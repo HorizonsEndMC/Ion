@@ -11,6 +11,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.configuration.file.YamlConfiguration
@@ -29,12 +30,12 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-object AreaShields : IonServerComponent(true) {
+object AreaShields : IonServerComponent() {
 	val bypassShieldEvents = ConcurrentHashMap.newKeySet<BlockExplodeEvent>()
 	private var explosionPowerOverride: Double? = null
 
 	override fun onEnable() {
-		loadData()
+		loadFile()
 
 		Tasks.asyncRepeat(0L, 20L * 60L) {
 			saveData()
@@ -44,27 +45,25 @@ object AreaShields : IonServerComponent(true) {
 	var configuration: YamlConfiguration? = null
 
 	//region File data
-	fun loadData() {
+	private fun loadFile() {
 		val areaShieldFile = File(IonServer.dataFolder, "areashields.yml")
 		if (!areaShieldFile.exists()) {
 			return
 		}
 
 		configuration = YamlConfiguration.loadConfiguration(areaShieldFile)
-		for (worldName in configuration!!.getKeys(false)) {
-			val world = Bukkit.getWorld(worldName)
+	}
 
-			if (world == null) {
-				log.warn("WORLD $worldName NOT FOUND $world! FAILED TO LOAD AREA SHIELD!")
-				continue
-			}
+	fun loadData(world: World) {
+		val configuration = configuration ?: return log.warn("Area Shields file not loaded.")
+		if (!configuration.getKeys(false).contains(world.name)) return
+		val worldName = world.name
 
-			configuration!!.getConfigurationSection(worldName)?.getKeys(false)?.forEach { vector ->
-				val split = vector.split(",")
-				val location = Location(world, split[0].toDouble(), split[1].toDouble(), split[2].toDouble())
-				val radius = configuration!!.getInt("$worldName.$vector")
-				locationRadiusMap[location] = radius
-			}
+		configuration.getConfigurationSection(worldName)?.getKeys(false)?.forEach { vector ->
+			val split = vector.split(",")
+			val location = Location(world, split[0].toDouble(), split[1].toDouble(), split[2].toDouble())
+			val radius = configuration.getInt("$worldName.$vector")
+			locationRadiusMap[location] = radius
 		}
 	}
 

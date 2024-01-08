@@ -30,7 +30,7 @@ class IonWorld private constructor(
 			}
 
 			ionWorlds[serverLevel] = IonWorld(serverLevel)
-			AreaShields.loadData()
+			AreaShields.loadData(serverLevel.world)
 		}
 
 		fun unregisterAll() {
