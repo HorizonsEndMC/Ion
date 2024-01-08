@@ -58,7 +58,7 @@ object Interdiction : IonServerComponent() {
 		}
 	}
 
-	fun toggleGravityWell(starship: ActiveStarship) {
+	fun toggleGravityWell(starship: ActiveStarship): Boolean {
 		when (starship.isInterdicting) {
 			true -> for (player in starship.world.getNearbyPlayers(
 				starship.centerOfMass.toLocation(starship.world),
@@ -88,7 +88,10 @@ object Interdiction : IonServerComponent() {
 				)
 			}
 		}
-		starship.setIsInterdicting(!starship.isInterdicting)
+
+		val newValue = !starship.isInterdicting
+		starship.setIsInterdicting(newValue)
+		return newValue
 	}
 
 	private fun pulseGravityWell(player: Player, starship: ActiveStarship, sign: Sign) {

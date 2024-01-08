@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.starship.control.signs
 
+import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.starship.BoardingRamps
+import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -118,6 +120,15 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			BoardingRamps.toggle(player, sign)
+		}
+	},
+	GRAVITY_WELLS("[wells]", arrayOf("&2Gravity".colorize(), "&8Generators".colorize(), null, null)) {
+		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
+			val starship = findPilotedPlayerStarship(player) ?: return
+
+			val newValue = Interdiction.toggleGravityWell(starship)
+
+			GravityWellMultiblock.setEnabled(sign, newValue)
 		}
 	};
 
