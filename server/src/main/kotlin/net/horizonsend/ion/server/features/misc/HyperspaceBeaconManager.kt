@@ -49,7 +49,7 @@ object HyperspaceBeaconManager : SLEventListener() {
 		}
 	}
 
-	private fun detectNearbyBeacons(starship: ActiveControlledStarship, x: Int, z: Int) {
+	fun detectNearbyBeacons(starship: ActiveControlledStarship, x: Int, z: Int) {
 		val pilot = starship.playerPilot ?: return
 		if (starship.hyperdrives.isEmpty()) return
 

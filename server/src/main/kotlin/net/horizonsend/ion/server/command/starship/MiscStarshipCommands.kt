@@ -30,6 +30,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.space.Space
@@ -601,9 +602,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("usebeacon")
 	fun onUseBeacon(sender: Player) {
 		val ship = getStarshipRiding(sender) as? ActiveControlledStarship ?: return
+		HyperspaceBeaconManager.detectNearbyBeacons(ship, 0, 0)
+		val beacon = ship.beacon
 
-		if (ship.beacon != null) {
-			val other = ship.beacon!!.exits?.randomOrNull() ?: ship.beacon!!.destination
+		if (beacon != null) {
+			val other = beacon.exits?.randomOrNull() ?: beacon.destination
 			tryJump(
 				ship,
 				other.x,
