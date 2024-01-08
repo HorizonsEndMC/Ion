@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.gravitywell
 
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.ChatColor
@@ -10,6 +11,9 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
 abstract class GravityWellMultiblock : Multiblock() {
+	override fun matchesUndetectedSign(sign: Sign): Boolean {
+		return super.matchesUndetectedSign(sign) || sign.line(0).plainText().equals("[gravwell]", ignoreCase = true)
+	}
 
 	companion object {
 
