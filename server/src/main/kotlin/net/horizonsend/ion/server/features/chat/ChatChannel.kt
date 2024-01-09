@@ -111,7 +111,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		}
 	},
 
-	PLANET(text("Planet", BLUE), listOf("planetchat", "pchat", "pc"), BLUE) {
+	PLANET(text("Planet", BLUE), listOf("planetchat", "pchat", "pc"), DARK_GREEN) {
 		override fun onChat(player: Player, event: AsyncChatEvent) {
 			val world = player.world
 
