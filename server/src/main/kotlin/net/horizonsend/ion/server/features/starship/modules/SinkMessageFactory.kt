@@ -7,7 +7,6 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
-import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -25,8 +24,6 @@ import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 
 class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory {
-	val pilotName = sunkShip.controller.getPilotName()
-
 	override fun execute() {
 		val arena = sunkShip.world.name.contains("arena", ignoreCase = true) // TODO manager later
 		val data = sunkShip.damagers
@@ -142,7 +139,10 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 			starship.type.displayNameComponent.color(NamedTextColor.WHITE)
 		)
 
-		val newName = if (PilotedStarships.isPiloted(starship as ActiveControlledStarship)) pilotName else text("none")
+		val newName = when (val controller = starship.controller) {
+			is PlayerController -> text(controller.player.name)
+			else -> controller.getPilotName()
+		}
 
 		return ofChildren(nameFormat, text(", piloted by ", RED), newName).hoverEvent(hover)
 	}

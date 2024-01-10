@@ -1,6 +1,5 @@
 package net.horizonsend.ion.proxy.commands.discord
 
-
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
