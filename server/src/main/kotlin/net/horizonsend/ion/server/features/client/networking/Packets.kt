@@ -36,6 +36,7 @@ enum class Packets(
 	HANDSHAKE(HandshakePacket),
 	GETPOS(GetPosPacket),
 	SHIP_DATA(ShipData),
+	WORLD_PACKET(WorldPacket),
 	PLAYER_ADD(PlayerAdd),
 	PLAYER_REMOVE(PlayerRemove);
 	val id get() = handler.id
