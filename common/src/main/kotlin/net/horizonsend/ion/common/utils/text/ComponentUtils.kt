@@ -3,10 +3,15 @@ package net.horizonsend.ion.common.utils.text
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toText
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
+import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.TextReplacementConfig
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -15,6 +20,9 @@ import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import java.util.regex.MatchResult
 import java.util.regex.Pattern
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
 
 // Serialization shortland
 fun String.miniMessage() = MiniMessage.miniMessage().deserialize(this)
@@ -73,8 +81,8 @@ fun template(
 }
 
 fun template(message: Component, vararg parameters: Any?) = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = true, *parameters)
-fun template(message: Component, useQuotesAroundObjects: Boolean = true, vararg parameters: Any?) = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = useQuotesAroundObjects, *parameters)
 fun template(message: Component, paramColor: TextColor, vararg parameters: Any?) = template(message, paramColor = paramColor, useQuotesAroundObjects = true, *parameters)
+fun template(message: Component, useQuotesAroundObjects: Boolean = true, vararg parameters: Any?) = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = useQuotesAroundObjects, *parameters)
 
 fun template(
 	message: Component,
@@ -113,17 +121,135 @@ fun Iterable<ComponentLike>.join(separator: Component = text(", ")): Component {
 }
 
 fun formatSpaceSuffix(message: Component?): Component {
-	if (message == null) return Component.empty()
-	if (message == Component.empty()) return Component.empty()
-	if (message.plainText().isEmpty()) return Component.empty()
+	if (message == null) return empty()
+	if (message == empty()) return empty()
+	if (message.plainText().isEmpty()) return empty()
 
 	return ofChildren(message, text(" "))
 }
 
 fun formatSpacePrefix(message: Component?): Component {
-	if (message == null) return Component.empty()
-	if (message == Component.empty()) return Component.empty()
-	if (message.plainText().isEmpty()) return Component.empty()
+	if (message == null) return empty()
+	if (message == empty()) return empty()
+	if (message.plainText().isEmpty()) return empty()
 
 	return ofChildren(text(" "), message)
+}
+
+const val PAGE_NEXT_BUTTON = " »"
+const val PAGE_PREVIOUS_BUTTON = "« "
+
+fun formatPageFooter(
+	command: String,
+	currentPage: Int,
+	maxPage: Int,
+	color: TextColor = HE_MEDIUM_GRAY,
+	paramColor: TextColor = HE_LIGHT_GRAY
+): Component {
+	val ratio = template(text("Page {0}/{1}", color), paramColor = paramColor, currentPage, maxPage)
+
+	val back = if (currentPage > 1) {
+		text(PAGE_PREVIOUS_BUTTON, paramColor)
+			.hoverEvent(text("$command ${currentPage - 1}"))
+			.clickEvent(ClickEvent.runCommand("$command ${currentPage - 1}"))
+	} else empty()
+	val forward = if (currentPage != maxPage) {
+		text(PAGE_NEXT_BUTTON, paramColor)
+			.hoverEvent(text("$command ${currentPage + 1}"))
+			.clickEvent(ClickEvent.runCommand("$command ${currentPage + 1}"))
+	} else empty()
+
+	val breakdownStart = max(1, currentPage - 2)
+	val breakdownMax = min(maxPage, currentPage + 2)
+
+	val breakdown = text()
+	breakdown.append(text("(", color))
+	if (breakdownStart != 1) breakdown.append(ofChildren(
+		text(1, paramColor)
+			.hoverEvent(text("$command 1"))
+			.clickEvent(ClickEvent.runCommand("$command 1")),
+		text(" ... ", color)
+	))
+
+	val range = (breakdownStart..breakdownMax).iterator()
+
+	while (range.hasNext()) {
+		val value = range.next()
+
+		val entry = text(value, paramColor)
+			.hoverEvent(text("$command $value"))
+			.clickEvent(ClickEvent.runCommand("$command $value"))
+
+		breakdown.append(entry)
+
+		if (range.hasNext()) breakdown.append(text(" | ", color))
+	}
+
+	if (breakdownMax != maxPage) breakdown.append(ofChildren(
+		text(" ... ", color),
+		text(maxPage, paramColor)
+			.hoverEvent(text("$command $maxPage"))
+			.clickEvent(ClickEvent.runCommand("$command $maxPage"))
+	))
+
+	breakdown.append(text(")", color))
+
+	return ofChildren(back, ratio, forward, text(" "), breakdown.build())
+}
+
+inline fun formatPaginatedMenu(
+	entries: Int,
+	command: String,
+	currentPage: Int,
+	maxPerPage: Int = 10,
+	color: TextColor = HE_MEDIUM_GRAY,
+	paramColor: TextColor = HE_LIGHT_GRAY,
+	footerSeparator: Component? = null,
+	transform: (Int) -> Component
+): Component {
+	val builder = text()
+
+	val min = minOf(entries, 0 + (maxPerPage * (currentPage - 1)))
+	val max = minOf(entries, maxPerPage + (maxPerPage * (currentPage - 1)))
+
+	for (entry in min until max) {
+		builder.append(ofChildren(transform(entry), newline()))
+	}
+
+	val maxPage = ceil(entries.toDouble() / maxPerPage).toInt()
+
+	footerSeparator?.let { builder.append(footerSeparator, newline()) }
+	builder.append(formatPageFooter(command, currentPage, maxPage, color, paramColor))
+
+	return builder.build()
+}
+
+fun formatPaginatedMenu(
+	entries: List<Component>,
+	command: String,
+	currentPage: Int,
+	maxPerPage: Int = 10,
+	color: TextColor = HE_MEDIUM_GRAY,
+	paramColor: TextColor = HE_LIGHT_GRAY,
+	footerSeparator: Component? = null,
+): Component {
+	val builder = text()
+
+	val min = minOf(entries.size, 0 + (maxPerPage * (currentPage - 1)))
+	val max = minOf(entries.size, maxPerPage + (maxPerPage * (currentPage - 1)))
+
+	val sublist = entries
+		.subList(min, max)
+		.toTypedArray()
+
+	for (entry in sublist) {
+		builder.append(ofChildren(entry, newline()))
+	}
+
+	val maxPage = ceil(entries.size.toDouble() / maxPerPage).toInt()
+
+	footerSeparator?.let { builder.append(footerSeparator, newline()) }
+	builder.append(formatPageFooter(command, currentPage, maxPage, color, paramColor))
+
+	return builder.build()
 }
