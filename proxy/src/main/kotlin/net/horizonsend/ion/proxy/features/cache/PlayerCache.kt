@@ -8,7 +8,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.event.PlayerDisconnectEvent
-import net.md_5.bungee.api.event.PreLoginEvent
+import net.md_5.bungee.api.event.PostLoginEvent
 import net.md_5.bungee.api.event.ServerConnectedEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
@@ -18,10 +18,10 @@ import java.util.concurrent.TimeUnit
 
 object PlayerCache : AbstractPlayerCache(), Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
-	fun preLogin(event: PreLoginEvent) {
-		if (PLUGIN.proxy.players.any { it.uniqueId == event.connection.uniqueId }) return
+	fun preLogin(event: PostLoginEvent) {
+		if (PLUGIN.proxy.players.any { it.uniqueId == event.player.uniqueId }) return
 
-		callOnPreLogin(event.connection.uniqueId)
+		callOnPreLogin(event.player.uniqueId)
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.proxy.features.cache.PlayerCache
 import net.horizonsend.ion.proxy.sendRichMessage
 import net.horizonsend.ion.proxy.utils.slPlayerId
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
@@ -28,14 +29,15 @@ class MessageCommand : BaseCommand() {
 		val wrapped = WrappedPlayer(player)
 
 		val targetPlayer = ProxyServer.getInstance().getPlayer(target) ?: return wrapped.userError("Target not found!")
-//		val cached = PlayerCache[targetPlayer.slPlayerId]
+		val cached = PlayerCache[targetPlayer.slPlayerId]
 
 		val formatted = message.replace("${targetPlayer.name} ", "")
 
 		player.sendRichMessage(format.invoke("me", targetPlayer.name, formatted))
 
 		// Let the sender see that the message has been sent, but don't send it to the recipient, or set the convo
-//		if (cached.blockedPlayerIDs.contains(player.slPlayerId)) return
+		println(cached)
+		if (cached.blockedPlayerIDs.contains(player.slPlayerId)) return println("blocked")
 
 		targetPlayer.sendRichMessage(format.invoke(player.name, "me", formatted))
 

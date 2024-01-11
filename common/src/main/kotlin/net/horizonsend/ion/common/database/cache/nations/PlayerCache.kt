@@ -258,7 +258,17 @@ abstract class AbstractPlayerCache : ManualCache() {
 			getColoredTag(NationRole.getTag(id))
 		}
 
-		PLAYER_DATA[id.uuid] = PlayerData(id, data.xp, data.level, settlement, nation, settlementTag, nationTag, data.bounty)
+		PLAYER_DATA[id.uuid] = PlayerData(
+			id = id,
+			xp = data.xp,
+			level = data.level,
+			settlementOid = settlement,
+			nationOid = nation,
+			settlementTag = settlementTag,
+			nationTag = nationTag,
+			bounty = data.bounty,
+			blockedPlayerIDs = data.blockedPlayerIDs
+		)
 	}
 
 	abstract fun getColoredTag(nameColorPair: Pair<String, SLTextStyleDB>?): String?
