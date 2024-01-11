@@ -25,7 +25,7 @@ dependencies {
 	implementation("co.aikar:acf-bungee:0.5.1-SNAPSHOT")
 	implementation("net.dv8tion:JDA:5.0.0-beta.18")
 	implementation("net.kyori:adventure-platform-bungeecord:4.3.1")
-	implementation("net.kyori:adventure-text-logger-slf4j:4.14.0")
+	implementation("net.kyori:adventure-text-logger-slf4j:4.15.0")
 
 	implementation("net.kyori:adventure-text-minimessage:4.14.0")
 	implementation("net.kyori:adventure-text-serializer-plain:4.14.0")
