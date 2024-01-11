@@ -177,7 +177,7 @@ fun Player.getSelection(): Region? {
 
 /** Uploads the clipboard to the specified schematic upload site */
 fun Clipboard.upload(): URL? {
-	return try { FaweAPI.upload(this, BuiltInClipboardFormat.SPONGE_SCHEMATIC) } catch (_: Throwable) { return null }
+	return try { FaweAPI.upload(this, BuiltInClipboardFormat.FAST) } catch (_: Throwable) { return null }
 }
 
 fun Clipboard.uploadAsync(callback: (URL?) -> Unit = {}) {

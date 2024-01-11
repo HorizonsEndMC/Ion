@@ -675,7 +675,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("unused")
-	@CommandAlias("download")
+	@CommandAlias("starshipdownload")
 	@Description("Download the ship you're currently piloting")
 	fun onDownload(sender: Player) = asyncCommand(sender) {
 		uploadCooldown.tryExec(sender) {
