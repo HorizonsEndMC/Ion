@@ -9,6 +9,8 @@ import net.horizonsend.ion.common.database.schema.nations.Role
 import net.horizonsend.ion.common.database.schema.nations.RoleCompanion
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.server.features.nations.gui.editRoleGUI
 import net.horizonsend.ion.server.features.nations.gui.editRolePermissionGUI
@@ -23,7 +25,6 @@ import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
-import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -153,7 +154,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		roleCompanion.create(parent, name, color.name, weight)
 
-		sender msg "&3Created role $name"
+		sender.success("Created role $name")
 	}
 
 	open fun onEdit(sender: Player, role: String) = asyncCommand(sender) {
@@ -182,7 +183,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		roleCompanion.updateById(getId(roleData), addToSet(roleCompanion.permissionsProperty, permission))
 
-		sender msg "&aAdded permission $permission to role ${roleData.name}"
+		sender.success("Added permission $permission to role ${roleData.name}")
 	}
 
 	open fun onPermissionList(sender: Player, role: String) = asyncCommand(sender) {
@@ -192,7 +193,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		failIf(permissions.isEmpty()) { "${roleData.name} has no permissions. To add permissions, use /$name permission add <permission>." }
 
-		sender msg "&7{${permissions.joinToString()}}"
+		sender.information("{${permissions.joinToString()}}")
 	}
 
 	open fun onPermissionRemove(sender: Player, role: String, permission: Permission) {
@@ -203,7 +204,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		roleCompanion.updateById(getId(roleData), pull(roleCompanion.permissionsProperty, permission))
 
-		sender msg "&aRemoved permission $permission from role ${roleData.name}"
+		sender.success("Removed permission $permission from role ${roleData.name}")
 	}
 
 	open fun onEditName(sender: Player, role: String, newName: String) = asyncCommand(sender) {
@@ -214,7 +215,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		roleCompanion.updateById(getId(roleData), org.litote.kmongo.setValue(roleCompanion.nameProperty, newName))
 
-		sender msg "&aRenamed ${roleData.name} to $newName"
+		sender.success("Renamed ${roleData.name} to $newName")
 	}
 
 	open fun onEditColor(sender: Player, role: String, newColor: SLTextStyle) = asyncCommand(sender) {
@@ -225,7 +226,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		roleCompanion.updateById(getId(roleData), org.litote.kmongo.setValue(roleCompanion.colorProperty, newColor.name))
 
-		sender msg "&aChanged color of ${roleData.name} from ${roleData.color.actualStyle.name} to ${newColor.name}"
+		sender.success("Changed color of ${roleData.name} from ${roleData.color.actualStyle.name} to ${newColor.name}")
 	}
 
 	open fun onEditWeight(sender: Player, role: String, newWeight: Int) = asyncCommand(sender) {
@@ -236,7 +237,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		roleCompanion.updateById(getId(roleData), org.litote.kmongo.setValue(roleCompanion.weightProperty, newWeight))
 
-		sender msg "&aChanged weight of ${roleData.name} from ${roleData.weight} to $newWeight"
+		sender.success("Changed weight of ${roleData.name} from ${roleData.weight} to $newWeight")
 	}
 
 	open fun onDelete(sender: Player, role: String) = asyncCommand(sender) {
@@ -245,7 +246,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		roleCompanion.delete(getId(roleData))
 
-		sender msg "&aDeleted role ${roleData.name}"
+		sender.success("Deleted role ${roleData.name}")
 	}
 
 	open fun onMembersGUI(sender: Player) = asyncCommand(sender) {
@@ -299,7 +300,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		roleCompanion.updateById(getId(roleData), addToSet(roleCompanion.membersProperty, playerId))
 
-		sender msg "&aGave role ${roleData.coloredName} to $player"
+		sender.success("Gave role ${roleData.name} to $player")
 	}
 
 	open fun onMemberRemove(sender: Player, player: String, role: String) = asyncCommand(sender) {
@@ -311,6 +312,6 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		failIf(result.matchedCount <= 0) { "$player doesn't have role ${roleData.name}." }
 
-		sender msg "&aTook role ${roleData.coloredName} from $player"
+		sender.success("Took role ${roleData.coloredName} from $player")
 	}
 }
