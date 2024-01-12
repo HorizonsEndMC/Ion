@@ -139,7 +139,8 @@ object Regions : IonServerComponent() {
 				change.containsUpdated(Settlement::nation) ||
 				change.containsUpdated(Settlement::trustedPlayers) ||
 				change.containsUpdated(Settlement::trustedSettlements) ||
-				change.containsUpdated(Settlement::trustedNations)
+				change.containsUpdated(Settlement::trustedNations) ||
+				change.containsUpdated(Settlement::motd)
 			) {
 				updateRegionsAsync(change.oid)
 			}
