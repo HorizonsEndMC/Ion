@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.starship.ai.spawning.alien.AlienSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.explorerTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpReinforcementSpawner
@@ -47,6 +48,7 @@ data class AISpawningConfiguration(
 		val explorerSingle: AISpawnerConfiguration = ExplorerSingleSpawner.defaultConfiguration,
 		val pirateSingle: AISpawnerConfiguration = PirateSpawner.defaultConfiguration,
 		val tsaiiSingle: AISpawnerConfiguration = TsaiiSpawner.defaultConfiguration,
+		val alienSpawner: AISpawnerConfiguration = AlienSpawner.defaultConfiguration,
 	)
 
 	/**
