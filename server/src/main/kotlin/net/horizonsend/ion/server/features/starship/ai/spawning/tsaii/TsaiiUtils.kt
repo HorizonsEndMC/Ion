@@ -47,7 +47,7 @@ val tsaiiStarfighter = registerFactory("TSAII_STARFIGHTER") { // TODO
 		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
 
 		val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 25.0))
-		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
 		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *tsaiiSmackTalk))
 
@@ -71,7 +71,7 @@ val tsaiiGunship = registerFactory("TSAII_GUNSHIP") { // TODO
 		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
 
 		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 55.0))
-		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
 		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *tsaiiSmackTalk))
 

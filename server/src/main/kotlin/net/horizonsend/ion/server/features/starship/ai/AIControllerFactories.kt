@@ -23,7 +23,7 @@ object AIControllerFactories : IonServerComponent() {
             val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = false })
             builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
             val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 25.0))
-            val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+            val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
             builder.addModule(
                 "movement",
                 CruiseModule(
@@ -50,7 +50,7 @@ object AIControllerFactories : IonServerComponent() {
             val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = false })
             builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
             val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 40.0))
-            val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+            val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
             builder.addModule(
                 "movement",
                 CruiseModule(
@@ -77,7 +77,7 @@ object AIControllerFactories : IonServerComponent() {
             val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = false })
             builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
             val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 40.0))
-            val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+            val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
             builder.addModule(
                 "movement",
                 CruiseModule(
@@ -104,7 +104,7 @@ object AIControllerFactories : IonServerComponent() {
             val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = false })
             builder.addModule("combat", FrigateCombatModule(it, targeting::findTarget).apply { shouldFaceTarget = false })
             val positioning = builder.addModule("positioning", CirclingPositionModule(it, targeting::findTarget, 40.0))
-            val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+            val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
             builder.addModule(
                 "movement",
                 CruiseModule(

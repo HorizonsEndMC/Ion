@@ -35,7 +35,7 @@ class FleeModule(
 			.normalize()
 			.multiply(-500)
 
-		return Vec3i(getCenter().clone().add(away))
+		return Vec3i(getCenter().toVector().clone().add(away))
 	}
 
 	override fun toString(): String {

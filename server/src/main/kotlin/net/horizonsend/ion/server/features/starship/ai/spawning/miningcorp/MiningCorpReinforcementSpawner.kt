@@ -37,7 +37,7 @@ class MiningCorpReinforcementSpawner(
 	override val spawnMessage: Component? = null
 
 	override fun findSpawnLocation(): Location {
-		val origin = controller.getCenter()
+		val origin = controller.getCenter().toLocation(controller.getWorld())
 		val world = controller.getWorld()
 
 		val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
@@ -78,7 +78,7 @@ class MiningCorpReinforcementSpawner(
 				val targeting = builder.addModule("targeting", HighestDamagerTargetingModule(it).apply { sticky = true })
 				builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
 				val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 25.0))
-				val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+				val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
 				builder.addModule(
 					"movement",
 					CruiseModule(

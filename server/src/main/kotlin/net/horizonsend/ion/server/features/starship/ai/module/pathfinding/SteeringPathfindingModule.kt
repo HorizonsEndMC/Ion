@@ -17,8 +17,6 @@ open class SteeringPathfindingModule(
 
 	fun getTargetPosition(): Vector = positioningSupplier.get().toVector()
 
-	override var blocked: Boolean = false
-
 	fun getAvoidVector(): Vector {
 		val center = getCenter().toVector()
 		val vectors = avoidPositions.map { it.toVector().subtract(center) }

@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovementExc
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.sortedByValue
 import net.kyori.adventure.text.Component
-import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
@@ -80,9 +79,7 @@ class AIController(
 	override fun canDestroyBlock(block: Block): Boolean = false
 	override fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean = false
 
-	/** Use the direct control center as a sort of cache to avoid the type conversion if possible */
-	fun getCenter(): Location = (starship as? ActiveControlledStarship)?.directControlCenter ?: starship.centerOfMass.toLocation(starship.world)
-	fun getCenterVec3i(): Vec3i = starship.centerOfMass
+	fun getCenter(): Vec3i = starship.centerOfMass
 
 	fun getWorld(): World = starship.world
 

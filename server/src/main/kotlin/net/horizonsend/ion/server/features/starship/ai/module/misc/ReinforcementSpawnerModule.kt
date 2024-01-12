@@ -29,7 +29,7 @@ class ReinforcementSpawnerModule(
 	}
 
 	fun sendMessage() {
-		val players = world.getNearbyPlayers(getCenter(), 500.0)
+		val players = getCenter().toLocation(world).getNearbyPlayers(500.0)
 
 		val (x, y, z) = starship.centerOfMass
 
