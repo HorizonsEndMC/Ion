@@ -20,7 +20,7 @@ import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
-import net.horizonsend.ion.server.features.space.spacestations.SpaceStations.SpaceStationPermission
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache.SpaceStationPermission
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.litote.kmongo.Id
@@ -31,7 +31,7 @@ abstract class CachedSpaceStation<T: SpaceStationInterface<O>, O: DbObject, C: S
 
 	abstract val owner: Id<O>
 
-	abstract val name: String
+	abstract var name: String
 
 	abstract var world: String
 	abstract var x: Int
@@ -83,14 +83,6 @@ abstract class CachedSpaceStation<T: SpaceStationInterface<O>, O: DbObject, C: S
 
 	fun abandon() = companion.delete(databaseId)
 
-	fun invalidate(recreate: Boolean = true) {
-		val database = companion.findById(databaseId) ?: return
-
-        SpaceStations.invalidate(database)
-
-		if (recreate) SpaceStations.createCached(database)
-	}
-
 	companion object {
 		fun calculateCost(oldRadius: Int, newRadius: Int): Int {
 			/*  A_1 = pi * r^2
@@ -108,7 +100,7 @@ class CachedNationSpaceStation(
 	override val databaseId: Oid<NationSpaceStation>,
 	override val owner: Oid<Nation>,
 
-	override val name: String,
+	override var name: String,
 
 	override var world: String,
 	override var x: Int,
@@ -136,7 +128,7 @@ class CachedSettlementSpaceStation(
 	override val databaseId: Oid<SettlementSpaceStation>,
 	override val owner: Oid<Settlement>,
 
-	override val name: String,
+	override var name: String,
 
 	override var world: String,
 	override var x: Int,
@@ -164,7 +156,7 @@ class CachedPlayerSpaceStation(
 	override val databaseId: Oid<PlayerSpaceStation>,
 	override val owner: SLPlayerId,
 
-	override val name: String,
+	override var name: String,
 
 	override var world: String,
 	override var x: Int,

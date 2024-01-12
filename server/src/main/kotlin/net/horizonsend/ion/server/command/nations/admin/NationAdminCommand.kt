@@ -21,7 +21,6 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStati
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
-import net.horizonsend.ion.server.features.space.spacestations.SpaceStations
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.World
 import org.bukkit.command.CommandSender
@@ -158,7 +157,6 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 		asyncCommand(sender) {
 
 			station.setLocation(x, z, world.name)
-			SpaceStations.reload()
 
 			sender.success("Set position of ${station.name} to $x, $z")
 		}
@@ -170,7 +168,6 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 		asyncCommand(sender) {
 
 			station.changeRadius(radius)
-			SpaceStations.reload()
 
 			sender.success("Set radius of ${station.name} to $radius")
 		}
@@ -179,7 +176,6 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	@Subcommand("spacestation reload")
 	@Suppress("unused")
 	fun onStationReload(sender: CommandSender) {
-		SpaceStations.reload()
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
 		sender.success("Reloaded space stations")
 	}

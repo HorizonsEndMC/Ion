@@ -25,12 +25,11 @@ import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
-import net.horizonsend.ion.server.features.space.spacestations.SpaceStations
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
 import org.litote.kmongo.Id
-import kotlin.jvm.optionals.getOrNull
 
 class RegionSpaceStation<T: SpaceStationInterface<Owner>, Owner: DbObject>(spaceStation: SpaceStationInterface<Owner>) : Region<T>(spaceStation), RegionTopLevel {
 	override val priority: Int = 0
@@ -47,9 +46,9 @@ class RegionSpaceStation<T: SpaceStationInterface<Owner>, Owner: DbObject>(space
 	var trustedSettlements: Set<Oid<Settlement>> = spaceStation.trustedSettlements; private set
 	var trustedNations: Set<Oid<Nation>> = spaceStation.trustedNations; private set
 
-	val color: Int get() = SpaceStations.spaceStationCache[name].get().color
-	val ownerName: String get() = SpaceStations.spaceStationCache[name].get().ownerName
-	val ownerType: String get() = SpaceStations.spaceStationCache[name].get().ownershipType
+	val color: Int get() = SpaceStationCache[name]?.color ?: error("$name wasn't cached!")
+	val ownerName: String get() = SpaceStationCache[name]?.ownerName ?: error("$name wasn't cached!")
+	val ownerType: String get() = SpaceStationCache[name]?.ownershipType ?: error("$name wasn't cached!")
 
 	override fun contains(x: Int, y: Int, z: Int): Boolean {
 		return distanceSquared(this.x.d(), 0.0, this.z.d(), x.d(), 0.0, z.d()) <= radius.toDouble().squared()
@@ -78,7 +77,7 @@ class RegionSpaceStation<T: SpaceStationInterface<Owner>, Owner: DbObject>(space
 	}
 
 	override fun calculateInaccessMessage(player: Player): String? {
-		val cached = SpaceStations.spaceStationCache[name].getOrNull() ?: return "&cStation not cached"
+		val cached = SpaceStationCache[name] ?: return "&cStation not cached"
 
 		if (cached is CachedPlayerSpaceStation && cached.owner == player.slPlayerId) return null
 

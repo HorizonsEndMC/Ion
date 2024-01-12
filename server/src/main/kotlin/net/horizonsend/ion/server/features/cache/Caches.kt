@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -31,7 +32,8 @@ object Caches : IonServerComponent() {
 		BountyCache,
 
 		CargoCrates,
-		EcoStations
+		EcoStations,
+		SpaceStationCache
 	)
 
 	override fun onEnable() = caches.forEach(Cache::load)

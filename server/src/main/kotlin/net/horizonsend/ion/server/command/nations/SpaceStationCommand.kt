@@ -23,6 +23,7 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
@@ -34,9 +35,12 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation.Companion.calculateCost
-import net.horizonsend.ion.server.features.space.spacestations.SpaceStations
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.miscellaneous.utils.*
-import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.litote.kmongo.Id
@@ -46,16 +50,22 @@ import java.util.*
 object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	val disallowedWorlds = listOf("horizon", "trench", "au0821")
 
+	private fun formatSpaceStationMessage(message: String, vararg params: Any) = template(
+		text(message, GRAY),
+		paramColor = AQUA,
+		useQuotesAroundObjects = false,
+		*params
+	)
+
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandContexts.registerContext(CachedSpaceStation::class.java) { c: BukkitCommandExecutionContext ->
-			SpaceStations.spaceStationCache[c.popFirstArg().uppercase(Locale.getDefault())].orNull()
-				?: throw InvalidCommandArgument("No such space station")
+			SpaceStationCache[c.popFirstArg()] ?: throw InvalidCommandArgument("No such space station")
 		}
 
 		registerAsyncCompletion(manager, "spacestations") { c ->
 			val player = c.player
 
-			SpaceStations.all().filter { it.hasOwnershipContext(player.slPlayerId) }.map { it.name }
+			SpaceStationCache.all().filter { it.hasOwnershipContext(player.slPlayerId) }.map { it.name }
 		}
 	}
 
@@ -119,7 +129,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		// Check conflicts with other stations
 		// (use the database directly, in order to avoid people making
 		// another one in the same location before the cache updates)
-		for (other in SpaceStations.all()) {
+		for (other in SpaceStationCache.all()) {
 			if (other.databaseId == cachedStation?.databaseId) continue
 
 			val minDistance = other.radius + radius
@@ -157,24 +167,24 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("unused")
 	fun createNation(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
 		val nation: Oid<Nation> = requireNationIn(sender)
-		requireNationPermission(sender, nation, SpaceStations.SpaceStationPermission.CREATE_STATION.nation)
+		requireNationPermission(sender, nation, SpaceStationCache.SpaceStationPermission.CREATE_STATION.nation)
 
-		create(sender, name, radius, cost, nation, NationSpaceStation.Companion)
+		create(sender, name, radius, "nation", cost, nation, NationSpaceStation.Companion)
 	}
 
 	@Subcommand("create settlement")
 	@Suppress("unused")
 	fun createSettlement(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
 		val nation: Oid<Settlement> = requireSettlementIn(sender)
-		requireSettlementPermission(sender, nation, SpaceStations.SpaceStationPermission.CREATE_STATION.settlement)
+		requireSettlementPermission(sender, nation, SpaceStationCache.SpaceStationPermission.CREATE_STATION.settlement)
 
-		create(sender, name, radius, cost, nation, SettlementSpaceStation.Companion)
+		create(sender, name, radius, "settlement", cost, nation, SettlementSpaceStation.Companion)
 	}
 
 	@Subcommand("create personal")
 	@Suppress("unused")
 	fun createPersonal(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
-		create(sender, name, radius, cost, sender.slPlayerId, PlayerSpaceStation.Companion)
+		create(sender, name, radius, "personal", cost, sender.slPlayerId, PlayerSpaceStation.Companion)
 	}
 
 	// Check settlement / nation permissions in their own version
@@ -182,6 +192,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender: Player,
 		name: String,
 		radius: Int,
+		ownershipType: String,
 		@Optional cost: Int?,
 		owner: Id<Owner>,
 		companion: SpaceStationCompanion<Owner, *>)
@@ -222,14 +233,15 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			SpaceStationCompanion.TrustLevel.MANUAL
 		)
 
-		SpaceStations.reload()
-
-		val station = SpaceStations.spaceStationCache[name].get()
-
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
-		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize(
-			"<gray>${station.ownershipType} <light_purple>${station.ownerName} <gray>established space station <aqua>$name <gray>in ${world.name}")
-		)
+
+		Notify.chatAndEvents(formatSpaceStationMessage(
+			"{0} established the {1} space station {2} in {3}",
+			text(sender.name, LIGHT_PURPLE),
+			text(ownershipType, GRAY),
+			name,
+			world.name,
+		))
 	}
 
 	private fun requireStationOwnership(player: SLPlayerId, station: CachedSpaceStation<*, *, *>) {
@@ -239,7 +251,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	private fun requirePermission(
         player: SLPlayerId,
         station: CachedSpaceStation<*, *, *>,
-        permission: SpaceStations.SpaceStationPermission
+        permission: SpaceStationCache.SpaceStationPermission
 	) {
 		if (!station.hasPermission(player, permission)) fail { "You don't have permission $permission" }
 	}
@@ -250,18 +262,16 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("unused")
 	fun onAbandon(sender: Player, station: CachedSpaceStation<*, *, *>) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
-		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.DELETE_STATION)
+		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.DELETE_STATION)
 
-		station.invalidate(false)
 		station.abandon()
 
-		SpaceStations.reload()
-
-		Notify.chatAndEvents(
-			MiniMessage.miniMessage().deserialize(
-				"<gray>${station.ownershipType} <light_purple>${station.ownerName} <gray>abandoned space station <aqua>${station.name}"
-			)
-		)
+		Notify.chatAndEvents(formatSpaceStationMessage(
+			"{0} {1} abandoned space station {2}",
+			text(station.ownershipType, GRAY),
+			text(station.ownerName, LIGHT_PURPLE),
+			station.name
+		))
 	}
 
 	@Subcommand("resize")
@@ -270,7 +280,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("unused")
 	fun onResize(sender: Player, station: CachedSpaceStation<*, *, *>, newRadius: Int, @Optional cost: Int?) {
 		requireStationOwnership(sender.slPlayerId, station)
-		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.MANAGE_STATION)
+		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.MANAGE_STATION)
 		val stationName = station.name
 
 		val location = sender.location
@@ -285,14 +295,18 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		failIf(cost != realCost) {
 			"You must acknowledge the cost of resizing a space station to resize one. " +
 				"The cost is ${realCost.toCreditsString()}. Run the command: " +
-				"/nstation resize $name $newRadius $realCost"
+				"/nstation resize ${station.name} $newRadius $realCost"
 		}
 
 		station.changeRadius(newRadius)
-		station.invalidate()
 
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
-		sender.sendRichMessage("<gray>Resized <aqua>$stationName<gray> to <aqua>$newRadius")
+
+		sender.sendMessage(formatSpaceStationMessage(
+			"Resized {0} to {1}",
+			stationName,
+			newRadius
+		))
 	}
 
 	@Subcommand("set trustlevel")
@@ -305,9 +319,12 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		failIf(station.trustLevel == trustLevel) { "$stationName's trust level is already $trustLevel" }
 
 		station.changeTrustLevel(trustLevel)
-		station.invalidate()
 
-		sender.sendRichMessage("<gray>Set trust level of <aqua>$stationName<gray> to <aqua>$trustLevel")
+		sender.sendMessage(formatSpaceStationMessage(
+			"Set trust level of {0} to {1}",
+			stationName,
+			trustLevel,
+		))
 	}
 
 	@Subcommand("trusted list")
@@ -338,17 +355,20 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
 		val playerName: String = getPlayerName(playerId)
 
-		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.MANAGE_STATION)
+		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.MANAGE_STATION)
 
 		failIf(station.trustedPlayers.contains(playerId)) {
 			"$playerName is already trusted in $stationName"
 		}
 
 		station.trustPlayer(playerId)
-		station.invalidate()
 
-		sender.sendRichMessage("<gray> Added <aqua>$playerName<gray> to <aqua>$stationName")
-		Notify.playerCrossServer(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		sender.sendMessage(formatSpaceStationMessage("Added {0} to {1}", playerName, stationName))
+
+		Notify.playerCrossServer(
+			playerId.uuid,
+			formatSpaceStationMessage("You were added to the space station {0} by {1}", stationName, sender.name)
+		)
 	}
 
 	@Subcommand("trusted add settlement")
@@ -363,17 +383,20 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			"Settlement $settlement not found"
 		}
 
-		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.MANAGE_STATION)
+		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.MANAGE_STATION)
 
 		failIf(station.trustedSettlements.contains(settlementId)) {
 			"$settlement is already trusted in $stationName"
 		}
 
 		station.trustSettlement(settlementId)
-		station.invalidate()
 
-		sender.sendRichMessage("<gray> Added <aqua>$settlement<gray> to <aqua>$stationName")
-		Notify.settlementCrossServer(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		sender.sendMessage(formatSpaceStationMessage("Added {0} to {1}", settlement, stationName))
+
+		Notify.settlementCrossServer(
+			settlementId,
+			formatSpaceStationMessage("Your settlement was added to the space station {0} by {1}", stationName, sender.name)
+		)
 	}
 
 	@Subcommand("trusted add nation")
@@ -388,17 +411,20 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			"Nation $nation not found"
 		}
 
-		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.MANAGE_STATION)
+		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.MANAGE_STATION)
 
 		failIf(station.trustedNations.contains(nationId)) {
 			"$nation is already trusted in $stationName"
 		}
 
 		station.trustNation(nationId)
-		station.invalidate()
 
-		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$stationName")
-		Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		sender.sendMessage(formatSpaceStationMessage("Added {0} to {1}", nation, stationName))
+
+		Notify.nationCrossServer(
+			nationId,
+			formatSpaceStationMessage("Your settlement was added to the space station {0} by {1}", stationName, sender.name)
+		)
 	}
 
 	@Subcommand("trusted remove player")
@@ -412,17 +438,20 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
 		val playerName: String = getPlayerName(playerId)
 
-		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.MANAGE_STATION)
+		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.MANAGE_STATION)
 
 		failIf(!station.trustedPlayers.contains(playerId)) {
 			"$playerName isn't trusted in $stationName"
 		}
 
 		station.unTrustPlayer(playerId)
-		station.invalidate()
 
-		sender.sendRichMessage("<gray> Removed <aqua>$playerName<gray> from <aqua>$stationName")
-		Notify.playerCrossServer(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		sender.sendMessage(formatSpaceStationMessage("Removed {0} from {1}", playerName, stationName,))
+
+		Notify.playerCrossServer(
+			playerId.uuid,
+			formatSpaceStationMessage("You were removed from station the space station {0} by {1}", stationName, sender.name)
+		)
 	}
 
 
@@ -438,17 +467,20 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			"Settlement $settlement not found"
 		}
 
-		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.MANAGE_STATION)
+		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.MANAGE_STATION)
 
 		failIf(!station.trustedSettlements.contains(settlementId)) {
 			"$settlement isn't trusted in $stationName"
 		}
 
 		station.unTrustSettlement(settlementId)
-		station.invalidate()
 
-		sender.sendRichMessage("<gray> Removed <aqua>$settlement<gray> from <aqua>$stationName")
-		Notify.settlementCrossServer(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		sender.sendMessage(formatSpaceStationMessage("Removed {0} from {1}", settlement, stationName,))
+
+		Notify.settlementCrossServer(
+			settlementId,
+			formatSpaceStationMessage("Your settlement was removed from station the space station {0} by {1}", stationName, sender.name)
+		)
 	}
 
 	@Subcommand("trusted remove nation")
@@ -463,17 +495,20 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			"Nation $nation not found"
 		}
 
-		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.MANAGE_STATION)
+		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.MANAGE_STATION)
 
 		failIf(!station.trustedNations.contains(nationId)) {
 			"$nation isn't trusted in $stationName"
 		}
 
 		station.unTrustNation(nationId)
-		station.invalidate()
 
-		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$stationName")
-		Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize("<gray>Your nation was removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		sender.sendMessage(formatSpaceStationMessage("Removed {0} from {1}", nation, stationName,))
+
+		Notify.nationCrossServer(
+			nationId,
+			formatSpaceStationMessage("Your settlement was removed from station the space station {0} by {1}", stationName, sender.name)
+		)
 	}
 
 	@Subcommand("set name")
@@ -484,14 +519,10 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		requireStationOwnership(sender.slPlayerId, station)
 
 		validateName(newName)
-
 		station.rename(newName)
-		station.invalidate()
 
-		SpaceStations.reload()
-
-		sender.sendRichMessage("<gray> Renamed <aqua>${station.name}<gray> to <aqua>$newName")
-		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gray>Space station <aqua>${station.name}<gray> has been renamed to <aqua>$newName<gray> by <aqua>${sender.name}"))
+		sender.sendMessage(formatSpaceStationMessage("Renamed {0} to {1}", station.name, newName,))
+		Notify.chatAndGlobal(formatSpaceStationMessage("Space station {0}  has been renamed to  {1} by {2}", station.name, newName, sender.name))
 	}
 }
 
