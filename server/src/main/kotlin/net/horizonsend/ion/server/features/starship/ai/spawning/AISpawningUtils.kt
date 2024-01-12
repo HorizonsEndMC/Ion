@@ -69,8 +69,10 @@ fun createAIShipFromTemplate(
 		template.miniMessageName,
 		createController
 	) {
+		it.speedLimit = template.maxSpeed
 		it.rewardsProvider = AIRewardsProvider(it, template)
 		it.sinkMessageFactory = AISinkMessageFactory(it)
+
 		callback(it)
 	}
 }
