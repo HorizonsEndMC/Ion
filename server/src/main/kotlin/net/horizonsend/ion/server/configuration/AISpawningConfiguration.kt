@@ -125,14 +125,22 @@ data class AISpawningConfiguration(
 	data class AIStarshipTemplate(
 		val identifier: String = "VESTA",
 		var schematicName: String = "Vesta",
+
 		var miniMessageName: String = "<red><bold>Vesta",
+		var color: Int = Integer.parseInt("ff0000", 16),
+
 		var type: StarshipType = StarshipType.SHUTTLE,
+
 		var controllerFactory: String = "STARFIGHTER",
+
 		var xpMultiplier: Double = 1.0,
 		var creditReward: Double = 100.0,
+
 		var maxSpeed: Int = -1,
+
 		val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 		val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
+
 		val mobs: MutableSet<MobSpawner> = mutableSetOf()
 	) {
 		init {

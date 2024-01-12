@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.Controll
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.World
 import org.slf4j.Logger
@@ -123,7 +124,12 @@ abstract class AISpawner(
 	open fun createController(template: AIStarshipTemplate, pilotName: Component): (ActiveStarship) -> Controller {
 		val factory = AIControllerFactories[template.controllerFactory]
 
-		return { starship -> factory(starship, pilotName, template.manualWeaponSets, template.autoWeaponSets) }
+		return { starship ->
+			val controller = factory(starship, pilotName, template.manualWeaponSets, template.autoWeaponSets)
+			controller.setColor(Color.fromRGB(template.color))
+
+			controller
+		}
 	}
 
 	/** An exception relating to a cause of a failed spawn. */
