@@ -33,7 +33,13 @@ object ChatListener : SLEventListener() {
 		}
 
 		// For some reason the replace function returns a copy, no other adventure method does this
-		event.message(event.message().replaceText { builder -> builder.matchLiteral("!").once().replacement("") })
+		event.message(event.message().replaceText { builder ->
+			builder
+				.match("^!")
+				.once()
+				.replacement("")
+		})
+
 		if (event.message().plainText().isEmpty()) return
 
 		channel.onChat(event.player, event)
