@@ -77,7 +77,6 @@ val cruiseEndpoint: (AIController) -> Optional<Vec3i> = lambda@{ controller: AIC
 // Privateer controllers passive, only becoming aggressive if fired upon
 val explorerCruise = AIControllerFactories.registerFactory("EXPLORER_CRUISE") {
 	setControllerTypeName("Starfighter")
-	addLocationSupplier(cruiseEndpoint)
 
 	setModuleBuilder {
 		val builder = AIControllerFactory.Builder.ModuleBuilder()
@@ -87,7 +86,7 @@ val explorerCruise = AIControllerFactories.registerFactory("EXPLORER_CRUISE") {
 		builder.addModule("combat", DefensiveCombatModule(it, targeting::findTarget))
 
 		// Movement handling
-		val positioning = builder.addModule("positioning", BasicPositioningModule(it, getLocationSupplier().invoke(it).orNull() ?: Vec3i(0, 0, 0)))
+		val positioning = builder.addModule("positioning", BasicPositioningModule(it, cruiseEndpoint.invoke(it).orNull() ?: Vec3i(0, 0, 0)))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
 		val flee = builder.addModule("flee", FleeModule(it, positioning::getDestination, targeting) { _, target -> target != null }) // Flee if there is a target found by the highest damage module
 		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
