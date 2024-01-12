@@ -53,7 +53,7 @@ abstract class CombatModule(controller: AIController, val targetingSupplier: Sup
 
 		val distance = target.distance(origin.toVector())
 
-		val weaponSet = controller.manualWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }?.name?.lowercase()
+		val weaponSet = controller.getManualSetInRange(distance)?.name?.lowercase()
 
 		Tasks.sync {
 			fireHeavyWeapons(direction, target, weaponSet = weaponSet)
@@ -77,7 +77,7 @@ abstract class CombatModule(controller: AIController, val targetingSupplier: Sup
 	protected fun handleAutoWeapons(origin: Vec3i, target: AITarget) {
 		val (x, y, z) = origin
 		val distance = target.getVec3i(false).distance(x, y, z)
-		val weaponSet = controller.autoWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }?.name?.lowercase()
+		val weaponSet = controller.getAutoSetInRange(distance)?.name?.lowercase()
 
 		if (weaponSet == null) {
 			AIControlUtils.unSetAllWeapons(controller)

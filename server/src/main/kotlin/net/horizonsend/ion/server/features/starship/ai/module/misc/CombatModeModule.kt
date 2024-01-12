@@ -24,10 +24,10 @@ class CombatModeModule(
 		val combatController = combatController(
 			starship,
 			controller.getPilotName(),
-			controller.manualWeaponSets,
-			controller.autoWeaponSets
+			controller.getAllManualSets(),
+			controller.getAllAutoSets()
 		)
 
-		starship.setController(controller)
+		starship.setController(combatController)
 	}
 }
