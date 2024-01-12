@@ -29,6 +29,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.PlayerStars
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -40,6 +41,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.util.HSVLike
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -54,6 +56,7 @@ import org.litote.kmongo.addToSet
 import org.litote.kmongo.pull
 import org.litote.kmongo.setValue
 import java.util.LinkedList
+import java.util.concurrent.TimeUnit
 
 object StarshipComputers : IonServerComponent() {
 
@@ -96,12 +99,14 @@ object StarshipComputers : IonServerComponent() {
 		tryOpenMenu(player, data)
 	}
 
+	private val pilotCooldown = PerPlayerCooldown.messagedCooldown(1, TimeUnit.SECONDS) { Bukkit.getPlayer(it)?.userError("You're doing that too often!") }
+
 	private fun handleRightClick(data: StarshipData?, player: Player) {
 		if (data == null) {
 			return
 		}
 
-		PilotedStarships.tryPilot(player, data)
+		pilotCooldown.tryExec(player) { PilotedStarships.tryPilot(player, data) }
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
