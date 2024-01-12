@@ -10,9 +10,9 @@ abstract class PathfindingModule(
 	controller: AIController,
 	protected val positioningSupplier: Supplier<Vec3i>
 ) : AIModule(controller) {
-	abstract var blocked: Boolean
-
 	abstract fun getMovementVector(): Vector
 
 	abstract fun getDestination(): Vec3i
+
+	open fun getIsBlocked(): Boolean = controller.hasBeenBlockedWithin(50)
 }

@@ -101,7 +101,7 @@ class CruiseModule(
 		IF_BLOCKED {
 			override fun handleShiftFlight(module: CruiseModule, origin: Location) {
 				val pathfindingModule = module.controller.modules["pathfinding"] as? PathfindingModule ?: return
-				val blocked = (pathfindingModule as? PathfindingModule)?.blocked ?: module.controller.hasBeenBlockedWithin()
+				val blocked = (pathfindingModule as? PathfindingModule)?.getIsBlocked() ?: module.controller.hasBeenBlockedWithin()
 
 				if (!blocked) {
 					module.controller.setShiftFlying(false)
@@ -115,7 +115,7 @@ class CruiseModule(
 			override fun handleShiftFlight(module: CruiseModule, origin: Location) {
 				val destination = module.cruiseDestination.get() ?: return
 				val pathfindingModule = module.controller.modules["pathfinding"] as? PathfindingModule ?: return
-				val blocked = (pathfindingModule as? PathfindingModule)?.blocked ?: module.controller.hasBeenBlockedWithin()
+				val blocked = (pathfindingModule as? PathfindingModule)?.getIsBlocked() ?: module.controller.hasBeenBlockedWithin()
 				val yObjective = destination.y
 
 				val yDifference = yObjective - origin.y

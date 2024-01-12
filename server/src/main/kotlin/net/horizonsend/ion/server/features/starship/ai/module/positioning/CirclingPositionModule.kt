@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.starship.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import org.bukkit.Location
 import java.util.function.Supplier
 import kotlin.math.PI
 import kotlin.math.cos
@@ -22,9 +21,7 @@ class CirclingPositionModule(
 	private val ticksPerCruise = StarshipCruising.SECONDS_PER_CRUISE * 20.0
 	private var internalDestination: Vec3i? = targetSupplier.get()?.getVec3i()
 
-	override fun findPosition(): Location = internalDestination?.toLocation(world) ?: getCenter()
-
-	override fun findPositionVec3i(): Vec3i = internalDestination ?: getCenterVec3i()
+	override fun findPosition(): Vec3i = internalDestination ?: getCenter()
 
 	var ticks = 0
 

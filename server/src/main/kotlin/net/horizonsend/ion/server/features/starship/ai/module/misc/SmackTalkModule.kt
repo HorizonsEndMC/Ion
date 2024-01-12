@@ -30,7 +30,7 @@ class SmackTalkModule(
 	fun sendMessage() {
 		val message = messages.randomOrNull() ?: return
 
-		val players = world.getNearbyPlayers(getCenter(), sendRange)
+		val players = world.getNearbyPlayers(getCenter().toLocation(world), sendRange)
 
 		val text = template(
 			message = "{0}\n{1}: {2}",

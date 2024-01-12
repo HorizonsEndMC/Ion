@@ -5,14 +5,14 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component
-import org.bukkit.Location
 import java.util.Optional
 
 class AIControllerFactory private constructor(
 	private val name: String,
 	private val modules: (AIController) -> Builder.ModuleBuilder,
-	private val locationSupplier: (AIController) -> Optional<Location>
+	private val locationSupplier: (AIController) -> Optional<Vec3i>
 ) {
 	/** Build the controller */
 	operator fun invoke(
@@ -36,7 +36,7 @@ class AIControllerFactory private constructor(
 
 	class Builder {
 		private var name: String = "AI_Controller"
-		private var locationSupplier: (AIController) -> Optional<Location> = { Optional.empty() }
+		private var locationSupplier: (AIController) -> Optional<Vec3i> = { Optional.empty() }
 		private var modules: (AIController) -> ModuleBuilder = { ModuleBuilder() }
 
 		constructor()
@@ -51,7 +51,7 @@ class AIControllerFactory private constructor(
 
 		fun setModuleBuilder(moduleBuilder: (AIController) -> ModuleBuilder) = apply { modules = moduleBuilder }
 
-		fun addLocationSupplier(supplier: (AIController) -> Optional<Location>) = apply { locationSupplier = supplier }
+		fun addLocationSupplier(supplier: (AIController) -> Optional<Vec3i>) = apply { locationSupplier = supplier }
 
 		fun getLocationSupplier() = locationSupplier
 

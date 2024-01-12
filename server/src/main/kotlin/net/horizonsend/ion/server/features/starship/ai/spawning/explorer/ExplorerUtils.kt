@@ -14,16 +14,11 @@ import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.Steeri
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.BasicPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.HighestDamagerTargetingModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.component1
-import net.horizonsend.ion.server.miscellaneous.utils.component2
-import net.horizonsend.ion.server.miscellaneous.utils.component3
-import net.horizonsend.ion.server.miscellaneous.utils.component4
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
-import org.bukkit.Location
-import org.bukkit.util.Vector
 import java.util.Optional
 import kotlin.random.Random
 
@@ -43,30 +38,37 @@ private val smackTalkList = arrayOf(
 
 val smackPrefix = text("Receiving transmission from civilian vessel", EXPLORER_LIGHT_CYAN)
 
-val cruiseEndpoint: (AIController) -> Optional<Location> = lambda@{ controller: AIController ->
+val cruiseEndpoint: (AIController) -> Optional<Vec3i> = lambda@{ controller: AIController ->
 	var iterations = 0
 	val origin = controller.getCenter()
-	val (world, originX, originY, originZ) = origin
+
+	val world = controller.getWorld()
+	val border = world.worldBorder
+
+	val minX = (border.center.x - border.size).toInt()
+	val minZ = (border.center.z - border.size).toInt()
+	val maxX = (border.center.x + border.size).toInt()
+	val maxZ = (border.center.z + border.size).toInt()
 
 	while (iterations < 15) {
 		iterations++
 
-		val endPointX = if (originX > 0) Random.nextDouble(-originX, 0.0) else Random.nextDouble(0.0, -originX)
-		val endPointZ = if (originZ > 0) Random.nextDouble(-originZ, 0.0) else Random.nextDouble(0.0, -originZ)
-		val endPoint = Vector(endPointX, originY, endPointZ)
+		val endPointX = Random.nextInt(minX, maxX)
+		val endPointZ = Random.nextInt(minZ, maxZ)
+		val endPoint = Vec3i(endPointX, origin.y, endPointZ)
 
 		val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
 
 		val minDistance = planets.minOfOrNull {
-			val direction = endPoint.clone().subtract(origin.toVector())
+			val direction = endPoint.minus(origin)
 
-			distanceToVector(origin.toVector(), direction, it)
+			distanceToVector(origin.toVector(), direction.toVector(), it)
 		}
 
 		// If there are planets, and the distance to any of them along the path of travel is less than 500, discard
 		if (minDistance != null && minDistance <= 500.0) continue
 
-		return@lambda Optional.of(Location(world, endPointX, originY, endPointZ))
+		return@lambda Optional.of(endPoint)
 	}
 
 	Optional.empty()
@@ -85,8 +87,8 @@ val explorerCruise = AIControllerFactories.registerFactory("EXPLORER_CRUISE") {
 		builder.addModule("combat", DefensiveCombatModule(it, targeting::findTarget))
 
 		// Movement handling
-		val positioning = builder.addModule("positioning", BasicPositioningModule(it, getLocationSupplier().invoke(it).orNull() ?: Location(it.getWorld(), 0.0, 0.0, 0.0)))
-		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+		val positioning = builder.addModule("positioning", BasicPositioningModule(it, getLocationSupplier().invoke(it).orNull() ?: Vec3i(0, 0, 0)))
+		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
 		val flee = builder.addModule("flee", FleeModule(it, positioning::getDestination, targeting) { _, target -> target != null }) // Flee if there is a target found by the highest damage module
 		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
 

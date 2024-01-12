@@ -15,7 +15,7 @@ class RadiusMessageModule(
 
 	private fun checkMessage() {
 		for ((distance, message) in messageDistanceMap) {
-			val players = world.getNearbyPlayers(getCenter(), distance)
+			val players = getCenter().toLocation(world).getNearbyPlayers(distance)
 			val uuids = alreadyMessaged[distance]
 
 			for (player in players) {

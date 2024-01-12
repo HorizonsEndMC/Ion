@@ -52,7 +52,7 @@ val miningCorpStarfighter = AIControllerFactories.registerFactory("MINING_CORP_S
 		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
 
 		val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 25.0))
-		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
 		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 
 		builder.addModule("reinforcement", ReinforcementSpawnerModule(it, MiningCorpReinforcementSpawner(it), 0.5, reinforcementMessage))
