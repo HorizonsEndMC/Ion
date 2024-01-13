@@ -137,11 +137,14 @@ data class AISpawningConfiguration(
 		var creditReward: Double = 100.0,
 
 		var maxSpeed: Int = -1,
+		var engagementRange: Double = 500.0,
 
 		val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 		val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 
-		val mobs: MutableSet<MobSpawner> = mutableSetOf()
+		val mobs: MutableSet<MobSpawner> = mutableSetOf(),
+		val smackInformation: SmackInformation? = null,
+		val radiusMessageInformation: RadiusMessageInformation? = null
 	) {
 		init {
 //			if (AISpawningManager.templates.values.contains(this)) error("Identifiers must be unique! $identifier already exists!")
@@ -166,6 +169,18 @@ data class AISpawningConfiguration(
 			val offsetY: Int,
 			val offsetZ: Int,
 			val entity: ServerConfiguration.PlanetSpawnConfig.Mob
+		)
+
+		@Serializable
+		data class SmackInformation(
+			val prefix: String,
+			val messages: List<String>
+		)
+
+		@Serializable
+		data class RadiusMessageInformation(
+			val prefix: String,
+			val messages: Map<Double, String>
 		)
 	}
 }

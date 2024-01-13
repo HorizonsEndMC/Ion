@@ -113,7 +113,8 @@ class AIController private constructor(
 	fun getAutoSetInRange(distance: Double): WeaponSet? {
 		return autoWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
 	}
-
+	
+	inline fun <reified T> getModuleByType(): T? = modules.values.filterIsInstance<T>().firstOrNull()
 
 	//Functionality
 	override fun tick() {
