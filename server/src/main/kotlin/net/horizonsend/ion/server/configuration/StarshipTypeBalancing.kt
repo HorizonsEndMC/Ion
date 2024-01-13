@@ -159,6 +159,30 @@ data class StarshipTypeBalancing(
 		maxSneakFlyAccel = 2,
 		interdictionRange = 2400,
 		hyperspaceRangeMultiplier = 1.8,
+		weapons = StarshipWeapons(
+			pulseCannon = StarshipWeapons.StarshipWeapon(
+				range = 1.0,
+				speed = 1.0,
+				areaShieldDamageMultiplier = 1.0,
+				starshipShieldDamageMultiplier = 1.0,
+				particleThickness = 0.6,
+				explosionPower = 0.01f,
+				volume = 10,
+				pitch = 0.5f,
+				soundName = "entity.firework_rocket.blast_far",
+				powerUsage = 69420,
+				length = 2,
+				angleRadians = 180.0,
+				convergeDistance = 16.0,
+				extraDistance = 2,
+				fireCooldownMillis = 250,
+				aimDistance = 0,
+				applyCooldownToAll = true,
+				minBlockCount = 1000,
+				maxBlockCount = 4000
+				canFire = false
+			)
+		)
 	),
 	val destroyer: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 5,
