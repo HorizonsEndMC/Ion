@@ -5,11 +5,15 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
+import net.horizonsend.ion.server.features.starship.ai.module.misc.RadiusMessageModule
+import net.horizonsend.ion.server.features.starship.ai.module.misc.SmackTalkModule
+import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestTargetingModule
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component
@@ -124,9 +128,31 @@ abstract class AISpawner(
 	open fun createController(template: AIStarshipTemplate, pilotName: Component): (ActiveStarship) -> Controller {
 		val factory = AIControllerFactories[template.controllerFactory]
 
-		return { starship ->
+		return { starship: ActiveStarship ->
 			val controller = factory(starship, pilotName, template.manualWeaponSets, template.autoWeaponSets)
+
 			controller.setColor(Color.fromRGB(template.color))
+			controller.getModuleByType<ClosestTargetingModule>()?.maxRange = template.engagementRange
+
+			template.smackInformation?.let { smackInformation ->
+				val prefix = miniMessage().deserialize(smackInformation.prefix)
+
+				if (smackInformation.messages.isEmpty()) return@let
+
+				val messages = smackInformation.messages.map { it.miniMessage() }.toTypedArray()
+
+				controller.modules["smack"] = SmackTalkModule(controller, prefix, *messages)
+			}
+
+			template.radiusMessageInformation?.let { messageInformation ->
+				val prefix = miniMessage().deserialize(messageInformation.prefix)
+
+				if (messageInformation.messages.isEmpty()) return@let
+
+				val messages = messageInformation.messages.mapValues { it.value.miniMessage() }
+
+				controller.modules["warning"] = RadiusMessageModule(controller, prefix, messages)
+			}
 
 			controller
 		}

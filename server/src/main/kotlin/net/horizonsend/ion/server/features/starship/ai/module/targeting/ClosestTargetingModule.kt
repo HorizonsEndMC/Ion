@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 
 class ClosestTargetingModule(
 	controller: AIController,
-	val maxRange: Double,
+	var maxRange: Double,
 	existingTarget: AITarget? = null
 ) : TargetingModule(controller) {
 	private var lastDamaged: Long = 0

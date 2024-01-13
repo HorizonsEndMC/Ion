@@ -54,8 +54,7 @@ fun createAIShipFromTemplate(
 	createController: (ActiveControlledStarship) -> Controller,
 	callback: (ActiveControlledStarship) -> Unit = {}
 ) {
-	val schematic = template.getSchematic() ?: throw
-	AISpawner.SpawningException(
+	val schematic = template.getSchematic() ?: throw AISpawner.SpawningException(
 		"Schematic not found for ${template.identifier} at ${template.schematicFile.toURI()}",
 		location.world,
 		Vec3i(location)
