@@ -61,13 +61,16 @@ class AIController private constructor(
 
 	var lastRotation: Long = 0L
 
+
 	// Disallow mining lasers and other block placement / destroying things for now
 	override fun canDestroyBlock(block: Block): Boolean = false
 	override fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean = false
 
+
 	// Pass through functions for starship information
 	fun getCenter(): Vec3i = starship.centerOfMass
 	fun getWorld(): World = starship.world
+
 
 	// Shield Health indicators
 	fun getShields() = starship.shields
@@ -75,20 +78,24 @@ class AIController private constructor(
 	fun getAverageShieldHealth() = (getShields().sumOf { it.powerRatio }) / getShieldCount().toDouble()
 	fun getMinimumShieldHealth() = (getShields().minOfOrNull { it.powerRatio } ?: 0.0)
 
+
 	// Control variables
 	private var isShiftFlying: Boolean = false
 	override fun isSneakFlying(): Boolean = isShiftFlying
 	fun setShiftFlying(value: Boolean) { isShiftFlying = value }
+
 
 	// The variable color, settable
 	private var color: Color = super.getColor()
 	fun setColor(value: Color) { color = value }
 	override fun getColor(): Color = color
 
+
 	// Settable name
 	private var pilotName: Component = text("AI Controller")
 	override fun getPilotName(): Component = pilotName
 	fun setPilotName(value: Component) { pilotName = value }
+
 
 	// Weapon sets
 	private val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
@@ -107,6 +114,8 @@ class AIController private constructor(
 		return autoWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
 	}
 
+
+	//Functionality
 	override fun tick() {
 		for ((_, module) in modules) {
 			module.tick()
