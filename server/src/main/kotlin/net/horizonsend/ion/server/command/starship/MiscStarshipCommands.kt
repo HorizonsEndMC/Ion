@@ -566,7 +566,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val name: Component = when (controller) {
 				is PlayerController -> {
 					val player = controller.player
-					val pilotNation = PlayerCache[player].nationOid
+					val pilotNation = PlayerCache.getIfOnline(player)?.nationOid
 
 					val color = if (pilotNation != null && senderNation != null) {
 						RelationCache[senderNation, pilotNation].color
