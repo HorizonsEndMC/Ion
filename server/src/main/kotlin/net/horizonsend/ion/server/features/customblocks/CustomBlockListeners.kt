@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.customblocks
 
 import net.horizonsend.ion.server.features.customitems.CustomBlockItem
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -10,6 +11,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.inventory.InventoryOpenEvent
 
 class CustomBlockListeners : SLEventListener() {
 
@@ -58,5 +60,22 @@ class CustomBlockListeners : SLEventListener() {
             }
         }
          */
+    }
+
+    @EventHandler
+    @Suppress("Unused")
+    fun onInventoryOpen(event: InventoryOpenEvent)
+    {
+        val inventory = event.inventory
+        for (item in inventory)
+        {
+            val newVersion = ConvertCommand.convertCustomMineral(item)
+            if (newVersion != null)
+            {
+                item.type = newVersion.type
+                item.itemMeta = newVersion.itemMeta
+                item.amount = newVersion.amount
+            }
+        }
     }
 }
