@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 @CommandAlias("convert")
 @Suppress("Unused")
@@ -74,61 +75,67 @@ object ConvertCommand : SLCommand() { // I imagine we'll need more than blasters
 	fun onConvertMineral(sender: Player) {
 		val heldItem = sender.inventory.itemInMainHand
 
-		if ((heldItem.type != Material.IRON_INGOT &&
-					heldItem.type != Material.IRON_ORE &&
-					heldItem.type != Material.IRON_BLOCK) ||
-			!heldItem.itemMeta.hasCustomModelData() ||
-			heldItem.itemMeta.customModelData == 0
-		) {
+		val newVersion = convertCustomMineral(heldItem)
+		if (newVersion == null) {
 			sender.userError("Not a valid custom item!")
 			return
 		}
 
-		if (heldItem.customItem != null) {
-			sender.userError("Item is already converted!")
-			return
+		sender.inventory.setItemInMainHand(newVersion)
+		sender.updateInventory()
+	}
+
+	fun convertCustomMineral(item: ItemStack?) : ItemStack? {
+		if (item == null) return null
+
+		if ((item.type != Material.IRON_INGOT &&
+				item.type != Material.IRON_ORE &&
+				item.type != Material.IRON_BLOCK) ||
+			!item.itemMeta.hasCustomModelData() ||
+			item.itemMeta.customModelData == 0
+			) {
+			return null
 		}
 
-		val newVersion = when (heldItem.type) {
-			Material.IRON_INGOT -> when (heldItem.itemMeta.customModelData) {
+		if (item.customItem != null) {
+			return null
+		}
+
+		val newVersion = when (item.type) {
+			Material.IRON_INGOT -> when (item.itemMeta.customModelData) {
 				1 -> CustomItems.ALUMINUM_INGOT
 				2 -> CustomItems.CHETHERITE
 				3 -> CustomItems.TITANIUM_INGOT
 				4 -> CustomItems.URANIUM
 				else -> {
-					sender.information("Wtf do you have")
-					return
+					return null
 				}
 			}
-			Material.IRON_ORE -> when (heldItem.itemMeta.customModelData) {
+			Material.IRON_ORE -> when (item.itemMeta.customModelData) {
 				1 -> CustomItems.ALUMINUM_ORE
 				2 -> CustomItems.CHETHERITE_ORE
 				3 -> CustomItems.TITANIUM_ORE
 				4 -> CustomItems.URANIUM_ORE
 				else -> {
-					sender.information("Wtf do you have")
-					return
+					return null
 				}
 			}
-			Material.IRON_BLOCK -> when (heldItem.itemMeta.customModelData) {
+			Material.IRON_BLOCK -> when (item.itemMeta.customModelData) {
 				1 -> CustomItems.ALUMINUM_BLOCK
 				2 -> CustomItems.CHETHERITE_BLOCK
 				3 -> CustomItems.TITANIUM_BLOCK
 				4 -> CustomItems.URANIUM_BLOCK
 				else -> {
-					sender.information("Wtf do you have")
-					return
+					return null
 				}
 			}
 			else -> {
-				sender.userError("This should not have exited here...")
-				return
+				return null
 			}
 		}.constructItemStack()
 
-		newVersion.amount = heldItem.amount
+		newVersion.amount = item.amount
 
-		sender.inventory.setItemInMainHand(newVersion)
-		sender.updateInventory()
+		return newVersion
 	}
 }
