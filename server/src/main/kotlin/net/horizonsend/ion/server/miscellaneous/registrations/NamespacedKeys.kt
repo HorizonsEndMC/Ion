@@ -47,6 +47,8 @@ object NamespacedKeys {
 
 	val CUSTOM_ENTITY = key("custom_entity")
 
+	val SPLITTER_DIRECTION = key("splitter_direction")
+
 	@Deprecated("") val ORE_CHECK = key("oreCheck")
 
 	@Deprecated("") val POWER = key("power")

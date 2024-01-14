@@ -1,17 +1,21 @@
 package net.horizonsend.ion.server.features.multiblock.misc
 
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SPLITTER_DIRECTION
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.getStateSafe
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.block.Container
 import org.bukkit.block.Furnace
@@ -20,21 +24,22 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 
 object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMultiblock {
 	override val name: String = "splitter"
 
-	val RIGHT = text("<-----", NamedTextColor.AQUA)
-	val LEFT = text("----->", NamedTextColor.AQUA)
+	private fun formatText(text: String, vararg params: String) = template(text(text, AQUA), paramColor = YELLOW, useQuotesAroundObjects = false, *params)
 
-	val BLACKLIST_OLD = text("BLACKLIST", NamedTextColor.BLACK, TextDecoration.BOLD)
-	val WHITELIST_OLD = text("WHITELIST", NamedTextColor.WHITE, TextDecoration.BOLD)
+	private val RIGHT = formatText("[{0}]   ----->   [{1}]", "-", "+")
+	private val LEFT = formatText("[{0}]   <-----   [{1}]", "+", "-")
 
 	override val signText: Array<Component?> = arrayOf(
 		text("Item Splitter", NamedTextColor.GOLD),
 		null,
-		null,
+		text(".:[Matching items]:;", NamedTextColor.GRAY),
 		RIGHT
 	)
 
@@ -82,34 +87,29 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		migrateFrom(sign)
+		val pdc = sign.persistentDataContainer
 
 		if (isBlacklist(sign)) {
 			player.success("Switched sorter to whitelist!")
+			pdc.set(SPLITTER_DIRECTION, PersistentDataType.BOOLEAN, false)
 			sign.line(3, LEFT)
 		} else {
 			player.success("Switched sorter to blacklist!")
+			pdc.set(SPLITTER_DIRECTION, PersistentDataType.BOOLEAN, true)
 			sign.line(3, RIGHT)
 		}
 
 		sign.update()
 	}
 
-	private fun migrateFrom(sign: Sign) {
-		val line = sign.line(3)
-
-		if (line == BLACKLIST_OLD) {
-			sign.line(3, RIGHT)
-			sign.update()
-		}
-
-		if (line == WHITELIST_OLD) {
-			sign.line(3, LEFT)
-			sign.update()
-		}
-	}
-
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
+		migrate(sign)
+
+		event.isBurning = false
+		event.burnTime = 20
+
+		furnace.cookTime = (-1000).toShort()
+
 		val filter = getBlacklist(sign)
 
 		val isBlacklist = isBlacklist(sign)
@@ -126,7 +126,7 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	}
 
 	/** If the lambda returns true, it is put into the filtered inventory, if possible **/
-	private fun doFilter(takeFrom: Container, filtered: Container, remainder: Container, filter: (ItemStack?) -> Boolean) {
+	private fun doFilter(takeFrom: InventoryHolder, filtered: InventoryHolder, remainder: InventoryHolder, filter: (ItemStack?) -> Boolean) {
 		val sourceInventory = takeFrom.inventory
 		val destinationInventory = filtered.inventory
 		val remainderInventory = remainder.inventory
@@ -174,13 +174,13 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 
 		val (absoluteX, absoluteY, absoluteZ) = absolute
 
-		return getStateIfLoaded(sign.world, absoluteX, absoluteY, absoluteZ) as? Container
+		return getStateSafe(sign.world, absoluteX, absoluteY, absoluteZ) as? Container
 	}
 
 	private fun getBlacklist(sign: Sign): Collection<ItemStack> {
 		val items = getStorage(sign, filterInventory)?.inventory ?: return listOf()
 
-		return items.contents.mapNotNull { it }
+		return items.storageContents.filterNotNull()
 	}
 
 	private val inputInventory: Vec3i = Vec3i(0, 1, -1)
@@ -192,6 +192,33 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	private val filteredInventory: Vec3i = Vec3i(2, 1, -2)
 
 	private fun isBlacklist(sign: Sign): Boolean {
-		return sign.line(3) == RIGHT
+		return sign.persistentDataContainer.getOrDefault(SPLITTER_DIRECTION, PersistentDataType.BOOLEAN, true)
+	}
+
+	private val RIGHT_OLD = text("<-----", AQUA)
+	private val LEFT_OLD = text("----->", AQUA)
+	private val BLACKLIST_OLD = text("BLACKLIST", NamedTextColor.BLACK, TextDecoration.BOLD)
+	private val WHITELIST_OLD = text("WHITELIST", NamedTextColor.WHITE, TextDecoration.BOLD)
+
+	private val previousBlacklistText = listOf<Component>(
+		BLACKLIST_OLD,
+		RIGHT_OLD
+	)
+
+	/** Migrates an old splitter to the new PDC format / sign text */
+	private fun migrate(sign: Sign) {
+		val pdc = sign.persistentDataContainer
+		if (pdc.keys.contains(SPLITTER_DIRECTION)) return
+
+		val line3 = sign.line(3)
+
+		if (previousBlacklistText.contains(line3)) {
+			pdc.set(SPLITTER_DIRECTION, PersistentDataType.BOOLEAN, true)
+			sign.line(3, RIGHT)
+			return
+		}
+
+		pdc.set(SPLITTER_DIRECTION, PersistentDataType.BOOLEAN, false)
+		sign.line(3, LEFT)
 	}
 }

@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.google.common.collect.ImmutableSet
 import net.minecraft.core.BlockPos
-import net.minecraft.server.level.ServerLevel
 import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.World
@@ -70,6 +69,7 @@ fun Block.getTypeSafe(): Material? {
  * A reference should NOT be held to this.
  */
 fun getStateIfLoaded(world: World, x: Int, y: Int, z: Int) = getBlockIfLoaded(world, x, y, z)?.getState(false)
+fun getStateSafe(world: World, x: Int, y: Int, z: Int) = getBlockIfLoaded(world, x, y, z)?.getState(true)
 
 val ADJACENT_BLOCK_FACES: Set<BlockFace> = ImmutableSet.of(
 	BlockFace.NORTH,

@@ -233,6 +233,9 @@ object Multiblocks : IonServerComponent() {
 			MiningLaserMultiblockTier3Top,
 			MiningLaserMultiblockTier3Bottom,
 
+			AntiAirCannonBaseMultiblock,
+			AntiAirCannonTurretMultiblock,
+
 			ItemSplitterMultiblock,
 			GasCollectorMultiblock,
 			GasPowerPlantMultiblock,
@@ -256,10 +259,7 @@ object Multiblocks : IonServerComponent() {
 			PlanterMultiblockTier3,
 			HarvesterMultiblockTier1,
 			HarvesterMultiblockTier2,
-			HarvesterMultiblockTier3,
-
-			AntiAirCannonBaseMultiblock,
-			AntiAirCannonTurretMultiblock,
+			HarvesterMultiblockTier3
 		)
 	}
 
@@ -348,7 +348,15 @@ object Multiblocks : IonServerComponent() {
 					}
 
 					event.player.rewardAchievement(Achievement.DETECT_MULTIBLOCK)
-					return multiblock.setupSign(player, sign)
+
+					multiblock.setupSign(player, sign)
+					sign.persistentDataContainer.set(
+						NamespacedKeys.MULTIBLOCK,
+						PersistentDataType.STRING,
+						multiblock::class.simpleName!!
+					)
+					sign.update()
+					return
 				} else {
 					lastMatch = multiblock
 				}
