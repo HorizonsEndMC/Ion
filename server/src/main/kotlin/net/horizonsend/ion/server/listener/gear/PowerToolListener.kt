@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server.listener.gear
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.gear.TreeCutter
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.removePower
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Effect
@@ -39,6 +41,8 @@ object PowerToolListener : SLEventListener() {
 		val blockType = block.type
 		when (type) {
 			"drill" -> {
+				val customBlock = CustomBlocks.getByBlock(block)
+
 				if (blockType == Material.BEDROCK || blockType == Material.BARRIER) {
 					return
 				}
@@ -47,7 +51,9 @@ object PowerToolListener : SLEventListener() {
 					return
 				}
 
+				/*
 				if (blockType != block.type) return
+				 */
 
 				if (getPower(item) < 20) {
 					player.sendMessage(ChatColor.RED.toString() + "Out of power.")
@@ -58,6 +64,15 @@ object PowerToolListener : SLEventListener() {
 				player.world.playSound(player.location, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.1f, 1.5f)
 				block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
 				block.breakNaturally(PICKAXE)
+				// customBlock turns to AIR due to BlockBreakEvent; play break sound and drop item
+				if (customBlock != null) {
+					block.world.playSound(block.location.toCenterLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f)
+					Tasks.sync {
+						for (drop in customBlock.getDrops(item)) {
+							player.world.dropItemNaturally(block.location.toCenterLocation(), drop)
+						}
+					}
+				}
 				if (blockType == Material.END_PORTAL_FRAME) {
 					player.world.dropItem(block.location, ItemStack(Material.END_PORTAL_FRAME))
 				}
