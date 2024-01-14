@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.starship.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.ai.util.AITarget
+import net.horizonsend.ion.server.features.starship.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.starship.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -113,7 +114,7 @@ class AIController private constructor(
 	fun getAutoSetInRange(distance: Double): WeaponSet? {
 		return autoWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
 	}
-	
+
 	inline fun <reified T> getModuleByType(): T? = modules.values.filterIsInstance<T>().firstOrNull()
 
 	//Functionality
@@ -150,22 +151,26 @@ class AIController private constructor(
 	/** Checks whether the ship's movement has been blocked within the specified time */
 	fun hasBeenBlockedWithin(millis: Long = TimeUnit.SECONDS.toMillis(5)) = (starship as ActiveControlledStarship).lastBlockedTime > (System.currentTimeMillis() - millis)
 
-	/** Gets and filters targets within the starship's world */
-	fun getNearbyTargets(filter: (AITarget) -> Boolean): Set<AITarget> {
+	/** Gets and filters targets within the starship's world in the specified radius */
+	fun getNearbyTargetsInRadius(minRange: Double, maxRange: Double, filter: (AITarget) -> Boolean): Set<AITarget> {
 		val targets = mutableSetOf<AITarget>()
 
-		targets += ActiveStarships.getInWorld(starship.world).map { StarshipTarget(it) }.filter(filter)
-//		targets += starship.world.players.map { PlayerTarget(it) }.filter(filter) // TODO uncomment this
+		targets += ActiveStarships.getInWorld(starship.world).map { StarshipTarget(it) }
+			.filter(filter)
+			.associateWith { it.getVec3i().distance(starship.centerOfMass) }
+			.filter { it.value in minRange..maxRange }
+			.sortedByValue()
+			.keys
+
+		targets += starship.world.players.map { PlayerTarget(it) }
+			.filter(filter)
+			.associateWith { it.getVec3i().distance(starship.centerOfMass) }
+			.filter { it.value in 0.0..50.0 }
+			.sortedByValue()
+			.keys
 
 		return targets
 	}
-
-	/** Gets and filters targets within the starship's world in the specified radius */
-	fun getNearbyTargetsInRadius(minRange: Double, maxRange: Double, filter: (AITarget) -> Boolean): Set<AITarget> = getNearbyTargets(filter)
-			.associateWith { it.getVec3i().distance(starship.centerOfMass) }
-			.sortedByValue()
-			.filter { it.value in minRange..maxRange }
-			.keys
 
 	override fun toString(): String {
 		return """
