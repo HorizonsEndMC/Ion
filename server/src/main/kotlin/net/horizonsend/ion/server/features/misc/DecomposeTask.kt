@@ -103,6 +103,7 @@ class DecomposeTask(
 
 				val block = newLocation.block
 				val blockData = block.blockData
+				val customBlock = CustomBlocks.getByBlock(block)
 
 				if (blockData.material.isAir) continue
 
@@ -118,13 +119,12 @@ class DecomposeTask(
 				PowerMachines.removePower(sign, 10)
 
 				// get drops BEFORE breaking
-				var drops: Collection<ItemStack> = block.drops
+				var drops: List<ItemStack> = block.drops.toList()
 
-				val customBlock = CustomBlocks.getByBlock(block) != null
 				var customOre = false
-				Ore.entries.forEach { ore -> if (ore.blockData == (CustomBlocks.getByBlock(block)?.blockData ?: false)) customOre = true }
+				Ore.entries.forEach { ore -> if (ore.blockData == (customBlock?.blockData ?: false)) customOre = true }
 
-				if (customBlock && !customOre) drops = CustomBlocks.getByBlock(block)?.getDrops()?.toList()!!
+				if (customBlock != null && !customOre) drops = customBlock.getDrops().toList()
 
 				block.setType(Material.AIR, false)
 

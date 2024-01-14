@@ -1,19 +1,15 @@
 package net.horizonsend.ion.server.features.customblocks
 
 import net.horizonsend.ion.server.features.customitems.CustomBlockItem
-import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.inventory.ItemStack
 
 class CustomBlockListeners : SLEventListener() {
 
@@ -39,11 +35,13 @@ class CustomBlockListeners : SLEventListener() {
         val block = event.block
         val customBlock = CustomBlocks.getByBlock(block) ?: return
 
+        // Prevents brown mushrooms from dropping
         if (event.isDropItems) {
             event.isDropItems = false
             block.type = Material.AIR
         }
 
+        /*
         val itemUsed = event.player.inventory.itemInMainHand
         val location = block.location.toCenterLocation()
         if (itemUsed.enchantments.containsKey(Enchantment.SILK_TOUCH)) {
@@ -59,5 +57,6 @@ class CustomBlockListeners : SLEventListener() {
                 }
             }
         }
+         */
     }
 }

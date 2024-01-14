@@ -103,14 +103,14 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 					continue
 				}
 
-				if (!canBuild(block)) {
-					continue
-				}
-
 				val customBlock = CustomBlocks.getByBlock(block)
 				var drops = customBlock?.getDrops() ?: if (block.type == Material.SNOW_BLOCK) listOf() else block.drops
 
 				if (block.type.isShulkerBox) drops = listOf()
+
+				if (!canBuild(block)) {
+					continue
+				}
 
 				for (item in drops) {
 					if (!LegacyItemUtils.canFit(output, item)) {
