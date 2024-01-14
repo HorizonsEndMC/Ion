@@ -2,12 +2,13 @@ package net.horizonsend.ion.server.features.multiblock.printer
 
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isConcretePowder
+import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -52,7 +53,7 @@ object CarbonProcessorMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 
 			y(+0) {
 				x(-1).anyGlass()
-				x(+0).stainedGlass()
+				x(+0).anyGlass()
 				x(+1).anyGlass()
 			}
 		}
@@ -76,11 +77,20 @@ object CarbonProcessorMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 		return sign.getRelative((sign.getState(false) as Sign).getFacing().oppositeFace, 3)
 	}
 
-	fun getOutput(sign: Block): ItemStack {
+	fun getOutput(sign: Block, inputType: ItemStack): ItemStack {
 		val direction: BlockFace = (sign.getState(false) as Sign).getFacing().oppositeFace
-		val typeName = sign.getRelative(direction, 2).type.name.replace("STAINED_GLASS", "CONCRETE")
-		val type = Material.getMaterial(typeName) ?: error("No material $typeName")
-		return ItemStack(type, 1)
+
+		val glassType = sign.getRelative(direction, 2).type
+
+		if (glassType.isStainedGlass) {
+			val concreteTypeName = glassType.name.replace("STAINED_GLASS", "CONCRETE")
+			val outputType = Material.getMaterial(concreteTypeName) ?: error("No material $concreteTypeName")
+
+			return ItemStack(outputType, 1)
+		}
+
+		val existingType = inputType.type
+		return ItemStack(Material.getMaterial(existingType.name.removeSuffix("_POWDER")) ?: error("No material $glassType"), 1)
 	}
 
 	override fun onFurnaceTick(
@@ -100,12 +110,14 @@ object CarbonProcessorMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 			return
 		}
 		val inventory = (getOutputBlock(sign.block).getState(false) as InventoryHolder).inventory
-		val output = getOutput(sign.block)
-		if (!LegacyItemUtils.canFit(inventory, output)) {
-			return
-		}
+
+		val output = getOutput(sign.block, fuel)
+
+		if (!LegacyItemUtils.canFit(inventory, output)) return
+
 		LegacyItemUtils.addToInventory(inventory, output)
 		PowerMachines.removePower(sign, 100)
+
 		fuel.amount = fuel.amount - 1
 		event.isBurning = false
 		event.burnTime = 50
