@@ -12,9 +12,12 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.starship.ai.module.misc.RadiusMessageModule
+import net.horizonsend.ion.server.features.starship.ai.module.misc.ReinforcementSpawnerModule
 import net.horizonsend.ion.server.features.starship.ai.module.misc.SmackTalkModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestTargetingModule
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.ReinforcementSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
@@ -125,7 +128,7 @@ abstract class AISpawner(
 	 *
 	 * @return A function used to create the controller for the starship
 	 **/
-	open fun createController(template: AIStarshipTemplate, pilotName: Component): (ActiveStarship) -> Controller {
+	open fun createController(template: AIStarshipTemplate, pilotName: Component): (ActiveStarship) -> AIController {
 		val factory = AIControllerFactories[template.controllerFactory]
 
 		return { starship: ActiveStarship ->
@@ -152,6 +155,20 @@ abstract class AISpawner(
 				val messages = messageInformation.messages.mapValues { it.value.miniMessage() }
 
 				controller.modules["warning"] = RadiusMessageModule(controller, prefix, messages)
+			}
+
+			template.reinforcementInformation?.let {
+				val spawner = ReinforcementSpawner(controller, it.configuration)
+
+				val module = ReinforcementSpawnerModule(
+					controller,
+					spawner,
+					it.activationThreshold,
+					miniMessage().deserialize(it.broadcastMessage),
+					delay = it.delay,
+				)
+
+				controller.modules["reinforcement"] = module
 			}
 
 			controller

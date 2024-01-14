@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.starship.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.kyori.adventure.text.Component
+import java.util.function.Supplier
 
 class AIControllerFactory private constructor(
 	private val name: String,
@@ -50,6 +51,13 @@ class AIControllerFactory private constructor(
 
 		class ModuleBuilder {
 			private val modules: MutableMap<String, AIModule> = mutableMapOf()
+
+			fun <T: AIModule> suppliedModule(identifier: String, modification: (T) -> T = { it }): Supplier<T> = Supplier {
+				@Suppress("UNCHECKED_CAST") // Up to the user to make sure of that
+				val module = modules[identifier] as T
+
+				modification(module)
+			}
 
 			fun <T: AIModule> addModule(name: String, module: T): T {
 				modules[name] = module

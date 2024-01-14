@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManage
 import net.horizonsend.ion.server.features.starship.ai.spawning.alien.AlienSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.explorerTemplates
-import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpReinforcementSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.miningGuildTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSpawner
@@ -43,7 +42,6 @@ data class AISpawningConfiguration(
 	@Serializable
 	data class AISpawners(
 		val miningCorpSpawner: AISpawnerConfiguration = MiningCorpSpawner.defaultConfiguration,
-		val miningCorpReinforcementSpawner: AISpawnerConfiguration = MiningCorpReinforcementSpawner.defaultConfiguration,
 		val privateerSingle: AISpawnerConfiguration = PrivateerSpawner.defaultConfiguration,
 		val explorerSingle: AISpawnerConfiguration = ExplorerSingleSpawner.defaultConfiguration,
 		val pirateSingle: AISpawnerConfiguration = PirateSpawner.defaultConfiguration,
@@ -142,9 +140,9 @@ data class AISpawningConfiguration(
 		val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 		val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 
-		val mobs: MutableSet<MobSpawner> = mutableSetOf(),
 		val smackInformation: SmackInformation? = null,
-		val radiusMessageInformation: RadiusMessageInformation? = null
+		val radiusMessageInformation: RadiusMessageInformation? = null,
+		val reinforcementInformation: ReinforcementInformation? = null
 	) {
 		init {
 //			if (AISpawningManager.templates.values.contains(this)) error("Identifiers must be unique! $identifier already exists!")
@@ -164,14 +162,6 @@ data class AISpawningConfiguration(
 		}
 
 		@Serializable
-		data class MobSpawner(
-			val offsetX: Int,
-			val offsetY: Int,
-			val offsetZ: Int,
-			val entity: ServerConfiguration.PlanetSpawnConfig.Mob
-		)
-
-		@Serializable
 		data class SmackInformation(
 			val prefix: String,
 			val messages: List<String>
@@ -181,6 +171,14 @@ data class AISpawningConfiguration(
 		data class RadiusMessageInformation(
 			val prefix: String,
 			val messages: Map<Double, String>
+		)
+
+		@Serializable
+		data class ReinforcementInformation(
+			val activationThreshold: Double,
+			val delay: Long,
+			val broadcastMessage: String,
+			val configuration: AISpawnerConfiguration
 		)
 	}
 }

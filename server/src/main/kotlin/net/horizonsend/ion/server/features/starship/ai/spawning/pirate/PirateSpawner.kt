@@ -31,29 +31,6 @@ class PirateSpawner : BasicSpawner(
 			maxDistanceFromPlayer = 4000.0,
 			tiers = listOf(
 				AISpawningConfiguration.AISpawnerTier(
-					identifier = "PIRATE_TEST",
-					nameList = mapOf(
-						"<$PIRATE_DARK_RED>Rapscallion" to 2,
-					),
-					ships = mapOf(
-						iskat.identifier to 2,
-						voss.identifier to 2,
-						hector.identifier to 2,
-						hiro.identifier to 2,
-						wasp.identifier to 2,
-						frenz.identifier to 2,
-						tempest.identifier to 2,
-						velasco.identifier to 2,
-						anaan.identifier to 2,
-						vendetta.identifier to 2,
-						cormorant.identifier to 2,
-						mantis.identifier to 2,
-						hernstein.identifier to 2,
-						fyr.identifier to 2,
-						bloodStar.identifier to 2
-					)
-				),
-				AISpawningConfiguration.AISpawnerTier(
 					identifier = "WEAKEST",
 					nameList = mapOf(
 						"<$PIRATE_DARK_RED>Rapscallion" to 200,

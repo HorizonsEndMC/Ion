@@ -3,15 +3,15 @@ package net.horizonsend.ion.server.features.starship.ai.module.misc
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.starship.ai.module.AIModule
-import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.ReinforcementSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 
 class ReinforcementSpawnerModule(
 	controller: AIController,
-	val spawner: AISpawner,
+	val spawner: ReinforcementSpawner,
 	private val activationAverageShieldHealth: Double,
 	private val spawnBroadCastMessage: Component,
 	val delay: Long = 200,
