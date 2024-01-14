@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp
 
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.starship.ai.module.combat.StarfighterCombatModule
@@ -11,13 +11,8 @@ import net.horizonsend.ion.server.features.starship.ai.module.movement.CruiseMod
 import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.HighestDamagerTargetingModule
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PRIVATEER_LIGHT_TEAL
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PRIVATEER_MEDIUM_TEAL
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.dagger
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.daybreak
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.furious
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.inflict
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.teneta
+import net.horizonsend.ion.server.features.starship.ai.module.targeting.SingleTargetingModule
+import net.horizonsend.ion.server.features.starship.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
@@ -31,9 +26,10 @@ import org.bukkit.World
  *
  * This spawner is constructed on the fly for each ship that would implement reinforcement mechanics.
  **/
-class MiningCorpReinforcementSpawner(
-	private val controller: AIController
-) : BasicSpawner("", IonServer.aiSpawningConfiguration.spawners::miningCorpReinforcementSpawner) {
+class ReinforcementSpawner(
+	private val controller: AIController,
+	config: AISpawningConfiguration.AISpawnerConfiguration,
+) : BasicSpawner("", { config }) {
 	override val spawnMessage: Component? = null
 
 	override fun findSpawnLocation(): Location {
@@ -67,6 +63,18 @@ class MiningCorpReinforcementSpawner(
 		return IonServer.aiSpawningConfiguration.getShipTemplate(shipIdentifier) to name
 	}
 
+	override fun createController(template: AISpawningConfiguration.AIStarshipTemplate, pilotName: Component): (ActiveStarship) -> AIController {
+		return { starship ->
+			val builtController = super.createController(template, pilotName)(starship)
+
+			(controller.modules["targeting"] as? TargetingModule)?.findTarget()?.let {
+				builtController.modules["targeting"] = SingleTargetingModule(builtController, it)
+			}
+
+			builtController
+		}
+	}
+
 	companion object {
 		@Suppress("unused")
 		val targetController = AIControllerFactories.registerFactory("MINING_CORP_REINFORCEMENTS") {
@@ -95,29 +103,5 @@ class MiningCorpReinforcementSpawner(
 
 			build()
 		}
-
-		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
-			miniMessageSpawnMessage = "${MiningCorpSpawner.miningGuild}<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
-			pointChance = 0.0,
-			pointThreshold = Int.MAX_VALUE,
-			minDistanceFromPlayer = 50.0,
-			maxDistanceFromPlayer = 100.0,
-			tiers = listOf(
-				AISpawningConfiguration.AISpawnerTier(
-					identifier = "REINFORCEMENTS",
-					nameList = mapOf(
-						"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Rookie" to 2,
-						"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Trainee" to 5
-					),
-					ships = mapOf(
-						dagger.identifier to 2,
-						teneta.identifier to 2,
-						furious.identifier to 2,
-						inflict.identifier to 2,
-						daybreak.identifier to 2
-					)
-				)
-			)
-		)
 	}
 }

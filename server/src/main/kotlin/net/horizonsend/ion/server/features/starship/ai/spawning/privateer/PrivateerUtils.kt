@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.Steeri
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.StandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestTargetingModule
+import net.horizonsend.ion.server.features.starship.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Location
@@ -28,12 +29,12 @@ val privateerStarfighter = registerFactory("PRIVATEER_STARFIGHTER") {
 	setModuleBuilder {
 		val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-		val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
-		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+		val targetingOriginal = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
+		builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-		val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 25.0))
+		val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 25.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targeting) { controller, _ -> controller.getMinimumShieldHealth() <= 0.2 }) // Flee if a shield reaches below 10%
+		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targetingOriginal) { controller, _ -> controller.getMinimumShieldHealth() <= 0.2 }) // Flee if a shield reaches below 10%
 		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
 
 		builder
@@ -48,13 +49,12 @@ val privateerGunship = registerFactory("PRIVATEER_GUNSHIP") {
 	setModuleBuilder {
 		val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-		val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
-		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+		builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
+		builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 55.0))
+		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targeting) { controller, _ -> controller.getMinimumShieldHealth() <= 0.2 }) // Flee if a shield reaches below 10%
-		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
+		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 
 		builder
 	}
@@ -68,13 +68,12 @@ val privateerCorvette = registerFactory("PRIVATEER_CORVETTE") {
 	setModuleBuilder {
 		val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-		val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
-		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+		builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
+		builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 55.0))
+		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targeting) { controller, _ -> controller.getMinimumShieldHealth() <= 0.2 }) // Flee if a shield reaches below 10%
-		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
+		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 
 		builder
 	}
@@ -86,135 +85,158 @@ private val PRIVATEER_SMACK_PREFIX: String = "<${PRIVATEER_LIGHTER_TEAL.asHexStr
 private fun basicPrivateerTemplate(
 	identifier: String,
 	schematicName: String,
+	miniMessageName: String,
 	type: StarshipType,
 	controllerFactory: String,
+	creditReward: Double,
+	xpMultiplier: Double,
+	engagementRadius: Double = 650.0,
 	manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 	autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
-	engagementRadius: Double = 500.0,
-): AISpawningConfiguration.AIStarshipTemplate {
-	val creditRewards = when (type) {
-		StarshipType.AI_CORVETTE -> 2650.0
-		StarshipType.AI_GUNSHIP -> 1850.0
-		StarshipType.AI_STARFIGHTER -> 950.0
-		else -> 0.0
-	}
-
-	return AISpawningConfiguration.AIStarshipTemplate(
-		identifier = identifier,
-		schematicName = schematicName,
-
-		miniMessageName = "<${PRIVATEER_DARK_TEAL.asHexString()}>$schematicName",
-		color = PRIVATEER_LIGHT_TEAL.value(),
-
-		type = type,
-
-		controllerFactory = controllerFactory,
-
-		xpMultiplier = 0.6,
-		creditReward = creditRewards,
-
-		maxSpeed = 20,
-		engagementRange = engagementRadius,
-
-		manualWeaponSets = manualWeaponSets,
-		autoWeaponSets = autoWeaponSets,
-
-		mobs = mutableSetOf(),
-		smackInformation = AISpawningConfiguration.AIStarshipTemplate.SmackInformation(
-			prefix = PRIVATEER_SMACK_PREFIX,
-			messages = listOf()
-		),
-		radiusMessageInformation = AISpawningConfiguration.AIStarshipTemplate.RadiusMessageInformation(
-			prefix = PRIVATEER_SMACK_PREFIX,
-			messages = mapOf(
-				engagementRadius * 1.5 to "<#FFA500>You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.",
-				engagementRadius to "<RED>You have violated restricted airspace. Your vessel will be fired upon."
-			)
+): AISpawningConfiguration.AIStarshipTemplate = AISpawningConfiguration.AIStarshipTemplate(
+	color = PRIVATEER_LIGHT_TEAL.value(),
+	smackInformation = AISpawningConfiguration.AIStarshipTemplate.SmackInformation(
+		prefix = PRIVATEER_SMACK_PREFIX,
+		messages = listOf(
+			"<white>Stand down, we have you outmatched!",
+			"<white>Once I breach your shields, there's no going back.",
+			"<white>Ha, you call those weapons?",
+			"<white>System command, hostile contact is taking severe shield damage.",
+			"<white>Flanking right!",
+			"<white>Flanking left!"
 		)
-	)
-}
+	),
+	radiusMessageInformation = AISpawningConfiguration.AIStarshipTemplate.RadiusMessageInformation(
+		prefix = PRIVATEER_SMACK_PREFIX,
+		messages = mapOf(
+			engagementRadius * 1.5 to "<#FFA500>You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.",
+			engagementRadius to "<RED>You have violated restricted airspace. Your vessel will be fired upon."
+		)
+	),
+	maxSpeed = -1,
+
+	engagementRange = engagementRadius,
+	identifier = identifier,
+	schematicName = schematicName,
+	miniMessageName = miniMessageName,
+	type = type,
+	controllerFactory = controllerFactory,
+	xpMultiplier = xpMultiplier,
+	creditReward = creditReward,
+	manualWeaponSets = manualWeaponSets,
+	autoWeaponSets = autoWeaponSets
+)
 
 val bulwark = basicPrivateerTemplate(
 	identifier = "BULWARK",
 	schematicName = "Bulwark",
-	type = StarshipType.AI_GUNSHIP,
-	controllerFactory = "PRIVATEER_GUNSHIP",
+	miniMessageName = "<${PRIVATEER_DARK_TEAL.asHexString()}>Bulwark",
+	type = StarshipType.AI_CORVETTE,
+	controllerFactory = "PRIVATEER_CORVETTE",
+	xpMultiplier = 0.8,
+	creditReward = 5750.0,
 	manualWeaponSets = mutableSetOf(
 		WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 	),
 	autoWeaponSets = mutableSetOf(
-		WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
-		WeaponSet(name = "tt", engagementRangeMin = 250.0, engagementRangeMax = 550.0)
+		WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 	)
 )
 
 val contractor = basicPrivateerTemplate(
 	identifier = "CONTRACTOR",
 	schematicName = "Contractor",
+	miniMessageName = "<${PRIVATEER_MEDIUM_TEAL.asHexString()}>Contractor",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "PRIVATEER_GUNSHIP",
+	xpMultiplier = 0.8,
+	creditReward = 3750.0,
 	manualWeaponSets = mutableSetOf(
-		WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)
+		WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 	),
 	autoWeaponSets = mutableSetOf(
-		WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0)
+		WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 	)
 )
 
 val dagger = basicPrivateerTemplate(
 	identifier = "DAGGER",
 	schematicName = "Dagger",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Dagger",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER"
+	controllerFactory = "PRIVATEER_STARFIGHTER",
+	xpMultiplier = 0.8,
+	creditReward = 2650.0,
 )
 
 val daybreak = basicPrivateerTemplate(
 	identifier = "DAYBREAK",
 	schematicName = "Daybreak",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Daybreak",
 	type = StarshipType.AI_CORVETTE,
-	controllerFactory = "PRIVATEER_CORVETTE"
+	controllerFactory = "PRIVATEER_CORVETTE",
+	xpMultiplier = 0.5,
+	creditReward = 2650.0
 )
 
 val patroller = basicPrivateerTemplate(
 	identifier = "PATROLLER",
 	schematicName = "Patroller",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Patroller",
 	type = StarshipType.AI_GUNSHIP,
-	controllerFactory = "PRIVATEER_GUNSHIP"
+	controllerFactory = "PRIVATEER_GUNSHIP",
+	xpMultiplier = 0.8,
+	creditReward = 1850.0
 )
 
 val protector = basicPrivateerTemplate(
 	identifier = "PROTECTOR",
 	schematicName = "Protector",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Protector",
 	type = StarshipType.AI_GUNSHIP,
-	controllerFactory = "PRIVATEER_GUNSHIP"
+	controllerFactory = "PRIVATEER_GUNSHIP",
+	xpMultiplier = 0.8,
+	creditReward = 950.0
 )
 
 val veteran = basicPrivateerTemplate(
 	identifier = "VETERAN",
 	schematicName = "Veteran",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Veteran",
 	type = StarshipType.AI_GUNSHIP,
-	controllerFactory = "PRIVATEER_GUNSHIP"
+	controllerFactory = "PRIVATEER_GUNSHIP",
+	xpMultiplier = 0.6,
+	creditReward = 1850.0
 )
 
 val teneta = basicPrivateerTemplate(
 	identifier = "TENETA",
 	schematicName = "Teneta",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Teneta",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER"
+	controllerFactory = "PRIVATEER_STARFIGHTER",
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val furious = basicPrivateerTemplate(
 	identifier = "FURIOUS",
 	schematicName = "Furious",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Furious",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER"
+	controllerFactory = "PRIVATEER_STARFIGHTER",
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val inflict = basicPrivateerTemplate(
 	identifier = "INFLICT",
 	schematicName = "Inflict",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Inflict",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER"
+	controllerFactory = "PRIVATEER_STARFIGHTER",
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val privateerTemplates = arrayOf(
