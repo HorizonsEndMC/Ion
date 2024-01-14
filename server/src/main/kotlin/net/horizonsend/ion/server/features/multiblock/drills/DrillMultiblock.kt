@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.drills
 
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.DRILL_USER
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -18,7 +19,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -33,6 +33,7 @@ import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
+import org.bukkit.persistence.PersistentDataType
 import java.util.EnumSet
 import java.util.UUID
 import kotlin.math.max
@@ -67,6 +68,9 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 		fun setUser(sign: Sign, player: String?) {
 			sign.line(3, player?.let { text(it) } ?: DISABLED)
+
+			if (player == null) sign.persistentDataContainer.remove(DRILL_USER) else sign.persistentDataContainer.set(DRILL_USER, PersistentDataType.STRING, player)
+
 			sign.update(false, false)
 		}
 
@@ -208,11 +212,10 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		val fuel = furnace.inventory.fuel
 		val smelting = furnace.inventory.smelting
 		if (fuel == null || smelting == null) return
-		val thirdLine = sign.line(3)
-		if (thirdLine == DISABLED) {
-			return
-		}
-		val player = Bukkit.getPlayer((thirdLine as TextComponent).content())
+
+		val pdcUser = sign.persistentDataContainer.get(DRILL_USER, PersistentDataType.STRING) ?: return
+		val player = Bukkit.getPlayer(pdcUser)
+
 		if (player == null) {
 			setUser(sign, null)
 			return

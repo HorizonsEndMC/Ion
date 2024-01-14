@@ -233,9 +233,6 @@ object Multiblocks : IonServerComponent() {
 			MiningLaserMultiblockTier3Top,
 			MiningLaserMultiblockTier3Bottom,
 
-			AntiAirCannonBaseMultiblock,
-			AntiAirCannonTurretMultiblock,
-
 			ItemSplitterMultiblock,
 			GasCollectorMultiblock,
 			GasPowerPlantMultiblock,
@@ -259,7 +256,10 @@ object Multiblocks : IonServerComponent() {
 			PlanterMultiblockTier3,
 			HarvesterMultiblockTier1,
 			HarvesterMultiblockTier2,
-			HarvesterMultiblockTier3
+			HarvesterMultiblockTier3,
+
+			AntiAirCannonBaseMultiblock,
+			AntiAirCannonTurretMultiblock
 		)
 	}
 
