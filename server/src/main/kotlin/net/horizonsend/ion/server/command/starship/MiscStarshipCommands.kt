@@ -423,7 +423,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val starship = getStarshipPiloting(sender)
 
 		if (!starship.weaponSets.containsKey(set)) {
-			sender msg "&cNo nodes for $set"
+			sender.userError("No nodes for $set")
 			return
 		}
 
@@ -431,7 +431,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		if (current != null) {
 			if (current == sender.uniqueId) {
-				sender msg "&7Released weapon set &b$set"
+				sender.success("Released weapon set <white>$set")
 				return
 			}
 
@@ -440,7 +440,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		starship.weaponSetSelections[sender.uniqueId] = set
 
-		sender msg "&7Took control of weapon set &b$set"
+		sender.success("Took control of weapon set <white>$set")
 	}
 
 	@Suppress("unused")

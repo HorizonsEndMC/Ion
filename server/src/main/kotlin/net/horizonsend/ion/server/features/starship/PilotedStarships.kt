@@ -438,17 +438,19 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	fun tryRelease(starship: ActiveControlledStarship): Boolean {
-		if (!StarshipUnpilotEvent(starship, starship.controller).callEvent()) {
-			return false
-		}
+		val controller = starship.controller
+
+		if (!StarshipUnpilotEvent(starship, controller).callEvent()) return false
 		if (starship.world.name.contains("hyperspace", ignoreCase=true)) return false
 
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
+
 		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 500.0)) {
 			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
 		}
-		starship.controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")
+
+		controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")
 		return true
 	}
 
