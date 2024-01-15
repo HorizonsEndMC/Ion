@@ -12,9 +12,9 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 
@@ -64,26 +64,24 @@ internal object NationRelationCommand : SLCommand() {
 
 		val actual = NationRelation.changeRelationWish(senderNation, otherNation, wish)
 
-		Bukkit.getOnlinePlayers().forEach { player ->
-			val message = template(
-				text("{0} of {1} has made the relation wish {2} with the nation {3}. Their wish is {4}, so their relation is {5}", YELLOW),
-				paramColor = YELLOW,
-				useQuotesAroundObjects = false,
-				sender.name,
-				getNationName(senderNation),
-				wish.component,
-				getNationName(otherNation),
-				otherWish.component,
-				actual.component
-			)
+		val message = template(
+			text("{0} of {1} has made the relation wish {2} with the nation {3}. Their wish is {4}, so their relation is {5}", YELLOW),
+			paramColor = YELLOW,
+			useQuotesAroundObjects = false,
+			sender.name,
+			getNationName(senderNation),
+			wish.component,
+			getNationName(otherNation),
+			otherWish.component,
+			actual.component
+		)
 
-			player.sendMessage(message)
+		Discord.sendEmbed(IonServer.discordSettings.globalChannel, Embed(
+			description = message.plainText(),
+			color = wish.color.value()
+		))
 
-			Discord.sendEmbed(IonServer.discordSettings.globalChannel, Embed(
-				description = message.plainText(),
-				color = wish.color.value()
-			))
-		}
+		Notify.notifyOnlineAction(message)
 	}
 
 	@Subcommand("relations")
