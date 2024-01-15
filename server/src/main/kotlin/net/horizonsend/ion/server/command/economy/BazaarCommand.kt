@@ -365,7 +365,7 @@ object BazaarCommand : SLCommand() {
 
 				// attempt to get the planet icon, just use a detonator if unavailable
 				// TODO: When porting over planet icons, change the legacy uranium icon too
-				val item: CustomItem = Space.getPlanet(territory.world)?.planetIcon ?: CustomItems.MINERAL_URANIUM
+				val item: CustomItem = Space.getPlanet(territory.world)?.planetIcon ?: CustomItems.BATTERY_LARGE
 
 				return@map guiButton(item.itemStack(1)) {
 					val clicker: Player = playerClicker
