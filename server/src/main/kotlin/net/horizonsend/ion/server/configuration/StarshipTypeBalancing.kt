@@ -86,7 +86,7 @@ data class StarshipTypeBalancing(
 				areaShieldDamageMultiplier = 2.0,
 				starshipShieldDamageMultiplier = 2.0,
 				particleThickness = 0.6,
-				explosionPower = 1.6875f,
+				explosionPower = 1.85625f,
 				volume = 10,
 				pitch = 0.5f,
 				soundName = "entity.firework_rocket.blast_far",
