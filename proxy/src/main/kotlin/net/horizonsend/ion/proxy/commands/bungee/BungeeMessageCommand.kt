@@ -36,8 +36,7 @@ class MessageCommand : BaseCommand() {
 		player.sendRichMessage(format.invoke("me", targetPlayer.name, formatted))
 
 		// Let the sender see that the message has been sent, but don't send it to the recipient, or set the convo
-		println(cached)
-		if (cached.blockedPlayerIDs.contains(player.slPlayerId)) return println("blocked")
+		if (cached.blockedPlayerIDs.contains(player.slPlayerId)) return
 
 		targetPlayer.sendRichMessage(format.invoke(player.name, "me", formatted))
 
