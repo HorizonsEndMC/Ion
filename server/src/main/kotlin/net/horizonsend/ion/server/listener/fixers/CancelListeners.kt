@@ -113,6 +113,7 @@ class CancelListeners : SLEventListener() {
 
 		// disable crafting for legacy MineralCustomItems or CustomBlockItem
 		// (There is no way to get the CustomBlockItems, so hard code for iron ingot uncraft
+		/*
 		if (event.inventory.matrix.any {
 			it != null &&
 					CustomItems[it] != null &&
@@ -124,9 +125,10 @@ class CancelListeners : SLEventListener() {
 			player.userError("Legacy mineral item detected; use the /convert command to transfer legacy items.")
 			event.inventory.result = ItemStack(Material.AIR)
 		}
+		 */
 
 		// disable crafting if any item is a new CustomItem and the result is not a new or legacy CustomItem
-		else if (event.inventory.matrix.any {
+		if (event.inventory.matrix.any {
 			// any item is in the matrix and not a new custom item
 			it != null &&
 					it.customItem != null &&
