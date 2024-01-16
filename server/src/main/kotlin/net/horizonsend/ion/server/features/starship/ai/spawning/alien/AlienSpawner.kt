@@ -16,6 +16,8 @@ class AlienSpawner : BasicSpawner(
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 
 	companion object {
-		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration()
+		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
+
+		)
 	}
 }

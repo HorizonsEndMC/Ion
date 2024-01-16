@@ -69,7 +69,7 @@ val tsaiiGunship = registerFactory("TSAII_GUNSHIP") { // TODO
 	build()
 }
 
-private fun basicPirateTemplate(
+private fun tsaiiTemplate(
 	identifier: String,
 	schematicName: String,
 	miniMessageName: String,
@@ -80,26 +80,8 @@ private fun basicPirateTemplate(
 	engagementRadius: Double = 750.0,
 	manualWeaponSets: MutableSet<AISpawningConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf(),
 	autoWeaponSets: MutableSet<AISpawningConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf(),
-	reinforcementThreshold: Double = 0.85,
-	reinforcementShips: Map<String, Int> = mapOf()
+	reinforcementInformation: AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation? = null
 ): AISpawningConfiguration.AIStarshipTemplate {
-	val reinforcementConfig = AISpawningConfiguration.AISpawnerConfiguration(
-		miniMessageSpawnMessage = "<bold><$PIRATE_SATURATED_RED>How dare you attack the boss’ on his day off. Hand over your ship!",
-		pointChance = 0.0,
-		pointThreshold = Int.MAX_VALUE,
-		minDistanceFromPlayer = 100.0,
-		maxDistanceFromPlayer = 150.0,
-		tiers = listOf(
-			AISpawningConfiguration.AISpawnerTier(
-				identifier = "REINFORCEMENTS",
-				nameList = mapOf(
-					"<$TSAII_DARK_ORANGE>Tsaii Raider" to 2
-				),
-				ships = reinforcementShips
-			)
-		)
-	)
-
 	return AISpawningConfiguration.AIStarshipTemplate(
 		color = TSAII_MEDIUM_ORANGE.value(),
 		smackInformation = AISpawningConfiguration.AIStarshipTemplate.SmackInformation(
@@ -116,12 +98,7 @@ private fun basicPirateTemplate(
 				1500.0 to "<#FFA500>You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.",
 			)
 		),
-		reinforcementInformation = AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation(
-			activationThreshold = reinforcementThreshold,
-			delay = 100L,
-			broadcastMessage = "<italic><red>Did you really think we would risk this ship without an escort fleet? We'll enjoy looting your corpse!",
-			configuration = reinforcementConfig
-		),
+		reinforcementInformation = reinforcementInformation,
 		engagementRange = engagementRadius,
 		identifier = identifier,
 		schematicName = schematicName,
@@ -135,55 +112,88 @@ private fun basicPirateTemplate(
 	)
 }
 
-val raider = basicPirateTemplate(
-	identifier = "RAIDER",
-	schematicName = "Raider",
-	miniMessageName = "<${TSAII_VERY_DARK_ORANGE.asHexString()}>Raider",
-	type = StarshipType.AI_GUNSHIP,
-	controllerFactory = "TSAII_GUNSHIP",
-	xpMultiplier = 0.8,
-	creditReward = 3000.0
-)
-
-val scythe = basicPirateTemplate(
-	identifier = "SCYTHE",
-	schematicName = "Scythe",
-	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Scythe",
-	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "TSAII_STARFIGHTER",
-	xpMultiplier = 0.8,
-	creditReward = 1850.0
-)
-
-val swarmer = basicPirateTemplate(
+val swarmer = tsaiiTemplate(
 	identifier = "SWARMER",
 	schematicName = "Swarmer",
 	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Swarmer",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "TSAII_STARFIGHTER",
-	xpMultiplier = 0.8,
-	creditReward = 1850.0
+	xpMultiplier = 0.7,
+	creditReward = 1550.0
 )
 
-val reaver = basicPirateTemplate(
+val scythe = tsaiiTemplate(
+	identifier = "SCYTHE",
+	schematicName = "Scythe",
+	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Scythe",
+	type = StarshipType.AI_STARFIGHTER,
+	controllerFactory = "TSAII_STARFIGHTER",
+	xpMultiplier = 0.7,
+	creditReward = 1550.0
+)
+
+val raider = tsaiiTemplate(
+	identifier = "RAIDER",
+	schematicName = "Raider",
+	miniMessageName = "<${TSAII_VERY_DARK_ORANGE.asHexString()}>Raider",
+	type = StarshipType.AI_GUNSHIP,
+	controllerFactory = "TSAII_GUNSHIP",
+	xpMultiplier = 0.7,
+	creditReward = 2500.0
+)
+
+val reaver = tsaiiTemplate(
 	identifier = "REAVER",
 	schematicName = "Reaver",
 	miniMessageName = "<${TSAII_VERY_DARK_ORANGE.asHexString()}>Reaver",
 	type = StarshipType.AI_DESTROYER,
 	controllerFactory = "AI_FRIGATE",
-	xpMultiplier = 0.8,
-	creditReward = 8000.0,
-	reinforcementThreshold = 0.85,
-	reinforcementShips = mapOf(raider.identifier to 2)
+	xpMultiplier = 0.7,
+	creditReward = 6500.0,
+	manualWeaponSets = mutableSetOf(
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+			name = "manual",
+			engagementRangeMin = 0.0,
+			engagementRangeMax = 220.0
+		)
+	),
+	autoWeaponSets = mutableSetOf(
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+			name = "auto",
+			engagementRangeMin = 250.0,
+			engagementRangeMax = 550.0
+		)
+	),
+	reinforcementInformation = AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation(
+		activationThreshold = 0.85,
+		delay = 100L,
+		broadcastMessage = "<italic><red>Did you really think we would risk this ship without an escort fleet? We'll enjoy looting your corpse!",
+		configuration = AISpawningConfiguration.AISpawnerConfiguration(
+			miniMessageSpawnMessage = "<bold><$PIRATE_SATURATED_RED>How dare you attack the boss’ on his day off. Hand over your ship!",
+			pointChance = 0.0,
+			pointThreshold = Int.MAX_VALUE,
+			minDistanceFromPlayer = 100.0,
+			maxDistanceFromPlayer = 150.0,
+			tiers = listOf(
+				AISpawningConfiguration.AISpawnerTier(
+					identifier = "REINFORCEMENTS",
+					nameList = mapOf(
+						"<$TSAII_DARK_ORANGE>Tsaii Raider" to 2
+					),
+					ships = mapOf(raider.identifier to 2)
+				)
+			)
+		)
+	)
 )
 
-val bastion = basicPirateTemplate( // TODO
+val bastion = tsaiiTemplate( // TODO
 	identifier = "BASTION",
 	schematicName = "Bastion",
 	miniMessageName = "<${TSAII_VERY_DARK_ORANGE.asHexString()}>Bastion",
 	type = StarshipType.AI_BATTLECRUISER,
 	controllerFactory = "TSAII_FRIGATE",
-	xpMultiplier = 0.8,
+	xpMultiplier = 0.7,
 	creditReward = 8000.0
 )
 
