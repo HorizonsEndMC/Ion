@@ -164,7 +164,7 @@ abstract class AISpawner(
 					controller,
 					spawner,
 					it.activationThreshold,
-					miniMessage().deserialize(it.broadcastMessage),
+					it.broadcastMessage?.let { message -> miniMessage().deserialize(message) },
 					delay = it.delay,
 				)
 

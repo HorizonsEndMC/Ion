@@ -80,7 +80,7 @@ private fun basicMiningCorpTemplate(
 	reinforcementShips: Map<String, Int>,
 ): AISpawningConfiguration.AIStarshipTemplate {
 	val reinforcementConfig = AISpawningConfiguration.AISpawnerConfiguration(
-		miniMessageSpawnMessage = "${MiningCorpSpawner.miningGuild}<$HE_MEDIUM_GRAY> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+		miniMessageSpawnMessage = "${miningGuildMini}<$HE_MEDIUM_GRAY> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
 		pointChance = 0.0,
 		pointThreshold = Int.MAX_VALUE,
 		minDistanceFromPlayer = 100.0,

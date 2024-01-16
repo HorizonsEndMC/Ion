@@ -4,13 +4,6 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
-import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
-import net.horizonsend.ion.server.features.starship.ai.module.combat.StarfighterCombatModule
-import net.horizonsend.ion.server.features.starship.ai.module.movement.CruiseModule
-import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.SteeringPathfindingModule
-import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisStandoffPositioningModule
-import net.horizonsend.ion.server.features.starship.ai.module.targeting.HighestDamagerTargetingModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.SingleTargetingModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
@@ -72,36 +65,6 @@ class ReinforcementSpawner(
 			}
 
 			builtController
-		}
-	}
-
-	companion object {
-		@Suppress("unused")
-		val targetController = AIControllerFactories.registerFactory("MINING_CORP_REINFORCEMENTS") {
-			setControllerTypeName("Starfighter")
-
-			setModuleBuilder {
-				val builder = AIControllerFactory.Builder.ModuleBuilder()
-
-				val targeting = builder.addModule("targeting", HighestDamagerTargetingModule(it).apply { sticky = true })
-				builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
-				val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 25.0))
-				val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-				builder.addModule(
-					"movement",
-					CruiseModule(
-						it,
-						pathfinding,
-						pathfinding::getDestination,
-						CruiseModule.ShiftFlightType.ALL,
-						256.0
-					)
-				)
-
-				builder
-			}
-
-			build()
 		}
 	}
 }

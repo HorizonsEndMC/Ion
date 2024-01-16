@@ -25,10 +25,8 @@ class MiningCorpSpawner : BasicSpawner(
 	)
 
 	companion object {
-		val miningGuild = "<$MINING_CORP_LIGHT_ORANGE>Mining<$MINING_CORP_DARK_ORANGE> Guild"
-
 		val defaultConfiguration = AISpawnerConfiguration(
-			miniMessageSpawnMessage = "$miningGuild <${HE_MEDIUM_GRAY}>extraction vessel {0} spawned at {1}, {3}, in {4}",
+			miniMessageSpawnMessage = "$miningGuildMini <${HE_MEDIUM_GRAY}>extraction vessel {0} spawned at {1}, {3}, in {4}",
 			pointChance = 0.8,
 			pointThreshold = 20 * 60 * 7,
 			minDistanceFromPlayer = 1000.0,

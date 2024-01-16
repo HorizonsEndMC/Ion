@@ -13,7 +13,7 @@ class ReinforcementSpawnerModule(
 	controller: AIController,
 	val spawner: ReinforcementSpawner,
 	private val activationAverageShieldHealth: Double,
-	private val spawnBroadCastMessage: Component,
+	private val spawnBroadCastMessage: Component?,
 	val delay: Long = 200,
 ) : AIModule(controller) {
 	private var triggered: Boolean = false
@@ -29,6 +29,8 @@ class ReinforcementSpawnerModule(
 	}
 
 	fun sendMessage() {
+		if (spawnBroadCastMessage == null) return
+
 		val players = getCenter().toLocation(world).getNearbyPlayers(500.0)
 
 		val (x, y, z) = starship.centerOfMass

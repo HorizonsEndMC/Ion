@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.ai.spawning.alien.AlienSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.alien.alienTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.explorerTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSpawner
@@ -33,7 +34,8 @@ data class AISpawningConfiguration(
 		*pirateShips,
 		*tsaiiTemplates,
 		*explorerTemplates,
-		*miningGuildTemplates
+		*miningGuildTemplates,
+		*alienTemplates
 	),
 	val spawners: AISpawners = AISpawners()
 ) {
@@ -177,7 +179,7 @@ data class AISpawningConfiguration(
 		data class ReinforcementInformation(
 			val activationThreshold: Double,
 			val delay: Long,
-			val broadcastMessage: String,
+			val broadcastMessage: String?,
 			val configuration: AISpawnerConfiguration
 		)
 	}
