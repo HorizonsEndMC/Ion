@@ -738,6 +738,13 @@ object CustomItems {
 //	)
 
 	// Throwables end
+	// Ammunition start
+	val NUCLEAR_ROCKET = register(
+		identifier = "NUCLEAR_MISSILE",
+		customModelData = 1101,
+		displayName = text("Nuclear Missile ", RED).decoration(BOLD, false),
+	)
+	// Ammunition end
 
 	val PROGRESS_HOLDER = register(ProgressHolder)
 
