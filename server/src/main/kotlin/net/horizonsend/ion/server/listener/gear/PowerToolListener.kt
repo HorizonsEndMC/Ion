@@ -70,7 +70,6 @@ object PowerToolListener : SLEventListener() {
 					block.world.playSound(block.location.toCenterLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f)
 					Tasks.sync {
 						for (drop in customBlock.getDrops(item)) {
-							println("powerToolListener: centerLocation(${block.location.toCenterLocation()})")
 							player.world.dropItem(block.location.toCenterLocation(), drop)
 						}
 					}
