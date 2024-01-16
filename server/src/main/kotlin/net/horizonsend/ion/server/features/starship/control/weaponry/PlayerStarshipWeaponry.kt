@@ -22,6 +22,9 @@ import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
+import org.bukkit.Material
+import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
+
 
 object PlayerStarshipWeaponry : IonServerComponent() {
 	@EventHandler(priority = EventPriority.LOW)
@@ -68,6 +71,52 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		manualFire(player, starship, event.action.isLeftClick, player.inventory.itemInMainHand)
 
 		player.debugBanner("END")
+	}
+	@EventHandler(priority = EventPriority.LOW)
+	fun onShiftRClick(event: PlayerInteractEvent) {
+
+		val player = event.player
+
+		player.debugBanner("INTERACT EVENT TURRET TARGETING START")
+		if (!PlayerStarshipControl.isHoldingController(player)) {
+			return
+		}
+		val starship = ActiveStarships.findByPassenger(player) ?: return
+
+		if (event.action.isLeftClick) {
+			event.isCancelled = true
+		}
+
+		if (player.isSneaking) {
+			if (event.action.isRightClick) {
+				// I am truly sorry, but I could not think of a better way to do this
+				val ignoreBlockList = setOf(Material.AIR, Material.BLACK_STAINED_GLASS, Material.GRAY_STAINED_GLASS, Material.RED_STAINED_GLASS, Material.LIGHT_GRAY_STAINED_GLASS, Material.BLACK_STAINED_GLASS_PANE, Material.GRAY_STAINED_GLASS_PANE, Material.RED_STAINED_GLASS_PANE, Material.LIGHT_GRAY_STAINED_GLASS_PANE)
+				val hitpoints = player.getLineOfSight(ignoreBlockList, 600)
+				val detectedBlock = hitpoints.last()
+				player.debug("hitpoints recorded")
+				val item = player.inventory.itemInMainHand
+				val clockWeaponSet = item.displayNameString.lowercase()
+				var weaponSet = starship.weaponSetSelections[player.uniqueId]
+				if (hitpoints.isEmpty()) {
+					starship.autoTurretTargets.remove(weaponSet)
+					player.debug("unset turrets as hitpoints is empty")
+					return
+				}
+				player.debug("first hitpoints detected:")
+				player.debug(detectedBlock.blockData.asString)
+				if (starship.weaponSets.keys().contains(clockWeaponSet)) {
+					weaponSet = clockWeaponSet
+					ActiveStarships.getInWorld(player.world).find { it.contains(detectedBlock.x, detectedBlock.y, detectedBlock.z) }?.let {
+						if (it == starship) {return} //should prevent setting to yourself
+						starship.autoTurretTargets[weaponSet] = AutoTurretTargeting.target(it)
+						player.debug("set the target to $it")
+						return
+					}
+					starship.autoTurretTargets.remove(weaponSet)
+				}
+				return
+			}
+		}
 	}
 
 	@EventHandler
