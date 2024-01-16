@@ -19,6 +19,7 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_20_R3.util.CraftMagicNumbers
 import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
@@ -71,8 +72,7 @@ abstract class SimpleProjectile(
 		if (!predictedNewLoc.isChunkLoaded) {
 			return
 		}
-
-		val result = loc.world.rayTrace(loc, dir, delta * speed, FluidCollisionMode.NEVER, true, 0.1) { true }
+		val result: RayTraceResult? = loc.world.rayTrace(loc, dir, delta * speed, FluidCollisionMode.NEVER, true, 0.1) { it.type != EntityType.ITEM_DISPLAY }
 		val newLoc = result?.hitPosition?.toLocation(loc.world) ?: predictedNewLoc
 		val travel = loc.distance(newLoc)
 
@@ -122,7 +122,6 @@ abstract class SimpleProjectile(
 		}
 
 		impact(newLoc, block, entity)
-
 		return true
 	}
 
