@@ -25,6 +25,7 @@ object PowerToolListener : SLEventListener() {
 	private val PICKAXE = ItemStack(Material.DIAMOND_PICKAXE, 1)
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@Suppress("Unued")
 	fun onInteract(event: PlayerInteractEvent) {
 		if (event.action != Action.LEFT_CLICK_BLOCK || event.player.gameMode == GameMode.CREATIVE) {
 			return
@@ -69,7 +70,7 @@ object PowerToolListener : SLEventListener() {
 					block.world.playSound(block.location.toCenterLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f)
 					Tasks.sync {
 						for (drop in customBlock.getDrops(item)) {
-							player.world.dropItemNaturally(block.location.toCenterLocation(), drop)
+							player.world.dropItem(block.location.toCenterLocation(), drop)
 						}
 					}
 				}

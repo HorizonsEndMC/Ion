@@ -11,7 +11,9 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
-import net.horizonsend.ion.common.utils.text.repeatString
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.bounties.BountiesMenu
@@ -22,7 +24,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
@@ -137,65 +138,28 @@ object BountyCommand : SLCommand() {
 	fun top(sender: Player, @Optional page: Int? = null) = asyncCommand(sender) {
 		if ((page ?: 1) <= 0) return@asyncCommand sender.userError("Page must not be less than or equal to zero!")
 
-		val lineBreak = text(repeatString("=", 25)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY)
+		val builder = text()
 
-		val bountiesText = text()
-			.append(text("The Galaxy's Most Wanted:", NamedTextColor.RED).decorate(TextDecoration.BOLD))
-			.append(newline())
-			.append(lineBreak)
-			.append(newline())
+		builder.append(text("The Galaxy's Most Wanted:", NamedTextColor.RED).decorate(TextDecoration.BOLD), newline())
 
 		val bounties = SLPlayer.all()
 			.toList()
 			.sortedByDescending { it.bounty }
-			.map { player ->
-			text()
-				.append(text(player.lastKnownName, NamedTextColor.DARK_RED))
-				.append(text(": ", NamedTextColor.RED))
-				.append(text(player.bounty.toCreditsString(), NamedTextColor.GOLD))
-				.append(newline())
-				.build()
+
+		val body = formatPaginatedMenu(
+			bounties.size,
+			"/bounty top",
+			page ?: 1,
+			color = NamedTextColor.RED
+		) {
+			val player = bounties[it]
+
+			ofChildren(text(player.lastKnownName, NamedTextColor.DARK_RED), text(": ", NamedTextColor.RED), player.bounty.toCreditComponent())
 		}
 
-		val min = minOf(bounties.size, 0 + (10 * ((page ?: 1) - 1)))
-		val max = minOf(bounties.size, 10 + (10 * ((page ?: 1) - 1)))
+		builder.append(body)
 
-		val sublist = bounties
-			.subList(min, max)
-			.toTypedArray()
-
-		val entriesText = text()
-			.append(text("Showing Entries ", NamedTextColor.RED))
-			.append(text(min, NamedTextColor.GOLD))
-			.append(text(" through ", NamedTextColor.RED))
-			.append(text(max, NamedTextColor.GOLD))
-			.append(text(" of ", NamedTextColor.RED))
-			.append(text(bounties.size, NamedTextColor.GOLD))
-			.append(text(".", NamedTextColor.RED))
-			.build()
-
-		val pageText = text()
-			.append(lineBreak)
-			.append(newline())
-			.append(entriesText)
-			.append(newline())
-			.append(
-				text("Previous", NamedTextColor.RED)
-					.clickEvent(ClickEvent.runCommand("/bounty top ${maxOf(1, (page ?: 1) - 1)}"))
-					.hoverEvent(text("/bounty top ${maxOf(1, (page ?: 1) - 1)}"))
-			)
-			.append(text("  |  ", NamedTextColor.DARK_GRAY))
-			.append(
-				text("Next", NamedTextColor.RED)
-					.clickEvent(ClickEvent.runCommand("/bounty top ${(page ?: 1) + 1}"))
-					.hoverEvent(text("/bounty top ${(page ?: 1) + 1}"))
-			)
-
-
-		bountiesText.append(*sublist) // Every one has a newline at the end
-		bountiesText.append(pageText.build())
-
-		sender.sendMessage(bountiesText.build())
+		sender.sendMessage(builder.build())
 	}
 
 	@Subcommand("get")

@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
@@ -15,6 +16,12 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
+import net.horizonsend.ion.common.utils.text.lineBreak
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
@@ -35,8 +42,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
@@ -243,32 +254,43 @@ object BazaarCommand : SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("list")
-	@Description("List the items you're selling at this city")
-	fun onList(sender: Player) = asyncCommand(sender) {
+	@Description("List all of the items you're selling")
+	fun onList(sender: Player, @Optional page: Int?) = asyncCommand(sender) {
 		val items = BazaarItem.find(BazaarItem::seller eq sender.slPlayerId).toList()
-		sender.information("Your Items (${items.size})")
-		for (item in items) {
+		val builder = text()
+
+		builder.append(text("Your Items (${items.size})"), newline())
+		builder.append(lineBreak(45), newline())
+
+		var totalBalance = 0.0
+
+		val body = formatPaginatedMenu(
+			items.size,
+			"/bazaar list",
+			page ?: 1
+		) { index ->
+			val item = items[index]
 			val itemDisplayName = Bazaars.fromItemString(item.itemString).displayNameComponent
 			val city = cityName(Regions[item.cityTerritory])
 			val stock = item.stock
-			val uncollected = item.balance.toCreditsString()
-			val price = item.price.toCreditsString()
+			val uncollected = item.balance.toCreditComponent()
+			val price = item.price.toCreditComponent()
 
-			sender.sendMessage(
-				text()
-					.append(itemDisplayName)
-					.append(text(" @ ").color(NamedTextColor.DARK_PURPLE))
-					.append(text(city).color(NamedTextColor.LIGHT_PURPLE))
-					.append(text(" [").color(NamedTextColor.DARK_GRAY))
-					.append(text("stock: ").color(NamedTextColor.GRAY))
-					.append(text(stock).color(NamedTextColor.GRAY))
-					.append(text(", balance: ").color(NamedTextColor.GRAY))
-					.append(text(uncollected).color(NamedTextColor.GOLD))
-					.append(text(", price: ").color(NamedTextColor.GRAY))
-					.append(text(price).color(NamedTextColor.YELLOW))
-					.append(text("]").color(NamedTextColor.DARK_GRAY))
+			totalBalance += item.balance
+
+			ofChildren(
+				itemDisplayName,
+				text(" @ ", DARK_PURPLE),
+				text(city, LIGHT_PURPLE),
+				bracketed(template(text("stock: {0}, balance: {1}, price: {2}", GRAY), stock, uncollected, price))
 			)
 		}
+
+		builder.append(body, newline())
+		builder.append(lineBreak(45), newline())
+		builder.append(template(text("Total Uncollected Credits: {0}", HE_MEDIUM_GRAY), totalBalance.toCreditComponent()))
+
+		sender.sendMessage(builder.build())
 	}
 
 	@Suppress("Unused")
@@ -286,10 +308,10 @@ object BazaarCommand : SLCommand() {
 
 				guiButton(Bazaars.fromItemString(item.itemString)).apply {
 					setLoreComponent(listOf(
-						text().append(text("City: ", NamedTextColor.DARK_PURPLE), text(city, NamedTextColor.LIGHT_PURPLE)).decoration(TextDecoration.ITALIC, false).build(),
-						text().append(text("Stock: ", NamedTextColor.GRAY), text(stock, NamedTextColor.GRAY)).decoration(TextDecoration.ITALIC, false).build(),
-						text().append(text("Balance: ", NamedTextColor.GRAY), text(uncollected, NamedTextColor.GOLD)).decoration(TextDecoration.ITALIC, false).build(),
-						text().append(text("Price: ", NamedTextColor.GRAY), text(price, NamedTextColor.YELLOW)).decoration(TextDecoration.ITALIC, false).build(),
+						text().append(text("City: ", DARK_PURPLE), text(city, LIGHT_PURPLE)).decoration(TextDecoration.ITALIC, false).build(),
+						text().append(text("Stock: ", GRAY), text(stock, GRAY)).decoration(TextDecoration.ITALIC, false).build(),
+						text().append(text("Balance: ", GRAY), text(uncollected, NamedTextColor.GOLD)).decoration(TextDecoration.ITALIC, false).build(),
+						text().append(text("Price: ", GRAY), text(price, NamedTextColor.YELLOW)).decoration(TextDecoration.ITALIC, false).build(),
 					))
 				}
 			}
@@ -343,7 +365,7 @@ object BazaarCommand : SLCommand() {
 
 				// attempt to get the planet icon, just use a detonator if unavailable
 				// TODO: When porting over planet icons, change the legacy uranium icon too
-				val item: CustomItem = Space.getPlanet(territory.world)?.planetIcon ?: CustomItems.MINERAL_URANIUM
+				val item: CustomItem = Space.getPlanet(territory.world)?.planetIcon ?: CustomItems.BATTERY_LARGE
 
 				return@map guiButton(item.itemStack(1)) {
 					val clicker: Player = playerClicker

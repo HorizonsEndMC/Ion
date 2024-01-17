@@ -218,6 +218,7 @@ object CustomItems {
 	//endregion Power Tools
 
 	//region Minerals
+	/*
 	class MineralCustomItem(
 		id: String,
 		displayName: String,
@@ -256,6 +257,7 @@ object CustomItems {
 	val MINERAL_CHETHERITE = registerMineral(type = "chetherite", typeName = "Chetherite", model = 2)
 	val MINERAL_TITANIUM = registerMineral(type = "titanium", typeName = "Titanium", model = 3)
 	val MINERAL_URANIUM = registerMineral(type = "uranium", typeName = "Uranium", model = 4)
+	 */
 	//endregion Minerals
 
 	//region Planet Icons

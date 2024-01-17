@@ -22,6 +22,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
@@ -44,7 +45,6 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
@@ -57,8 +57,6 @@ import org.litote.kmongo.EMPTY_BSON
 import org.litote.kmongo.eq
 import org.litote.kmongo.ne
 import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 @CommandAlias("nation|n")
@@ -346,7 +344,7 @@ internal object NationCommand : SLCommand() {
 
 		Nation.setColor(nationId, color.asRGB())
 
-		sender.sendMessage(nationMessageFormat("Updated nation color to {0}", text("████████████", color(red, green, blue))))
+		sender.sendMessage(nationMessageFormat("Updated nation color to {0}", text("█████████████", color(red, green, blue))))
 	}
 
 	@Suppress("unused")
@@ -451,13 +449,6 @@ internal object NationCommand : SLCommand() {
 			.sortedByDescending { semiActiveMemberCounts[it] ?: 0 }
 			.sortedByDescending { activeMemberCounts[it] ?: 0 }
 
-		val pages = max(1, sortedNations.size / super.linesPerPage)
-		val index = (max(min(page ?: 1, pages), 1)) - 1
-		val nationsOnPage = sortedNations.subList(
-			fromIndex = index * linesPerPage,
-			toIndex = min(index * linesPerPage + linesPerPage, sortedNations.size)
-		)
-
 		val nameColor = NamedTextColor.GOLD
 		val leaderColor = NamedTextColor.AQUA
 		val membersColor = NamedTextColor.BLUE
@@ -474,7 +465,12 @@ internal object NationCommand : SLCommand() {
 			newline()
 		))
 
-		for (nation in nationsOnPage) {
+		val menu = formatPaginatedMenu(
+			sortedNations.size,
+			"/n top",
+			page ?: 1
+		) { index ->
+			val nation = sortedNations[index]
 			val data: NationCache.NationData = NationCache[nation]
 
 			val members = nationMembers[nation]!!
@@ -495,54 +491,24 @@ internal object NationCommand : SLCommand() {
 			val name = data.name
 			val leaderName = SLPlayer.getName(data.leader)!!
 
-			val line = text()
+			text()
 				.hoverEvent(text("Click for more info"))
 				.clickEvent(ClickEvent.runCommand("/n info $name"))
 
 				.append(text("    $name ", nameColor))
 				.append(text(leaderName, leaderColor))
-				.append(text(" ${members.count()}", membersColor))
+				.append(text(" ${members.count()} ", membersColor))
 				.append(SettlementCommand.formatActive(active, semiActive, inactive))
 				.append(text(" ${SettlementCache.all().count { it.nation == nation }}", settlementsColor))
 				.append(text(" ${Regions.getAllOf<RegionTerritory>().count { it.nation == nation }}", outpostsColor))
-				.append(newline())
 				.build()
-
-			message.append(line)
-		}
-
-		val pageLine = text()
-
-		if (index > 0) {
-			pageLine.append(ofChildren(
-				text(" [", DARK_GREEN),
-				text("<--", WHITE)
-					.clickEvent(ClickEvent.runCommand("/nation top $index"))
-					.hoverEvent(text("Click to see previous page")),
-				text("]", DARK_GREEN),
-			))
-		}
-
-		pageLine.append(ofChildren(
-			text(" Page ", DARK_AQUA),
-			text("${index + 1}/$pages ", HEColorScheme.HE_MEDIUM_GRAY),
-		))
-
-		if (index < pages - 1) {
-			pageLine.append(ofChildren(
-				text(" [", DARK_GREEN),
-				text("-->", WHITE)
-					.clickEvent(ClickEvent.runCommand("/nation top ${index + 2}"))
-					.hoverEvent(text("Click to see next page")),
-				text("]", DARK_GREEN),
-			))
 		}
 
 		message
-			.append(pageLine.build())
+			.append(menu, newline())
 			.append(net.horizonsend.ion.common.utils.text.lineBreak(47))
 
-		sender.sendMessage(message)
+		sender.sendMessage(message.build())
 	}
 
 	@Suppress("unused")
