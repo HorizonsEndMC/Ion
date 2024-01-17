@@ -505,6 +505,18 @@ object CustomItems {
 //	)
 
 	// Throwables end
+	// Planet Icons Start
+
+	val PLANET_ICON_EDEN = register(
+		object : MineralItem(
+			identifier = "PLANET_ICON_EDEN",
+			material = WARPED_FUNGUS_ON_A_STICK,
+			customModelData = 218,
+			displayName = text("Eden").decoration(ITALIC, false),
+		) {}
+	)
+
+	// Planet Icons End
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun register(identifier: String, customModelData: Int, displayName: Component): CustomItem {

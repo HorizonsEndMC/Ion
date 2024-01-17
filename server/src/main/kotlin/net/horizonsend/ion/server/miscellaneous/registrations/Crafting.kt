@@ -37,17 +37,22 @@ import org.bukkit.Material.BROWN_WOOL
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.CYAN_WOOL
+import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
+import org.bukkit.Material.DIAMOND_HORSE_ARMOR
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.GLASS
 import org.bukkit.Material.GLASS_PANE
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GOLD_INGOT
+import org.bukkit.Material.GOLDEN_HORSE_ARMOR
 import org.bukkit.Material.GRAY_WOOL
 import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.GREEN_WOOL
 import org.bukkit.Material.HONEYCOMB
 import org.bukkit.Material.IRON_BLOCK
+import org.bukkit.Material.IRON_HORSE_ARMOR
+import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.LEATHER
@@ -55,12 +60,14 @@ import org.bukkit.Material.LIGHT_BLUE_WOOL
 import org.bukkit.Material.LIGHT_GRAY_WOOL
 import org.bukkit.Material.LIME_WOOL
 import org.bukkit.Material.MAGENTA_WOOL
+import org.bukkit.Material.NETHER_BRICK
 import org.bukkit.Material.NETHER_WART
 import org.bukkit.Material.NETHER_WART_BLOCK
 import org.bukkit.Material.OAK_LOG
 import org.bukkit.Material.OCHRE_FROGLIGHT
 import org.bukkit.Material.ORANGE_WOOL
 import org.bukkit.Material.PEARLESCENT_FROGLIGHT
+import org.bukkit.Material.PAPER
 import org.bukkit.Material.PINK_WOOL
 import org.bukkit.Material.PRISMARINE
 import org.bukkit.Material.PRISMARINE_BRICKS
@@ -143,6 +150,38 @@ object Crafting : IonServerComponent() {
 			setIngredient('a', AIR)
 		}
 
+		// Iron Horse Armor
+		shapedRecipe("Iron_horse_armor", IRON_HORSE_ARMOR) {
+			shape("iai", "iii", "iai")
+
+			setIngredient('i', IRON_INGOT)
+			setIngredient('a', AIR)
+		}
+
+		// Golden Horse Armor
+		shapedRecipe("golden_horse_armor", GOLDEN_HORSE_ARMOR) {
+			shape("gag", "ggg", "gag")
+
+			setIngredient('g', GOLD_INGOT)
+			setIngredient('a', AIR)
+		}
+
+		// Diamond Horse Armor
+		shapedRecipe("diamond_horse_armor", DIAMOND_HORSE_ARMOR) {
+			shape("dad", "ddd", "dad")
+
+			setIngredient('d', DIAMOND)
+			setIngredient('a', AIR)
+		}
+
+		// Name Tag
+		shapedRecipe("name_tag", NAME_TAG) {
+			shape("spp")
+
+			setIngredient('s', STRING)
+			setIngredient('p', PAPER)
+		}
+
 		// Ochre Froglight
 		shapedRecipe("ochre_froglight", OCHRE_FROGLIGHT) {
 			shape("xhx", "hlh", "xhx")
@@ -168,6 +207,36 @@ object Crafting : IonServerComponent() {
 			setIngredient('a', AMETHYST_SHARD)
 			setIngredient('l', SHROOMLIGHT)
 			setIngredient('x', AIR)
+		}
+
+		// Music Disc - Pigstep
+		shapedRecipe("music_disc_pigstep", MUSIC_DISC_PIGSTEP) {
+			shape("nhn", "ngn", "nin")
+
+			setIngredient('n', NETHER_BRICK)
+			setIngredient('i', COPPER_INGOT)
+			setIngredient('h', HONEYCOMB)
+			setIngredient('g', GOLD_INGOT)
+		}
+
+		// Music Disc - Otherside
+		shapedRecipe("music_disc_otherside", MUSIC_DISC_OTHERSIDE) {
+			shape("chc", "cac", "cic")
+
+			setIngredient('c', COAL)
+			setIngredient('i', COPPER_INGOT)
+			setIngredient('h', HONEYCOMB)
+			setIngredient('a', AMETHYST)
+		}
+
+		// Music Disc - 5
+		shapedRecipe("music_disc_5", MUSIC_DISC_5) {
+			shape("chc", "cdc", "cic")
+
+			setIngredient('c', COAL)
+			setIngredient('i', COPPER_INGOT)
+			setIngredient('h', HONEYCOMB)
+			setIngredient('d', DIAMOND)
 		}
 
 		// Prismarine Crystals
