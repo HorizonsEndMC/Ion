@@ -9,14 +9,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToPitchYaw
-import net.horizonsend.ion.server.miscellaneous.utils.yawToBlockFace
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
-import kotlin.math.roundToInt
 
 object AIControlUtils {
 	/** Will stop moving if provided a null vector **/
@@ -150,7 +149,7 @@ object AIControlUtils {
 			controller.damager,
 			controller.starship,
 			leftClick,
-			yawToBlockFace(controller.yaw.roundToInt()),
+			vectorToBlockFace(direction),
 			direction,
 			target ?: StarshipWeaponry.getTarget(originLocation, direction, controller.starship),
 			weaponSet

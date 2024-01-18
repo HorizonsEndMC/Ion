@@ -10,12 +10,10 @@ import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.Steeri
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.CirclingPositionModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestTargetingModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.TargetingModule
-import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PIRATE_SATURATED_RED
-import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TSAII_DARK_ORANGE
-import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.raider
 import net.kyori.adventure.text.format.TextColor
 
-val ALIEN_STANDARD = TextColor.fromHexString("#A83283")!!
+val ALIEN_STANDARD = TextColor.fromHexString("#8E32A8")!!
+val ALIEN_ACCENT = TextColor.fromHexString("#9B42F5")!!
 
 @Suppress("unused")
 val alienSpawner = registerFactory("ALIEN_FRIGATE") {
@@ -76,14 +74,14 @@ private fun alienTemplateFormat(
 	)
 }
 
-val verdolithReinforcement = alienTemplateFormat(
-	identifier = "VERDOLITH",
-	schematicName = "Verdolith",
-	miniMessageName = "<#013220>Verdolith",
+val malingshu = alienTemplateFormat(
+	identifier = "MALINGSHU",
+	schematicName = "Malingshu",
+	miniMessageName = "<#FCBA03>Malingshu",
 	type = StarshipType.AI_FRIGATE,
 	controllerFactory = "ALIEN_FRIGATE",
 	xpMultiplier = 0.9,
-	creditReward = 9000.0,
+	creditReward = 8250.0,
 	manualWeaponSets = mutableSetOf(AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
 		name = "manual",
 		engagementRangeMin = 0.0,
@@ -93,7 +91,7 @@ val verdolithReinforcement = alienTemplateFormat(
 		name = "auto",
 		engagementRangeMin = 250.0,
 		engagementRangeMax = 550.0
-	)),
+	))
 )
 
 val mianbao = alienTemplateFormat(
@@ -113,17 +111,38 @@ val mianbao = alienTemplateFormat(
 		name = "auto",
 		engagementRangeMin = 250.0,
 		engagementRangeMax = 550.0
-	))
+	)),
+	reinforcementInformation = AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation(
+		activationThreshold = 0.95,
+		delay = 100L,
+		broadcastMessage = null,
+		configuration = AISpawningConfiguration.AISpawnerConfiguration(
+			miniMessageSpawnMessage = "<italic><$ALIEN_STANDARD>You cannot decipher the transmission from the incoming alien ship",
+			pointChance = 0.0,
+			pointThreshold = Int.MAX_VALUE,
+			minDistanceFromPlayer = 100.0,
+			maxDistanceFromPlayer = 150.0,
+			tiers = listOf(
+				AISpawningConfiguration.AISpawnerTier(
+					identifier = "REINFORCEMENTS",
+					nameList = mapOf(
+						"<$ALIEN_ACCENT><obfuscated>飞行员" to 5,
+					),
+					ships = mapOf(malingshu.identifier to 2)
+				)
+			)
+		)
+	)
 )
 
-val malingshu = alienTemplateFormat(
-	identifier = "MALINGSHU",
-	schematicName = "Malingshu",
-	miniMessageName = "<#FCBA03>Malingshu",
+val verdolithReinforcement = alienTemplateFormat(
+	identifier = "VERDOLITH",
+	schematicName = "Verdolith",
+	miniMessageName = "<#013220>Verdolith",
 	type = StarshipType.AI_FRIGATE,
 	controllerFactory = "ALIEN_FRIGATE",
 	xpMultiplier = 0.9,
-	creditReward = 8250.0,
+	creditReward = 9000.0,
 	manualWeaponSets = mutableSetOf(AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
 		name = "manual",
 		engagementRangeMin = 0.0,
@@ -133,7 +152,7 @@ val malingshu = alienTemplateFormat(
 		name = "auto",
 		engagementRangeMin = 250.0,
 		engagementRangeMax = 550.0
-	))
+	)),
 )
 
 val verdolithReinforced = alienTemplateFormat(
@@ -155,11 +174,11 @@ val verdolithReinforced = alienTemplateFormat(
 		engagementRangeMax = 550.0
 	)),
 	reinforcementInformation = AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation(
-		activationThreshold = 0.85,
+		activationThreshold = 0.65,
 		delay = 100L,
 		broadcastMessage = null,
 		configuration = AISpawningConfiguration.AISpawnerConfiguration(
-			miniMessageSpawnMessage = "<obfuscated><$PIRATE_SATURATED_RED>bBbBBBbbbBBb",
+			miniMessageSpawnMessage = "<italic><$ALIEN_STANDARD>You cannot decipher the transmission from the incoming alien ship",
 			pointChance = 0.0,
 			pointThreshold = Int.MAX_VALUE,
 			minDistanceFromPlayer = 100.0,
@@ -168,9 +187,9 @@ val verdolithReinforced = alienTemplateFormat(
 				AISpawningConfiguration.AISpawnerTier(
 					identifier = "REINFORCEMENTS",
 					nameList = mapOf(
-						"<$TSAII_DARK_ORANGE>Tsaii Raider" to 2
+						"<$ALIEN_ACCENT><obfuscated>飞行员" to 5
 					),
-					ships = mapOf(raider.identifier to 2)
+					ships = mapOf(verdolithReinforcement.identifier to 2)
 				)
 			)
 		)

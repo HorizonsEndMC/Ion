@@ -11,11 +11,9 @@ import java.util.function.Supplier
 
 open class SteeringPathfindingModule(
 	controller: AIController,
-	positioningSupplier: Supplier<Vec3i>
+	positioningSupplier: Supplier<Vec3i?>
 ) : PathfindingModule(controller, positioningSupplier) {
 	protected val avoidPositions: LinkedBlockingDeque<Vec3i> = LinkedBlockingDeque(50)
-
-	fun getTargetPosition(): Vector = positioningSupplier.get().toVector()
 
 	fun getAvoidVector(): Vector {
 		val center = getCenter().toVector()
@@ -31,14 +29,14 @@ open class SteeringPathfindingModule(
 	}
 
 	override fun getMovementVector(): Vector {
+		val destination = getDestination() ?: return Vector()
 		val center = getCenter().toVector()
-		val destination = getDestination()
 		val movementDirection = destination.toVector().subtract(center)
 
 		return movementDirection.subtract(getAvoidVector())
 	}
 
-	override fun getDestination(): Vec3i {
+	override fun getDestination(): Vec3i? {
 		return positioningSupplier.get()
 	}
 }

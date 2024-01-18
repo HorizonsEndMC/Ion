@@ -43,12 +43,12 @@ data class AISpawningConfiguration(
 
 	@Serializable
 	data class AISpawners(
-		val miningCorpSpawner: AISpawnerConfiguration = MiningCorpSpawner.defaultConfiguration,
-		val privateerSingle: AISpawnerConfiguration = PrivateerSpawner.defaultConfiguration,
-		val explorerSingle: AISpawnerConfiguration = ExplorerSingleSpawner.defaultConfiguration,
-		val pirateSingle: AISpawnerConfiguration = PirateSpawner.defaultConfiguration,
-		val tsaiiSingle: AISpawnerConfiguration = TsaiiSpawner.defaultConfiguration,
-		val alienSpawner: AISpawnerConfiguration = AlienSpawner.defaultConfiguration,
+		val miningCorp: AISpawnerConfiguration = MiningCorpSpawner.defaultConfiguration,
+		val privateer: AISpawnerConfiguration = PrivateerSpawner.defaultConfiguration,
+		val explorer: AISpawnerConfiguration = ExplorerSingleSpawner.defaultConfiguration,
+		val pirate: AISpawnerConfiguration = PirateSpawner.defaultConfiguration,
+		val tsaii: AISpawnerConfiguration = TsaiiSpawner.defaultConfiguration,
+		val alien: AISpawnerConfiguration = AlienSpawner.defaultConfiguration,
 	)
 
 	/**

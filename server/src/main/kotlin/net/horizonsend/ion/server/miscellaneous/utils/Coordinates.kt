@@ -364,13 +364,17 @@ fun vectorToBlockFace(vector: Vector, includeVertical: Boolean = false): BlockFa
 	return yawToBlockFace(yawDegrees)
 }
 
+/**
+ * Converts yaw to a block face.
+ * Note: Uses (0..360) values, if providing yaw in the minecraft format (-180..180), add 180 to the input value.
+ **/
 fun yawToBlockFace(yawDegrees: Int): BlockFace = when (yawDegrees) {
 	in 0..45 -> BlockFace.SOUTH
 	in 45..135 -> BlockFace.WEST
 	in 135..225 -> BlockFace.NORTH
 	in 225..315 -> BlockFace.EAST
 	in 315..360 -> BlockFace.SOUTH
-	else -> throw IllegalArgumentException()
+	else -> throw IllegalArgumentException("yaw $yawDegrees isn't within 0..360!")
 }
 
 fun vectorToPitchYaw(vector: Vector): Pair<Float, Float> {

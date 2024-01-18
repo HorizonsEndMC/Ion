@@ -11,7 +11,7 @@ import org.bukkit.Location
 
 class PirateSpawner : BasicSpawner(
 	"PIRATE_SINGLE",
-	IonServer.aiSpawningConfiguration.spawners::pirateSingle,
+	IonServer.aiSpawningConfiguration.spawners::pirate,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 
@@ -26,7 +26,7 @@ class PirateSpawner : BasicSpawner(
 		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
 			miniMessageSpawnMessage = "<${HEColorScheme.HE_MEDIUM_GRAY}>A pirate {0} has been identified in the area of {1}, {3}, in {4}. <$PIRATE_SATURATED_RED>Please avoid the sector until the threat has been cleared.",
 			pointChance = 0.5,
-			pointThreshold = 20 * 60 * 10,
+			pointThreshold = 10000,
 			minDistanceFromPlayer = 2000.0,
 			maxDistanceFromPlayer = 4000.0,
 			tiers = listOf(
@@ -39,6 +39,7 @@ class PirateSpawner : BasicSpawner(
 					ships = mapOf(
 						iskat.identifier to 3,
 						voss.identifier to 2,
+						hiro.identifier to 2,
 						hector.identifier to 2
 					)
 				),
@@ -79,7 +80,6 @@ class PirateSpawner : BasicSpawner(
 						"<$PIRATE_DARK_RED>Buccaneer Jack" to 2,
 					),
 					ships = mapOf(
-						hiro.identifier to 4,
 						wasp.identifier to 4,
 						frenz.identifier to 4,
 						tempest.identifier to 2,
@@ -94,12 +94,12 @@ class PirateSpawner : BasicSpawner(
 						"<italic><$PIRATE_DARK_RED>Warlord Greg" to 2
 					),
 					ships = mapOf(
-						frenz.identifier to 4,
-						tempest.identifier to 2,
-						velasco.identifier to 2,
-						anaan.identifier to 2,
 						vendetta.identifier to 2,
-						cormorant.identifier to 2
+						hernstein.identifier to 2,
+						mantis.identifier to 4,
+						cormorant.identifier to 2,
+						fyr.identifier to 2,
+						bloodStar.identifier to 2
 					)
 				),
 				AISpawningConfiguration.AISpawnerTier(
@@ -109,19 +109,19 @@ class PirateSpawner : BasicSpawner(
 						"<bold><$PIRATE_DARK_RED>Warlord Drake" to 2,
 					),
 					ships = mapOf(
-						anaan.identifier to 2,
 						vendetta.identifier to 2,
 						cormorant.identifier to 2,
 						mantis.identifier to 2,
 						hernstein.identifier to 2,
-						fyr.identifier to 2
+						fyr.identifier to 2,
+						bloodStar.identifier to 3
 					)
 				),
 			),
 			worldSettings = listOf(
 				AISpawningConfiguration.AIWorldSettings(
 					world = "Asteri",
-					rolls = 5,
+					rolls = 15,
 					tiers = mapOf(
 						"WEAKEST" to 2,
 						"WEAK" to 2,
@@ -129,7 +129,7 @@ class PirateSpawner : BasicSpawner(
 				),
 				AISpawningConfiguration.AIWorldSettings(
 					world = "Regulus",
-					rolls = 10,
+					rolls = 25,
 					tiers = mapOf(
 						"WEAK" to 10,
 						"NORMAL" to 10,
@@ -138,7 +138,7 @@ class PirateSpawner : BasicSpawner(
 				),
 				AISpawningConfiguration.AIWorldSettings(
 					world = "Sirius",
-					rolls = 5,
+					rolls = 15,
 					tiers = mapOf(
 						"WEAK" to 10,
 						"NORMAL" to 10
@@ -146,7 +146,7 @@ class PirateSpawner : BasicSpawner(
 				),
 				AISpawningConfiguration.AIWorldSettings(
 					world = "Ilios",
-					rolls = 10,
+					rolls = 25,
 					tiers = mapOf(
 						"WEAK" to 10,
 						"NORMAL" to 10,
@@ -155,7 +155,7 @@ class PirateSpawner : BasicSpawner(
 				),
 				AISpawningConfiguration.AIWorldSettings(
 					world = "Horizon",
-					rolls = 30,
+					rolls = 10,
 					tiers = mapOf(
 						"MODERATE" to 5,
 						"STRONG" to 10,
@@ -164,18 +164,16 @@ class PirateSpawner : BasicSpawner(
 				),
 				AISpawningConfiguration.AIWorldSettings(
 					world = "Trench",
-					rolls = 30,
+					rolls = 10,
 					tiers = mapOf(
-						"MODERATE" to 5,
 						"STRONG" to 10,
 						"EXTRA_STRONG" to 5,
 					)
 				),
 				AISpawningConfiguration.AIWorldSettings(
 					world = "AU-0821",
-					rolls = 30,
+					rolls = 10,
 					tiers = mapOf(
-						"MODERATE" to 5,
 						"STRONG" to 10,
 						"EXTRA_STRONG" to 10,
 					)

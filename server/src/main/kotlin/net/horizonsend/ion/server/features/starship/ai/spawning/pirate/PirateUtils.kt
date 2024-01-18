@@ -290,7 +290,7 @@ val bloodStar = basicPirateTemplate(
 	xpMultiplier = 0.8,
 	creditReward = 2650.0,
 	reinforcementThreshold = 0.85,
-	reinforcementShips = mapOf(cormorant.identifier to 2)
+	reinforcementShips = mapOf(cormorant.identifier to 2),
 )
 
 val pirateShips = arrayOf(

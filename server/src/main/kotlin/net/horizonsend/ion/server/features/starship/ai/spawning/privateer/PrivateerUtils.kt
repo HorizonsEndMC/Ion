@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.privateer
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -80,7 +81,7 @@ val privateerCorvette = registerFactory("PRIVATEER_CORVETTE") {
 	build()
 }
 
-private val PRIVATEER_SMACK_PREFIX: String = "<${PRIVATEER_LIGHTER_TEAL.asHexString()}>Receiving transmission from privateer vessel"
+private val PRIVATEER_SMACK_PREFIX: String = "<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from <$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> vessel"
 
 private fun basicPrivateerTemplate(
 	identifier: String,

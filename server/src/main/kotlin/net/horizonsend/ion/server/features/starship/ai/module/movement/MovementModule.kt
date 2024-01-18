@@ -28,7 +28,7 @@ abstract class MovementModule(
 
 	fun getDistance(origin: Vector, destination: Vector) = getVector(origin, destination, normalized = false).length()
 
-	open fun getDestination(): Vec3i {
+	open fun getDestination(): Vec3i? {
 		return directionSupplier.getDestination()
 	}
 
@@ -81,7 +81,7 @@ abstract class MovementModule(
 	/** Faces the target */
 	fun faceTarget(origin: Location) {
 		val destination = getDestination()
-		val direction = getVector(origin.toVector(), destination.toVector())
+		val direction = getVector(origin.toVector(), (getDestination() ?: return).toVector())
 
 		faceDirection(direction)
 	}
@@ -115,7 +115,7 @@ abstract class MovementModule(
 	}
 
 	fun cruiseToDestination(origin: Location) {
-		val direction = getVector(origin.toVector(), getDestination().toVector())
+		val direction = getVector(origin.toVector(), (getDestination() ?: return).toVector())
 
 		cruiseInDirection(direction)
 	}

@@ -11,7 +11,7 @@ import org.bukkit.Location
 
 class TsaiiSpawner : BasicSpawner(
 	"TSAII_ATTACK",
-	IonServer.aiSpawningConfiguration.spawners::tsaiiSingle,
+	IonServer.aiSpawningConfiguration.spawners::tsaii,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 
@@ -41,6 +41,7 @@ class TsaiiSpawner : BasicSpawner(
 						raider.identifier to 5,
 						scythe.identifier to 5,
 						swarmer.identifier to 5,
+						reaver.identifier to 5
 					)
 				)
 			),
@@ -48,17 +49,17 @@ class TsaiiSpawner : BasicSpawner(
 				AISpawningConfiguration.AIWorldSettings(
 					world = "Horizon",
 					rolls = 20,
-					tiers = mapOf("STANDARD" to 2,)
+					tiers = mapOf("STANDARD" to 2)
 				),
 				AISpawningConfiguration.AIWorldSettings(
 					world = "Trench",
 					rolls = 15,
-					tiers = mapOf("STANDARD" to 2,)
+					tiers = mapOf("STANDARD" to 2)
 				),
 				AISpawningConfiguration.AIWorldSettings(
 					world = "AU-0821",
 					rolls = 15,
-					tiers = mapOf("STANDARD" to 2,)
+					tiers = mapOf("STANDARD" to 2)
 				)
 			)
 		)
