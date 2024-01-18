@@ -1,20 +1,26 @@
 package net.horizonsend.ion.server.features.multiblock.misc
 
+import org.bukkit.Sound as SoundType
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.entity.TeleportFlag
+import net.horizonsend.ion.common.utils.text.colors.Colors
+import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyBlockUtils
-import net.horizonsend.ion.server.miscellaneous.utils.isGlass
-import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.isSlab
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.format.TextColor.color
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
@@ -45,6 +51,94 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		at(+0, +0, +1).anyGlass()
 	}
 
+	private fun tryDescend(
+		player: Player,
+		event: Cancellable?,
+	) {
+		val (x, originY, z) = Vec3i(player.location)
+		val world = player.world
+
+		val standingOn = getBlockIfLoaded(player.world, x, originY - 1, z) ?: return
+
+		if (!checkMultiblock(standingOn)) return
+
+		for (y in originY - 2 downTo player.world.minHeight) {
+			val block = getBlockIfLoaded(world, x, y, z) ?: return
+			val type = block.getTypeSafe() ?: return
+
+			if (type.isAir) continue
+			if (!type.isCollidable) continue
+
+			val newLocation = block.location.add(0.5, 1.5, 0.5)
+
+			finishTeleport(player, newLocation, event, SoundType.BLOCK_PISTON_CONTRACT, "Descending")
+			break
+		}
+	}
+
+	private fun tryAscend(player: Player, event: Cancellable?) {
+		val (x, originY, z) = Vec3i(player.location)
+		val world = player.world
+
+		for (y in originY + 1..player.world.maxHeight) {
+			val block = getBlockIfLoaded(world, x, y, z) ?: return player.debug("Block not loaded, cancelled")
+
+			if (block.getTypeSafe()?.isAir == true) {
+				continue
+			}
+
+			if (!checkMultiblock(block)) {
+				if (block.getTypeSafe()?.isAir == false) break // obstructed
+
+				continue
+			}
+
+			val newLocation = block.location.add(0.5, 1.5, 0.5)
+
+			finishTeleport(player, newLocation, event, SoundType.BLOCK_PISTON_EXTEND, "Ascending")
+			break
+		}
+	}
+
+	private fun finishTeleport(player: Player, location: Location, event: Cancellable?, soundType: SoundType, verb: String) {
+		location.pitch = player.location.pitch
+		location.yaw = player.location.yaw
+
+		@Suppress("UnstableApiUsage")
+		player.teleport(
+			location,
+			TeleportCause.PLUGIN,
+			TeleportFlag.Relative.PITCH,
+			TeleportFlag.Relative.YAW,
+		)
+
+		event?.isCancelled = true
+
+		val sound = Sound.sound(
+			soundType,
+			Sound.Source.BLOCK,
+			0.5f,
+			1.0f
+		)
+
+		player.playSound(sound)
+		player.sendActionBar(verb.toComponent(color(Colors.HINT)))
+	}
+
+	/** From the glass block, check if it is part of a valid tractor beam **/
+	private fun checkMultiblock(block: Block): Boolean {
+		for (face in LegacyBlockUtils.PIPE_DIRECTIONS) {
+			val slabEdge = block.getRelative(face, 1)
+
+			if (!slabEdge.type.isSlab) continue
+			if (!TractorBeamMultiblock.blockMatchesStructure(slabEdge, face.oppositeFace)) continue
+
+			return true
+		}
+
+		return false
+	}
+
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (event.item?.type != Material.CLOCK) return
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
@@ -53,81 +147,7 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		tryDescend(player, event)
 	}
 
-	private fun <T: Cancellable> tryDescend(player: Player, event: T) {
-		player.debug("trying to descend")
-
-		val below = player.location.block.getRelative(BlockFace.DOWN)
-
-		if (below.type != Material.GLASS && !below.type.isStainedGlass) return player.debug("cancelled 1")
-
-		var distance = 1
-		val maxDistance = below.y - 1
-
-		while (distance < maxDistance) {
-			val relative = below.getRelative(BlockFace.DOWN, distance)
-
-			if (relative.type != Material.AIR) {
-				break
-			}
-
-			distance++
-		}
-
-		if (distance < 3) return player.debug("cancelled 2")
-
-		val block = below.getRelative(BlockFace.DOWN, distance)
-
-		if (!checkMultiblock(below)) return player.debug("cancelled 3")
-
-		event.isCancelled = true
-
-		player.teleport(
-			block.location.add(0.5, 1.5, 0.5),
-			TeleportCause.PLUGIN,
-			*TeleportFlag.Relative.values()
-		)
-	}
-
-	private fun <T: Cancellable> tryAscend(player: Player, event: T) {
-		val blockStandingIn = player.location.block
-
-		for (i in player.world.minHeight..(player.world.maxHeight - blockStandingIn.y)) {
-			val block = blockStandingIn.getRelative(BlockFace.UP, i)
-			if (block.type == Material.AIR) continue
-
-			if (!block.type.isGlass) continue
-
-			if (!checkMultiblock(block)) continue
-
-//			event.isCancelled = true
-
-			player.teleport(
-				block.location.add(0.5, 1.5, 0.5),
-				TeleportCause.PLUGIN,
-				*TeleportFlag.Relative.values()
-			)
-		}
-	}
-
-	/** From the glass block, check if it is part of a valid tractor beam **/
-	private fun checkMultiblock(block: Block): Boolean {
-		for (face in LegacyBlockUtils.PIPE_DIRECTIONS) {
-			val sign = block.getRelative(face, 2)
-			if (!sign.type.isWallSign) {
-				continue
-			}
-
-			if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) {
-				continue
-			}
-
-			return true
-		}
-
-		return false
-	}
-
-	// Bring the player up if they right click while facing up with a clock
+	// Bring the player up if they right-click while facing up with a clock
 	// and there's a tractor beam above them
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onPlayerInteractEventC(event: PlayerInteractEvent) {
@@ -142,7 +162,7 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 	fun onPlayerJumpEvent(event: PlayerJumpEvent) {
 		if (event.player.inventory.itemInMainHand.type != Material.CLOCK) return
 
-		tryAscend(event.player, event)
+		tryAscend(event.player, null)
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
