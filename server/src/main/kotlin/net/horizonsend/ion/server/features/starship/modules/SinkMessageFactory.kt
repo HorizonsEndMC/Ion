@@ -46,12 +46,14 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 		val assistPrefix = if (assists.isNotEmpty()) ofChildren(text(", assisted by:", RED), newline()) else empty()
 
 		val message = ofChildren(sinkMessage, assistPrefix, assists.values.join(separator = newline()))
+		if (sunkShip.world.name.contains("plots", ignoreCase = true) || (arena))
+			{Bukkit.getServer().sendMessage(message)}
+		else Notify.chatAndGlobal(message)
 
-		if (arena) Bukkit.getServer().sendMessage(message) else Notify.chatAndGlobal(message)
 	}
 
 	private fun sendDiscordMessage(arena: Boolean, sinkMessage: Component, assists: Map<Damager, Component>) {
-		if (arena) return
+		if ((arena) || sunkShip.world.name.contains("plots", ignoreCase = true))  return
 
 		Tasks.async {
 			// Formatting the messages
