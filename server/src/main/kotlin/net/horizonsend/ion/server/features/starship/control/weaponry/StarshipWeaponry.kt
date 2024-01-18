@@ -86,45 +86,45 @@ object StarshipWeaponry : IonServerComponent() {
 	): LinkedList<StarshipWeapons.ManualQueuedShot> {
 		val queuedShots = LinkedList<StarshipWeapons.ManualQueuedShot>()
 
-		shooter.debugBanner("Queuing shots")
+		shooter.starship?.debugBanner("Queuing shots")
 
 		for (weapon: WeaponSubsystem in weapons) {
-			shooter.debug("Weapon: ${weapon.name}")
+			shooter.starship?.debug("Weapon: ${weapon.name}")
 
 			if (weapon !is ManualWeaponSubsystem) {
-				shooter.debug("Continue, weapon cannot be manually fired.")
+				shooter.starship?.debug("Continue, weapon cannot be manually fired.")
 				continue
 			}
 
 			if (!weapon.isAcceptableDirection(facing)) {
-				shooter.debug("Continue, weapon cannot fire in this direction.")
+				shooter.starship?.debug("Continue, weapon cannot fire in this direction.")
 				continue
 			}
 
 			if (weapon is HeavyWeaponSubsystem != !leftClick) {
-				shooter.debug("Continue, not correct click")
+				shooter.starship?.debug("Continue, not correct click")
 				continue
 			}
 
 			if (!weapon.isCooledDown()) {
-				shooter.debug("Continue, weapon not cooled down")
+				shooter.starship?.debug("Continue, weapon not cooled down")
 				continue
 			}
 
 			if (!weapon.isIntact()) {
-				shooter.debug("Continue, weapon not intact")
+				shooter.starship?.debug("Continue, weapon not intact")
 				continue
 			}
 
 			val targetedDir: Vector = weapon.getAdjustedDir(dir, target)
 
 			if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(targetedDir)) {
-				shooter.debug("Continue, turret not oriented properly")
+				shooter.starship?.debug("Continue, turret not oriented properly")
 				continue
 			}
 
 			if (!weapon.canFire(targetedDir, target)) {
-				shooter.debug("Continue, weapon cannot fire.")
+				shooter.starship?.debug("Continue, weapon cannot fire.")
 				continue
 			}
 

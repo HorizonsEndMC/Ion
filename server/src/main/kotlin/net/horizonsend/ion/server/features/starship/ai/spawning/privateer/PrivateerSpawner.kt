@@ -10,7 +10,7 @@ import org.bukkit.Location
 
 class PrivateerSpawner : BasicSpawner(
 	"PRIVATEER_SINGLE",
-	IonServer.aiSpawningConfiguration.spawners::privateerSingle,
+	IonServer.aiSpawningConfiguration.spawners::privateer,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 
@@ -24,7 +24,9 @@ class PrivateerSpawner : BasicSpawner(
 		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
 			miniMessageSpawnMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HEColorScheme.HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {3}, in {4}",
 			pointChance = 0.5,
-			pointThreshold = 20 * 60 * 7,
+			pointThreshold = 12000,
+			minDistanceFromPlayer = 1000.0,
+			maxDistanceFromPlayer = 2500.0,
 			tiers = listOf(
 				AISpawningConfiguration.AISpawnerTier(
 					identifier = "EASY",
@@ -33,7 +35,6 @@ class PrivateerSpawner : BasicSpawner(
 						"<${PRIVATEER_MEDIUM_TEAL}>System Defense <${PRIVATEER_LIGHT_TEAL}>Trainee" to 2,
 					),
 					ships = mapOf(
-						dagger.identifier to 2,
 						protector.identifier to 2,
 						furious.identifier to 2,
 						inflict.identifier to 2
@@ -60,10 +61,8 @@ class PrivateerSpawner : BasicSpawner(
 						"<${PRIVATEER_MEDIUM_TEAL}>System Defense <${PRIVATEER_LIGHT_TEAL}>Veteran" to 2,
 					),
 					ships = mapOf(
-						contractor.identifier to 2,
 						teneta.identifier to 2,
-						veteran.identifier to 2,
-//						patroller.identifier to 2
+						veteran.identifier to 2
 					)
 				),
 				AISpawningConfiguration.AISpawnerTier(
@@ -74,10 +73,8 @@ class PrivateerSpawner : BasicSpawner(
 						"<${PRIVATEER_MEDIUM_TEAL}>System Defense <${PRIVATEER_LIGHT_TEAL}>Pilot" to 2
 					),
 					ships = mapOf(
-						contractor.identifier to 4,
-//						daybreak.identifier to 2,
-						veteran.identifier to 4,
-//						patroller.identifier to 2
+						daybreak.identifier to 2,
+						dagger.identifier to 2
 					)
 				),
 				AISpawningConfiguration.AISpawnerTier(
@@ -87,9 +84,9 @@ class PrivateerSpawner : BasicSpawner(
 						"<${PRIVATEER_MEDIUM_TEAL}>Privateer <${PRIVATEER_LIGHT_TEAL}>Veteran" to 2
 					),
 					ships = mapOf(
-						bulwark.identifier to 4,
-//						daybreak.identifier to 2,
-						contractor.identifier to 1,
+						bulwark.identifier to 5,
+						contractor.identifier to 3,
+						dagger.identifier to 1
 					)
 				)
 			),

@@ -180,6 +180,8 @@ fun findSpawnLocationNearPlayer(
 
 		if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) continue
 
+		loc.y = 192.0
+
 		return loc
 	}
 

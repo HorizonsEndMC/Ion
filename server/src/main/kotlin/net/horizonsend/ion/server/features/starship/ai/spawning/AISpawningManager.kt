@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIStarsh
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.ai.spawning.alien.AlienSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSpawner
@@ -72,6 +73,7 @@ object AISpawningManager : IonServerComponent(true) {
 		spawners += MiningCorpSpawner()
 		spawners += PirateSpawner()
 		spawners += TsaiiSpawner()
+		spawners += AlienSpawner()
 	}
 
 	/** Ticks all the spawners, increasing points and maybe triggering an execution */

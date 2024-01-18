@@ -53,7 +53,7 @@ val miningCorpStarfighter = AIControllerFactories.registerFactory("MINING_CORP_S
 		builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
 		builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-		val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 25.0))
+		val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 45.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
 		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 
@@ -63,7 +63,7 @@ val miningCorpStarfighter = AIControllerFactories.registerFactory("MINING_CORP_S
 	build()
 }
 
-private val MINING_CORP_SMACK_PREFIX: String = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Receiving transmission from $miningGuildMini vessel"
+private val MINING_CORP_SMACK_PREFIX: String = "<$HE_MEDIUM_GRAY>Receiving transmission from $miningGuildMini <$HE_MEDIUM_GRAY>vessel"
 
 private fun basicMiningCorpTemplate(
 	identifier: String,

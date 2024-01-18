@@ -16,7 +16,7 @@ import org.bukkit.Location
 
 class ExplorerSingleSpawner : BasicSpawner(
 	"EXPLORER_SINGLE",
-	IonServer.aiSpawningConfiguration.spawners::explorerSingle,
+	IonServer.aiSpawningConfiguration.spawners::explorer,
 ) {
 	override fun findSpawnLocation(): Location? {
 		// Get a random world based on the weight in the config

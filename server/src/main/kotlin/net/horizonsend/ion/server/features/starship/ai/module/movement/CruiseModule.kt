@@ -52,12 +52,14 @@ class CruiseModule(
 		}
 
 		starship.debug("More than sqrt($maximumCruiseDistanceSquared) blocks away, cruising")
-		cruiseToVec3i(starshipLocation, getDestination())
+
+		val destination = getDestination() ?: return
+		cruiseToVec3i(starshipLocation, destination)
 	}
 
 	/** Returns true if the destination is sufficiently far that it should cruise */
 	private fun assessDistance(): Boolean {
-		val destination = getDestination()
+		val destination = getDestination() ?: return false
 
 		val distance = distanceSquared(destination.toVector(), getCenter().toVector())
 
@@ -85,7 +87,7 @@ class CruiseModule(
 		NONE,
 		MATCH_Y {
 			override fun handleShiftFlight(module: CruiseModule, origin: Location) {
-				val destination = module.getDestination()
+				val destination = module.getDestination() ?: return
 
 				val difference = origin.y - destination.y
 				if (abs(difference) < 5) {
