@@ -1,10 +1,10 @@
 package net.horizonsend.ion.proxy
 
 import co.aikar.commands.BungeeCommandManager
-import net.horizonsend.ion.common.CommonConfig
+import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.extensions.prefixProvider
-import net.horizonsend.ion.common.utils.Configuration
+import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.proxy.commands.bungee.BungeeInfoCommand
 import net.horizonsend.ion.proxy.commands.bungee.MessageCommand

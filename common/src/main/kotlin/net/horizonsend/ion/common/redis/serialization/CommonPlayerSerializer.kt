@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.utils.redis.serialization
+package net.horizonsend.ion.common.redis.serialization
 
 import com.google.gson.InstanceCreator
 import com.google.gson.JsonDeserializationContext
@@ -10,7 +10,7 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import net.horizonsend.ion.common.extensions.CommonPlayer
-import net.horizonsend.ion.common.utils.redis.types.CommonPlayerData
+import net.horizonsend.ion.common.redis.types.CommonPlayerData
 import java.lang.reflect.Type
 import java.util.UUID
 

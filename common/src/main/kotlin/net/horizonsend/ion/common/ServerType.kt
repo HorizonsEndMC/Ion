@@ -1,6 +1,6 @@
-package net.horizonsend.ion.common.utils
+package net.horizonsend.ion.common
 
-enum class Server(val displayName: String) {
+enum class ServerType(val displayName: String) {
 	SURVIVAL("Survival"),
 	CREATIVE("Creative"),
 	PROXY("Proxy"),

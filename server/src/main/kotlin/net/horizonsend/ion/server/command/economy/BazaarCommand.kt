@@ -14,6 +14,7 @@ import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.bracketed
@@ -257,6 +258,9 @@ object BazaarCommand : SLCommand() {
 	@Description("List all of the items you're selling")
 	fun onList(sender: Player, @Optional page: Int?) = asyncCommand(sender) {
 		val items = BazaarItem.find(BazaarItem::seller eq sender.slPlayerId).toList()
+
+		if (items.isEmpty()) return@asyncCommand sender.userError("You do not have any items listed on the bazaar.")
+
 		val builder = text()
 
 		builder.append(text("Your Items (${items.size})"), newline())

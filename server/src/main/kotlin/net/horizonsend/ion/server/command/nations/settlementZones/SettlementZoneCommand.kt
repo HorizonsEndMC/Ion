@@ -14,7 +14,7 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.common.redis
+import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.i
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.chat
 
-import net.horizonsend.ion.common.redis
+import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.Mutes.muteCache
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template

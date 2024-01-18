@@ -18,10 +18,10 @@ object DiscordInfoCommand : IonDiscordCommand() {
 				description = """
 					[Survival Web Map](https://survival.horizonsend.net)
 					[Creative Web Map](https://creative.horizonsend.net)
-					[Discord Server](https://discord.gg/RPvgQsGzKM)
+					[Discord ServerType](https://discord.gg/RPvgQsGzKM)
 					[Resource Pack](https://github.com/HorizonsEndMC/ResourcePack/releases/latest)
 					[Wiki](https://wiki.horizonsend.net)
-					[Server Rules](https://wiki.horizonsend.net/rules)
+					[ServerType Rules](https://wiki.horizonsend.net/rules)
 				""".trimIndent()
 			)
 		).queue()

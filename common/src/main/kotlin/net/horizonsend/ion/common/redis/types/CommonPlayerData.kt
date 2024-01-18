@@ -1,7 +1,7 @@
-package net.horizonsend.ion.common.utils.redis.types
+package net.horizonsend.ion.common.redis.types
 
 import net.horizonsend.ion.common.extensions.CommonPlayer
-import net.horizonsend.ion.common.utils.Server
+import net.horizonsend.ion.common.ServerType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.luckperms.api.model.user.User
@@ -18,6 +18,6 @@ data class CommonPlayerData(
 }
 
 data class CommonPlayerDataContainer(
-	val server: Server,
+	val server: ServerType,
 	val players: List<CommonPlayer>
 )

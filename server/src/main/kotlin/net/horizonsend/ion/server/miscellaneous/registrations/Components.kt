@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
-import net.horizonsend.ion.common.utils.redis.RedisActions
+import net.horizonsend.ion.common.redis.RedisActions
 import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.chat.ChannelSelections

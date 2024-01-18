@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.utils
+package net.horizonsend.ion.common.utils.configuration
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
