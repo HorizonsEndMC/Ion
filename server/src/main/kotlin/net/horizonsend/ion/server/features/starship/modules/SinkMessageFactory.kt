@@ -26,6 +26,7 @@ import org.bukkit.Bukkit
 class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory {
 	override fun execute() {
 		val arena = sunkShip.world.name.contains("arena", ignoreCase = true) // TODO manager later
+		val plots = sunkShip.world.name.contains("plots", ignoreCase = true) // TODO manager later
 		val data = sunkShip.damagers
 
 		// First person got the final blow
@@ -52,6 +53,7 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 
 	private fun sendDiscordMessage(arena: Boolean, sinkMessage: Component, assists: Map<Damager, Component>) {
 		if (arena) return
+		if (plots) return
 
 		Tasks.async {
 			// Formatting the messages
