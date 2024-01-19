@@ -75,7 +75,7 @@ private fun alienTemplateFormat(
 }
 
 val mianbaoUnreinforced = alienTemplateFormat(
-	identifier = "MIANBAO",
+	identifier = "MIANBAO_UNREINFORCED",
 	schematicName = "Mianbao",
 	miniMessageName = "<#FCBA03>Mianbao",
 	type = StarshipType.AI_CORVETTE,
@@ -96,7 +96,7 @@ val mianbaoUnreinforced = alienTemplateFormat(
 )
 
 val malingshuUnreinforced = alienTemplateFormat(
-	identifier = "MALINGSHU",
+	identifier = "MALINGSHU_UNREINFORCED",
 	schematicName = "Malingshu",
 	miniMessageName = "<#FCBA03>Malingshu",
 	type = StarshipType.AI_FRIGATE,
@@ -124,7 +124,7 @@ val malingshuUnreinforced = alienTemplateFormat(
 )
 
 val malingshuReinforced = alienTemplateFormat(
-	identifier = "MALINGSHU",
+	identifier = "MALINGSHU_REINFORCED",
 	schematicName = "Malingshu",
 	miniMessageName = "<#FCBA03>Malingshu",
 	type = StarshipType.AI_FRIGATE,
@@ -172,7 +172,7 @@ val malingshuReinforced = alienTemplateFormat(
 )
 
 val mianbaoReinforced = alienTemplateFormat(
-	identifier = "MIANBAO",
+	identifier = "MIANBAO_REINFORCED",
 	schematicName = "Mianbao",
 	miniMessageName = "<#FCBA03>Mianbao",
 	type = StarshipType.AI_CORVETTE,
@@ -213,7 +213,7 @@ val mianbaoReinforced = alienTemplateFormat(
 )
 
 val verdolithReinforcement = alienTemplateFormat(
-	identifier = "VERDOLITH",
+	identifier = "VERDOLITH_UNREINFROCED",
 	schematicName = "Verdolith",
 	miniMessageName = "<#013220>Verdolith",
 	type = StarshipType.AI_FRIGATE,
@@ -291,5 +291,7 @@ val alienTemplates = arrayOf(
 	verdolithReinforcement,
 	verdolithReinforced,
 	mianbaoReinforced,
-	malingshuReinforced
+	mianbaoUnreinforced,
+	malingshuReinforced,
+	malingshuUnreinforced
 )
