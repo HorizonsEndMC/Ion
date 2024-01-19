@@ -16,7 +16,7 @@ val ALIEN_STANDARD = TextColor.fromHexString("#8E32A8")!!
 val ALIEN_ACCENT = TextColor.fromHexString("#9B42F5")!!
 
 @Suppress("unused")
-val alienSpawner = registerFactory("ALIEN_FRIGATE") {
+val alienFrig = registerFactory("ALIEN_FRIGATE") {
 	setControllerTypeName("alien_frigate")
 
 	setModuleBuilder {
@@ -43,7 +43,7 @@ private fun alienTemplateFormat(
 	controllerFactory: String,
 	creditReward: Double,
 	xpMultiplier: Double,
-	engagementRadius: Double = 550.0,
+	engagementRadius: Double = 2500.0,
 	manualWeaponSets: MutableSet<AISpawningConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf(),
 	autoWeaponSets: MutableSet<AISpawningConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf(),
 	reinforcementInformation: AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation? = null
@@ -87,11 +87,18 @@ val malingshu = alienTemplateFormat(
 		engagementRangeMin = 0.0,
 		engagementRangeMax = 550.0
 	)),
-	autoWeaponSets = mutableSetOf(AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
-		name = "auto",
-		engagementRangeMin = 250.0,
-		engagementRangeMax = 550.0
-	))
+	autoWeaponSets = mutableSetOf(
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+			name = "auto",
+			engagementRangeMin = 0.0,
+			engagementRangeMax = 250.0
+		),
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+			name = "tt",
+			engagementRangeMin = 250.0,
+			engagementRangeMax = 550.0
+		)
+	)
 )
 
 val mianbao = alienTemplateFormat(
@@ -143,11 +150,18 @@ val verdolithReinforcement = alienTemplateFormat(
 	controllerFactory = "ALIEN_FRIGATE",
 	xpMultiplier = 0.9,
 	creditReward = 9000.0,
-	manualWeaponSets = mutableSetOf(AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
-		name = "manual",
-		engagementRangeMin = 0.0,
-		engagementRangeMax = 550.0
-	)),
+	manualWeaponSets = mutableSetOf(
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+			name = "phaser",
+			engagementRangeMin = 0.0,
+			engagementRangeMax = 220.0
+		),
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+			name = "manual",
+			engagementRangeMin = 220.0,
+			engagementRangeMax = 550.0
+		),
+	),
 	autoWeaponSets = mutableSetOf(AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
 		name = "auto",
 		engagementRangeMin = 250.0,
@@ -163,11 +177,18 @@ val verdolithReinforced = alienTemplateFormat(
 	controllerFactory = "ALIEN_FRIGATE",
 	xpMultiplier = 0.9,
 	creditReward = 9000.0,
-	manualWeaponSets = mutableSetOf(AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
-		name = "manual",
-		engagementRangeMin = 0.0,
-		engagementRangeMax = 550.0
-	)),
+	manualWeaponSets = mutableSetOf(
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+			name = "phaser",
+			engagementRangeMin = 0.0,
+			engagementRangeMax = 220.0
+		),
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+			name = "manual",
+			engagementRangeMin = 220.0,
+			engagementRangeMax = 550.0
+		),
+	),
 	autoWeaponSets = mutableSetOf(AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
 		name = "auto",
 		engagementRangeMin = 250.0,

@@ -77,7 +77,7 @@ private fun tsaiiTemplate(
 	controllerFactory: String,
 	creditReward: Double,
 	xpMultiplier: Double,
-	engagementRadius: Double = 750.0,
+	engagementRadius: Double = 1000.0,
 	manualWeaponSets: MutableSet<AISpawningConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf(),
 	autoWeaponSets: MutableSet<AISpawningConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf(),
 	reinforcementInformation: AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation? = null
