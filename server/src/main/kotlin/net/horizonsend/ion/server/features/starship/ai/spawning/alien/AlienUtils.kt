@@ -265,7 +265,7 @@ val verdolithReinforced = alienTemplateFormat(
 		engagementRangeMax = 550.0
 	)),
 	reinforcementInformation = AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation(
-		activationThreshold = 0.65,
+		activationThreshold = 0.80,
 		delay = 100L,
 		broadcastMessage = null,
 		configuration = AISpawningConfiguration.AISpawnerConfiguration(

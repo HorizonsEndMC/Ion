@@ -18,16 +18,16 @@ class StandoffPositioningModule(
 
 	private val standoffRange get() = standoffDistance + standoffBonus + targetStandoffBonus
 
-	override fun findPosition(): Vec3i {
-		val target = targetSupplier.get() ?: return getCenter()
+	override fun findPosition(): Vec3i? {
+		val target = targetSupplier.get() ?: return null
 
 		val vector = targetToShipVector(target)
 
 		return Vec3i(target.getLocation().add(vector.multiply(standoffRange)))
 	}
 
-	override fun getDestination(): Vec3i {
-		return targetSupplier.get()?.getVec3i() ?: return Vec3i(getCenter())
+	override fun getDestination(): Vec3i? {
+		return targetSupplier.get()?.getVec3i()
 	}
 
 	/** Get a normalized vector from the target to the ship */

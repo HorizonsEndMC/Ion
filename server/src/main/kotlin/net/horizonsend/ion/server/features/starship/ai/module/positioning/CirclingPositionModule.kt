@@ -21,7 +21,7 @@ class CirclingPositionModule(
 	private val ticksPerCruise = StarshipCruising.SECONDS_PER_CRUISE * 20.0
 	private var internalDestination: Vec3i? = targetSupplier.get()?.getVec3i()
 
-	override fun findPosition(): Vec3i = internalDestination ?: getCenter()
+	override fun findPosition(): Vec3i? = internalDestination
 
 	var ticks = 0
 
@@ -63,5 +63,5 @@ class CirclingPositionModule(
 		return blocksPerTick/ circumference
 	}
 
-	override fun getDestination(): Vec3i = internalDestination ?: getCenterVec3i()
+	override fun getDestination(): Vec3i? = internalDestination
 }
