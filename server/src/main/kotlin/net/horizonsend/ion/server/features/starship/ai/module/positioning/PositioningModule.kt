@@ -5,6 +5,6 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 
 abstract class PositioningModule(controller: AIController) : AIModule(controller) {
-	abstract fun findPosition(): Vec3i
-	abstract fun getDestination(): Vec3i
+	abstract fun findPosition(): Vec3i?
+	abstract fun getDestination(): Vec3i?
 }
