@@ -5,6 +5,8 @@ import dev.vankka.mcdiscordreserializer.discord.DiscordSerializerOptions
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Activity.playing
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -23,6 +25,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.KeybindComponent
 import net.kyori.adventure.text.TranslatableComponent
 import java.time.Instant
+import java.util.concurrent.TimeUnit
 
 object Discord : IonProxyComponent() {
 	private val serializer = DiscordSerializer(DiscordSerializerOptions(
@@ -58,6 +61,8 @@ object Discord : IonProxyComponent() {
 			commandManager?.build()
 
 			enabled = true
+
+			PLUGIN.proxy.scheduler.repeat(5, 5, TimeUnit.SECONDS, ::updateBotPresence)
 		} catch (e: Throwable) {
 			log.error("Failed to start JDA! $e")
 		}
@@ -88,6 +93,15 @@ object Discord : IonProxyComponent() {
 		val textChannel = getChannel(channel) ?: return
 
 		textChannel.sendMessage(message).queue()
+	}
+
+	private fun updateBotPresence() {
+		if (!enabled) return
+
+		JDA?.presence?.setPresence(
+			OnlineStatus.ONLINE,
+			playing("with ${PLUGIN.proxy.onlineCount} players!")
+		)
 	}
 }
 
