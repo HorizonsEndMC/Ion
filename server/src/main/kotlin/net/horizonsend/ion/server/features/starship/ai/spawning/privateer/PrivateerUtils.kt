@@ -136,6 +136,7 @@ val bulwark = basicPrivateerTemplate(
 	controllerFactory = "PRIVATEER_CORVETTE",
 	xpMultiplier = 0.8,
 	creditReward = 5750.0,
+	engagementRadius = 1250.0,
 	manualWeaponSets = mutableSetOf(
 		WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 	),
@@ -152,6 +153,7 @@ val contractor = basicPrivateerTemplate(
 	controllerFactory = "PRIVATEER_GUNSHIP",
 	xpMultiplier = 0.8,
 	creditReward = 3750.0,
+	engagementRadius = 1250.0,
 	manualWeaponSets = mutableSetOf(
 		WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 	),
@@ -168,6 +170,7 @@ val dagger = basicPrivateerTemplate(
 	controllerFactory = "PRIVATEER_STARFIGHTER",
 	xpMultiplier = 0.8,
 	creditReward = 2650.0,
+	engagementRadius = 1250.0
 )
 
 val daybreak = basicPrivateerTemplate(

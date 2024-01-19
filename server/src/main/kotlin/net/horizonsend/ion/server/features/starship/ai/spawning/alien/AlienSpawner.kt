@@ -37,7 +37,7 @@ class AlienSpawner : BasicSpawner(
 						"<$ALIEN_ACCENT><obfuscated>飞行员" to 5,
 					),
 					ships = mapOf(
-//						verdolithReinforced.identifier to 2,
+						verdolithReinforced.identifier to 2,
 						mianbao.identifier to 2,
 						malingshu.identifier to 2
 					)
