@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
@@ -143,7 +144,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 				is Animals -> if (starship.isWithinHitbox(entity)) passengers.add(entity)
 
-				is Item -> if (starship.isWithinHitbox(entity)) passengers.add(entity)
+				is Item -> if (starship.isWithinHitbox(entity) && !entity.itemStack.type.isShulkerBox) passengers.add(entity)
 			}
 		}
 
