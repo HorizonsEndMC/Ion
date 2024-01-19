@@ -69,66 +69,38 @@ private fun basicPirateTemplate(
 	engagementRadius: Double = 750.0,
 	manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 	autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
-	reinforcementThreshold: Double = 0.85,
-	reinforcementShips: Map<String, Int> = mapOf()
-): AISpawningConfiguration.AIStarshipTemplate {
-	val reinforcementConfig = AISpawningConfiguration.AISpawnerConfiguration(
-		miniMessageSpawnMessage = "<bold><$PIRATE_SATURATED_RED>How dare you attack the boss’ on his day off. Hand over your ship!",
-		pointChance = 0.0,
-		pointThreshold = Int.MAX_VALUE,
-		minDistanceFromPlayer = 100.0,
-		maxDistanceFromPlayer = 150.0,
-		tiers = listOf(
-			AISpawningConfiguration.AISpawnerTier(
-				identifier = "REINFORCEMENTS",
-				nameList = mapOf(
-					"<$PIRATE_DARK_RED>Rapscallion" to 2,
-					"<$PIRATE_DARK_RED>Swashbuckler" to 2,
-					"<$PIRATE_DARK_RED>Corsair Kragan" to 2,
-					"<$PIRATE_DARK_RED>Corsair Kavarr" to 2
-				),
-				ships = reinforcementShips
-			)
+	reinforcementInformation: AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation? = null
+): AISpawningConfiguration.AIStarshipTemplate = AISpawningConfiguration.AIStarshipTemplate(
+	color = PIRATE_SATURATED_RED.value(),
+	smackInformation = AISpawningConfiguration.AIStarshipTemplate.SmackInformation(
+		prefix = PIRATE_SMACK_PREFIX,
+		messages = listOf(
+			"Nice day, Nice Ship. I think ill take it!",
+			"I'll plunder your booty!",
+			"Scram or we'll blow you to pieces!",
+			"Someones too curious for their own good.",
+			"Don't say I didn't warn ya, mate."
 		)
-	)
-
-	return AISpawningConfiguration.AIStarshipTemplate(
-		color = PIRATE_SATURATED_RED.value(),
-		smackInformation = AISpawningConfiguration.AIStarshipTemplate.SmackInformation(
-			prefix = PIRATE_SMACK_PREFIX,
-			messages = listOf(
-				"Nice day, Nice Ship. I think ill take it!",
-				"I'll plunder your booty!",
-				"Scram or we'll blow you to pieces!",
-				"Someones too curious for their own good.",
-				"Don't say I didn't warn ya, mate."
-			)
-		),
-		radiusMessageInformation = AISpawningConfiguration.AIStarshipTemplate.RadiusMessageInformation(
-			prefix = PIRATE_SMACK_PREFIX,
-			messages = mapOf(
-				engagementRadius * 1.5 to "<#FFA500>You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.",
-				engagementRadius to "<RED>You have violated restricted airspace. Your vessel will be fired upon."
-			)
-		),
-		reinforcementInformation = AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation(
-			activationThreshold = reinforcementThreshold,
-			delay = 100L,
-			broadcastMessage = "<italic><red>Did you really think we would risk this ship without an escort fleet? We'll enjoy looting your corpse!",
-			configuration = reinforcementConfig
-		),
-		engagementRange = engagementRadius,
-		identifier = identifier,
-		schematicName = schematicName,
-		miniMessageName = miniMessageName,
-		type = type,
-		controllerFactory = controllerFactory,
-		xpMultiplier = xpMultiplier,
-		creditReward = creditReward,
-		manualWeaponSets = manualWeaponSets,
-		autoWeaponSets = autoWeaponSets
-	)
-}
+	),
+	radiusMessageInformation = AISpawningConfiguration.AIStarshipTemplate.RadiusMessageInformation(
+		prefix = PIRATE_SMACK_PREFIX,
+		messages = mapOf(
+			engagementRadius * 1.5 to "<#FFA500>You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.",
+			engagementRadius to "<RED>You have violated restricted airspace. Your vessel will be fired upon."
+		)
+	),
+	reinforcementInformation = reinforcementInformation,
+	engagementRange = engagementRadius,
+	identifier = identifier,
+	schematicName = schematicName,
+	miniMessageName = miniMessageName,
+	type = type,
+	controllerFactory = controllerFactory,
+	xpMultiplier = xpMultiplier,
+	creditReward = creditReward,
+	manualWeaponSets = manualWeaponSets,
+	autoWeaponSets = autoWeaponSets
+)
 
 val iskat = basicPirateTemplate(
 	identifier = "ISKAT",
@@ -289,8 +261,30 @@ val bloodStar = basicPirateTemplate(
 	controllerFactory = "PRIVATEER_CORVETTE",
 	xpMultiplier = 0.8,
 	creditReward = 2650.0,
-	reinforcementThreshold = 0.85,
-	reinforcementShips = mapOf(cormorant.identifier to 2),
+	reinforcementInformation = AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation(
+		activationThreshold = 0.85,
+		delay = 100L,
+		broadcastMessage = "<italic><red>Did you really think we would risk this ship without an escort fleet? We'll enjoy looting your corpse!",
+		configuration = AISpawningConfiguration.AISpawnerConfiguration(
+			miniMessageSpawnMessage = "<$PIRATE_DARK_RED>We hear ya! {0} comin' to save your booty!.",
+			pointChance = 0.0,
+			pointThreshold = Int.MAX_VALUE,
+			minDistanceFromPlayer = 100.0,
+			maxDistanceFromPlayer = 150.0,
+			tiers = listOf(
+				AISpawningConfiguration.AISpawnerTier(
+					identifier = "REINFORCEMENTS",
+					nameList = mapOf(
+						"<$PIRATE_DARK_RED>Rapscallion" to 2,
+						"<$PIRATE_DARK_RED>Swashbuckler" to 2,
+						"<$PIRATE_DARK_RED>Corsair Kragan" to 2,
+						"<$PIRATE_DARK_RED>Corsair Kavarr" to 2
+					),
+					ships = mapOf(cormorant.identifier to 2)
+				)
+			)
+		)
+	)
 )
 
 val pirateShips = arrayOf(
