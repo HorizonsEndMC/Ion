@@ -74,7 +74,28 @@ private fun alienTemplateFormat(
 	)
 }
 
-val malingshu = alienTemplateFormat(
+val mianbaoUnreinforced = alienTemplateFormat(
+	identifier = "MIANBAO",
+	schematicName = "Mianbao",
+	miniMessageName = "<#FCBA03>Mianbao",
+	type = StarshipType.AI_CORVETTE,
+	controllerFactory = "ALIEN_FRIGATE",
+	xpMultiplier = 0.9,
+	creditReward = 6750.0,
+	manualWeaponSets = mutableSetOf(AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+		name = "manual",
+		engagementRangeMin = 0.0,
+		engagementRangeMax = 550.0
+	)),
+	autoWeaponSets = mutableSetOf(AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+		name = "auto",
+		engagementRangeMin = 250.0,
+		engagementRangeMax = 550.0
+	)),
+	reinforcementInformation = null
+)
+
+val malingshuUnreinforced = alienTemplateFormat(
 	identifier = "MALINGSHU",
 	schematicName = "Malingshu",
 	miniMessageName = "<#FCBA03>Malingshu",
@@ -98,10 +119,59 @@ val malingshu = alienTemplateFormat(
 			engagementRangeMin = 250.0,
 			engagementRangeMax = 550.0
 		)
+	),
+	reinforcementInformation = null
+)
+
+val malingshuReinforced = alienTemplateFormat(
+	identifier = "MALINGSHU",
+	schematicName = "Malingshu",
+	miniMessageName = "<#FCBA03>Malingshu",
+	type = StarshipType.AI_FRIGATE,
+	controllerFactory = "ALIEN_FRIGATE",
+	xpMultiplier = 0.9,
+	creditReward = 8250.0,
+	manualWeaponSets = mutableSetOf(AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+		name = "manual",
+		engagementRangeMin = 0.0,
+		engagementRangeMax = 550.0
+	)),
+	autoWeaponSets = mutableSetOf(
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+			name = "auto",
+			engagementRangeMin = 0.0,
+			engagementRangeMax = 250.0
+		),
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(
+			name = "tt",
+			engagementRangeMin = 250.0,
+			engagementRangeMax = 550.0
+		)
+	),
+	reinforcementInformation = AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation(
+		activationThreshold = 0.95,
+		delay = 100L,
+		broadcastMessage = null,
+		configuration = AISpawningConfiguration.AISpawnerConfiguration(
+			miniMessageSpawnMessage = "<italic><$ALIEN_STANDARD>You cannot decipher the transmission from the incoming alien ship",
+			pointChance = 0.0,
+			pointThreshold = Int.MAX_VALUE,
+			minDistanceFromPlayer = 100.0,
+			maxDistanceFromPlayer = 150.0,
+			tiers = listOf(
+				AISpawningConfiguration.AISpawnerTier(
+					identifier = "REINFORCEMENTS",
+					nameList = mapOf(
+						"<$ALIEN_ACCENT><obfuscated>飞行员" to 5,
+					),
+					ships = mapOf(mianbaoUnreinforced.identifier to 2)
+				)
+			)
+		)
 	)
 )
 
-val mianbao = alienTemplateFormat(
+val mianbaoReinforced = alienTemplateFormat(
 	identifier = "MIANBAO",
 	schematicName = "Mianbao",
 	miniMessageName = "<#FCBA03>Mianbao",
@@ -135,7 +205,7 @@ val mianbao = alienTemplateFormat(
 					nameList = mapOf(
 						"<$ALIEN_ACCENT><obfuscated>飞行员" to 5,
 					),
-					ships = mapOf(malingshu.identifier to 2)
+					ships = mapOf(malingshuUnreinforced.identifier to 2)
 				)
 			)
 		)
@@ -220,6 +290,6 @@ val verdolithReinforced = alienTemplateFormat(
 val alienTemplates = arrayOf(
 	verdolithReinforcement,
 	verdolithReinforced,
-	mianbao,
-	malingshu
+	mianbaoReinforced,
+	malingshuReinforced
 )
