@@ -38,8 +38,8 @@ class AlienSpawner : BasicSpawner(
 					),
 					ships = mapOf(
 						verdolithReinforced.identifier to 2,
-						mianbao.identifier to 2,
-						malingshu.identifier to 2
+						mianbaoReinforced.identifier to 2,
+						malingshuReinforced.identifier to 2
 					)
 				)
 			),
