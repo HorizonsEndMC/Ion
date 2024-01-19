@@ -18,10 +18,11 @@ class AIRewardsProvider(starship: ActiveStarship, val template: AISpawningConfig
 
 		val percent = points.get() / pointsSum
 		val xp = ((sqrt(killedSize.pow(2.0) / sqrt(killedSize * 0.00005))) * percent * template.xpMultiplier).toInt()
+		val money = template.creditReward * percent
 
-		if (xp > 0) {
+		if (xp > 0 || money > 0.0) {
 			damager.rewardXP(xp)
-			damager.rewardMoney(template.creditReward)
+			damager.rewardMoney(money)
 
 			damager.sendMessage(template(
 				message = text("Received {0} XP for defeating {1}", NamedTextColor.DARK_PURPLE),
