@@ -3,6 +3,7 @@ package net.horizonsend.ion.common.utils.text
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toText
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor
@@ -53,3 +54,6 @@ fun Iterable<ComponentLike>.join(separator: Component? = text(", ")): Component 
 
 	return builder.build()
 }
+
+/** Returns an empty component if the provided component was null */
+fun Component?.orEmpty(): Component = this ?: empty()
