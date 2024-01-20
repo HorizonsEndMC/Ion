@@ -61,7 +61,7 @@ fun mainThreadCheck() {
 	if (!Bukkit.isPrimaryThread()) {
 		IonServer.slF4JLogger.warn(
 			"This function may be unsafe to use asynchronously.",
-			Throwable()
+			Throwable("This function may be unsafe to use asynchronously.")
 		)
 	}
 }

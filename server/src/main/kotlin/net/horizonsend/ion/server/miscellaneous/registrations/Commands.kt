@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
+import net.horizonsend.ion.server.command.admin.WorldCommand
 import net.horizonsend.ion.server.command.economy.BazaarCommand
 import net.horizonsend.ion.server.command.economy.CityNpcCommand
 import net.horizonsend.ion.server.command.economy.CollectedItemCommand
@@ -140,6 +141,7 @@ val commands: List<SLCommand> = listOf(
 	MultiblockCommand,
 	SpaceGenCommand,
 	ConfigurationCommands,
+	WorldCommand,
 	ConvertCommand,
 	CustomItemCommand,
 	IonCommand,
