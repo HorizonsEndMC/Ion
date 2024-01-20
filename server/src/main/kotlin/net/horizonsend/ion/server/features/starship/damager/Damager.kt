@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
@@ -42,6 +43,8 @@ interface PlayerDamager : Damager {
 	override fun getDisplayName(): Component = player.displayName()
 
 	override fun rewardMoney(credits: Double) {
+		if (!IonServer.featureFlags.ECONOMY) return
+
 		VAULT_ECO.depositPlayer(player, credits)
 	}
 

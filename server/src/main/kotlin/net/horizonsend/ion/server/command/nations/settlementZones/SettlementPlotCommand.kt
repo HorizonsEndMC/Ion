@@ -33,7 +33,10 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 
 	@Subcommand("buy")
 	@Description("Buy the zone you're standing in as a plot (with confirmation)")
+	@Suppress("unused")
 	fun onBuy(sender: Player, @Optional price: Int?) = asyncCommand(sender) {
+		requireEconomyEnabled()
+
 		val zone = Regions.findFirstOf<RegionSettlementZone>(sender.location)
 			?: fail { "You're not standing in a settlement zone." }
 
@@ -56,6 +59,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 
 	@Subcommand("list")
 	@Description("List all of your plots")
+	@Suppress("unused")
 	fun onList(sender: Player) = asyncCommand(sender) {
 		val zones = Regions.getAllOf<RegionSettlementZone>()
 
@@ -111,6 +115,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 	@Subcommand("sell")
 	@Description("Put a plot of yours up for sale")
 	@CommandCompletion("@plots -1|100|1000|10000")
+	@Suppress("unused")
 	fun onSell(sender: Player, zone: RegionSettlementZone, price: Int) = asyncCommand(sender) {
 		requireOwnsZone(sender, zone)
 
@@ -136,6 +141,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 	@Subcommand("unclaim")
 	@Description("Unclaimed the specific plot")
 	@CommandCompletion("@plots")
+	@Suppress("unused")
 	fun onUnclaim(sender: Player, zone: RegionSettlementZone) = asyncCommand(sender) {
 		requireOwnsZone(sender, zone)
 
@@ -147,6 +153,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 	@Subcommand("trusted add player")
 	@Description("Add a player as a trusted player in your plot")
 	@CommandCompletion("@plots @players")
+	@Suppress("unused")
 	fun onTrustedAddPlayer(sender: Player, zone: RegionSettlementZone, name: String) = asyncCommand(sender) {
 		requireOwnsZone(sender, zone)
 		val player = resolveOfflinePlayer(name).slPlayerId
@@ -158,6 +165,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 	@Subcommand("trusted add nation")
 	@Description("Add a nation as a trusted nation in your plot")
 	@CommandCompletion("@plots @nations")
+	@Suppress("unused")
 	fun onTrustedAddNation(sender: Player, zone: RegionSettlementZone, name: String) = asyncCommand(sender) {
 		requireOwnsZone(sender, zone)
 		val nation = resolveNation(name)
@@ -169,6 +177,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 	@Subcommand("trusted add settlement")
 	@Description("Add a settlement as a trusted settlement in your plot")
 	@CommandCompletion("@plots @settlements")
+	@Suppress("unused")
 	fun onTrustedAddSettlement(sender: Player, zone: RegionSettlementZone, name: String) = asyncCommand(sender) {
 		requireOwnsZone(sender, zone)
 		val settlement = resolveSettlement(name)
@@ -180,6 +189,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 	@Subcommand("trusted remove player")
 	@Description("Remove a player as a trusted player in your plot")
 	@CommandCompletion("@plots @players")
+	@Suppress("unused")
 	fun onTrustedRemovePlayer(sender: Player, zone: RegionSettlementZone, name: String) = asyncCommand(sender) {
 		requireOwnsZone(sender, zone)
 		val player = resolveOfflinePlayer(name).slPlayerId
@@ -191,6 +201,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 	@Subcommand("trusted remove nation")
 	@Description("Remove a nation as a trusted nation in your plot")
 	@CommandCompletion("@plots @nations")
+	@Suppress("unused")
 	fun onTrustedRemoveNation(sender: Player, zone: RegionSettlementZone, name: String) = asyncCommand(sender) {
 		requireOwnsZone(sender, zone)
 		val nation = resolveNation(name)
@@ -202,6 +213,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 	@Subcommand("trusted remove settlement")
 	@Description("Remove a settlement as a trusted settlement in your plot")
 	@CommandCompletion("@plots @settlements")
+	@Suppress("unused")
 	fun onTrustedRemoveSettlement(sender: Player, zone: RegionSettlementZone, name: String) = asyncCommand(sender) {
 		requireOwnsZone(sender, zone)
 		val settlement = resolveSettlement(name)
@@ -220,6 +232,7 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 
 	@Subcommand("minbuildaccess")
 	@Description("Allow certain types of players to build in the plot, e.g. allies (strict for exceptions only, default)")
+	@Suppress("unused")
 	fun onMinBuildAccess(
 		sender: Player,
 		zone: RegionSettlementZone,
