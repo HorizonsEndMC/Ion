@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.miscellaneous.IonWorld
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.World
 import org.bukkit.event.world.WorldLoadEvent
@@ -16,7 +17,13 @@ object SpaceWorlds : IonServerComponent() {
 
 	private val cache: LoadingCache<World, Boolean> = CacheBuilder.newBuilder()
 		.weakKeys()
-		.build(CacheLoader.from { world -> world != null && getSpaceFlagFile(world).exists() })
+		.build(CacheLoader.from cache@{ world ->
+			if (world == null) return@cache false
+
+			val ionWorld = IonWorld[world]
+
+			return@cache ionWorld.configuration.flags.contains(IonWorld.WorldFlag.SPACE_ENVIRONMENT)
+		})
 
 	override fun onEnable() {
 		listen<WorldLoadEvent> { event -> cache.get(event.world) }

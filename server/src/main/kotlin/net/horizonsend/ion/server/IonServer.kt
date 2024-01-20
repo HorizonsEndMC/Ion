@@ -31,7 +31,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.listeners
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -93,7 +92,7 @@ object IonServer : JavaPlugin() {
 
 		// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
 		// such as reloading or other plugins doing things they probably shouldn't.
-		for (world in server.worlds) IonWorld.register(world.minecraft)
+		for (world in server.worlds) IonWorld.register(world)
 
 		for (component in components) { // Components
 			fun startAndMeasureTime(component: IonComponent) {
