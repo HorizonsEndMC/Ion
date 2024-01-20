@@ -32,7 +32,7 @@ enum class SecondaryChest(val NBT: CompoundTag, val money: (Double) -> Double) {
 		val random = Random()
 
 		fun giveReward(player: Player, chest: Chest) {
-			if (!IonServer.featureFlags.ECONOMY) return
+			if (!IonServer.featureFlags.economy) return
 
 			if (chest.persistentDataContainer.get(NamespacedKeys.INACTIVE, PersistentDataType.STRING) == "true") return
 			chest.persistentDataContainer.set(NamespacedKeys.INACTIVE, PersistentDataType.STRING, "true")
