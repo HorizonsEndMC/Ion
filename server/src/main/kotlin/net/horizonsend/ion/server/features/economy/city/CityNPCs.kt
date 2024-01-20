@@ -9,6 +9,7 @@ import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
@@ -167,6 +168,8 @@ object CityNPCs : IonServerComponent(true) {
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {
+		if (!IonServer.featureFlags.ECONOMY) return
+
 		val player: Player = event.clicker
 		val npc: NPC = event.npc
 		log.info("clicked ${player.name} clicked npc ${npc.name}")

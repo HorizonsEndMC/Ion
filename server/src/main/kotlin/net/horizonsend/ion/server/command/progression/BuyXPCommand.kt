@@ -13,6 +13,8 @@ import org.bukkit.entity.Player
 object BuyXPCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("buyxp")
 	fun onExecute(sender: Player, amount: Int, @Optional cost: Double?) {
+		requireEconomyEnabled()
+
 		failIf(amount <= 0) { "Amount must be more than zero" }
 
 		val realCost = LEVEL_BALANCING.creditsPerXP * amount
