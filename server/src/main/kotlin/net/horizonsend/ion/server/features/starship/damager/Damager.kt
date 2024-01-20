@@ -43,7 +43,7 @@ interface PlayerDamager : Damager {
 	override fun getDisplayName(): Component = player.displayName()
 
 	override fun rewardMoney(credits: Double) {
-		if (!IonServer.featureFlags.ECONOMY) return
+		if (!IonServer.featureFlags.economy) return
 
 		VAULT_ECO.depositPlayer(player, credits)
 	}
