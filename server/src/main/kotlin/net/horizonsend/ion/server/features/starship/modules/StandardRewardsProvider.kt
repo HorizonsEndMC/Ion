@@ -20,8 +20,9 @@ import kotlin.math.sqrt
 open class StandardRewardsProvider(protected val starship: ActiveStarship) : RewardsProvider {
 	override fun onSink() {
 		val dataMap = starship.damagers
-			.filter { (damager, _) ->
+			.filter { (damager, data) ->
 				if (damager !is PlayerDamager) return@filter false
+				if (data.lastDamaged < ShipKillXP.damagerExpiration) return@filter false
 
 				// require they be online to get xp
 				// if they have this perm, e.g. someone in dutymode or on creative, they don't get xp
@@ -39,8 +40,6 @@ open class StandardRewardsProvider(protected val starship: ActiveStarship) : Rew
 
 		for ((damager, data) in dataMap.entries) {
 			val (points, timeStamp) = data
-
-			if (timeStamp < ShipKillXP.damagerExpiration) continue
 
 			val player = (damager as? PlayerDamager)?.player ?: continue // shouldn't happen
 

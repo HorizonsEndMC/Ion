@@ -1,25 +1,40 @@
 package net.horizonsend.ion.server.features.starship.modules
 
 import net.horizonsend.ion.common.utils.text.MessageFactory
-import net.horizonsend.ion.common.utils.text.join
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.formatSpacePrefix
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.orEmpty
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
+import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.modules.SinkMessageFactory.Companion.SPACE_ARENA
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
-import org.bukkit.Bukkit
+import net.kyori.adventure.text.Component.newline
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 
 class AISinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory {
 	override fun execute() {
-		val arena = sunkShip.world.name.contains("arena", ignoreCase = true) // TODO manager later
+		val arena = IonServer.configuration.serverName.equals("creative", ignoreCase = true) // TODO manager later
 		val data = sunkShip.damagers
 
 		// First person got the final blow
-		val sortedByTime = data.entries.sortedByDescending { it.value.lastDamaged }.iterator()
+		val sortedByTime = data.toList()
+			.filter { (damager, data) ->
+				if (damager is AIShipDamager && damager.starship.controller is NoOpController) return@filter false
+				if (data.lastDamaged < ShipKillXP.damagerExpiration) return@filter false
+
+				true
+			}
+			.sortedByDescending { it.second.lastDamaged }
+			.iterator()
 
 		if (!sortedByTime.hasNext()) throw NullPointerException("Starship sunk with no damagers")
 
@@ -31,47 +46,41 @@ class AISinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactor
 		sendGameMessage(arena, sinkMessage, assists)
 	}
 
-	private fun sendGameMessage(arena: Boolean, sinkMessage: Component, assists: Map<Damager, Component>) {
-		val assistPrefix = if (assists.isNotEmpty()) ofChildren(Component.text(", assisted by:", NamedTextColor.RED), Component.newline()) else Component.empty()
+	private fun sendGameMessage(arena: Boolean, sinkMessage: Component, assists: Component?) {
+		val message = ofChildren(sinkMessage, assists.orEmpty())
 
-		val message = ofChildren(sinkMessage, assistPrefix, assists.values.join(separator = Component.newline()))
-
-		if (arena) Bukkit.getServer().sendMessage(message) else Notify.chatAndGlobal(message)
+		if (arena) IonServer.server.sendMessage(message) else Notify.chatAndGlobal(message)
 	}
 
 	private fun getSinkMessage(arena: Boolean, killerDamager: Damager): Component {
-		val killedShipText = formatName(sunkShip)
+		val killedShipText = ofChildren(sunkShip.getDisplayName(), text(" "), bracketed(text(sunkShip.initialBlockCount)))
 
 		val killerName = formatName(killerDamager)
-		val sunkMessage = ofChildren(Component.text(" was sunk by ", NamedTextColor.RED), killerName)
+		val sunkMessage = ofChildren(text(" was sunk by ", RED), killerName)
 
-		val arenaText = if (arena) ofChildren(
-			Component.text("[", TextColor.color(85, 85, 85)),
-			Component.text("Space Arena", TextColor.color(255, 255, 102)),
-			Component.text("] ", TextColor.color(85, 85, 85))
-		) else Component.empty()
+		val arenaText = if (arena) SPACE_ARENA else Component.empty()
 
 		return ofChildren(arenaText, killedShipText, sunkMessage)
 	}
 
-	private fun getAssists(sortedByTime: Iterator<Map.Entry<Damager, ShipKillXP.ShipDamageData>>) : Map<Damager, Component> {
-		val components = mutableMapOf<Damager, Component>()
+	private fun getAssists(sortedByTime: Iterator<Pair<Damager, ShipKillXP.ShipDamageData>>) : Component? {
+		if (!sortedByTime.hasNext()) return null
+
+		val assistsMessage = formatSpacePrefix(bracketed(text("Assists")))
+
+		val hover = text()
 
 		// Take 5 damagers
 		while (sortedByTime.hasNext()) {
 			val (assistDamager, _) = sortedByTime.next()
+			hover.append(formatName(assistDamager))
 
-			val assistName = formatName(assistDamager)
-
-			val assist = Component.text()
-				.append(assistName)
-
-			if (sortedByTime.hasNext()) assist.append(Component.text(",", NamedTextColor.RED))
-
-			components[assistDamager] = assist.build()
+			if (sortedByTime.hasNext()) hover.append(newline())
 		}
 
-		return components
+		assistsMessage.hoverEvent(hover.build())
+
+		return assistsMessage
 	}
 
 	private fun formatName(damager: Damager): Component {
@@ -79,26 +88,26 @@ class AISinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactor
 
 		if (starship !is ActiveControlledStarship) return damager.getDisplayName()
 
-		return formatName(starship)
+		return formatPlayerShipName(starship)
 	}
 
-	private fun formatName(starship: ActiveStarship): Component {
-		val hover = ofChildren(Component.text("${starship.initialBlockCount} block ", NamedTextColor.WHITE), starship.type.displayNameComponent)
+	private fun formatPlayerShipName(starship: ActiveStarship): Component {
+		val hover = ofChildren(text("${starship.initialBlockCount} block ", WHITE), starship.type.displayNameComponent)
 
 		val nameFormat = if ((starship as? ActiveControlledStarship)?.data?.name == null) ofChildren(
-			Component.text("A ", NamedTextColor.RED),
-			Component.text(starship.initialBlockCount),
-			Component.text(" block ", NamedTextColor.RED),
-			starship.type.displayNameComponent.color(NamedTextColor.WHITE)
+			text("A ", RED),
+			text(starship.initialBlockCount),
+			text(" block ", RED),
+			starship.type.displayNameComponent.color(WHITE)
 		)
 		else ofChildren(
 			starship.getDisplayName(),
-			Component.text(", a ", NamedTextColor.RED),
-			Component.text(starship.initialBlockCount),
-			Component.text(" block ", NamedTextColor.RED),
-			starship.type.displayNameComponent.color(NamedTextColor.WHITE)
+			text(", a ", RED),
+			text(starship.initialBlockCount),
+			text(" block ", RED),
+			starship.type.displayNameComponent.color(WHITE)
 		)
 
-		return ofChildren(nameFormat, Component.text(", piloted by ", NamedTextColor.RED), starship.controller.getPilotName()).hoverEvent(hover)
+		return ofChildren(nameFormat, text(", piloted by ", RED), starship.controller.getPilotName()).hoverEvent(hover)
 	}
 }
