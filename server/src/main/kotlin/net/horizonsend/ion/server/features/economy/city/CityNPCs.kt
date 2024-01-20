@@ -168,7 +168,7 @@ object CityNPCs : IonServerComponent(true) {
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {
-		if (!IonServer.featureFlags.ECONOMY) return
+		if (!IonServer.featureFlags.economy) return
 
 		val player: Player = event.clicker
 		val npc: NPC = event.npc

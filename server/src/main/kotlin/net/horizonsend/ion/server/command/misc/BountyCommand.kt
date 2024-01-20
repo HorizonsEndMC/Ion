@@ -35,7 +35,7 @@ import org.litote.kmongo.inc
 
 @CommandAlias("bounty")
 object BountyCommand : SLCommand() {
-	private fun requireBountiesEnabled() = failIf(!IonServer.featureFlags.BOUNTIES) { "Bounties are disabled on this server!" }
+	private fun requireBountiesEnabled() = failIf(!IonServer.featureFlags.bounties) { "Bounties are disabled on this server!" }
 
 	@Default
 	@Subcommand("menu")
