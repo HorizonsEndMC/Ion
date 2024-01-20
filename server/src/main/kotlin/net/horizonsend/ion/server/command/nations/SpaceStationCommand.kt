@@ -199,6 +199,8 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		owner: Id<Owner>,
 		companion: SpaceStationCompanion<Owner, *>)
 	{
+		requireEconomyEnabled()
+
 		failIf(!sender.hasPermission("nations.spacestation.create")) {
 			"You can't create space stations here!"
 		}
@@ -281,6 +283,8 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandCompletion("@spaceStations")
 	@Suppress("unused")
 	fun onResize(sender: Player, station: CachedSpaceStation<*, *, *>, newRadius: Int, @Optional cost: Int?) {
+		requireEconomyEnabled()
+
 		requireStationOwnership(sender.slPlayerId, station)
 		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.MANAGE_STATION)
 		val stationName = station.name
