@@ -107,7 +107,7 @@ class StarshipFactoryPrinter(
 			return false
 		}
 
-		if (availableCredits < ShipFactoryMaterialCosts.getPrice(data) && IonServer.featureFlags.ECONOMY) return false
+		if (availableCredits < ShipFactoryMaterialCosts.getPrice(data) && IonServer.featureFlags.economy) return false
 
 		decrementAvailable(item, count, amount)
 		incrementUsed(item, amount)
@@ -176,7 +176,7 @@ class StarshipFactoryPrinter(
 	private fun flushBlockQueue() {
 		for ((key, data) in queue) {
 			val price = ShipFactoryMaterialCosts.getPrice(data.createCraftBlockData())
-			if (IonServer.featureFlags.ECONOMY) tryCreditCost(price)
+			if (IonServer.featureFlags.economy) tryCreditCost(price)
 
 			val blockX = blockKeyX(key)
 			val blockY = blockKeyY(key)
