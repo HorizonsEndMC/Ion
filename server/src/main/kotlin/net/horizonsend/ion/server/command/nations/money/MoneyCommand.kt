@@ -39,6 +39,8 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 	}
 
 	open fun onDeposit(sender: Player, amount: Int) = asyncCommand(sender) {
+		requireEconomyEnabled()
+
 		failIf(IonServer.configuration.serverName == "Creative") { "Cannot withdraw or deposit on creative" }
 		val parent: Oid<Parent> = requireDefaultParent(sender)
 		requireCanDeposit(sender, parent)
@@ -56,6 +58,8 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 	}
 
 	open fun onWithdraw(sender: Player, amount: Int) = asyncCommand(sender) {
+		requireEconomyEnabled()
+
 		failIf(amount <= 0) { "Amount must be greater than 0" }
 		failIf(IonServer.configuration.serverName == "Creative") { "Cannot withdraw or deposit on creative" }
 

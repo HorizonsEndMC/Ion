@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -106,7 +108,7 @@ class StarshipFactoryPrinter(
 			return false
 		}
 
-		if (availableCredits < ShipFactoryMaterialCosts.getPrice(data)) return false
+		if (availableCredits < ShipFactoryMaterialCosts.getPrice(data) && IonServer.featureFlags.ECONOMY) return false
 
 		decrementAvailable(item, count, amount)
 		incrementUsed(item, amount)
@@ -175,7 +177,7 @@ class StarshipFactoryPrinter(
 	private fun flushBlockQueue() {
 		for ((key, data) in queue) {
 			val price = ShipFactoryMaterialCosts.getPrice(data.createCraftBlockData())
-			tryCreditCost(price)
+			if (IonServer.featureFlags.ECONOMY) tryCreditCost(price)
 
 			val blockX = blockKeyX(key)
 			val blockY = blockKeyY(key)
