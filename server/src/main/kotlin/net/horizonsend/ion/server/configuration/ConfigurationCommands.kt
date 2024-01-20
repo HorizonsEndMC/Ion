@@ -172,8 +172,8 @@ object ConfigurationCommands : SLCommand() {
 	@Subcommand("config save")
 	fun configSave(sender: CommandSender) {
 		Configuration.save(IonServer.configuration, IonServer.configurationFolder, "server.json")
-		Configuration.save(IonServer.pvpBalancing, IonServer.configurationFolder, "server.json")
-		Configuration.save(IonServer.starshipBalancing, IonServer.configurationFolder, "server.json")
+		Configuration.save(IonServer.pvpBalancing, IonServer.configurationFolder, "pvpbalancing.json")
+		Configuration.save(IonServer.starshipBalancing, IonServer.configurationFolder, "starshipbalancing.json")
 
 		sender.success("Saved configs with current runtime values.")
 	}
