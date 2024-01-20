@@ -224,7 +224,7 @@ abstract class SLCommand : BaseCommand() {
 	protected fun requireNotCapital(settlementId: Oid<Settlement>, action: String = "do that") =
 		failIf(SettlementCache[settlementId].nation?.let(NationCache::get)?.capital == settlementId) { "The capital settlement can't $action!" }
 
-	fun requireEconomyEnabled() = failIf(!IonServer.featureFlags.ECONOMY) { "Economy is disabled on this server!" }
+	fun requireEconomyEnabled() = failIf(!IonServer.featureFlags.economy) { "Economy is disabled on this server!" }
 
 	protected fun requireMoney(sender: Player, amount: Number, text: String = "do that") {
 		requireEconomyEnabled()
