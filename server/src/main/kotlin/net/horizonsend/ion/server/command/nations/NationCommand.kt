@@ -139,6 +139,8 @@ internal object NationCommand : SLCommand() {
 		blue: Int,
 		@Optional cost: Int?
 	) = asyncCommand(sender) {
+		requireEconomyEnabled()
+
 		val settlement = requireSettlementIn(sender)
 		requireSettlementLeader(sender, settlement)
 		requireNotInNation(sender)
