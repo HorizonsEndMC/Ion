@@ -6,6 +6,7 @@ import net.megavex.scoreboardlibrary.api.ScoreboardLibrary
 import net.megavex.scoreboardlibrary.api.exception.NoPacketAdapterAvailableException
 import net.megavex.scoreboardlibrary.api.noop.NoopScoreboardLibrary
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.key.Key
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
@@ -13,6 +14,8 @@ import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
 
 object Sidebar : IonServerComponent() {
+	val fontKey = Key.key("horizonsend:sidebar")
+
 	private val playerSidebars: MutableMap<UUID, MainSidebar> = Collections.synchronizedMap(mutableMapOf<UUID, MainSidebar>())
 	private val scoreboardLibrary by lazy {
 		try {
