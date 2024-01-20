@@ -29,7 +29,7 @@ object ShipData : IonPacketHandler() {
 			val type = MiniMessage.miniMessage().deserialize(ship.type.displayNameMiniMessage)
 			val pm = ship.reactor.powerDistributor
 			val targets = ship.autoTurretTargets.mapValues { it.value.identifier }
-			val hull = ship.hullIntegrity().times(100).roundToInt()
+			val hull = ship.hullIntegrity.times(100).roundToInt()
 			val gravwell = ship.isInterdicting
 			val weaponset = ship.weaponSetSelections[player.uniqueId] ?: "None"
 			val regenEfficiency = ship.shieldEfficiency

@@ -4,12 +4,18 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.component.ContactsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ContactsSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.LocationSidebarComponent
+import net.horizonsend.ion.server.features.sidebar.component.StarshipsHeaderSidebarComponent
+import net.horizonsend.ion.server.features.sidebar.component.StarshipsSidebarComponent1
+import net.horizonsend.ion.server.features.sidebar.component.StarshipsSidebarComponent2
+import net.horizonsend.ion.server.features.sidebar.component.StarshipsSidebarComponent3
+import net.horizonsend.ion.server.features.sidebar.component.StarshipsSidebarComponent4
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsNameSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.PlayerLocationSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.WaypointsSidebar
+import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
@@ -22,7 +28,7 @@ import java.util.Locale
 
 class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 	companion object {
-		const val MIN_LENGTH = 40
+		const val MIN_LENGTH = 0
 		const val WAYPOINT_MAX_LENGTH = 30
 		private const val CONTACTS_RANGE = 6000
 		const val CONTACTS_SQRANGE = CONTACTS_RANGE * CONTACTS_RANGE
@@ -47,6 +53,21 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 		val locationComponent: SidebarComponent = LocationSidebarComponent(player)
 		lines.addComponent(locationComponent)
 
+		// Starship
+		val starship = PilotedStarships[player]
+		if (starship != null) {
+			val starshipsHeaderSidebarComponent: SidebarComponent = StarshipsHeaderSidebarComponent(starship)
+			val starshipsSidebarComponent1: SidebarComponent = StarshipsSidebarComponent1(starship)
+			val starshipsSidebarComponent2: SidebarComponent = StarshipsSidebarComponent2(starship)
+			val starshipsSidebarComponent3: SidebarComponent = StarshipsSidebarComponent3(starship)
+			val starshipsSidebarComponent4: SidebarComponent = StarshipsSidebarComponent4(starship)
+			lines.addComponent(starshipsHeaderSidebarComponent)
+			lines.addComponent(starshipsSidebarComponent1)
+			lines.addComponent(starshipsSidebarComponent2)
+			lines.addComponent(starshipsSidebarComponent3)
+			lines.addComponent(starshipsSidebarComponent4)
+		}
+
 		// Contacts
 		val contactsEnabled = PlayerCache[player.uniqueId].contactsEnabled
 		if (contactsEnabled) {
@@ -56,7 +77,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 			for (contact in contacts) {
 				contactsComponents.add(ContactsSidebarComponent { contact })
 			}
-			lines.addComponent(contactsHeaderComponent)
+			if (contacts.isNotEmpty()) lines.addComponent(contactsHeaderComponent)
 			for (component in contactsComponents) lines.addComponent(component)
 		}
 

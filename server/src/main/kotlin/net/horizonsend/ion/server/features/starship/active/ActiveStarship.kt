@@ -182,6 +182,8 @@ abstract class ActiveStarship (
 	var isInterdicting = false; private set
 	abstract val interdictionRange: Int
 
+	var hullIntegrity = 1.0
+
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
 		isInterdicting = value
@@ -356,11 +358,11 @@ abstract class ActiveStarship (
 		}
 	}
 
-	fun hullIntegrity(): Double {
+	fun updateHullIntegrity() {
 		val nonAirBlocks = blocks.count {
 			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
 		}
-		return nonAirBlocks.toDouble() / initialBlockCount.toDouble()
+		hullIntegrity = nonAirBlocks.toDouble() / initialBlockCount.toDouble()
 	}
 
 	fun getEntryRange(planet: CachedPlanet): Int {
