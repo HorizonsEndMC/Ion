@@ -34,7 +34,7 @@ object ReminderManager : IonComponent() {
 
 	private val prefix = bracketed(text("Horizon's End", HE_LIGHT_GRAY, TextDecoration.BOLD))
 
-	private const val INTERVAL = 5L * 1
+	private const val INTERVAL = 5L * 60L
 
 	override fun onEnable() {
 		PLUGIN.proxy.scheduler.repeat(INTERVAL, INTERVAL, TimeUnit.SECONDS, ::sendBroadcast)
