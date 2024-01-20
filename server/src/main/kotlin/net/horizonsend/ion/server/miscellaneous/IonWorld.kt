@@ -1,36 +1,41 @@
 package net.horizonsend.ion.server.miscellaneous
 
 import com.destroystokyo.paper.event.server.ServerTickStartEvent
+import kotlinx.serialization.Serializable
+import net.horizonsend.ion.common.utils.configuration.Configuration
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.minecraft.server.level.ServerLevel
+import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import kotlin.DeprecationLevel.ERROR
 
 class IonWorld private constructor(
-	val serverLevel: ServerLevel,
-
+	val world: World,
 	val starships: MutableList<ActiveStarship> = mutableListOf()
 ) {
+	val configuration: WorldSettings by lazy { Configuration.load(IonServer.configurationFolder, "${world.name}.json") }
+
+	fun saveConfiguration() = Configuration.save(configuration, IonServer.configurationFolder, "${world.name}.json")
+
 	companion object : SLEventListener() {
-		private val ionWorlds = mutableMapOf<ServerLevel, IonWorld>()
+		private val ionWorlds = mutableMapOf<World, IonWorld>()
 
-		operator fun get(serverLevel: ServerLevel): IonWorld = ionWorlds[serverLevel]!!
+		operator fun get(world: World): IonWorld = ionWorlds[world] ?: throw IllegalStateException("Unregistered Ion World: $world!")
 
-		fun register(serverLevel: ServerLevel) {
+		fun register(world: World) {
 			mainThreadCheck()
 
-			if (ionWorlds.contains(serverLevel)) {
+			if (ionWorlds.contains(world)) {
 				throw IllegalStateException("Attempted to register server level which is already registered!")
 			}
 
-			ionWorlds[serverLevel] = IonWorld(serverLevel)
-			AreaShields.loadData(serverLevel.world)
+			ionWorlds[world] = IonWorld(world)
+			AreaShields.loadData(world)
 		}
 
 		fun unregisterAll() {
@@ -44,7 +49,7 @@ class IonWorld private constructor(
 		fun onWorldInitEvent(event: WorldInitEvent) {
 			mainThreadCheck()
 
-			register(event.world.minecraft)
+			register(event.world)
 		}
 
 		@Deprecated("Event Listener", level = ERROR)
@@ -52,7 +57,7 @@ class IonWorld private constructor(
 		fun onWorldUnloadEvent(event: WorldUnloadEvent) {
 			mainThreadCheck()
 
-			ionWorlds.remove(event.world.minecraft)
+			ionWorlds.remove(event.world)
 		}
 
 		@Deprecated("Event Listener", level = ERROR)
@@ -66,5 +71,16 @@ class IonWorld private constructor(
 				log.warn("Exception while ticking starship!", result)
 			}
 		}
+	}
+
+	@Serializable
+	data class WorldSettings(
+		val flags: MutableSet<WorldFlag> = mutableSetOf()
+	)
+
+	enum class WorldFlag {
+		SPACE_ENVIRONMENT,
+		ALLOW_SPACE_STATIONS,
+		ALLOW_AI_SPAWNS,
 	}
 }
