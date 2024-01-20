@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.schema.Cryopod
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
@@ -32,6 +34,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isFroglight
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import net.kyori.adventure.audience.Audience
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -40,7 +43,7 @@ import java.util.LinkedList
 import java.util.Locale
 
 object SubsystemDetector {
-	fun detectSubsystems(starship: ActiveControlledStarship) {
+	fun detectSubsystems(feedbackDestination: Audience, starship: ActiveControlledStarship) {
 		// these has to be queued for after the loop so things like the bounds are detected first,
 		// and so they are detected in the right order, e.g. weapons before weapon sets/signs
 		val potentialThrusterBlocks = LinkedList<Block>()
@@ -76,7 +79,7 @@ object SubsystemDetector {
 			detectThruster(starship, block)
 		}
 		for (block in potentialWeaponBlocks) {
-			detectWeapon(starship, block)
+			detectWeapon(feedbackDestination, starship, block)
 		}
 		for (block in potentialLandingGearBlocks) {
 			detectLandingGear(starship, block)
@@ -90,6 +93,10 @@ object SubsystemDetector {
 
 	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
 		val sign = block.state as Sign
+
+		if (Multiblocks.getFromPDC(sign) is AreaShield) {
+			throw ActiveStarshipFactory.StarshipActivationException("Starships cannot fly with area shields!")
+		}
 
 		if (sign.type.isWallSign && sign.getLine(0).lowercase(Locale.getDefault()).contains("node")) {
 			val inwardFace = sign.getFacing().oppositeFace
@@ -156,7 +163,7 @@ object SubsystemDetector {
 		}
 	}
 
-	private fun detectWeapon(starship: ActiveControlledStarship, block: Block) {
+	private fun detectWeapon(feedbackDestination: Audience, starship: ActiveControlledStarship, block: Block) {
 		for (face: BlockFace in CARDINAL_BLOCK_FACES) {
 			val multiblock = getWeaponMultiblock(block, face) ?: continue
 
@@ -165,12 +172,15 @@ object SubsystemDetector {
 			val subsystem = multiblock.createSubsystem(starship, pos, face)
 
 			if (subsystem is PermissionWeaponSubsystem && starship.playerPilot?.hasPermission(subsystem.permission) == false) {
+				throw ActiveStarshipFactory.StarshipActivationException("You don't have permission ${subsystem.permission} to use ${subsystem::class.simpleName}")
+			}
+
+			if (isDuplicate(starship, subsystem)) {
 				continue
 			}
 
-			if (subsystem is WeaponSubsystem && !subsystem.canCreateSubsystem()) continue
-
-			if (isDuplicate(starship, subsystem)) {
+			if (subsystem is WeaponSubsystem && !subsystem.canCreateSubsystem()) {
+				feedbackDestination.userError("Could not create subsystem ${subsystem.name}!")
 				continue
 			}
 

@@ -325,6 +325,16 @@ object Multiblocks : IonServerComponent() {
 		return null
 	}
 
+	fun getFromPDC(sign: Sign): Multiblock? {
+		val pdc = sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING) ?: return null
+
+		return multiblocks.firstOrNull { it::class.simpleName == pdc }
+	}
+
+	fun matchesPersistentDataContainer(sign: Sign, multiblock: Multiblock): Boolean {
+		return sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)  == multiblock::class.simpleName
+	}
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	fun onInteractMultiblockSign(event: PlayerInteractEvent) {
 		if (event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) {
