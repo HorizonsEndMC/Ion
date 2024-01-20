@@ -230,11 +230,13 @@ object StationSieges : IonServerComponent() {
 			}
 		}
 
-		if (!VAULT_ECO.has(player, NATIONS_BALANCE.capturableStation.siegeCost.toDouble())) {
-			player.userError("You need C${NATIONS_BALANCE.capturableStation.siegeCost} to begin a siege.")
-			return@asyncLocked
-		} else {
-			VAULT_ECO.withdrawPlayer(player, NATIONS_BALANCE.capturableStation.siegeCost.toDouble())
+		if (IonServer.featureFlags.ECONOMY) {
+			if (!VAULT_ECO.has(player, NATIONS_BALANCE.capturableStation.siegeCost.toDouble())) {
+				player.userError("You need C${NATIONS_BALANCE.capturableStation.siegeCost} to begin a siege.")
+				return@asyncLocked
+			} else {
+				VAULT_ECO.withdrawPlayer(player, NATIONS_BALANCE.capturableStation.siegeCost.toDouble())
+			}
 		}
 
 		val oldNation = station.nation

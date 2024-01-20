@@ -11,6 +11,8 @@ import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
+import net.horizonsend.ion.server.configuration.FeatureFlags
 import net.horizonsend.ion.server.configuration.GassesConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
@@ -47,6 +49,7 @@ val sharedDataFolder by lazy { File(LegacySettings.sharedFolder).apply { mkdirs(
 object IonServer : JavaPlugin() {
 	val configurationFolder = dataFolder.resolve("configuration").apply { mkdirs() }
 
+	var featureFlags: FeatureFlags = Configuration.load(configurationFolder, "features.json")
 	var pvpBalancing: PVPBalancingConfiguration = Configuration.load(configurationFolder, "pvpbalancing.json")
 	var starshipBalancing: StarshipTypeBalancing = Configuration.load(configurationFolder, "starshipbalancing.json")
 

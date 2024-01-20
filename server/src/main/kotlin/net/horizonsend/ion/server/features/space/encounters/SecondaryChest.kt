@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.space.encounters
 
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SECONDARY_CHEST_MONEY
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -31,6 +32,8 @@ enum class SecondaryChest(val NBT: CompoundTag, val money: (Double) -> Double) {
 		val random = Random()
 
 		fun giveReward(player: Player, chest: Chest) {
+			if (!IonServer.featureFlags.ECONOMY) return
+
 			if (chest.persistentDataContainer.get(NamespacedKeys.INACTIVE, PersistentDataType.STRING) == "true") return
 			chest.persistentDataContainer.set(NamespacedKeys.INACTIVE, PersistentDataType.STRING, "true")
 
