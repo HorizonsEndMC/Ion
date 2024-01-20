@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FeatureFlags(
-	val ECONOMY: Boolean = true,
-	val BOUNTIES: Boolean = true,
+	val economy: Boolean = true,
+	val bounties: Boolean = true,
 )
