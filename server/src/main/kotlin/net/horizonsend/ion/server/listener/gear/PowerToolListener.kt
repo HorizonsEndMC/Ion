@@ -25,7 +25,7 @@ object PowerToolListener : SLEventListener() {
 	private val PICKAXE = ItemStack(Material.DIAMOND_PICKAXE, 1)
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	@Suppress("Unued")
+	@Suppress("Unused")
 	fun onInteract(event: PlayerInteractEvent) {
 		if (event.action != Action.LEFT_CLICK_BLOCK || event.player.gameMode == GameMode.CREATIVE) {
 			return
@@ -51,10 +51,6 @@ object PowerToolListener : SLEventListener() {
 				if (!BlockBreakEvent(block, player).callEvent()) {
 					return
 				}
-
-				/*
-				if (blockType != block.type) return
-				 */
 
 				if (getPower(item) < 20) {
 					player.sendMessage(ChatColor.RED.toString() + "Out of power.")
