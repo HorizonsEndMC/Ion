@@ -117,6 +117,8 @@ object ActiveStarships : IonServerComponent() {
 	}
 
 	fun updateWorld(starship: ActiveStarship, oldWorld: World, newWorld: World) {
+		if (oldWorld.uid == newWorld.uid) return
+
 		worldMap[oldWorld].remove(starship)
 		worldMap[newWorld].add(starship)
 

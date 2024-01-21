@@ -40,7 +40,10 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 			.sortedByDescending { it.second.lastDamaged }
 			.iterator()
 
-		if (!sortedByTime.hasNext()) throw NullPointerException("Starship sunk with no damagers")
+		if (!sortedByTime.hasNext()) {
+			IonServer.slF4JLogger.warn("Starship sunk with no damagers")
+			return
+		}
 
 		val (killerDamager, _) = sortedByTime.next()
 
