@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
+import org.bukkit.event.world.WorldSaveEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import kotlin.DeprecationLevel.ERROR
 
@@ -22,10 +23,24 @@ class IonWorld private constructor(
 
 	fun saveConfiguration() = Configuration.save(configuration, IonServer.configurationFolder, "${world.name}.json")
 
+	fun hasFlag(flag: WorldFlag): Boolean = configuration.flags.contains(flag)
+
+	//TODO
+	// - Terrain Generator
+	// - Environment Provider
+	// - IonChunks
+	//   - Wires
+	//   - Explosion Reversal
+	// - Area Shields
+	// -
+	// -
+
 	companion object : SLEventListener() {
 		private val ionWorlds = mutableMapOf<World, IonWorld>()
 
 		operator fun get(world: World): IonWorld = ionWorlds[world] ?: throw IllegalStateException("Unregistered Ion World: $world!")
+
+		fun World.ion(): IonWorld = get(this)
 
 		fun register(world: World) {
 			mainThreadCheck()
@@ -70,6 +85,11 @@ class IonWorld private constructor(
 				val result = runCatching(starship::tick).exceptionOrNull() ?: continue
 				log.warn("Exception while ticking starship!", result)
 			}
+		}
+
+		@EventHandler
+		fun onWorldSave(event: WorldSaveEvent) {
+//			TODO
 		}
 	}
 

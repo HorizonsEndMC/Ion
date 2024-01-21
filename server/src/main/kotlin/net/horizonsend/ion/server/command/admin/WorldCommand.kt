@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.command.admin
 
+import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
@@ -11,16 +12,16 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.miscellaneous.IonWorld
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 
-@Subcommand("ionworld")
+@CommandAlias("ionworld")
 @CommandPermission("ion.admin.world")
 object WorldCommand : SLCommand() {
 	@Subcommand("flag add")
@@ -29,7 +30,10 @@ object WorldCommand : SLCommand() {
 		val ionWorld = IonWorld[world]
 
 		if (ionWorld.configuration.flags.add(flag)) sender.success("Removed flag $flag")
-		else sender.userError("World ${world.name} already had the flag $flag")
+		else return sender.userError("World ${world.name} already had the flag $flag")
+
+		ionWorld.saveConfiguration()
+		SpaceWorlds.cache.invalidate(world)
 	}
 
 	@Subcommand("flag remove")
@@ -38,7 +42,10 @@ object WorldCommand : SLCommand() {
 		val ionWorld = IonWorld[world]
 
 		if (ionWorld.configuration.flags.remove(flag)) sender.success("Removed flag $flag")
-		else sender.userError("World ${world.name} did not have flag $flag")
+		else return sender.userError("World ${world.name} did not have flag $flag")
+
+		ionWorld.saveConfiguration()
+		SpaceWorlds.cache.invalidate(world)
 	}
 
 	@Subcommand("flag list")
@@ -54,9 +61,8 @@ object WorldCommand : SLCommand() {
 
 		val body = formatPaginatedMenu(
 			flags.size,
-			"/bounty top",
-			page ?: 1,
-			color = NamedTextColor.RED
+			"/ionworld flag list",
+			page ?: 1
 		) {
 			val flag = flags[it]
 
