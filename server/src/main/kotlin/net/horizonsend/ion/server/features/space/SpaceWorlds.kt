@@ -6,45 +6,24 @@ import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.IonWorld
+import net.horizonsend.ion.server.miscellaneous.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.World
 import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.event.world.WorldUnloadEvent
-import java.io.File
 
 object SpaceWorlds : IonServerComponent() {
-	private fun getSpaceFlagFile(world: World) = File(world.worldFolder, "data/starlegacy/space.flag")
-
-	private val cache: LoadingCache<World, Boolean> = CacheBuilder.newBuilder()
+	val cache: LoadingCache<World, Boolean> = CacheBuilder.newBuilder()
 		.weakKeys()
 		.build(CacheLoader.from cache@{ world ->
 			if (world == null) return@cache false
 
-			val ionWorld = IonWorld[world]
-
-			return@cache ionWorld.configuration.flags.contains(IonWorld.WorldFlag.SPACE_ENVIRONMENT)
+			return@cache world.ion().hasFlag(IonWorld.WorldFlag.SPACE_ENVIRONMENT)
 		})
 
 	override fun onEnable() {
 		listen<WorldLoadEvent> { event -> cache.get(event.world) }
 		listen<WorldUnloadEvent> { event -> cache.invalidate(event.world) }
-	}
-
-	fun setSpaceWorld(world: World, space: Boolean) {
-		if (space) {
-			getSpaceFlagFile(world).apply {
-				parentFile.mkdirs()
-				createNewFile()
-			}
-		} else {
-			getSpaceFlagFile(world).apply {
-				if (exists()) {
-					delete()
-				}
-			}
-		}
-
-		cache.invalidate(world)
 	}
 
 	fun contains(world: World): Boolean = cache.get(world)
