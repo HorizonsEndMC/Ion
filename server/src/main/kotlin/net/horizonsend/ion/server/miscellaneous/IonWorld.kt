@@ -19,9 +19,9 @@ class IonWorld private constructor(
 	val world: World,
 	val starships: MutableList<ActiveStarship> = mutableListOf()
 ) {
-	val configuration: WorldSettings by lazy { Configuration.load(IonServer.configurationFolder, "${world.name}.json") }
+	val configuration: WorldSettings by lazy { Configuration.load(worldConfigFolder, "${world.name}.json") }
 
-	fun saveConfiguration() = Configuration.save(configuration, IonServer.configurationFolder, "${world.name}.json")
+	fun saveConfiguration() = Configuration.save(configuration, worldConfigFolder, "${world.name}.json")
 
 	fun hasFlag(flag: WorldFlag): Boolean = configuration.flags.contains(flag)
 
@@ -36,6 +36,8 @@ class IonWorld private constructor(
 	// -
 
 	companion object : SLEventListener() {
+		private val worldConfigFolder = IonServer.configurationFolder.resolve("worlds").apply { mkdirs() }
+
 		private val ionWorlds = mutableMapOf<World, IonWorld>()
 
 		operator fun get(world: World): IonWorld = ionWorlds[world] ?: throw IllegalStateException("Unregistered Ion World: $world!")
