@@ -28,14 +28,14 @@ class CustomBlockListeners : SLEventListener() {
         event.block.location.block.setBlockData(blockData, true)
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     @Suppress("Unused")
     fun onCustomBlockBreakEvent(event: BlockBreakEvent) {
         if (event.isCancelled) return
         if (event.player.gameMode == GameMode.CREATIVE) return
 
         val block = event.block
-        val customBlock = CustomBlocks.getByBlock(block) ?: return
+        if (CustomBlocks.getByBlock(block) == null) return
 
         // Prevents brown mushrooms from dropping
         if (event.isDropItems) {
