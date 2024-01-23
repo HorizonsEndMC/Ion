@@ -36,7 +36,7 @@ class BungeeInfoCommand : BaseCommand() {
 						.create()
 				)
 				.append(
-					ComponentBuilder("Discord ServerType\n")
+					ComponentBuilder("Discord Server\n")
 						.event(ClickEvent(Action.OPEN_URL, "https://discord.gg/RPvgQsGzKM"))
 						.color(ChatColor.WHITE)
 						.underlined(true)
@@ -64,7 +64,7 @@ class BungeeInfoCommand : BaseCommand() {
 						.create()
 				)
 				.append(
-					ComponentBuilder("ServerType Rules")
+					ComponentBuilder("Server Rules")
 						.event(ClickEvent(Action.OPEN_URL, "https://wiki.horizonsend.net/rules"))
 						.color(ChatColor.WHITE)
 						.underlined(true)
