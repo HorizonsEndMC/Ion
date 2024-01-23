@@ -20,14 +20,20 @@ object ReminderManager : IonComponent() {
 		"<$HE_MEDIUM_GRAY>Commissions and cargo trading are great ways for new players to make money. Feeling confident? Try your hand at /bounty.",
 		"<$HE_MEDIUM_GRAY>Need an item? Use /bazaar browse, although be aware: the prices are quadrupled if you're buying remotely!",
 		"<$HE_MEDIUM_GRAY>24 siegeable stations exist in space. Only nations can siege stations, and owning between 1-6 stations reaps benefits for all nation members.",
-		"<$HE_MEDIUM_GRAY>Just starting out? Try visiting the planets of Luxiterna or Aret. Both have resources valuable for new players.",
-		"<$HE_MEDIUM_GRAY>Level 60 is currently the highest level required to unlock the biggest available ship class: Destroyers / Heavy Frighteners (12,000 blocks).",
-		"<$HE_MEDIUM_GRAY>Want to pick a fight with NPCs? It's recommended you take a gunship, at least.",
+		"<$HE_MEDIUM_GRAY>Just starting out? Try visiting the planets of Luxiterna or Aret. Both have valuable resources for new players.",
+		"<$HE_MEDIUM_GRAY>Level 60 is currently the highest level required to unlock the biggest available ship classes: Destroyers & Heavy Freighters (12,000 blocks).",
+		"<$HE_MEDIUM_GRAY>Want to pick a fight with AI ships? It's recommended you take a gunship, at least.",
 		"<$HE_MEDIUM_GRAY>Looking for a settlement or nation to join? Be sure to ask in global chat using /g. There are always players recruiting.",
-		"<$HE_MEDIUM_GRAY>Setting up machinery? Solar power and Gas generators are clean and reliable. Do /wiki to learn more.",
-		"<$HE_MEDIUM_GRAY>Don't forget to enable your ship lock when parking in territory that's not your own. The lock is toggleable in the ship computer (jukebox).",
+		"<$HE_MEDIUM_GRAY>Setting up machinery? Solar panels and Gas generators are clean and reliable. Do /wiki to learn more.",
+		"<$HE_MEDIUM_GRAY>Don't forget to enable your ship lock when parking in territory that's not your own. You can toggle the lock in the ship computer (jukebox).",
 		"<$HE_MEDIUM_GRAY>Use /starship when piloting a ship to get a diagnostic overview of your vessel. This is quite useful for shipbuilding and repairs.",
-		"<$HE_MEDIUM_GRAY>Unsure who someone is? Use /pinfo [player]."
+		"<$HE_MEDIUM_GRAY>Unsure who someone is? Use /pinfo [player].",
+		"<$HE_MEDIUM_GRAY>Keep in mind: You're only able to buy crates from a trade city once every 8 hours.",
+		"<$HE_MEDIUM_GRAY>Stuck in hyperspace? Commissions broken? Feel free to request help from a Helper or Moderator at any time.",
+		"<$HE_MEDIUM_GRAY>Don't know how to build a multiblock? Look for it using /wiki.",
+		"<$HE_MEDIUM_GRAY>You can switch to the Creative server by doing /server Creative.",
+		"<$HE_MEDIUM_GRAY>Need a certain ore that you can't seem to find? Look at the star systems on /wiki.",
+		"<$HE_MEDIUM_GRAY>You can search for specific items in containers using /itemsearch."
 
 		// expand list here
 	)
