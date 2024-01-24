@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.sidebar.component
 
-import net.horizonsend.ion.server.features.sidebar.Sidebar
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar.starshipNameComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.*
@@ -14,14 +15,14 @@ class StarshipsHeaderSidebarComponent(starship: ActiveControlledStarship) : Side
     private val starshipIcon = starship.type.icon
 
     override fun draw(drawable: LineDrawable) {
-        val line = text()
-        line.append(text("Starship").style(style(BOLD).color(YELLOW)))
-        line.append(text(" | ", DARK_GRAY))
+        val line = ofChildren(
+            text("Starship").style(style(BOLD).color(YELLOW)),
+            text(" | ", DARK_GRAY),
 
-        // Starship Name
-        line.append(text(starshipIcon, WHITE).font(Sidebar.fontKey))
-        line.append(text(" $starshipName", WHITE))
+            // Starship Name
+            starshipNameComponent(starshipName, starshipIcon)
+        )
 
-        drawable.drawLine(line.build())
+        drawable.drawLine(line)
     }
 }

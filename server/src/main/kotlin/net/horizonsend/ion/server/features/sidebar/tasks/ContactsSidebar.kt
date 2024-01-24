@@ -166,11 +166,11 @@ object ContactsSidebar {
                     name = text(starship.identifier, color),
                     prefix = constructPrefixTextComponent(starship.type.icon, relationColor(player, otherController)),
                     suffix = constructSuffixTextComponent(
-                        if (starship.isInterdicting) {
-                            interdictionTextComponent(distance, starship.balancing.interdictionRange, true)
-                        } else Component.empty(),
                         if (currentStarship != null) {
                             autoTurretTextComponent(currentStarship, starship)
+                        } else Component.empty(),
+                        if (starship.isInterdicting) {
+                            interdictionTextComponent(distance, starship.balancing.interdictionRange, true)
                         } else Component.empty()
                     ),
                     heading = constructHeadingTextComponent(direction, color),
@@ -317,6 +317,7 @@ object ContactsSidebar {
         val returnComponent = text()
         for (component in components) {
             returnComponent.append(component)
+            returnComponent.appendSpace()
         }
         return returnComponent.build()
     }
