@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.utils.LegacyBlockUtils
+import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
@@ -127,7 +127,7 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 
 	/** From the glass block, check if it is part of a valid tractor beam **/
 	private fun checkMultiblock(block: Block): Boolean {
-		for (face in LegacyBlockUtils.PIPE_DIRECTIONS) {
+		for (face in CARDINAL_BLOCK_FACES) {
 			val slabEdge = block.getRelative(face, 1)
 
 			if (!slabEdge.type.isSlab) continue
