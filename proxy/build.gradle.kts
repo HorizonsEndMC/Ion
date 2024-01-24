@@ -23,7 +23,7 @@ dependencies {
 
 	// Included Dependencies
 	implementation("co.aikar:acf-bungee:0.5.1-SNAPSHOT")
-	implementation("net.dv8tion:JDA:5.0.0-beta.19")
+	implementation("net.dv8tion:JDA:5.0.0-beta.20")
 	implementation("net.kyori:adventure-platform-bungeecord:4.3.2")
 	implementation("net.kyori:adventure-text-logger-slf4j:4.15.0")
 
