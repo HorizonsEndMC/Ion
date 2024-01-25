@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.features.progression.Levels
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
 import net.kyori.adventure.text.Component
@@ -15,7 +16,7 @@ import java.util.function.Supplier
 
 enum class StarshipType(
 	val displayName: String,
-	val icon: String = "\uE032",
+	val icon: String = SidebarIcon.GENERIC_STARSHIP_ICON.text,
 	val color: String,
 	val dynmapIcon: String = "anchor",
 
@@ -71,7 +72,7 @@ enum class StarshipType(
 	),
 	STARFIGHTER(
 		displayName = "Starfighter",
-		icon = "\uE000",
+		icon = SidebarIcon.STARFIGHTER_ICON.text,
 		minSize = 350,
 		maxSize = 500,
 		minLevel = 1,
@@ -86,7 +87,7 @@ enum class StarshipType(
 	),
 	AI_STARFIGHTER(
 		displayName = "Starfighter",
-		icon = "\uE000",
+		icon = SidebarIcon.STARFIGHTER_ICON.text,
 		minSize = 150,
 		maxSize = 500,
 		minLevel = 1000,
@@ -102,7 +103,7 @@ enum class StarshipType(
 	),
 	GUNSHIP(
 		displayName = "Gunship",
-		icon = "\uE001",
+		icon = SidebarIcon.GUNSHIP_ICON.text,
 		minSize = 500,
 		maxSize = 2000,
 		minLevel = 10,
@@ -117,7 +118,7 @@ enum class StarshipType(
 	),
 	AI_GUNSHIP(
 		displayName = "Gunship",
-		icon = "\uE001",
+		icon = SidebarIcon.GUNSHIP_ICON.text,
 		minSize = 500,
 		maxSize = 2000,
 		minLevel = 1000,
@@ -133,7 +134,7 @@ enum class StarshipType(
 	),
 	CORVETTE(
 		displayName = "Corvette",
-		icon = "\uE002",
+		icon = SidebarIcon.CORVETTE_ICON.text,
 		minSize = 2000,
 		maxSize = 4000,
 		minLevel = 20,
@@ -150,7 +151,7 @@ enum class StarshipType(
 	),
 	AI_CORVETTE(
 		displayName = "Corvette",
-		icon = "\uE002",
+		icon = SidebarIcon.CORVETTE_ICON.text,
 		minSize = 2000,
 		maxSize = 4000,
 		minLevel = 1000,
@@ -168,7 +169,7 @@ enum class StarshipType(
 	),
 	FRIGATE(
 		displayName = "Frigate",
-		icon = "\uE003",
+		icon = SidebarIcon.FRIGATE_ICON.text,
 		minSize = 4000,
 		maxSize = 8000,
 		minLevel = 40,
@@ -185,7 +186,7 @@ enum class StarshipType(
 	),
 	AI_FRIGATE(
 		displayName = "Frigate",
-		icon = "\uE003",
+		icon = SidebarIcon.FRIGATE_ICON.text,
 		minSize = 4000,
 		maxSize = 8000,
 		minLevel = 1000,
@@ -203,7 +204,7 @@ enum class StarshipType(
 	),
 	DESTROYER(
 		displayName = "Destroyer",
-		icon = "\uE004",
+		icon = SidebarIcon.DESTROYER_ICON.text,
 		minSize = 8000,
 		maxSize = 12000,
 		minLevel = 60,
@@ -220,7 +221,7 @@ enum class StarshipType(
 	),
 	AI_DESTROYER(
 		displayName = "Destroyer",
-		icon = "\uE004",
+		icon = SidebarIcon.DESTROYER_ICON.text,
 		minSize = 8000,
 		maxSize = 12000,
 		minLevel = 1000,
@@ -238,7 +239,7 @@ enum class StarshipType(
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",
-		icon = "\uE005",
+		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 12000,
 		maxSize = 20000,
 		minLevel = 1000,
@@ -252,7 +253,7 @@ enum class StarshipType(
 	),
 	AI_BATTLECRUISER(
 		displayName = "Battlecruiser",
-		icon = "\uE005",
+		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 12000,
 		maxSize = 20000,
 		minLevel = 1000,
@@ -267,7 +268,7 @@ enum class StarshipType(
 	),
 	BATTLESHIP(
 		displayName = "Battleship",
-		icon = "\uE006",
+		icon = SidebarIcon.BATTLESHIP_ICON.text,
 		minSize = 20000,
 		maxSize = 32000,
 		minLevel = 1000,
@@ -281,7 +282,7 @@ enum class StarshipType(
 	),
 	AI_BATTLESHIP(
 		displayName = "Battleship",
-		icon = "\uE006",
+		icon = SidebarIcon.BATTLESHIP_ICON.text,
 		minSize = 20000,
 		maxSize = 32000,
 		minLevel = 1000,
@@ -296,7 +297,7 @@ enum class StarshipType(
 	),
 	DREADNOUGHT(
 		displayName = "Dreadnought",
-		icon = "\uE007",
+		icon = SidebarIcon.DREADNOUGHT_ICON.text,
 		minSize = 32000,
 		maxSize = 48000,
 		minLevel = 1000,
@@ -310,7 +311,7 @@ enum class StarshipType(
 	),
 	AI_DREADNOUGHT(
 		displayName = "Dreadnought",
-		icon = "\uE007",
+		icon = SidebarIcon.DREADNOUGHT_ICON.text,
 		minSize = 32000,
 		maxSize = 48000,
 		minLevel = 1000,
@@ -325,7 +326,7 @@ enum class StarshipType(
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
-		icon = "\uE010",
+		icon = SidebarIcon.SHUTTLE_ICON.text,
 		minSize = 100,
 		maxSize = 1000,
 		minLevel = 1,
@@ -343,7 +344,7 @@ enum class StarshipType(
 	),
 	AI_SHUTTLE(
 		displayName = "Shuttle",
-		icon = "\uE010",
+		icon = SidebarIcon.SHUTTLE_ICON.text,
 		minSize = 100,
 		maxSize = 1000,
 		minLevel = 1000,
@@ -362,7 +363,7 @@ enum class StarshipType(
 	),
 	TRANSPORT(
 		displayName = "Transport",
-		icon = "\uE011",
+		icon = SidebarIcon.TRANSPORT_ICON.text,
 		minSize = 1000,
 		maxSize = 2000,
 		minLevel = 10,
@@ -380,7 +381,7 @@ enum class StarshipType(
 	),
 	AI_TRANSPORT(
 		displayName = "Transport",
-		icon = "\uE011",
+		icon = SidebarIcon.TRANSPORT_ICON.text,
 		minSize = 1000,
 		maxSize = 2000,
 		minLevel = 1000,
@@ -399,7 +400,7 @@ enum class StarshipType(
 	),
 	LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
-		icon = "\uE012",
+		icon = SidebarIcon.LIGHT_FREIGHTER_ICON.text,
 		minSize = 2000,
 		maxSize = 4000,
 		minLevel = 20,
@@ -417,7 +418,7 @@ enum class StarshipType(
 	),
 	AI_LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
-		icon = "\uE012",
+		icon = SidebarIcon.LIGHT_FREIGHTER_ICON.text,
 		minSize = 2000,
 		maxSize = 4000,
 		minLevel = 1000,
@@ -436,7 +437,7 @@ enum class StarshipType(
 	),
 	MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
-		icon = "\uE013",
+		icon = SidebarIcon.MEDIUM_FREIGHTER_ICON.text,
 		minSize = 4000,
 		maxSize = 8000,
 		minLevel = 40,
@@ -454,7 +455,7 @@ enum class StarshipType(
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
-		icon = "\uE014",
+		icon = SidebarIcon.HEAVY_FREIGHTER_ICON.text,
 		minSize = 8000,
 		maxSize = 12000,
 		minLevel = 60,
@@ -472,7 +473,7 @@ enum class StarshipType(
 	),
 	AI_HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
-		icon = "\uE014",
+		icon = SidebarIcon.HEAVY_FREIGHTER_ICON.text,
 		minSize = 8000,
 		maxSize = 12000,
 		minLevel = 1000,

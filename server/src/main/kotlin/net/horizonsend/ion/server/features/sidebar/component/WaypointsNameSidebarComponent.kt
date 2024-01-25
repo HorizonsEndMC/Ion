@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.sidebar.component
 
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
@@ -17,13 +18,14 @@ class WaypointsNameSidebarComponent(supplier: Supplier<String>, val destination:
     }
 
     override fun draw(drawable: LineDrawable) {
-        val line = text()
-        if (destination) {
-            line.append(text("Final: ").color(GRAY))
-        } else {
-            line.append(text("Next: ").color(GRAY))
-        }
-        line.append(text(string).color(getDestinationColor(destination)))
-        drawable.drawLine(line.build())
+        val line = ofChildren(
+            if (destination) {
+                text("Final: ", GRAY)
+            } else {
+                text("Next: ", GRAY)
+            },
+            text(string, getDestinationColor(destination))
+        )
+        drawable.drawLine(line)
     }
 }
