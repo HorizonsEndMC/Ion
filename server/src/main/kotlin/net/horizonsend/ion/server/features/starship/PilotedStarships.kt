@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
+import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.subsystem.LandingGearSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
@@ -441,7 +442,10 @@ object PilotedStarships : IonServerComponent() {
 		val controller = starship.controller
 
 		if (!StarshipUnpilotEvent(starship, controller).callEvent()) return false
-		if (starship.world.name.contains("hyperspace", ignoreCase=true)) return false
+		if (Hyperspace.isMoving(starship)) {
+			starship.userError("Cannot release while moving through hyperspace! You'd be lost to the void!")
+			return false
+		}
 
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)

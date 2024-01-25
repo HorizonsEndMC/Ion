@@ -54,14 +54,6 @@ object StarshipTeleportation {
 
 		val world = newWorld ?: starship.world
 
-		if (wouldBeOutOfWorldBorder(starship, world, previousDX, previousDZ)) {
-			starship.onlinePassengers.forEach { passenger ->
-				passenger.userError("Failed to teleport, would be out of border")
-			}
-
-			return CompletableFuture.completedFuture(false)
-		}
-
 		var adjustX = previousAdjustX ?: randomOffset()
 		var adjustZ = previousAdjustZ ?: randomOffset()
 
