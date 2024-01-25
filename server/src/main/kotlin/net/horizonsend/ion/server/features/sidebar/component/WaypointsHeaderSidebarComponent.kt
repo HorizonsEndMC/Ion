@@ -1,8 +1,11 @@
 package net.horizonsend.ion.server.features.sidebar.component
 
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.sidebar.Sidebar
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.X_CROSS_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.ROUTE_SEGMENT_ICON
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
-import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -20,9 +23,9 @@ class WaypointsHeaderSidebarComponent(player: Player) : SidebarComponent {
     private val compactWaypoints = PlayerCache[player].compactWaypoints
     private val numJumps = WaypointManager.playerNumJumps[player.uniqueId] ?: -1
     private val numJumpsComponent = if (numJumps == -1) {
-        text("\uE031").font(key("horizonsend:sidebar")).color(RED)
+        text(X_CROSS_ICON.text, RED).font(Sidebar.fontKey)
     } else {
-        text(numJumps.toString()).style(style().color(AQUA))
+        text(numJumps.toString(), AQUA)
     }
 
     private fun getColor(enabled: Boolean): NamedTextColor {
@@ -30,14 +33,14 @@ class WaypointsHeaderSidebarComponent(player: Player) : SidebarComponent {
     }
 
     override fun draw(drawable: LineDrawable) {
-        val line = text()
-        line.append(text("Route").style(style(BOLD).color(YELLOW)))
-        line.append(text(" | ").color(DARK_GRAY))
-        line.append(text("\uE036").font(key("horizonsend:sidebar")).color(getColor(compactWaypoints)))
-        line.append(text(" | ").color(DARK_GRAY))
-        line.append(text("Jumps: ").style(style().color(GRAY)))
-        line.append(numJumpsComponent)
-
-        drawable.drawLine(line.build())
+        val line = ofChildren(
+            text("Route").style(style(BOLD).color(YELLOW)),
+            text(" | ", DARK_GRAY),
+            text(ROUTE_SEGMENT_ICON.text, getColor(compactWaypoints)).font(Sidebar.fontKey),
+            text(" | ", DARK_GRAY),
+            text("Jumps: ", GRAY),
+            numJumpsComponent
+        )
+        drawable.drawLine(line)
     }
 }

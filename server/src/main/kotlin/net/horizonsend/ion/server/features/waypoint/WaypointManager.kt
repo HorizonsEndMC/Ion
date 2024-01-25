@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
@@ -168,7 +169,7 @@ object WaypointManager : IonServerComponent() {
         for (planet in Space.getPlanets()) {
             val vertex = WaypointVertex(
                 name = planet.name,
-                icon = '\uE020',
+                icon = SidebarIcon.PLANET_ICON.text.first(),
                 loc = planet.location.toLocation(planet.spaceWorld!!)
             )
             mainGraph.addVertex(vertex)
@@ -179,12 +180,12 @@ object WaypointManager : IonServerComponent() {
             // 2 vertices for each beacon's entry and exit point
             val vertexEntry = WaypointVertex(
                 name = beacon.name.replace(" ", "_"),
-                icon = '\uE022',
+                icon = SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON.text.first(),
                 loc = beacon.spaceLocation.toLocation()
             )
             val vertexExit = WaypointVertex(
                 name = StringBuilder(beacon.name.replace(" ", "_")).append("_Exit").toString(),
-                icon = '\uE034',
+                icon = SidebarIcon.HYPERSPACE_BEACON_EXIT_ICON.text.first(),
                 loc = beacon.destination.toLocation()
             )
             // link edge vertex with exit vertex (for edge connections later)
@@ -253,7 +254,7 @@ object WaypointManager : IonServerComponent() {
         graph.removeVertex(locVertex)
         val newVertex = WaypointVertex(
             name = "Current Location",
-            icon = '\uE035',
+            icon = SidebarIcon.PLUS_CROSS_ICON.text.first(),
             loc = player.location,
             linkedWaypoint = null
         )
@@ -264,7 +265,7 @@ object WaypointManager : IonServerComponent() {
     fun addTempVertex(loc: Location): WaypointVertex {
         return WaypointVertex(
             name = "Waypoint @ ${loc.world.name} (${loc.x.toInt()}, ${loc.z.toInt()})",
-            icon = '\uE035',
+            icon = SidebarIcon.PLUS_CROSS_ICON.text.first(),
             loc = loc,
             linkedWaypoint = null
         )
@@ -389,7 +390,7 @@ object WaypointManager : IonServerComponent() {
             for (edge in path.edgeList) {
                 val jumps = getNumJumps(player, edge)
                 if (compactWaypoints && jumps != -1) {
-                    str.append(repeatString("\uE036", jumps - 1))
+                    str.append(repeatString(SidebarIcon.ROUTE_SEGMENT_ICON.text, jumps - 1))
                 }
                 str.append(edge.target.icon)
             }

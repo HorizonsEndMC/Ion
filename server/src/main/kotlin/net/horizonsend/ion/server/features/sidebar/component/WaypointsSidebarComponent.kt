@@ -1,6 +1,9 @@
 package net.horizonsend.ion.server.features.sidebar.component
 
-import net.kyori.adventure.key.Key.key
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.sidebar.Sidebar
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.ROUTE_SEGMENT_ICON
+import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -16,21 +19,21 @@ class WaypointsSidebarComponent(supplier: Supplier<String>) : SidebarComponent {
     private fun getRouteComponent(): TextComponent {
         val component = text()
         for (char in string) {
-            if (char == '\uE036') {
-                component.append(text(char).font(key("horizonsend:sidebar")).color(GRAY))
+            if (char == ROUTE_SEGMENT_ICON.text.first()) {
+                component.append(text(char, GRAY).font(Sidebar.fontKey))
             } else {
-                component.append(text(char).font(key("horizonsend:sidebar")).color(AQUA))
+                component.append(text(char, AQUA).font(Sidebar.fontKey))
             }
         }
         return component.build()
     }
 
     override fun draw(drawable: LineDrawable) {
-        val line = text()
-        line.appendSpace()
-        line.append(text(">  ").color(DARK_GRAY))
-        line.append(getRouteComponent())
-
-        drawable.drawLine(line.build())
+        val line = ofChildren(
+            space(),
+            text("> ", DARK_GRAY),
+            getRouteComponent()
+        )
+        drawable.drawLine(line)
     }
 }

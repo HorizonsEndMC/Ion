@@ -2,9 +2,13 @@ package net.horizonsend.ion.server.features.sidebar.tasks
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.sidebar.Sidebar
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.INTERDICTION_ICON
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
+import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
@@ -101,7 +105,7 @@ object StarshipsSidebar {
     fun interdictionActiveComponent(isInterdicting: Boolean): Component {
         return if (isInterdicting) {
             ofChildren(
-                Component.text("\uE033", AQUA).font(Sidebar.fontKey),
+                Component.text(INTERDICTION_ICON.text, AQUA).font(Sidebar.fontKey),
             )
         } else Component.empty()
     }
@@ -109,7 +113,7 @@ object StarshipsSidebar {
     fun weaponsetActiveComponent(weaponset: String?): Component {
         return if (weaponset != null) {
             ofChildren(
-                Component.text("\uE026", AQUA).font(Sidebar.fontKey),
+                Component.text(CROSSHAIR_ICON.text, AQUA).font(Sidebar.fontKey),
                 Component.text(weaponset, AQUA),
             )
         } else Component.empty()
@@ -122,7 +126,7 @@ object StarshipsSidebar {
         percent <= 40 -> GREEN
         percent <= 55 -> DARK_GREEN
         percent <= 70 -> AQUA
-        percent <= 85 -> NamedTextColor.DARK_AQUA
-        else -> NamedTextColor.BLUE
+        percent <= 85 -> DARK_AQUA
+        else -> BLUE
     }
 }

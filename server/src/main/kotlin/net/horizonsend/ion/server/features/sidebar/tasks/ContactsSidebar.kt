@@ -7,6 +7,12 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GENERIC_STARSHIP_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.INTERDICTION_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.PLANET_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STAR_ICON
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
@@ -203,7 +209,7 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text("Last Piloted Starship", color),
-                    prefix = constructPrefixTextComponent("\uE032", YELLOW),
+                    prefix = constructPrefixTextComponent(GENERIC_STARSHIP_ICON.text, YELLOW),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
@@ -230,7 +236,7 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(planet.name, color),
-                    prefix = constructPrefixTextComponent("\uE020", DARK_AQUA),
+                    prefix = constructPrefixTextComponent(PLANET_ICON.text, DARK_AQUA),
                     suffix = constructSuffixTextComponent(
                         interdictionTextComponent(
                             distance,
@@ -263,7 +269,7 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(star.name, color),
-                    prefix = constructPrefixTextComponent("\uE021", YELLOW),
+                    prefix = constructPrefixTextComponent(STAR_ICON.text, YELLOW),
                     suffix = constructSuffixTextComponent(
                         interdictionTextComponent(
                             distance,
@@ -296,7 +302,7 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(beacon.name, color),
-                    prefix = constructPrefixTextComponent("\uE022", BLUE),
+                    prefix = constructPrefixTextComponent(HYPERSPACE_BEACON_ENTER_ICON.text, BLUE),
                     suffix = constructSuffixTextComponent(beaconTextComponent(beacon.prompt)),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
@@ -341,9 +347,9 @@ object ContactsSidebar {
 
     private fun interdictionTextComponent(distance: Int, interdictionDistance: Int, visibleOutOfRange: Boolean) =
         if (distance <= interdictionDistance) {
-            text("\uE033", RED).font(fontKey)
+            text(INTERDICTION_ICON.text, RED).font(fontKey)
         } else if (visibleOutOfRange) {
-            text("\uE033", GOLD).font(fontKey)
+            text(INTERDICTION_ICON.text, GOLD).font(fontKey)
         } else Component.empty()
 
     private fun beaconTextComponent(text: String?) =
@@ -366,7 +372,7 @@ object ContactsSidebar {
                     } ?: continue
                 }
             }
-            textComponent.append(text("\uE026", AQUA).font(fontKey))
+            textComponent.append(text(CROSSHAIR_ICON.text, AQUA).font(fontKey))
             textComponent.append(text(weaponset.key, AQUA))
             textComponent.appendSpace()
         }
@@ -385,4 +391,3 @@ object ContactsSidebar {
         var padding: TextComponent
     )
 }
-
