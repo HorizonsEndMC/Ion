@@ -1,8 +1,7 @@
 package net.horizonsend.ion.server.features.space.encounters
 
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.giveReward
-import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.block.Chest
 import org.bukkit.event.EventHandler
@@ -13,9 +12,9 @@ class EncounterManager : SLEventListener() {
 	fun onPlayerInteract(event: PlayerInteractEvent) {
 		val clickedBlock = (event.clickedBlock?.state as? Chest) ?: return
 
-		val serverLevel = event.player.world.minecraft
+		val world = event.player.world
 
-		if (!SpaceGenerationManager.worldGenerators.containsKey(serverLevel)) return
+		if (!WorldGenerationManager.worldGenerators.containsKey(world)) return
 
 		Encounters[clickedBlock]?.onChestInteract(event)
 		giveReward(event.player, clickedBlock)

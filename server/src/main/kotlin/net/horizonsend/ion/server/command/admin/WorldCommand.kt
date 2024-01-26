@@ -13,7 +13,8 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.space.SpaceWorlds
-import net.horizonsend.ion.server.miscellaneous.IonWorld
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
@@ -26,7 +27,7 @@ import org.bukkit.command.CommandSender
 object WorldCommand : SLCommand() {
 	@Subcommand("flag add")
 	@Suppress("unused")
-	fun onAddWorldFlag(sender: CommandSender, world: World, flag: IonWorld.WorldFlag) {
+	fun onAddWorldFlag(sender: CommandSender, world: World, flag: WorldFlag) {
 		val ionWorld = IonWorld[world]
 
 		if (ionWorld.configuration.flags.add(flag)) sender.success("Removed flag $flag")
@@ -38,7 +39,7 @@ object WorldCommand : SLCommand() {
 
 	@Subcommand("flag remove")
 	@Suppress("unused")
-	fun onRemoveWorldFlag(sender: CommandSender, world: World, flag: IonWorld.WorldFlag) {
+	fun onRemoveWorldFlag(sender: CommandSender, world: World, flag: WorldFlag) {
 		val ionWorld = IonWorld[world]
 
 		if (ionWorld.configuration.flags.remove(flag)) sender.success("Removed flag $flag")
