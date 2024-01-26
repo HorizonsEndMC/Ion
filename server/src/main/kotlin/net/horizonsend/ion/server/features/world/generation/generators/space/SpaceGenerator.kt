@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.world.generation.generators.space
 
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
@@ -19,9 +22,9 @@ import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.persistence.PersistentDataType
 import java.io.File
+import java.util.Optional
 import java.util.Random
 import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -34,7 +37,7 @@ class SpaceGenerator(
 	val world: World,
 	val configuration: ServerConfiguration.AsteroidConfig,
 ) : WorldGenerator {
-	val spaceGenerationVersion: Byte = 0
+	private val spaceGenerationVersion: Byte = 0
 	val random = Random(world.seed)
 
 	// ASTEROIDS SECTION
@@ -47,63 +50,8 @@ class SpaceGenerator(
 
 	val weightedOres = configuration.blockPalettes.associate { configuration.blockPalettes.indexOf(it) to oreWeights(it) }
 
-	// Multiple of the radius of the asteroid to mark chunks as might contain an asteroid
-	val searchRadius = 1.0
-
-	/**
-	 * Generates an asteroid with optional specification for the parameters
-	 **/
-	fun generateWorldAsteroid(
-		chunkSeed: Long,
-		chunkRandom: Random,
-		maxHeight: Int,
-		minHeight: Int,
-		x: Int,
-		y: Int,
-		z: Int,
-		size: Double? = null,
-		index: Int? = null,
-		octaves: Int? = null,
-	): AsteroidGenerationData {
-		var newY = y
-
-		fun generateSize(): Double {
-			val newSize = chunkRandom.nextDouble(10.0, configuration.maxAsteroidSize)
-			val downShift: Boolean = y + newSize > maxHeight
-			val upShift: Boolean = y - newSize < minHeight
-
-			if (upShift) newY = (y - (y + newSize - maxHeight)).toInt()
-			if (downShift) newY = (y + (y - newSize + minHeight)).toInt()
-
-			return newSize
-		}
-
-		val formattedSize = size ?: generateSize()
-
-		val palette = weightedPalettes.random(chunkRandom)
-
-		val blockPalette = index?.let {
-			if (!IntRange(0, configuration.blockPalettes.size - 1).contains(index)) {
-				throw IndexOutOfBoundsException("ERROR: index out of range: 0..${configuration.blockPalettes.size - 1}")
-			}
-			weightedPalettes[it]
-		} ?: palette
-
-		val formattedOctaves = octaves ?: floor(3 * 0.998.pow(formattedSize)).toInt().coerceAtLeast(1)
-
-		return AsteroidGenerationData(
-			chunkSeed,
-			x,
-			newY,
-			z,
-			blockPalette.second,
-			blockPalette.first,
-			formattedSize,
-			formattedOctaves
-		)
-	}
-
-	fun generateRandomAsteroid(
+	/** Generates a random asteroid using the world configuration */
+	private fun generateRandomAsteroid(
 		chunkSeed: Long,
 		chunkRandom: Random,
 		maxHeight: Int,
@@ -138,7 +86,6 @@ class SpaceGenerator(
 			size,
 			2
 		)
-
 	}
 
 	fun parseDensity(x: Double, y: Double, z: Double): Double {
@@ -169,29 +116,13 @@ class SpaceGenerator(
 	// Asteroids end
 
 	// Wrecks start
-	val schematicMap = configuration.wreckClasses.flatMap { wreckClass -> wreckClass.wrecks }.associate { wreck ->
-		wreck.wreckSchematicName to schematic(wreck.wreckSchematicName)
-	}
+	val schematicCache: LoadingCache<String, Optional<Clipboard>> = CacheBuilder.newBuilder().build(
+		CacheLoader.from { schematicName ->
+			val file: File = IonServer.dataFolder.resolve("wrecks").resolve("$schematicName.schem")
 
-	private fun schematic(schematicName: String): Clipboard {
-		val file: File = IonServer.dataFolder.resolve("wrecks").resolve("$schematicName.schem")
-
-		return readSchematic(file) ?: throw IllegalArgumentException("Could not read schematic $file")
-	}
-
-	fun generateRandomWreckData(chunkRandom: Random, x: Int, y: Int, z: Int): WreckGenerationData {
-		val wreckClass = configuration.weightedWreckList.random(chunkRandom)
-		val wreck = wreckClass.random(chunkRandom)
-		val encounter = wreck.encounterWeightedRandomList.randomOrNull(chunkRandom)?.let { Encounters[it] }
-
-		return WreckGenerationData(
-			x,
-			y,
-			z,
-			wreck.wreckSchematicName,
-			encounter
-		)
-	}
+			return@from Optional.ofNullable(readSchematic(file))
+		}
+	)
 
 	private fun <T> search(
 		chunkPos: ChunkPos,
@@ -284,7 +215,17 @@ class SpaceGenerator(
 				4207097,
 				configuration.wreckMultiplier
 			) { _, chunkRandom, _, _, x, y, z ->
-				generateRandomWreckData(chunkRandom, x, y, z)
+				val wreckClass = configuration.weightedWreckList.random(chunkRandom)
+				val wreck = wreckClass.random(chunkRandom)
+				val encounter = wreck.encounterWeightedRandomList.randomOrNull(chunkRandom)?.let { Encounters[it] }
+
+				WreckGenerationData(
+					x,
+					y,
+					z,
+					wreck.wreckSchematicName,
+					encounter
+				)
 			}
 		} else listOf()
 
