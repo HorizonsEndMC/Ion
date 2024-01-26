@@ -139,7 +139,7 @@ data class WreckGenerationData(
 	)
 
 	fun worldGenData(generator: SpaceGenerator): WreckGen {
-		val clipboard: Clipboard = generator.schematicMap[wreckName]!!
+		val clipboard: Clipboard = generator.schematicCache[wreckName].get()
 
 		val region = clipboard.region.clone()
 		val targetBlockVector: BlockVector3 = BlockVector3.at(x, y, z)
