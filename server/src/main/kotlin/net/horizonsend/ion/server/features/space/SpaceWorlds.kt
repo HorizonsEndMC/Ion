@@ -5,8 +5,8 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.miscellaneous.IonWorld
-import net.horizonsend.ion.server.miscellaneous.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.World
 import org.bukkit.event.world.WorldLoadEvent
@@ -18,7 +18,7 @@ object SpaceWorlds : IonServerComponent() {
 		.build(CacheLoader.from cache@{ world ->
 			if (world == null) return@cache false
 
-			return@cache world.ion().hasFlag(IonWorld.WorldFlag.SPACE_ENVIRONMENT)
+			return@cache world.ion().hasFlag(WorldFlag.SPACE_ENVIRONMENT)
 		})
 
 	override fun onEnable() {

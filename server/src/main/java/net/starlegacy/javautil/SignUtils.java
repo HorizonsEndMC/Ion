@@ -1,7 +1,7 @@
 package net.starlegacy.javautil;
 
 import com.google.gson.Gson;
-import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
 import org.bukkit.ChatColor;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class SignUtils {
         return text.toString();
     }
 
-    public static String[] fromCompoundTag(CompoundTag nbt) {
+    public static String[] fromCompoundTag(CompoundBinaryTag nbt) {
         String[] lines = new String[]{"", "", "", ""};
 
         if (nbt == null) {
