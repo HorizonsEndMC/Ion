@@ -2,6 +2,11 @@ package net.horizonsend.ion.server.features.tutorial
 
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.BOLD
+import net.horizonsend.ion.common.utils.text.HORIZONS_END
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -23,6 +28,18 @@ import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
+import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
+import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
@@ -38,17 +55,19 @@ enum class TutorialPhase(
 	val showCompleted: Boolean = false
 ) {
 	GET_SHIP_CONTROLLER(
-		PopupMessage("&a&l&oWelcome!", "&7Welcome to &6Star &eLegacy"),
-		PopupMessage("&3Tutorial", "&4&lYou can leave by doing /tutorialexit"),
-		PopupMessage("&3Tutorial", "&2SL has unique features to learn like spaceships"),
-		PopupMessage("&3Tutorial", "&eThis tutorial teaches you how to fly a spaceship!"),
-		PopupMessage("&9Controller", "First, you need a ship controller"),
-		PopupMessage("&9Controller", "Ship controllers are needed to fly ships"),
-		PopupMessage("&9Controller", "You can always get one with /kit controller"),
-		PopupMessage("&9Controller", "&6&lEnter Command&8: &b/kit controller"),
+		PopupMessage(text("Welcome!", WHITE), ofChildren(text("Welcome to ", HE_MEDIUM_GRAY), HORIZONS_END)),
+		PopupMessage(text("Tutorial", DARK_AQUA), text("You can leave by doing /tutorialexit", DARK_RED)),
+		PopupMessage(text("Tutorial", DARK_AQUA), ofChildren(HORIZONS_END, text(" has unique features to learn like spaceships", DARK_GREEN))),
+		PopupMessage(text("Tutorial", DARK_AQUA), text("This tutorial teaches you how to fly a spaceship!")),
+		PopupMessage(text("Controller", BLUE), text("First, you need a ship controller")),
+		PopupMessage(text("Controller", BLUE), text("Ship controllers are needed to fly ships")),
+		PopupMessage(text("Controller", BLUE), text("You can always get one with /kit controller")),
+		PopupMessage(text("Controller", BLUE), text("Enter the command: /kit controller", GOLD, BOLD)),
 		cancel = false
 	) {
 		override fun setupHandlers() = on<PlayerCommandPreprocessEvent>({ it.player }) { event, player ->
+			println(event.message)
+			println(event.player)
 			if (event.message.removePrefix("/").equals("kit controller", ignoreCase = true)) {
 				event.isCancelled = true
 
@@ -61,15 +80,15 @@ enum class TutorialPhase(
 		}
 	},
 	PLACE_SHIP_COMPUTER(
-		PopupMessage("&5Computer", "Now you need a ship computer"),
-		PopupMessage("&5Computer", "Ship computers are used to start the ship"),
-		ActionMessage("&5Computer", "You have been given one ship computer") { player ->
+		PopupMessage(text("Computer", DARK_PURPLE), text("Now you need a ship computer")),
+		PopupMessage(text("Computer", DARK_PURPLE), text("Ship computers are used to start the ship")),
+		ActionMessage(text("Computer", DARK_PURPLE), text("You have been given one ship computer")) { player ->
 			val item = ItemStack(Material.JUKEBOX, 1).setDisplayNameAndGet("&rStarship Computer".colorize())
 			player.inventory.addItem(item).forEach { (_, leftover) ->
 				player.world.dropItem(player.eyeLocation, leftover)
 			}
 		},
-		PopupMessage("&5Computer", "&d&lPlace ship computer (black jukebox)")
+		PopupMessage(text("Computer", DARK_PURPLE), text("Place ship computer (black jukebox)", LIGHT_PURPLE, BOLD))
 	) {
 		override fun setupHandlers() = on<BlockPlaceEvent>({ it.player }) { event, player ->
 			if (event.block.type == Material.JUKEBOX) {
@@ -78,53 +97,53 @@ enum class TutorialPhase(
 		}
 	},
 	OPEN_COMPUTER_MENU(
-		PopupMessage("&3Computer Menu", "Ship computers are used via their menu"),
-		PopupMessage("&3Computer Menu", "&lLeft click computer with controller (clock)")
+		PopupMessage(text("Computer Menu", DARK_AQUA), text("Ship computers are used via their menu")),
+		PopupMessage(text("Computer Menu", DARK_AQUA), text("Left click computer with controller (clock)", GOLD, BOLD))
 	) {
-		override fun setupHandlers() = on<StarshipComputerOpenMenuEvent>({ it.player }) { event, player ->
+		override fun setupHandlers() = on<StarshipComputerOpenMenuEvent>({ it.player }) { _, player ->
 			nextStep(player)
 			Tasks.syncDelay(15, player::closeInventory)
 		}
 	},
 	DETECT_SHIP(
-		PopupMessage("&6Detection", "Now you need to detect the ship"),
-		PopupMessage("&6Detection", "Detecting determines which blocks are your ship"),
-		PopupMessage("&6Detection", "Some block types are detected, but not stone etc"),
-		PopupMessage("&6Detection", "Use the ship computer to detect"),
-		PopupMessage("&6Detection", "&e&lOpen the menu again & click &5&lRe-Detect")
+		PopupMessage(text("Detection", GOLD), text("Now you need to detect the ship")),
+		PopupMessage(text("Detection", GOLD), text("Detecting determines which blocks are your ship")),
+		PopupMessage(text("Detection", GOLD), text("Some block types are detected, but not stone etc")),
+		PopupMessage(text("Detection", GOLD), text("Use the ship computer to detect")),
+		PopupMessage(text("Detection", GOLD), "<yellow><bold>Open the menu again & click <dark_purple><bold>Re-Detect".miniMessage())
 	) {
-		override fun setupHandlers() = on<StarshipDetectEvent>({ it.player }) { event, player ->
+		override fun setupHandlers() = on<StarshipDetectEvent>({ it.player }) { _, player ->
 			nextStep(player)
 		}
 	},
 	PILOT_SHIP(
-		PopupMessage("&aPiloting", "Now you need to pilot the ship"),
-		PopupMessage("&aPiloting", "Ships only move while they are piloted"),
-		PopupMessage("&aPiloting", "Additionally, shields only work while piloted"),
-		PopupMessage("&aPiloting", "&6&lRight click computer with controller (clock)")
+		PopupMessage(text("Piloting", GREEN), text("Now you need to pilot the ship")),
+		PopupMessage(text("Piloting", GREEN), text("Ships only move while they are piloted")),
+		PopupMessage(text("Piloting", GREEN), text("Additionally, shields only work while piloted")),
+		PopupMessage(text("Piloting", GREEN), text("Right click computer with controller (clock)", GOLD, BOLD))
 	) {
-		override fun setupHandlers() = on<StarshipPilotEvent>({ it.player }) { event, player ->
+		override fun setupHandlers() = on<StarshipPilotEvent>({ it.player }) { _, player ->
 			nextStep(player)
 		}
 	},
 	SHIFT_FLY_FORWARD(
-		PopupMessage("&dMoving", "You can move ships while piloted"),
-		PopupMessage("&dMoving", "There are various ways to move ships"),
-		PopupMessage("&dMoving", "The most basic way is 'shift' flying"),
-		PopupMessage("&dMoving", "To shift fly, first hold your controller"),
-		PopupMessage("&dMoving", "Then, hold the sneak key (default key shift)"),
-		PopupMessage("&dMoving", "This moves you the way you're facing"),
-		PopupMessage("&dMoving", "For practice, shift fly forwards"),
-		PopupMessage("&dMoving", "&6&lHold the controller, face the window, & sneak")
+		PopupMessage(text("Moving", LIGHT_PURPLE), text("You can move ships while piloted")),
+		PopupMessage(text("Moving", LIGHT_PURPLE), text("There are various ways to move ships")),
+		PopupMessage(text("Moving", LIGHT_PURPLE), text("The most basic way is 'shift' flying")),
+		PopupMessage(text("Moving", LIGHT_PURPLE), text("To shift fly, first hold your controller")),
+		PopupMessage(text("Moving", LIGHT_PURPLE), text("Then, hold the sneak key (default key shift)")),
+		PopupMessage(text("Moving", LIGHT_PURPLE), text("This moves you the way you're facing")),
+		PopupMessage(text("Moving", LIGHT_PURPLE), text("For practice, shift fly forwards")),
+		PopupMessage(text("Moving", LIGHT_PURPLE), text("Hold the controller, face the window, & sneak", GOLD, BOLD))
 	) {
-		override fun setupHandlers() = on<StarshipTranslateEvent>({ it.starship.playerPilot }) { event, player ->
+		override fun setupHandlers() = on<StarshipTranslateEvent>({ it.starship.playerPilot }) { _, player ->
 			nextStep(player)
 		}
 	},
 	SHIFT_FLY_DOWN(
-		PopupMessage("&2Moving Down", "You can shift fly any direction, even down"),
-		PopupMessage("&2Moving Down", "Shift flying down lets you land on a planet"),
-		PopupMessage("&2Moving Down", "&6&lHold the controller, face down, & sneak"),
+		PopupMessage(text("Moving Down", DARK_GREEN), text("You can shift fly any direction, even down")),
+		PopupMessage(text("Moving Down", DARK_GREEN), text("Shift flying down lets you land on a planet")),
+		PopupMessage(text("Moving Down", DARK_GREEN), text("Hold the controller, face down, & sneak", GOLD, BOLD)),
 		cancel = false // let them keep shift flying forward
 	) {
 		override fun setupHandlers() = on<StarshipTranslateEvent>({ it.starship.playerPilot }) { event, player ->
@@ -136,13 +155,13 @@ enum class TutorialPhase(
 		}
 	},
 	TURN_RIGHT(
-		PopupMessage("&dRotating", "Besides moving, you can turn your ship"),
-		PopupMessage("&dRotating", "Ships can face the 4 directions (N/E/S/W)"),
-		PopupMessage("&dRotating", "To turn your ship, you can use the helm sign"),
-		PopupMessage("&dRotating", "Right click the sign with [helm] on it"),
-		PopupMessage("&dRotating", "Then, holding the controller, click again"),
-		PopupMessage("&dRotating", "Right click to turn right, left click for left"),
-		PopupMessage("&dRotating", "&6&lHold the controller, right click the helm sign")
+		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Besides moving, you can turn your ship")),
+		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Ships can face the 4 directions (N/E/S/W)")),
+		PopupMessage(text("Rotating", LIGHT_PURPLE), text("To turn your ship, you can use the helm sign")),
+		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Right click the sign with [helm] on it")),
+		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Then, holding the controller, click again")),
+		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Right click to turn right, left click for left")),
+		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Hold the controller, right click the helm sign", GOLD, BOLD))
 	) {
 		override fun setupHandlers() = on<StarshipRotateEvent>({ it.starship.playerPilot }) { event, player ->
 			if (event.clockwise) {
@@ -151,7 +170,7 @@ enum class TutorialPhase(
 		}
 	},
 	TURN_LEFT(
-		PopupMessage("&dRotating", "&6&lNow left click the helm sign"),
+		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Now left click the helm sign", GOLD, BOLD)),
 		cancel = false // let them rotate
 	) {
 		override fun setupHandlers() = on<StarshipRotateEvent>({ it.starship.playerPilot }) { event, player ->
@@ -161,29 +180,29 @@ enum class TutorialPhase(
 		}
 	},
 	CRUISE_START(
-		PopupMessage("&9Cruising", "Cruise to move steadily over long distances"),
-		PopupMessage("&9Cruising", "Cruising uses thrusters to determine speed"),
-		PopupMessage("&9Cruising", "To cruise, right click the [cruise] sign"),
-		PopupMessage("&9Cruising", "Right click again to cruise"),
-		PopupMessage("&9Cruising", "Cruising works forwards and diagonally of it"),
-		PopupMessage("&9Cruising", "If you can't face the right way, turn the ship"),
-		PopupMessage("&9Cruising", "&6&lHold the controller & right click cruise sign")
+		PopupMessage(text("Cruising", BLUE), text("Cruise to move steadily over long distances")),
+		PopupMessage(text("Cruising", BLUE), text("Cruising uses thrusters to determine speed")),
+		PopupMessage(text("Cruising", BLUE), text("To cruise, right click the [cruise] sign")),
+		PopupMessage(text("Cruising", BLUE), text("Right click again to cruise")),
+		PopupMessage(text("Cruising", BLUE), text("Cruising works forwards and diagonally of it")),
+		PopupMessage(text("Cruising", BLUE), text("If you can't face the right way, turn the ship")),
+		PopupMessage(text("Cruising", BLUE), text("Hold the controller & right click cruise sign", GOLD, BOLD))
 	) {
 		override fun setupHandlers() = on<StarshipStartCruisingEvent>({ it.starship.playerPilot }) { event, player ->
 			nextStep(player)
 		}
 	},
 	CRUISE_STOP(
-		PopupMessage("&9Stop Cruising", "&6&lLeft click the cruise sign to stop")
+		PopupMessage(text("Stop Cruising", BLUE), text("Left click the cruise sign to stop", GOLD, BOLD))
 	) {
 		override fun setupHandlers() = on<StarshipStopCruisingEvent>({ it.starship.playerPilot }) { event, player ->
 			nextStep(player)
 		}
 	},
 	RELEASE_SHIP(
-		PopupMessage("&7Releasing", "When done flying, release to stop piloting"),
-		PopupMessage("&7Releasing", "Releasing also lets you leave the ship"),
-		PopupMessage("&7Releasing", "&e&lType /release or right click the computer")
+		PopupMessage(text("Releasing", GRAY), text("When done flying, release to stop piloting")),
+		PopupMessage(text("Releasing", GRAY), text("Releasing also lets you leave the ship")),
+		PopupMessage(text("Releasing", GRAY), text("Type /release or right click the computer", YELLOW, BOLD))
 	) {
 		override fun setupHandlers() = on<StarshipUnpilotEvent>({ (it.controller as? PlayerController)?.player }) { event, player ->
 			event.isCancelled = true

@@ -2,6 +2,7 @@ package net.horizonsend.ion.common.utils.text
 
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toText
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
@@ -76,10 +77,15 @@ fun formatLink(showText: String, link: String): Component {
 		.hoverEvent(text(link))
 }
 
-val ITALIC = TextDecoration.ITALIC
+// Allow static imports
+val OBFUSCATED = TextDecoration.OBFUSCATED
 val BOLD = TextDecoration.BOLD
-val UNDERLINED = TextDecoration.UNDERLINED
 val STRIKETHROUGH = TextDecoration.STRIKETHROUGH
+val UNDERLINED = TextDecoration.UNDERLINED
+val ITALIC = TextDecoration.ITALIC
+
+val HORIZONS_END = text("Horizon's End", HE_LIGHT_GRAY, BOLD)
+val HORIZONS_END_BRACKETED = bracketed(text("Horizon's End", HE_LIGHT_GRAY, BOLD))
 
 //<editor-fold desc="Custom GUI helper functions">/
 
