@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.tutorial
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
@@ -18,21 +19,22 @@ import net.horizonsend.ion.server.features.tutorial.message.TutorialMessage
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
-import net.horizonsend.ion.server.miscellaneous.utils.msg
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
-import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.inventory.ItemStack
 
-enum class TutorialPhase(vararg val messages: TutorialMessage, val cancel: Boolean = true) {
+enum class TutorialPhase(
+	vararg val messages: TutorialMessage,
+	val cancel: Boolean = true,
+	val showCompleted: Boolean = false
+) {
 	GET_SHIP_CONTROLLER(
 		PopupMessage("&a&l&oWelcome!", "&7Welcome to &6Star &eLegacy"),
 		PopupMessage("&3Tutorial", "&4&lYou can leave by doing /tutorialexit"),
@@ -186,9 +188,13 @@ enum class TutorialPhase(vararg val messages: TutorialMessage, val cancel: Boole
 			StarshipDestruction.vanish(event.starship)
 			nextStep(player)
 		}
-	};
+	}
+
+	;
 
 	open fun onStart(player: Player) {}
+
+	open fun onEnd(player: Player) {}
 
 	abstract fun setupHandlers()
 
@@ -202,30 +208,26 @@ enum class TutorialPhase(vararg val messages: TutorialMessage, val cancel: Boole
 	) {
 		val phase = this
 
-		Bukkit.getPluginManager().registerEvents(
-			object : Listener {
-				@EventHandler(priority = EventPriority.NORMAL)
-				fun onEvent(event: T) {
-					val player: Player = getPlayer(event) ?: return
+		listen<T>(EventPriority.NORMAL) { event: T ->
+			val player: Player = getPlayer(event) ?: return@listen
 
-					if (TutorialManager.getPhase(player) == phase) {
-						if (TutorialManager.isReading(player)) {
-							if (event is Cancellable && this@TutorialPhase.cancel) {
-								event.isCancelled = true
-								player msg "&cFinish reading the messages! :P"
-							}
-							return
-						}
-						handler(event, player)
+			if (TutorialManager.getPhase(player) == phase) {
+				if (TutorialManager.isReading(player)) {
+					if (event is Cancellable && this@TutorialPhase.cancel) {
+						event.isCancelled = true
+						player.userError("Finish reading the messages! :P")
 					}
+
+					return@listen
 				}
-			},
-			IonServer
-		)
+
+				handler(event, player)
+			}
+		}
 	}
 
 	protected fun nextStep(player: Player) {
-		player action "&a&oCompleted $this"
+		if (showCompleted) player.success("Completed $this")
 		player.resetTitle()
 
 		val next: TutorialPhase? = byOrdinal[ordinal + 1]
@@ -235,6 +237,7 @@ enum class TutorialPhase(vararg val messages: TutorialMessage, val cancel: Boole
 			return
 		}
 
+		onEnd(player)
 		TutorialManager.startPhase(player, next)
 	}
 
