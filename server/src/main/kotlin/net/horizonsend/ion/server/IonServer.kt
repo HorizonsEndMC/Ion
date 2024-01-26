@@ -20,10 +20,10 @@ import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.TradeConfiguration
 import net.horizonsend.ion.server.features.ai.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
-import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
-import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.generation.generators.bukkit.EmptyChunkGenerator
+import net.horizonsend.ion.server.features.world.generation.generators.bukkit.SpaceBiomeProvider
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.IonWorld
 import net.horizonsend.ion.server.miscellaneous.LegacyConfig
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
 import net.horizonsend.ion.server.miscellaneous.registrations.components
@@ -159,7 +159,7 @@ object IonServer : JavaPlugin() {
 	}
 
 	override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator {
-		return SpaceChunkGenerator()
+		return EmptyChunkGenerator
 	}
 }
 
