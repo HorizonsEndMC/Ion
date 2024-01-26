@@ -99,5 +99,4 @@ class IonWorld private constructor(
 	data class WorldSettings(
 		val flags: MutableSet<WorldFlag> = mutableSetOf()
 	)
-
 }
