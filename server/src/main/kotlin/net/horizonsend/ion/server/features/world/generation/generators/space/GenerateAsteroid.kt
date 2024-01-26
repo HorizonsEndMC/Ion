@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.space.generation.generators
+package net.horizonsend.ion.server.features.world.generation.generators.space
 
 import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection

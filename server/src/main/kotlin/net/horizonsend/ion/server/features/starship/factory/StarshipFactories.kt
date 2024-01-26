@@ -103,7 +103,7 @@ object StarshipFactories : IonServerComponent() {
 			blocks[key] = data
 
 			if (data.material.isSign) {
-				signs[key] = SignUtils.fromCompoundTag(baseBlock.nbtData)
+				signs[key] = SignUtils.fromCompoundTag(baseBlock.nbt)
 			}
 		}
 
