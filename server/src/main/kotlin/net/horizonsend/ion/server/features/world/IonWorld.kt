@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous
+package net.horizonsend.ion.server.features.world
 
 import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import kotlinx.serialization.Serializable
@@ -100,9 +100,4 @@ class IonWorld private constructor(
 		val flags: MutableSet<WorldFlag> = mutableSetOf()
 	)
 
-	enum class WorldFlag {
-		SPACE_ENVIRONMENT,
-		ALLOW_SPACE_STATIONS,
-		ALLOW_AI_SPAWNS,
-	}
 }

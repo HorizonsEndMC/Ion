@@ -11,8 +11,9 @@ import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
-import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.listener.fixers.BiomeFixer9001
 import net.horizonsend.ion.server.listener.fixers.CancelListeners
 import net.horizonsend.ion.server.listener.fixers.EdenFixer9000
@@ -37,7 +38,6 @@ import net.horizonsend.ion.server.listener.misc.RecipeModifications
 import net.horizonsend.ion.server.listener.misc.ResourcePackListener
 import net.horizonsend.ion.server.listener.nations.FriendlyFireListener
 import net.horizonsend.ion.server.listener.nations.MovementListener
-import net.horizonsend.ion.server.miscellaneous.IonWorld
 import org.bukkit.event.Listener
 
 val listeners: List<Listener> = listOf(
@@ -72,7 +72,7 @@ val listeners: List<Listener> = listOf(
 	HyperspaceBeaconManager,
 	IonWorld,
 	MiscListeners(),
-	SpaceGenerationManager,
+	WorldGenerationManager,
 	EncounterManager(),
 	ResourcePackListener(),
 	VoidNetwork(),

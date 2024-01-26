@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.space.generation.generators
+package net.horizonsend.ion.server.features.world.generation.generators.space
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
