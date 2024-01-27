@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.sidebar.component
 
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -14,7 +13,6 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 
 class StarshipsSidebarComponent2(starship: ActiveControlledStarship) : SidebarComponent {
-    private val icon = starship.type.icon
     private val currentVelocity = starship.cruiseData.velocity.length().roundToHundredth()
     private val maxVelocity = starship.cruiseData.targetSpeed
     private val pmThruster = starship.reactor.powerDistributor.thrusterPortion
@@ -22,14 +20,15 @@ class StarshipsSidebarComponent2(starship: ActiveControlledStarship) : SidebarCo
     private val isDirectControlEnabled = starship.isDirectControlEnabled
     private val isCruising = StarshipCruising.isCruising(starship)
     private val isStopped = starship.cruiseData.velocity.lengthSquared() == 0.0
+    private val compassComponent = StarshipsSidebar.compassComponent(starship.getTargetForward(), starship.type.icon)
 
     override fun draw(drawable: LineDrawable) {
         val line = ofChildren(
-            text("W", GRAY),
+            compassComponent[1][0],
             space(),
-            text(icon, GRAY).font(Sidebar.fontKey),
+            compassComponent[1][1],
             space(),
-            text("E", GRAY),
+            compassComponent[1][2],
             text(" | ", DARK_GRAY),
 
             // Speed
