@@ -251,7 +251,7 @@ object StarshipDetection : IonServerComponent() {
 		}
 
 		/*// Allow listeners to cancel the detection
-		if (!StarshipDetectEvent(player, computer, world, blockTypes.keys).callEvent()) {
+		if (!StarshipDetectedEvent(player, computer, world, blockTypes.keys).callEvent()) {
 				throw StarshipDetection.DetectionFailedException(
 						"Detection cancelled"
 				)

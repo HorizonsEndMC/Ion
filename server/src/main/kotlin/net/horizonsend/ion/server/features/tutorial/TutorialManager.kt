@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.paste
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.horizonsend.ion.server.miscellaneous.utils.red
 import net.horizonsend.ion.server.miscellaneous.utils.title
+import net.minecraft.world.level.chunk.LevelChunkSection
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -164,19 +165,23 @@ object TutorialManager : IonServerComponent() {
 			}
 		}
 
-// 		TutorialPhase.values().forEach(TutorialPhase::setupHandlers)
+ 		TutorialPhase.values().forEach(TutorialPhase::setupHandlers)
 	}
 
 	private fun clearChunk(chunkReference: WeakReference<Chunk>) {
 		val chunk = chunkReference.get() ?: return
 		val nmsChunk = chunk.minecraft
-// 		val sections = nmsChunk.sections
+ 		val sections = nmsChunk.sections
+
 		for (it in nmsChunk.blockEntities.keys.toList()) {
 			nmsChunk.level.removeBlockEntity(it)
 		}
-// 		for (i in 0..sections.lastIndex) {
-// 			sections[i] = NMSLevelChunk.EMPTY_CHUNK_SECTION
-// 		}
+
+ 		for (oldSection in sections.withIndex()) {
+			 val (y, _) = oldSection
+
+ 			 sections[y] = LevelChunkSection(y, nmsChunk.biomeRegistry, nmsChunk.pos, nmsChunk.level)
+ 		}
 	}
 
 	fun start(player: Player) {

@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.achievements
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
-import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
-import net.horizonsend.ion.server.features.starship.event.StarshipDetectEvent
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipDetectedEvent
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.event.EventHandler
@@ -26,7 +26,7 @@ class AchievementListeners : SLEventListener() {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	fun onDetectShip(event: StarshipDetectEvent) {
+	fun onDetectShip(event: StarshipDetectedEvent) {
 		event.player.rewardAchievement(Achievement.DETECT_SHIP)
 	}
 
