@@ -16,7 +16,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
-import net.horizonsend.ion.common.redis
+import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.utils.redis.serialization
+package net.horizonsend.ion.common.redis.serialization
 
 import com.google.gson.InstanceCreator
 import com.google.gson.JsonDeserializationContext

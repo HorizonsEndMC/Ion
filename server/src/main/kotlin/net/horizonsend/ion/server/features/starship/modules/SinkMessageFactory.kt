@@ -4,14 +4,16 @@ import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
+import net.horizonsend.ion.server.miscellaneous.utils.Discord.asDiscord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
@@ -21,17 +23,27 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextColor
-import org.bukkit.Bukkit
 
 class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory {
 	override fun execute() {
-		val arena = sunkShip.world.name.contains("arena", ignoreCase = true) // TODO manager later
+		val arena = IonServer.configuration.serverName.equals("creative", ignoreCase = true) // TODO manager later
 		val data = sunkShip.damagers
 
 		// First person got the final blow
-		val sortedByTime = data.entries.sortedByDescending { it.value.lastDamaged }.iterator()
+		val sortedByTime = data.toList()
+			.filter { (damager, data) ->
+				if (damager is AIShipDamager && damager.starship.controller is NoOpController) return@filter false
+				if (data.lastDamaged < ShipKillXP.damagerExpiration) return@filter false
 
-		if (!sortedByTime.hasNext()) throw NullPointerException("Starship sunk with no damagers")
+				true
+			}
+			.sortedByDescending { it.second.lastDamaged }
+			.iterator()
+
+		if (!sortedByTime.hasNext()) {
+			IonServer.slF4JLogger.warn("Starship sunk with no damagers")
+			return
+		}
 
 		val (killerDamager, _) = sortedByTime.next()
 
@@ -47,7 +59,7 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 
 		val message = ofChildren(sinkMessage, assistPrefix, assists.values.join(separator = newline()))
 
-		if (arena) Bukkit.getServer().sendMessage(message) else Notify.chatAndGlobal(message)
+		if (arena) IonServer.server.sendMessage(message) else Notify.chatAndGlobal(message)
 	}
 
 	private fun sendDiscordMessage(arena: Boolean, sinkMessage: Component, assists: Map<Damager, Component>) {
@@ -60,10 +72,10 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 
 			val killedNationColor = sunkShip.controller.damager.color.asRGB()
 
-			val fields = mutableListOf(Embed.Field(name = sinkMessage.plainText(), value = "", inline = false))
+			val fields = mutableListOf(Embed.Field(name = asDiscord(sinkMessage), value = "", inline = false))
 
 			if (assists.isNotEmpty()) {
-				fields.add(Embed.Field("Assisted By:", assists.map { formatName(it.key).plainText() }.joinToString("\n"), false))
+				fields.add(Embed.Field("Assisted By:", assists.map { asDiscord(formatName(it.key)) }.joinToString("\n"), false))
 			}
 
 			val embed = Embed(
@@ -85,16 +97,12 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 		val killerName = formatName(killerDamager)
 		val sunkMessage = ofChildren(text(" was sunk by ", RED), killerName)
 
-		val arenaText = if (arena) ofChildren(
-			text("[", TextColor.color(85, 85, 85)),
-			text("Space Arena", TextColor.color(255, 255, 102)),
-			text("] ", TextColor.color(85, 85, 85))
-		) else empty()
+		val arenaText = if (arena) SPACE_ARENA else empty()
 
 		return ofChildren(arenaText, killedShipText, sunkMessage)
 	}
 
-	private fun getAssists(sortedByTime: Iterator<Map.Entry<Damager, ShipKillXP.ShipDamageData>>) : Map<Damager, Component> {
+	private fun getAssists(sortedByTime: Iterator<Pair<Damager, ShipKillXP.ShipDamageData>>) : Map<Damager, Component> {
 		val components = mutableMapOf<Damager, Component>()
 
 		// Take 5 damagers
@@ -145,5 +153,13 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 		}
 
 		return ofChildren(nameFormat, text(", piloted by ", RED), newName).hoverEvent(hover)
+	}
+
+	companion object {
+		val SPACE_ARENA = ofChildren(
+			text("[", TextColor.color(85, 85, 85)),
+			text("Space Arena", TextColor.color(255, 255, 102)),
+			text("] ", TextColor.color(85, 85, 85))
+		)
 	}
 }

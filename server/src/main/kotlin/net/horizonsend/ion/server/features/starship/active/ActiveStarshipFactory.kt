@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.active
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.miscellaneous.ComponentMessageException
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -18,6 +19,8 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 object ActiveStarshipFactory {
+	class StarshipActivationException(message: String) : ComponentMessageException(message)
+
 	fun createControlledStarship(
 		feedbackDestination: Audience,
 		data: StarshipData,
@@ -97,7 +100,7 @@ object ActiveStarshipFactory {
 	}
 
 	private fun initSubsystems(feedbackDestination: Audience, starship: ActiveControlledStarship) {
-		SubsystemDetector.detectSubsystems(starship)
+		SubsystemDetector.detectSubsystems(feedbackDestination, starship)
 		prepareShields(starship)
 		starship.generateThrusterMap()
 		determineForward(starship)

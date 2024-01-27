@@ -89,7 +89,7 @@ object Levels : IonServerComponent() {
 		if (!doLevelUp(newLevel, currentXP - cost, playerID, player, name, previousCost + cost)) {
 			Tasks.sync {
 				player.showTitle(Title.title(text("LEVEL UP!", DARK_PURPLE, TextDecoration.BOLD), text("Level $newLevel", GOLD, TextDecoration.ITALIC)))
-				player.sendMessage(template(text("Leveled up to level {0} for {1} SLXP"), GOLD, newLevel, previousCost + cost))
+				player.sendMessage(template(text("Leveled up to level {0} for {1} SLXP", DARK_PURPLE), GOLD, newLevel, previousCost + cost))
 
 				val message = template(
 						text("{0} leveled up to {1}!", GREEN),

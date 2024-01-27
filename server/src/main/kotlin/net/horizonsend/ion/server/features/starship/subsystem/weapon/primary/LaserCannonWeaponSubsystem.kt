@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -17,6 +18,11 @@ class LaserCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 	override val length: Int = balancing.length
 	override val angleRadians: Double = Math.toRadians(balancing.angleRadians)
 	override val convergeDist: Double = balancing.convergeDistance
+
+	override fun isAcceptableDirection(face: BlockFace): Boolean {
+		starship.debug("face: $face weapon facing: ${this.face}")
+		return super.isAcceptableDirection(face)
+	}
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
 		CannonLaserProjectile(starship, loc, dir, shooter).fire()

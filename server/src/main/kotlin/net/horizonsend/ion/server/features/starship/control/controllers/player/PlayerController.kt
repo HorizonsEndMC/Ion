@@ -23,11 +23,14 @@ abstract class PlayerController(
 	override val yaw: Float get() = player.location.yaw
 	override val pitch: Float get() = player.location.pitch
 
-	override val color: Color
-		 get() = if (!starship.rainbowToggle) PlayerCache[player].nationOid?.let { Color.fromRGB( NationCache[it].color ) } ?: super.color else {
-			 val random = ThreadLocalRandom.current()
-			 Color.fromRGB(random.nextInt(50, 255), random.nextInt(50, 255), random.nextInt(50, 255))
-		 }
+	override fun getColor(): Color {
+		if (starship.rainbowToggle) {
+			val random = ThreadLocalRandom.current()
+			return Color.fromRGB(random.nextInt(50, 255), random.nextInt(50, 255), random.nextInt(50, 255))
+		}
+
+		return PlayerCache[player].nationOid?.let { Color.fromRGB( NationCache[it].color ) } ?: super.getColor()
+	}
 
 	override fun canDestroyBlock(block: Block): Boolean = BlockBreakEvent(block, player).callEvent()
 

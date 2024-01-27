@@ -1,9 +1,8 @@
-package net.horizonsend.ion.common
+package net.horizonsend.ion.common.utils.configuration
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.database.DBManager
-import net.horizonsend.ion.common.utils.Configuration
-import net.horizonsend.ion.common.utils.Server
+import net.horizonsend.ion.common.ServerType
 import redis.clients.jedis.Jedis
 import java.io.File
 
@@ -36,7 +35,7 @@ data class Redis(
 
 @Serializable
 data class Common(
-	val serverType: Server = Server.SURVIVAL
+	val serverType: ServerType = ServerType.SURVIVAL
 )
 
 fun <T> redis(block: Jedis.() -> T): T = DBManager.jedisPool.resource.use(block)

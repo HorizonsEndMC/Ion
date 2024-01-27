@@ -54,8 +54,7 @@ fun createAIShipFromTemplate(
 	createController: (ActiveControlledStarship) -> Controller,
 	callback: (ActiveControlledStarship) -> Unit = {}
 ) {
-	val schematic = template.getSchematic() ?: throw
-	AISpawner.SpawningException(
+	val schematic = template.getSchematic() ?: throw AISpawner.SpawningException(
 		"Schematic not found for ${template.identifier} at ${template.schematicFile.toURI()}",
 		location.world,
 		Vec3i(location)
@@ -69,8 +68,10 @@ fun createAIShipFromTemplate(
 		template.miniMessageName,
 		createController
 	) {
+		it.speedLimit = template.maxSpeed
 		it.rewardsProvider = AIRewardsProvider(it, template)
 		it.sinkMessageFactory = AISinkMessageFactory(it)
+
 		callback(it)
 	}
 }
@@ -178,6 +179,8 @@ fun findSpawnLocationNearPlayer(
 		if (!border.isInside(loc)) continue
 
 		if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) continue
+
+		loc.y = 192.0
 
 		return loc
 	}

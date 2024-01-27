@@ -88,7 +88,7 @@ abstract class ActiveStarship (
 
 	var world: World = world
 		set(value) {
-			ActiveStarships.updateWorld(this, value, value)
+			ActiveStarships.updateWorld(this, field, value)
 			field = value
 		}
 

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.utils.redis
+package net.horizonsend.ion.common.redis
 
 import java.lang.reflect.Type
 

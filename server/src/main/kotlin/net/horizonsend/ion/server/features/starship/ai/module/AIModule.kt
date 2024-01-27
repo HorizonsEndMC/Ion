@@ -27,7 +27,7 @@ abstract class AIModule(val controller: AIController) {
 
 	open fun shutDown() {}
 
-	protected open fun getCenter(): Location = controller.getCenter()
+	protected open fun getCenter(): Vec3i = controller.getCenter()
 	protected open fun getCenterVec3i(): Vec3i = controller.starship.centerOfMass
 
 	fun adjust(movement: StarshipMovement, vec3i: Vec3i): Vec3i = Vec3i(

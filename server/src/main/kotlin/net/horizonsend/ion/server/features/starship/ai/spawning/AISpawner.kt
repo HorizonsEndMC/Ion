@@ -5,15 +5,23 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
+import net.horizonsend.ion.server.features.starship.ai.module.misc.RadiusMessageModule
+import net.horizonsend.ion.server.features.starship.ai.module.misc.ReinforcementSpawnerModule
+import net.horizonsend.ion.server.features.starship.ai.module.misc.SmackTalkModule
+import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestTargetingModule
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.ReinforcementSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.World
 import org.slf4j.Logger
@@ -120,10 +128,51 @@ abstract class AISpawner(
 	 *
 	 * @return A function used to create the controller for the starship
 	 **/
-	open fun createController(template: AIStarshipTemplate, pilotName: Component): (ActiveStarship) -> Controller {
+	open fun createController(template: AIStarshipTemplate, pilotName: Component): (ActiveStarship) -> AIController {
 		val factory = AIControllerFactories[template.controllerFactory]
 
-		return { starship -> factory(starship, pilotName, template.manualWeaponSets, template.autoWeaponSets) }
+		return { starship: ActiveStarship ->
+			val controller = factory(starship, pilotName, template.manualWeaponSets, template.autoWeaponSets)
+
+			controller.setColor(Color.fromRGB(template.color))
+			controller.getModuleByType<ClosestTargetingModule>()?.maxRange = template.engagementRange
+
+			template.smackInformation?.let { smackInformation ->
+				val prefix = miniMessage().deserialize(smackInformation.prefix)
+
+				if (smackInformation.messages.isEmpty()) return@let
+
+				val messages = smackInformation.messages.map { it.miniMessage() }.toTypedArray()
+
+				controller.modules["smack"] = SmackTalkModule(controller, prefix, *messages)
+			}
+
+			template.radiusMessageInformation?.let { messageInformation ->
+				val prefix = miniMessage().deserialize(messageInformation.prefix)
+
+				if (messageInformation.messages.isEmpty()) return@let
+
+				val messages = messageInformation.messages.mapValues { it.value.miniMessage() }
+
+				controller.modules["warning"] = RadiusMessageModule(controller, prefix, messages)
+			}
+
+			template.reinforcementInformation?.let {
+				val spawner = ReinforcementSpawner(controller, it.configuration)
+
+				val module = ReinforcementSpawnerModule(
+					controller,
+					spawner,
+					it.activationThreshold,
+					it.broadcastMessage?.let { message -> miniMessage().deserialize(message) },
+					delay = it.delay,
+				)
+
+				controller.modules["reinforcement"] = module
+			}
+
+			controller
+		}
 	}
 
 	/** An exception relating to a cause of a failed spawn. */

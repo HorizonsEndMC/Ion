@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.starship.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import org.bukkit.Location
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 import kotlin.math.pow
@@ -19,20 +18,16 @@ class StandoffPositioningModule(
 
 	private val standoffRange get() = standoffDistance + standoffBonus + targetStandoffBonus
 
-	override fun findPosition(): Location {
-		val target = targetSupplier.get() ?: return getCenter()
+	override fun findPosition(): Vec3i? {
+		val target = targetSupplier.get() ?: return null
 
 		val vector = targetToShipVector(target)
 
-		return target.getLocation().add(vector.multiply(standoffRange))
+		return Vec3i(target.getLocation().add(vector.multiply(standoffRange)))
 	}
 
-	override fun findPositionVec3i(): Vec3i {
-		return Vec3i(findPosition())
-	}
-
-	override fun getDestination(): Vec3i {
-		return targetSupplier.get()?.getVec3i() ?: return Vec3i(getCenter())
+	override fun getDestination(): Vec3i? {
+		return targetSupplier.get()?.getVec3i()
 	}
 
 	/** Get a normalized vector from the target to the ship */

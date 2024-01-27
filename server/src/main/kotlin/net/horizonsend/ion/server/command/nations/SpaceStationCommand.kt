@@ -131,6 +131,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		// another one in the same location before the cache updates)
 		for (other in SpaceStationCache.all()) {
 			if (other.databaseId == cachedStation?.databaseId) continue
+			if (other.world != world.name) continue
 
 			val minDistance = other.radius + radius
 			val distance = distance(x, y, z, other.x, y, other.z)
@@ -144,6 +145,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		// (use the database directly, in order to avoid people making
 		// another one in the same location before the cache updates)
 		for (other in EcoStations.getAll()) {
+			if (other.world != world.name) continue
 			val minDistance = 5000
 			val distance = distance(x, y, z, other.x, y, other.z)
 

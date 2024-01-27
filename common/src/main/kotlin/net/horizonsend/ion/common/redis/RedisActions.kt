@@ -1,11 +1,11 @@
-package net.horizonsend.ion.common.utils.redis
+package net.horizonsend.ion.common.redis
 
 import com.google.gson.reflect.TypeToken
-import net.horizonsend.ion.common.CommonConfig
+import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager.jedisPool
-import net.horizonsend.ion.common.utils.Server
-import net.horizonsend.ion.common.utils.redis.serialization.RedisSerialization
+import net.horizonsend.ion.common.ServerType
+import net.horizonsend.ion.common.redis.serialization.RedisSerialization
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPubSub
 import java.lang.reflect.Type
@@ -87,7 +87,7 @@ object RedisActions : IonComponent() {
 		actionId: String,
 		content: Data,
 		type: Type,
-		targetServers: List<Server> = listOf(Server.SURVIVAL, Server.CREATIVE, Server.PROXY, Server.DISCORD_BOT)
+		targetServers: List<ServerType> = listOf(ServerType.SURVIVAL, ServerType.CREATIVE, ServerType.PROXY, ServerType.DISCORD_BOT)
 	) : UUID {
 		val messageUuid = UUID.randomUUID()
 		val serializedContent = RedisSerialization.serialize(data = content, type = type)

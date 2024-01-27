@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
-import net.horizonsend.ion.common.utils.DoubleLocation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.debug
@@ -82,8 +81,6 @@ fun Player.worldBorderEffect(duration: Long) {
 		this.minecraft.connection.send(end)
 	}
 }
-
-fun Location.triple() = DoubleLocation(x, y, z)
 
 val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).getHandle(ChunkStatus.FULL) as LevelChunk // ChunkStatus.FULL guarantees a LevelChunk
 val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle

@@ -6,8 +6,6 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.nearestPointToVector
-import org.bukkit.Location
-import org.bukkit.util.Vector
 import java.util.function.Supplier
 import kotlin.math.pow
 
@@ -23,7 +21,7 @@ class AxisStandoffPositioningModule(
 	val targetStandoffBonus = (target.get() as? StarshipTarget)?.ship?.initialBlockCount?.toDouble()?.pow((1.0 / 3.0)) ?: 0.0
 	val standoffBonus = controller.starship.initialBlockCount.toDouble().pow((1.0 / 3.0))
 
-	private fun getAxisPoint(): Vector {
+	private fun getAxisPoint(): Vec3i {
 		val shipLocation = getCenter().toVector()
 		val targetLocation = getDestination().toVector()
 
@@ -43,16 +41,10 @@ class AxisStandoffPositioningModule(
 			it.distance(shipLocation)
 		}
 
-		return if (shipLocation.distanceSquared(axisPointFar) <= 100.0) axisPointClose else axisPointFar
+		return Vec3i(if (shipLocation.distanceSquared(axisPointFar) <= 100.0) axisPointClose else axisPointFar)
 	}
 
 	override fun getDestination(): Vec3i = target.get()?.getVec3i() ?: controller.starship.centerOfMass
 
-	override fun findPosition(): Location {
-		return getAxisPoint().toLocation(world)
-	}
-
-	override fun findPositionVec3i(): Vec3i {
-		return Vec3i(getAxisPoint())
-	}
+	override fun findPosition(): Vec3i = getAxisPoint()
 }

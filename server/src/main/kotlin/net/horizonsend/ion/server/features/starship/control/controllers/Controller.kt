@@ -26,7 +26,9 @@ abstract class Controller(
 	override fun audience(): Audience = Audience.empty()
 
 	/** The color used for this controller. Currently, applies weapon color **/
-	open val color = Color.fromRGB(Integer.parseInt("ff0000", 16))
+	open fun getColor(): Color {
+		return Color.fromRGB(Integer.parseInt("ff0000", 16))
+	}
 
 	/** Called on each server tick. */
 	open fun tick() {}

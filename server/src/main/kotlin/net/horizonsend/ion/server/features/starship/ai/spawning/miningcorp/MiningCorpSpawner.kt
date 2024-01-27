@@ -13,7 +13,7 @@ import org.bukkit.Location
 
 class MiningCorpSpawner : BasicSpawner(
 	"MINING_CORP_SINGLE",
-	IonServer.aiSpawningConfiguration.spawners::miningCorpSpawner,
+	IonServer.aiSpawningConfiguration.spawners::miningCorp,
 ) {
 	override fun findSpawnLocation(): Location? = findMiningCorpSpawnPosition(configuration)
 
@@ -25,21 +25,22 @@ class MiningCorpSpawner : BasicSpawner(
 	)
 
 	companion object {
-		val miningGuild = "<$MINING_CORP_LIGHT_ORANGE>Mining<$MINING_CORP_DARK_ORANGE> Guild"
-
 		val defaultConfiguration = AISpawnerConfiguration(
-			miniMessageSpawnMessage = "$miningGuild <${HE_MEDIUM_GRAY}>extraction vessel {0} spawned at {1}, {3}, in {4}",
+			miniMessageSpawnMessage = "$miningGuildMini <${HE_MEDIUM_GRAY}>extraction vessel {0} spawned at {1}, {3}, in {4}",
 			pointChance = 0.8,
-			pointThreshold = 20 * 60 * 7,
+			pointThreshold = 8400,
 			minDistanceFromPlayer = 1000.0,
 			maxDistanceFromPlayer = 2500.0,
 			tiers = listOf(
 				AISpawnerTier(
 					identifier = "STANDARD",
 					nameList = mapOf(
-						"<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Lieutenant <white>1" to 2,
-						"<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Lieutenant <white>2" to 2,
-						"<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Lieutenant <white>3" to 2
+						"<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Daron Centrich" to 2,
+						"<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Autopilot<$HE_MEDIUM_GRAY>-<white>2.56" to 2,
+						"<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Autopilot<$HE_MEDIUM_GRAY>-<white>3.11" to 2,
+						"<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Autopilot<$HE_MEDIUM_GRAY>-<white>2.59" to 2,
+						"<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Autopilot<$HE_MEDIUM_GRAY>-<white>1.94" to 2,
+						"<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Hawthorne Severt" to 2
 					),
 					ships = mapOf(
 						woodpecker.identifier to 2,
@@ -56,11 +57,11 @@ class MiningCorpSpawner : BasicSpawner(
 						"<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Ship's Captain <white>3" to 2
 					),
 					ships = mapOf(
-						woodpecker.identifier to 2,
-						typeV11.identifier to 2,
-						typeA21b.identifier to 2,
-						typeI41.identifier to 2,
-//						badger.identifier to 3
+						woodpecker.identifier to 3,
+						typeV11.identifier to 3,
+						typeA21b.identifier to 3,
+						typeI41.identifier to 3,
+						beaver.identifier to 2
 					)
 				),
 				AISpawnerTier(
@@ -71,12 +72,11 @@ class MiningCorpSpawner : BasicSpawner(
 						"<${MINING_CORP_DARK_ORANGE.asHexString()}>Ship's Captain <white>3" to 2
 					),
 					ships = mapOf(
-						woodpecker.identifier to 2,
-						typeV11.identifier to 2,
 						typeA21b.identifier to 2,
 						typeI41.identifier to 2,
+						ostrich.identifier to 2,
 						beaver.identifier to 6,
-//						badger.identifier to 2
+						badger.identifier to 4
 					)
 				),
 //				AISpawnerTier(
@@ -132,8 +132,7 @@ class MiningCorpSpawner : BasicSpawner(
 					rolls = 10,
 					tiers = mapOf(
 						"MODERATE" to 8,
-						"ADVANCED" to 1,
-//						"ULTRA" to 1
+						"ADVANCED" to 1
 					)
 				),
 				AIWorldSettings(
@@ -142,8 +141,7 @@ class MiningCorpSpawner : BasicSpawner(
 					tiers = mapOf(
 						"STANDARD" to 2,
 						"MODERATE" to 8,
-						"ADVANCED" to 4,
-//						"ULTRA" to 2
+						"ADVANCED" to 4
 					)
 				),
 				AIWorldSettings(
@@ -152,8 +150,7 @@ class MiningCorpSpawner : BasicSpawner(
 					tiers = mapOf(
 						"STANDARD" to 2,
 						"MODERATE" to 8,
-						"ADVANCED" to 4,
-//						"ULTRA" to 2
+						"ADVANCED" to 4
 					)
 				)
 			)

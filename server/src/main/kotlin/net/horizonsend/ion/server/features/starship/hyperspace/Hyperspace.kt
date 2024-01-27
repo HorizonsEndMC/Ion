@@ -201,7 +201,7 @@ object Hyperspace : IonServerComponent() {
 		.sortedBy { it.multiblock.baseRange }
 		.lastOrNull()
 
-	fun isHyperspaceWorld(world: World): Boolean = world.name.endsWith("_hyperspace")
+	fun isHyperspaceWorld(world: World): Boolean = world.name.endsWith("_hyperspace", ignoreCase = true)
 
 	fun getHyperspaceWorld(world: World): World? =
 		if (!isHyperspaceWorld(world)) {

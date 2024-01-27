@@ -7,9 +7,10 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.starship.ai.spawning.alien.AlienSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.alien.alienTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.explorerTemplates
-import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpReinforcementSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.miningGuildTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSpawner
@@ -33,7 +34,8 @@ data class AISpawningConfiguration(
 		*pirateShips,
 		*tsaiiTemplates,
 		*explorerTemplates,
-		*miningGuildTemplates
+		*miningGuildTemplates,
+		*alienTemplates
 	),
 	val spawners: AISpawners = AISpawners()
 ) {
@@ -41,12 +43,12 @@ data class AISpawningConfiguration(
 
 	@Serializable
 	data class AISpawners(
-		val miningCorpSpawner: AISpawnerConfiguration = MiningCorpSpawner.defaultConfiguration,
-		val miningCorpReinforcementSpawner: AISpawnerConfiguration = MiningCorpReinforcementSpawner.defaultConfiguration,
-		val privateerSingle: AISpawnerConfiguration = PrivateerSpawner.defaultConfiguration,
-		val explorerSingle: AISpawnerConfiguration = ExplorerSingleSpawner.defaultConfiguration,
-		val pirateSingle: AISpawnerConfiguration = PirateSpawner.defaultConfiguration,
-		val tsaiiSingle: AISpawnerConfiguration = TsaiiSpawner.defaultConfiguration,
+		val miningCorp: AISpawnerConfiguration = MiningCorpSpawner.defaultConfiguration,
+		val privateer: AISpawnerConfiguration = PrivateerSpawner.defaultConfiguration,
+		val explorer: AISpawnerConfiguration = ExplorerSingleSpawner.defaultConfiguration,
+		val pirate: AISpawnerConfiguration = PirateSpawner.defaultConfiguration,
+		val tsaii: AISpawnerConfiguration = TsaiiSpawner.defaultConfiguration,
+		val alien: AISpawnerConfiguration = AlienSpawner.defaultConfiguration,
 	)
 
 	/**
@@ -123,15 +125,26 @@ data class AISpawningConfiguration(
 	data class AIStarshipTemplate(
 		val identifier: String = "VESTA",
 		var schematicName: String = "Vesta",
+
 		var miniMessageName: String = "<red><bold>Vesta",
+		var color: Int = Integer.parseInt("ff0000", 16),
+
 		var type: StarshipType = StarshipType.SHUTTLE,
+
 		var controllerFactory: String = "STARFIGHTER",
+
 		var xpMultiplier: Double = 1.0,
 		var creditReward: Double = 100.0,
+
 		var maxSpeed: Int = -1,
+		var engagementRange: Double = 500.0,
+
 		val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 		val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
-		val mobs: MutableSet<MobSpawner> = mutableSetOf()
+
+		val smackInformation: SmackInformation? = null,
+		val radiusMessageInformation: RadiusMessageInformation? = null,
+		val reinforcementInformation: ReinforcementInformation? = null
 	) {
 		init {
 //			if (AISpawningManager.templates.values.contains(this)) error("Identifiers must be unique! $identifier already exists!")
@@ -151,11 +164,23 @@ data class AISpawningConfiguration(
 		}
 
 		@Serializable
-		data class MobSpawner(
-			val offsetX: Int,
-			val offsetY: Int,
-			val offsetZ: Int,
-			val entity: ServerConfiguration.PlanetSpawnConfig.Mob
+		data class SmackInformation(
+			val prefix: String,
+			val messages: List<String>
+		)
+
+		@Serializable
+		data class RadiusMessageInformation(
+			val prefix: String,
+			val messages: Map<Double, String>
+		)
+
+		@Serializable
+		data class ReinforcementInformation(
+			val activationThreshold: Double,
+			val delay: Long,
+			val broadcastMessage: String?,
+			val configuration: AISpawnerConfiguration
 		)
 	}
 }

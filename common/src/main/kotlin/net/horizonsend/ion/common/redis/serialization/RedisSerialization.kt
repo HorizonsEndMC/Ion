@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.utils.redis.serialization
+package net.horizonsend.ion.common.redis.serialization
 
 import com.google.gson.GsonBuilder
 import net.horizonsend.ion.common.database.Oid

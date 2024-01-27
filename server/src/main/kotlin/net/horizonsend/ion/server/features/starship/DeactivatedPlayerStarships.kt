@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.schema.starships.AIStarshipData
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
@@ -241,12 +242,23 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 			val carriedShipMap = captureCarriedShips(carriedShips, cache)
 
 			Tasks.sync {
-				val starship = ActiveStarshipFactory.createControlledStarship(
-					feedbackDestination,
-					data,
-					state.blockMap.keys,
-					carriedShipMap
-				) ?: return@sync
+				val starship = try {
+					ActiveStarshipFactory.createControlledStarship(
+						feedbackDestination,
+						data,
+						state.blockMap.keys,
+						carriedShipMap
+					) ?: return@sync
+				} catch (e: ActiveStarshipFactory.StarshipActivationException) {
+					feedbackDestination.serverError("There was an error piloting your starship")
+					e.sendMessage(feedbackDestination)
+
+					// Abort, add back data
+					data.companion().add(data)
+					cache.add(data)
+
+					return@sync
+				}
 
 				ActiveStarships.add(starship)
 				callback.invoke(starship)

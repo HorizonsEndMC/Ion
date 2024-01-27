@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
-import net.horizonsend.ion.common.CommonConfig
+import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.extensions.prefixProvider
-import net.horizonsend.ion.common.utils.Configuration
+import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.SLCommand
@@ -36,6 +36,7 @@ import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
+import kotlin.system.measureTimeMillis
 
 val LegacySettings get() = IonServer.legacySettings
 val ServerConfiguration get() = IonServer.configuration
@@ -58,12 +59,16 @@ object IonServer : JavaPlugin() {
 	override fun onEnable(): Unit =
 		runCatching(::internalEnable).fold(
 			{
-				val message = getUpdateMessage(dataFolder) ?: return
-				slF4JLogger.info(message)
+				Tasks.sync {
+					val message = getUpdateMessage(dataFolder) ?: return@sync
+					slF4JLogger.info(message)
 
-				try {
-					Discord.sendMessage(discordSettings.changelogChannel,"${configuration.serverName} $message")
-				} catch (_: Exception) {
+					try {
+						Discord.sendMessage(discordSettings.changelogChannel,"${configuration.serverName} $message")
+					} catch (e: Exception) {
+						slF4JLogger.error(e.message)
+						e.printStackTrace()
+					}
 				}
 			},
 			{
@@ -87,19 +92,17 @@ object IonServer : JavaPlugin() {
 		for (world in server.worlds) IonWorld.register(world.minecraft)
 
 		for (component in components) { // Components
-			val start = System.currentTimeMillis()
+			fun startAndMeasureTime(component: IonComponent) {
+				val time = measureTimeMillis { component.onEnable() }
+				slF4JLogger.info("Enabled ${component.javaClass.simpleName} in $time ms")
+			}
 
 			if (component is IonServerComponent) {
-				if (component.runAfterTick)
-					Tasks.sync { component.onEnable() }
-				else component.onEnable()
+				if (component.runAfterTick) Tasks.sync { startAndMeasureTime(component) }
+				else startAndMeasureTime(component)
 
-				IonServer.server.pluginManager.registerEvents(component, IonServer)
-			} else component.onEnable()
-
-			val end = System.currentTimeMillis()
-
-			slF4JLogger.info("Enabled ${component.javaClass.simpleName} in ${end - start}ms")
+				server.pluginManager.registerEvents(component, IonServer)
+			} else startAndMeasureTime(component)
 		}
 
 		// The listeners are defined in a separate file for the sake of keeping the main class clean.
@@ -142,6 +145,7 @@ object IonServer : JavaPlugin() {
 		for (component in components.asReversed()) try {
 			component.onDisable()
 		} catch (e: Exception) {
+			slF4JLogger.error("There was an error shutting down ${component.javaClass.simpleName}! ${e.message}")
 			e.printStackTrace()
 		}
 	}

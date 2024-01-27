@@ -151,7 +151,7 @@ object StarshipDebugCommand : SLCommand() {
 	@Subcommand("query worldmap")
 	@Suppress("Unused")
 	fun onWorldMapQuery(sender: Player, world: World) {
-		sender.information(ActiveStarships.getInWorld(world).joinToString { it.identifier + "\n" })
+		sender.information(ActiveStarships.getInWorld(world).joinToString(separator = ",\n") { it.identifier })
 	}
 
 	@Subcommand("query set")
