@@ -26,7 +26,7 @@ class AchievementListeners : SLEventListener() {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	fun onDetectShip(event: StarshipDetectEvent) {
+	fun onDetectShip(event: StarshipDetectedEvent) {
 		event.player.rewardAchievement(Achievement.DETECT_SHIP)
 	}
 

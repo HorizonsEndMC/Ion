@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipDetectedEvent
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -241,13 +242,16 @@ object StarshipComputers : IonServerComponent() {
 				} catch (e: StarshipDetection.DetectionFailedException) {
 					player.serverErrorActionMessage("${e.message} Detection failed!")
 					player.hint("Is it touching another structure?")
+
 					return@async
 				} catch (e: Exception) {
 					e.printStackTrace()
 					player.serverErrorActionMessage("An error occurred while detecting")
+
 					return@async
 				}
 
+				StarshipDetectedEvent(player, player.world).callEvent()
 				player.rewardAchievement(Achievement.DETECT_SHIP)
 
 				DeactivatedPlayerStarships.updateState(data, state)
