@@ -14,14 +14,15 @@ class StarshipsSidebarComponent3(starship: ActiveControlledStarship) : SidebarCo
     private val pmShield = starship.reactor.powerDistributor.shieldPortion.times(100).toInt()
     private val pmWeapon = starship.reactor.powerDistributor.weaponPortion.times(100).toInt()
     private val pmThruster = starship.reactor.powerDistributor.thrusterPortion.times(100).toInt()
+    private val compassComponent = StarshipsSidebar.compassComponent(starship.getTargetForward(), starship.type.icon)
 
     override fun draw(drawable: LineDrawable) {
         val line = ofChildren(
-            text("/", GRAY),
+            compassComponent[2][0],
             space(),
-            text("S", GRAY),
+            compassComponent[2][1],
             space(),
-            text("\\", GRAY),
+            compassComponent[2][2],
             text(" | ", DARK_GRAY),
 
             // Power modes

@@ -22,7 +22,6 @@ class StarshipsHeaderSidebarComponent(starship: ActiveControlledStarship) : Side
             // Starship Name
             starshipNameComponent(starshipName, starshipIcon)
         )
-
         drawable.drawLine(line)
     }
 }
