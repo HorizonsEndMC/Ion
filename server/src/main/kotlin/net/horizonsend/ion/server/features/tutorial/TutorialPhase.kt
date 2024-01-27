@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipDetectEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipDetectedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
@@ -112,7 +112,7 @@ enum class TutorialPhase(
 		PopupMessage(text("Detection", GOLD), text("Use the ship computer to detect")),
 		PopupMessage(text("Detection", GOLD), "<yellow><bold>Open the menu again & click <dark_purple><bold>Re-Detect".miniMessage())
 	) {
-		override fun setupHandlers() = on<StarshipDetectEvent>({ it.player }) { _, player ->
+		override fun setupHandlers() = on<StarshipDetectedEvent>({ it.player }) { _, player ->
 			nextStep(player)
 		}
 	},
