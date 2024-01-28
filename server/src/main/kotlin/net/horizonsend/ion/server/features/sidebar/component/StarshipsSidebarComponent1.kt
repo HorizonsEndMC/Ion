@@ -13,7 +13,7 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 
 class StarshipsSidebarComponent1(starship: ActiveControlledStarship) : SidebarComponent {
     private val hullIntegrity = starship.hullIntegrity.times(100).toInt()
-    private val compassComponent = StarshipsSidebar.compassComponent(starship.getTargetForward(), starship.type.icon)
+    private val compassComponent = StarshipsSidebar.compassComponent(starship)
 
     override fun draw(drawable: LineDrawable) {
         val line = ofChildren(
