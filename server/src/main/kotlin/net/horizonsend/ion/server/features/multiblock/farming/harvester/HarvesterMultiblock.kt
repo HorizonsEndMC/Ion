@@ -19,13 +19,13 @@ import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-abstract class HarvesterMultiblock(val tierText: String, val tierMaterial: Material) : CropMultiblock() {
+abstract class HarvesterMultiblock(val tierMaterial: Material, tierNumber: Int, tierColor: TextColor) : CropMultiblock() {
 	override val name: String = "harvester"
-	override val signText: Array<Component?> = createSignText(
-		line1 = "&7Auto",
-		line2 = "&2Harvester",
-		line3 = null,
-		line4 = tierText
+	override val signText: Array<Component?> = arrayOf(
+		Component.text().append(Component.text("Auto ", NamedTextColor.GRAY).build(),
+		Component.text().append(Component.text("Harvester", NamedTextColor.DARK_GREEN).build(),
+		null,
+		Component.text().append(Component.text("Tier ", tierColor), Component.text(tierNumber, tierColor)).build()
 	)
 
 	override val regionRadius: Int = 1
