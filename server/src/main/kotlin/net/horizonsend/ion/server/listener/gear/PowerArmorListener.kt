@@ -3,18 +3,17 @@ package net.horizonsend.ion.server.listener.gear
 import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
-import java.time.Instant
-import java.util.Locale
-import java.util.UUID
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorModule
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.removePower
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import org.bukkit.Color
@@ -28,6 +27,8 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
+import java.time.Instant
+import java.util.UUID
 
 private val lastMoved = HashMap<UUID, Long>()
 
@@ -94,7 +95,7 @@ object PowerArmorListener : SLEventListener() {
 			}
 
 			if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK &&
-				!player.world.name.lowercase(Locale.getDefault()).contains("arena") &&
+				!player.world.hasFlag(WorldFlag.AREA) &&
 				!ProtectionListener.isProtectedCity(player.location)
 			) {
 				removePower(item, 100)
@@ -108,7 +109,7 @@ object PowerArmorListener : SLEventListener() {
 		for ((module, moduleItem) in modules) {
 			if (cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
 				modifier = 0.0
-				if (!player.world.name.lowercase(Locale.getDefault()).contains("arena")) {
+				if (!player.world.hasFlag(WorldFlag.AREA)) {
 					removePower(moduleItem, 10)
 				}
 			}

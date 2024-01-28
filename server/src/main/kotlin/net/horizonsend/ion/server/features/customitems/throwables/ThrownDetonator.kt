@@ -5,6 +5,8 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Throwa
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrownCustomItem
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.damager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.regeneratingBlockChange
 import org.bukkit.Material
@@ -71,7 +73,7 @@ class ThrownDetonator(
 		val event = regeneratingBlockChange(item, block, blocks, 0.123f, true)
 		val called = event.callEvent()
 
-		if (!called && !world.name.contains("arena", ignoreCase = true)) return
+		if (!called && !world.hasFlag(WorldFlag.AREA)) return
 
 		blocks.forEach { it.setType(Material.AIR, false) }
 

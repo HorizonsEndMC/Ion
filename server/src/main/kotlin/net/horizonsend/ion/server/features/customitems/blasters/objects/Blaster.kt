@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.blasters.RayTracedParticleProjectile
 import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key.key
@@ -31,7 +33,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
-import java.util.Locale
 import java.util.function.Supplier
 
 abstract class Blaster<T : Balancing>(
@@ -83,8 +84,9 @@ abstract class Blaster<T : Balancing>(
 			}
 		}
 
-		if (livingEntity.world.name.lowercase(Locale.getDefault()).contains("arena") || !balancing.consumesAmmo) ammo =
-			balancing.magazineSize
+		if (livingEntity.world.hasFlag(WorldFlag.AREA) || !balancing.consumesAmmo) {
+			ammo = balancing.magazineSize
+		}
 
 		if (ammo - originalAmmo == 0) {
 			livingEntity.playSound(

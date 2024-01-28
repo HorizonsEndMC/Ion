@@ -4,7 +4,6 @@ import co.aikar.commands.annotation.Optional
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.MoneyHolder
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.entity.Player
@@ -41,7 +40,6 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 	open fun onDeposit(sender: Player, amount: Int) = asyncCommand(sender) {
 		requireEconomyEnabled()
 
-		failIf(IonServer.configuration.serverName == "Creative") { "Cannot withdraw or deposit on creative" }
 		val parent: Oid<Parent> = requireDefaultParent(sender)
 		requireCanDeposit(sender, parent)
 
@@ -61,7 +59,6 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 		requireEconomyEnabled()
 
 		failIf(amount <= 0) { "Amount must be greater than 0" }
-		failIf(IonServer.configuration.serverName == "Creative") { "Cannot withdraw or deposit on creative" }
 
 		val parent: Oid<Parent> = requireDefaultParent(sender)
 		requireCanWithdraw(sender, parent)
