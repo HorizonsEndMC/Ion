@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Energy
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.alongVector
 import net.horizonsend.ion.server.miscellaneous.utils.get
@@ -163,7 +165,7 @@ class RayTracedParticleProjectile(
 				} ?: false
 
 				// Ignore nation if in arena
-				if (!isSameNation || flyingHitEntity.world.name.lowercase().contains("arena")) {
+				if (!isSameNation || flyingHitEntity.world.hasFlag(WorldFlag.AREA)) {
 					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
 						System.currentTimeMillis() + 3000 // 3 second glide disable
 					flyingHitEntity.alert("Taking fire! Rocket boots powering down!")

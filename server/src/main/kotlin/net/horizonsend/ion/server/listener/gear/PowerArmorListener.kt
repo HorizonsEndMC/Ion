@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorModule
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.removePower
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
@@ -94,7 +96,7 @@ object PowerArmorListener : SLEventListener() {
 			}
 
 			if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK &&
-				!player.world.name.lowercase(Locale.getDefault()).contains("arena") &&
+				!player.world.hasFlag(WorldFlag.AREA) &&
 				!ProtectionListener.isProtectedCity(player.location)
 			) {
 				removePower(item, 100)
@@ -108,7 +110,7 @@ object PowerArmorListener : SLEventListener() {
 		for ((module, moduleItem) in modules) {
 			if (cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
 				modifier = 0.0
-				if (!player.world.name.lowercase(Locale.getDefault()).contains("arena")) {
+				if (!player.world.hasFlag(WorldFlag.AREA)) {
 					removePower(moduleItem, 10)
 				}
 			}

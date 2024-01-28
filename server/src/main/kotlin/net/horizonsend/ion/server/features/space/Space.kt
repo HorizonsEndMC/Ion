@@ -6,14 +6,19 @@ import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.database.schema.space.Star
+import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.isWater
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.optional
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
+import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import java.util.Optional
 
@@ -54,6 +59,47 @@ object Space : IonServerComponent() {
 		reload()
 
 		listen<WorldUnloadEvent> { event -> planetWorldCache.invalidate(event.world) }
+
+		listen<BlockBreakEvent> { event ->
+			val world = event.block.world
+
+			if (!SpaceWorlds.contains(world)) return@listen
+
+			val x = event.block.x.toDouble()
+			val y = event.block.y.toDouble()
+			val z = event.block.z.toDouble()
+
+			fun check(loc: Vec3i, radius: Int): Boolean {
+				return distanceSquared(
+					x,
+					y,
+					z,
+					loc.x.toDouble(),
+					loc.y.toDouble(),
+					loc.z.toDouble()
+				) <= radius.squared()
+			}
+
+			for (star in getStars()) {
+				if (check(star.location, star.sphereRadius)) {
+					event.isCancelled = true
+					return@listen
+				}
+			}
+
+			for (planet in getPlanets()) {
+				if (check(planet.location, planet.atmosphereRadius)) {
+					event.isCancelled = true
+					return@listen
+				}
+			}
+		}
+
+		listen<BlockFadeEvent> { event ->
+			if (!SpaceWorlds.contains(event.block.world)) return@listen
+
+			if (event.newState.type.isWater) event.isCancelled = true
+		}
 	}
 
 	fun reload() {
@@ -66,7 +112,7 @@ object Space : IonServerComponent() {
 			val starName: String = mongoStar.name
 			val spaceWorldName: String = mongoStar.spaceWorld
 			val starX: Int = mongoStar.x
-			val starY: Int = 192 // mongoStar.y
+			val starY = 192 // mongoStar.y
 			val starZ: Int = mongoStar.z
 			val starSize: Double = mongoStar.size
 			val starSeed: Long = mongoStar.seed
@@ -166,5 +212,4 @@ object Space : IonServerComponent() {
 	fun getPlanet(planetName: String): CachedPlanet? = planetNameCache[planetName].orElse(null)
 
 	fun getStar(starName: String): CachedStar? = starNameCache[starName].orElse(null)
-
 }
