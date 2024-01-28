@@ -1,11 +1,12 @@
 package net.horizonsend.ion.server.features.sidebar.tasks
 
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.INTERDICTION_ICON
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.EQUALS
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -21,6 +22,9 @@ import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.block.BlockFace
+import org.bukkit.util.Vector
+import kotlin.math.abs
+import kotlin.math.sign
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.DurationUnit
 
@@ -122,14 +126,30 @@ object StarshipsSidebar {
         } else Component.empty()
     }
 
-    fun compassComponent(blockFace: BlockFace, icon: String): MutableList<MutableList<Component>> {
+    fun compassComponent(starship: ActiveControlledStarship): MutableList<MutableList<Component>> {
+        val cruiseData = starship.cruiseData
+        val vec = cruiseData.velocity
+        val targetVec = cruiseData.targetDir
+
         val compass = mutableListOf(
-            mutableListOf(Component.text("\\").asComponent(), Component.text("N").asComponent(), Component.text("/").asComponent()),
-            mutableListOf(Component.text("W").asComponent(), Component.text(icon).font(Sidebar.fontKey).asComponent(), Component.text("E").asComponent()),
-            mutableListOf(Component.text("/").asComponent(), Component.text("S").asComponent(), Component.text("\\").asComponent())
+            mutableListOf(
+                Component.text("\\").color(compassColor(vec, targetVec, -1, -1)).asComponent(),
+                Component.text("N").color(compassColor(vec, targetVec, 0, -1)).asComponent(),
+                Component.text("/").color(compassColor(vec, targetVec, 1, -1)).asComponent()
+            ),
+            mutableListOf(
+                Component.text("W").color(compassColor(vec, targetVec, -1, 0)).asComponent(),
+                Component.text(starship.type.icon).color(compassColor(vec, targetVec, 0, 0)).font(Sidebar.fontKey),
+                Component.text("E").color(compassColor(vec, targetVec, 1, 0)).asComponent()
+            ),
+            mutableListOf(
+                Component.text("/").color(compassColor(vec, targetVec, -1, 1)).asComponent(),
+                Component.text("S").color(compassColor(vec, targetVec, 0, 1)).asComponent(),
+                Component.text("\\").color(compassColor(vec, targetVec, 1, 1)).asComponent()
+            )
         )
 
-        when (blockFace) {
+        when (starship.forward) {
             BlockFace.SOUTH -> {
                 compass.reverse()
                 compass[0].reverse()
@@ -183,6 +203,30 @@ object StarshipsSidebar {
         else -> BLUE
     }
 
+    private fun compassColor(dir: Vector, targetDir: Vector?, x: Int, z: Int): NamedTextColor {
+        var color = GRAY
+
+        val dx = if (abs(dir.x) >= 0.5) sign(dir.x).toInt() else 0
+        val dz = if (abs(dir.z) > 0.5) sign(dir.z).toInt() else 0
+
+        if (dx == x && dz == z) {
+            color = GOLD
+        }
+
+        if (targetDir != null && targetDir.lengthSquared() > 0) {
+            val targetDx = if (abs(targetDir.x) >= 0.5) sign(targetDir.x).toInt() else 0
+            val targetDz = if (abs(targetDir.z) > 0.5) sign(targetDir.z).toInt() else 0
+
+            if (dx == targetDx && dx == x && dz == targetDz && dz == z) {
+                color = GREEN
+            } else if (targetDx == x && targetDz == z) {
+                color = AQUA
+            }
+        }
+
+        return color
+    }
+
     private fun transpose(xs: List<List<Component>>): List<List<Component>> {
         val cols = xs[0].size
         val rows = xs.size
@@ -197,10 +241,9 @@ object StarshipsSidebar {
     private val backwardsToForwards = TextReplacementConfig.builder().matchLiteral("\\").replacement("/")
 
     private fun replaceSlash(component: Component): Component {
-
-        if (component.contains(Component.text("/"), EQUALS)) {
+        if (component.plainText() == "/") {
             return component.replaceText(forwardsToBackwards.build())
-        } else if (component.contains(Component.text("\\"), EQUALS)) {
+        } else if (component.plainText() == "\\") {
             return component.replaceText(backwardsToForwards.build())
         }
 

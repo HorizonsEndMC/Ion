@@ -20,7 +20,7 @@ class StarshipsSidebarComponent2(starship: ActiveControlledStarship) : SidebarCo
     private val isDirectControlEnabled = starship.isDirectControlEnabled
     private val isCruising = StarshipCruising.isCruising(starship)
     private val isStopped = starship.cruiseData.velocity.lengthSquared() == 0.0
-    private val compassComponent = StarshipsSidebar.compassComponent(starship.getTargetForward(), starship.type.icon)
+    private val compassComponent = StarshipsSidebar.compassComponent(starship)
 
     override fun draw(drawable: LineDrawable) {
         val line = ofChildren(

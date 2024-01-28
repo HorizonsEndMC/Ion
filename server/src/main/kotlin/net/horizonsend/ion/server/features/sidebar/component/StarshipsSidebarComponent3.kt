@@ -14,7 +14,7 @@ class StarshipsSidebarComponent3(starship: ActiveControlledStarship) : SidebarCo
     private val pmShield = starship.reactor.powerDistributor.shieldPortion.times(100).toInt()
     private val pmWeapon = starship.reactor.powerDistributor.weaponPortion.times(100).toInt()
     private val pmThruster = starship.reactor.powerDistributor.thrusterPortion.times(100).toInt()
-    private val compassComponent = StarshipsSidebar.compassComponent(starship.getTargetForward(), starship.type.icon)
+    private val compassComponent = StarshipsSidebar.compassComponent(starship)
 
     override fun draw(drawable: LineDrawable) {
         val line = ofChildren(
