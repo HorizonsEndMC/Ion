@@ -4,6 +4,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.damager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -91,7 +93,7 @@ object DetonatorListener : SLEventListener() {
 				player.world.createExplosion(detonator, 1f, false, false)
 				player.world.playSound(detonator.location, Sound.ENTITY_GENERIC_EXPLODE, 10f, 0.5f)
 
-				if (!blockExplodeEvent.callEvent() && !detonator.world.name.contains("arena", ignoreCase = true)) {
+				if (!blockExplodeEvent.callEvent() && !detonator.world.hasFlag(WorldFlag.AREA)) {
 					return@syncDelay
 				}
 

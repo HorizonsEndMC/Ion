@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.listener.gear
 
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
-import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.GameMode
@@ -22,7 +24,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import java.util.Locale
 
 object SwordListener : SLEventListener() {
 	@EventHandler
@@ -87,7 +88,7 @@ object SwordListener : SLEventListener() {
 	fun onZombieSpawn(event: CreatureSpawnEvent) {
 		if (event.entityType != EntityType.ZOMBIE) return
 		val zombie = event.entity as Zombie
-		if (zombie.world.name.lowercase(Locale.getDefault()).contains("arena")) {
+		if (zombie.world.hasFlag(WorldFlag.AREA)) {
 			Tasks.sync {
 				zombie.equipment.setItemInMainHand(CustomItems["energy_sword_purple"]?.itemStack(1))
 			}
@@ -99,7 +100,7 @@ object SwordListener : SLEventListener() {
 		if (event.entityType != EntityType.VINDICATOR) return
 		val vindicator = event.entity as Vindicator
 
-		if (vindicator.world.name.lowercase(Locale.getDefault()).contains("arena")) {
+		if (vindicator.world.hasFlag(WorldFlag.AREA)) {
 			Tasks.sync {
 				vindicator.equipment.setItemInMainHand(CustomItems["energy_sword_green"]?.itemStack(1))
 			}
@@ -111,7 +112,7 @@ object SwordListener : SLEventListener() {
 		if (event.entityType != EntityType.VEX) return
 		val vex = event.entity as Vex
 
-		if (vex.world.name.lowercase(Locale.getDefault()).contains("arena")) {
+		if (vex.world.hasFlag(WorldFlag.AREA)) {
 			Tasks.sync {
 				vex.equipment.setItemInMainHand(CustomItems["energy_sword_blue"]?.itemStack(1))
 			}
@@ -123,7 +124,7 @@ object SwordListener : SLEventListener() {
 		if (event.entityType != EntityType.WITHER_SKELETON) return
 		val witherskeleton = event.entity as WitherSkeleton
 
-		if (witherskeleton.world.name.lowercase(Locale.getDefault()).contains("arena")) {
+		if (witherskeleton.world.hasFlag(WorldFlag.AREA)) {
 			Tasks.sync {
 				witherskeleton.equipment.setItemInMainHand(CustomItems["energy_sword_red"]?.itemStack(1))
 			}

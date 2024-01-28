@@ -47,7 +47,6 @@ import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.space.Orbits
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceMap
-import net.horizonsend.ion.server.features.space.SpaceMechanics
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Hangars
@@ -105,8 +104,6 @@ val components: List<IonComponent> = listOf(
 	SpaceWorlds,
 	Space,
 	Orbits,
-
-	SpaceMechanics,
 
 	NationsBalancing,
 	Regions,
