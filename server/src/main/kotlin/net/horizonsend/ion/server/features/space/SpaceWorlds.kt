@@ -18,7 +18,7 @@ object SpaceWorlds : IonServerComponent() {
 		.build(CacheLoader.from cache@{ world ->
 			if (world == null) return@cache false
 
-			return@cache world.ion().hasFlag(WorldFlag.SPACE_ENVIRONMENT)
+			return@cache world.ion.hasFlag(WorldFlag.SPACE_WORLD)
 		})
 
 	override fun onEnable() {

@@ -12,6 +12,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.NoOpCont
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Discord.asDiscord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -26,7 +28,7 @@ import net.kyori.adventure.text.format.TextColor
 
 class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory {
 	override fun execute() {
-		val arena = IonServer.configuration.serverName.equals("creative", ignoreCase = true) // TODO manager later
+		val arena = sunkShip.world.hasFlag(WorldFlag.AREA)
 		val data = sunkShip.damagers
 
 		// First person got the final blow

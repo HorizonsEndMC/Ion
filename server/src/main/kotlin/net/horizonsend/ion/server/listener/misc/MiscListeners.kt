@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.features.space.SpaceMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.world.environment.Environment
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -36,7 +36,7 @@ class MiscListeners : SLEventListener() {
 	fun onEntityDamage(event: EntityDamageEvent) {
 		val player: Player = event.entity as? Player ?: return
 
-		if (event.cause == EntityDamageEvent.DamageCause.DROWNING && SpaceMechanics.isWearingSpaceSuit(player)) {
+		if (event.cause == EntityDamageEvent.DamageCause.DROWNING && Environment.isWearingSpaceSuit(player)) {
 			event.isCancelled = true
 		}
 	}

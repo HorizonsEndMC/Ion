@@ -1,9 +1,11 @@
 package net.horizonsend.ion.server.features.gear.powerarmor
 
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.removePower
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.gear.hasMovedInLastSecond
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Material.LEATHER_BOOTS
@@ -16,7 +18,6 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import java.util.Locale
 import java.util.UUID
 
 object PowerArmorManager {
@@ -48,9 +49,7 @@ object PowerArmorManager {
 								PotionEffect(PotionEffectType.SPEED, 20, 2, true, true)
 							)
 
-							if (hasMovedInLastSecond(player) && !player.world.name.lowercase(Locale.getDefault())
-								.contains("arena")
-							) {
+							if (hasMovedInLastSecond(player) && !player.world.hasFlag(WorldFlag.AREA)) {
 								removePower(item, 1)
 							}
 						}
@@ -62,9 +61,7 @@ object PowerArmorManager {
 						}
 
 						PowerArmorModule.ROCKET_BOOSTING -> {
-							if (player.isGliding && !player.world.name.lowercase(Locale.getDefault())
-								.contains("arena")
-							) {
+							if (player.isGliding && !player.world.hasFlag(WorldFlag.AREA)) {
 								removePower(item, 5)
 							}
 						}
@@ -109,7 +106,7 @@ object PowerArmorManager {
 					player.velocity = player.velocity.midpoint(player.location.direction.multiply(0.6))
 					player.world.spawnParticle(Particle.SMOKE_NORMAL, player.location, 5)
 
-					if (!player.world.name.lowercase(Locale.getDefault()).contains("arena")) {
+					if (!player.world.hasFlag(WorldFlag.AREA)) {
 						removePower(item, 5)
 					}
 
