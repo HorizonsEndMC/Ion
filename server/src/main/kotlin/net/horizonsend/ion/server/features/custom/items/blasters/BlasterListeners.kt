@@ -1,10 +1,13 @@
 package net.horizonsend.ion.server.features.custom.items.blasters
 
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.blasters.objects.Blaster
+import net.horizonsend.ion.server.features.custom.items.blasters.objects.Magazine
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -30,9 +33,7 @@ class BlasterListeners : SLEventListener() {
 
 		if (customItem !is Blaster<*>) return
 
-		val arena: String = if (IonServer.configuration.serverName.equals("creative", ignoreCase = true))
-			"<#555555>[<#ffff66>Arena<#555555>]<reset> "
-		else ""
+		val arena: String = if (killer.world.hasFlag(WorldFlag.AREA)) "<#555555>[<#ffff66>Arena<#555555>]<reset> " else ""
 
 		val blaster = customItem.displayName
 		val victimColor =

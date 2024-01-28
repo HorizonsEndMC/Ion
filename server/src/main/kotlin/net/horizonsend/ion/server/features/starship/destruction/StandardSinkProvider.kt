@@ -8,6 +8,9 @@ import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
+import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
@@ -182,10 +185,12 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			val aX = blockKeyX(a).d()
 			val aY = blockKeyY(a).d()
 			val aZ = blockKeyZ(a).d()
+
 			obstructedLocs.any { b ->
 				val bX = blockKeyX(b).d()
 				val bY = blockKeyY(b).d()
 				val bZ = blockKeyZ(b).d()
+
 				distanceSquared(aX, aY, aZ, bX, bY, bZ) < 4
 			}
 		}
@@ -238,7 +243,7 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			}
 		}
 
-		if (world.name == "SpaceArena") {
+		if (world.hasFlag(WorldFlag.AREA) ) {
 			val air = Material.AIR.createBlockData()
 
 			Tasks.syncDelayTask(finalDelay) {
