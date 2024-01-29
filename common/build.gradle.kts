@@ -22,7 +22,7 @@ dependencies {
 
 	compileOnly("net.md-5:bungeecord-chat:1.20-R0.1")
 	compileOnly("net.luckperms:api:5.4")
-	compileOnly("com.gitlab.ruany:LiteBansAPI:0.4.1")
+	compileOnly("com.gitlab.ruany:LiteBansAPI:0.5.0")
 
 	api(kotlin("reflect"))
 	api(kotlin("stdlib"))
