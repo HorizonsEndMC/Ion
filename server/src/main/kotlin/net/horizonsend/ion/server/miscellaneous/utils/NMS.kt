@@ -67,7 +67,7 @@ fun BukkitBlock.getNMSBlockData(): BlockState {
  * Will attempt to get the block in a thread safe manner.
  * If the chunk is not loaded or it's outside of the valid Y range, will return null.
  */
-fun getNMSBlockDataSafe(world: World, x: Int, y: Int, z: Int): BlockState? {
+fun getNMSBlockSateSafe(world: World, x: Int, y: Int, z: Int): BlockState? {
 	if (y < world.minHeight || y > world.maxHeight) {
 		return null
 	}
@@ -81,10 +81,10 @@ fun getNMSBlockDataSafe(world: World, x: Int, y: Int, z: Int): BlockState? {
 	}
 }
 
-fun getNMSBlockDataSafe(world: World, pos: BlockPos): BlockState? {
+fun getNMSBlockSateSafe(world: World, pos: BlockPos): BlockState? {
 	val (x, y, z) = pos
 
-	return getNMSBlockDataSafe(world, x, y, z)
+	return getNMSBlockSateSafe(world, x, y, z)
 }
 
 fun MinecraftBlock.isAir(): Boolean = this == Blocks.AIR || this == Blocks.CAVE_AIR || this == Blocks.VOID_AIR || this == Blocks.LIGHT
