@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.sidebar.tasks
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.INTERDICTION_ICON
@@ -22,6 +23,7 @@ import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.block.BlockFace
+import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import kotlin.math.abs
 import kotlin.math.sign
@@ -126,10 +128,11 @@ object StarshipsSidebar {
         } else Component.empty()
     }
 
-    fun compassComponent(starship: ActiveControlledStarship): MutableList<MutableList<Component>> {
+    fun compassComponent(starship: ActiveControlledStarship, player: Player): MutableList<MutableList<Component>> {
         val cruiseData = starship.cruiseData
         val vec = cruiseData.velocity
         val targetVec = cruiseData.targetDir
+        val rotateCompass = PlayerCache[player.uniqueId].rotateCompass
 
         val compass = mutableListOf(
             mutableListOf(
@@ -149,44 +152,51 @@ object StarshipsSidebar {
             )
         )
 
-        when (starship.forward) {
-            BlockFace.SOUTH -> {
-                compass.reverse()
-                compass[0].reverse()
-                compass[1].reverse()
-                compass[2].reverse()
-            }
-            BlockFace.EAST -> {
-                compass[0].reverse()
-                compass[1].reverse()
-                compass[2].reverse()
-                val transposed = transpose(compass)
-                compass[0] = transposed[0].toMutableList()
-                compass[1] = transposed[1].toMutableList()
-                compass[2] = transposed[2].toMutableList()
-
-                compass.forEach { row ->
-                    for (elementIndex in 0..<row.size) {
-                        row[elementIndex] = replaceSlash(row[elementIndex])
-                    }
+        if (rotateCompass) {
+            // Rotate compass array based on ship's current forward direction
+            when (starship.forward) {
+                BlockFace.SOUTH -> {
+                    compass.reverse()
+                    compass[0].reverse()
+                    compass[1].reverse()
+                    compass[2].reverse()
                 }
-            }
-            BlockFace.WEST -> {
-                val transposed = transpose(compass)
-                compass[0] = transposed[0].toMutableList()
-                compass[1] = transposed[1].toMutableList()
-                compass[2] = transposed[2].toMutableList()
-                compass[0].reverse()
-                compass[1].reverse()
-                compass[2].reverse()
 
-                compass.forEach { row ->
-                    for (elementIndex in 0..<row.size) {
-                        row[elementIndex] = replaceSlash(row[elementIndex])
+                BlockFace.EAST -> {
+                    compass[0].reverse()
+                    compass[1].reverse()
+                    compass[2].reverse()
+                    val transposed = transpose(compass)
+                    compass[0] = transposed[0].toMutableList()
+                    compass[1] = transposed[1].toMutableList()
+                    compass[2] = transposed[2].toMutableList()
+
+                    compass.forEach { row ->
+                        for (elementIndex in 0..<row.size) {
+                            row[elementIndex] = replaceSlash(row[elementIndex])
+                        }
                     }
                 }
 
-            } else -> { }
+                BlockFace.WEST -> {
+                    val transposed = transpose(compass)
+                    compass[0] = transposed[0].toMutableList()
+                    compass[1] = transposed[1].toMutableList()
+                    compass[2] = transposed[2].toMutableList()
+                    compass[0].reverse()
+                    compass[1].reverse()
+                    compass[2].reverse()
+
+                    compass.forEach { row ->
+                        for (elementIndex in 0..<row.size) {
+                            row[elementIndex] = replaceSlash(row[elementIndex])
+                        }
+                    }
+
+                }
+
+                else -> {}
+            }
         }
 
         return compass
@@ -206,8 +216,8 @@ object StarshipsSidebar {
     private fun compassColor(dir: Vector, targetDir: Vector?, x: Int, z: Int): NamedTextColor {
         var color = GRAY
 
-        val dx = if (abs(dir.x) >= 0.5) sign(dir.x).toInt() else 0
-        val dz = if (abs(dir.z) > 0.5) sign(dir.z).toInt() else 0
+        val dx = if (abs(dir.x) >= 0.4) sign(dir.x).toInt() else 0
+        val dz = if (abs(dir.z) > 0.4) sign(dir.z).toInt() else 0
 
         if (dx == x && dz == z) {
             color = GOLD
