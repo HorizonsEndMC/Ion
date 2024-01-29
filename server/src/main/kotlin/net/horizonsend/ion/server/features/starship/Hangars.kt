@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
-import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockDataSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockSateSafe
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
@@ -65,7 +65,7 @@ object Hangars : IonServerComponent() {
 				val x = blockKeyX(blockKey)
 				val y = blockKeyY(blockKey)
 				val z = blockKeyZ(blockKey)
-				val currentData: BlockState = getNMSBlockDataSafe(world, x, y, z) ?: continue
+				val currentData: BlockState = getNMSBlockSateSafe(world, x, y, z) ?: continue
 				if (!currentData.bukkitMaterial.isAir) {
 					continue
 				}
