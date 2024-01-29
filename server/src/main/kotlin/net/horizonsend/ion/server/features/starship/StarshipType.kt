@@ -87,7 +87,7 @@ enum class StarshipType(
 	),
 	AI_STARFIGHTER(
 		displayName = "Starfighter",
-		icon = SidebarIcon.STARFIGHTER_ICON.text,
+		icon = SidebarIcon.AI_STARFIGHTER_ICON.text,
 		minSize = 150,
 		maxSize = 500,
 		minLevel = 1000,
@@ -118,7 +118,7 @@ enum class StarshipType(
 	),
 	AI_GUNSHIP(
 		displayName = "Gunship",
-		icon = SidebarIcon.GUNSHIP_ICON.text,
+		icon = SidebarIcon.AI_GUNSHIP_ICON.text,
 		minSize = 500,
 		maxSize = 2000,
 		minLevel = 1000,
@@ -151,7 +151,7 @@ enum class StarshipType(
 	),
 	AI_CORVETTE(
 		displayName = "Corvette",
-		icon = SidebarIcon.CORVETTE_ICON.text,
+		icon = SidebarIcon.AI_CORVETTE_ICON.text,
 		minSize = 2000,
 		maxSize = 4000,
 		minLevel = 1000,
@@ -186,7 +186,7 @@ enum class StarshipType(
 	),
 	AI_FRIGATE(
 		displayName = "Frigate",
-		icon = SidebarIcon.FRIGATE_ICON.text,
+		icon = SidebarIcon.AI_FRIGATE_ICON.text,
 		minSize = 4000,
 		maxSize = 8000,
 		minLevel = 1000,
@@ -221,7 +221,7 @@ enum class StarshipType(
 	),
 	AI_DESTROYER(
 		displayName = "Destroyer",
-		icon = SidebarIcon.DESTROYER_ICON.text,
+		icon = SidebarIcon.AI_DESTROYER_ICON.text,
 		minSize = 8000,
 		maxSize = 12000,
 		minLevel = 1000,
@@ -253,7 +253,7 @@ enum class StarshipType(
 	),
 	AI_BATTLECRUISER(
 		displayName = "Battlecruiser",
-		icon = SidebarIcon.BATTLECRUISER_ICON.text,
+		icon = SidebarIcon.AI_BATTLECRUISER_ICON.text,
 		minSize = 12000,
 		maxSize = 20000,
 		minLevel = 1000,
@@ -282,7 +282,7 @@ enum class StarshipType(
 	),
 	AI_BATTLESHIP(
 		displayName = "Battleship",
-		icon = SidebarIcon.BATTLESHIP_ICON.text,
+		icon = SidebarIcon.AI_BATTLESHIP_ICON.text,
 		minSize = 20000,
 		maxSize = 32000,
 		minLevel = 1000,
@@ -311,7 +311,7 @@ enum class StarshipType(
 	),
 	AI_DREADNOUGHT(
 		displayName = "Dreadnought",
-		icon = SidebarIcon.DREADNOUGHT_ICON.text,
+		icon = SidebarIcon.AI_DREADNOUGHT_ICON.text,
 		minSize = 32000,
 		maxSize = 48000,
 		minLevel = 1000,
@@ -344,7 +344,7 @@ enum class StarshipType(
 	),
 	AI_SHUTTLE(
 		displayName = "Shuttle",
-		icon = SidebarIcon.SHUTTLE_ICON.text,
+		icon = SidebarIcon.AI_SHUTTLE_ICON.text,
 		minSize = 100,
 		maxSize = 1000,
 		minLevel = 1000,
@@ -381,7 +381,7 @@ enum class StarshipType(
 	),
 	AI_TRANSPORT(
 		displayName = "Transport",
-		icon = SidebarIcon.TRANSPORT_ICON.text,
+		icon = SidebarIcon.AI_TRANSPORT_ICON.text,
 		minSize = 1000,
 		maxSize = 2000,
 		minLevel = 1000,
@@ -418,7 +418,7 @@ enum class StarshipType(
 	),
 	AI_LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
-		icon = SidebarIcon.LIGHT_FREIGHTER_ICON.text,
+		icon = SidebarIcon.AI_LIGHT_FREIGHTER_ICON.text,
 		minSize = 2000,
 		maxSize = 4000,
 		minLevel = 1000,
@@ -473,7 +473,7 @@ enum class StarshipType(
 	),
 	AI_HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
-		icon = SidebarIcon.HEAVY_FREIGHTER_ICON.text,
+		icon = SidebarIcon.AI_HEAVY_FREIGHTER_ICON.text,
 		minSize = 8000,
 		maxSize = 12000,
 		minLevel = 1000,

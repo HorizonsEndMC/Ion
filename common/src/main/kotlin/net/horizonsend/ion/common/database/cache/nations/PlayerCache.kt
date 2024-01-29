@@ -48,6 +48,10 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var waypointsEnabled: Boolean = true,
 		var compactWaypoints: Boolean = true,
 
+		var starshipsEnabled: Boolean = true,
+		var advancedStarshipInfo: Boolean = false,
+		var rotateCompass: Boolean = true,
+
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
 
@@ -195,6 +199,33 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val compactWaypoints = it.boolean()
 					data.compactWaypoints = compactWaypoints
+				}
+			}
+
+			change[SLPlayer::starshipsEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val starshipsEnabled = it.boolean()
+					data.starshipsEnabled = starshipsEnabled
+				}
+			}
+
+			change[SLPlayer::advancedStarshipInfo]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val advancedStarshipInfo = it.boolean()
+					data.advancedStarshipInfo = advancedStarshipInfo
+				}
+			}
+
+			change[SLPlayer::rotateCompass]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val rotateCompass = it.boolean()
+					data.rotateCompass = rotateCompass
 				}
 			}
 

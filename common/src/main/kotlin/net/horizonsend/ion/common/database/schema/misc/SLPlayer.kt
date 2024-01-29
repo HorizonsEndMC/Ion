@@ -72,6 +72,9 @@ data class SLPlayer(
 	var beaconsEnabled: Boolean = true,
 	var waypointsEnabled: Boolean = true,
 	var compactWaypoints: Boolean = true,
+	var starshipsEnabled: Boolean = true,
+	var advancedStarshipInfo: Boolean = false,
+	var rotateCompass: Boolean = true,
 
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 ) : DbObject {

@@ -54,18 +54,24 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 		lines.addComponent(locationComponent)
 
 		// Starship
-		val starship = PilotedStarships[player]
-		if (starship != null) {
-			val starshipsHeaderSidebarComponent: SidebarComponent = StarshipsHeaderSidebarComponent(starship)
-			val starshipsSidebarComponent1: SidebarComponent = StarshipsSidebarComponent1(starship)
-			val starshipsSidebarComponent2: SidebarComponent = StarshipsSidebarComponent2(starship)
-			val starshipsSidebarComponent3: SidebarComponent = StarshipsSidebarComponent3(starship)
-			val starshipsSidebarComponent4: SidebarComponent = StarshipsSidebarComponent4(starship)
-			lines.addComponent(starshipsHeaderSidebarComponent)
-			lines.addComponent(starshipsSidebarComponent1)
-			lines.addComponent(starshipsSidebarComponent2)
-			lines.addComponent(starshipsSidebarComponent3)
-			lines.addComponent(starshipsSidebarComponent4)
+		val starshipsEnabled = PlayerCache[player.uniqueId].starshipsEnabled
+		if (starshipsEnabled) {
+			val starship = PilotedStarships[player]
+			if (starship != null) {
+				val starshipsHeaderSidebarComponent: SidebarComponent =
+					StarshipsHeaderSidebarComponent(starship, player)
+				val starshipsSidebarComponent1: SidebarComponent = StarshipsSidebarComponent1(starship, player)
+				val starshipsSidebarComponent2: SidebarComponent = StarshipsSidebarComponent2(starship, player)
+				val starshipsSidebarComponent3: SidebarComponent = StarshipsSidebarComponent3(starship, player)
+				val starshipsSidebarComponent4: SidebarComponent = StarshipsSidebarComponent4(starship, player)
+				lines.addComponent(starshipsHeaderSidebarComponent)
+				lines.addComponent(starshipsSidebarComponent1)
+				lines.addComponent(starshipsSidebarComponent2)
+				lines.addComponent(starshipsSidebarComponent3)
+				if (PlayerCache[player.uniqueId].advancedStarshipInfo) {
+					lines.addComponent(starshipsSidebarComponent4)
+				}
+			}
 		}
 
 		// Contacts
