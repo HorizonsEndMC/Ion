@@ -3,8 +3,12 @@ package net.horizonsend.ion.server.features.starship.modules
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
+import net.horizonsend.ion.server.features.achievements.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
@@ -13,6 +17,19 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 class AIRewardsProvider(starship: ActiveStarship, val template: AISpawningConfiguration.AIStarshipTemplate) : StandardRewardsProvider(starship) {
+	override fun processDamagers(starship: ActiveStarship, dataMap: Map<Damager, ShipKillXP.ShipDamageData>) {
+		val sum = dataMap.values.sumOf { it.points.get() }
+
+		for ((damager, data) in dataMap.entries) {
+			val (points, timeStamp) = data
+			val player = (damager as? PlayerDamager)?.player ?: continue // shouldn't happen
+
+			processDamagerRewards(damager, points, timeStamp, sum)
+
+			if (points.get() > 0) player.rewardAchievement(Achievement.KILL_SHIP)
+		}
+	}
+
 	override fun processDamagerRewards(damager: Damager, points: AtomicInteger, lastDamaged: Long, pointsSum: Int) {
 		val killedSize = starship.initialBlockCount.toDouble()
 

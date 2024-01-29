@@ -58,7 +58,7 @@ object ShipKillXP : IonServerComponent() {
 			""".trimIndent()
 		)
 
-		starship.rewardsProvider.onSink()
+		starship.rewardsProvider.triggerReward()
 		starship.sinkMessageFactory.execute()
 	}
 }
