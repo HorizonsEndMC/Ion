@@ -8,13 +8,13 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.CHISELED_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.add
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockSateSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isAir
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -119,18 +119,19 @@ object Decomposers : IonServerComponent() {
 		up: BlockFace,
 		forward: BlockFace
 	): Int {
-		val serverLevel = origin.world.minecraft
+		val world = origin.world
 
 		for (offsetWidth: Int in 0 until height) {
 			for (offsetForward: Int in 0 until length) {
 				for (offsetUp: Int in 0 until width) {
-					val originBlockPos = origin.toBlockPos().mutable()
-					originBlockPos.add(up.direction.multiply(offsetUp).toBlockPos())
-					originBlockPos.add(forward.direction.multiply(offsetForward).toBlockPos())
-					originBlockPos.add(right.direction.multiply(offsetWidth).toBlockPos())
+					val loc = origin.clone()
 
-					val block = serverLevel.getBlockIfLoaded(originBlockPos)
-					if (block?.isAir() == false) return offsetWidth
+					loc.add(up.direction.multiply(offsetUp))
+					loc.add(forward.direction.multiply(offsetForward))
+					loc.add(right.direction.multiply(offsetWidth))
+
+					val block = getNMSBlockSateSafe(world, Vec3i(loc))
+					if (block?.isAir == false) return offsetWidth
 				}
 			}
 		}
