@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
-import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockDataSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockSateSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isButton
@@ -369,7 +369,7 @@ class MultiblockShape {
 
 		fun machineFurnace() = complete(Material.FURNACE.createBlockData()) { block, inward, loadChunks ->
 			val blockData = if (loadChunks) block.getNMSBlockData() else
-				getNMSBlockDataSafe(block.world, block.x, block.y, block.z) ?: return@complete false
+				getNMSBlockSateSafe(block.world, block.x, block.y, block.z) ?: return@complete false
 
 			if (blockData.bukkitMaterial != Material.FURNACE) return@complete false
 			val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace
