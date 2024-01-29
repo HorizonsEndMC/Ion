@@ -12,17 +12,17 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.WallSign
 
 /**
- * @see getNMSBlockDataSafe
+ * @see getNMSBlockSateSafe
  */
 fun getBlockTypeSafe(world: World, x: Int, y: Int, z: Int): Material? {
-	return getNMSBlockDataSafe(world, x, y, z)?.bukkitMaterial
+	return getNMSBlockSateSafe(world, x, y, z)?.bukkitMaterial
 }
 
 /**
- * @see getNMSBlockDataSafe
+ * @see getNMSBlockSateSafe
  */
 fun getBlockDataSafe(world: World, x: Int, y: Int, z: Int): BlockData? {
-	return getNMSBlockDataSafe(world, x, y, z)?.createCraftBlockData()
+	return getNMSBlockSateSafe(world, x, y, z)?.createCraftBlockData()
 }
 
 /**
