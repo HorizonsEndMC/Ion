@@ -4,8 +4,6 @@ import net.minecraft.world.item.ItemStack as MinecraftItemStack
 import net.minecraft.world.level.block.Block as MinecraftBlock
 import org.bukkit.block.Block as BukkitBlock
 import org.bukkit.inventory.ItemStack as BukkitItemStack
-import net.minecraft.core.BlockPos
-import net.minecraft.core.BlockPos.MutableBlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.Blocks
@@ -81,7 +79,7 @@ fun getNMSBlockSateSafe(world: World, x: Int, y: Int, z: Int): BlockState? {
 	}
 }
 
-fun getNMSBlockSateSafe(world: World, pos: BlockPos): BlockState? {
+fun getNMSBlockSateSafe(world: World, pos: Vec3i): BlockState? {
 	val (x, y, z) = pos
 
 	return getNMSBlockSateSafe(world, x, y, z)
@@ -94,23 +92,5 @@ fun World.getChunkAtIfLoaded(chunkX: Int, chunkZ: Int): Chunk? = minecraft.getCh
 fun World.setNMSBlockData(x: Int, y: Int, z: Int, data: BlockState, applyPhysics: Boolean = false): Boolean {
 	getBlockAt(x, y, z).setBlockData(data.createCraftBlockData(), applyPhysics)
 	return true
-}
-//endregion
-
-//region Block Positions
-fun BlockPos.added(x: Int, y: Int, z: Int): BlockPos {
-	return BlockPos(this.x + x, this.y + y, this.z + z)
-}
-
-fun MutableBlockPos.add(otherPos: BlockPos) {
-	this.x = this.x + otherPos.x
-	this.y = this.y + otherPos.y
-	this.z = this.z + otherPos.z
-}
-
-fun MutableBlockPos.multiply(otherPos: BlockPos) {
-	this.x = this.x * otherPos.x
-	this.y = this.y * otherPos.y
-	this.z = this.z * otherPos.z
 }
 //endregion
