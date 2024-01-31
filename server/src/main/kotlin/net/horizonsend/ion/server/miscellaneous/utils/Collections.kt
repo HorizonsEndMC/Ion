@@ -71,3 +71,4 @@ fun <K, V> Map<out K, V>.toMutableList(): MutableList<Pair<K, V>> {
 
 fun <K, V, R, Z> Map<K, V>.mapTo(other: MutableMap<R, Z>, transform: (Map.Entry<K,V>) -> Pair<R, Z>) = other.putAll(map(transform))
 fun <K, V, R, Z> Map<K, V>.mapNotNullTo(other: MutableMap<R, Z>, transform: (Map.Entry<K,V>) -> Pair<R, Z>?) = other.putAll(map(transform).filterNotNull())
+fun <T> MutableSet<T>.and(vararg others: T): MutableSet<T> = apply { others.forEach { add(it) } }
