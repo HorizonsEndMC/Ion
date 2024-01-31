@@ -62,6 +62,9 @@ val Material.isWallSign: Boolean get() = WALL_SIGN_TYPES.contains(this)
 val SIGN_TYPES = getMatchingMaterials { it.name.endsWith("_SIGN") }
 val Material.isSign: Boolean get() = SIGN_TYPES.contains(this)
 
+val TERRACOTTA_TYPES = getMatchingMaterials { it.name.contains("TERRACOTTA") }
+val Material.isTerracotta: Boolean get() = TERRACOTTA_TYPES.contains(this)
+
 val GLAZED_TERRACOTTA_TYPES = getMatchingMaterials { it.name.endsWith("_GLAZED_TERRACOTTA") }
 val Material.isGlazedTerracotta: Boolean get() = GLAZED_TERRACOTTA_TYPES.contains(this)
 
