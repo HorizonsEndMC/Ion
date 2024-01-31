@@ -50,9 +50,9 @@ object DisposalMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultibl
 			}
 			z(+1) {
 				y(-1) {
-					x(-1).stainedTerracotta()
+					x(-1).terracotta()
 					x(+0).sponge()
-					x(+1).stainedTerracotta()
+					x(+1).terracotta()
 				}
 				y(+0) {
 					x(-1).anyGlassPane()

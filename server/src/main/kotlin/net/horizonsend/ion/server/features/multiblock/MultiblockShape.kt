@@ -6,33 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10.bu
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.Wires
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
-import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
-import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockFace
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
-import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
-import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockDataSafe
-import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
-import net.horizonsend.ion.server.miscellaneous.utils.isButton
-import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
-import net.horizonsend.ion.server.miscellaneous.utils.isDaylightSensor
-import net.horizonsend.ion.server.miscellaneous.utils.isDoor
-import net.horizonsend.ion.server.miscellaneous.utils.isFroglight
-import net.horizonsend.ion.server.miscellaneous.utils.isGlass
-import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
-import net.horizonsend.ion.server.miscellaneous.utils.isRedstoneLamp
-import net.horizonsend.ion.server.miscellaneous.utils.isSlab
-import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
-import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlassPane
-import net.horizonsend.ion.server.miscellaneous.utils.isStairs
-import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
-import net.horizonsend.ion.server.miscellaneous.utils.isWall
-import net.horizonsend.ion.server.miscellaneous.utils.isWool
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.minecraft.world.level.block.AbstractFurnaceBlock
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -248,6 +222,8 @@ class MultiblockShape {
 		fun filteredTypes(filter: (Material) -> Boolean) = anyType(MATERIALS.filter(filter))
 
 		fun carbyne() = anyType(CONCRETE_TYPES)
+
+		fun terracotta() = anyType(TERRACOTTA_TYPES)
 		fun stainedTerracotta() = anyType(STAINED_TERRACOTTA_TYPES)
 
 		fun glass() = type(Material.GLASS)

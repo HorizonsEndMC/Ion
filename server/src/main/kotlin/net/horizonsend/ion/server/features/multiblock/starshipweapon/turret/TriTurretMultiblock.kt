@@ -45,7 +45,7 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 		y(getYFactor() * 3) {
 			z(-3) {
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).terracotta()
 				x(+1).anyStairs()
 			}
 
@@ -62,25 +62,25 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 			}
 
 			z(+0) {
-				x(-3..-2) { stainedTerracotta() }
+				x(-3..-2) { terracotta() }
 				x(-1..+1) { concrete() }
-				x(+2..+3) { stainedTerracotta() }
+				x(+2..+3) { terracotta() }
 			}
 
 			z(+1) {
 				x(-3).anyStairs()
-				x(-2).stainedTerracotta()
+				x(-2).terracotta()
 				x(-1).concrete()
-				x(+0).stainedTerracotta()
+				x(+0).terracotta()
 				x(+1).concrete()
-				x(+2).stainedTerracotta()
+				x(+2).terracotta()
 				x(+3).anyStairs()
 			}
 
 			z(+2) {
 				x(-2).ironBlock()
 				x(-1).concrete()
-				x(+0).stainedTerracotta()
+				x(+0).terracotta()
 				x(+1).concrete()
 				x(+2).ironBlock()
 			}
@@ -100,24 +100,24 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 			z(-2) {
 				x(-2).anySlab()
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).terracotta()
 				x(+1).anyStairs()
 				x(+2).anySlab()
 			}
 
 			z(-1) {
-				x(-2).stainedTerracotta()
-				x(-1).stainedTerracotta()
-				x(+0).stainedTerracotta()
-				x(+1).stainedTerracotta()
-				x(+2).stainedTerracotta()
+				x(-2).terracotta()
+				x(-1).terracotta()
+				x(+0).terracotta()
+				x(+1).terracotta()
+				x(+2).terracotta()
 			}
 
 			z(+0) {
 				x(-3).anyStairs()
 				x(-2).type(GRINDSTONE)
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).terracotta()
 				x(+1).anyStairs()
 				x(+2).type(GRINDSTONE)
 				x(+3).anyStairs()

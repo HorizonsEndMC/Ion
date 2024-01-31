@@ -24,7 +24,7 @@ sealed class LightTurretMultiblock : TurretMultiblock() {
 		z(-1) {
 			y(getSign() * 3) {
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).terracotta()
 				x(+1).anyStairs()
 			}
 			y(getSign() * 4) {
@@ -36,9 +36,9 @@ sealed class LightTurretMultiblock : TurretMultiblock() {
 				x(+0).sponge()
 			}
 			y(getSign() * 3) {
-				x(-1).stainedTerracotta()
+				x(-1).terracotta()
 				x(+0).ironBlock()
-				x(+1).stainedTerracotta()
+				x(+1).terracotta()
 			}
 			y(getSign() * 4) {
 				x(-1).anySlab()
@@ -49,7 +49,7 @@ sealed class LightTurretMultiblock : TurretMultiblock() {
 		z(+1) {
 			y(getSign() * 3) {
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).terracotta()
 				x(+1).anyStairs()
 			}
 			y(getSign() * 4) {
