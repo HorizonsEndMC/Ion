@@ -117,7 +117,7 @@ abstract class Blaster<T : Balancing>(
 			}
 		}
 
-		if (livingEntity.world.hasFlag(WorldFlag.AREA) || !balancing.consumesAmmo) {
+		if (livingEntity.world.hasFlag(WorldFlag.ARENA) || !balancing.consumesAmmo) {
 			ammo = balancing.magazineSize
 		}
 

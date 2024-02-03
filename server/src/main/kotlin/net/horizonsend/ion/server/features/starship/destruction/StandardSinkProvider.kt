@@ -243,7 +243,7 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			}
 		}
 
-		if (world.hasFlag(WorldFlag.AREA) ) {
+		if (world.hasFlag(WorldFlag.ARENA) ) {
 			val air = Material.AIR.createBlockData()
 
 			Tasks.syncDelayTask(finalDelay) {
