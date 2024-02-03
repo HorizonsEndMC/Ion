@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.environments
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.kyori.adventure.text.Component
@@ -134,5 +135,42 @@ object WorldCommand : SLCommand() {
 		builder.append(body)
 
 		sender.sendMessage(builder.build())
+	}
+
+	@Subcommand("apply preset")
+	@Suppress("unused")
+	fun setPreset(sender: CommandSender, world: World, preset: WorldPreset) {
+		preset.setup(world)
+		sender.success("Applied preset $preset to ${world.name}")
+	}
+
+	/** World setting presets */
+	enum class WorldPreset {
+		SPACE {
+			override fun setup(world: World) {
+				val ionWorld = world.ion
+
+				ionWorld.configuration.flags.add(WorldFlag.SPACE_WORLD)
+				ionWorld.configuration.flags.add(WorldFlag.ALLOW_SPACE_STATIONS)
+				ionWorld.configuration.flags.add(WorldFlag.ALLOW_AI_SPAWNS)
+				ionWorld.configuration.environments.add(Environment.SPACE_ENVIRONMENT)
+
+				ionWorld.saveConfiguration()
+				SpaceWorlds.cache.invalidate(world)
+			}
+		},
+		HYPERSPACE {
+			override fun setup(world: World) {
+				val ionWorld = world.ion
+
+				ionWorld.configuration.environments.add(Environment.SPACE_ENVIRONMENT)
+
+				ionWorld.saveConfiguration()
+			}
+		}
+
+		;
+
+		abstract fun setup(world: World)
 	}
 }

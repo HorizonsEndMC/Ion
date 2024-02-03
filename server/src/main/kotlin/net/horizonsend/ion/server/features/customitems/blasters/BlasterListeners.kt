@@ -33,7 +33,7 @@ class BlasterListeners : SLEventListener() {
 
 		if (customItem !is Blaster<*>) return
 
-		val arena: String = if (killer.world.hasFlag(WorldFlag.AREA)) "<#555555>[<#ffff66>Arena<#555555>]<reset> " else ""
+		val arena: String = if (killer.world.hasFlag(WorldFlag.ARENA)) "<#555555>[<#ffff66>Arena<#555555>]<reset> " else ""
 
 		val blaster = customItem.displayName
 		val victimColor =
