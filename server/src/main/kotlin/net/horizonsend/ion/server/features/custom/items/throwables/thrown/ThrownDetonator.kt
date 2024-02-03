@@ -73,7 +73,7 @@ class ThrownDetonator(
 		val event = regeneratingBlockChange(item, block, blocks, 0.123f, true)
 		val called = event.callEvent()
 
-		if (!called && !world.hasFlag(WorldFlag.AREA)) return
+		if (!called && !world.hasFlag(WorldFlag.ARENA)) return
 
 		blocks.forEach { it.setType(Material.AIR, false) }
 
