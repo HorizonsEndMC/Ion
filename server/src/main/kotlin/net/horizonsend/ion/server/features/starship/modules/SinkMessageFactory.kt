@@ -28,7 +28,7 @@ import net.kyori.adventure.text.format.TextColor
 
 class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory {
 	override fun execute() {
-		val arena = sunkShip.world.hasFlag(WorldFlag.AREA)
+		val arena = sunkShip.world.hasFlag(WorldFlag.ARENA)
 		val data = sunkShip.damagers
 
 		// First person got the final blow

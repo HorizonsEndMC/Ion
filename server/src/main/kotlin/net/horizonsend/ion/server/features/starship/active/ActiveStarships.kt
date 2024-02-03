@@ -83,7 +83,7 @@ object ActiveStarships : IonServerComponent() {
 
 		worldMap[starship.world].remove(starship)
 
-		if (starship.world.hasFlag(WorldFlag.AREA) && !starship.isExploding) {
+		if (starship.world.hasFlag(WorldFlag.ARENA) && !starship.isExploding) {
 			StarshipDestruction.vanish(starship)
 		}
 

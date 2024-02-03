@@ -93,7 +93,7 @@ object DetonatorListener : SLEventListener() {
 				player.world.createExplosion(detonator, 1f, false, false)
 				player.world.playSound(detonator.location, Sound.ENTITY_GENERIC_EXPLODE, 10f, 0.5f)
 
-				if (!blockExplodeEvent.callEvent() && !detonator.world.hasFlag(WorldFlag.AREA)) {
+				if (!blockExplodeEvent.callEvent() && !detonator.world.hasFlag(WorldFlag.ARENA)) {
 					return@syncDelay
 				}
 

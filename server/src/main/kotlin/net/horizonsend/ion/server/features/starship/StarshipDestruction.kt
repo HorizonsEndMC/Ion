@@ -304,7 +304,7 @@ object StarshipDestruction {
 			}
 		}
 
-		if (world.hasFlag(WorldFlag.AREA) ) {
+		if (world.hasFlag(WorldFlag.ARENA) ) {
 			val air = Material.AIR.createBlockData()
 
 			Tasks.syncDelayTask(finalDelay) {
