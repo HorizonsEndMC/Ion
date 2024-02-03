@@ -83,7 +83,7 @@ class ThrownPumpkinGrenade(
 		val event = regeneratingBlockChange(item, block, blocks, 0.123f, true)
 		val called = event.callEvent()
 
-		if (!called && !world.hasFlag(WorldFlag.AREA)) return
+		if (!called && !world.hasFlag(WorldFlag.ARENA)) return
 
 		damageSource?.damager()?.let {
 			addToDamagers(
