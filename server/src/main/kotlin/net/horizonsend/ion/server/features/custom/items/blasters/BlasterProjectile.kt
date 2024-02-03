@@ -165,7 +165,7 @@ class RayTracedParticleProjectile(
 				} ?: false
 
 				// Ignore nation if in arena
-				if (!isSameNation || flyingHitEntity.world.hasFlag(WorldFlag.AREA)) {
+				if (!isSameNation || flyingHitEntity.world.hasFlag(WorldFlag.ARENA)) {
 					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
 						System.currentTimeMillis() + 3000 // 3 second glide disable
 					flyingHitEntity.alert("Taking fire! Rocket boots powering down!")
