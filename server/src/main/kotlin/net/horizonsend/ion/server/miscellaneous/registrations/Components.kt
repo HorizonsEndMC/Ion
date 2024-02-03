@@ -77,7 +77,7 @@ import net.horizonsend.ion.server.features.transport.TransportConfig
 import net.horizonsend.ion.server.features.transport.Wires
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
-import net.horizonsend.ion.server.features.tutorial.TutorialManager
+import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
@@ -158,7 +158,7 @@ val components: List<IonComponent> = listOf(
 	StarshipCruising,
 	Hangars,
 	StarshipFactories,
-	TutorialManager,
+	Tutorials,
 	Interdiction,
 	StarshipDealers,
 	ShipKillXP,
