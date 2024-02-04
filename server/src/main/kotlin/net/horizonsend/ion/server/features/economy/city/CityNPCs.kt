@@ -10,17 +10,16 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.npcs.NPCFeature
+import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.createNamedMemoryRegistry
-import net.horizonsend.ion.server.miscellaneous.utils.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.loadChunkAsync
 import org.bukkit.Location
 import org.bukkit.World
@@ -33,7 +32,7 @@ import java.util.UUID
 /**
  * Manages NPCs for cities, handles the synchronization of them with the worlds
  */
-object CityNPCs : IonServerComponent(true) {
+object CityNPCs : NPCFeature() {
 
 	private lateinit var citizensRegistry: NPCRegistry
 	private val npcTypeMap = mutableMapOf<UUID, CityNPC.Type>()
@@ -42,20 +41,13 @@ object CityNPCs : IonServerComponent(true) {
 	var BAZAAR_CITY_TERRITORIES: Set<Oid<Territory>> = setOf()
 
 	override fun onEnable() {
-		if (!isCitizensLoaded) {
-			log.warn("Citizens not loaded! No NPCs!")
-			return
-		} else {
-			log.info("Citizens hooked!")
-		}
-
 		synchronizeNPCs()
 	}
 
 	override fun onDisable() {
 		// Citizens doesn't clear entities properly on reload.
 		// Our plugins are reload safe, so we must do it manually.
-		clearCitizensNpcs()
+		disableRegistry()
 	}
 
 	fun getCityNpcType(npc: NPC): CityNPC.Type? = npcTypeMap[npc.uniqueId]
@@ -114,9 +106,9 @@ object CityNPCs : IonServerComponent(true) {
 		BAZAAR_CITY_TERRITORIES = newBazaarTerritories
 
 		Tasks.sync {
+			disableRegistry()
 			npcTypeMap.clear()
-			clearCitizensNpcs()
-			citizensRegistry = createNamedMemoryRegistry("trade-city-npcs")
+			setupRegistry()
 
 			val spawned = mutableSetOf<Oid<CityNPC>>()
 
@@ -188,14 +180,6 @@ object CityNPCs : IonServerComponent(true) {
 			CityNPC.Type.IMPORTER -> ShipmentManager.onImport(player, cityInfo)
 			CityNPC.Type.BAZAAR -> Bazaars.onClickBazaarNPC(player, cityInfo)
 			CityNPC.Type.MERCHANT -> Merchants.onClickMerchantNPC(player, cityInfo)
-		}
-	}
-
-	private fun clearCitizensNpcs() {
-		if (CityNPCs::citizensRegistry.isInitialized) {
-			citizensRegistry.toList().forEach { it.destroy() }
-			citizensRegistry.deregisterAll()
-			CitizensAPI.removeNamedNPCRegistry("trade-city-npcs")
 		}
 	}
 
