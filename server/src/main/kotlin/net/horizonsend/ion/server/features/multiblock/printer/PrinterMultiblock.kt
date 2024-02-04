@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.printer
 
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -105,11 +105,11 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
 
-		if (PowerMachines.getPower(sign) == 0 ||
-			smelting == null ||
-			smelting.type != Material.PRISMARINE_CRYSTALS ||
-			fuel == null ||
-			fuel.type != Material.COBBLESTONE
+		if (PowerMachines.getPower(sign) < 250
+			|| smelting == null
+			|| smelting.type != Material.PRISMARINE_CRYSTALS
+			|| fuel == null
+			|| fuel.type != Material.COBBLESTONE
 		) {
 			return
 		}
@@ -121,16 +121,13 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 
 		val direction = sign.getFacing().oppositeFace
 
-		val state = sign.block.getRelative(direction, 5).getState(false)
-			as? InventoryHolder ?: return
+		val state = sign.block.getRelative(direction, 5).getState(false) as? InventoryHolder ?: return
 
 		val product = sign.block.getRelative(sign.getFacing().oppositeFace, 3).type
 		val output = getOutput(product)
 
 		val inventory = state.inventory
-		if (!LegacyItemUtils.canFit(inventory, output)) {
-			return
-		}
+		if (!LegacyItemUtils.canFit(inventory, output)) return
 
 		LegacyItemUtils.addToInventory(inventory, output)
 		fuel.amount = fuel.amount - 1
