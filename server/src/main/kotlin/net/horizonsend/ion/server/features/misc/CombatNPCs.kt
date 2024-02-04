@@ -179,6 +179,7 @@ object CombatNPCs : NPCFeature() {
 			destroyNPC(npc)
 
 			SLPlayer.updateById(playerId.slPlayerId, setValue(SLPlayer::wasKilled, true))
+
 			Tasks.async {
 				val name: String = SLPlayer.getName(playerId.slPlayerId) ?: "UNKNOWN"
 				Notify.chatAndEvents(
@@ -219,17 +220,11 @@ object CombatNPCs : NPCFeature() {
 		disableRegistry()
 	}
 
-	fun destroyNPC(npc: NPC): CompletableFuture<Unit> =
-		npc.storedLocation.world.getChunkAtAsync(npc.storedLocation).thenApply { _ ->
-			npc.storedLocation.chunk.removePluginChunkTicket(IonServer)
+	fun destroyNPC(npc: NPC): CompletableFuture<Unit> = npc.storedLocation.world.getChunkAtAsync(npc.storedLocation).thenApply { _ ->
+		npc.storedLocation.chunk.removePluginChunkTicket(IonServer)
 
-			npc.destroy()
-			combatNpcRegistry.deregister(npc)
-		}
-
-	/** Bukkit treats NPCs as Player **/
-	fun Player.isCombatNpc() : Boolean {
-		return combatNpcRegistry.isNPC(this)
+		npc.destroy()
+		combatNpcRegistry.deregister(npc)
 	}
 }
 
