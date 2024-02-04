@@ -1,16 +1,14 @@
 package net.horizonsend.ion.server.features.economy.collectors
 
-import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.npcs.NPCFeature
+import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
-import net.horizonsend.ion.server.miscellaneous.utils.createNamedMemoryRegistry
-import net.horizonsend.ion.server.miscellaneous.utils.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.loadChunkAsync
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -19,10 +17,8 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
 
-object Collectors : IonServerComponent(true) {
+object Collectors : NPCFeature() {
 	private lateinit var citizensRegistry: NPCRegistry
-
-	private const val npcRegistryName = "trade-collectors"
 
 	private val npcStationCache = ConcurrentHashMap<UUID, Oid<EcoStation>>()
 
@@ -38,21 +34,18 @@ object Collectors : IonServerComponent(true) {
 	}
 
 	override fun onDisable() {
-		clearCitizenNPCs()
+		disableRegistry()
 	}
 
 	/** If the NPC is a cached collector, returns its eco station */
 	fun getCollectorStation(npc: NPC): Oid<EcoStation>? = npcStationCache[npc.uniqueId]
 
 	fun synchronizeNPCsAsync(callback: (() -> Unit) = { }) = Tasks.sync {
-		if (!isCitizensLoaded) {
-			return@sync
-		}
+		if (!isCitizensLoaded) return@sync
 
-		clearCitizenNPCs()
+		disableRegistry()
 		npcStationCache.clear()
-
-		citizensRegistry = createNamedMemoryRegistry(npcRegistryName)
+		setupRegistry()
 
 		for (ecoStation in EcoStation.all()) {
 			val world = Bukkit.getWorld(ecoStation.world) ?: continue
@@ -83,13 +76,5 @@ object Collectors : IonServerComponent(true) {
 		}
 
 		callback() // run callback synchronously when complete
-	}
-
-	private fun clearCitizenNPCs() {
-		if (Collectors::citizensRegistry.isInitialized) {
-			citizensRegistry.toList().forEach(NPC::destroy)
-			citizensRegistry.deregisterAll()
-			CitizensAPI.removeNamedNPCRegistry(npcRegistryName)
-		}
 	}
 }

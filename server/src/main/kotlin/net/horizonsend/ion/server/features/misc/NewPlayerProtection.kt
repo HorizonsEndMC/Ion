@@ -14,9 +14,9 @@ import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.economy.city.CityNPCs.isNpc
+import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.luckperms.api.node.NodeEqualityPredicate
 import net.luckperms.api.node.types.PermissionNode
