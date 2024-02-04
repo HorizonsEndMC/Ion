@@ -10,14 +10,12 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.npcs.NPCFeature
+import net.horizonsend.ion.server.features.npcs.isNPC
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.createNamedMemoryRegistry
-import net.horizonsend.ion.server.miscellaneous.utils.firsts
 import net.horizonsend.ion.server.miscellaneous.utils.get
-import net.horizonsend.ion.server.miscellaneous.utils.isNPC
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -41,7 +39,7 @@ import java.util.EnumSet
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
-object CombatNPCs : IonServerComponent(true) {
+object CombatNPCs : NPCFeature() {
 	private const val remainTimeMinutes = 4L
 
 	/** Map of NPC ID to its inventory */
@@ -51,6 +49,8 @@ object CombatNPCs : IonServerComponent(true) {
 	private lateinit var combatNpcRegistry: NPCRegistry
 
 	override fun onEnable() {
+		setupRegistry()
+
 		// weirdness happens when someone already logged in logs on. this is my hacky fix.
 		val lastJoinMap = mutableMapOf<UUID, Long>()
 
@@ -61,8 +61,6 @@ object CombatNPCs : IonServerComponent(true) {
 
 			lastJoinMap[playerId] = System.currentTimeMillis()
 		}
-
-		combatNpcRegistry = createNamedMemoryRegistry("combat-npcs")
 
 		//when a player quits, create a combat npc
 		listen<PlayerQuitEvent> { event ->
@@ -218,7 +216,7 @@ object CombatNPCs : IonServerComponent(true) {
 	}
 
 	override fun onDisable() {
-		npcToPlayer.values.firsts().forEach(CombatNPCs::destroyNPC)
+		disableRegistry()
 	}
 
 	fun destroyNPC(npc: NPC): CompletableFuture<Unit> =
