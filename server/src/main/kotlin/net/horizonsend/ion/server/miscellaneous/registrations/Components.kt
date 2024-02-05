@@ -38,6 +38,8 @@ import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
 import net.horizonsend.ion.server.features.nations.StationSieges
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.npcs.StarshipDealers
+import net.horizonsend.ion.server.features.npcs.TutorialNPCs
 import net.horizonsend.ion.server.features.ores.CustomOrePlacement
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
@@ -54,7 +56,6 @@ import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.LastPilotedStarship
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipComputers
-import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -161,6 +162,7 @@ val components: List<IonComponent> = listOf(
 	Tutorials,
 	Interdiction,
 	StarshipDealers,
+	TutorialNPCs,
 	ShipKillXP,
 	Decomposers,
 
