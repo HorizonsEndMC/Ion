@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai
 
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -173,17 +174,6 @@ class AIController private constructor(
 	}
 
 	override fun toString(): String {
-		return """
-			Controller: $name
-			Starship: ${starship.identifier}
-
-			Is Shift Flying: $isShiftFlying
-			Movement Pitch: $pitch
-			Movement Yaw: $yaw
-
-			Last Rotated: $lastRotation
-
-			Modules: ${modules.entries.joinToString { (key, value) -> "$key : $value" }}
-		""".trimIndent()
+		return "AI Controller[Display Name: ${pilotName.plainText()} Starship: ${starship.identifier}]"
 	}
 }
