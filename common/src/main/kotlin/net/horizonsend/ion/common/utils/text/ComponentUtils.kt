@@ -16,6 +16,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.Style
+import net.kyori.adventure.text.format.Style.style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -83,6 +84,8 @@ val BOLD = TextDecoration.BOLD
 val STRIKETHROUGH = TextDecoration.STRIKETHROUGH
 val UNDERLINED = TextDecoration.UNDERLINED
 val ITALIC = TextDecoration.ITALIC
+
+fun text(string: String, decoration: TextDecoration): Component = text(string, style(decoration))
 
 val HORIZONS_END = text("Horizon's End", HE_LIGHT_GRAY, BOLD)
 val HORIZONS_END_BRACKETED = bracketed(text("Horizon's End", HE_LIGHT_GRAY, BOLD))
