@@ -5,11 +5,14 @@ import net.citizensnpcs.api.npc.MemoryNPCDataStore
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.horizonsend.ion.server.IonServerComponent
-import org.bukkit.entity.Player
+import net.horizonsend.ion.server.miscellaneous.utils.loadChunkAsync
+import org.bukkit.Location
+import org.bukkit.World
+import org.bukkit.entity.Entity
 
 abstract class NPCFeature : IonServerComponent(true) {
-	protected val npcRegistryName = javaClass.name
-	protected lateinit var npcRegistry: NPCRegistry
+	val npcRegistryName = javaClass.name
+	lateinit var npcRegistry: NPCRegistry
 
 	protected fun createNamedMemoryRegistry(npcRegistryName: String): NPCRegistry {
 		log.info("Creating Citizens memory data store $npcRegistryName")
@@ -40,9 +43,17 @@ abstract class NPCFeature : IonServerComponent(true) {
 		}
 	}
 
-	fun isNpc(player: Player): Boolean? {
+	fun isNpc(entity: Entity): Boolean? {
 		if (!isCitizensLoaded) return null
 
-		return npcRegistry.isNPC(player)
+		return npcRegistry.isNPC(entity)
+	}
+
+	fun spawnNPCAsync(npc: NPC, world: World, location: Location, preCheck: (NPC) -> Boolean = { true }, spawn: () -> Unit = {}) {
+		loadChunkAsync(location.world, location) {
+			if (!preCheck(npc)) return@loadChunkAsync
+
+			spawn()
+		}
 	}
 }

@@ -1,14 +1,18 @@
-package net.horizonsend.ion.server.features.starship
+package net.horizonsend.ion.server.features.npcs
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import kotlinx.serialization.Serializable
 import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.api.npc.NPCRegistry
+import net.citizensnpcs.trait.LookClose
+import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.achievements.Achievement
@@ -23,8 +27,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
 import org.bukkit.Location
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -32,18 +40,73 @@ import org.bukkit.inventory.ItemStack
 import java.lang.System.currentTimeMillis
 import java.util.UUID
 
-object StarshipDealers : IonServerComponent() {
+object StarshipDealers : NPCFeature() {
 	private val lastBuyTimes = mutableMapOf<ServerConfiguration.Ship, MutableMap<UUID, Long>>()
 	val schematicMap = IonServer.configuration.soldShips.associateWith { it.schematic() }
+
+	val store = JsonNPCStore<ShipDealer>(this)
+
+	override fun onEnable() {
+		setupRegistry()
+
+		store.loadNPCs()
+	}
+
+	override fun onDisable() {
+		disableRegistry()
+	}
+
+	@Serializable
+	data class ShipDealer(
+		override val position: ServerConfiguration.Pos,
+		override val type: EntityType,
+		val skinName: String,
+		val skinSignature: String,
+		val skinValue: String
+	) : JsonNPCStore.NPC {
+		override fun createNPC(registry: NPCRegistry, index: Int): NPC {
+			val npc = registry.createNPC(
+				type,
+				UUID.randomUUID(),
+				2000 + index,
+				legacyAmpersand().serialize(text("Starship Dealer", GOLD))
+			)
+
+			val location = position.toLocation()
+
+			spawnNPCAsync(
+				npc = npc,
+				world = location.world,
+				location = location,
+				spawn = {
+					npc.getOrAddTrait(SkinTrait::class.java).apply {
+						setSkinPersistent(this@ShipDealer.skinName, skinSignature, skinValue)
+					}
+
+					npc.getOrAddTrait(LookClose::class.java).apply {
+						lookClose(true)
+						setRealisticLooking(true)
+					}
+
+					npc.isProtected = true
+
+					npc.spawn(location)
+				}
+			)
+
+			return npc
+		}
+	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {
 		val npc = event.npc
 		val player = event.clicker
 
-		if (!npc.name.endsWith("Ship Dealer")) {
+		if (!npcRegistry.contains(npc)) {
 			return
 		}
+
 		MenuHelper.apply {
 			val ships: List<GuiItem> = schematicMap.map { (ship, schematic) ->
 				val item: ItemStack = item(ship.guiMaterial)
