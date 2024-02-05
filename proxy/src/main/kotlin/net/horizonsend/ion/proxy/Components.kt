@@ -3,6 +3,7 @@ package net.horizonsend.ion.proxy
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.redis.RedisActions
 import net.horizonsend.ion.proxy.features.ConnectionMessages
+import net.horizonsend.ion.proxy.features.PlayerShuffle
 import net.horizonsend.ion.proxy.features.ServerPresence
 import net.horizonsend.ion.proxy.features.cache.Caches
 import net.horizonsend.ion.proxy.features.discord.Discord
@@ -17,5 +18,6 @@ val components = listOf(
 	ConnectionMessages,
 	PlayerTracking,
 	ReminderManager,
-	Discord
+	Discord,
+	PlayerShuffle
 )
