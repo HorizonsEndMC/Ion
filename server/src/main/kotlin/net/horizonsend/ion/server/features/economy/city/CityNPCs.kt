@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.loadChunkAsync
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.EntityType
@@ -124,14 +123,20 @@ object CityNPCs : NPCFeature() {
 				)
 				npcTypeMap[npc.uniqueId] = info.type
 
-				loadChunkAsync(location.world, location) {
-					if (!spawned.add(info.id)) {
-						log.warn("Spawn task called more than once for city NPC $info")
-						return@loadChunkAsync
+				spawnNPCAsync(
+					npc = npc,
+					world = location.world,
+					location = location,
+					preCheck = {
+						if (!spawned.add(info.id)) {
+							log.warn("Spawn task called more than once for city NPC $info")
+							false
+						} else true
+					},
+					spawn = {
+						spawnNPC(location, npc, info)
 					}
-
-					spawnNPC(location, npc, info)
-				}
+				)
 
 				log.debug("Created NPC ${npc.uniqueId} (${npc.name})")
 			}
