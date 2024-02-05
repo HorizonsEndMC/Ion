@@ -6,11 +6,11 @@ import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.misc.GlowModule
 import net.horizonsend.ion.server.features.ai.starship.StarshipTemplate
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.npcs.StarshipDealers
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipComputers
-import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
