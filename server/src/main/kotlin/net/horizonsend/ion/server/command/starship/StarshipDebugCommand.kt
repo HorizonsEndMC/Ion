@@ -147,16 +147,4 @@ object StarshipDebugCommand : SLCommand() {
 
 		(ship.controller as? AIController)?.let { sender.userError("Target: ${(it.modules["targeting"] as? TargetingModule)?.findTarget()}") }
 	}
-
-	@Subcommand("query worldmap")
-	@Suppress("Unused")
-	fun onWorldMapQuery(sender: Player, world: World) {
-		sender.information(ActiveStarships.getInWorld(world).joinToString(separator = ",\n") { it.identifier })
-	}
-
-	@Subcommand("query set")
-	@Suppress("Unused")
-	fun onSetQuery(sender: Player) {
-		sender.information(ActiveStarships.all().joinToString { it.identifier + "\n" })
-	}
 }

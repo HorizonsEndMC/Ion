@@ -14,6 +14,7 @@ fun getMatchingMaterials(filter: (Material) -> Boolean): EnumSet<Material> =
 val STAINED_GLASS_TYPES = getMatchingMaterials { it.name.endsWith("_STAINED_GLASS") }
 val Material.isGlass: Boolean get() = this == Material.GLASS || this.isStainedGlass
 val Material.isStainedGlass: Boolean get() = STAINED_GLASS_TYPES.contains(this)
+val Material.isTintedGlass: Boolean get() = equals(Material.TINTED_GLASS)
 
 val STAINED_GLASS_PANE_TYPES = getMatchingMaterials { it.name.endsWith("_STAINED_GLASS_PANE") }
 val Material.isGlassPane: Boolean get() = this == Material.GLASS_PANE || this.isStainedGlassPane
@@ -61,6 +62,9 @@ val Material.isWallSign: Boolean get() = WALL_SIGN_TYPES.contains(this)
 
 val SIGN_TYPES = getMatchingMaterials { it.name.endsWith("_SIGN") }
 val Material.isSign: Boolean get() = SIGN_TYPES.contains(this)
+
+val TERRACOTTA_TYPES = getMatchingMaterials { it.name.contains("TERRACOTTA") }
+val Material.isTerracotta: Boolean get() = TERRACOTTA_TYPES.contains(this)
 
 val GLAZED_TERRACOTTA_TYPES = getMatchingMaterials { it.name.endsWith("_GLAZED_TERRACOTTA") }
 val Material.isGlazedTerracotta: Boolean get() = GLAZED_TERRACOTTA_TYPES.contains(this)

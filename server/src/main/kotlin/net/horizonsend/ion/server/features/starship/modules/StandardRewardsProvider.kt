@@ -18,9 +18,9 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 open class StandardRewardsProvider(protected val starship: ActiveStarship) : RewardsProvider {
-	override fun onSink() {
+	override fun triggerReward() {
 		val dataMap = starship.damagers
-			.filter { (damager, data) ->
+			.filter filter@{ (damager, data) ->
 				if (damager !is PlayerDamager) return@filter false
 				if (data.lastDamaged < ShipKillXP.damagerExpiration) return@filter false
 
@@ -32,7 +32,7 @@ open class StandardRewardsProvider(protected val starship: ActiveStarship) : Rew
 		processDamagers(this.starship, dataMap)
 	}
 
-	private fun processDamagers(
+	protected open fun processDamagers(
 		starship: ActiveStarship,
 		dataMap: Map<Damager, ShipKillXP.ShipDamageData> // Filtered
 	) {

@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
+import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
@@ -33,6 +34,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
 import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.isWool
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+
 import net.minecraft.world.level.block.AbstractFurnaceBlock
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -248,6 +250,8 @@ class MultiblockShape {
 		fun filteredTypes(filter: (Material) -> Boolean) = anyType(MATERIALS.filter(filter))
 
 		fun carbyne() = anyType(CONCRETE_TYPES)
+
+		fun terracotta() = anyType(TERRACOTTA_TYPES)
 		fun stainedTerracotta() = anyType(STAINED_TERRACOTTA_TYPES)
 
 		fun glass() = type(Material.GLASS)
@@ -273,6 +277,18 @@ class MultiblockShape {
 		) { block, _, loadChunks ->
 			val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 			return@complete blockData is Slab && blockData.type == Slab.Type.DOUBLE
+		}
+
+		fun terracottaOrDoubleslab() {
+			complete(
+				Material.TERRACOTTA.createBlockData()
+			) { block, _, loadChunks ->
+				val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
+				val blockType = if (loadChunks) block.type else block.getTypeSafe()
+
+				return@complete (blockData is Slab && blockData.type == Slab.Type.DOUBLE)
+					|| TERRACOTTA_TYPES.contains(blockType)
+			}
 		}
 
 		fun concrete() = filteredTypes { it.isConcrete }
