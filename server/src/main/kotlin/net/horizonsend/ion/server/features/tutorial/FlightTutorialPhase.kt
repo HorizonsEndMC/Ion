@@ -232,10 +232,10 @@ enum class FlightTutorialPhase(
 
 	;
 
-	override val entries: List<TutorialPhase> = values().toList()
+	override val entries: List<TutorialPhase> get() = values().toList()
 
 	companion object : TutorialCompanion() {
-		override val entries: List<TutorialPhase> = FlightTutorialPhase.values().toList()
+		override val entries: List<TutorialPhase> get() = FlightTutorialPhase.values().toList()
 
 		private val byOrdinal: Map<Int, FlightTutorialPhase> = values().associateBy(FlightTutorialPhase::ordinal)
 

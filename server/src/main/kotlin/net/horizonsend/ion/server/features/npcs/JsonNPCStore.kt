@@ -23,8 +23,9 @@ class JsonNPCStore<T: JsonNPCStore.NPC>(private val feature: NPCFeature, val loa
 		}
 	}
 
+
 	@Serializable
-	interface NPC {
+	sealed interface NPC {
 		val position: ServerConfiguration.Pos
 		val type: EntityType
 
@@ -33,7 +34,7 @@ class JsonNPCStore<T: JsonNPCStore.NPC>(private val feature: NPCFeature, val loa
 
 	@Serializable
 	data class Storage<T: NPC>(
-		val npcs: List<T>
+		val npcs: List<T> = listOf()
 	)
 
 	companion object {
