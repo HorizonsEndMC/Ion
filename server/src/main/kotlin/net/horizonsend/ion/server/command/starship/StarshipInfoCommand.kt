@@ -76,7 +76,7 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		sender.sendRichMessage("   <gray>Power Division:")
 		val powerTypes = listOf(
-			"Shield" to ship.reactor.powerDistributor.thrusterPortion,
+			"Shield" to ship.reactor.powerDistributor.shieldPortion,
 			"Weapon" to ship.reactor.powerDistributor.weaponPortion,
 			"Thruster" to ship.reactor.powerDistributor.thrusterPortion
 		)
