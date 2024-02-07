@@ -98,6 +98,8 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		val ignoreBlockList = mutableSetOf(Material.AIR, Material.GLASS).apply {
 			addAll(STAINED_GLASS_TYPES)
 			addAll(STAINED_GLASS_PANE_TYPES)
+			add(Material.IRON_BARS)
+			add(Material.GLASS_PANE)
 		}
 
 		starship.debug("Ignoring ${ignoreBlockList.joinToString { it.toString() }}")
