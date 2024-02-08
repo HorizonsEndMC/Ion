@@ -4,7 +4,6 @@ import io.papermc.paper.util.Tick
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.HORIZONS_END
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
@@ -45,7 +44,6 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.title.Title.title
 import org.bukkit.Location
@@ -65,7 +63,6 @@ enum class FlightTutorialPhase(
 	override val announceCompletion: Boolean = false,
 ) : TutorialPhase {
 	GET_SHIP_CONTROLLER(
-		PopupMessage(text("Welcome!", WHITE), ofChildren(text("Welcome to ", HE_MEDIUM_GRAY), HORIZONS_END)),
 		PopupMessage(text("Tutorial", DARK_AQUA), text("You can leave by doing /tutorialexit", DARK_RED)),
 		PopupMessage(text("Tutorial", DARK_AQUA), ofChildren(HORIZONS_END, text(" has unique features to learn like spaceships", DARK_GREEN))),
 		PopupMessage(text("Tutorial", DARK_AQUA), text("This tutorial teaches you how to fly a spaceship!")),
