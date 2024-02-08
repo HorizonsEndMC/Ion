@@ -219,7 +219,7 @@ data class StarshipTypeBalancing(
 		maxSneakFlyAccel = 3,
 		interdictionRange = 3200,
 		hyperspaceRangeMultiplier = 2.5,
-		cruiseSpeedMultiplier = 0.875,
+		cruiseSpeedMultiplier = 0.5,
 		weapons = StarshipWeapons(
 			quadTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -232,7 +232,7 @@ data class StarshipTypeBalancing(
 				volume = 0,
 				pitch = 2.0f,
 				soundName = "starship.weapon.turbolaser.quad.shoot",
-				powerUsage = 3000,
+				powerUsage = 4500,
 				length = 0,
 				angleRadians = 0.0,
 				convergeDistance = 0.0,
