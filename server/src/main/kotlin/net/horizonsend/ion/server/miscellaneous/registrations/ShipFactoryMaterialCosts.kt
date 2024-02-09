@@ -326,6 +326,9 @@ object ShipFactoryMaterialCosts {
 			CustomBlocks.URANIUM_BLOCK.blockData -> 50.0
 			CustomBlocks.CHETHERITE_BLOCK.blockData -> 100.0
 			CustomBlocks.ALUMINUM_BLOCK.blockData -> 100.0
+			CustomBlocks.RAW_ALUMINUM_BLOCK.blockData -> 30.0
+			CustomBlocks.RAW_TITANIUM_BLOCK.blockData -> 30.0
+			CustomBlocks.RAW_URANIUM_BLOCK.blockData -> 30.0
 			else ->
 				if (data.material.isGlass) {
 					0.1
