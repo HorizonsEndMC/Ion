@@ -34,6 +34,7 @@ import org.bukkit.Material.IRON_HOE
 import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_ORE
 import org.bukkit.Material.RAW_IRON
+import org.bukkit.Material.RAW_IRON_BLOCK
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.block.Dispenser
 import org.bukkit.entity.Entity
@@ -346,6 +347,16 @@ object CustomItems {
 		) {}
 	)
 
+	 val RAW_ALUMINUM_BLOCK = register(
+		 object : CustomBlockItem(
+			 identifier = "RAW_ALUMINUM_BLOCK",
+			 material = RAW_IRON_BLOCK,
+			 customModelData = 1,
+			 displayName = text("Raw Aluminum Block").decoration(ITALIC, false),
+			 customBlockIdentifier = "RAW_ALUMINUM_BLOCK"
+		 ) {}
+	 )
+
 	val CHETHERITE = register(
 		object : MineralItem(
 			identifier = "CHETHERITE",
@@ -413,6 +424,16 @@ object CustomItems {
 		) {}
 	)
 
+	val RAW_TITANIUM_BLOCK = register(
+		object : CustomBlockItem(
+			identifier = "RAW_TITANIUM_BLOCK",
+			material = RAW_IRON_BLOCK,
+			customModelData = 1,
+			displayName = text("Raw Titanium Block").decoration(ITALIC, false),
+			customBlockIdentifier = "RAW_TITANIUM_BLOCK"
+		) {}
+	)
+
 	val URANIUM = register(
 		object : MineralItem(
 			identifier = "URANIUM",
@@ -448,6 +469,16 @@ object CustomItems {
 			customModelData = 4,
 			displayName = text("Uranium Block").decoration(ITALIC, false),
 			customBlockIdentifier = "URANIUM_BLOCK"
+		) {}
+	)
+
+	val RAW_URANIUM_BLOCK = register(
+		object : CustomBlockItem(
+			identifier = "RAW_URANIUM_BLOCK",
+			material = RAW_IRON_BLOCK,
+			customModelData = 1,
+			displayName = text("Raw Uranium Block").decoration(ITALIC, false),
+			customBlockIdentifier = "RAW_URANIUM_BLOCK"
 		) {}
 	)
 

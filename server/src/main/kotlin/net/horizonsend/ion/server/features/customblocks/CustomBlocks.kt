@@ -44,6 +44,13 @@ object CustomBlocks {
         drops = customItemDrop("ALUMINUM_BLOCK")
     ))
 
+    val RAW_ALUMINUM_BLOCK = register(CustomBlock(
+        identifier = "RAW_ALUMINUM_BLOCK",
+        blockData = mushroomBlockData(setOf(NORTH)),
+        tool = "pickaxe",
+        drops = customItemDrop("RAW_ALUMINUM_BLOCK")
+    ))
+
     val CHETHERITE_ORE = register(CustomBlock(
         identifier = "CHETHERITE_ORE",
         blockData = mushroomBlockData(setOf(EAST, NORTH, UP)),
@@ -72,6 +79,13 @@ object CustomBlocks {
         drops = customItemDrop("TITANIUM_BLOCK")
     ))
 
+    val RAW_TITANIUM_BLOCK = register(CustomBlock(
+        identifier = "RAW_TITANIUM_BLOCK",
+        blockData = mushroomBlockData(setOf(EAST)),
+        tool = "pickaxe",
+        drops = customItemDrop("RAW_TITANIUM_BLOCK")
+    ))
+
     val URANIUM_ORE = register(CustomBlock(
         identifier = "URANIUM_ORE",
         blockData = mushroomBlockData(setOf(UP)),
@@ -84,6 +98,13 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(EAST, NORTH, SOUTH, WEST)),
         tool = "pickaxe",
         drops = customItemDrop("URANIUM_BLOCK")
+    ))
+
+    val RAW_URANIUM_BLOCK = register(CustomBlock(
+        identifier = "RAW_URANIUM_BLOCK",
+        blockData = mushroomBlockData(setOf(SOUTH)),
+        tool = "pickaxe",
+        drops = customItemDrop("RAW_URANIUM_BLOCK")
     ))
 
     private fun customItemDrop(identifier: String, amount: Int = 1): List<ItemStack> {
