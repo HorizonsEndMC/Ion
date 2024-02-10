@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.Component.text
@@ -188,6 +189,7 @@ class MiningLaserSubsystem(
 			starship.world.playSound(
 				player.location,
 				"starship.weapon.mining_laser.stop",
+				SoundCategory.PLAYERS,
 				1.0f,
 				1f
 			)
@@ -317,15 +319,7 @@ class MiningLaserSubsystem(
 						.getRelative(BlockFace.UP, y)
 						.getRelative(BlockFace.SOUTH, z)
 
-					if (
-						listOf(
-							Material.AIR,
-							Material.BEDROCK,
-							Material.REINFORCED_DEEPSLATE
-						).any { it == toExplode.type }
-					) {
-						continue
-					}
+					if (MINING_LASER_NOT_MINED.contains(toExplode.type)) continue
 
 					toDestroy.add(toExplode)
 				}
@@ -333,5 +327,9 @@ class MiningLaserSubsystem(
 		}
 
 		return toDestroy.apply { sortBy { it.location.distanceSquared(pos.toLocation(center.world)) } }
+	}
+
+	companion object {
+		val MINING_LASER_NOT_MINED = enumSetOf(Material.AIR, Material.BEDROCK, Material.REINFORCED_DEEPSLATE, Material.BARRIER)
 	}
 }
