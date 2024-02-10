@@ -216,16 +216,21 @@ object StarshipsSidebar {
     private fun compassColor(dir: Vector, targetDir: Vector?, x: Int, z: Int): NamedTextColor {
         var color = GRAY
 
-        val dx = if (abs(dir.x) >= 0.4) sign(dir.x).toInt() else 0
-        val dz = if (abs(dir.z) > 0.4) sign(dir.z).toInt() else 0
+        val dirNormalized = if (dir.lengthSquared() > 0) {
+            dir.clone().normalize()
+        } else dir
+        val targetDirNormalized = targetDir?.clone()?.normalize()
+
+        val dx = if (abs(dirNormalized.x) >= 0.4) sign(dirNormalized.x).toInt() else 0
+        val dz = if (abs(dirNormalized.z) > 0.4) sign(dirNormalized.z).toInt() else 0
 
         if (dx == x && dz == z) {
             color = GOLD
         }
 
-        if (targetDir != null && targetDir.lengthSquared() > 0) {
-            val targetDx = if (abs(targetDir.x) >= 0.5) sign(targetDir.x).toInt() else 0
-            val targetDz = if (abs(targetDir.z) > 0.5) sign(targetDir.z).toInt() else 0
+        if (targetDirNormalized != null && targetDirNormalized.lengthSquared() > 0) {
+            val targetDx = if (abs(targetDirNormalized.x) >= 0.4) sign(targetDirNormalized.x).toInt() else 0
+            val targetDz = if (abs(targetDirNormalized.z) > 0.4) sign(targetDirNormalized.z).toInt() else 0
 
             if (dx == targetDx && dx == x && dz == targetDz && dz == z) {
                 color = GREEN
