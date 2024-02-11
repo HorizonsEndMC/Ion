@@ -29,7 +29,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		at(0, 0, 1).hopper()
 	}
 
-	val configuration = IonServer.gassesConfiguration
+	val configuration = IonServer.globalGassesConfiguration
 
 	override fun onFurnaceTick(
 		event: FurnaceBurnEvent,
