@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE_BLOCK
@@ -28,8 +28,8 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SNIPER_RECEIV
 import net.horizonsend.ion.server.features.customitems.CustomItems.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
-import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
 import org.bukkit.Bukkit
@@ -402,7 +402,7 @@ object Crafting : IonServerComponent() {
 
 		// Detonator Crafting
 		itemStackShapeRecipe("detonator", DETONATOR.constructItemStack()) {
-			shape(" r ", "tut", " t ",)
+			shape(" r ", "tut", " t ")
 
 			setIngredient('r', REDSTONE)
 			setIngredient('t', TITANIUM_INGOT.constructItemStack())

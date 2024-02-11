@@ -116,9 +116,7 @@ private fun basicMiningCorpTemplate(
 }
 
 fun findMiningCorpSpawnPosition(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location? {
-	val locationNearPlayer = findSpawnLocationNearPlayer(configuration) ?: return null
-
-	return locationNearPlayer
+	return findSpawnLocationNearPlayer(configuration)
 }
 
 val ostrich = basicMiningCorpTemplate(

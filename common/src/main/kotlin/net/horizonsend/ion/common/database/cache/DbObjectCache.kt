@@ -2,7 +2,6 @@ package net.horizonsend.ion.common.database.cache
 
 import com.googlecode.cqengine.ConcurrentIndexedCollection
 import com.googlecode.cqengine.attribute.support.FunctionalSimpleAttribute
-import com.googlecode.cqengine.attribute.support.SimpleFunction
 import com.googlecode.cqengine.index.unique.UniqueIndex
 import com.googlecode.cqengine.query.QueryFactory
 import com.mongodb.client.model.changestream.ChangeStreamDocument

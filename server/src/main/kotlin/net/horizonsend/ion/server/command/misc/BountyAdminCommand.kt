@@ -24,7 +24,6 @@ object BountyAdminCommand : SLCommand() {
 	@Subcommand("set")
 	@CommandPermission("ion.bounty.modify")
 	@CommandCompletion("@players")
-	@Suppress("unused")
 	fun set(sender: Player, targetName: String, newBounty: Double) = asyncCommand(sender) {
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
 
@@ -35,7 +34,6 @@ object BountyAdminCommand : SLCommand() {
 	@Subcommand("add")
 	@CommandPermission("ion.bounty.modify")
 	@CommandCompletion("@players")
-	@Suppress("unused")
 	fun add(sender: Player, name: String, amount: Double) = asyncCommand(sender) {
 		val player = SLPlayer[name] ?: fail { "Player $name not found!" }
 
@@ -47,7 +45,6 @@ object BountyAdminCommand : SLCommand() {
 	@CommandPermission("ion.bounty.modify")
 	@Description("Find a past or current claimed bounty")
 	@CommandCompletion("@players @players")
-	@Suppress("unused")
 	fun find(sender: Player, hunterName: String, targetName: String) = asyncCommand(sender) {
 		val hunter = SLPlayer[hunterName] ?: fail { "Player $hunterName not found!" }
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
@@ -61,7 +58,6 @@ object BountyAdminCommand : SLCommand() {
 	@CommandPermission("ion.bounty.modify")
 	@Description("Clear a player's current claimed bounty")
 	@CommandCompletion("@players @players")
-	@Suppress("unused")
 	fun clear(sender: Player, hunterName: String, targetName: String) = asyncCommand(sender) {
 		val hunter = SLPlayer[hunterName] ?: fail { "Player $hunterName not found!" }
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
@@ -78,7 +74,6 @@ object BountyAdminCommand : SLCommand() {
 	@CommandPermission("ion.bounty.modify")
 	@Description("Force a bounty to be rewarded")
 	@CommandCompletion("@players @players")
-	@Suppress("unused")
 	fun collect(sender: Player, hunterName: String, targetName: String) = asyncCommand(sender) {
 		val hunter = Bukkit.getPlayer(hunterName) ?: fail { "Player $hunterName not found!" }
 		val target = Bukkit.getPlayer(targetName) ?: fail { "Player $targetName not found!" }
