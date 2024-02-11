@@ -1,15 +1,15 @@
 package net.horizonsend.ion.server.features.starship
 
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
+import net.horizonsend.ion.server.miscellaneous.utils.isAnvil
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
-import net.horizonsend.ion.server.miscellaneous.utils.isAnvil
 import org.bukkit.Material
 import java.util.EnumMap
 import kotlin.math.max
 
 object Mass {
-	val BLAST_RESIST_MASS_MULTIPLIER = 5.0
+	const val BLAST_RESIST_MASS_MULTIPLIER = 5.0
 
 	private val massMap = EnumMap(
 		MATERIALS.filter { it.isBlock }.associateWith {

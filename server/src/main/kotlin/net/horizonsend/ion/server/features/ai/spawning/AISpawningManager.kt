@@ -82,7 +82,7 @@ object AISpawningManager : IonServerComponent(true) {
 
 		if (controller !is AIController) return false
 
-		val mostRecentDamager = starship.damagers.entries.sortedBy { it.value.lastDamaged }.firstOrNull()
+		val mostRecentDamager = starship.damagers.entries.minByOrNull { it.value.lastDamaged }
 
 		if (mostRecentDamager != null && mostRecentDamager.value.lastDamaged > lastDamagedRequirement) return false
 

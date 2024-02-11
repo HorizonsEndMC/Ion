@@ -22,7 +22,7 @@ import org.dynmap.markers.MarkerAPI
 import org.litote.kmongo.eq
 import java.io.Closeable
 
-@Suppress("unused", "MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate")
 object NationsMap : IonServerComponent(true) {
 	private fun syncOnly(block: () -> Unit) = when {
 		Bukkit.isPrimaryThread() -> block()

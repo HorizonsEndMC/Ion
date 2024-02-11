@@ -479,7 +479,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		station.unTrustPlayer(playerId)
 
-		sender.sendMessage(formatSpaceStationMessage("Removed {0} from {1}", playerName, stationName,))
+		sender.sendMessage(formatSpaceStationMessage("Removed {0} from {1}", playerName, stationName))
 
 		Notify.playerCrossServer(
 			playerId.uuid,
@@ -508,7 +508,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		station.unTrustSettlement(settlementId)
 
-		sender.sendMessage(formatSpaceStationMessage("Removed {0} from {1}", settlement, stationName,))
+		sender.sendMessage(formatSpaceStationMessage("Removed {0} from {1}", settlement, stationName))
 
 		Notify.settlementCrossServer(
 			settlementId,
@@ -536,7 +536,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		station.unTrustNation(nationId)
 
-		sender.sendMessage(formatSpaceStationMessage("Removed {0} from {1}", nation, stationName,))
+		sender.sendMessage(formatSpaceStationMessage("Removed {0} from {1}", nation, stationName))
 
 		Notify.nationCrossServer(
 			nationId,
@@ -554,7 +554,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		validateName(newName)
 		station.rename(newName)
 
-		sender.sendMessage(formatSpaceStationMessage("Renamed {0} to {1}", station.name, newName,))
+		sender.sendMessage(formatSpaceStationMessage("Renamed {0} to {1}", station.name, newName))
 		Notify.chatAndGlobal(formatSpaceStationMessage("Space station {0}  has been renamed to  {1} by {2}", station.name, newName, sender.name))
 	}
 

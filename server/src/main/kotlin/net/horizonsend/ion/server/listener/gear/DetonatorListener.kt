@@ -20,6 +20,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
+import kotlin.math.max
 
 object DetonatorListener : SLEventListener() {
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -68,7 +69,7 @@ object DetonatorListener : SLEventListener() {
 			detonator.setGravity(false)
 			detonator.velocity = Vector(0, 0, 0)
 
-			Tasks.syncDelay(Math.max(1.0, 20 * 1.5 - detonator.ticksLived).toLong()) {
+			Tasks.syncDelay(max(1.0, 20 * 1.5 - detonator.ticksLived).toLong()) {
 				detonator.remove()
 
 				val blocks = ArrayList<Block>()

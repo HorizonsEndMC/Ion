@@ -49,7 +49,6 @@ internal object NPCOwnerCommand : net.horizonsend.ion.server.command.SLCommand()
 	}
 
 	@Subcommand("delete")
-	@Suppress("unused")
 	fun onDelete(sender: Player) = asyncCommand(sender) {
 		val territory = requireTerritoryIn(sender)
 		val npcOwner = territory.npcOwner ?: fail { "${territory.name} is not owned by an npc owner" }

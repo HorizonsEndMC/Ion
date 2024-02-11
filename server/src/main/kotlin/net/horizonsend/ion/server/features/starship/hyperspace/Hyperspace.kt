@@ -218,7 +218,6 @@ object Hyperspace : IonServerComponent() {
 			null
 		}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipActivated(event: StarshipActivatedEvent) {
 		val starship = event.starship
@@ -234,7 +233,6 @@ object Hyperspace : IonServerComponent() {
 		StarshipTeleportation.teleportStarship(starship, dest)
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipDeactivated(event: StarshipDeactivatedEvent) {
 		val starship = event.starship
@@ -255,19 +253,16 @@ object Hyperspace : IonServerComponent() {
 		event.isCancelled = true
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipTranslate(event: StarshipTranslateEvent) {
 		onStarshipMove(event)
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipRotate(event: StarshipRotateEvent) {
 		onStarshipMove(event)
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipEnterHyperspace(event: StarshipEnterHyperspaceEvent) {
 		val starship = event.starship
@@ -283,7 +278,6 @@ object Hyperspace : IonServerComponent() {
 			}
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipExitHyperspace(event: StarshipExitHyperspaceEvent) {
 		val movement = event.movement

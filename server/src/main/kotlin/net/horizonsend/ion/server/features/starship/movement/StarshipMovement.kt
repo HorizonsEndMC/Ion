@@ -19,7 +19,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.isFlyable
-import net.horizonsend.ion.server.features.starship.subsystem.misc.CryoSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
@@ -272,7 +272,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 					val newPos = displacedVec(subsystem.pos)
 					subsystem.pos = newPos
 
-					if (subsystem is CryoSubsystem) {
+					if (subsystem is CryopodSubsystem) {
 						Cryopod.updateById(
 							subsystem.pod._id,
 							setValue(Cryopod::x, newPos.x),

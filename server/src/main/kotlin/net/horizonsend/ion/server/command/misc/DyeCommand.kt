@@ -28,7 +28,7 @@ import java.util.*
 @CommandPermission("starlegacy.dye")
 object DyeCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
-	@Default()
+	@Default
 	fun execute(sender: Player, newColor: String) {
 		val newDyeColor = enumValueOfOrNull<DyeColor>(newColor.uppercase(Locale.getDefault()))
 			?: fail { "Valid colors are " + DyeColor.values().joinToString() }
