@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.qol
+package net.horizonsend.ion.server.command.qol
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
@@ -23,14 +23,12 @@ import org.bukkit.inventory.ShapelessRecipe
 @CommandAlias("recipe")
 @Suppress("Unused")
 @CommandPermission("ion.recipe")
-class RecipeCommand : BaseCommand(), Listener {
-	companion object {
-		val invs = mutableListOf<InventoryView>()
-	}
+object RecipeCommand : BaseCommand(), Listener {
+	private val inventories = mutableListOf<InventoryView>()
 
 	@EventHandler
 	fun onClick(ev: InventoryClickEvent) {
-		if (invs.contains(ev.view)) {
+		if (inventories.contains(ev.view)) {
 			ev.isCancelled = true
 		}
 	}
@@ -83,7 +81,7 @@ class RecipeCommand : BaseCommand(), Listener {
 			}
 		}
 
-		invs.add(view)
+		inventories.add(view)
 	}
 
 	fun shapelessRecipe(sender: Player, recipe: ShapelessRecipe) {
@@ -95,6 +93,6 @@ class RecipeCommand : BaseCommand(), Listener {
 			view.setItem(i + 1, ingredients[i])
 		}
 
-		invs.add(view)
+		inventories.add(view)
 	}
 }
