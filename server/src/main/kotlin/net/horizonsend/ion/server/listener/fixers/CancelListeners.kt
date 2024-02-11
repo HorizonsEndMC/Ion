@@ -142,7 +142,7 @@ class CancelListeners : SLEventListener() {
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	@Suppress("Unused", "Deprecation")
+	@Suppress("Unused")
 	fun onPlayerKickEvent(event: PlayerKickEvent) {
 		// Really dumb solution for players being kicked due to "out of order chat messages"
 		if (event.reason.lowercase().contains("out-of-order")) {

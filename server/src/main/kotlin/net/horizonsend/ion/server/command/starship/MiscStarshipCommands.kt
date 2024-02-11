@@ -641,7 +641,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		sender.sendMessage(ofChildren(text("Total Blocks in all ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalBlocks, HE_LIGHT_BLUE)))
 	}
 
-	@Suppress("unused")
 	@CommandAlias("usebeacon")
 	fun onUseBeacon(sender: Player) {
 		val ship = getStarshipRiding(sender) as? ActiveControlledStarship ?: return

@@ -170,8 +170,8 @@ object StarshipWeapons {
 	private fun isPowerAvailable(weapon: WeaponSubsystem, boostPower: AtomicDouble): Boolean {
 		val reactor = weapon.starship.reactor
 		val powerUsage = weapon.powerUsage.toDouble()
-		return when {
-			weapon is HeavyWeaponSubsystem -> boostPower.get() >= powerUsage
+		return when (weapon) {
+			is HeavyWeaponSubsystem -> boostPower.get() >= powerUsage
 			else -> reactor.weaponCapacitor.isAvailable(powerUsage)
 		}
 	}

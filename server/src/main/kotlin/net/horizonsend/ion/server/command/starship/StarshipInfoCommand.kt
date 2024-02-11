@@ -37,7 +37,7 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 				"   <gray>Pilot:<white> ${ship.controller.name}"
 		)
 
-		val passengers = ship.onlinePassengers.map { it.name }.joinToString()
+		val passengers = ship.onlinePassengers.joinToString { it.name }
 		if (passengers.any()) {
 			sender.sendRichMessage("   <gray>Passengers: <white>$passengers")
 		}

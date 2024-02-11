@@ -28,18 +28,18 @@ object CompoundTagType : PersistentDataType<PersistentDataContainer, CompoundTag
 			primitive.raw
 
 			when (tag) {
-				is ByteTag -> primitive.raw.set(name, tag)
-				is ShortTag -> primitive.raw.set(name, tag)
-				is IntTag -> primitive.raw.set(name, tag)
-				is LongTag -> primitive.raw.set(name, tag)
-				is FloatTag -> primitive.raw.set(name, tag)
-				is DoubleTag -> primitive.raw.set(name, tag)
-				is ByteArrayTag -> primitive.raw.set(name, tag)
-				is StringTag -> primitive.raw.set(name, tag)
-				is CompoundTag -> primitive.raw.set(name, tag)
-				is IntArrayTag -> primitive.raw.set(name, tag)
-				is LongArrayTag -> primitive.raw.set(name, tag)
-				is ListTag -> primitive.raw.set(name, tag)
+				is ByteTag -> primitive.raw[name] = tag
+				is ShortTag -> primitive.raw[name] = tag
+				is IntTag -> primitive.raw[name] = tag
+				is LongTag -> primitive.raw[name] = tag
+				is FloatTag -> primitive.raw[name] = tag
+				is DoubleTag -> primitive.raw[name] = tag
+				is ByteArrayTag -> primitive.raw[name] =tag
+				is StringTag -> primitive.raw[name] =tag
+				is CompoundTag -> primitive.raw[name] =tag
+				is IntArrayTag -> primitive.raw[name] =tag
+				is LongArrayTag -> primitive.raw[name] =tag
+				is ListTag -> primitive.raw[name] =tag
 				else -> {
 					throw NotImplementedError("Impossible to get data from generic Tag.")
 				}
