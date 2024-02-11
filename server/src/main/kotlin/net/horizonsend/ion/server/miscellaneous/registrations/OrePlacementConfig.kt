@@ -11,7 +11,6 @@ TODO: This should be loaded from a configuration file.
 
 const val algorithmVersion = 11
 
-@Suppress("unused")
 enum class OrePlacementConfig(
 	val groundMaterial: EnumSet<Material>,
 	val options: Map<OldOreData, Int> = mapOf(),

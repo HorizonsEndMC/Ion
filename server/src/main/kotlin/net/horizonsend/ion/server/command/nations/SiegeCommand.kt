@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.nations.StationSieges
 import org.bukkit.entity.Player
 
 internal object SiegeCommand : SLCommand() {
-	@Suppress("unused")
 	@CommandAlias("siege")
 	fun execute(sender: Player) {
 		tellPlayerCurrentlySiegableStations(sender)

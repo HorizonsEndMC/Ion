@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.chat
 
-import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.Mutes.muteCache
+import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServerComponent
@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.Collections
+import java.util.Locale
 import java.util.UUID
 
 object ChannelSelections : IonServerComponent() {
@@ -57,7 +58,7 @@ object ChannelSelections : IonServerComponent() {
 
 			val message: String = event.message
 			val args: List<String> = message.removePrefix("/").split(" ")
-			val command: String = args[0].toLowerCase()
+			val command: String = args[0].lowercase(Locale.getDefault())
 
 			ChatChannel.values().firstOrNull { it.commandAliases.contains(command) }?.let { channel ->
 				event.isCancelled = true

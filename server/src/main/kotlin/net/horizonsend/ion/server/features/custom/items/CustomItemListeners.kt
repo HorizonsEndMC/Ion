@@ -63,7 +63,6 @@ class CustomItemListeners : SLEventListener() {
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	@Suppress("unused")
 	fun onPlayerSwapItem(event: PlayerSwapHandItemsEvent) {
 		// We have to get it from the inventory and not the event, otherwise things break
 		val itemStack = event.player.inventory.itemInMainHand
@@ -74,7 +73,6 @@ class CustomItemListeners : SLEventListener() {
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	@Suppress("unused")
 	fun onItemDispensed(event: BlockPreDispenseEvent) {
 		// Retain the dispenser/ dropper parity
 		if (event.block.type != Material.DISPENSER) return

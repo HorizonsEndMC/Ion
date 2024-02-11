@@ -47,9 +47,7 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 	override val world: String get() = Regions.get<RegionTerritory>(territory).world
 
 	private fun getRegionTerritory(): RegionTerritory {
-		val territory: RegionTerritory = Regions[territory]
-		requireNotNull(territory) { "Zone $id ($name) of settlement $settlement's territory $territory isn't cached!" }
-		return territory
+		return Regions[this.territory]
 	}
 
 	init {
