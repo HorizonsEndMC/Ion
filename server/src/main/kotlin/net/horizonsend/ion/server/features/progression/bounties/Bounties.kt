@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.bounties
+package net.horizonsend.ion.server.features.progression.bounties
 
 import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer

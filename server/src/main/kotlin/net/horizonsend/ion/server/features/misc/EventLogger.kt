@@ -4,7 +4,7 @@ import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.ServerConfiguration
-import net.horizonsend.ion.server.features.bounties.Bounties.hasActive
+import net.horizonsend.ion.server.features.progression.bounties.Bounties.hasActive
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
