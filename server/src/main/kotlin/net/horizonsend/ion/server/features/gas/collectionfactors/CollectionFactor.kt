@@ -29,15 +29,6 @@ abstract class CollectionFactor {
                 "random" -> return RandomFactor(params[1].toFloat())
                 "hyperspaceonly" -> return HyperspaceOnlyFactor()
                 "spaceonly" -> return SpaceOnlyFactor()
-                "worldlimit" -> return WorldLimitFactor(params[1].split(",".toRegex()).dropLastWhile { it.isEmpty() })
-
-                "worldchance" -> return WorldChanceFactor(
-					params[1].split(",".toRegex()).dropLastWhile { it.isEmpty() }.associate {
-						val pair = it.split("=".toRegex())
-
-						pair[0] to pair[1].toDouble()
-					}
-				)
 
                 "skylight", "outdoors" -> return OutdoorsFactor()
 				"randomheight" -> return RandomByHeightFactor(params[1].toDouble(), params[2].toDouble(), params[3].toDouble(), params[4].toDouble())
