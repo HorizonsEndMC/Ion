@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.configuration.FeatureFlags
-import net.horizonsend.ion.server.configuration.GassesConfiguration
+import net.horizonsend.ion.server.configuration.GlobalGassesConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
@@ -53,7 +53,7 @@ object IonServer : JavaPlugin() {
 	var starshipBalancing: StarshipTypeBalancing = Configuration.load(configurationFolder, "starshipbalancing.json")
 
 	var configuration: ServerConfiguration = Configuration.load(configurationFolder, "server.json")
-	var gassesConfiguration: GassesConfiguration = Configuration.load(configurationFolder, "gasses.json")
+	var globalGassesConfiguration: GlobalGassesConfiguration = Configuration.load(configurationFolder, "gasses.json")
 	var tradeConfiguration: TradeConfiguration = Configuration.load(configurationFolder, "trade.json")
 	var aiSpawningConfiguration: AISpawningConfiguration = Configuration.load(configurationFolder, "aiSpawning.json")
 	var discordSettings: DiscordConfiguration = Configuration.load(configurationFolder, "discord.json")
