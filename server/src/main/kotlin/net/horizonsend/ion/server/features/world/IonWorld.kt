@@ -74,6 +74,8 @@ class IonWorld private constructor(
 			ionWorlds[world] = ionWorld
 
 			AreaShields.loadData(world)
+
+			ionWorld.configuration.environments.forEach { it.setup() }
 			Tasks.syncRepeat(10, 10, ionWorld::tickEnvironments)
 		}
 
