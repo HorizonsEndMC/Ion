@@ -153,7 +153,9 @@ object WorldCommand : SLCommand() {
 				ionWorld.configuration.flags.add(WorldFlag.SPACE_WORLD)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_SPACE_STATIONS)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_AI_SPAWNS)
-				ionWorld.configuration.environments.add(Environment.SPACE_ENVIRONMENT)
+
+				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
+				ionWorld.configuration.environments.add(Environment.VACUUM)
 
 				ionWorld.saveConfiguration()
 				SpaceWorlds.cache.invalidate(world)
@@ -163,7 +165,8 @@ object WorldCommand : SLCommand() {
 			override fun setup(world: World) {
 				val ionWorld = world.ion
 
-				ionWorld.configuration.environments.add(Environment.SPACE_ENVIRONMENT)
+				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
+				ionWorld.configuration.environments.add(Environment.VACUUM)
 
 				ionWorld.saveConfiguration()
 			}
