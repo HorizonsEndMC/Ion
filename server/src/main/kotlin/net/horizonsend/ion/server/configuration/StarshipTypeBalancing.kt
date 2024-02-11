@@ -241,7 +241,8 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				inaccuracyRadians = 2.0,
 				maxPerShot = 3,
-				applyCooldownToAll = true
+				applyCooldownToAll = true,
+				minBlockCount = 17500
 			)
 		)
 	),
