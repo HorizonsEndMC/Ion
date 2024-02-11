@@ -18,7 +18,6 @@ import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.features.economy.collectors.Collectors
-import net.horizonsend.ion.server.features.enviornment.mobs.CustomMobSpawning
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gear.Gear
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
@@ -80,6 +79,7 @@ import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawning
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
