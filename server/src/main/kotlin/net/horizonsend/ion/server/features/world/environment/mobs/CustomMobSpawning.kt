@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.enviornment.mobs
+package net.horizonsend.ion.server.features.world.environment.mobs
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent

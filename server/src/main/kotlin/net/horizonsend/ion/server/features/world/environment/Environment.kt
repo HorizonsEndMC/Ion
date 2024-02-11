@@ -4,12 +4,13 @@ import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorModule
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.removePower
-import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.isInside
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityChangeBlockEvent
@@ -19,7 +20,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import java.util.concurrent.TimeUnit
 
 enum class Environment {
-	SPACE_ENVIRONMENT {
+	VACUUM {
 		private fun checkSuffocation(player: Player) {
 			if (isWearingSpaceSuit(player)) return
 			if (checkPressureField(player)) return
@@ -46,6 +47,14 @@ enum class Environment {
 		}
 
 		override fun tickPlayer(player: Player) {
+			if (player.gameMode != GameMode.SURVIVAL || player.isDead) return
+
+			checkSuffocation(player)
+		}
+	},
+
+	NO_GRAVITY {
+		override fun tickPlayer(player: Player) {
 			if (player.gameMode != GameMode.SURVIVAL || player.isDead || !player.hasGravity()) return
 
 			if (isInside(player.eyeLocation, 1)) {
@@ -66,17 +75,13 @@ enum class Environment {
 			if (player.isSprinting) {
 				player.isSprinting = false
 			}
-
-			checkSuffocation(player)
 		}
 
 		override fun setup() {
 			listen<ItemSpawnEvent> { event ->
 				val entity = event.entity
 
-				if (!SpaceWorlds.contains(entity.world)) {
-					return@listen
-				}
+				if (!entity.world.hasEnvironment()) return@listen
 
 				entity.setGravity(false)
 				entity.velocity = entity.velocity.multiply(0.05)
@@ -85,9 +90,7 @@ enum class Environment {
 			listen<PlayerMoveEvent> { event ->
 				val player = event.player
 
-				if (!SpaceWorlds.contains(player.world)) {
-					return@listen
-				}
+				if (!player.world.hasEnvironment()) return@listen
 
 				val isPositiveChange = event.to.y - event.from.y > event.player.world.minHeight
 
@@ -97,17 +100,20 @@ enum class Environment {
 			}
 
 			listen<EntityDamageEvent> { event ->
-				if (SpaceWorlds.contains(event.entity.world) && event.cause == EntityDamageEvent.DamageCause.FALL) {
-					event.isCancelled = true
-				}
+				if (!event.entity.world.hasEnvironment()) return@listen
+				if (event.cause != EntityDamageEvent.DamageCause.FALL) return@listen
+
+				event.isCancelled = true
 			}
 
 			listen<EntityChangeBlockEvent> { event ->
 				val entity = event.entity
-				if (entity is FallingBlock && SpaceWorlds.contains(event.block.world)) {
-					event.isCancelled = true
-					event.block.setBlockData(event.blockData, false)
-				}
+
+				if (!entity.world.hasEnvironment()) return@listen
+				if (entity !is FallingBlock) return@listen
+
+				event.isCancelled = true
+				event.block.setBlockData(event.blockData, false)
 			}
 		}
 	}
@@ -116,6 +122,8 @@ enum class Environment {
 
 	open fun tickPlayer(player: Player) {}
 	open fun setup() {}
+
+	protected fun World.hasEnvironment(): Boolean = this.ion.environments.contains(this@Environment)
 
 	companion object {
 		fun isWearingSpaceSuit(player: Player): Boolean {
