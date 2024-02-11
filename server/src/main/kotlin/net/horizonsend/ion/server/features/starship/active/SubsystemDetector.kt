@@ -16,14 +16,14 @@ import net.horizonsend.ion.server.features.multiblock.particleshield.EventShield
 import net.horizonsend.ion.server.features.multiblock.particleshield.SphereShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
-import net.horizonsend.ion.server.features.starship.subsystem.CryoSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.BoxShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
@@ -150,7 +150,7 @@ object SubsystemDetector {
 
 			is CryoPodMultiblock -> {
 				val cryo = Cryopod[Vec3i(sign.location), sign.world.name] ?: return
-				starship.subsystems += CryoSubsystem(starship, sign, multiblock, cryo)
+				starship.subsystems += CryopodSubsystem(starship, sign, multiblock, cryo)
 			}
 
 			is GravityWellMultiblock -> {
