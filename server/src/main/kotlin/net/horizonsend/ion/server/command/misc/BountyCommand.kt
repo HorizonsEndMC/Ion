@@ -16,9 +16,9 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.bounties.Bounties
-import net.horizonsend.ion.server.features.bounties.BountiesMenu
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.progression.bounties.Bounties
+import net.horizonsend.ion.server.features.progression.bounties.BountiesMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO

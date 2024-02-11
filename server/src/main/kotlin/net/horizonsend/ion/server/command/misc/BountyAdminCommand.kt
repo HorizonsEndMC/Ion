@@ -10,7 +10,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.bounties.Bounties
+import net.horizonsend.ion.server.features.progression.bounties.Bounties
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.litote.kmongo.and

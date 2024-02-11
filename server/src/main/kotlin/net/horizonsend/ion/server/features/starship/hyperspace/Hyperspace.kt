@@ -5,8 +5,8 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.progression.achievements.Achievement
+import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM

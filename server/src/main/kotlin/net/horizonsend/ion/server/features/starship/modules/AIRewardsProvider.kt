@@ -3,9 +3,9 @@ package net.horizonsend.ion.server.features.starship.modules
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.progression.ShipKillXP
+import net.horizonsend.ion.server.features.progression.achievements.Achievement
+import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.miscellaneous.utils.mapNotNullTo
