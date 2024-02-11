@@ -40,7 +40,6 @@ object BountyCommand : SLCommand() {
 	@Default
 	@Subcommand("menu")
 	@Description("Open the bounty menu")
-	@Suppress("unused")
 	fun menu(sender: Player) {
 		requireBountiesEnabled()
 		BountiesMenu.openMenuAsync(sender)
@@ -48,7 +47,6 @@ object BountyCommand : SLCommand() {
 
 	@Subcommand("list")
 	@Description("List your active bounties")
-	@Suppress("unused")
 	fun list(sender: Player) = asyncCommand(sender) {
 		requireBountiesEnabled()
 
@@ -74,7 +72,6 @@ object BountyCommand : SLCommand() {
 	@Description("Put a bounty on a player")
 	@CommandCompletion("@players")
 	@Default
-	@Suppress("unused")
 	fun put(sender: Player, targetName: String, amount: Double) = asyncCommand(sender) {
 		requireBountiesEnabled()
 		requireEconomyEnabled()
@@ -178,7 +175,6 @@ object BountyCommand : SLCommand() {
 	@Description("Get a player's bounty")
 	@CommandCompletion("@players")
 	@Default
-	@Suppress("unused")
 	fun get(sender: Player, targetName: String) = asyncCommand(sender) {
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
 

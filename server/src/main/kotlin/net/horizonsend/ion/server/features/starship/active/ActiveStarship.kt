@@ -254,7 +254,6 @@ abstract class ActiveStarship (
 		return ThrustData(acceleration, speed)
 	}
 
-
 	fun calculateHitbox() {
 		this.hitbox.calculate(this.blocks)
 	}

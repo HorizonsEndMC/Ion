@@ -27,21 +27,18 @@ object HyperspaceBeaconManager : SLEventListener() {
 		}
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipUnpilot(event: StarshipUnpilotEvent) {
 		val player = (event.starship.controller as? PlayerController)?.player ?: return
 		activeRequests.remove(player.uniqueId)
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipMove(event: StarshipTranslateEvent) {
 		clearExpired()
 		detectNearbyBeacons(event.starship, event.x, event.z)
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipExitHyperspace(event: StarshipExitHyperspaceEvent) {
 		if (event.starship is ActiveControlledStarship) {

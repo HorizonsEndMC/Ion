@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryMoveItemEvent
 import org.bukkit.event.inventory.InventoryType
+import kotlin.math.min
 
 object InventoryListener : SLEventListener() {
 	@EventHandler
@@ -54,7 +55,7 @@ object InventoryListener : SLEventListener() {
 					}
 
 					val cursorAmount = cursor.amount
-					val addition = Math.min(clickedItem.maxStackSize - amount, cursorAmount)
+					val addition = min(clickedItem.maxStackSize - amount, cursorAmount)
 					clickedItem.amount = amount + addition
 					cursor.amount = cursorAmount - addition
 					e.isCancelled = true
@@ -79,7 +80,7 @@ object InventoryListener : SLEventListener() {
 						}
 
 						val cursorAmount = cursor.amount
-						val addition = Math.min(1, cursorAmount)
+						val addition = min(1, cursorAmount)
 						clickedItem.amount = amount + addition
 						cursor.amount = cursorAmount - addition
 						e.isCancelled = true

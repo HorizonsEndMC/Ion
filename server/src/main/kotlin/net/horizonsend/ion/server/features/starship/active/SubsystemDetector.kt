@@ -26,7 +26,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.misc.CryoSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
@@ -62,7 +62,6 @@ object SubsystemDetector {
 		val potentialSignBlocks = LinkedList<Block>()
 		val potentialLandingGearBlocks = LinkedList<Block>()
 
-
 		starship.iterateBlocks { x, y, z ->
 			val block = starship.world.getBlockAt(x, y, z)
 			val type = block.type
@@ -72,11 +71,11 @@ object SubsystemDetector {
 			potentialWeaponBlocks.add(block)
 
 			if (
-					type == Material.GLOWSTONE ||
-					type == Material.REDSTONE_LAMP ||
-					type == Material.SEA_LANTERN ||
-					type == Material.MAGMA_BLOCK ||
-					type.isFroglight
+				type == Material.GLOWSTONE ||
+				type == Material.REDSTONE_LAMP ||
+				type == Material.SEA_LANTERN ||
+				type == Material.MAGMA_BLOCK ||
+				type.isFroglight
 			) {
 				potentialThrusterBlocks += block
 			}
@@ -84,14 +83,12 @@ object SubsystemDetector {
 			if (type == Material.OBSERVER) potentialLandingGearBlocks.add(block)
 		}
 
-
 		starship.reactor = ReactorSubsystem(starship)
 		starship.subsystems += starship.reactor
 
 		for (block in potentialThrusterBlocks) {
 			detectThruster(starship, block)
 		}
-
 		for (block in potentialWeaponBlocks) {
 			detectWeapon(feedbackDestination, starship, block)
 		}
@@ -183,7 +180,7 @@ object SubsystemDetector {
 
 			is CryoPodMultiblock -> {
 				val cryo = Cryopod[Vec3i(sign.location), sign.world.name] ?: return
-				starship.subsystems += CryoSubsystem(starship, sign, multiblock, cryo)
+				starship.subsystems += CryopodSubsystem(starship, sign, multiblock, cryo)
 			}
 
 			is GravityWellMultiblock -> {
@@ -191,7 +188,6 @@ object SubsystemDetector {
 			}
 		}
 	}
-
 
 	private fun detectThruster(starship: ActiveControlledStarship, block: Block) {
 		for (face in CARDINAL_BLOCK_FACES) {
@@ -202,7 +198,6 @@ object SubsystemDetector {
 			starship.subsystems += ThrusterSubsystem(starship, pos, face, thrusterType)
 		}
 	}
-
 
 	private fun detectWeapon(feedbackDestination: Audience, starship: ActiveControlledStarship, block: Block) {
 		for (face: BlockFace in CARDINAL_BLOCK_FACES) {
@@ -251,7 +246,6 @@ object SubsystemDetector {
 			else -> getSignlessStarshipWeaponMultiblock(block, face)
 		}
 	}
-
 
 	private fun getSignWeaponMultiblock(block: Block, face: BlockFace): SubsystemMultiblock<*>? {
 		val sign = block.state as Sign

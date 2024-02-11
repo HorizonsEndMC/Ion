@@ -17,7 +17,7 @@ object FriendlyFireListener : SLEventListener() {
 		return true
 	}
 
-	@EventHandler()
+	@EventHandler
 	fun onDamage(event: EntityDamageByEntityEvent) {
 		if (event.damager.type != EntityType.PLAYER || event.entity.type != EntityType.PLAYER) {
 			return
