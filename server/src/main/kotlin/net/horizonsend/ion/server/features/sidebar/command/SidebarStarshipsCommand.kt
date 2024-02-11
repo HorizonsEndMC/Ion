@@ -11,8 +11,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
-import org.litote.kmongo.set
-import org.litote.kmongo.setTo
+import org.litote.kmongo.setValue
 
 @CommandAlias("sidebar")
 object SidebarStarshipsCommand : SLCommand() {
@@ -30,7 +29,7 @@ object SidebarStarshipsCommand : SLCommand() {
     fun onEnableStarships(
         sender: Player
     ) {
-        SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::starshipsEnabled setTo true))
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::starshipsEnabled, true))
         sender.success("Enabled starship info on sidebar")
     }
 
@@ -39,7 +38,7 @@ object SidebarStarshipsCommand : SLCommand() {
     fun onDisableStarships(
         sender: Player
     ) {
-        SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::starshipsEnabled setTo false))
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::starshipsEnabled, false))
         sender.success("Disabled starship info on sidebar")
     }
 
@@ -50,7 +49,7 @@ object SidebarStarshipsCommand : SLCommand() {
         @Optional toggle: Boolean?
     ) {
         val advancedStarshipInfo = toggle ?: !PlayerCache[sender].advancedStarshipInfo
-        SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::advancedStarshipInfo setTo advancedStarshipInfo))
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::advancedStarshipInfo, advancedStarshipInfo))
         sender.success("Changed advanced starship info to $advancedStarshipInfo")
     }
 
@@ -61,7 +60,7 @@ object SidebarStarshipsCommand : SLCommand() {
         @Optional toggle: Boolean?
     ) {
         val rotateCompass = toggle ?: !PlayerCache[sender].rotateCompass
-        SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::rotateCompass setTo rotateCompass))
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::rotateCompass, rotateCompass))
         sender.success("Changed rotating compass to $rotateCompass")
     }
 }

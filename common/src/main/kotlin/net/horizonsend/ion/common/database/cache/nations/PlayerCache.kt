@@ -116,8 +116,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
 
-					val newNation = it.int()
-					data.xp = newNation
+					val newXp = it.int()
+					data.xp = newXp
 				}
 			}
 
@@ -125,8 +125,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
 
-					val newNation = it.int()
-					data.level = newNation
+					val newLevel = it.int()
+					data.level = newLevel
 				}
 			}
 
@@ -298,7 +298,18 @@ abstract class AbstractPlayerCache : ManualCache() {
 			settlementTag = settlementTag,
 			nationTag = nationTag,
 			bounty = data.bounty,
-			blockedPlayerIDs = data.blockedPlayerIDs
+			blockedPlayerIDs = data.blockedPlayerIDs,
+			contactsEnabled = data.contactsEnabled,
+			contactsStarships = data.contactsStarships,
+			lastStarshipEnabled = data.lastStarshipEnabled,
+			planetsEnabled = data.planetsEnabled,
+			starsEnabled = data.starsEnabled,
+			beaconsEnabled = data.beaconsEnabled,
+			waypointsEnabled = data.waypointsEnabled,
+			compactWaypoints = data.compactWaypoints,
+			starshipsEnabled = data.starshipsEnabled,
+			advancedStarshipInfo = data.advancedStarshipInfo,
+			rotateCompass = data.rotateCompass
 		)
 	}
 
