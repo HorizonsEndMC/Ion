@@ -4,8 +4,8 @@ import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.progression.achievements.Achievement
+import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship

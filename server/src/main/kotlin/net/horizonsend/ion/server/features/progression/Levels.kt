@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.progression
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.progression.achievements.Achievement
+import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.loadConfig

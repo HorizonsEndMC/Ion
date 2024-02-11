@@ -14,7 +14,7 @@ enum class IntroTutorialPhase(
 	override vararg val messages: TutorialMessage,
 	override val cancelEvent: Boolean = true,
 	override val announceCompletion: Boolean = false,
-	) : TutorialPhase {
+) : TutorialPhase {
 	WAIT_TO_MOVE(
 		PopupMessage(Component.text("Welcome!", NamedTextColor.WHITE), ofChildren(Component.text("Welcome to ", HEColorScheme.HE_MEDIUM_GRAY), HORIZONS_END)),
 		cancelEvent = false

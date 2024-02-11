@@ -12,8 +12,6 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.economy.city.TradeCities
@@ -23,6 +21,8 @@ import net.horizonsend.ion.server.features.nations.gui.input
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.progression.SLXP
+import net.horizonsend.ion.server.features.progression.achievements.Achievement
+import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.achievements
+package net.horizonsend.ion.server.features.progression.achievements
 
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer

@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.redis.RedisActions
-import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
@@ -44,6 +43,7 @@ import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.ShipKillXP
+import net.horizonsend.ion.server.features.progression.bounties.Bounties
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.space.Orbits
 import net.horizonsend.ion.server.features.space.Space
