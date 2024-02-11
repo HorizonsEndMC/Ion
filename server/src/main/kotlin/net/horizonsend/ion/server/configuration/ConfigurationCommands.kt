@@ -181,7 +181,7 @@ object ConfigurationCommands : SLCommand() {
 	@Subcommand("config reload")
 	fun onConfigReload(sender: CommandSender) {
 		IonServer.configuration = Configuration.load(IonServer.configurationFolder, "server.json")
-		IonServer.gassesConfiguration = Configuration.load(IonServer.configurationFolder, "gasses.json")
+		IonServer.globalGassesConfiguration = Configuration.load(IonServer.configurationFolder, "gasses.json")
 		IonServer.tradeConfiguration = Configuration.load(IonServer.configurationFolder, "trade.json")
 		IonServer.aiSpawningConfiguration = Configuration.load(IonServer.configurationFolder, "aiships.json")
 		IonServer.pvpBalancing = Configuration.load(IonServer.configurationFolder, "pvpbalancing.json")

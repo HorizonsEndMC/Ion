@@ -37,9 +37,12 @@ object Gasses : IonServerComponent(false) {
 			identifier = "HYDROGEN",
 			displayName = text("Hydrogen", NamedTextColor.RED),
 			containerIdentifier = "GAS_CANISTER_HYDROGEN",
-			powerPerUnit = IonServer.gassesConfiguration.gasses.hydrogen.powerPerUnit,
-			cooldown = IonServer.gassesConfiguration.gasses.hydrogen.cooldown,
-			factorSupplier = IonServer.gassesConfiguration.gasses::hydrogen
+			powerPerUnit = IonServer.globalGassesConfiguration.gasses.hydrogen.powerPerUnit,
+			cooldown = IonServer.globalGassesConfiguration.gasses.hydrogen.cooldown,
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::hydrogen,
+			collectionFactorSupplier = {
+				it.configuration.gasses.hydrogen.formattedFactors
+			}
 		) {}
 	)
 	val NITROGEN = registerGas(
@@ -47,9 +50,12 @@ object Gasses : IonServerComponent(false) {
 			identifier = "NITROGEN",
 			displayName = text("Nitrogen", NamedTextColor.RED),
 			containerIdentifier = "GAS_CANISTER_NITROGEN",
-			powerPerUnit = IonServer.gassesConfiguration.gasses.nitrogen.powerPerUnit,
-			cooldown = IonServer.gassesConfiguration.gasses.nitrogen.cooldown,
-			factorSupplier = IonServer.gassesConfiguration.gasses::nitrogen
+			powerPerUnit = IonServer.globalGassesConfiguration.gasses.nitrogen.powerPerUnit,
+			cooldown = IonServer.globalGassesConfiguration.gasses.nitrogen.cooldown,
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::nitrogen,
+			collectionFactorSupplier = {
+				it.configuration.gasses.nitrogen.formattedFactors
+			}
 		) {}
 	)
 	val METHANE = registerGas(
@@ -57,9 +63,12 @@ object Gasses : IonServerComponent(false) {
 			identifier = "METHANE",
 			displayName = text("Methane", NamedTextColor.RED),
 			containerIdentifier = "GAS_CANISTER_METHANE",
-			powerPerUnit = IonServer.gassesConfiguration.gasses.methane.powerPerUnit,
-			cooldown = IonServer.gassesConfiguration.gasses.methane.cooldown,
-			factorSupplier = IonServer.gassesConfiguration.gasses::methane
+			powerPerUnit = IonServer.globalGassesConfiguration.gasses.methane.powerPerUnit,
+			cooldown = IonServer.globalGassesConfiguration.gasses.methane.cooldown,
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::methane,
+			collectionFactorSupplier = {
+				it.configuration.gasses.methane.formattedFactors
+			}
 		) {}
 	)
 
@@ -69,8 +78,11 @@ object Gasses : IonServerComponent(false) {
 			identifier = "OXYGEN",
 			displayName = text("Oxygen", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_OXYGEN",
-			powerMultipler = IonServer.gassesConfiguration.gasses.oxygen.powerMultiplier,
-			factorSupplier = IonServer.gassesConfiguration.gasses::oxygen
+			powerMultipler = IonServer.globalGassesConfiguration.gasses.oxygen.powerMultiplier,
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::oxygen,
+			collectionFactorSupplier = {
+				it.configuration.gasses.oxygen.formattedFactors
+			}
 		) {}
 	)
 	val CHLORINE = registerGas(
@@ -78,8 +90,11 @@ object Gasses : IonServerComponent(false) {
 			identifier = "CHLORINE",
 			displayName = text("Chlorine", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_CHLORINE",
-			powerMultipler = IonServer.gassesConfiguration.gasses.chlorine.powerMultiplier,
-			factorSupplier = IonServer.gassesConfiguration.gasses::chlorine
+			powerMultipler = IonServer.globalGassesConfiguration.gasses.chlorine.powerMultiplier,
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::chlorine,
+			collectionFactorSupplier = {
+				it.configuration.gasses.chlorine.formattedFactors
+			}
 		) {}
 	)
 	val FLUORINE = registerGas(
@@ -87,8 +102,11 @@ object Gasses : IonServerComponent(false) {
 			identifier = "FLUORINE",
 			displayName = text("Fluorine", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_FLUORINE",
-			powerMultipler = IonServer.gassesConfiguration.gasses.fluorine.powerMultiplier,
-			factorSupplier = IonServer.gassesConfiguration.gasses::fluorine
+			powerMultipler = IonServer.globalGassesConfiguration.gasses.fluorine.powerMultiplier,
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::fluorine,
+			collectionFactorSupplier = {
+				it.configuration.gasses.fluorine.formattedFactors
+			}
 		) {}
 	)
 
@@ -98,7 +116,10 @@ object Gasses : IonServerComponent(false) {
 			identifier = "HELIUM",
 			displayName = text("Helium", NamedTextColor.BLUE),
 			containerIdentifier = "GAS_CANISTER_HELIUM",
-			configurationSupplier = IonServer.gassesConfiguration.gasses::helium
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::helium,
+			collectionFactorSupplier = {
+				it.configuration.gasses.helium.formattedFactors
+			}
 		) {}
 	)
 	val CARBON_DIOXIDE = registerGas(
@@ -106,7 +127,10 @@ object Gasses : IonServerComponent(false) {
 			identifier = "CARBON_DIOXIDE",
 			displayName = text("Carbon Dioxide", NamedTextColor.BLUE),
 			containerIdentifier = "GAS_CANISTER_CARBON_DIOXIDE",
-			configurationSupplier = IonServer.gassesConfiguration.gasses::carbonDioxide
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::carbonDioxide,
+			collectionFactorSupplier = {
+				it.configuration.gasses.carbonDioxide.formattedFactors
+			}
 		) {}
 	)
 
@@ -174,7 +198,7 @@ object Gasses : IonServerComponent(false) {
 
 	private fun fillEmptyCanister(furnace: Furnace, gas: Gas): Boolean {
 		val newType = CustomItems.getByIdentifier(gas.containerIdentifier) as? GasCanister ?: return false
-		val newCanister = newType.createWithFill(IonServer.gassesConfiguration.collectorAmount)
+		val newCanister = newType.createWithFill(IonServer.globalGassesConfiguration.collectorAmount)
 
 		furnace.inventory.fuel = newCanister
 
@@ -186,7 +210,7 @@ object Gasses : IonServerComponent(false) {
 		if (type !is GasCanister) return  false
 
 		val currentFill = type.getFill(canisterItem)
-		val newFill = currentFill + IonServer.gassesConfiguration.collectorAmount
+		val newFill = currentFill + IonServer.globalGassesConfiguration.collectorAmount
 
 		// If the canister would be filled
 		return if (newFill >= type.maximumFill) {
