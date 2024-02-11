@@ -112,8 +112,7 @@ fun distance(fromX: Int, fromZ: Int, toX: Int, toZ: Int): Double =
 fun magnitude(x: Double, y: Double, z: Double): Double = sqrt(x.squared() + y.squared() + z.squared())
 
 fun normalize(x: Double, y: Double, z: Double): Triple<Double, Double, Double> {
-	val magnitude = magnitude(x, y, z)
-	return when (magnitude) {
+	return when (val magnitude = magnitude(x, y, z)) {
 		0.0 -> Triple(0.0, 0.0, 0.0)
 		else -> Triple(x / magnitude, y / magnitude, z / magnitude)
 	}
@@ -269,7 +268,7 @@ fun isInside(location: Location, extraChecks: Int): Boolean {
 
 	var check = 0
 
-	while (check < extraChecks && !airBlocks.isEmpty()) {
+	while (check < extraChecks && airBlocks.isNotEmpty()) {
 		edgeLoop@ for (airBlock in airBlocks.toList()) {
 			for (direction in directionArray) {
 				if (direction.oppositeFace == direction) {
@@ -438,8 +437,8 @@ fun Vector.orthogonalVectors(): Pair<Vector, Vector> {
 }
 
 fun Vector.orthogonalThird(other: Vector): Vector {
-	val x = x; val y = y; val z = z;
-	val ox = other.x; val oy = other.y; val oz = other.z;
+	val x = x; val y = y; val z = z
+	val ox = other.x; val oy = other.y; val oz = other.z
 
 	return Vector(+((y * oz) + (z * oy)), -((x * oz) - (z * ox)), +((x * oy) - (y * ox)))
 }

@@ -7,7 +7,6 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
 class WaypointListeners : SLEventListener() {
-    @Suppress("unused")
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         // add player's graph to the map
@@ -16,7 +15,6 @@ class WaypointListeners : SLEventListener() {
         WaypointManager.playerPaths[event.player.uniqueId] = mutableListOf()
     }
 
-    @Suppress("unused")
     @EventHandler
     fun onPlayerLeave(event: PlayerQuitEvent) {
         // remove player's graph from the map (maybe keep it)
@@ -25,7 +23,6 @@ class WaypointListeners : SLEventListener() {
         WaypointManager.playerPaths.remove(event.player.uniqueId)
     }
 
-    @Suppress("unused")
     @EventHandler
     fun onPlayerTeleport(event: PlayerChangedWorldEvent) {
         // update the player's map upon a world change

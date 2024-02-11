@@ -164,7 +164,7 @@ object AreaShields : IonServerComponent() {
 			}
 			val sign = block.getState(false) as Sign
 			val multiblock = Multiblocks[sign] as? AreaShield ?: continue
-			if (multiblock.radius != areaShields.get(shieldLocation)) continue
+			if (multiblock.radius != areaShields[shieldLocation]) continue
 			var power = PowerMachines.getPower(sign)
 			if (power <= 0) continue
 			power -= blockList.size * 2

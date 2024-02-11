@@ -52,9 +52,9 @@ class CachedPlanet(
 			val radians = Math.toRadians(orbitProgress)
 
 			return Vec3i(
-				x = x + (Math.cos(radians) * orbitDistance.d()).i(),
+				x = x + (cos(radians) * orbitDistance.d()).i(),
 				y = y,
-				z = z + (Math.sin(radians) * orbitDistance.d()).i()
+				z = z + (sin(radians) * orbitDistance.d()).i()
 			)
 		}
 

@@ -308,17 +308,17 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				.append(massShadowInfo.description)
 				.append(newline())
 				.append(text("Location: "))
-				.append(text("${massShadowInfo.x}, ${massShadowInfo.z}", NamedTextColor.WHITE))
+				.append(text("${massShadowInfo.x}, ${massShadowInfo.z}", WHITE))
 				.append(newline())
 				.append(text("Gravity well radius: "))
-				.append(text(massShadowInfo.radius, NamedTextColor.WHITE))
+				.append(text(massShadowInfo.radius, WHITE))
 				.append(newline())
 				.append(text("Current distance from center: "))
-				.append(text(massShadowInfo.distance, NamedTextColor.WHITE))
+				.append(text(massShadowInfo.distance, WHITE))
 				.append(newline())
 				.append(text("Cruise direction to escape: "))
 				.append(text(directionString, NamedTextColor.GREEN))
-				.append(text(" (${(atan2(escapeVector.z, escapeVector.x) * 180 / PI).toInt()})", NamedTextColor.WHITE))
+				.append(text(" (${(atan2(escapeVector.z, escapeVector.x) * 180 / PI).toInt()})", WHITE))
 
 			starship.sendMessage(message)
 			return
@@ -602,7 +602,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		sender.sendMessage(ofChildren(text("Total Blocks in all ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalBlocks, HE_LIGHT_BLUE)))
 	}
 
-	@Suppress("unused")
 	@CommandAlias("usebeacon")
 	fun onUseBeacon(sender: Player) {
 		val ship = getStarshipRiding(sender) as? ActiveControlledStarship ?: return

@@ -662,9 +662,9 @@ internal object NationCommand : SLCommand() {
 		val leaderRole = NationRole.getHighestRole(cached.leader)
 		val leaderRoleComp = leaderRole?.let { leader ->
 			text(leader.name).color(color(
-				@Suppress("Deprecation") leader.color.actualStyle.wrappedColor.color.red,
-				@Suppress("Deprecation") leader.color.actualStyle.wrappedColor.color.green,
-				@Suppress("Deprecation") leader.color.actualStyle.wrappedColor.color.blue
+				leader.color.actualStyle.wrappedColor.color.red,
+				leader.color.actualStyle.wrappedColor.color.green,
+				leader.color.actualStyle.wrappedColor.color.blue
 			))
 		} ?: text()
 		val leaderText = text("Leader: ")

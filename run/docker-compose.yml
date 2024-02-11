@@ -9,7 +9,7 @@ services:
     image: "mongo:4.2"
     container_name: "mongo"
     command: [ "--replSet", "rs0" ]
-    ports: [ 127.0.0.1:27017:27017 ]
+    ports: [ "127.0.0.1:27017:27017" ]
     volumes:
       - ./config/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     healthcheck:
@@ -25,7 +25,7 @@ services:
   waterfall:
     image: "itzg/bungeecord"
     container_name: "waterfall"
-    ports: [ 25565:25577 ]
+    ports: [ "25565:25577" ]
     tty: true
     stdin_open: true
     volumes:

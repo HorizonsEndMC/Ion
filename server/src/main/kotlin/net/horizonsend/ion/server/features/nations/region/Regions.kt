@@ -249,10 +249,10 @@ object Regions : IonServerComponent() {
 private class RegionCache {
 	private val idMap: MutableMap<ObjectId, Region<*>> = ConcurrentHashMap()
 
-	@Suppress("UnstableApiUsage") // our standards are very low
+	// our standards are very low
 	private val worldRegions: Multimap<String, Region<*>> = HashMultimap.create()
 
-	@Suppress("UnstableApiUsage") // our standards are very low
+	// our standards are very low
 	private val classMap: Multimap<Class<Region<*>>, Region<*>> = HashMultimap.create()
 
 	fun forEach(action: (Region<*>) -> Unit): Unit = idMap.values.forEach(action)

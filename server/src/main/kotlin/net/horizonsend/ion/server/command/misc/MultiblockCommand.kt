@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
-import net.minecraft.core.BlockPos
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import org.bukkit.block.Block
 import org.bukkit.block.Sign

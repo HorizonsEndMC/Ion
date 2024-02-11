@@ -211,8 +211,8 @@ object SubsystemDetector {
 	}
 
 	private fun getWeaponMultiblock(block: Block, face: BlockFace): SubsystemMultiblock<*>? {
-		return when {
-			block.state is Sign -> getSignWeaponMultiblock(block, face)
+		return when (block.state) {
+			is Sign -> getSignWeaponMultiblock(block, face)
 			else -> getSignlessStarshipWeaponMultiblock(block, face)
 		}
 	}

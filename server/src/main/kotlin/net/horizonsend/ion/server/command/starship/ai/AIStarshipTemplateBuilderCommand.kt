@@ -30,7 +30,6 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 
 	@Subcommand("build from new")
 	@Description("Start construction of a template")
-	@Suppress("unused")
 	fun onStartNew(sender: Player, identifier: String, schematicName: String, type: StarshipType) {
 		val identifierUppercase = identifier.uppercase()
 
@@ -46,7 +45,6 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	@Subcommand("build from existing")
 	@Description("Start construction of a template")
 	@CommandCompletion("@existingTemplates")
-	@Suppress("unused")
 	fun onStartFromExisting(sender: Player, identifier: String) {
 		val identifierUppercase = identifier.uppercase()
 
@@ -60,7 +58,6 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	@Subcommand("list autosets")
 	@Description("List auto weapon sets for the template")
 	@CommandCompletion("@buildingTemplates @nothing")
-	@Suppress("unused")
 	fun listAutoWeaponSets(sender: Player, identifier: String) {
 		val template = requireBuilding(identifier)
 
@@ -70,7 +67,6 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	@Subcommand("list manualsets")
 	@Description("List manual weapon sets for the template")
 	@CommandCompletion("@buildingTemplates @nothing")
-	@Suppress("unused")
 	fun listManualWeaponSets(sender: Player, identifier: String) {
 		val template = requireBuilding(identifier)
 
@@ -80,7 +76,6 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	@Subcommand("add manualset")
 	@Description("Add manual weapon sets to the template")
 	@CommandCompletion("@buildingTemplates name minDistance maxDistance")
-	@Suppress("unused")
 	fun addManualSet(sender: Player, identifier: String, name: String, minDistance: Double, maxDistance: Double) {
 		val template = requireBuilding(identifier)
 
@@ -93,7 +88,6 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	@Subcommand("add autoset")
 	@Description("Add auto weapon sets to the template")
 	@CommandCompletion("@buildingTemplates name minDistance maxDistance")
-	@Suppress("unused")
 	fun addAutoSet(sender: Player, identifier: String, name: String, minDistance: Double, maxDistance: Double) {
 		val template = requireBuilding(identifier)
 
@@ -106,7 +100,6 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	@Subcommand("set schematicname")
 	@Description("Set schematic name")
 	@CommandCompletion("@buildingTemplates @nothing")
-	@Suppress("unused")
 	fun setSchematicName(sender: Player, identifier: String, name: String) {
 		val template = requireBuilding(identifier)
 		val withoutExtension = name.removeSuffix(".schem")
@@ -118,7 +111,6 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	@Subcommand("set displayname")
 	@Description("Set display name (minimessage format)")
 	@CommandCompletion("@buildingTemplates @nothing")
-	@Suppress("unused")
 	fun setDisplayName(sender: Player, identifier: String, name: String) {
 		val template = requireBuilding(identifier)
 
@@ -129,7 +121,6 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	@Subcommand("set controller")
 	@Description("Set controller")
 	@CommandCompletion("@buildingTemplates @controllerFactories")
-	@Suppress("unused")
 	fun setController(sender: Player, identifier: String, controllerFactory: String) {
 		val template = requireBuilding(identifier)
 
@@ -140,7 +131,6 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	@Subcommand("set type")
 	@Description("Set starship type")
 	@CommandCompletion("@buildingTemplates")
-	@Suppress("unused")
 	fun setType(sender: Player, identifier: String, type: StarshipType) {
 		val template = requireBuilding(identifier)
 
@@ -150,7 +140,6 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 
 	@CommandCompletion("@buildingTemplates")
 	@Subcommand("build")
-	@Suppress("unused")
 	fun onBuild(sender: Player, identifier: String, @Optional overwrite: String?) {
 		val identifierUppercase = identifier.uppercase()
 		val template = requireBuilding(identifier)

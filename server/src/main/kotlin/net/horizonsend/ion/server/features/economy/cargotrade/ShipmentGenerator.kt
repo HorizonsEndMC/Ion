@@ -145,8 +145,8 @@ object ShipmentGenerator : IonServerComponent() {
 	 */
 	private fun pickDestination(importingCities: List<TradeCityData>): TradeCityData {
 		return getRandomWeighted(
-			importingCities.associate {
-				it to when (it.type) {
+			importingCities.associateWith {
+				when (it.type) {
 					TradeCityType.SETTLEMENT -> balancing.generator.settlementCityChance
 					TradeCityType.NPC -> balancing.generator.npcCityChance
 				}

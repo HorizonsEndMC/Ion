@@ -244,7 +244,7 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 		.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
 
 	fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, isAuto: Boolean = true) {
-		val speed = getProjectileSpeed(starship).toDouble()
+		val speed = getProjectileSpeed(starship)
 
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
 			if (starship.isInternallyObstructed(point, dir)) continue
