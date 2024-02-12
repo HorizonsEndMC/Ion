@@ -14,6 +14,12 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_
 import net.horizonsend.ion.server.features.customitems.CustomItems.GUN_BARREL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL_RECEIVER
+import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_ALUMINUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_ALUMINUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_TITANIUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_TITANIUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_URANIUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.RIFLE
 import net.horizonsend.ion.server.features.customitems.CustomItems.RIFLE_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SHOTGUN_RECEIVER
@@ -393,9 +399,19 @@ object Crafting : IonServerComponent() {
 			addIngredient(ALUMINUM_INGOT.constructItemStack().asQuantity(9))
 		}
 
+		// Raw Aluminum Block Crafting
+		itemStackShapelessRecipe("rawAluminumBlock", RAW_ALUMINUM_BLOCK.constructItemStack()) {
+			addIngredient(RAW_ALUMINUM.constructItemStack().asQuantity(9))
+		}
+
 		// Aluminum Crafting
 		itemStackShapelessRecipe("aluminum", ALUMINUM_INGOT.constructItemStack().asQuantity(9)) {
 			addIngredient(ALUMINUM_BLOCK.constructItemStack())
+		}
+
+		// Raw Aluminum Crafting
+		itemStackShapelessRecipe("rawAluminum", RAW_ALUMINUM.constructItemStack().asQuantity(9)) {
+			addIngredient(RAW_ALUMINUM_BLOCK.constructItemStack())
 		}
 
 		// Chetherite Block Crafting
@@ -413,9 +429,19 @@ object Crafting : IonServerComponent() {
 			addIngredient(TITANIUM_INGOT.constructItemStack().asQuantity(9))
 		}
 
+		// Raw Titanium Block Crafting
+		itemStackShapelessRecipe("rawTitaniumBlock", RAW_TITANIUM_BLOCK.constructItemStack()) {
+			addIngredient(RAW_TITANIUM.constructItemStack().asQuantity(9))
+		}
+
 		// Titanium Crafting
 		itemStackShapelessRecipe("titanium", TITANIUM_INGOT.constructItemStack().asQuantity(9)) {
 			addIngredient(TITANIUM_BLOCK.constructItemStack())
+		}
+
+		// Raw Titanium Crafting
+		itemStackShapelessRecipe("rawTitanium", RAW_TITANIUM.constructItemStack().asQuantity(9)) {
+			addIngredient(RAW_TITANIUM_BLOCK.constructItemStack())
 		}
 
 		// Uranium Block Crafting
@@ -423,9 +449,19 @@ object Crafting : IonServerComponent() {
 			addIngredient(URANIUM.constructItemStack().asQuantity(9))
 		}
 
+		// Raw Uranium Block Crafting
+		itemStackShapelessRecipe("rawUraniumBlock", RAW_URANIUM_BLOCK.constructItemStack()) {
+			addIngredient(RAW_URANIUM.constructItemStack().asQuantity(9))
+		}
+
 		// Uranium Crafting
 		itemStackShapelessRecipe("uranium", URANIUM.constructItemStack().asQuantity(9)) {
 			addIngredient(URANIUM_BLOCK.constructItemStack())
+		}
+
+		// Raw Uranium Crafting
+		itemStackShapelessRecipe("rawUranium", RAW_URANIUM.constructItemStack().asQuantity(9)) {
+			addIngredient(RAW_URANIUM_BLOCK.constructItemStack())
 		}
 	}
 

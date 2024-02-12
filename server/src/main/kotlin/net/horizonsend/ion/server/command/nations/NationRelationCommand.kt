@@ -2,18 +2,26 @@ package net.horizonsend.ion.server.command.nations
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
+import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
@@ -85,17 +93,29 @@ internal object NationRelationCommand : SLCommand() {
 	}
 
 	@Subcommand("relations")
-	fun onRelations(sender: Player) = asyncCommand(sender) {
+	fun onRelations(sender: Player, @Optional page: Int?) = asyncCommand(sender) {
 		val nation = requireNationIn(sender)
 
-		for (relation in NationRelation.find(NationRelation::nation eq nation)) {
+		val relations = NationRelation.find(NationRelation::nation eq nation).toList()
+
+		val body = formatPaginatedMenu(
+			entries = relations.count(),
+			command = "/nation relations",
+			currentPage = page ?: 1,
+		) {
+			val relation = relations[it]
 			val other = relation.other
 			val otherName = getNationName(other)
 			val otherWish = NationRelation.getRelationWish(other, nation)
-			sender.sendRichMessage(
-				"<yellow>$otherName<dark_gray>: ${relation.actual.miniMessage} " +
-					"<dark_gray>(<gray>Your wish: ${relation.wish.miniMessage}<gray>, their wish: ${otherWish.miniMessage}<dark_gray>)"
-			)
+
+			val relationText = bracketed(template(text("Your wish: {0}, their wish: {1}", GRAY), relation.wish.component, otherWish.component))
+
+			ofChildren(text(otherName, YELLOW), text(": ", DARK_GRAY), relation.actual.component, text(" "), relationText)
 		}
+
+		sender.sendMessage(ofChildren(
+			lineBreakWithCenterText(text("Relations", YELLOW)), newline(),
+			body
+		))
 	}
 }

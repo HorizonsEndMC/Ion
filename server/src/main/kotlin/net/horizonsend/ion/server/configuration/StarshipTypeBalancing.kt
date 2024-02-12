@@ -219,12 +219,12 @@ data class StarshipTypeBalancing(
 		maxSneakFlyAccel = 3,
 		interdictionRange = 3200,
 		hyperspaceRangeMultiplier = 2.5,
-		cruiseSpeedMultiplier = 0.875,
+		cruiseSpeedMultiplier = 0.75,
 		weapons = StarshipWeapons(
 			quadTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
 				range = 500.0,
-				speed = 70.0,
+				speed = 60.0,
 				areaShieldDamageMultiplier = 6.0,
 				starshipShieldDamageMultiplier = 6.0,
 				particleThickness = 0.6,
@@ -232,7 +232,7 @@ data class StarshipTypeBalancing(
 				volume = 0,
 				pitch = 2.0f,
 				soundName = "starship.weapon.turbolaser.quad.shoot",
-				powerUsage = 3000,
+				powerUsage = 4500,
 				length = 0,
 				angleRadians = 0.0,
 				convergeDistance = 0.0,
@@ -241,7 +241,8 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				inaccuracyRadians = 2.0,
 				maxPerShot = 3,
-				applyCooldownToAll = true
+				applyCooldownToAll = true,
+				minBlockCount = 17500
 			)
 		)
 	),

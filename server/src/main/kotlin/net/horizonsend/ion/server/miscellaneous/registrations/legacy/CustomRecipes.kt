@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_BLUE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_GREEN
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_ORANGE
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_PINK
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_PURPLE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_RED
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_YELLOW
@@ -42,6 +43,7 @@ import org.bukkit.Material.FIREWORK_ROCKET
 import org.bukkit.Material.GLASS_PANE
 import org.bukkit.Material.GLOWSTONE_DUST
 import org.bukkit.Material.IRON_INGOT
+import org.bukkit.Material.PINK_TULIP
 import org.bukkit.Material.PRISMARINE_CRYSTALS
 import org.bukkit.Material.REDSTONE
 import org.bukkit.Material.SEA_LANTERN
@@ -212,7 +214,8 @@ object CustomRecipes : IonServerComponent() {
 		ENERGY_SWORD_YELLOW to materialChoice(COAL),
 		ENERGY_SWORD_GREEN to materialChoice(EMERALD),
 		ENERGY_SWORD_PURPLE to customItemChoice(CHETHERITE),
-		ENERGY_SWORD_ORANGE to materialChoice(COPPER_INGOT)
+		ENERGY_SWORD_ORANGE to materialChoice(COPPER_INGOT),
+		ENERGY_SWORD_PINK to materialChoice(PINK_TULIP)
 	).forEach { (sword, specialItem) ->
 		createRecipe(
 			sword, "aga", "a*a", "ata",
