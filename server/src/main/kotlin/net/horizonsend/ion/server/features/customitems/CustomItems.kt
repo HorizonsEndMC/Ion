@@ -428,7 +428,7 @@ object CustomItems {
 		object : CustomBlockItem(
 			identifier = "RAW_TITANIUM_BLOCK",
 			material = RAW_IRON_BLOCK,
-			customModelData = 1,
+			customModelData = 3,
 			displayName = text("Raw Titanium Block").decoration(ITALIC, false),
 			customBlockIdentifier = "RAW_TITANIUM_BLOCK"
 		) {}
@@ -476,7 +476,7 @@ object CustomItems {
 		object : CustomBlockItem(
 			identifier = "RAW_URANIUM_BLOCK",
 			material = RAW_IRON_BLOCK,
-			customModelData = 1,
+			customModelData = 4,
 			displayName = text("Raw Uranium Block").decoration(ITALIC, false),
 			customBlockIdentifier = "RAW_URANIUM_BLOCK"
 		) {}
