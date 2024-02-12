@@ -16,6 +16,7 @@ import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.CompletedCollectionMission
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
+import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.Shuttle
@@ -101,6 +102,7 @@ object DBManager : IonComponent() {
 		// misc
 		SLPlayer.init()
 		Shuttle.init()
+		Bookmark.init()
 
 		// nations
 		CapturableStation.init()
