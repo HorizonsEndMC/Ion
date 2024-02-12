@@ -80,6 +80,9 @@ import org.bukkit.Material.TRIPWIRE
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WHITE_WOOL
 import org.bukkit.Material.YELLOW_WOOL
+import org.bukkit.Material.NAME_TAG
+import org.bukkit.Material.PAPER
+import org.bukkit.Material.TRIPWIRE_HOOK
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
@@ -139,8 +142,17 @@ object Crafting : IonServerComponent() {
 			shape("lll", "tat")
 
 			setIngredient('l', LEATHER)
-			setIngredient('t', TRIPWIRE)
+			setIngredient('t', TRIPWIRE_HOOK)
 			setIngredient('a', AIR)
+		}
+
+		// Nametag
+		shapedRecipe("nametag", NAME_TAG) {
+			shape("s","t","p")
+
+			setIngredient('s', STRING)
+			setIngredient('t', TRIPWIRE_HOOK)
+			setIngredient('p', PAPER)
 		}
 
 		// Ochre Froglight
