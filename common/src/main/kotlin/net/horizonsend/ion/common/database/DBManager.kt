@@ -140,6 +140,7 @@ object DBManager : IonComponent() {
 
 		Cryopod.init()
 		ClaimedBounty.init()
+		Bookmark.init()
 	}
 
 	override fun onDisable() {

@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -21,7 +22,7 @@ import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import java.util.*
 
-@CommandAlias("bookmark")
+@CommandAlias("bookmark|bm")
 object BookmarkCommand : SLCommand() {
     override fun onEnable(manager: PaperCommandManager) {
         registerAsyncCompletion(manager, "bookmarks") { c ->
@@ -96,6 +97,22 @@ object BookmarkCommand : SLCommand() {
             .find(Bookmark::owner eq slPlayerId)
             .descendingSort(Bookmark::name)
             .toList()
+
+        if (bookmarks.isEmpty()) {
+            sender.userError("You have no bookmarks")
+            return
+        }
+
+        for (bookmark in bookmarks) {
+            sender.information("${bookmark.name}: ${bookmark.worldName}, ${bookmark.x}, ${bookmark.y}, ${bookmark.z}")
+        }
+    }
+
+    @Subcommand("cachelist")
+    @Suppress("unused")
+    fun onCacheList(sender: Player) {
+        val slPlayerId = sender.slPlayerId
+        val bookmarks: List<Bookmark> = BookmarkCache.getAll().filter { bm -> bm.owner == slPlayerId }.sortedByDescending { it.name }
 
         if (bookmarks.isEmpty()) {
             sender.userError("You have no bookmarks")
