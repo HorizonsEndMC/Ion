@@ -27,11 +27,6 @@ object BookmarkCache: DbObjectCache<Bookmark, Oid<Bookmark>>(Bookmark) {
                 nameAttribute
             )
         )
-        cache.addIndex(HashIndex.onAttribute(xAttribute))
-        cache.addIndex(HashIndex.onAttribute(yAttribute))
-        cache.addIndex(HashIndex.onAttribute(zAttribute))
-        cache.addIndex(HashIndex.onAttribute(serverNameAttribute))
-        cache.addIndex(HashIndex.onAttribute(worldNameAttribute))
     }
 
     // Bookmarks are not expected to be updated, only created and deleted

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.sidebar.component
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.Sidebar
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GENERIC_STARSHIP_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GUNSHIP_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON
@@ -27,6 +28,7 @@ class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
 	private val planetsEnabled = PlayerCache[player].planetsEnabled
 	private val starsEnabled = PlayerCache[player].starsEnabled
 	private val beaconsEnabled = PlayerCache[player].beaconsEnabled
+    private val bookmarksEnabled = PlayerCache[player].bookmarksEnabled
 
     private fun getColor(enabled: Boolean) : NamedTextColor {
         return if (enabled) AQUA else GRAY
@@ -44,7 +46,9 @@ class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
             space(),
             text(STAR_ICON.text, getColor(starsEnabled)).font(Sidebar.fontKey),
             space(),
-            text(HYPERSPACE_BEACON_ENTER_ICON.text, getColor(beaconsEnabled)).font(Sidebar.fontKey)
+            text(HYPERSPACE_BEACON_ENTER_ICON.text, getColor(beaconsEnabled)).font(Sidebar.fontKey),
+            space(),
+            text(SidebarIcon.BOOKMARK_ICON.text, getColor(bookmarksEnabled)).font(Sidebar.fontKey)
         )
         drawable.drawLine(line)
     }

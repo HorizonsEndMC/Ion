@@ -1,12 +1,15 @@
 package net.horizonsend.ion.server.features.sidebar.tasks
 
+import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GENERIC_STARSHIP_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON
@@ -27,6 +30,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
@@ -85,6 +89,7 @@ object ContactsSidebar {
         val planetsEnabled = PlayerCache[player].planetsEnabled
         val starsEnabled = PlayerCache[player].starsEnabled
         val beaconsEnabled = PlayerCache[player].beaconsEnabled
+        val bookmarksEnabled = PlayerCache[player].bookmarksEnabled
 
         // identify contacts that should be displayed (enabled and in range)
         val starships: List<ActiveStarship> = if (starshipsEnabled) {
@@ -118,6 +123,14 @@ object ContactsSidebar {
             }
         } else listOf()
 
+        val bookmarks: List<Bookmark> = if (bookmarksEnabled) {
+            BookmarkCache.getAll().filter { bm -> bm.owner == player.slPlayerId }.filter {
+                it.worldName == player.world.name &&
+                        Vector(it.x, it.y, it.z).distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE
+            }
+        } else listOf()
+
+
         // Add contacts to main contacts list
         if (starshipsEnabled) {
             addStarshipContacts(starships, playerVector, contactsList, player)
@@ -137,6 +150,10 @@ object ContactsSidebar {
 
         if (beaconsEnabled) {
             addBeaconContacts(beacons, playerVector, contactsList)
+        }
+
+        if (bookmarksEnabled) {
+            addBookmarkContacts(bookmarks, playerVector, contactsList)
         }
 
         // append spaces
@@ -304,6 +321,33 @@ object ContactsSidebar {
                     name = text(beacon.name, color),
                     prefix = constructPrefixTextComponent(HYPERSPACE_BEACON_ENTER_ICON.text, BLUE),
                     suffix = constructSuffixTextComponent(beaconTextComponent(beacon.prompt)),
+                    heading = constructHeadingTextComponent(direction, color),
+                    height = constructHeightTextComponent(height, color),
+                    distance = constructDistanceTextComponent(distance, color),
+                    distanceInt = distance,
+                    padding = Component.empty()
+                )
+            )
+        }
+    }
+
+    private fun addBookmarkContacts(
+        bookmarks: List<Bookmark>,
+        playerVector: Vector,
+        contactsList: MutableList<ContactsData>
+    ) {
+        for (bookmark in bookmarks) {
+            val vector = Vector(bookmark.x, bookmark.y, bookmark.z)
+            val distance = vector.distance(playerVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val height = vector.y.toInt()
+            val color = distanceColor(distance)
+
+            contactsList.add(
+                ContactsData(
+                    name = text(bookmark.name, color),
+                    prefix = constructPrefixTextComponent(BOOKMARK_ICON.text, DARK_PURPLE),
+                    suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
                     distance = constructDistanceTextComponent(distance, color),

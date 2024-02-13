@@ -99,4 +99,15 @@ object SidebarContactsCommand : SLCommand() {
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::beaconsEnabled, beaconsEnabled))
 		sender.success("Changed beacon visibility to $beaconsEnabled")
 	}
+
+	@Suppress("unused")
+	@Subcommand("contacts bookmark")
+	fun onToggleBookmarks(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val bookmarksEnabled = toggle ?: !PlayerCache[sender].bookmarksEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::bookmarksEnabled, bookmarksEnabled))
+		sender.success("Changed bookmark visibility to $bookmarksEnabled")
+	}
 }
