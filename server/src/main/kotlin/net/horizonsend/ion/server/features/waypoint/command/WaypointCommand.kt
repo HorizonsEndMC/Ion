@@ -27,13 +27,13 @@ object WaypointCommand : SLCommand() {
     fun onSetWaypoint(
         sender: Player
     ) {
-        sender.userError("Usage: /waypoint add <planet/hyperspaceBeacon> or /waypoint add <spaceWorld> <x> <z>")
+        sender.userError("Usage: /route add <planet/hyperspaceBeacon> or /route add <spaceWorld> <x> <z>")
     }
 
     // add vertex as destination
     @Suppress("unused")
     @CommandAlias("add")
-    @CommandCompletion("@planets|@hyperspaceGates")
+    @CommandCompletion("@planets|@hyperspaceGates|@bookmarks")
     @Description("Add a waypoint to the route navigation")
     fun onSetWaypoint(
         sender: Player,
@@ -77,7 +77,7 @@ object WaypointCommand : SLCommand() {
 
         val x = MiscStarshipCommands.parseNumber(xCoordinate, sender.location.x.toInt()).toDouble()
         val z = MiscStarshipCommands.parseNumber(zCoordinate, sender.location.z.toInt()).toDouble()
-        val vertex = WaypointManager.addTempVertex(Location(getWorld, x, 128.0, z))
+        val vertex = WaypointManager.addTempVertex(Location(getWorld, x, 192.0, z))
 
         if (WaypointManager.addDestination(sender, vertex)) {
             WaypointManager.updatePlayerGraph(sender)

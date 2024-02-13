@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
+import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
@@ -230,12 +231,14 @@ object WaypointManager : IonServerComponent() {
             playerGraphs[player.uniqueId]?.let { playerGraph ->
                 clonePlayerGraphFromMain(playerGraph)
                 updatePlayerPositionVertex(playerGraph, player)
+                populatePlayerBookmarkVertex(playerGraph, player)
             }
         } else {
             // add player's graph to the map
             val playerGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
             clonePlayerGraphFromMain(playerGraph)
             updatePlayerPositionVertex(playerGraph, player)
+            populatePlayerBookmarkVertex(playerGraph, player)
             playerGraphs[player.uniqueId] = playerGraph
         }
     }
@@ -260,6 +263,24 @@ object WaypointManager : IonServerComponent() {
         )
         graph.addVertex(newVertex)
         connectVerticesInSameWorld(graph, newVertex)
+    }
+
+    private fun populatePlayerBookmarkVertex(
+        graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
+        player: Player
+    ) {
+        val bookmarks = BookmarkCommand.getBookmarks(player)
+
+        for (bookmark in bookmarks) {
+            val newVertex = WaypointVertex(
+                name = bookmark.name,
+                icon = SidebarIcon.BOOKMARK_ICON.text.first(),
+                loc = Location(Bukkit.getWorld(bookmark.worldName), bookmark.x.toDouble(), bookmark.y.toDouble(), bookmark.z.toDouble()),
+                linkedWaypoint = null
+            )
+            graph.addVertex(newVertex)
+            connectVerticesInSameWorld(graph, newVertex)
+        }
     }
 
     fun addTempVertex(loc: Location): WaypointVertex {
