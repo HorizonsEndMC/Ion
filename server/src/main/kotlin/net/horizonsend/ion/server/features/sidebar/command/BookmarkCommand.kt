@@ -11,16 +11,21 @@ import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
+import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
-import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
-import java.util.*
+import java.util.Locale
 
 @CommandAlias("bookmark|bm")
 object BookmarkCommand : SLCommand() {
@@ -38,6 +43,7 @@ object BookmarkCommand : SLCommand() {
 
     @Subcommand("save")
     @Suppress("unused")
+    @CommandCompletion("name")
     fun onSave(sender: Player, @Optional name: String?) {
         if (!name.isNullOrBlank()) {
             if (name != name.lowercase(Locale.getDefault())) {
@@ -91,36 +97,38 @@ object BookmarkCommand : SLCommand() {
 
     @Subcommand("list")
     @Suppress("unused")
-    fun onList(sender: Player) {
-        val slPlayerId = sender.slPlayerId
-        val bookmarks: List<Bookmark> = Bookmark
-            .find(Bookmark::owner eq slPlayerId)
-            .descendingSort(Bookmark::name)
-            .toList()
+    fun onCacheList(sender: Player) {
+        val bookmarks: List<Bookmark> = getBookmarks(sender).sortedByDescending { it.name }
 
         if (bookmarks.isEmpty()) {
             sender.userError("You have no bookmarks")
             return
         }
 
+        sender.sendMessage(lineBreakWithCenterText(Component.text("Active Starships", HEColorScheme.HE_LIGHT_ORANGE)))
+
         for (bookmark in bookmarks) {
             sender.information("${bookmark.name}: ${bookmark.worldName}, ${bookmark.x}, ${bookmark.y}, ${bookmark.z}")
+
+            val line = template(
+                "{0}: World {1] @ {2}, {3}, {4}",
+                color = HE_LIGHT_GRAY,
+                paramColor = WHITE,
+                useQuotesAroundObjects = true,
+                bookmark.name,
+                bookmark.worldName,
+                bookmark.x,
+                bookmark.y,
+                bookmark.z
+            )
+
+            sender.sendMessage(line)
         }
+
+        sender.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(47))
     }
 
-    @Subcommand("cachelist")
-    @Suppress("unused")
-    fun onCacheList(sender: Player) {
-        val slPlayerId = sender.slPlayerId
-        val bookmarks: List<Bookmark> = BookmarkCache.getAll().filter { bm -> bm.owner == slPlayerId }.sortedByDescending { it.name }
-
-        if (bookmarks.isEmpty()) {
-            sender.userError("You have no bookmarks")
-            return
-        }
-
-        for (bookmark in bookmarks) {
-            sender.information("${bookmark.name}: ${bookmark.worldName}, ${bookmark.x}, ${bookmark.y}, ${bookmark.z}")
-        }
+    fun getBookmarks(player: Player): List<Bookmark> {
+        return BookmarkCache.getAll().filter { bm -> bm.owner == player.slPlayerId }
     }
 }
