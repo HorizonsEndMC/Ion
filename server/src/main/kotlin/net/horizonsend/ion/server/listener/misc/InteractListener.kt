@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.gear.getPower
+import net.horizonsend.ion.server.features.gear.setPower
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.misc.getPower
-import net.horizonsend.ion.server.features.misc.setPower
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks

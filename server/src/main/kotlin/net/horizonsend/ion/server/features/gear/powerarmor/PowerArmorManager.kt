@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.gear.powerarmor
 
-import net.horizonsend.ion.server.features.misc.getPower
-import net.horizonsend.ion.server.features.misc.removePower
+import net.horizonsend.ion.server.features.gear.getPower
+import net.horizonsend.ion.server.features.gear.removePower
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.gear.hasMovedInLastSecond
