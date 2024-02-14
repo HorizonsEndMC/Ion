@@ -44,6 +44,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var planetsEnabled: Boolean = true,
 		var starsEnabled: Boolean = true,
 		var beaconsEnabled: Boolean = true,
+		var stationsEnabled: Boolean = true,
 		var bookmarksEnabled: Boolean = true,
 
 		var waypointsEnabled: Boolean = true,
@@ -185,6 +186,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::stationsEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val stationsEnabled = it.boolean()
+					data.stationsEnabled = stationsEnabled
+				}
+			}
+
 			change[SLPlayer::bookmarksEnabled]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -315,6 +325,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			planetsEnabled = data.planetsEnabled,
 			starsEnabled = data.starsEnabled,
 			beaconsEnabled = data.beaconsEnabled,
+			stationsEnabled = data.stationsEnabled,
 			bookmarksEnabled = data.bookmarksEnabled,
 			waypointsEnabled = data.waypointsEnabled,
 			compactWaypoints = data.compactWaypoints,
