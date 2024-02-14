@@ -153,6 +153,8 @@ object WorldCommand : SLCommand() {
 				ionWorld.configuration.flags.add(WorldFlag.SPACE_WORLD)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_SPACE_STATIONS)
 				ionWorld.configuration.flags.add(WorldFlag.ALLOW_AI_SPAWNS)
+				ionWorld.configuration.flags.add(WorldFlag.SPEEDERS_EXPLODE)
+				ionWorld.configuration.flags.add(WorldFlag.ALLOW_MINING_LASERS)
 
 				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
 				ionWorld.configuration.environments.add(Environment.VACUUM)
@@ -164,6 +166,8 @@ object WorldCommand : SLCommand() {
 		HYPERSPACE {
 			override fun setup(world: World) {
 				val ionWorld = world.ion
+
+				ionWorld.configuration.flags.add(WorldFlag.SPEEDERS_EXPLODE)
 
 				ionWorld.configuration.environments.add(Environment.NO_GRAVITY)
 				ionWorld.configuration.environments.add(Environment.VACUUM)
