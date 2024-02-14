@@ -52,8 +52,8 @@ object WaypointManager : IonServerComponent() {
         // JGraphT is not thread safe; this cannot be async
         Tasks.syncRepeat(0L, 100L) {
             Bukkit.getOnlinePlayers().forEach { player ->
+                updatePlayerGraph(player)
                 if (playerDestinations.isNotEmpty()) {
-                    updatePlayerGraph(player)
                     checkWaypointReached(player)
                     updatePlayerPaths(player)
                     updateNumJumps(player)
@@ -271,6 +271,8 @@ object WaypointManager : IonServerComponent() {
     ) {
         val bookmarks = BookmarkCommand.getBookmarks(player)
 
+        // Bookmarks may share the same name as a planet/gate/other object, but because those are loaded first,
+        // getVertex() will default to the object instead of the bookmark
         for (bookmark in bookmarks) {
             val newVertex = WaypointVertex(
                 name = bookmark.name,

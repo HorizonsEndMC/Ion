@@ -39,9 +39,18 @@ object WaypointCommand : SLCommand() {
         sender: Player,
         option: String
     ) {
-        val vertex = WaypointManager.getVertex(WaypointManager.mainGraph, option)
+        val playerGraph = WaypointManager.playerGraphs[sender.uniqueId]
+        if (playerGraph == null) {
+            sender.userError("Player graph not found; please notify staff")
+            return
+        }
+        val vertex = WaypointManager.getVertex(playerGraph, option)
         if (vertex == null) {
             sender.userError("Vertex not found")
+            return
+        }
+        if (WaypointManager.getLastWaypoint(sender) == vertex.name) {
+            sender.userError("Last waypoint already set to this destination")
             return
         }
         if (WaypointManager.addDestination(sender, vertex)) {
