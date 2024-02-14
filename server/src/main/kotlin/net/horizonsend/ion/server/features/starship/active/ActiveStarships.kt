@@ -9,13 +9,13 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipType.SPEEDER
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -123,7 +123,7 @@ object ActiveStarships : IonServerComponent() {
 		worldMap[oldWorld].remove(starship)
 		worldMap[newWorld].add(starship)
 
-		if (starship.type == SPEEDER && SpaceWorlds.contains(newWorld)) StarshipDestruction.destroy(starship)
+		if (starship.type == SPEEDER && newWorld.ion.hasFlag(WorldFlag.SPEEDERS_EXPLODE)) StarshipDestruction.destroy(starship)
 	}
 
 	operator fun get(playerShipId: Oid<out StarshipData>) = shipIdMap[playerShipId]
