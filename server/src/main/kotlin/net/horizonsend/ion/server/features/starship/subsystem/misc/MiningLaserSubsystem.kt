@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblock
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -19,6 +18,8 @@ import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlo
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -212,9 +213,7 @@ class MiningLaserSubsystem(
 			return
 		}
 
-		val isPlots = starship.world.name.contains("plots", ignoreCase = true)
-
-		if (!SpaceWorlds.contains(starship.world) && !isPlots) {
+		if (!starship.world.ion.hasFlag(WorldFlag.ALLOW_MINING_LASERS)) {
 			starship.sendMessage(
 				text("The Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} wasn't able to initialize its gravitational collection beam and was disabled! (Move to a space world)")
 			)
