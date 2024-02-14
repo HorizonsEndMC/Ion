@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.sidebar.tasks
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
+import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
@@ -15,10 +16,17 @@ import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GENERIC_STARSHIP_
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.INTERDICTION_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.PLANET_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.SIEGE_STATION_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STAR_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STATION_ICON
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.LastPilotedStarship
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -53,7 +61,7 @@ object ContactsSidebar {
         }
     }
 
-    private fun relationColor(player: Player, otherController: Controller): NamedTextColor {
+    private fun playerRelationColor(player: Player, otherController: Controller): NamedTextColor {
         when (otherController) {
             is NoOpController -> return GRAY
             is AIController -> return DARK_GRAY
@@ -64,6 +72,29 @@ object ContactsSidebar {
             }
             else -> return GRAY
         }
+    }
+
+    private fun stationRelationColor(player: Player, station: CachedSpaceStation<*, *, *>): NamedTextColor {
+        when (station) {
+            is CachedPlayerSpaceStation -> return GRAY
+            is CachedSettlementSpaceStation -> {
+                val viewerSettlement = PlayerCache[player].settlementOid ?: return GRAY
+                val otherSettlement = station.owner
+                return if (viewerSettlement == otherSettlement) AQUA else GRAY
+            }
+            is CachedNationSpaceStation -> {
+                val viewerNation = PlayerCache[player].nationOid ?: return GRAY
+                val otherNation = station.owner
+                return RelationCache[viewerNation, otherNation].color
+            }
+            else -> return GRAY
+        }
+    }
+
+    private fun capturableStationRelationColor(player: Player, station: CapturableStation): NamedTextColor {
+        val viewerNation = PlayerCache[player].nationOid ?: return GRAY
+        val otherNation = station.nation ?: return GRAY
+        return RelationCache[viewerNation, otherNation].color
     }
 
     private fun getDirectionToObject(direction: Vector): String {
@@ -89,6 +120,7 @@ object ContactsSidebar {
         val planetsEnabled = PlayerCache[player].planetsEnabled
         val starsEnabled = PlayerCache[player].starsEnabled
         val beaconsEnabled = PlayerCache[player].beaconsEnabled
+        val stationsEnabled = PlayerCache[player].stationsEnabled
         val bookmarksEnabled = PlayerCache[player].bookmarksEnabled
 
         // identify contacts that should be displayed (enabled and in range)
@@ -123,6 +155,20 @@ object ContactsSidebar {
             }
         } else listOf()
 
+        val stations: List<CachedSpaceStation<*, *, *>> = if (stationsEnabled) {
+            SpaceStationCache.all().filter {
+                it.world == player.world.name && Vector(it.x, 192, it.z)
+                    .distanceSquared(playerVector) < MainSidebar.CONTACTS_SQRANGE
+            }
+        } else listOf()
+
+        val capturableStations: List<CapturableStation> = if (stationsEnabled) {
+            CapturableStation.all().filter {
+                it.world == player.world.name && Vector(it.x, 192, it.z)
+                    .distanceSquared(playerVector) < MainSidebar.CONTACTS_SQRANGE
+            }
+        } else listOf()
+
         val bookmarks: List<Bookmark> = if (bookmarksEnabled) {
             BookmarkCache.getAll().filter { bm -> bm.owner == player.slPlayerId }.filter {
                 it.worldName == player.world.name &&
@@ -150,6 +196,11 @@ object ContactsSidebar {
 
         if (beaconsEnabled) {
             addBeaconContacts(beacons, playerVector, contactsList)
+        }
+
+        if (stationsEnabled) {
+            addStationContacts(stations, playerVector, contactsList, player)
+            addCapturableStationContacts(capturableStations, playerVector, contactsList, player)
         }
 
         if (bookmarksEnabled) {
@@ -187,7 +238,7 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(starship.identifier, color),
-                    prefix = constructPrefixTextComponent(starship.type.icon, relationColor(player, otherController)),
+                    prefix = constructPrefixTextComponent(starship.type.icon, playerRelationColor(player, otherController)),
                     suffix = constructSuffixTextComponent(
                         if (currentStarship != null) {
                             autoTurretTextComponent(currentStarship, starship)
@@ -321,6 +372,63 @@ object ContactsSidebar {
                     name = text(beacon.name, color),
                     prefix = constructPrefixTextComponent(HYPERSPACE_BEACON_ENTER_ICON.text, BLUE),
                     suffix = constructSuffixTextComponent(beaconTextComponent(beacon.prompt)),
+                    heading = constructHeadingTextComponent(direction, color),
+                    height = constructHeightTextComponent(height, color),
+                    distance = constructDistanceTextComponent(distance, color),
+                    distanceInt = distance,
+                    padding = Component.empty()
+                )
+            )
+        }
+    }
+
+    private fun addStationContacts(
+        stations: List<CachedSpaceStation<*, *, *>>,
+        playerVector: Vector,
+        contactsList: MutableList<ContactsData>,
+        player: Player
+    ) {
+        for (station in stations) {
+            val vector = Vector(station.x, 192, station.z)
+            val distance = vector.distance(playerVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val height = vector.y.toInt()
+            val color = distanceColor(distance)
+
+            contactsList.add(
+                ContactsData(
+                    name = text(station.name, color),
+                    prefix = constructPrefixTextComponent(STATION_ICON.text, stationRelationColor(player, station)),
+                    suffix = Component.empty(),
+                    heading = constructHeadingTextComponent(direction, color),
+                    height = constructHeightTextComponent(height, color),
+                    distance = constructDistanceTextComponent(distance, color),
+                    distanceInt = distance,
+                    padding = Component.empty()
+                )
+            )
+        }
+    }
+
+    private fun addCapturableStationContacts(
+        capturableStations: List<CapturableStation>,
+        playerVector: Vector,
+        contactsList: MutableList<ContactsData>,
+        player: Player
+    ) {
+        for (station in capturableStations) {
+            val vector = Vector(station.x, 192, station.z)
+            val distance = vector.distance(playerVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val height = vector.y.toInt()
+            val color = distanceColor(distance)
+
+            contactsList.add(
+                ContactsData(
+                    name = text(station.name, color),
+                    prefix = constructPrefixTextComponent(SIEGE_STATION_ICON.text,
+                        capturableStationRelationColor(player, station)),
+                    suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
                     distance = constructDistanceTextComponent(distance, color),

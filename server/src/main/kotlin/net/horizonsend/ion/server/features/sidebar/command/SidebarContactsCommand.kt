@@ -101,6 +101,17 @@ object SidebarContactsCommand : SLCommand() {
 	}
 
 	@Suppress("unused")
+	@Subcommand("contacts station")
+	fun onToggleStations(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val stationsEnabled = toggle ?: !PlayerCache[sender].stationsEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::stationsEnabled, stationsEnabled))
+		sender.success("Changed station visibility to $stationsEnabled")
+	}
+
+	@Suppress("unused")
 	@Subcommand("contacts bookmark")
 	fun onToggleBookmarks(
 		sender: Player,

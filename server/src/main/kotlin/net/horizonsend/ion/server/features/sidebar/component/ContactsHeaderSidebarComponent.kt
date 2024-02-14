@@ -3,12 +3,13 @@ package net.horizonsend.ion.server.features.sidebar.component
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.Sidebar
-import net.horizonsend.ion.server.features.sidebar.SidebarIcon
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GENERIC_STARSHIP_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GUNSHIP_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.PLANET_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STAR_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STATION_ICON
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -28,6 +29,7 @@ class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
 	private val planetsEnabled = PlayerCache[player].planetsEnabled
 	private val starsEnabled = PlayerCache[player].starsEnabled
 	private val beaconsEnabled = PlayerCache[player].beaconsEnabled
+    private val stationsEnabled = PlayerCache[player].stationsEnabled
     private val bookmarksEnabled = PlayerCache[player].bookmarksEnabled
 
     private fun getColor(enabled: Boolean) : NamedTextColor {
@@ -48,7 +50,9 @@ class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
             space(),
             text(HYPERSPACE_BEACON_ENTER_ICON.text, getColor(beaconsEnabled)).font(Sidebar.fontKey),
             space(),
-            text(SidebarIcon.BOOKMARK_ICON.text, getColor(bookmarksEnabled)).font(Sidebar.fontKey)
+            text(STATION_ICON.text, getColor(stationsEnabled)).font(Sidebar.fontKey),
+            space(),
+            text(BOOKMARK_ICON.text, getColor(bookmarksEnabled)).font(Sidebar.fontKey)
         )
         drawable.drawLine(line)
     }
