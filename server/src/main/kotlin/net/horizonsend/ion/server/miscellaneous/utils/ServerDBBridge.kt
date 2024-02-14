@@ -28,6 +28,7 @@ import java.util.Base64
 import java.util.UUID
 
 val SLTextStyleDB.actualStyle get() = SLTextStyle.valueOf(this)
+
 val StarshipTypeDB.actualType get() = StarshipType.valueOf(this)
 
 val Player.slPlayerId: SLPlayerId get() = uniqueId.slPlayerId
@@ -63,7 +64,7 @@ fun Blueprint.canAccess(player: Player): Boolean {
 	return slPlayerId == owner || trustedPlayers.contains(slPlayerId) || trustedNations.contains(PlayerCache[player].nationOid)
 }
 
-class PlayerWrapper(private val inner: Player) : CommonPlayer {
+class CommonPlayerWrapper(private val inner: Player) : CommonPlayer {
 	override val name: String = inner.name
 	override val uniqueId: UUID = inner.uniqueId
 
@@ -71,7 +72,7 @@ class PlayerWrapper(private val inner: Player) : CommonPlayer {
 	override fun getUser(): User = luckPerms.getPlayerAdapter(Player::class.java).getUser(inner)
 
 	companion object {
-		fun Player.common(): CommonPlayer = PlayerWrapper(this)
+		fun Player.common(): CommonPlayer = CommonPlayerWrapper(this)
 	}
 }
 

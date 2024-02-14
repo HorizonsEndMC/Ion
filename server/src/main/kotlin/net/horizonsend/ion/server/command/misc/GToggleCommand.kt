@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.miscellaneous.utils.PlayerWrapper.Companion.common
+import net.horizonsend.ion.server.miscellaneous.utils.CommonPlayerWrapper.Companion.common
 import net.luckperms.api.model.group.Group
 import net.luckperms.api.node.NodeEqualityPredicate
 import net.luckperms.api.node.types.InheritanceNode

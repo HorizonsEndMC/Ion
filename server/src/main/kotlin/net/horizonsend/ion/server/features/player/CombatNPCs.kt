@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.misc
+package net.horizonsend.ion.server.features.player
 
 import net.citizensnpcs.api.event.NPCDamageByEntityEvent
 import net.citizensnpcs.api.event.NPCDamageEvent

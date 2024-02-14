@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.customblocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.customitems.CustomItemListeners
 import net.horizonsend.ion.server.features.customitems.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
-import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListener
@@ -14,6 +13,7 @@ import net.horizonsend.ion.server.features.screens.listeners.InventoryCloseListe
 import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryMoveItemListener
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
+import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager

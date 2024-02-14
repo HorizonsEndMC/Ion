@@ -65,8 +65,8 @@ import net.horizonsend.ion.server.command.starship.ai.AIStarshipTemplateBuilderC
 import net.horizonsend.ion.server.configuration.ConfigurationCommands
 import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
 import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
+import net.horizonsend.ion.server.features.player.NewPlayerProtection
 import net.horizonsend.ion.server.features.progression.achievements.AchievementsCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand

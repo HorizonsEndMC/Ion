@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.Table
 import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.server.features.misc.ITEM_POWER_PREFIX
+import net.horizonsend.ion.server.features.gear.ITEM_POWER_PREFIX
 import net.horizonsend.ion.server.miscellaneous.utils.set
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.format.TextDecoration

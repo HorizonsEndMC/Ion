@@ -30,9 +30,8 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
@@ -50,6 +49,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.PlayerStars
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem

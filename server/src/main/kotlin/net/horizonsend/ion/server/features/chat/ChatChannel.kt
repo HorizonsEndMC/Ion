@@ -27,7 +27,7 @@ import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
-import net.horizonsend.ion.server.miscellaneous.utils.PlayerWrapper.Companion.common
+import net.horizonsend.ion.server.miscellaneous.utils.CommonPlayerWrapper.Companion.common
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text

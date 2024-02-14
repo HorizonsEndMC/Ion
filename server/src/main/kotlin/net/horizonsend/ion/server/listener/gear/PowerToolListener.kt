@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.listener.gear
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.gear.TreeCutter
-import net.horizonsend.ion.server.features.misc.getPower
-import net.horizonsend.ion.server.features.misc.removePower
+import net.horizonsend.ion.server.features.gear.getPower
+import net.horizonsend.ion.server.features.gear.removePower
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks

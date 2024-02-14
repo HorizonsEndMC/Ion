@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.redis.RedisActions
 import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
+import net.horizonsend.ion.server.features.client.networking.serverbound.PacketHandler
 import net.horizonsend.ion.server.features.client.whereisit.mod.ModNetworking
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
@@ -23,12 +24,8 @@ import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
-import net.horizonsend.ion.server.features.misc.CombatNPCs
-import net.horizonsend.ion.server.features.misc.Decomposers
-import net.horizonsend.ion.server.features.misc.DutyModeMonitor
-import net.horizonsend.ion.server.features.misc.EventLogger
+import net.horizonsend.ion.server.features.machine.decomposer.Decomposers
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
-import net.horizonsend.ion.server.features.misc.PacketHandler
 import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.nations.NationsBalancing
@@ -39,6 +36,9 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.npcs.StarshipDealers
 import net.horizonsend.ion.server.features.npcs.TutorialNPCs
 import net.horizonsend.ion.server.features.ores.CustomOrePlacement
+import net.horizonsend.ion.server.features.player.CombatNPCs
+import net.horizonsend.ion.server.features.player.DutyModeMonitor
+import net.horizonsend.ion.server.features.player.EventLogger
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
