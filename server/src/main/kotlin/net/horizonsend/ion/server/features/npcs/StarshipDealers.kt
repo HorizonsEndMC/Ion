@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.nations.gui.item
 import net.horizonsend.ion.server.features.npcs.traits.ShipDealerTrait
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.progression.Levels
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
