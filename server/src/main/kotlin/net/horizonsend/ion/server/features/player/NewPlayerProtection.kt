@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.misc
+package net.horizonsend.ion.server.features.player
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
