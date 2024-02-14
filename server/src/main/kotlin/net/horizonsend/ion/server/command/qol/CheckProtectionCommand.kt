@@ -2,15 +2,15 @@ package net.horizonsend.ion.server.command.qol
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.miscellaneous.utils.get
-import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.Statistic
 import org.bukkit.entity.Player
 import java.time.Duration
