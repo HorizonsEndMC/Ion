@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.misc
+package net.horizonsend.ion.server.features.player
 
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
@@ -32,6 +32,7 @@ object EventLogger : IonServerComponent() {
 			return
 		}
 
+		val webhook = ServerConfiguration.eventLoggerWebhook ?: return
 		listen<PlayerDeathEvent> { event ->
 			val player = event.player
 

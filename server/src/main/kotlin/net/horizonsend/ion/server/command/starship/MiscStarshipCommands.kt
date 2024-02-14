@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
@@ -55,6 +56,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem

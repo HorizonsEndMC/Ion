@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.world.environment
 
+import net.horizonsend.ion.server.features.gear.getPower
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorModule
-import net.horizonsend.ion.server.features.misc.getPower
-import net.horizonsend.ion.server.features.misc.removePower
+import net.horizonsend.ion.server.features.gear.removePower
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.isInside

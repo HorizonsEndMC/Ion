@@ -8,10 +8,10 @@ import net.horizonsend.ion.server.features.custom.items.blasters.BlasterListener
 import net.horizonsend.ion.server.features.custom.items.mods.ToolModMenu
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
-import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
+import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager

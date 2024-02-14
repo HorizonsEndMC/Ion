@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.misc
+package net.horizonsend.ion.server.features.gear
 
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.PoweredCustomItem

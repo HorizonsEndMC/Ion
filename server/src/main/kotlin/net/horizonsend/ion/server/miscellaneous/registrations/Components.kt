@@ -27,13 +27,8 @@ import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.misc.AutoRestart
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
-import net.horizonsend.ion.server.features.misc.CombatNPCs
-import net.horizonsend.ion.server.features.misc.Decomposers
-import net.horizonsend.ion.server.features.misc.DutyModeMonitor
-import net.horizonsend.ion.server.features.misc.EventLogger
+import net.horizonsend.ion.server.features.machine.decomposer.Decomposers
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
-import net.horizonsend.ion.server.features.misc.PacketHandler
-import net.horizonsend.ion.server.features.misc.ProxyMessaging
 import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
@@ -46,6 +41,9 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.npcs.StarshipDealers
 import net.horizonsend.ion.server.features.npcs.TutorialNPCs
 import net.horizonsend.ion.server.features.ores.generation.OreGeneration
+import net.horizonsend.ion.server.features.player.CombatNPCs
+import net.horizonsend.ion.server.features.player.DutyModeMonitor
+import net.horizonsend.ion.server.features.player.EventLogger
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
