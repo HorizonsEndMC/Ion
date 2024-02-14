@@ -13,13 +13,13 @@ import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 
-abstract class PlanterMultiblock(val tierMaterial: Material, tierNumber: Int) : CropMultiblock() {
+abstract class PlanterMultiblock(val tierMaterial: Material, tierNumber: Int, tierColor: TextColor) : CropMultiblock() {
 	override val name: String = "planter"
 	override val signText: Array<Component?> = arrayOf(
-		text().append(text("Auto ", NamedTextColor.GRAY), text("Planter", NamedTextColor.GREEN)).build(),
-		text().append(text("Tier ", NamedTextColor.DARK_AQUA), text(tierNumber, NamedTextColor.AQUA)).build(),
+		Component.text().append(Component.text("Auto ", NamedTextColor.GRAY).build(),
+		Component.text().append(Component.text("Planter", NamedTextColor.GREEN).build(),
 		null,
-		null
+		Component.text().append(Component.text("Tier ", tierColor), Component.text(tierNumber, tierColor)).build()
 	)
 
 	override val regionRadius: Int = 1
