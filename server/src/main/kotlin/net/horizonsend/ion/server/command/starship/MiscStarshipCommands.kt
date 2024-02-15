@@ -572,7 +572,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 						RelationCache[senderNation, pilotNation].color
 					} else WHITE
 
-					text(player.name, color)
+					controller.getPilotName().color(color)
 				}
 
 				else -> controller.getPilotName()
