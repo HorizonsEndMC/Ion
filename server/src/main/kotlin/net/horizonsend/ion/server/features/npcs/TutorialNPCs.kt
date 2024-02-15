@@ -1,15 +1,18 @@
 package net.horizonsend.ion.server.features.npcs
 
 import kotlinx.serialization.Serializable
+import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
-import net.citizensnpcs.trait.SkinTrait
+import net.horizonsend.ion.common.utils.configuration.UUIDSerializer
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
+import net.horizonsend.ion.server.features.tutorial.npcs.TutorialNPCType
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.entity.EntityType
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import java.util.UUID
 
 object TutorialNPCs : NPCFeature() {
@@ -28,17 +31,15 @@ object TutorialNPCs : NPCFeature() {
 	@Serializable
 	data class TutorialDroid(
 		override val position: ServerConfiguration.Pos,
-		override val type: EntityType,
-		val skinName: String,
-		val skinSignature: String,
-		val skinValue: String
+		@Serializable(with = UUIDSerializer::class) override val uuid: UUID,
+		val type: TutorialNPCType
 	) : JsonNPCStore.NPC {
 		override fun createNPC(registry: NPCRegistry, index: Int): NPC {
 			val npc = registry.createNPC(
-				type,
-				UUID.randomUUID(),
+				EntityType.PLAYER,
+				uuid,
 				2000 + index,
-				LegacyComponentSerializer.legacyAmpersand().serialize(Component.text("Tutorial Droid", NamedTextColor.LIGHT_PURPLE))
+				LegacyComponentSerializer.legacyAmpersand().serialize(type.npcName)
 			)
 
 			val location = position.toLocation()
@@ -48,9 +49,9 @@ object TutorialNPCs : NPCFeature() {
 				world = location.world,
 				location = location,
 				spawn = {
-					npc.getOrAddTrait(SkinTrait::class.java).apply {
-						setSkinPersistent(this@TutorialDroid.skinName, skinSignature, skinValue)
-					}
+//					npc.getOrAddTrait(SkinTrait::class.java).apply {
+//						setSkinPersistent(this@TutorialDroid.skinName, skinSignature, skinValue)
+//					}
 
 					npc.getOrAddTrait(LookClose::class.java).apply {
 						lookClose(true)
@@ -65,5 +66,14 @@ object TutorialNPCs : NPCFeature() {
 
 			return npc
 		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	fun onClickNPC(event: NPCRightClickEvent) {
+		if (!IonServer.featureFlags.tutorials) return
+
+		val stored = store.storage.npcs.first { it.uuid == event.npc.uniqueId }
+
+		stored.type.onRightClick(event)
 	}
 }
