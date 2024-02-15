@@ -68,9 +68,9 @@ object StarshipsSidebar {
 
     fun maxSpeedComponent(currentVelocity: Double, maxVelocity: Int, acceleration: Double): Component {
         return ofChildren(
-            Component.text(currentVelocity, GREEN),
+            Component.text(currentVelocity, AQUA),
             Component.text("/", DARK_GRAY),
-            Component.text(maxVelocity, DARK_GREEN),
+            Component.text(maxVelocity, DARK_AQUA),
             Component.space(),
             Component.text(acceleration, YELLOW)
         )
