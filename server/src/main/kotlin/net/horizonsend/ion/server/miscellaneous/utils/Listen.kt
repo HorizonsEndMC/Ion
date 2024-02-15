@@ -20,7 +20,7 @@ inline fun <reified T : Event> listen(
 		T::class.java,
 		object : Listener {},
 		priority,
-		{ listener, event -> block(listener, event as? T ?: return@registerEvent IonServer.slF4JLogger.warn("Listener $listener could not cast $event to ${T::class.java}!")) },
+		{ listener, event -> block(listener, event as? T ?: return@registerEvent) },
 		IonServer,
 		ignoreCancelled
 	)
