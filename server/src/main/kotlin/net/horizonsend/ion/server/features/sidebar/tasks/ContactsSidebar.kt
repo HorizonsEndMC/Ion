@@ -76,11 +76,11 @@ object ContactsSidebar {
 
     private fun stationRelationColor(player: Player, station: CachedSpaceStation<*, *, *>): NamedTextColor {
         when (station) {
-            is CachedPlayerSpaceStation -> return GRAY
+            is CachedPlayerSpaceStation -> return if (station.owner == player.slPlayerId) GREEN else GRAY
             is CachedSettlementSpaceStation -> {
                 val viewerSettlement = PlayerCache[player].settlementOid ?: return GRAY
                 val otherSettlement = station.owner
-                return if (viewerSettlement == otherSettlement) AQUA else GRAY
+                return if (viewerSettlement == otherSettlement) GREEN else GRAY
             }
             is CachedNationSpaceStation -> {
                 val viewerNation = PlayerCache[player].nationOid ?: return GRAY

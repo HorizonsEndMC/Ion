@@ -8,7 +8,6 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
@@ -108,10 +107,8 @@ object BookmarkCommand : SLCommand() {
         sender.sendMessage(lineBreakWithCenterText(Component.text("Active Starships", HEColorScheme.HE_LIGHT_ORANGE)))
 
         for (bookmark in bookmarks) {
-            sender.information("${bookmark.name}: ${bookmark.worldName}, ${bookmark.x}, ${bookmark.y}, ${bookmark.z}")
-
             val line = template(
-                "{0}: World {1] @ {2}, {3}, {4}",
+                "{0}: {1} @ {2}, {3}, {4}",
                 color = HE_LIGHT_GRAY,
                 paramColor = WHITE,
                 useQuotesAroundObjects = true,
