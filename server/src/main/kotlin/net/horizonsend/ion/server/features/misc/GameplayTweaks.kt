@@ -106,7 +106,6 @@ object GameplayTweaks : IonServerComponent() {
 		setBlastResistance(Material.QUARTZ_STAIRS, 6.0f)
 		setBlastResistance(Material.SANDSTONE_STAIRS, 6.0f)
 		setBlastResistance(Material.RED_SANDSTONE_STAIRS, 6.0f)
-		FROGLIGHT_TYPES.forEach { setBlastResistance(it, 0.3f)}
 		STAINED_TERRACOTTA_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		GLAZED_TERRACOTTA_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		SLAB_TYPES.forEach { setBlastResistance(it, 6.0f) }
