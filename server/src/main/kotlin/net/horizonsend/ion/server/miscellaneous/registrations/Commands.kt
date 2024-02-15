@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.command.TutorialCommand
 import net.horizonsend.ion.server.command.admin.AdminCommands
 import net.horizonsend.ion.server.command.admin.BatteryCommand
 import net.horizonsend.ion.server.command.admin.ConvertCommand
@@ -178,5 +179,6 @@ val commands: List<SLCommand> = listOf(
 	LocatorCommands,
 
 	HelpCommand,
-	FleetCommand
+	FleetCommand,
+	TutorialCommand
 )
