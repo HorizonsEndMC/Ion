@@ -264,7 +264,7 @@ data class StarshipTypeBalancing(
 		interdictionRange = 3500,
 		hyperspaceRangeMultiplier = 2.6,
 		cruiseSpeedMultiplier = 0.8,
-		shieldPowerMultiplier = 1.1,
+		shieldPowerMultiplier = 1.0,
 		weapons = StarshipWeapons(
 			quadTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
