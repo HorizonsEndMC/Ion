@@ -5,7 +5,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks
-import net.horizonsend.ion.server.features.world.generation.generators.interfaces.ChunkGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.space.GenerateAsteroid.generateAsteroidSection
 import net.horizonsend.ion.server.features.world.generation.generators.space.GenerateWreck.generateWreckSection
 import net.horizonsend.ion.server.features.world.generation.generators.space.GenerateWreck.getCoveredSections
@@ -16,7 +15,7 @@ class GenerateChunk(
 	val chunk: LevelChunk,
 	val wrecks: List<WreckGenerationData>,
 	val asteroids: List<AsteroidGenerationData>
-) : ChunkGenerator {
+) {
 	val config = generator.configuration
 	var isCancelled = false
 

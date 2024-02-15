@@ -11,6 +11,7 @@ import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.configuration.UUIDSerializer
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.configuration.ServerConfiguration
@@ -57,15 +58,15 @@ object StarshipDealers : NPCFeature() {
 	@Serializable
 	data class ShipDealer(
 		override val position: ServerConfiguration.Pos,
-		override val type: EntityType,
+		@Serializable(with = UUIDSerializer::class) override val uuid: UUID,
 		val skinName: String,
 		val skinSignature: String,
 		val skinValue: String
 	) : JsonNPCStore.NPC {
 		override fun createNPC(registry: NPCRegistry, index: Int): NPC {
 			val npc = registry.createNPC(
-				type,
-				UUID.randomUUID(),
+				EntityType.PLAYER,
+				uuid,
 				2000 + index,
 				legacyAmpersand().serialize(text("Starship Dealer", GOLD))
 			)
