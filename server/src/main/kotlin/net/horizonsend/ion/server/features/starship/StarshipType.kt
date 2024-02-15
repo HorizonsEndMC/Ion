@@ -75,7 +75,7 @@ enum class StarshipType(
 		minLevel = 1,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
-		concretePercent = 0.15,
+		concretePercent = 0.3,
 		menuItemMaterial = Material.IRON_NUGGET,
 		isWarship = true,
 		color = "#ff8000",
