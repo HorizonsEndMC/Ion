@@ -54,7 +54,7 @@ object BookmarkCommand : SLCommand() {
                 return
             }
             if (!name.replace('-', ' ').replace('_', ' ').isAlphanumeric(includeSpaces = true)) {
-                sender.userError("Name must onlt contain letters, numbers, and - or _")
+                sender.userError("Name must only contain letters, numbers, and - or _")
                 return
             }
         }
