@@ -3,20 +3,21 @@ package net.horizonsend.ion.server.features.sidebar.tasks
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
-import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.misc.CachedCapturableStation
+import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GENERIC_STARSHIP_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.INTERDICTION_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.PLANET_ICON
-import net.horizonsend.ion.server.features.sidebar.SidebarIcon.SIEGE_STATION_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STAR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STATION_ICON
 import net.horizonsend.ion.server.features.space.CachedPlanet
@@ -43,7 +44,17 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.*
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
+import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
+import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
@@ -87,7 +98,7 @@ object ContactsSidebar {
         }
     }
 
-    private fun capturableStationRelationColor(player: Player, station: CapturableStation): NamedTextColor {
+    private fun capturableStationRelationColor(player: Player, station: CachedCapturableStation): NamedTextColor {
         val viewerNation = PlayerCache[player].nationOid ?: return GRAY
         val otherNation = station.nation ?: return GRAY
         return RelationCache[viewerNation, otherNation].color
@@ -158,9 +169,9 @@ object ContactsSidebar {
             }
         } else listOf()
 
-        val capturableStations: List<CapturableStation> = if (stationsEnabled) {
-            CapturableStation.all().filter {
-                it.world == player.world.name && Vector(it.x, 192, it.z)
+        val capturableStations: List<CachedCapturableStation> = if (stationsEnabled) {
+            CapturableStationCache.stations.filter {
+                it.loc.world.name == player.world.name && it.loc.toVector()
                     .distanceSquared(playerVector) < MainSidebar.CONTACTS_SQRANGE
             }
         } else listOf()
@@ -407,13 +418,13 @@ object ContactsSidebar {
     }
 
     private fun addCapturableStationContacts(
-        capturableStations: List<CapturableStation>,
+        capturableStations: List<CachedCapturableStation>,
         playerVector: Vector,
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
         for (station in capturableStations) {
-            val vector = Vector(station.x, 192, station.z)
+            val vector = station.loc.toVector()
             val distance = vector.distance(playerVector).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
             val height = vector.y.toInt()
@@ -422,7 +433,8 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(station.name, color),
-                    prefix = constructPrefixTextComponent(SIEGE_STATION_ICON.text,
+                    prefix = constructPrefixTextComponent(
+                        SidebarIcon.SIEGE_STATION_ICON.text,
                         capturableStationRelationColor(player, station)),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),

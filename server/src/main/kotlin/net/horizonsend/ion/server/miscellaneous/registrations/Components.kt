@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.features.gear.Gear
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
+import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.misc.CombatNPCs
 import net.horizonsend.ion.server.features.misc.Decomposers
 import net.horizonsend.ion.server.features.misc.DutyModeMonitor
@@ -197,4 +198,5 @@ val components: List<IonComponent> = listOf(
 
 	AntiAirCannons,
 	CustomOrePlacement,
+	CapturableStationCache
 )
