@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.sidebar.component
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar
+import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar.blockCountComponent
 import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar.hullIntegrityComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.kyori.adventure.text.Component
@@ -17,6 +18,8 @@ import org.bukkit.entity.Player
 
 class StarshipsSidebarComponent1(starship: ActiveControlledStarship, player: Player) : SidebarComponent {
     private val hullIntegrity = starship.hullIntegrity.times(100).toInt()
+    private val initialBlockCount = starship.initialBlockCount
+    private val currentBlockCount = starship.currentBlockCount
     private val compassComponent = StarshipsSidebar.compassComponent(starship, player)
     private val advancedStarshipInfo = PlayerCache[player.uniqueId].advancedStarshipInfo
 
@@ -25,7 +28,9 @@ class StarshipsSidebarComponent1(starship: ActiveControlledStarship, player: Pla
             ofChildren(
                 text("HULL: ", GRAY),
                 hullIntegrityComponent(hullIntegrity),
-                text("%", DARK_GRAY)
+                text("%", DARK_GRAY),
+                space(),
+                blockCountComponent(currentBlockCount, initialBlockCount)
             )
         } else Component.empty()
     }
