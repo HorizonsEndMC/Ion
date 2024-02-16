@@ -47,6 +47,14 @@ object StarshipsSidebar {
         }}
     }
 
+    fun blockCountComponent(currentBlockCount: Int, initialBlockCount: Int): Component {
+        return ofChildren(
+            Component.text(currentBlockCount, GRAY),
+            Component.text("/", DARK_GRAY),
+            Component.text(initialBlockCount, GRAY)
+        )
+    }
+
     fun speedComponent(directControl: Boolean, cruising: Boolean, stopped: Boolean): Component {
         val component = Component.text()
 
