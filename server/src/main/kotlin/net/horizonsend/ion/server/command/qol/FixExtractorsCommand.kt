@@ -5,9 +5,11 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import com.sk89q.worldedit.WorldEdit
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import org.bukkit.entity.Player
 
 @CommandAlias("fixextractors")
@@ -16,8 +18,13 @@ object FixExtractorsCommand : SLCommand() {
 	@Default
 	@Suppress("unused")
 	fun onFixExtractors(sender: Player) {
-		val session = WorldEdit.getInstance().sessionManager.findByName(sender.name) ?: return
-		val selection = session.getSelection(session.selectionWorld)
+		val selection = sender.getSelection() ?: return
+		if(selection.volume > 200000) return
+
+		if(sender.world != selection.world) {
+			sender.userError("Selection in different world than player - command canceled.")
+			return
+		}
 
 		var count = 0
 
