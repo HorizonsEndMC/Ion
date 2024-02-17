@@ -27,7 +27,7 @@ object SetPowerCommand : SLCommand() {
 			sender.userError("Selection in world ${selection.world?.name}, player is in world ${sender.world.name} - command canceled.")
 			return
 		}
-		Tasks.async {
+		//Tasks.async {
 			for (blockPosition in selection) {
 				val x = blockPosition.x
 				val y = blockPosition.y
@@ -42,7 +42,7 @@ object SetPowerCommand : SLCommand() {
 				getPower(sign, false)
 				setPower(sign, amount, false)
 			}
-		}
+		//}
 		sender.success("Set multiblock power to $amount.")
 	}
 }
