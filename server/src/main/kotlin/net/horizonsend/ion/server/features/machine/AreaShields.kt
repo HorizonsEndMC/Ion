@@ -29,6 +29,8 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
+import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
+import net.horizonsend.ion.server.features.economy.cargotrade.balancing
 
 object AreaShields : IonServerComponent() {
 	val bypassShieldEvents = ConcurrentHashMap.newKeySet<BlockExplodeEvent>()
@@ -162,6 +164,7 @@ object AreaShields : IonServerComponent() {
 			if (!block.type.isWallSign) {
 				continue
 			}
+			val multiplier = StarshipTypeBalancing()
 			val sign = block.getState(false) as Sign
 			val multiblock = Multiblocks[sign] as? AreaShield ?: continue
 			if (multiblock.radius != areaShields.get(shieldLocation)) continue
