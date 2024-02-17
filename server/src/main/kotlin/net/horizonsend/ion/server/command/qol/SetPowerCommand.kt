@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.machine.PowerMachines.getPower
 import net.horizonsend.ion.server.features.machine.PowerMachines.setPower
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
@@ -27,8 +28,6 @@ object SetPowerCommand : SLCommand() {
 			sender.userError("Selection in world ${selection.world?.name}, player is in world ${sender.world.name} - command canceled.")
 			return
 		}
-
-		var count = 0
 		Tasks.async {
 			for (blockPosition in selection) {
 				val x = blockPosition.x
@@ -40,8 +39,9 @@ object SetPowerCommand : SLCommand() {
 				if (!block.type.isWallSign) continue
 
 				val sign = getStateSafe(block.world, x, y, z) as? org.bukkit.block.Sign ?: continue
-
-				setPower(sign, amount, true)
+				sender.success("sign exists yippee")
+				getPower(sign, false)
+				setPower(sign, amount, false)
 			}
 		}
 		sender.success("Set multiblock power to $amount.")
