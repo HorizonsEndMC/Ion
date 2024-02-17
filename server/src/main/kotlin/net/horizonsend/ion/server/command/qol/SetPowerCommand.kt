@@ -42,7 +42,6 @@ object SetPowerCommand : SLCommand() {
 
 			val sign = getBlockDataSafe(block.world, x, y, z) as? org.bukkit.block.Sign ?: continue
 
-			//getPower(sign, false)
 			setPower(sign, amount, false)
 		}
 		sender.success("Set multiblock power to $amount.")
