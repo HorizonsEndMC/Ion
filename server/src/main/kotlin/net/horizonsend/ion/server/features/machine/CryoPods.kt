@@ -56,32 +56,29 @@ object CryoPods: SLEventListener() {
 	fun onPlayerRespawn(event: PlayerRespawnEvent) {
 		val player = event.player
 
-		val cryopods = Cryopod.find(Cryopod::owner eq player.slPlayerId).sort(descending(Cryopod::lastSelectedAt))
+		val cryopod = Cryopod.find(Cryopod::owner eq player.slPlayerId).sort(descending(Cryopod::lastSelectedAt)).firstOrNull() ?: return
 
-		for (possibleCryopod in cryopods) {
-			val world = Bukkit.getWorld(possibleCryopod.worldName)
+		val world = Bukkit.getWorld(cryopod.worldName)
 
-			if (world == null) {
-				player.serverError("World ${possibleCryopod.worldName} is missing!")
-				continue
-			}
-
-			val signPosition = possibleCryopod.bukkitLocation()
-			val sign = signPosition.block.state as? Sign
-
-			if (sign == null) {
-				player.serverError("Cryopod sign at ${possibleCryopod.x}, ${possibleCryopod.y}, ${possibleCryopod.z} is missing!")
-				continue
-			}
-
-			if (!CryoPodMultiblock.signMatchesStructure(sign, loadChunks = true)) {
-				player.serverError("Cryopod at ${possibleCryopod.x}, ${possibleCryopod.y}, ${possibleCryopod.z} is not intact!!")
-				continue
-			}
-
-			event.respawnLocation = signPosition.add(0.5, -1.0, 0.5)
-			break
+		if (world == null) {
+			player.serverError("World ${cryopod.worldName} is missing!")
+			return
 		}
+
+		val signPosition = cryopod.bukkitLocation()
+		val sign = signPosition.block.state as? Sign
+
+		if (sign == null) {
+			player.serverError("Cryopod sign at ${cryopod.x}, ${cryopod.y}, ${cryopod.z} is missing!")
+			return
+		}
+
+		if (!CryoPodMultiblock.signMatchesStructure(sign, loadChunks = true)) {
+			player.serverError("Cryopod at ${cryopod.x}, ${cryopod.y}, ${cryopod.z} is not intact!!")
+			return
+		}
+
+		event.respawnLocation = signPosition.add(0.5, -1.0, 0.5)
 	}
 
 	@EventHandler
