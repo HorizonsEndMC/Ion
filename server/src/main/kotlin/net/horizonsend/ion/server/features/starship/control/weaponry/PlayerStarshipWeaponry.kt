@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.control.weaponry
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugBanner
+import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -11,9 +12,11 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCon
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.manualFire
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.rightClickTimes
 import net.horizonsend.ion.server.features.starship.damager.damager
+import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -22,6 +25,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
+
 
 object PlayerStarshipWeaponry : IonServerComponent() {
 	@EventHandler(priority = EventPriority.LOW)
@@ -70,6 +74,58 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		player.debugBanner("END")
 	}
 
+	/**
+	 * Allows players to set an auto weapon set on a ship within their line of sight by shift-right-clicking on it with a clock named for the set.
+	 **/
+	@EventHandler(priority = EventPriority.LOW)
+	fun onShiftRClick(event: PlayerInteractEvent) {
+		val player = event.player
+
+		player.debugBanner("INTERACT EVENT TURRET TARGETING START")
+		if (!PlayerStarshipControl.isHoldingController(player)) return
+
+		val starship = ActiveStarships.findByPassenger(player) ?: return
+
+		if (!event.action.isRightClick) return
+		if (!player.isSneaking) return
+
+		event.isCancelled = true
+
+		val item = player.inventory.itemInMainHand
+		val clockWeaponSet = item.displayNameString.lowercase()
+
+		val ignoreBlockList = mutableSetOf(Material.AIR, Material.GLASS).apply {
+			addAll(STAINED_GLASS_TYPES)
+		}
+
+		starship.debug("Ignoring ${ignoreBlockList.joinToString { it.toString() }}")
+
+		// Get blocks in the line of sight
+		val hitPoints = player.getLineOfSight(ignoreBlockList, 600)
+		val detectedBlock = hitPoints.lastOrNull()
+
+		starship.debug("Found blocks ${hitPoints.joinToString { it.toString() }}")
+
+		if (detectedBlock == null) {
+			starship.debug("Removing node $clockWeaponSet")
+			if (starship.weaponSets.containsKey(clockWeaponSet)) starship.autoTurretTargets.remove(clockWeaponSet)
+
+			return
+		}
+
+		ActiveStarships.getInWorld(player.world)
+			.find { it.contains(detectedBlock.x, detectedBlock.y, detectedBlock.z) }
+			?.let {
+				if (it == starship) return //should prevent setting to yourself
+
+				starship.autoTurretTargets[clockWeaponSet] = AutoTurretTargeting.target(it)
+				event.player.sendActionBar(MiniMessage.miniMessage().deserialize("<gray>Now firing <aqua>$clockWeaponSet<gray> weaponSet"))
+			} ?: let {
+				starship.autoTurretTargets.remove(clockWeaponSet)
+				event.player.sendActionBar(MiniMessage.miniMessage().deserialize("<gray>Released <aqua>$clockWeaponSet<gray> weaponSet"))
+		}
+	}
+
 	@EventHandler
 	fun onPlayerItemHoldEvent(event: PlayerItemHeldEvent) {
 		val itemStack: ItemStack = event.player.inventory.getItem(event.newSlot) ?: return
@@ -80,9 +136,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		val itemName = itemStack.displayNameString.lowercase()
 
 		if (starship.weaponSets.keys().contains(itemName)) {
-			event.player.sendActionBar(
-				MiniMessage.miniMessage().deserialize("<gray>Now firing <aqua>$itemName<gray> weaponSet")
-			)
+			event.player.sendActionBar(MiniMessage.miniMessage().deserialize("<gray>Now firing <aqua>$itemName<gray> weaponSet"))
 		}
 	}
 

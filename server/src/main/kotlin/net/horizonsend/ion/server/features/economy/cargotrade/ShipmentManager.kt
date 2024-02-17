@@ -552,11 +552,12 @@ object ShipmentManager : IonServerComponent() {
 		expires: Date
 	): ItemStack {
 		val destination: RegionTerritory = Regions[shipment.to.territoryId]
-		val systemName = Space.planetNameCache[destination.world].orNull()?.spaceWorldName
+		val originSystemName = Space.planetNameCache[Regions.get<RegionTerritory>(shipment.from.territoryId).world].orNull()?.spaceWorldName
+		val destinationSystemName = Space.planetNameCache[destination.world].orNull()?.spaceWorldName
 
 		val lore = listOf(
-			"&3Shipping From: &b${shipment.from.displayName} (${Regions.get<RegionTerritory>(shipment.from.territoryId)}, in system $systemName)",
-			"&5Shipping To: &d${shipment.to.displayName}&7 ($destination)",
+			"&3Shipping From: &b${shipment.from.displayName} (${Regions.get<RegionTerritory>(shipment.from.territoryId)}, in system $originSystemName)",
+			"&5Shipping To: &d${shipment.to.displayName}&7 ($destination), in system $destinationSystemName",
 			"&cExpires: &e$expires",
 			"&2Shipment ID: &a$shipmentId"/*,
 			"&6Shipment Route Value: &e${shipment.routeValue.roundToHundredth()}"*/

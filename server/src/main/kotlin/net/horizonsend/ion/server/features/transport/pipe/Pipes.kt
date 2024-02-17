@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlassPane
+import net.horizonsend.ion.server.miscellaneous.utils.isTintedGlass
 import net.horizonsend.ion.server.miscellaneous.utils.randomEntry
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -131,11 +132,13 @@ object Pipes : IonServerComponent() {
 
 	fun isPipedInventory(material: Material): Boolean = inventoryTypes.contains(material)
 
-	fun isAnyPipe(material: Material): Boolean = material.isGlass || material.isGlassPane
+	fun isAnyPipe(material: Material): Boolean = material.isGlass || material.isGlassPane || material.isTintedGlass
 
 	private fun isDirectionalPipe(material: Material): Boolean = material.isGlassPane
 
 	private fun isColoredPipe(material: Material): Boolean = material.isStainedGlass || material.isStainedGlassPane
+
+	private fun isTintedPipe(material: Material): Boolean = material.isTintedGlass
 
 	/**
 	 * Starts a pipe chain that continues until it goes too long,
@@ -511,11 +514,11 @@ object Pipes : IonServerComponent() {
 		}
 	)
 
-	private fun canPipesTransfer(originType: Material, otherType: Material): Boolean {
-		return isAnyPipe(otherType) && // it has to be any of the valid pipe types
-			(isColoredPipe(originType) == isColoredPipe(otherType)) && // both are either colored pipes or not
-			colorMap[originType] == colorMap[otherType]
-	}
+	private fun canPipesTransfer(originType: Material, otherType: Material): Boolean =
+		(isAnyPipe(otherType) // it has to be any of the valid pipe types
+		&& (isColoredPipe(originType) == isColoredPipe(otherType)) // both are either colored pipes or not
+		&& colorMap[originType] == colorMap[otherType]) || (isTintedPipe(originType) || isTintedPipe(otherType))
+
 
 	/**
 	 * This method will move the item to the appropriate slot of the furnace.

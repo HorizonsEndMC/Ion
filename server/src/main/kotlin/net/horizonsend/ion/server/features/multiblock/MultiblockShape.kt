@@ -279,6 +279,18 @@ class MultiblockShape {
 			return@complete blockData is Slab && blockData.type == Slab.Type.DOUBLE
 		}
 
+		fun terracottaOrDoubleslab() {
+			complete(
+				Material.TERRACOTTA.createBlockData()
+			) { block, _, loadChunks ->
+				val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
+				val blockType = if (loadChunks) block.type else block.getTypeSafe()
+
+				return@complete (blockData is Slab && blockData.type == Slab.Type.DOUBLE)
+					|| TERRACOTTA_TYPES.contains(blockType)
+			}
+		}
+
 		fun concrete() = filteredTypes { it.isConcrete }
 
 		fun stoneBrick() = type(Material.STONE_BRICKS)
