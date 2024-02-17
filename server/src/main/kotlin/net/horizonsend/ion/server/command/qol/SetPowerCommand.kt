@@ -40,7 +40,7 @@ object SetPowerCommand : SLCommand() {
 
 			if (!block.type.isWallSign) continue
 
-			val sign = block.state as? org.bukkit.block.Sign ?: continue
+			val sign = getBlockDataSafe(block.world, x, y, z) as? org.bukkit.block.Sign ?: continue
 
 			//getPower(sign, false)
 			setPower(sign, amount, false)
