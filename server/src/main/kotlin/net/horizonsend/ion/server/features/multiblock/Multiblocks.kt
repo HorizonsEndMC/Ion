@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.multiblock.ammopress.StandardAmmoPressMultiblock
+import net.horizonsend.ion.server.features.multiblock.ammoloader.StandardAmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield20
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield30
@@ -200,6 +201,7 @@ object Multiblocks : IonServerComponent() {
 			MobDefender,
 
 			StandardAmmoPressMultiblock,
+			StandardAmmoLoaderMultiblock,
 
 			LaserCannonStarshipWeaponMultiblock,
 			PlasmaCannonStarshipWeaponMultiblock,

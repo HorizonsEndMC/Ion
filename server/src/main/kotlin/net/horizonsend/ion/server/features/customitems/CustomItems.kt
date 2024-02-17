@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.features.customitems.minerals.Smeltable
 import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralItem
+import net.horizonsend.ion.server.features.customitems.shipammo.objects.ShellItem
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrowableCustomItem
@@ -27,15 +28,7 @@ import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
-import org.bukkit.Material.DIAMOND_HOE
-import org.bukkit.Material.GOLDEN_HOE
-import org.bukkit.Material.IRON_BLOCK
-import org.bukkit.Material.IRON_HOE
-import org.bukkit.Material.IRON_INGOT
-import org.bukkit.Material.IRON_ORE
-import org.bukkit.Material.RAW_IRON
-import org.bukkit.Material.RAW_IRON_BLOCK
-import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
+import org.bukkit.Material.*
 import org.bukkit.block.Dispenser
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
@@ -50,6 +43,30 @@ object CustomItems {
 	val ALL get() = customItems.values
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
+
+	// Ship Ammunition Start
+
+	val UNLOADED_TURRET_SHELL =
+		register(
+			object : ShellItem(
+				identifier = "UNLOADED_SHELL",
+				material = STICK,
+				customModelData = 511,
+				displayName = text("Unloaded Shell")
+			) {}
+		)
+
+	val LOADED_TURRET_SHELL =
+		register(
+			object : ShellItem(
+				identifier = "LOADED_SHELL",
+				material = STICK,
+				customModelData = 512,
+				displayName = text("Loaded Shell")
+			) {}
+		)
+
+	// Ship Ammunition End
 	// Magazines Start
 
 	val STANDARD_MAGAZINE =
