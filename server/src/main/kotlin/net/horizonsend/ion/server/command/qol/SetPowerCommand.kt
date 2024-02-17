@@ -16,7 +16,7 @@ import org.bukkit.entity.Player
 
 @CommandAlias("setpower")
 @CommandPermission("ion.setpower")
-object RemovePowerCommand : SLCommand() {
+object SetPowerCommand : SLCommand() {
 	@Default
 	@Subcommand("amount")
 	@Suppress("unused")
