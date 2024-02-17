@@ -105,6 +105,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			for (other in player.world.players) {
 				if (other.location.distanceSquared(player.location) > distanceSquared) continue
+				if (PlayerCache[other].blockedPlayerIDs.contains(player.slPlayerId)) continue
 
 				other.sendMessage(component)
 			}
@@ -122,6 +123,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 			val component = formatChatMessage(text("Planet", GREEN, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
 
 			for (other in player.world.players) {
+				if (PlayerCache[other].blockedPlayerIDs.contains(player.slPlayerId)) continue
 				other.sendMessage(component)
 			}
 		}
