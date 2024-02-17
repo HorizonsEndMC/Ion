@@ -9,8 +9,8 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.machine.PowerMachines.getPower
 import net.horizonsend.ion.server.features.machine.PowerMachines.setPower
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
-import net.horizonsend.ion.server.miscellaneous.utils.getStateSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.entity.Player
 
@@ -27,7 +27,7 @@ object SetPowerCommand : SLCommand() {
 			sender.userError("Selection in world ${selection.world?.name}, player is in world ${sender.world.name} - command canceled.")
 			return
 		}
-		//Tasks.async {
+		Tasks.async {
 			for (blockPosition in selection) {
 				val x = blockPosition.x
 				val y = blockPosition.y
@@ -37,12 +37,12 @@ object SetPowerCommand : SLCommand() {
 
 				if (!block.type.isWallSign) continue
 
-				val sign = getStateSafe(block.world, x, y, z) as? org.bukkit.block.Sign ?: continue
+				val sign = getBlockDataSafe(block.world, x, y, z) as? org.bukkit.block.Sign ?: continue
 				sender.success("sign exists yippee")
 				getPower(sign, false)
 				setPower(sign, amount, false)
 			}
-		//}
+		}
 		sender.success("Set multiblock power to $amount.")
 	}
 }
