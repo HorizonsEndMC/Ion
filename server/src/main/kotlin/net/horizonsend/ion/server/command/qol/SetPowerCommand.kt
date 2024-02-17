@@ -30,21 +30,20 @@ object SetPowerCommand : SLCommand() {
 			sender.userError("Selection in world ${selection.world?.name}, player is in world ${sender.world.name} - command canceled.")
 			return
 		}
-		Tasks.async {
-			for (blockPosition in selection) {
-				val x = blockPosition.x
-				val y = blockPosition.y
-				val z = blockPosition.z
 
-				val block = sender.world.getBlockAt(x, y, z)
+		for (blockPosition in selection) {
+			val x = blockPosition.x
+			val y = blockPosition.y
+			val z = blockPosition.z
 
-				if (!block.type.isWallSign) continue
+			val block = sender.world.getBlockAt(x, y, z)
 
-				val sign = block.state as? org.bukkit.block.Sign ?: continue
-				sender.success("sign exists yippee")
-				getPower(sign, false)
-				setPower(sign, amount, false)
-			}
+			if (!block.type.isWallSign) continue
+
+			val sign = block.state as? org.bukkit.block.Sign ?: continue
+
+			//getPower(sign, false)
+			setPower(sign, amount, false)
 		}
 		sender.success("Set multiblock power to $amount.")
 	}
