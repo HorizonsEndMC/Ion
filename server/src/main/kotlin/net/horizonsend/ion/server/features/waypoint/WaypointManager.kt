@@ -6,6 +6,8 @@ import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon
+import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
@@ -50,8 +52,8 @@ object WaypointManager : IonServerComponent() {
         // JGraphT is not thread safe; this cannot be async
         Tasks.syncRepeat(0L, 100L) {
             Bukkit.getOnlinePlayers().forEach { player ->
+                updatePlayerGraph(player)
                 if (playerDestinations.isNotEmpty()) {
-                    updatePlayerGraph(player)
                     checkWaypointReached(player)
                     updatePlayerPaths(player)
                     updateNumJumps(player)
@@ -168,7 +170,7 @@ object WaypointManager : IonServerComponent() {
         for (planet in Space.getPlanets()) {
             val vertex = WaypointVertex(
                 name = planet.name,
-                icon = '\uE020',
+                icon = SidebarIcon.PLANET_ICON.text.first(),
                 loc = planet.location.toLocation(planet.spaceWorld!!)
             )
             mainGraph.addVertex(vertex)
@@ -179,12 +181,12 @@ object WaypointManager : IonServerComponent() {
             // 2 vertices for each beacon's entry and exit point
             val vertexEntry = WaypointVertex(
                 name = beacon.name.replace(" ", "_"),
-                icon = '\uE022',
+                icon = SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON.text.first(),
                 loc = beacon.spaceLocation.toLocation()
             )
             val vertexExit = WaypointVertex(
                 name = StringBuilder(beacon.name.replace(" ", "_")).append("_Exit").toString(),
-                icon = '\uE034',
+                icon = SidebarIcon.HYPERSPACE_BEACON_EXIT_ICON.text.first(),
                 loc = beacon.destination.toLocation()
             )
             // link edge vertex with exit vertex (for edge connections later)
@@ -229,12 +231,14 @@ object WaypointManager : IonServerComponent() {
             playerGraphs[player.uniqueId]?.let { playerGraph ->
                 clonePlayerGraphFromMain(playerGraph)
                 updatePlayerPositionVertex(playerGraph, player)
+                populatePlayerBookmarkVertex(playerGraph, player)
             }
         } else {
             // add player's graph to the map
             val playerGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
             clonePlayerGraphFromMain(playerGraph)
             updatePlayerPositionVertex(playerGraph, player)
+            populatePlayerBookmarkVertex(playerGraph, player)
             playerGraphs[player.uniqueId] = playerGraph
         }
     }
@@ -253,7 +257,7 @@ object WaypointManager : IonServerComponent() {
         graph.removeVertex(locVertex)
         val newVertex = WaypointVertex(
             name = "Current Location",
-            icon = '\uE035',
+            icon = SidebarIcon.PLUS_CROSS_ICON.text.first(),
             loc = player.location,
             linkedWaypoint = null
         )
@@ -261,10 +265,30 @@ object WaypointManager : IonServerComponent() {
         connectVerticesInSameWorld(graph, newVertex)
     }
 
+    private fun populatePlayerBookmarkVertex(
+        graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
+        player: Player
+    ) {
+        val bookmarks = BookmarkCommand.getBookmarks(player)
+
+        // Bookmarks may share the same name as a planet/gate/other object, but because those are loaded first,
+        // getVertex() will default to the object instead of the bookmark
+        for (bookmark in bookmarks) {
+            val newVertex = WaypointVertex(
+                name = bookmark.name,
+                icon = SidebarIcon.BOOKMARK_ICON.text.first(),
+                loc = Location(Bukkit.getWorld(bookmark.worldName), bookmark.x.toDouble(), bookmark.y.toDouble(), bookmark.z.toDouble()),
+                linkedWaypoint = null
+            )
+            graph.addVertex(newVertex)
+            connectVerticesInSameWorld(graph, newVertex)
+        }
+    }
+
     fun addTempVertex(loc: Location): WaypointVertex {
         return WaypointVertex(
             name = "Waypoint @ ${loc.world.name} (${loc.x.toInt()}, ${loc.z.toInt()})",
-            icon = '\uE035',
+            icon = SidebarIcon.PLUS_CROSS_ICON.text.first(),
             loc = loc,
             linkedWaypoint = null
         )
@@ -389,7 +413,7 @@ object WaypointManager : IonServerComponent() {
             for (edge in path.edgeList) {
                 val jumps = getNumJumps(player, edge)
                 if (compactWaypoints && jumps != -1) {
-                    str.append(repeatString("\uE036", jumps - 1))
+                    str.append(repeatString(SidebarIcon.ROUTE_SEGMENT_ICON.text, jumps - 1))
                 }
                 str.append(edge.target.icon)
             }

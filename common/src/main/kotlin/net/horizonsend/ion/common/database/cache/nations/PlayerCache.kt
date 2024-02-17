@@ -44,9 +44,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var planetsEnabled: Boolean = true,
 		var starsEnabled: Boolean = true,
 		var beaconsEnabled: Boolean = true,
+		var stationsEnabled: Boolean = true,
+		var bookmarksEnabled: Boolean = true,
 
 		var waypointsEnabled: Boolean = true,
 		var compactWaypoints: Boolean = true,
+
+		var starshipsEnabled: Boolean = true,
+		var advancedStarshipInfo: Boolean = false,
+		var rotateCompass: Boolean = false,
 
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
@@ -112,8 +118,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
 
-					val newNation = it.int()
-					data.xp = newNation
+					val newXp = it.int()
+					data.xp = newXp
 				}
 			}
 
@@ -121,8 +127,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
 
-					val newNation = it.int()
-					data.level = newNation
+					val newLevel = it.int()
+					data.level = newLevel
 				}
 			}
 
@@ -180,6 +186,24 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::stationsEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val stationsEnabled = it.boolean()
+					data.stationsEnabled = stationsEnabled
+				}
+			}
+
+			change[SLPlayer::bookmarksEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val bookmarksEnabled = it.boolean()
+					data.bookmarksEnabled = bookmarksEnabled
+				}
+			}
+
 			change[SLPlayer::waypointsEnabled]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -195,6 +219,33 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val compactWaypoints = it.boolean()
 					data.compactWaypoints = compactWaypoints
+				}
+			}
+
+			change[SLPlayer::starshipsEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val starshipsEnabled = it.boolean()
+					data.starshipsEnabled = starshipsEnabled
+				}
+			}
+
+			change[SLPlayer::advancedStarshipInfo]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val advancedStarshipInfo = it.boolean()
+					data.advancedStarshipInfo = advancedStarshipInfo
+				}
+			}
+
+			change[SLPlayer::rotateCompass]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val rotateCompass = it.boolean()
+					data.rotateCompass = rotateCompass
 				}
 			}
 
@@ -267,7 +318,20 @@ abstract class AbstractPlayerCache : ManualCache() {
 			settlementTag = settlementTag,
 			nationTag = nationTag,
 			bounty = data.bounty,
-			blockedPlayerIDs = data.blockedPlayerIDs
+			blockedPlayerIDs = data.blockedPlayerIDs,
+			contactsEnabled = data.contactsEnabled,
+			contactsStarships = data.contactsStarships,
+			lastStarshipEnabled = data.lastStarshipEnabled,
+			planetsEnabled = data.planetsEnabled,
+			starsEnabled = data.starsEnabled,
+			beaconsEnabled = data.beaconsEnabled,
+			stationsEnabled = data.stationsEnabled,
+			bookmarksEnabled = data.bookmarksEnabled,
+			waypointsEnabled = data.waypointsEnabled,
+			compactWaypoints = data.compactWaypoints,
+			starshipsEnabled = data.starshipsEnabled,
+			advancedStarshipInfo = data.advancedStarshipInfo,
+			rotateCompass = data.rotateCompass
 		)
 	}
 

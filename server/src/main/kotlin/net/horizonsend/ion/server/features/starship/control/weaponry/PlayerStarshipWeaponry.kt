@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCon
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.manualFire
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.rightClickTimes
 import net.horizonsend.ion.server.features.starship.damager.damager
+import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
@@ -96,6 +97,9 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 
 		val ignoreBlockList = mutableSetOf(Material.AIR, Material.GLASS).apply {
 			addAll(STAINED_GLASS_TYPES)
+			addAll(STAINED_GLASS_PANE_TYPES)
+			add(Material.IRON_BARS)
+			add(Material.GLASS_PANE)
 		}
 
 		starship.debug("Ignoring ${ignoreBlockList.joinToString { it.toString() }}")

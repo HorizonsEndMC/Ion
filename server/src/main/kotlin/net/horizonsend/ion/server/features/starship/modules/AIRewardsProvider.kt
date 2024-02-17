@@ -28,7 +28,7 @@ class AIRewardsProvider(val starship: ActiveStarship, val template: AISpawningCo
 
 			// require they be online to get xp
 			// if they have this perm, e.g. someone in dutymode or on creative, they don't get xp
-			if (!damager.player.hasPermission("starships.noxp")) return@filter null
+			if (damager.player.hasPermission("starships.noxp")) return@filter null
 
 			damager to data
 		}

@@ -2,9 +2,11 @@ package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.Table
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.features.misc.ITEM_POWER_PREFIX
 import net.horizonsend.ion.server.miscellaneous.utils.set
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.BLUE
 import org.bukkit.ChatColor.DARK_AQUA
@@ -19,9 +21,6 @@ import org.bukkit.Material
 import org.bukkit.Material.DIAMOND_AXE
 import org.bukkit.Material.DIAMOND_PICKAXE
 import org.bukkit.Material.FLINT_AND_STEEL
-import org.bukkit.Material.IRON_BLOCK
-import org.bukkit.Material.IRON_INGOT
-import org.bukkit.Material.IRON_ORE
 import org.bukkit.Material.LEATHER_BOOTS
 import org.bukkit.Material.LEATHER_CHESTPLATE
 import org.bukkit.Material.LEATHER_HELMET
@@ -34,16 +33,20 @@ import java.util.Locale
 
 open class CustomItem(
 	val id: String,
-	displayName: String,
+	private val displayNameRaw: String,
 	val material: Material,
 	val model: Int,
-	val unbreakable: Boolean
+	val unbreakable: Boolean,
+	val useMiniMessage: Boolean = false
 ) {
-	val displayName = "${ChatColor.RESET}$displayName"
+	val displayName = "${ChatColor.RESET}$displayNameRaw"
 
 	open fun itemStack(amount: Int): ItemStack = ItemStack(material, amount)
 		.updateMeta {
-			it.setDisplayName(displayName)
+			if (useMiniMessage) {
+				it.displayName(miniMessage.deserialize(displayNameRaw).decoration(TextDecoration.ITALIC, false))
+			} else it.setDisplayName(displayName)
+
 			it.isUnbreakable = unbreakable
 			it.setCustomModelData(model)
 		}
@@ -155,8 +158,8 @@ object CustomItems {
 		EnergySwordItem("energy_sword_$color", "$colorName$YELLOW Energy$DARK_AQUA Sword", SHIELD, model)
 	)
 
-	class EnergySwordItem(id: String, displayName: String, material: Material, model: Int) :
-		CustomItem(id, displayName, material, model, true)
+	class EnergySwordItem(id: String, displayName: String, material: Material, model: Int, useMiniMessage: Boolean = false) :
+		CustomItem(id, displayName, material, model, true, useMiniMessage)
 
 	val ENERGY_SWORD_BLUE = registerEnergySword(color = "blue", colorName = "${BLUE}Blue", model = 1)
 	val ENERGY_SWORD_RED = registerEnergySword(color = "red", colorName = "${RED}Red", model = 2)
@@ -164,6 +167,7 @@ object CustomItems {
 	val ENERGY_SWORD_GREEN = registerEnergySword(color = "green", colorName = "${GREEN}Green", model = 4)
 	val ENERGY_SWORD_PURPLE = registerEnergySword(color = "purple", colorName = "${DARK_PURPLE}Purple", model = 5)
 	val ENERGY_SWORD_ORANGE = registerEnergySword(color = "orange", colorName = "${GOLD}Orange", model = 6)
+	val ENERGY_SWORD_PINK = register(EnergySwordItem("energy_sword_pink", "<#FFC0CB>Pink<yellow> Energy<dark_aqua> Sword", SHIELD, 7, useMiniMessage = true))
 	//endregion Energy Swords
 
 	//region Power Armor

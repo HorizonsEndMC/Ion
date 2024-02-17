@@ -1,7 +1,16 @@
 package net.horizonsend.ion.server.features.sidebar.component
 
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.kyori.adventure.key.Key.key
+import net.horizonsend.ion.server.features.sidebar.Sidebar
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GENERIC_STARSHIP_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GUNSHIP_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.PLANET_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STAR_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STATION_ICON
+import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -20,25 +29,31 @@ class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
 	private val planetsEnabled = PlayerCache[player].planetsEnabled
 	private val starsEnabled = PlayerCache[player].starsEnabled
 	private val beaconsEnabled = PlayerCache[player].beaconsEnabled
+    private val stationsEnabled = PlayerCache[player].stationsEnabled
+    private val bookmarksEnabled = PlayerCache[player].bookmarksEnabled
 
     private fun getColor(enabled: Boolean) : NamedTextColor {
         return if (enabled) AQUA else GRAY
     }
 
     override fun draw(drawable: LineDrawable) {
-        val line = text()
-        line.append(text("Contacts").style(style(BOLD).color(YELLOW)))
-        line.append(text(" | ").color(DARK_GRAY))
-        line.append(text("\uE001").font(key("horizonsend:sidebar")).color(getColor(starshipsEnabled)))
-        line.appendSpace()
-        line.append(text("\uE032").font(key("horizonsend:sidebar")).color(getColor(lastStarshipEnabled)))
-        line.appendSpace()
-        line.append(text("\uE020").font(key("horizonsend:sidebar")).color(getColor(planetsEnabled)))
-        line.appendSpace()
-        line.append(text("\uE021").font(key("horizonsend:sidebar")).color(getColor(starsEnabled)))
-        line.appendSpace()
-        line.append(text("\uE022").font(key("horizonsend:sidebar")).color(getColor(beaconsEnabled)))
-
-        drawable.drawLine(line.build())
+        val line = ofChildren(
+            text("Contacts").style(style(BOLD).color(YELLOW)),
+            text(" | ", DARK_GRAY),
+            text(GUNSHIP_ICON.text, getColor(starshipsEnabled)).font(Sidebar.fontKey),
+            space(),
+            text(GENERIC_STARSHIP_ICON.text, getColor(lastStarshipEnabled)).font(Sidebar.fontKey),
+            space(),
+            text(PLANET_ICON.text, getColor(planetsEnabled)).font(Sidebar.fontKey),
+            space(),
+            text(STAR_ICON.text, getColor(starsEnabled)).font(Sidebar.fontKey),
+            space(),
+            text(HYPERSPACE_BEACON_ENTER_ICON.text, getColor(beaconsEnabled)).font(Sidebar.fontKey),
+            space(),
+            text(STATION_ICON.text, getColor(stationsEnabled)).font(Sidebar.fontKey),
+            space(),
+            text(BOOKMARK_ICON.text, getColor(bookmarksEnabled)).font(Sidebar.fontKey)
+        )
+        drawable.drawLine(line)
     }
 }

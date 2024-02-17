@@ -119,7 +119,7 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 			sender.sendRichMessage("   <gray>Maximum Shields the starship can handle: <aqua>${ship.maxShields}")
 		}
 
-		sender.sendRichMessage("   <gray>Hull Integrity: <white>${ship.hullIntegrity().times(100).roundToInt()}%")
+		sender.sendRichMessage("   <gray>Hull Integrity: <white>${ship.hullIntegrity.times(100).roundToInt()}%")
 		sender.sendRichMessage("   <gray>Center of Mass: <white>${ship.centerOfMass}")
 
 //		val worth = blocks.values

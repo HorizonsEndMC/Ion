@@ -12,8 +12,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
-import org.litote.kmongo.set
-import org.litote.kmongo.setTo
+import org.litote.kmongo.setValue
 
 @CommandAlias("sidebar")
 object SidebarWaypointsCommand : SLCommand() {
@@ -31,7 +30,7 @@ object SidebarWaypointsCommand : SLCommand() {
     fun onEnableWaypoints(
         sender: Player
     ) {
-        SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::waypointsEnabled setTo true))
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::waypointsEnabled, true))
         sender.success("Enabled route on sidebar")
     }
 
@@ -40,7 +39,7 @@ object SidebarWaypointsCommand : SLCommand() {
     fun onDisableWaypoints(
         sender: Player
     ) {
-        SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::waypointsEnabled setTo false))
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::waypointsEnabled, false))
         sender.success("Disabled route on sidebar")
     }
 
@@ -52,7 +51,7 @@ object SidebarWaypointsCommand : SLCommand() {
         @Optional toggle: Boolean?
     ) {
         val waypointsCompactWaypoints = toggle ?: !PlayerCache[sender].compactWaypoints
-        SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::compactWaypoints setTo waypointsCompactWaypoints))
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::compactWaypoints, waypointsCompactWaypoints))
         sender.success("Changed compact waypoints visibility to $waypointsCompactWaypoints")
     }
 }

@@ -1,36 +1,55 @@
 package net.horizonsend.ion.server.features.sidebar.tasks
 
+import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.misc.CachedCapturableStation
+import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
+import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GENERIC_STARSHIP_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.INTERDICTION_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.PLANET_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STAR_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STATION_ICON
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.LastPilotedStarship
-import net.horizonsend.ion.server.features.starship.StarshipType.CORVETTE
-import net.horizonsend.ion.server.features.starship.StarshipType.DESTROYER
-import net.horizonsend.ion.server.features.starship.StarshipType.FRIGATE
-import net.horizonsend.ion.server.features.starship.StarshipType.GUNSHIP
-import net.horizonsend.ion.server.features.starship.StarshipType.HEAVY_FREIGHTER
-import net.horizonsend.ion.server.features.starship.StarshipType.LIGHT_FREIGHTER
-import net.horizonsend.ion.server.features.starship.StarshipType.MEDIUM_FREIGHTER
-import net.horizonsend.ion.server.features.starship.StarshipType.SHUTTLE
-import net.horizonsend.ion.server.features.starship.StarshipType.STARFIGHTER
-import net.horizonsend.ion.server.features.starship.StarshipType.TRANSPORT
+import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
-import net.kyori.adventure.key.Key
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
+import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
+import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -42,8 +61,6 @@ import org.bukkit.util.Vector
 import kotlin.math.abs
 
 object ContactsSidebar {
-	private val fontKey = Key.key("horizonsend:sidebar")
-
     private fun distanceColor(distance: Int): NamedTextColor {
         return when {
             distance < 500 -> RED
@@ -53,6 +70,38 @@ object ContactsSidebar {
             distance < 6000 -> GREEN
             else -> GREEN
         }
+    }
+
+    private fun playerRelationColor(player: Player, otherController: Controller): NamedTextColor {
+        when (otherController) {
+            is NoOpController -> return GRAY
+            is AIController -> return DARK_GRAY
+            is PlayerController -> {
+                val viewerNation = PlayerCache[player].nationOid ?: return GRAY
+                val otherNation = PlayerCache[otherController.player].nationOid ?: return GRAY
+                return RelationCache[viewerNation, otherNation].color
+            }
+            else -> return GRAY
+        }
+    }
+
+    private fun stationRelationColor(player: Player, station: CachedSpaceStation<*, *, *>): NamedTextColor {
+        when (station) {
+            is CachedPlayerSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId)) GREEN else GRAY
+            is CachedSettlementSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId)) GREEN else GRAY
+            is CachedNationSpaceStation -> {
+                val viewerNation = PlayerCache[player].nationOid ?: return GRAY
+                val otherNation = station.owner
+                return RelationCache[viewerNation, otherNation].color
+            }
+            else -> return GRAY
+        }
+    }
+
+    private fun capturableStationRelationColor(player: Player, station: CachedCapturableStation): NamedTextColor {
+        val viewerNation = PlayerCache[player].nationOid ?: return GRAY
+        val otherNation = station.nation ?: return GRAY
+        return RelationCache[viewerNation, otherNation].color
     }
 
     private fun getDirectionToObject(direction: Vector): String {
@@ -68,6 +117,7 @@ object ContactsSidebar {
         return directionString.toString()
     }
 
+    // Main method for generating all contacts a player cna see
     fun getPlayerContacts(player: Player): List<ContactsData> {
         val contactsList: MutableList<ContactsData> = mutableListOf()
         val playerVector = player.location.toVector()
@@ -77,8 +127,10 @@ object ContactsSidebar {
         val planetsEnabled = PlayerCache[player].planetsEnabled
         val starsEnabled = PlayerCache[player].starsEnabled
         val beaconsEnabled = PlayerCache[player].beaconsEnabled
+        val stationsEnabled = PlayerCache[player].stationsEnabled
+        val bookmarksEnabled = PlayerCache[player].bookmarksEnabled
 
-        // identify valid contacts
+        // identify contacts that should be displayed (enabled and in range)
         val starships: List<ActiveStarship> = if (starshipsEnabled) {
             ActiveStarships.all().filter {
                 it.world == player.world &&
@@ -110,6 +162,29 @@ object ContactsSidebar {
             }
         } else listOf()
 
+        val stations: List<CachedSpaceStation<*, *, *>> = if (stationsEnabled) {
+            SpaceStationCache.all().filter {
+                it.world == player.world.name && Vector(it.x, 192, it.z)
+                    .distanceSquared(playerVector) < MainSidebar.CONTACTS_SQRANGE
+            }
+        } else listOf()
+
+        val capturableStations: List<CachedCapturableStation> = if (stationsEnabled) {
+            CapturableStationCache.stations.filter {
+                it.loc.world.name == player.world.name && it.loc.toVector()
+                    .distanceSquared(playerVector) < MainSidebar.CONTACTS_SQRANGE
+            }
+        } else listOf()
+
+        val bookmarks: List<Bookmark> = if (bookmarksEnabled) {
+            BookmarkCache.getAll().filter { bm -> bm.owner == player.slPlayerId }.filter {
+                it.worldName == player.world.name &&
+                        Vector(it.x, it.y, it.z).distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE
+            }
+        } else listOf()
+
+
+        // Add contacts to main contacts list
         if (starshipsEnabled) {
             addStarshipContacts(starships, playerVector, contactsList, player)
         }
@@ -130,6 +205,15 @@ object ContactsSidebar {
             addBeaconContacts(beacons, playerVector, contactsList)
         }
 
+        if (stationsEnabled) {
+            addStationContacts(stations, playerVector, contactsList, player)
+            addCapturableStationContacts(capturableStations, playerVector, contactsList, player)
+        }
+
+        if (bookmarksEnabled) {
+            addBookmarkContacts(bookmarks, playerVector, contactsList)
+        }
+
         // append spaces
         for (contact in contactsList) {
             contact.padding = text(repeatString(" ", 1))
@@ -146,9 +230,9 @@ object ContactsSidebar {
         player: Player
     ) {
         for (starship in starships) {
-            val vector = when (starship) {
-                is ActiveControlledStarship -> starship.playerPilot?.location?.toVector() ?: starship.centerOfMass.toVector()
-
+            val otherController = starship.controller
+            val vector = when (otherController) {
+                is ActivePlayerController -> otherController.player.location.toVector()
                 else -> starship.centerOfMass.toVector()
             }
 
@@ -156,41 +240,23 @@ object ContactsSidebar {
             val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
             val height = vector.y.toInt()
             val color = distanceColor(distance)
+            val currentStarship = PilotedStarships[player]
 
             contactsList.add(
                 ContactsData(
-                    name = (text(starship.identifier)).color(color),
-
-                    prefix = when (starship.type) {
-                        STARFIGHTER -> text("\uE000").font(fontKey)
-                        GUNSHIP -> text("\uE001").font(fontKey)
-                        CORVETTE -> text("\uE002").font(fontKey)
-                        FRIGATE -> text("\uE003").font(fontKey)
-                        DESTROYER -> text("\uE004").font(fontKey)
-                        SHUTTLE -> text("\uE010").font(fontKey)
-                        TRANSPORT -> text("\uE011").font(fontKey)
-                        LIGHT_FREIGHTER -> text("\uE012").font(fontKey)
-                        MEDIUM_FREIGHTER -> text("\uE013").font(fontKey)
-                        HEAVY_FREIGHTER -> text("\uE014").font(fontKey)
-                        else -> text("\uE032").font(fontKey)
-                    }.run {
-                        val viewerNation = PlayerCache[player].nationOid ?: return@run this.color(GRAY)
-                        val pilotNation =
-                            PlayerCache[starship.playerPilot ?: return@run this.color(NamedTextColor.DARK_GRAY)].nationOid
-                                ?: return@run this.color(GRAY)
-                        return@run this.color(RelationCache[viewerNation, pilotNation].color)
-                    } as TextComponent,
-
-                    suffix = if (starship.isInterdicting && distance <= starship.balancing.interdictionRange) {
-                        text("\uE033")
-                            .font(fontKey).color(RED) as TextComponent
-                    } else if (starship.isInterdicting) {
-                        text("\uE033")
-                            .font(fontKey).color(GOLD) as TextComponent
-                    } else Component.empty(),
-                    heading = text(direction).append(text(repeatString(" ", 2 - direction.length)).font(fontKey)).color(color),
-                    height = text("$height").append(text("y")).append(text(repeatString(" ", 3 - height.toString().length)).font(fontKey)).color(color),
-                    distance = text("$distance").append(text("m")).append(text(repeatString(" ", 4 - distance.toString().length)).font(fontKey)).color(color),
+                    name = text(starship.identifier, color),
+                    prefix = constructPrefixTextComponent(starship.type.icon, playerRelationColor(player, otherController)),
+                    suffix = constructSuffixTextComponent(
+                        if (currentStarship != null) {
+                            autoTurretTextComponent(currentStarship, starship)
+                        } else Component.empty(),
+                        if (starship.isInterdicting) {
+                            interdictionTextComponent(distance, starship.balancing.interdictionRange, true)
+                        } else Component.empty()
+                    ),
+                    heading = constructHeadingTextComponent(direction, color),
+                    height = constructHeightTextComponent(height, color),
+                    distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
                     padding = Component.empty()
                 )
@@ -217,30 +283,12 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text("Last Piloted Starship").color(color),
-                    prefix = text("\uE032")
-                        .font(fontKey).color(NamedTextColor.YELLOW) as TextComponent,
+                    name = text("Last Piloted Starship", color),
+                    prefix = constructPrefixTextComponent(GENERIC_STARSHIP_ICON.text, YELLOW),
                     suffix = Component.empty(),
-                    heading = text(direction)
-                        .append(
-                            text(repeatString(" ", 2 - direction.length))
-                                .font(fontKey)
-                        )
-                        .color(color),
-                    height = text("$height")
-                        .append(text("y"))
-                        .append(
-                            text(repeatString(" ", 3 - height.toString().length))
-                                .font(fontKey)
-                        )
-                        .color(color),
-                    distance = text("$distance")
-                        .append(text("m"))
-                        .append(
-                            text(repeatString(" ", 4 - distance.toString().length))
-                                .font(fontKey)
-                        )
-                        .color(color),
+                    heading = constructHeadingTextComponent(direction, color),
+                    height = constructHeightTextComponent(height, color),
+                    distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
                     padding = Component.empty()
                 )
@@ -262,33 +310,18 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text(planet.name).color(color),
-                    prefix = text("\uE020")
-                        .font(fontKey).color(NamedTextColor.DARK_AQUA) as TextComponent,
-                    suffix = if (distance <= MassShadows.PLANET_RADIUS) {
-                        text("\uE033")
-                            .font(fontKey).color(RED) as TextComponent
-                    } else Component.empty(),
-                    heading = text(direction)
-                        .append(
-                            text(repeatString(" ", 2 - direction.length))
-                                .font(fontKey)
+                    name = text(planet.name, color),
+                    prefix = constructPrefixTextComponent(PLANET_ICON.text, DARK_AQUA),
+                    suffix = constructSuffixTextComponent(
+                        interdictionTextComponent(
+                            distance,
+                            MassShadows.PLANET_RADIUS,
+                            false
                         )
-                        .color(color),
-                    height = text("$height")
-                        .append(text("y"))
-                        .append(
-                            text(repeatString(" ", 3 - height.toString().length))
-                                .font(fontKey)
-                        )
-                        .color(color),
-                    distance = text("$distance")
-                        .append(text("m"))
-                        .append(
-                            text(repeatString(" ", 4 - distance.toString().length))
-                                .font(fontKey)
-                        )
-                        .color(color),
+                    ),
+                    heading = constructHeadingTextComponent(direction, color),
+                    height = constructHeightTextComponent(height, color),
+                    distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
                     padding = Component.empty()
                 )
@@ -310,33 +343,18 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text(star.name).color(color),
-                    prefix = text("\uE021")
-                        .font(fontKey).color(NamedTextColor.YELLOW) as TextComponent,
-                    suffix = if (distance <= MassShadows.STAR_RADIUS) {
-                        text("\uE033")
-                            .font(fontKey).color(RED) as TextComponent
-                    } else Component.empty(),
-                    heading = text(direction)
-                        .append(
-                            text(repeatString(" ", 2 - direction.length))
-                                .font(fontKey)
+                    name = text(star.name, color),
+                    prefix = constructPrefixTextComponent(STAR_ICON.text, YELLOW),
+                    suffix = constructSuffixTextComponent(
+                        interdictionTextComponent(
+                            distance,
+                            MassShadows.STAR_RADIUS,
+                            false
                         )
-                        .color(color),
-                    height = text("$height")
-                        .append(text("y"))
-                        .append(
-                            text(repeatString(" ", 3 - height.toString().length))
-                                .font(fontKey)
-                        )
-                        .color(color),
-                    distance = text("$distance")
-                        .append(text("m"))
-                        .append(
-                            text(repeatString(" ", 4 - distance.toString().length))
-                                .font(fontKey)
-                        )
-                        .color(color),
+                    ),
+                    heading = constructHeadingTextComponent(direction, color),
+                    height = constructHeightTextComponent(height, color),
+                    distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
                     padding = Component.empty()
                 )
@@ -358,36 +376,168 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text(beacon.name).color(color),
-                    prefix = text("\uE022")
-                        .font(fontKey).color(NamedTextColor.BLUE) as TextComponent,
-                    suffix = if (beacon.prompt?.contains("⚠") == true) text("⚠")
-                        .color(RED) else Component.empty(),
-                    heading = text(direction)
-                        .append(
-                            text(repeatString(" ", 2 - direction.length))
-                                .font(fontKey)
-                        )
-                        .color(color),
-                    height = text("$height")
-                        .append(text("y"))
-                        .append(
-                            text(repeatString(" ", 3 - height.toString().length))
-                                .font(fontKey)
-                        )
-                        .color(color),
-                    distance = text("$distance")
-                        .append(text("m"))
-                        .append(
-                            text(repeatString(" ", 4 - distance.toString().length))
-                                .font(fontKey)
-                        )
-                        .color(color),
+                    name = text(beacon.name, color),
+                    prefix = constructPrefixTextComponent(HYPERSPACE_BEACON_ENTER_ICON.text, BLUE),
+                    suffix = constructSuffixTextComponent(beaconTextComponent(beacon.prompt)),
+                    heading = constructHeadingTextComponent(direction, color),
+                    height = constructHeightTextComponent(height, color),
+                    distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
                     padding = Component.empty()
                 )
             )
         }
+    }
+
+    private fun addStationContacts(
+        stations: List<CachedSpaceStation<*, *, *>>,
+        playerVector: Vector,
+        contactsList: MutableList<ContactsData>,
+        player: Player
+    ) {
+        for (station in stations) {
+            val vector = Vector(station.x, 192, station.z)
+            val distance = vector.distance(playerVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val height = vector.y.toInt()
+            val color = distanceColor(distance)
+
+            contactsList.add(
+                ContactsData(
+                    name = text(station.name, color),
+                    prefix = constructPrefixTextComponent(STATION_ICON.text, stationRelationColor(player, station)),
+                    suffix = Component.empty(),
+                    heading = constructHeadingTextComponent(direction, color),
+                    height = constructHeightTextComponent(height, color),
+                    distance = constructDistanceTextComponent(distance, color),
+                    distanceInt = distance,
+                    padding = Component.empty()
+                )
+            )
+        }
+    }
+
+    private fun addCapturableStationContacts(
+        capturableStations: List<CachedCapturableStation>,
+        playerVector: Vector,
+        contactsList: MutableList<ContactsData>,
+        player: Player
+    ) {
+        for (station in capturableStations) {
+            val vector = station.loc.toVector()
+            val distance = vector.distance(playerVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val height = vector.y.toInt()
+            val color = distanceColor(distance)
+
+            contactsList.add(
+                ContactsData(
+                    name = text(station.name, color),
+                    prefix = constructPrefixTextComponent(
+                        SidebarIcon.SIEGE_STATION_ICON.text,
+                        capturableStationRelationColor(player, station)),
+                    suffix = Component.empty(),
+                    heading = constructHeadingTextComponent(direction, color),
+                    height = constructHeightTextComponent(height, color),
+                    distance = constructDistanceTextComponent(distance, color),
+                    distanceInt = distance,
+                    padding = Component.empty()
+                )
+            )
+        }
+    }
+
+    private fun addBookmarkContacts(
+        bookmarks: List<Bookmark>,
+        playerVector: Vector,
+        contactsList: MutableList<ContactsData>
+    ) {
+        for (bookmark in bookmarks) {
+            val vector = Vector(bookmark.x, bookmark.y, bookmark.z)
+            val distance = vector.distance(playerVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val height = vector.y.toInt()
+            val color = distanceColor(distance)
+
+            contactsList.add(
+                ContactsData(
+                    name = text(bookmark.name, color),
+                    prefix = constructPrefixTextComponent(BOOKMARK_ICON.text, DARK_PURPLE),
+                    suffix = Component.empty(),
+                    heading = constructHeadingTextComponent(direction, color),
+                    height = constructHeightTextComponent(height, color),
+                    distance = constructDistanceTextComponent(distance, color),
+                    distanceInt = distance,
+                    padding = Component.empty()
+                )
+            )
+        }
+    }
+
+    private fun constructPrefixTextComponent(icon: String, color: NamedTextColor) =
+        text(icon)
+            .font(fontKey)
+            .color(color) as TextComponent
+
+    private fun constructSuffixTextComponent(vararg components: Component): TextComponent {
+        val returnComponent = text()
+        for (component in components) {
+            returnComponent.append(component)
+            returnComponent.appendSpace()
+        }
+        return returnComponent.build()
+    }
+
+    private fun constructDistanceTextComponent(distance: Int, color: NamedTextColor) =
+        text(distance)
+            .append(text("m"))
+            .append(text(repeatString(" ", 4 - distance.toString().length)).font(fontKey))
+            .color(color)
+
+    private fun constructHeightTextComponent(height: Int, color: NamedTextColor) =
+        text(height)
+            .append(text("y"))
+            .append(text(repeatString(" ", 3 - height.toString().length)).font(fontKey))
+            .color(color)
+
+    private fun constructHeadingTextComponent(direction: String, color: NamedTextColor) =
+        text(direction)
+            .append(text(repeatString(" ", 2 - direction.length)).font(fontKey))
+            .color(color)
+
+    private fun interdictionTextComponent(distance: Int, interdictionDistance: Int, visibleOutOfRange: Boolean) =
+        if (distance <= interdictionDistance) {
+            text(INTERDICTION_ICON.text, RED).font(fontKey)
+        } else if (visibleOutOfRange) {
+            text(INTERDICTION_ICON.text, GOLD).font(fontKey)
+        } else Component.empty()
+
+    private fun beaconTextComponent(text: String?) =
+        if (text?.contains("⚠") == true) text("⚠", RED)
+        else Component.empty()
+
+    private fun autoTurretTextComponent(starship: ActiveControlledStarship, otherStarship: ActiveStarship): Component {
+        val textComponent = text()
+
+        for (weaponset in starship.autoTurretTargets.entries) {
+            when (otherStarship.controller) {
+                is ActivePlayerController -> {
+                    starship.autoTurretTargets.values.find {
+                        it.identifier == (otherStarship.controller as PlayerController).player.name
+                    } ?: continue
+                }
+                else -> {
+                    starship.autoTurretTargets.values.find {
+                        otherStarship.identifier.contains(it.identifier)
+                    } ?: continue
+                }
+            }
+            textComponent.append(text(CROSSHAIR_ICON.text, AQUA).font(fontKey))
+            textComponent.append(text(weaponset.key, AQUA))
+            textComponent.appendSpace()
+        }
+
+        return textComponent.build()
     }
 
     data class ContactsData(
@@ -401,4 +551,3 @@ object ContactsSidebar {
         var padding: TextComponent
     )
 }
-

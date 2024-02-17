@@ -1,3 +1,7 @@
+import org.jetbrains.kotlin.js.parser.sourcemaps.JsonArray
+import org.jetbrains.kotlin.js.parser.sourcemaps.JsonObject
+import org.jetbrains.kotlin.js.parser.sourcemaps.JsonString
+import org.jetbrains.kotlin.js.parser.sourcemaps.parseJson
 import java.net.URL
 
 plugins {
@@ -27,10 +31,44 @@ fun downloadJenkinsArtifact(domain: String, project: String, filter: String, loc
 	println("Done!")
 }
 
+fun downloadModrinthArtifact(project: String) {
+	val targetVersion = "1.19.4"
+	val targetLoader = "paper"
+
+	print("Downloading $project... ")
+
+	val versions : JsonArray = parseJson(URL("https://api.modrinth.com/v2/project/$project/version").readText()) as JsonArray
+
+	val version = versions.elements.firstOrNull check@{ version ->
+		version as JsonObject
+
+		val gameVersions = version.properties["game_versions"] as JsonArray
+		val gameLoaders = version.properties["loaders"] as JsonArray
+
+		if (gameVersions.elements.none { it as JsonString; it.value == targetVersion }) return@check false
+		if (gameLoaders.elements.none { it as JsonString; it.value == targetLoader }) return@check false
+
+		true
+	} as JsonObject?
+
+	if (version == null) {
+		println("\nCould not find suitable version for $project!")
+		return
+	}
+
+	val file = ((version.properties["files"] as JsonArray).elements[0] as JsonObject).properties["url"] as JsonString
+	val fileName = file.value.substringAfterLast("/")
+
+	File("./run/paper/plugins/$fileName").writeBytes(URL(file.value).readBytes())
+
+	println("Done!")
+}
+
 tasks.create("downloadTestServerDependencies") {
 	doFirst {
 		downloadJenkinsArtifact("ci.athion.net", "FastAsyncWorldEdit", "contains(.,'Bukkit')", "artifacts")
 		downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'bukkit/')", "bukkit/loader/build/libs")
 		downloadJenkinsArtifact("ci.dmulloy2.net", "ProtocolLib", "", "build/libs")
+		downloadModrinthArtifact("unifiedmetrics")
 	}
 }

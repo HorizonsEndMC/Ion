@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.entity.Player
 import org.litote.kmongo.set
 import org.litote.kmongo.setTo
+import org.litote.kmongo.setValue
 
 @CommandAlias("sidebar")
 object SidebarContactsCommand : SLCommand() {
@@ -30,7 +31,7 @@ object SidebarContactsCommand : SLCommand() {
 	fun onEnableContacts(
 		sender: Player
 	) {
-		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::contactsEnabled setTo true))
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsEnabled, true))
 		sender.success("Enabled contacts on sidebar")
 	}
 
@@ -39,7 +40,7 @@ object SidebarContactsCommand : SLCommand() {
 	fun onDisableContacts(
 		sender: Player
 	) {
-		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::contactsEnabled setTo false))
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsEnabled, false))
 		sender.success("Disabled contacts on sidebar")
 	}
 
@@ -51,6 +52,7 @@ object SidebarContactsCommand : SLCommand() {
 	) {
 		val contactsStarships = toggle ?: !PlayerCache[sender].contactsStarships
 		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::contactsStarships setTo contactsStarships))
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsStarships, contactsStarships))
 		sender.success("Changed starship visibility to $contactsStarships")
 	}
 
@@ -61,7 +63,7 @@ object SidebarContactsCommand : SLCommand() {
 		@Optional toggle: Boolean?
 	) {
 		val contactsLastStarship = toggle ?: !PlayerCache[sender].lastStarshipEnabled
-		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::lastStarshipEnabled setTo contactsLastStarship))
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::lastStarshipEnabled, contactsLastStarship))
 		sender.success("Changed last starship visibility to $contactsLastStarship")
 	}
 
@@ -72,7 +74,7 @@ object SidebarContactsCommand : SLCommand() {
 		@Optional toggle: Boolean?
 	) {
 		val contactsPlanets = toggle ?: !PlayerCache[sender].planetsEnabled
-		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::planetsEnabled setTo contactsPlanets))
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::planetsEnabled, contactsPlanets))
 		sender.success("Changed planet visibility to $contactsPlanets")
 	}
 
@@ -83,7 +85,7 @@ object SidebarContactsCommand : SLCommand() {
 		@Optional toggle: Boolean?
 	) {
 		val starsEnabled = toggle ?: !PlayerCache[sender].starsEnabled
-		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::starsEnabled setTo starsEnabled))
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::starsEnabled, starsEnabled))
 		sender.success("Changed star visibility to $starsEnabled")
 	}
 
@@ -94,7 +96,29 @@ object SidebarContactsCommand : SLCommand() {
 		@Optional toggle: Boolean?
 	) {
 		val beaconsEnabled = toggle ?: !PlayerCache[sender].beaconsEnabled
-		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::beaconsEnabled setTo beaconsEnabled))
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::beaconsEnabled, beaconsEnabled))
 		sender.success("Changed beacon visibility to $beaconsEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts station")
+	fun onToggleStations(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val stationsEnabled = toggle ?: !PlayerCache[sender].stationsEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::stationsEnabled, stationsEnabled))
+		sender.success("Changed station visibility to $stationsEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts bookmark")
+	fun onToggleBookmarks(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val bookmarksEnabled = toggle ?: !PlayerCache[sender].bookmarksEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::bookmarksEnabled, bookmarksEnabled))
+		sender.success("Changed bookmark visibility to $bookmarksEnabled")
 	}
 }

@@ -32,6 +32,11 @@ class HeavyWeaponBooster(val subsystem: ReactorSubsystem) {
 		return output
 	}
 
+	fun getWarmupTime(): Long {
+		val time = (lastHeavyWeaponBoost + warmup) - System.nanoTime()
+		return if (lastHeavyWeaponBoost.toInt() == -1) -1 else if (time > 0) time else 0
+	}
+
 	private fun handleNewType(newHeavyWeaponType: String?, newWarmup: Long) {
 		this.type = newHeavyWeaponType
 		sendMessage("&e&oHeavy weapon boost requested, charging...")

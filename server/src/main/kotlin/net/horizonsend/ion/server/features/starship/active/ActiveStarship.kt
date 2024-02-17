@@ -138,6 +138,7 @@ abstract class ActiveStarship (
 	var isTeleporting: Boolean = false
 
 	val initialBlockCount: Int = blocks.size
+	var currentBlockCount: Int = initialBlockCount
 
 	val subsystems = LinkedList<StarshipSubsystem>()
 	var drillCount = 0
@@ -181,6 +182,8 @@ abstract class ActiveStarship (
 
 	var isInterdicting = false; private set
 	abstract val interdictionRange: Int
+
+	var hullIntegrity = 1.0
 
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
@@ -356,11 +359,11 @@ abstract class ActiveStarship (
 		}
 	}
 
-	fun hullIntegrity(): Double {
-		val nonAirBlocks = blocks.count {
+	fun updateHullIntegrity() {
+		currentBlockCount = blocks.count {
 			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
 		}
-		return nonAirBlocks.toDouble() / initialBlockCount.toDouble()
+		hullIntegrity = currentBlockCount.toDouble() / initialBlockCount.toDouble()
 	}
 
 	fun getEntryRange(planet: CachedPlanet): Int {

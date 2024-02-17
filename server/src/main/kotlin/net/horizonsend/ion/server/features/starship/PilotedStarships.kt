@@ -187,6 +187,8 @@ object PilotedStarships : IonServerComponent() {
 		Tasks.checkMainThread()
 		val controller = starship.controller
 
+		starship.setDirectControlEnabled(false)
+
 		val unpilotedController = when (controller) {
 			is PlayerController -> UnpilotedController(controller)
 			else -> NoOpController(starship, starship.controller.damager)
