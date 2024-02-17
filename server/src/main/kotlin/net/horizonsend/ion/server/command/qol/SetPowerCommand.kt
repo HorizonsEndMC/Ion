@@ -18,7 +18,6 @@ import org.bukkit.entity.Player
 @CommandPermission("ion.setpower")
 object SetPowerCommand : SLCommand() {
 	@Default
-	@Subcommand("amount")
 	@Suppress("unused")
 	fun onSetPower(sender: Player, amount: Int){
 		val selection = sender.getSelection() ?: return
