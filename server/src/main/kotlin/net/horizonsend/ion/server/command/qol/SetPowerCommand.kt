@@ -21,7 +21,10 @@ object SetPowerCommand : SLCommand() {
 	@Suppress("unused")
 	fun onSetPower(sender: Player, amount: Int){
 		val selection = sender.getSelection() ?: return
-		if(selection.volume > 200000) return
+		if(selection.volume > 200000) {
+			sender.userError("Selection too large! The maximum volume is 200000.")
+			return
+		}
 
 		if(sender.world.name != selection.world?.name) {
 			sender.userError("Selection in world ${selection.world?.name}, player is in world ${sender.world.name} - command canceled.")
@@ -37,7 +40,7 @@ object SetPowerCommand : SLCommand() {
 
 				if (!block.type.isWallSign) continue
 
-				val sign = getBlockDataSafe(block.world, x, y, z) as? org.bukkit.block.Sign ?: continue
+				val sign = block.state as? org.bukkit.block.Sign ?: continue
 				sender.success("sign exists yippee")
 				getPower(sign, false)
 				setPower(sign, amount, false)
