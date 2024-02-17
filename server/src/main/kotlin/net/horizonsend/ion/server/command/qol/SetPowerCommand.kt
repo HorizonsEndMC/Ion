@@ -36,7 +36,7 @@ object SetPowerCommand : SLCommand() {
 				val block = sender.world.getBlockAt(x, y, z)
 
 				if (!block.type.isWallSign) continue
-				sender.success("block is a sign")
+
 				val sign = getStateSafe(block.world, x, y, z) as? org.bukkit.block.Sign ?: continue
 				sender.success("sign exists yippee")
 				getPower(sign, false)
