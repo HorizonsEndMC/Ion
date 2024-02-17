@@ -24,7 +24,7 @@ object SetPowerCommand : SLCommand() {
 		if(selection.volume > 200000) return
 
 		if(sender.world != selection.world) {
-			sender.userError("Selection in different world than player - command canceled.")
+			sender.userError("Selection in world ${selection.world?.name}, player is in world ${sender.world.name} - command canceled.")
 			return
 		}
 
