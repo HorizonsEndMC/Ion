@@ -1,7 +1,12 @@
 package net.horizonsend.ion.server.features.starship.subsystem
 
+import net.horizonsend.ion.server.features.customitems.CustomItems.LOADED_TURRET_SHELL
+import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.miscellaneous.utils.airState
+import net.horizonsend.ion.server.miscellaneous.utils.isEmpty
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
@@ -29,6 +34,7 @@ class MagazineSubsystem(starship: ActiveStarship, sign: Sign, multiblock: Magazi
 		// "It is known that in some implementations this method will also set the
 		// inputted argument amount to the number of that item not removed from slots."
 		// - javadoc for this method
+
 		inventory.removeItemAnySlot(itemStack.clone())
 		return true
 	}
