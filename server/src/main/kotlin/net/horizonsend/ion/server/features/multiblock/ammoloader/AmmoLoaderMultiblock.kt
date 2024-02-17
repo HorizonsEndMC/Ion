@@ -9,13 +9,11 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.isEmpty
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
-import org.bukkit.inventory.ItemStack
 
 
 abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
@@ -34,11 +32,9 @@ abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 
 		z(+1) {
 			y(-1) {
-				x(-2).anyWall()
-				x(-1).ironBlock()
+				x(-1).anyStairs()
 				x(+0).ironBlock()
-				x(+1).ironBlock()
-				x(+2).anyWall()
+				x(+1).anyStairs()
 			}
 
 			y(+0) {
@@ -50,65 +46,51 @@ abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 
 		z(+2) {
 			y(-1) {
-				x(-2).ironBlock()
 				x(-1).copperBlock()
 				x(+0).sponge()
 				x(+1).copperBlock()
-				x(+2).ironBlock()
 			}
 
 			y(+0) {
-				x(-2).anyStairs()
 				x(-1).anyGlass()
 				x(+0).endRod()
 				x(+1).anyGlass()
-				x(+2).anyStairs()
 			}
 		}
 
 		z(+3) {
 			y(-1) {
-				x(-2).anyGlassPane()
-				x(-1).copperBlock()
+				x(-1).anyGlassPane()
 				x(+0).aluminumBlock()
-				x(+1).copperBlock()
-				x(+2).anyGlassPane()
+				x(+1).anyGlassPane()
 			}
 
 			y(+0) {
-				x(-2).anyGlassPane()
-				x(-1).anyGlass()
+				x(-1).anyGlassPane()
 				x(+0).type(Material.ANVIL)
-				x(+1).anyGlass()
-				x(+2).anyGlassPane()
+				x(+1).anyGlassPane()
 			}
 		}
 
 		z(+4) {
 			y(-1) {
-				x(-2).ironBlock()
 				x(-1).copperBlock()
 				x(+0).sponge()
 				x(+1).copperBlock()
-				x(+2).ironBlock()
 			}
 
 			y(+0) {
-				x(-2).anyStairs()
 				x(-1).anyGlass()
 				x(+0).endRod()
 				x(+1).anyGlass()
-				x(+2).anyStairs()
 			}
 		}
 
 		z(+5) {
 			y(-1) {
-				x(-2).anyStairs()
-				x(-1).ironBlock()
+				x(-1).anyStairs()
 				x(+0).ironBlock()
-				x(+1).ironBlock()
-				x(+2).anyStairs()
+				x(+1).anyStairs()
 			}
 
 			y(+0) {
@@ -144,42 +126,33 @@ abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			furnace: Furnace,
 			sign: Sign
 	) {
-		println("1")
-		event.isBurning = false
-		event.burnTime = 200
-		furnace.cookTime = (-1000).toShort()
-		event.isCancelled = false
-		println("2")
-
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
-		val result = furnace.inventory.result
-		println("3")
+		val fuelCustomItem = fuel?.customItem
 
 		if (PowerMachines.getPower(sign) == 0 ||
 				smelting == null ||
 				smelting.type != Material.PRISMARINE_CRYSTALS ||
 				fuel == null ||
-				fuel.type != Material.PRISMARINE_CRYSTALS
+				fuelCustomItem == null
 		) {
 			return
 		}
-		event.isCancelled = false
 
 
 		val direction = sign.getFacing().oppositeFace
 		val state = sign.block.getRelative(direction, 7).getState(false)
 				as? InventoryHolder ?: return
 		val inventory = state.inventory
-		if (!state.inventory.containsAtLeast(UNLOADED_TURRET_SHELL.constructItemStack(), 1) || !state.inventory.containsAtLeast(ItemStack(Material.GOLD_NUGGET), 1)) return
+		if (fuelCustomItem != UNLOADED_TURRET_SHELL) return
+		if (!inventory.contains(org.bukkit.Material.GOLD_NUGGET )) return
 
-		if (result == null) {
-			furnace.inventory.result = LOADED_TURRET_SHELL.constructItemStack()
-	}
-		else result.add(1)
-		inventory.removeItemAnySlot(UNLOADED_TURRET_SHELL.constructItemStack())
-		inventory.removeItemAnySlot(ItemStack(Material.GOLD_NUGGET))
-		PowerMachines.removePower(sign, 150)
+		event.isBurning = false
+		event.burnTime = 200
+		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
+
+		furnace.inventory.removeItemAnySlot(UNLOADED_TURRET_SHELL.constructItemStack())
+		furnace.inventory.addItem(LOADED_TURRET_SHELL.constructItemStack())
 	}
 }
