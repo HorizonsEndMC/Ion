@@ -23,7 +23,7 @@ object SetPowerCommand : SLCommand() {
 		val selection = sender.getSelection() ?: return
 		if(selection.volume > 200000) return
 
-		if(sender.world != selection.world) {
+		if(sender.world.name != selection.world?.name) {
 			sender.userError("Selection in world ${selection.world?.name}, player is in world ${sender.world.name} - command canceled.")
 			return
 		}
