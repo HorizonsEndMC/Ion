@@ -327,6 +327,7 @@ class MultiblockShape {
 
 		fun titaniumBlock() = customBlock(CustomBlocks.TITANIUM_BLOCK)
 		fun aluminumBlock() = customBlock(CustomBlocks.ALUMINUM_BLOCK)
+		fun oxygenTank() = customBlock(CustomBlocks.OXYGEN_TANK)
 		fun chetheriteBlock() = customBlock(CustomBlocks.CHETHERITE_BLOCK)
 		fun steelBlock() = customBlock(CustomBlocks.STEEL_BLOCK)
 		fun wireInputComputer() = type(Wires.INPUT_COMPUTER_BLOCK)
