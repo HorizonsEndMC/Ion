@@ -3,24 +3,24 @@ package net.horizonsend.ion.server.features.npcs
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.loadChunkAsync
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
+import org.slf4j.Logger
 import java.util.UUID
 
-class NPCManager(val name: String) : IonServerComponent(true) {
+class NPCManager(private val logger: Logger, val name: String) {
 	private lateinit var npcRegistry: NPCRegistry
 	var enabled = false
 
 	fun enableRegistry() {
 		if (!isCitizensLoaded) {
-			log.warn("Citizens not loaded! $name may not function properly!")
+			logger.warn("Citizens not loaded! $name may not function properly!")
 			return
 		}
 
-		npcRegistry = createNamedMemoryRegistry(log, name)
+		npcRegistry = createNamedMemoryRegistry(logger, name)
 		enabled = true
 	}
 
