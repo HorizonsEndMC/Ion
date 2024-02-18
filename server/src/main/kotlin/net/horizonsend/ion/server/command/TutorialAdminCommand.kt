@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 import java.util.UUID
 
 @CommandAlias("tutorialadmin")
-object TutorialCommand : SLCommand() {
+object TutorialAdminCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerAsyncCompletion("tutorialNPCIds") {
 			TutorialNPCs.manager.allNPCs().map { it.uniqueId.toString() }
@@ -20,15 +20,15 @@ object TutorialCommand : SLCommand() {
 	fun onCreateNPC(sender: Player, type: TutorialNPCType) {
 		TutorialNPCs.createNPC(
 			sender.location,
-			type
+			type,
+			UUID.randomUUID(),
+			save = true
 		)
 	}
-//
+
 	@Subcommand("remove npc")
 	fun onRemoveNPC(sender: Player, uuid: String) {
-		TutorialNPCs.editStorage {
-			types.remove(UUID.fromString(uuid))
-		}
+		TutorialNPCs.removeNPC(UUID.fromString(uuid))
 	}
 
 	@Subcommand("reload npc")

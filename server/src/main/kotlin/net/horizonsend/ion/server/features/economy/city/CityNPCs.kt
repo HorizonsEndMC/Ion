@@ -30,7 +30,7 @@ import java.util.UUID
  * Manages NPCs for cities, handles the synchronization of them with the worlds
  */
 object CityNPCs : IonServerComponent(true) {
-	val manager = NPCManager("CityNPCs")
+	val manager = NPCManager(log, "CityNPCs")
 
 	private val npcTypeMap = mutableMapOf<UUID, CityNPC.Type>()
 
@@ -45,7 +45,7 @@ object CityNPCs : IonServerComponent(true) {
 			log.info("Citizens hooked!")
 		}
 
-		manager.onEnable()
+		manager.enableRegistry()
 		synchronizeNPCs()
 	}
 
