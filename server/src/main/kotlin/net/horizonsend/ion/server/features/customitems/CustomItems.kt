@@ -25,6 +25,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
+import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
@@ -52,7 +53,7 @@ object CustomItems {
 				identifier = "UNLOADED_SHELL",
 				material = BONE,
 				customModelData = 511,
-				displayName = text("Unloaded Shell")
+				displayName = text("Unloaded Shell").decoration(ITALIC, false)
 			) {}
 		)
 
@@ -62,7 +63,7 @@ object CustomItems {
 				identifier = "LOADED_SHELL",
 				material = BONE,
 				customModelData = 512,
-				displayName = text("Loaded Shell")
+				displayName = text("Loaded Shell").decoration(ITALIC, false)
 			) {}
 		)
 
@@ -323,6 +324,25 @@ object CustomItems {
 			customModelData = 1021,
 			gasIdentifier = "CARBON_DIOXIDE",
 			displayName = canisterName(text("Carbon Dioxide", BLUE))
+		) {}
+	)
+
+	val OXYGEN_TANK = register(
+		object : CustomBlockItem(
+			identifier = "OXYGEN_TANK",
+			material = IRON_BLOCK,
+			customModelData = 601,
+			displayName = text("Oxygen Tank").decoration(ITALIC, false),
+			customBlockIdentifier = "OXYGEN_TANK"
+		)	{}
+	)
+
+	val STEEL_INGOT = register(
+		object : MineralItem(
+			identifier = "STEEL_INGOT",
+			material = IRON_INGOT,
+			customModelData = 600,
+			displayName = text("Steel Ingot").decoration(ITALIC, false)
 		) {}
 	)
 
