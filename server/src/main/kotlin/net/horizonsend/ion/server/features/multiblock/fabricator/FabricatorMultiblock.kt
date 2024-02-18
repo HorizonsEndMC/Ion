@@ -1,12 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.fabricator
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM
-import net.horizonsend.ion.server.features.customitems.CustomItems.FABRICATED_ASSEMBLY
 import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_CELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_ROD_CORE
-import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_ASSEMBLY
-import net.horizonsend.ion.server.features.customitems.CustomItems.REINFORCED_FRAME
-import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_ASSEMBLY
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
@@ -31,7 +27,7 @@ abstract class FabricatorMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 				x(+1).ironBlock()
 				x(+2).anyStairs()
 			}
-			y(+0) {
+			y(+1) {
 				x(-2).anyStairs()
 				x(-1).craftingTable()
 				x(+0).machineFurnace()
@@ -103,7 +99,7 @@ abstract class FabricatorMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 	override val name = "fabricator"
 
 	override val signText = createSignText(
-			line1 = "&8Fabricator",
+			line1 = "&7Fabricator",
 			line2 = null,
 			line3 = null,
 			line4 = null
@@ -115,7 +111,7 @@ abstract class FabricatorMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			sign: Sign
 	) {
 		event.isBurning = false
-		event.burnTime = 200
+		event.burnTime = 360000
 		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
 
@@ -137,20 +133,5 @@ abstract class FabricatorMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			else result.add(1)
 			PowerMachines.removePower(sign, 300)
 		}
-		else if (fuel.customItem == REACTIVE_ASSEMBLY) {
-			event.isCancelled = false
-			fuel.subtract(1)
-			if (result == null) furnace.inventory.result = FABRICATED_ASSEMBLY.constructItemStack()
-			else result.add(1)
-			PowerMachines.removePower(sign, 300)
-		}
-		else if (fuel.customItem == STEEL_ASSEMBLY) {
-			event.isCancelled = false
-			fuel.subtract(1)
-			if (result == null) furnace.inventory.result = REINFORCED_FRAME.constructItemStack()
-			else result.add(1)
-			PowerMachines.removePower(sign, 300)
-		}
-		else return
 	}
 }

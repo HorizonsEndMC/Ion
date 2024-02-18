@@ -53,57 +53,56 @@ abstract class CompressorMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 				x(+0).pistonBase()
 				x(+1).anyGlassPane()
 			}
-		}
-		z(+3) {
-			y(-1) {
-				x(-1).anyGlass()
-				x(+0).sponge()
-				x(+1).anyGlass()
+			z(+3) {
+				y(-1) {
+					x(-1).anyGlass()
+					x(+0).sponge()
+					x(+1).anyGlass()
+				}
+				y(+0) {
+					x(-1).anyGlass()
+					x(+0).lodestone()
+					x(+1).anyGlass()
+				}
 			}
-			y(+0) {
-				x(-1).anyGlass()
-				x(+0).lodestone()
-				x(+1).anyGlass()
-			}
-		}
-		z(+4) {
-			y(-1) {
-				x(-1).netheriteBlock()
-				x(+0).endRod()
-				x(+1).netheriteBlock()
-			}
-			y(+0) {
-				x(-1).anyGlassPane()
-				x(+0).pistonBase()
-				x(+1).anyGlassPane()
-			}
-		}
-		z(+5) {
-			y(-1) {
-				x(-1).netheriteBlock()
-				x(+0).endRod()
-				x(+1).netheriteBlock()
-			}
-			y(+0) {
-				x(-1).ironBlock()
-				x(+0).ironBlock()
-				x(+1).ironBlock()
-			}
-		}
-		z(+6) {
-			y(-1) {
-				x(-1).ironBlock()
-				x(+0).sponge()
-				x(+1).ironBlock()
-			}
-			y(+0) {
-				x(-1).anyStairs()
-				x(+0).ironBlock()
-				x(+1).anyStairs()
+			z(+4) {
+				y(-1) {
+					x(-1).netheriteBlock()
+					x(+0).endRod()
+					x(+1).netheriteBlock()
+				}
+				y(+0) {
+					x(-1).anyGlassPane()
+					x(+0).pistonBase()
+					x(+1).anyGlassPane()
+				}
+				z(+5) {
+					y(-1) {
+						x(-1).netheriteBlock()
+						x(+0).endRod()
+						x(+1).netheriteBlock()
+					}
+					y(+0) {
+						x(-1).ironBlock()
+						x(+0).ironBlock()
+						x(+1).ironBlock()
+					}
+					z(+6) {
+						y(-1) {
+							x(-1).ironBlock()
+							x(+0).sponge()
+							x(+1).ironBlock()
+						}
+						y(+0) {
+							x(-1).anyStairs()
+							x(+0).ironBlock()
+							x(+1).anyStairs()
+						}
+					}
+				}
 			}
 		}
 	}
-
 
 	override val name = "compressor"
 
@@ -120,7 +119,7 @@ abstract class CompressorMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			sign: Sign
 	) {
 		event.isBurning = false
-		event.burnTime = 200
+		event.burnTime = 3600000
 		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
 
