@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server.features.economy.collectors
 
+import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
-import net.horizonsend.ion.server.features.npcs.NPCFeature
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.npcs.createNamedMemoryRegistry
 import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
@@ -17,8 +19,10 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
 
-object Collectors : NPCFeature() {
+object Collectors : IonServerComponent(true) {
 	private lateinit var citizensRegistry: NPCRegistry
+
+	private const val npcRegistryName = "trade-collectors"
 
 	private val npcStationCache = ConcurrentHashMap<UUID, Oid<EcoStation>>()
 
@@ -34,18 +38,21 @@ object Collectors : NPCFeature() {
 	}
 
 	override fun onDisable() {
-		disableRegistry()
+		clearCitizenNPCs()
 	}
 
 	/** If the NPC is a cached collector, returns its eco station */
 	fun getCollectorStation(npc: NPC): Oid<EcoStation>? = npcStationCache[npc.uniqueId]
 
 	fun synchronizeNPCsAsync(callback: (() -> Unit) = { }) = Tasks.sync {
-		if (!isCitizensLoaded) return@sync
+		if (!isCitizensLoaded) {
+			return@sync
+		}
 
-		disableRegistry()
+		clearCitizenNPCs()
 		npcStationCache.clear()
-		setupRegistry()
+
+		citizensRegistry = createNamedMemoryRegistry(log, npcRegistryName)
 
 		for (ecoStation in EcoStation.all()) {
 			val world = Bukkit.getWorld(ecoStation.world) ?: continue
@@ -76,5 +83,13 @@ object Collectors : NPCFeature() {
 		}
 
 		callback() // run callback synchronously when complete
+	}
+
+	private fun clearCitizenNPCs() {
+		if (Collectors::citizensRegistry.isInitialized) {
+			citizensRegistry.toList().forEach(NPC::destroy)
+			citizensRegistry.deregisterAll()
+			CitizensAPI.removeNamedNPCRegistry(npcRegistryName)
+		}
 	}
 }
