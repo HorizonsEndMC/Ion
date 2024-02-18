@@ -346,6 +346,18 @@ object CustomItems {
 		) {}
 	)
 
+	val STEEL_BLOCK = register(
+			object : CustomBlockItem(
+					identifier = "STEEL_BLOCK",
+					material = IRON_BLOCK,
+					customModelData = 600,
+					displayName = text("Steel Block").decoration(ITALIC, false),
+					customBlockIdentifier = "STEEL_BLOCK"
+			) {}
+	)
+
+	val STEEL_PLATE = registerStackable("STEEL_PLATE", 10, text("Steel Plate"))
+
 	val ALUMINUM_INGOT = register(
 		object : MineralItem(
 			identifier = "ALUMINUM_INGOT",
@@ -519,6 +531,69 @@ object CustomItems {
 		) {}
 	)
 
+	val ENRICHED_URANIUM = register(
+		object: MineralItem(
+			identifier = "ENRICHED_URANIUM",
+			material = IRON_INGOT,
+			customModelData = 17,
+			displayName = text("Enriched Uranium").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val ENRICHED_URANIUM_BLOCK = register(
+		object: CustomBlockItem(
+			identifier = "ENRICHED_URANIUM_BLOCK",
+			material = IRON_BLOCK,
+			customModelData = 17,
+			displayName = text("Enriched Uranium Block").decoration(ITALIC, false),
+			customBlockIdentifier = "ENRICHED_URANIUM_BLOCK"
+			)	{}
+	)
+
+	val URANIUM_CORE = register(
+		object : MineralItem(
+			identifier = "URANIUM_CORE",
+			material = IRON_INGOT,
+			customModelData = 18,
+			displayName = text("Uranium Core").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val URANIUM_ROD = register(
+		object : MineralItem(
+			identifier = "URANIUM_ROD",
+			material = IRON_INGOT,
+			customModelData = 19,
+			displayName = text("Uranium Rod").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val FUEL_ROD_CORE = register(
+		object : MineralItem(
+			identifier = "FUEL_ROD_CORE",
+			material = IRON_INGOT,
+			customModelData = 20,
+			displayName = text("Fuel Rod Core").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val FUEL_CELL = register(
+		object : MineralItem(
+			identifier = "FUEL_CELL",
+			material = IRON_INGOT,
+			customModelData = 21,
+			displayName = text("Fuel Cell").decoration(ITALIC, false)
+		)	{}
+	)
+	val FUEL_CONTROL = register(
+		object : MineralItem(
+			identifier = "FUEL_CONTROL",
+			material = IRON_INGOT,
+			customModelData = 22,
+			displayName = text("Fuel Control").decoration(ITALIC, false).decoration(BOLD, true)
+		)	{}
+	)
+
 	fun canisterName(gasName: Component): Component = text()
 		.append(gasName)
 		.append(text(" Gas Canister", GRAY))
@@ -605,6 +680,19 @@ object CustomItems {
 	// Planets end
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
+	private fun registerStackable(identifier: String, customModelData: Int, displayName: Component): CustomItem {
+		return register(object : CustomItem(identifier) {
+			override fun constructItemStack(): ItemStack {
+				return ItemStack(HEART_OF_THE_SEA).updateMeta {
+					it.setCustomModelData(customModelData)
+					it.displayName(displayName.decoration(ITALIC, false))
+					it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
+				}
+			}
+		})
+	}
+
+
 	private fun register(identifier: String, customModelData: Int, displayName: Component): CustomItem {
 		return register(object : CustomItem(identifier) {
 			override fun constructItemStack(): ItemStack {
