@@ -29,12 +29,14 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
+import org.bukkit.Material.BONE
 import org.bukkit.Material.DIAMOND_HOE
 import org.bukkit.Material.GOLDEN_HOE
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_HOE
 import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_ORE
+import org.bukkit.Material.HEART_OF_THE_SEA
 import org.bukkit.Material.RAW_IRON
 import org.bukkit.Material.RAW_IRON_BLOCK
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK

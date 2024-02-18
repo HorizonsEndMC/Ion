@@ -59,8 +59,10 @@ import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.GREEN_WOOL
 import org.bukkit.Material.HONEYCOMB
 import org.bukkit.Material.IRON_BLOCK
+import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.Material.LAPIS_BLOCK
+import org.bukkit.Material.LAPIS_LAZULI
 import org.bukkit.Material.LEATHER
 import org.bukkit.Material.LIGHT_BLUE_WOOL
 import org.bukkit.Material.LIGHT_GRAY_WOOL

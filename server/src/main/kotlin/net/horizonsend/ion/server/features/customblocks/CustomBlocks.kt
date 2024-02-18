@@ -12,6 +12,7 @@ import org.bukkit.block.BlockFace.EAST
 import org.bukkit.block.BlockFace.NORTH
 import org.bukkit.block.BlockFace.SOUTH
 import org.bukkit.block.BlockFace.UP
+import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.BlockFace.WEST
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
