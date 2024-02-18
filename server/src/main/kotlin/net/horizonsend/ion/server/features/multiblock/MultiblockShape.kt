@@ -255,6 +255,7 @@ class MultiblockShape {
 		fun stainedTerracotta() = anyType(STAINED_TERRACOTTA_TYPES)
 
 		fun glass() = type(Material.GLASS)
+		fun anvil() = type(Material.ANVIL)
 		fun stainedGlass() = filteredTypes { it.isStainedGlass }
 		fun anyGlass() = filteredTypes { it.isGlass }
 
@@ -293,6 +294,7 @@ class MultiblockShape {
 
 		fun concrete() = filteredTypes { it.isConcrete }
 
+		fun sculkCatalyst() = type(Material.SCULK_CATALYST)
 		fun stoneBrick() = type(Material.STONE_BRICKS)
 
 		fun ironBlock() = type(Material.IRON_BLOCK)
@@ -325,6 +327,7 @@ class MultiblockShape {
 		fun aluminumBlock() = customBlock(CustomBlocks.ALUMINUM_BLOCK)
 		fun oxygenTank() = customBlock(CustomBlocks.OXYGEN_TANK)
 		fun chetheriteBlock() = customBlock(CustomBlocks.CHETHERITE_BLOCK)
+		fun steelBlock() = customBlock(CustomBlocks.STEEL_BLOCK)
 		fun wireInputComputer() = type(Wires.INPUT_COMPUTER_BLOCK)
 
 		fun redstoneLamp() = filteredTypes { it.isRedstoneLamp }
