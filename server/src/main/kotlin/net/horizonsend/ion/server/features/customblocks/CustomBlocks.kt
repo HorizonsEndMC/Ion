@@ -181,3 +181,4 @@ open class CustomBlock(
         return if (isTool || isSpecialItem) cloneDrops() else listOf()
     }
 }
+
