@@ -10,11 +10,12 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.npcs.NPCFeature
-import net.horizonsend.ion.server.features.npcs.isNPC
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.npcs.createNamedMemoryRegistry
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.firsts
 import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.text.Component.text
@@ -39,7 +40,7 @@ import java.util.EnumSet
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
-object CombatNPCs : NPCFeature() {
+object CombatNPCs : IonServerComponent(true) {
 	private const val remainTimeMinutes = 4L
 
 	/** Map of NPC ID to its inventory */
@@ -49,8 +50,6 @@ object CombatNPCs : NPCFeature() {
 	private lateinit var combatNpcRegistry: NPCRegistry
 
 	override fun onEnable() {
-		setupRegistry()
-
 		// weirdness happens when someone already logged in logs on. this is my hacky fix.
 		val lastJoinMap = mutableMapOf<UUID, Long>()
 
@@ -61,6 +60,8 @@ object CombatNPCs : NPCFeature() {
 
 			lastJoinMap[playerId] = System.currentTimeMillis()
 		}
+
+		combatNpcRegistry = createNamedMemoryRegistry(log, "combat-npcs")
 
 		//when a player quits, create a combat npc
 		listen<PlayerQuitEvent> { event ->
@@ -179,7 +180,6 @@ object CombatNPCs : NPCFeature() {
 			destroyNPC(npc)
 
 			SLPlayer.updateById(playerId.slPlayerId, setValue(SLPlayer::wasKilled, true))
-
 			Tasks.async {
 				val name: String = SLPlayer.getName(playerId.slPlayerId) ?: "UNKNOWN"
 				Notify.chatAndEvents(
@@ -205,7 +205,7 @@ object CombatNPCs : NPCFeature() {
 		}
 
 		listen<PlayerDeathEvent>(priority = EventPriority.LOWEST) { event ->
-			if (event.player.isNPC()) return@listen
+			if (event.player.isCombatNpc()) return@listen
 			val data = SLPlayer[event.player]
 			if (data.wasKilled) {
 				event.drops.clear()
@@ -217,14 +217,20 @@ object CombatNPCs : NPCFeature() {
 	}
 
 	override fun onDisable() {
-		disableRegistry()
+		npcToPlayer.values.firsts().forEach(CombatNPCs::destroyNPC)
 	}
 
-	fun destroyNPC(npc: NPC): CompletableFuture<Unit> = npc.storedLocation.world.getChunkAtAsync(npc.storedLocation).thenApply { _ ->
-		npc.storedLocation.chunk.removePluginChunkTicket(IonServer)
+	fun destroyNPC(npc: NPC): CompletableFuture<Unit> =
+		npc.storedLocation.world.getChunkAtAsync(npc.storedLocation).thenApply { _ ->
+			npc.storedLocation.chunk.removePluginChunkTicket(IonServer)
 
-		npc.destroy()
-		combatNpcRegistry.deregister(npc)
+			npc.destroy()
+			combatNpcRegistry.deregister(npc)
+		}
+
+	/** Bukkit treats NPCs as Player **/
+	fun Player.isCombatNpc() : Boolean {
+		return combatNpcRegistry.getByUniqueId(uniqueId) == null
 	}
 }
 
