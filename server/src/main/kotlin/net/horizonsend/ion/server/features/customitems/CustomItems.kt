@@ -50,7 +50,7 @@ object CustomItems {
 		register(
 			object : ShellItem(
 				identifier = "UNLOADED_SHELL",
-				material = STICK,
+				material = BONE,
 				customModelData = 511,
 				displayName = text("Unloaded Shell")
 			) {}
@@ -60,7 +60,7 @@ object CustomItems {
 		register(
 			object : ShellItem(
 				identifier = "LOADED_SHELL",
-				material = STICK,
+				material = BONE,
 				customModelData = 512,
 				displayName = text("Loaded Shell")
 			) {}

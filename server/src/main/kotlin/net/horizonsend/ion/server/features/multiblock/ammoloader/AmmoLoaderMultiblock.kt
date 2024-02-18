@@ -9,11 +9,13 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.isEmpty
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.ItemStack
 
 
 abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
@@ -32,9 +34,11 @@ abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 
 		z(+1) {
 			y(-1) {
-				x(-1).anyStairs()
+				x(-2).anyWall()
+				x(-1).ironBlock()
 				x(+0).ironBlock()
-				x(+1).anyStairs()
+				x(+1).ironBlock()
+				x(+2).anyWall()
 			}
 
 			y(+0) {
@@ -46,51 +50,65 @@ abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 
 		z(+2) {
 			y(-1) {
+				x(-2).ironBlock()
 				x(-1).copperBlock()
 				x(+0).sponge()
 				x(+1).copperBlock()
+				x(+2).ironBlock()
 			}
 
 			y(+0) {
+				x(-2).anyStairs()
 				x(-1).anyGlass()
 				x(+0).endRod()
 				x(+1).anyGlass()
+				x(+2).anyStairs()
 			}
 		}
 
 		z(+3) {
 			y(-1) {
-				x(-1).anyGlassPane()
+				x(-2).anyGlassPane()
+				x(-1).copperBlock()
 				x(+0).aluminumBlock()
-				x(+1).anyGlassPane()
+				x(+1).copperBlock()
+				x(+2).anyGlassPane()
 			}
 
 			y(+0) {
-				x(-1).anyGlassPane()
+				x(-2).anyGlassPane()
+				x(-1).anyGlass()
 				x(+0).type(Material.ANVIL)
-				x(+1).anyGlassPane()
+				x(+1).anyGlass()
+				x(+2).anyGlassPane()
 			}
 		}
 
 		z(+4) {
 			y(-1) {
+				x(-2).ironBlock()
 				x(-1).copperBlock()
 				x(+0).sponge()
 				x(+1).copperBlock()
+				x(+2).ironBlock()
 			}
 
 			y(+0) {
+				x(-2).anyStairs()
 				x(-1).anyGlass()
 				x(+0).endRod()
 				x(+1).anyGlass()
+				x(+2).anyStairs()
 			}
 		}
 
 		z(+5) {
 			y(-1) {
-				x(-1).anyStairs()
+				x(-2).anyStairs()
+				x(-1).ironBlock()
 				x(+0).ironBlock()
-				x(+1).anyStairs()
+				x(+1).ironBlock()
+				x(+2).anyStairs()
 			}
 
 			y(+0) {
@@ -126,33 +144,39 @@ abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			furnace: Furnace,
 			sign: Sign
 	) {
+		event.isBurning = false
+		event.burnTime = 200
+		furnace.cookTime = (-1000).toShort()
+		event.isCancelled = false
+
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
-		val fuelCustomItem = fuel?.customItem
 
 		if (PowerMachines.getPower(sign) == 0 ||
 				smelting == null ||
 				smelting.type != Material.PRISMARINE_CRYSTALS ||
 				fuel == null ||
-				fuelCustomItem == null
+				fuel.type != Material.PRISMARINE_CRYSTALS
 		) {
 			return
 		}
+		event.isCancelled = false
 
 
 		val direction = sign.getFacing().oppositeFace
 		val state = sign.block.getRelative(direction, 7).getState(false)
 				as? InventoryHolder ?: return
 		val inventory = state.inventory
-		if (fuelCustomItem != UNLOADED_TURRET_SHELL) return
-		if (!inventory.contains(org.bukkit.Material.GOLD_NUGGET )) return
+		if (!inventory.containsAtLeast(UNLOADED_TURRET_SHELL.constructItemStack(), 1)) {return}
+		if (!inventory.containsAtLeast(ItemStack(Material.GOLD_NUGGET), 1)) {return}
 
-		event.isBurning = false
-		event.burnTime = 200
-		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
 
-		furnace.inventory.removeItemAnySlot(UNLOADED_TURRET_SHELL.constructItemStack())
+
 		furnace.inventory.addItem(LOADED_TURRET_SHELL.constructItemStack())
+		inventory.removeItemAnySlot(UNLOADED_TURRET_SHELL.constructItemStack())
+		inventory.removeItemAnySlot(ItemStack(Material.GOLD_NUGGET))
+		PowerMachines.removePower(sign, 150)
+		event.isCancelled = false
 	}
 }
