@@ -29,6 +29,8 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SMB_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SNIPER_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGAZINE
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
@@ -37,7 +39,63 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.Material.*
+import org.bukkit.Material.AIR
+import org.bukkit.Material.AMETHYST_SHARD
+import org.bukkit.Material.BELL
+import org.bukkit.Material.BLACK_WOOL
+import org.bukkit.Material.BLUE_WOOL
+import org.bukkit.Material.BROWN_WOOL
+import org.bukkit.Material.COPPER_BLOCK
+import org.bukkit.Material.COPPER_INGOT
+import org.bukkit.Material.CYAN_WOOL
+import org.bukkit.Material.DIAMOND_BLOCK
+import org.bukkit.Material.EMERALD_BLOCK
+import org.bukkit.Material.GLASS
+import org.bukkit.Material.GLASS_PANE
+import org.bukkit.Material.GOLD_BLOCK
+import org.bukkit.Material.GOLD_INGOT
+import org.bukkit.Material.GRAY_WOOL
+import org.bukkit.Material.GREEN_DYE
+import org.bukkit.Material.GREEN_WOOL
+import org.bukkit.Material.HONEYCOMB
+import org.bukkit.Material.IRON_BLOCK
+import org.bukkit.Material.IRON_INGOT
+import org.bukkit.Material.IRON_TRAPDOOR
+import org.bukkit.Material.LAPIS_BLOCK
+import org.bukkit.Material.LAPIS_LAZULI
+import org.bukkit.Material.LEATHER
+import org.bukkit.Material.LIGHT_BLUE_WOOL
+import org.bukkit.Material.LIGHT_GRAY_WOOL
+import org.bukkit.Material.LIME_WOOL
+import org.bukkit.Material.MAGENTA_WOOL
+import org.bukkit.Material.NETHER_WART
+import org.bukkit.Material.NETHER_WART_BLOCK
+import org.bukkit.Material.OAK_LOG
+import org.bukkit.Material.OCHRE_FROGLIGHT
+import org.bukkit.Material.ORANGE_WOOL
+import org.bukkit.Material.PEARLESCENT_FROGLIGHT
+import org.bukkit.Material.PINK_WOOL
+import org.bukkit.Material.PRISMARINE
+import org.bukkit.Material.PRISMARINE_BRICKS
+import org.bukkit.Material.PRISMARINE_CRYSTALS
+import org.bukkit.Material.PURPLE_WOOL
+import org.bukkit.Material.QUARTZ
+import org.bukkit.Material.REDSTONE
+import org.bukkit.Material.REDSTONE_BLOCK
+import org.bukkit.Material.RED_WOOL
+import org.bukkit.Material.SADDLE
+import org.bukkit.Material.SEA_LANTERN
+import org.bukkit.Material.SHROOMLIGHT
+import org.bukkit.Material.SLIME_BALL
+import org.bukkit.Material.STICK
+import org.bukkit.Material.STRING
+import org.bukkit.Material.TRIPWIRE
+import org.bukkit.Material.VERDANT_FROGLIGHT
+import org.bukkit.Material.WHITE_WOOL
+import org.bukkit.Material.YELLOW_WOOL
+import org.bukkit.Material.NAME_TAG
+import org.bukkit.Material.PAPER
+import org.bukkit.Material.TRIPWIRE_HOOK
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
@@ -50,6 +108,14 @@ object Crafting : IonServerComponent() {
 		//Oxygen Tank
 		itemStackShapelessRecipe("oxygenTank", OXYGEN_TANK.constructItemStack()) {
 			addIngredient(GAS_CANISTER_OXYGEN.constructItemStack().asQuantity(9))
+		}
+
+		itemStackShapelessRecipe("steelBlock", STEEL_BLOCK.constructItemStack()) {
+			addIngredient(STEEL_INGOT.constructItemStack().asQuantity(9))
+		}
+
+		itemStackShapelessRecipe("steelIngot", STEEL_INGOT.constructItemStack().asQuantity(9)) {
+			addIngredient(STEEL_BLOCK.constructItemStack().asQuantity(1))
 		}
 
 		// Prismarine Bricks
@@ -150,8 +216,8 @@ object Crafting : IonServerComponent() {
 
 		//Unloaded Turret Shell Crafting
 		itemStackShapelessRecipe("Unloaded_Turret_Shell", UNLOADED_TURRET_SHELL.constructItemStack()) {
-			addIngredient(IRON_INGOT, 1)
-			addIngredient(LAPIS_LAZULI, 1)
+			addIngredient(ItemStack(IRON_INGOT, 1))
+			addIngredient(ItemStack(LAPIS_LAZULI, 1))
 		}
 
 		// Blaster Barrel Crafting
