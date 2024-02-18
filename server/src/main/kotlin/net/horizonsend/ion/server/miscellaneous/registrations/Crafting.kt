@@ -11,7 +11,9 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE_BL
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
 import net.horizonsend.ion.server.features.customitems.CustomItems.DETONATOR
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY
+import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.customitems.CustomItems.GUN_BARREL
+import net.horizonsend.ion.server.features.customitems.CustomItems.OXYGEN_TANK
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_ALUMINUM
@@ -27,9 +29,12 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SMB_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SNIPER_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGAZINE
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
 import org.bukkit.Bukkit
@@ -54,8 +59,10 @@ import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.GREEN_WOOL
 import org.bukkit.Material.HONEYCOMB
 import org.bukkit.Material.IRON_BLOCK
+import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.Material.LAPIS_BLOCK
+import org.bukkit.Material.LAPIS_LAZULI
 import org.bukkit.Material.LEATHER
 import org.bukkit.Material.LIGHT_BLUE_WOOL
 import org.bukkit.Material.LIGHT_GRAY_WOOL
@@ -98,6 +105,19 @@ import org.bukkit.inventory.ShapelessRecipe
 
 object Crafting : IonServerComponent() {
 	override fun onEnable() {
+		//Oxygen Tank
+		itemStackShapelessRecipe("oxygenTank", OXYGEN_TANK.constructItemStack()) {
+			addIngredient(GAS_CANISTER_OXYGEN.constructItemStack().asQuantity(9))
+		}
+
+		itemStackShapelessRecipe("steelBlock", STEEL_BLOCK.constructItemStack()) {
+			addIngredient(STEEL_INGOT.constructItemStack().asQuantity(9))
+		}
+
+		itemStackShapelessRecipe("steelIngot", STEEL_INGOT.constructItemStack().asQuantity(9)) {
+			addIngredient(STEEL_BLOCK.constructItemStack().asQuantity(1))
+		}
+
 		// Prismarine Bricks
 		Bukkit.addRecipe(
 			FurnaceRecipe(
@@ -193,6 +213,12 @@ object Crafting : IonServerComponent() {
 
 		// Nether Wart Block -> Nether Warts
 		shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
+
+		//Unloaded Turret Shell Crafting
+		itemStackShapelessRecipe("Unloaded_Turret_Shell", UNLOADED_TURRET_SHELL.constructItemStack()) {
+			addIngredient(ItemStack(IRON_INGOT, 1))
+			addIngredient(ItemStack(LAPIS_LAZULI, 1))
+		}
 
 		// Blaster Barrel Crafting
 		itemStackShapeRecipe("blaster_barrel", GUN_BARREL.constructItemStack()) {
