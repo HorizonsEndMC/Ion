@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGA
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
 import org.bukkit.Bukkit
@@ -208,6 +209,12 @@ object Crafting : IonServerComponent() {
 
 		// Nether Wart Block -> Nether Warts
 		shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
+
+		//Unloaded Turret Shell Crafting
+		itemStackShapelessRecipe("Unloaded_Turret_Shell", UNLOADED_TURRET_SHELL.constructItemStack()) {
+			addIngredient(IRON_INGOT, 1)
+			addIngredient(LAPIS_LAZULI, 1)
+		}
 
 		// Blaster Barrel Crafting
 		itemStackShapeRecipe("blaster_barrel", GUN_BARREL.constructItemStack()) {
