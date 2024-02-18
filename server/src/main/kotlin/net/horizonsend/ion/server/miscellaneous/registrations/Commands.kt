@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.command.TutorialCommand
+import net.horizonsend.ion.server.command.TutorialAdminCommand
 import net.horizonsend.ion.server.command.admin.AdminCommands
 import net.horizonsend.ion.server.command.admin.BatteryCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
@@ -165,5 +165,5 @@ val commands: List<SLCommand> = listOf(
 	BlockCommand,
 
 	HelpCommand,
-	TutorialCommand
+	TutorialAdminCommand
 )

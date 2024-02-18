@@ -23,7 +23,6 @@ abstract class TutorialCompanion {
 	open fun onEnable() {}
 	open fun onDisable() {}
 
-
 	abstract val WORLD_NAME: String
 
 	fun getWorld(): World = Bukkit.getWorld(WORLD_NAME)!!
