@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.Wires
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks.REACTOR_CORE
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
@@ -257,10 +256,9 @@ class MultiblockShape {
 
 		fun glass() = type(Material.GLASS)
 		fun anvil() = type(Material.ANVIL)
-		fun reactorCore() = customBlock(REACTOR_CORE)
 		fun stainedGlass() = filteredTypes { it.isStainedGlass }
 		fun anyGlass() = filteredTypes { it.isGlass }
-		fun seaLantern() = type(Material.SEA_LANTERN)
+
 		fun glassPane() = type(Material.GLASS_PANE)
 		fun stainedGlassPane() = filteredTypes { it.isStainedGlassPane }
 		fun anyGlassPane() = filteredTypes { it.isGlassPane }

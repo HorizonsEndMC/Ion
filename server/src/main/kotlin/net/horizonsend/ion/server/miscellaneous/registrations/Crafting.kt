@@ -3,6 +3,9 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_INGOT
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_PLATE
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
@@ -10,6 +13,9 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
 import net.horizonsend.ion.server.features.customitems.CustomItems.DETONATOR
+import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_ROD_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.customitems.CustomItems.GUN_BARREL
@@ -35,6 +41,8 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOC
 import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_CORE
+import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_ROD
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Material.*
@@ -51,6 +59,15 @@ object Crafting : IonServerComponent() {
 		itemStackShapelessRecipe("oxygenTank", OXYGEN_TANK.constructItemStack()) {
 			addIngredient(GAS_CANISTER_OXYGEN.constructItemStack().asQuantity(9))
 		}
+
+		itemStackShapelessRecipe("steelBlock", STEEL_BLOCK.constructItemStack()) {
+			addIngredient(STEEL_INGOT.constructItemStack().asQuantity(9))
+		}
+
+		itemStackShapelessRecipe("steelIngot", STEEL_INGOT.constructItemStack().asQuantity(9)) {
+			addIngredient(STEEL_BLOCK.constructItemStack().asQuantity(1))
+		}
+
 
 		// Prismarine Bricks
 		Bukkit.addRecipe(
@@ -150,8 +167,8 @@ object Crafting : IonServerComponent() {
 
 		//Unloaded Turret Shell Crafting
 		itemStackShapelessRecipe("Unloaded_Turret_Shell", UNLOADED_TURRET_SHELL.constructItemStack()) {
-			addIngredient(IRON_INGOT, 1)
-			addIngredient(LAPIS_LAZULI, 1)
+			addIngredient(ItemStack(IRON_INGOT, 1))
+			addIngredient(ItemStack(LAPIS_LAZULI, 1))
 		}
 
 		// Blaster Barrel Crafting
@@ -418,10 +435,26 @@ object Crafting : IonServerComponent() {
 		itemStackShapelessRecipe("uranium", URANIUM.constructItemStack().asQuantity(9)) {
 			addIngredient(URANIUM_BLOCK.constructItemStack())
 		}
+		// Enriched Uranium Crafting
+		itemStackShapelessRecipe("enrichedUranium", ENRICHED_URANIUM.constructItemStack().asQuantity(9)) {
+			addIngredient(ENRICHED_URANIUM_BLOCK.constructItemStack())
+		}
+		// Enriched Uranium Block Crafting
+		itemStackShapelessRecipe("enrichedUraniumBlock", ENRICHED_URANIUM_BLOCK.constructItemStack()){
+			addIngredient(ENRICHED_URANIUM.constructItemStack().asQuantity(9))
+		}
 
 		// Raw Uranium Crafting
 		itemStackShapelessRecipe("rawUranium", RAW_URANIUM.constructItemStack().asQuantity(9)) {
 			addIngredient(RAW_URANIUM_BLOCK.constructItemStack())
+		}
+
+		//Uranium Core Crafting
+		itemStackShapelessRecipe("uraniumCore", URANIUM_CORE.constructItemStack()) {
+			addIngredient(ENRICHED_URANIUM_BLOCK.constructItemStack().asQuantity(9))
+		}
+		itemStackShapelessRecipe("fuelRodCore", FUEL_ROD_CORE.constructItemStack()) {
+			addIngredient(URANIUM_ROD.constructItemStack().asQuantity(9))
 		}
 	}
 
