@@ -38,7 +38,8 @@ import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import java.util.*
+import java.util.EnumMap
+import java.util.EnumSet
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -191,7 +192,7 @@ object Pipes : IonServerComponent() {
 			if (data.distance > transportConfig.pipes.maxDistance) {
 				return
 			}
-
+			//confusedly the current coordinates of the random walk
 			val nx = data.x + data.direction.modX
 			val ny = data.y + data.direction.modY
 			val nz = data.z + data.direction.modZ
@@ -199,7 +200,6 @@ object Pipes : IonServerComponent() {
 			val nextType: Material = getBlockTypeSafe(data.world, nx, ny, nz) ?: return
 
 			debugHighlightBlock(nx, ny, nz)
-			//println(nextType.toString())
 
 			// if the next type is not even a pipe, end the chain
 			if (!isAnyPipe(nextType)) {
@@ -349,7 +349,10 @@ object Pipes : IonServerComponent() {
 		sideFilters[sideFace] = filterData
 		sideFilterItems[sideFace] = combinedFilter
 	}
-
+	/** Helper function for filtering direction for grindstones by matching proposal with
+	 * grindstone direction
+	 * @param sideFace the proposed face its checking against
+	 * @param sidePipes the running list of next step directions*/
 	private fun handleMergePipe(
 		data: PipeChainData,
 		x: Int,
@@ -358,6 +361,7 @@ object Pipes : IonServerComponent() {
 		sidePipes: MutableList<BlockFace>,
 		sideFace: BlockFace
 	) {
+		//grindstones have unique block data that has to be handled in cases
 		val block: Grindstone = getBlockDataSafe(data.world,x,y,z) as Grindstone
 		val outFace: BlockFace = when {
 			block.attachedFace == org.bukkit.block.data.FaceAttachable.AttachedFace.CEILING ->
@@ -544,10 +548,10 @@ object Pipes : IonServerComponent() {
 	)
 
 	private fun canPipesTransfer(originType: Material, otherType: Material): Boolean =
-		(isAnyPipe(otherType) // it has to be any of the valid pipe types
-		&& (isColoredPipe(originType) == isColoredPipe(otherType)) // both are either colored pipes or not
-		&& colorMap[originType] == colorMap[otherType])
-		|| (isWildCard(originType) || isWildCard(otherType))
+		isAnyPipe(otherType) && // it has to be any of the valid pipe types
+			((isColoredPipe(originType) == isColoredPipe(otherType) // both are either colored pipes or not
+		        && colorMap[originType] == colorMap[otherType])
+		    || (isWildCard(originType) || isWildCard(otherType)))
 
 
 	/**
