@@ -8,11 +8,7 @@ import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import org.bukkit.block.BlockFace.EAST
-import org.bukkit.block.BlockFace.NORTH
-import org.bukkit.block.BlockFace.SOUTH
-import org.bukkit.block.BlockFace.UP
-import org.bukkit.block.BlockFace.WEST
+import org.bukkit.block.BlockFace.*
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
 import org.bukkit.inventory.ItemStack
@@ -57,6 +53,13 @@ object CustomBlocks {
         tool = "pickaxe",
         drops = customItemDrop("CHETHERITE")
     ))
+
+	val OXYGEN_TANK = register(CustomBlock(
+		identifier = "OXYGEN_TANK",
+		blockData = mushroomBlockData(setOf(SOUTH,EAST,DOWN)),
+		tool = "pickaxe",
+		drops = customItemDrop("OXYGEN_TANK")
+	))
 
     val CHETHERITE_BLOCK = register(CustomBlock(
         identifier = "CHETHERITE_BLOCK",
