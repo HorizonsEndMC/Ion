@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.server.features.multiblock.oxygenfurnace.StandardOxygenFurnaceMultiblock
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
@@ -61,6 +62,7 @@ import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
+import net.horizonsend.ion.server.features.multiblock.oxygenfurnace.OxygenFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.particleshield.BoxShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMultiblockClass08Left
@@ -132,6 +134,8 @@ object Multiblocks : IonServerComponent() {
 
 	private fun initMultiblocks() {
 		multiblocks = listOf(
+			StandardOxygenFurnaceMultiblock,
+
 			GeneratorMultiblockTier1,
 			GeneratorMultiblockTier2,
 			GeneratorMultiblockTier3,
