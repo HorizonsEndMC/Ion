@@ -8,11 +8,7 @@ import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import org.bukkit.block.BlockFace.EAST
-import org.bukkit.block.BlockFace.NORTH
-import org.bukkit.block.BlockFace.SOUTH
-import org.bukkit.block.BlockFace.UP
-import org.bukkit.block.BlockFace.WEST
+import org.bukkit.block.BlockFace.*
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
 import org.bukkit.inventory.ItemStack
@@ -58,6 +54,20 @@ object CustomBlocks {
         drops = customItemDrop("CHETHERITE")
     ))
 
+	val OXYGEN_TANK = register(CustomBlock(
+		identifier = "OXYGEN_TANK",
+		blockData = mushroomBlockData(setOf(SOUTH,EAST,DOWN)),
+		tool = "pickaxe",
+		drops = customItemDrop("OXYGEN_TANK")
+	))
+
+	val STEEL_BLOCK = register(CustomBlock(
+			identifier = "STEEL_BLOCK",
+			blockData = mushroomBlockData(setOf(SOUTH, UP, DOWN)),
+			tool = "pickaxe",
+			drops = customItemDrop("STEEL_BLOCK")
+	))
+
     val CHETHERITE_BLOCK = register(CustomBlock(
         identifier = "CHETHERITE_BLOCK",
         blockData = mushroomBlockData(setOf(SOUTH, UP)),
@@ -99,6 +109,13 @@ object CustomBlocks {
         tool = "pickaxe",
         drops = customItemDrop("URANIUM_BLOCK")
     ))
+
+	val ENRICHED_URANIUM_BLOCK = register(CustomBlock(
+		identifier = "ENRICHED_URANIUM_BLOCK",
+		blockData = mushroomBlockData(setOf(EAST, WEST)),
+		tool = "pickaxe",
+		drops = customItemDrop("ENRICHED_URANIUM_BLOCK")
+	))
 
     val RAW_URANIUM_BLOCK = register(CustomBlock(
         identifier = "RAW_URANIUM_BLOCK",

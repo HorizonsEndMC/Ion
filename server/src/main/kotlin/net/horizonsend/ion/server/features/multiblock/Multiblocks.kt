@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.multiblock.oxygenfurnace.StandardOxygenFurnaceMultiblock
+import net.horizonsend.ion.server.features.multiblock.centrifuge.StandardCentrifugeMultiblock
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
@@ -15,9 +16,11 @@ import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield5
 import net.horizonsend.ion.server.features.multiblock.autocrafter.AutoCrafterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.autocrafter.AutoCrafterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.autocrafter.AutoCrafterMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.centrifuge.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.compressor.StandardCompressorMultiblock
 import net.horizonsend.ion.server.features.multiblock.defense.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.defense.AntiAirCannonTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.dockingtube.ConnectedDockingTubeMultiblock
@@ -25,6 +28,7 @@ import net.horizonsend.ion.server.features.multiblock.dockingtube.DisconnectedDo
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.fabricator.StandardFabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.farming.harvester.HarvesterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.farming.harvester.HarvesterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.farming.harvester.HarvesterMultiblockTier3
@@ -135,6 +139,9 @@ object Multiblocks : IonServerComponent() {
 	private fun initMultiblocks() {
 		multiblocks = listOf(
 			StandardOxygenFurnaceMultiblock,
+			StandardCentrifugeMultiblock,
+			StandardCompressorMultiblock,
+			StandardFabricatorMultiblock,
 
 			GeneratorMultiblockTier1,
 			GeneratorMultiblockTier2,
