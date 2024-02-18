@@ -61,6 +61,13 @@ object CustomBlocks {
 		drops = customItemDrop("OXYGEN_TANK")
 	))
 
+    val STEEL_BLOCK = register(CustomBlock(
+        identifier = "STEEL_BLOCK",
+        blockData = mushroomBlockData(setOf(SOUTH, UP, DOWN)),
+        tool = "pickaxe",
+        drops = customItemDrop("STEEL_BLOCK")
+    ))
+
     val CHETHERITE_BLOCK = register(CustomBlock(
         identifier = "CHETHERITE_BLOCK",
         blockData = mushroomBlockData(setOf(SOUTH, UP)),

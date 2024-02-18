@@ -29,6 +29,8 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SMB_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SNIPER_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGAZINE
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
@@ -50,6 +52,14 @@ object Crafting : IonServerComponent() {
 		//Oxygen Tank
 		itemStackShapelessRecipe("oxygenTank", OXYGEN_TANK.constructItemStack()) {
 			addIngredient(GAS_CANISTER_OXYGEN.constructItemStack().asQuantity(9))
+		}
+
+		itemStackShapelessRecipe("steelBlock", STEEL_BLOCK.constructItemStack()) {
+			addIngredient(STEEL_INGOT.constructItemStack().asQuantity(9))
+		}
+
+		itemStackShapelessRecipe("steelIngot", STEEL_INGOT.constructItemStack().asQuantity(9)) {
+			addIngredient(STEEL_BLOCK.constructItemStack().asQuantity(1))
 		}
 
 		// Prismarine Bricks
@@ -150,8 +160,8 @@ object Crafting : IonServerComponent() {
 
 		//Unloaded Turret Shell Crafting
 		itemStackShapelessRecipe("Unloaded_Turret_Shell", UNLOADED_TURRET_SHELL.constructItemStack()) {
-			addIngredient(IRON_INGOT, 1)
-			addIngredient(LAPIS_LAZULI, 1)
+			addIngredient(ItemStack(IRON_INGOT, 1))
+			addIngredient(ItemStack(LAPIS_LAZULI, 1))
 		}
 
 		// Blaster Barrel Crafting

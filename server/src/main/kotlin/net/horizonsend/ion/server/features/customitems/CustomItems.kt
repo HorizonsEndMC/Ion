@@ -345,6 +345,17 @@ object CustomItems {
 			displayName = text("Steel Ingot").decoration(ITALIC, false)
 		) {}
 	)
+	val STEEL_BLOCK = register(
+		object : CustomBlockItem(
+			identifier = "STEEL_BLOCK",
+			material = IRON_BLOCK,
+			customModelData = 600,
+			displayName = text("Steel Block").decoration(ITALIC, false),
+			customBlockIdentifier = "STEEL_BLOCK"
+		) {}
+	)
+
+	val STEEL_PLATE = registerStackable("STEEL_PLATE", 10, text("Steel Plate"))
 
 	val ALUMINUM_INGOT = register(
 		object : MineralItem(
@@ -579,6 +590,18 @@ object CustomItems {
 		return register(object : CustomItem(identifier) {
 			override fun constructItemStack(): ItemStack {
 				return ItemStack(WARPED_FUNGUS_ON_A_STICK).updateMeta {
+					it.setCustomModelData(customModelData)
+					it.displayName(displayName.decoration(ITALIC, false))
+					it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
+				}
+			}
+		})
+	}
+
+	private fun registerStackable(identifier: String, customModelData: Int, displayName: Component): CustomItem {
+		return register(object : CustomItem(identifier) {
+			override fun constructItemStack(): ItemStack {
+				return ItemStack(HEART_OF_THE_SEA).updateMeta {
 					it.setCustomModelData(customModelData)
 					it.displayName(displayName.decoration(ITALIC, false))
 					it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
