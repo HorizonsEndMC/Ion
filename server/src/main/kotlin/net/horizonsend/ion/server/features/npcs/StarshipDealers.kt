@@ -30,11 +30,19 @@ import org.bukkit.inventory.ItemStack
 import java.lang.System.currentTimeMillis
 import java.util.UUID
 
-object StarshipDealers : IonServerComponent() {
-	val manager = NPCManager("StarshipDealerNPCs")
+object StarshipDealers : IonServerComponent(true) {
+	val manager = NPCManager(log, "StarshipDealerNPCs")
 
 	private val lastBuyTimes = mutableMapOf<ServerConfiguration.Ship, MutableMap<UUID, Long>>()
 	val schematicMap = IonServer.configuration.soldShips.associateWith { it.schematic() }
+
+	override fun onEnable() {
+		manager.enableRegistry()
+	}
+
+	override fun onDisable() {
+		manager.disableRegistry()
+	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {

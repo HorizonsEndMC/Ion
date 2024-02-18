@@ -191,14 +191,22 @@ data class ServerConfiguration(
 		val y: Int,
 		val z: Int
 	) {
-		fun bukkitWorld(): World = Bukkit.getWorld(world) ?: throw
-		kotlin.NullPointerException("Could not find world $world")
+		fun bukkitWorld(): World = Bukkit.getWorld(world) ?: throw NullPointerException("Could not find world $world")
 
 		fun toVector(): Vector = Vector(x, y, z)
 
 		fun toVec3i(): Vec3i = Vec3i(x, y, z)
 
 		fun toLocation(): Location = Location(bukkitWorld(), x.toDouble(), y.toDouble(), z.toDouble())
+
+		companion object {
+			fun fromLocation(location: Location): Pos = Pos(
+				location.world.name,
+				location.blockX,
+				location.blockY,
+				location.blockZ
+			)
+		}
 	}
 
 	/**
