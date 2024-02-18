@@ -1,47 +1,86 @@
 package net.horizonsend.ion.server.features.npcs
 
 import kotlinx.serialization.Serializable
+import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.api.npc.NPCDataStore
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.configuration.UUIDSerializer
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import org.bukkit.entity.EntityType
 import java.util.UUID
 
-class JsonNPCStore<T: JsonNPCStore.NPC>(private val feature: NPCFeature, val loadCallback: (net.citizensnpcs.api.npc.NPC) -> Unit = {}) {
-	private fun loadConfiguration(): Storage<T> = Configuration.load(npcStorageDirectory, "${feature.npcRegistryName}.json")
+class JsonNPCStore(private val start: Int, val name: String) : NPCDataStore {
+	private fun loadConfiguration(): NPCStorage = Configuration.load(npcStorageDirectory, "$name.json")
 
-	val storage by lazy { loadConfiguration() }
+	private fun editConfiguration(edit: NPCStorage.() -> Unit) = Configuration.save(edit(storage), npcStorageDirectory, "${javaClass.simpleName}.json")
 
-	fun loadNPCs() {
-		if (!isCitizensLoaded) return
+	private var storage = loadConfiguration()
 
-		val registry = feature.npcRegistry
+	@Serializable
+	private data class NPCStorage(
+		val npcs: MutableList<StoredNPC> = mutableListOf()
+	)
 
-		storage.npcs.withIndex().forEach { (index, value) ->
-			val npc = value.createNPC(registry, index)
-			loadCallback(npc)
+	@Serializable
+	private data class StoredNPC(
+		val name: String,
+		val x: Double,
+		val y: Double,
+		val z: Double,
+		val world: String,
+		@Serializable(with = UUIDSerializer::class) val uuid: UUID,
+		val id: Int,
+		val type: EntityType
+	)
+
+	val npc: MutableList<NPC> = mutableListOf()
+
+	override fun clearData(npc: NPC) = editConfiguration { npcs.removeAll { it.uuid == npc.uniqueId } }
+
+	override fun createUniqueNPCId(registry: NPCRegistry): Int {
+		return start + storage.npcs.size
+	}
+
+	override fun loadInto(registry: NPCRegistry) {
+		for (npc in storage.npcs) {
+			registry.createNPC(npc.type, npc.uuid, createUniqueNPCId(registry), npc.name)
 		}
 	}
 
-	fun saveStorage() {
-		Configuration.save(storage, npcStorageDirectory, "${feature.npcRegistryName}.json")
+	override fun reloadFromSource() {
+		storage = loadConfiguration()
 	}
 
-	@Serializable
-	sealed interface NPC {
-		val position: ServerConfiguration.Pos
-		@Serializable(with = UUIDSerializer::class) val uuid: UUID
-
-		fun createNPC(registry: NPCRegistry, index: Int): net.citizensnpcs.api.npc.NPC
+	override fun saveToDisk() = Tasks.async {
+		Configuration.save(storage, npcStorageDirectory, "${javaClass.simpleName}.json")
 	}
 
-	@Serializable
-	data class Storage<T: NPC>(
-		val npcs: MutableList<T> = mutableListOf()
-	)
+	override fun saveToDiskImmediate() {
+		Configuration.save(storage, npcStorageDirectory, "${javaClass.simpleName}.json")
+	}
+
+	override fun store(npc: NPC) {
+		storage.npcs.add(StoredNPC(
+			npc.name,
+			npc.storedLocation.x,
+			npc.storedLocation.y,
+			npc.storedLocation.z,
+			npc.storedLocation.world.name,
+			npc.uniqueId,
+			npc.id,
+			npc.entity.type
+		))
+	}
+
+	override fun storeAll(registry: NPCRegistry) {
+		for (npc in registry) {
+			store(npc)
+		}
+	}
 
 	companion object {
-		private val npcStorageDirectory = IonServer.configurationFolder.resolve("npcs").apply { mkdirs() }
+		val npcStorageDirectory = IonServer.configurationFolder.resolve("npcs").apply { mkdirs() }
 	}
 }
