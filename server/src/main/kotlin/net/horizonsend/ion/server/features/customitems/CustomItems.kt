@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.features.customitems.minerals.Smeltable
 import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralItem
+import net.horizonsend.ion.server.features.customitems.shipammo.objects.ShellItem
 import net.horizonsend.ion.server.features.customitems.misc.ProgressHolder
 import net.horizonsend.ion.server.features.customitems.misc.ShellItem
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
