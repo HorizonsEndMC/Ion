@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.platepress
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_CHASSIS
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_PLATING
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_CHASSIS
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_PLATE
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
@@ -142,5 +144,13 @@ abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			else result.add(1)
 			PowerMachines.removePower(sign, 300)
 		}
+		else if (fuel.customItem == STEEL_PLATE) {
+			event.isCancelled = false
+			fuel.subtract(1)
+			if (result == null) furnace.inventory.result = STEEL_CHASSIS.constructItemStack()
+			else result.add(1)
+			PowerMachines.removePower(sign, 300)
+		}
+		else return
 	}
 }
