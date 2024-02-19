@@ -26,7 +26,8 @@ class MiniPhaserWeaponSubsystem(
 	override val length: Int = balancing.length
 	override val convergeDist: Double = balancing.convergeDistance
 	override val extraDistance: Int = balancing.extraDistance
-	override val angleRadians: Double = Math.toRadians(balancing.angleRadians)
+	override val angleRadiansHorizontal: Double = Math.toRadians(balancing.angleRadiansHorizontal)
+	override val angleRadiansVertical: Double = Math.toRadians(balancing.angleRadiansVertical)
 	override val powerUsage: Int = balancing.powerUsage
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 
