@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.multiblock.centrifuge.CentrifugeMulti
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.circuitfab.StandardCircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.compressor.StandardCompressorMultiblock
 import net.horizonsend.ion.server.features.multiblock.defense.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.defense.AntiAirCannonTurretMultiblock
@@ -76,6 +77,7 @@ import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMulti
 import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMultiblockClass30
 import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMultiblockClass65
 import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMultiblockClass85
+import net.horizonsend.ion.server.features.multiblock.platepress.StandardPlatePressMultiblock
 import net.horizonsend.ion.server.features.multiblock.powerbank.PowerBankMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.powerbank.PowerBankMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.powerbank.PowerBankMultiblockTier3
@@ -142,6 +144,8 @@ object Multiblocks : IonServerComponent() {
 			StandardCentrifugeMultiblock,
 			StandardCompressorMultiblock,
 			StandardFabricatorMultiblock,
+			StandardCircuitfabMultiblock,
+			StandardPlatePressMultiblock,
 
 			GeneratorMultiblockTier1,
 			GeneratorMultiblockTier2,

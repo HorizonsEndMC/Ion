@@ -2,15 +2,12 @@ package net.horizonsend.ion.server.features.multiblock.platepress
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_CHASSIS
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_PLATING
-import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_CHASSIS
-import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_PLATE
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
@@ -122,9 +119,8 @@ abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			furnace: Furnace,
 			sign: Sign
 	) {
-
 		event.isBurning = false
-		event.burnTime = 200
+		event.burnTime = 3600000
 		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
 
@@ -132,35 +128,19 @@ abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 		val fuel = furnace.inventory.fuel
 		val result = furnace.inventory.result
 
-
 		if (PowerMachines.getPower(sign) == 0 ||
 				smelting == null ||
 				smelting.type != Material.PRISMARINE_CRYSTALS ||
 				fuel == null
 		) {
 			return
-
 		}
 		if (fuel.customItem == REACTIVE_PLATING) {
 			event.isCancelled = false
 			fuel.subtract(1)
-			if (result == null) {
-				furnace.inventory.result = REACTIVE_CHASSIS.constructItemStack()
-			}
-			else {
-				result.add(1)
-			}
-			PowerMachines.removePower(sign, 300)
-		}
-		else if (fuel.customItem == STEEL_PLATE) {
-			event.isCancelled = false
-			fuel.subtract(1)
-			if (result == null) furnace.inventory.result = STEEL_CHASSIS.constructItemStack()
+			if (result == null) furnace.inventory.result = REACTIVE_CHASSIS.constructItemStack()
 			else result.add(1)
 			PowerMachines.removePower(sign, 300)
-		}
-		else{
-			return
 		}
 	}
 }
