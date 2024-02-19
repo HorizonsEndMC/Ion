@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.minecraft.world.level.block.MushroomBlock
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -123,6 +124,20 @@ object CustomBlocks {
         tool = "pickaxe",
         drops = customItemDrop("RAW_URANIUM_BLOCK")
     ))
+
+	val SUPERCONDUCTOR_BLOCK = register(CustomBlock(
+		identifier = "SUPERCONDUCTOR_BLOCK",
+		blockData = mushroomBlockData(setOf(SOUTH, DOWN)),
+		tool = "pickaxe",
+		drops = customItemDrop("SUPERCONDUCTOR_BLOCK")
+	))
+
+	val REACTOR_CORE = register(CustomBlock(
+		identifier = "REACTOR_CORE",
+		blockData = mushroomBlockData(setOf(NORTH, UP, WEST)),
+		tool = "pickaxe",
+		drops = customItemDrop("REACTOR_CORE")
+	))
 
     private fun customItemDrop(identifier: String, amount: Int = 1): List<ItemStack> {
         val customItem = CustomItems.getByIdentifier(identifier)?.constructItemStack() ?: return listOf()
