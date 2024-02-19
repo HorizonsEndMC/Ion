@@ -6,13 +6,12 @@ import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.machine.PowerMachines.getPower
 import net.horizonsend.ion.server.features.machine.PowerMachines.setPower
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.entity.Player
+import net.horizonsend.ion.server.command.admin.debug
 
 @CommandAlias("setpower")
 @CommandPermission("ion.setpower")
@@ -20,9 +19,10 @@ object SetPowerCommand : SLCommand() {
 	@Default
 	@Suppress("unused")
 	fun onSetPower(sender: Player, amount: Int){
+		val maxSelectionVolume = 200000
 		val selection = sender.getSelection() ?: return
-		if(selection.volume > 200000) {
-			sender.userError("Selection too large! The maximum volume is 200000.")
+		if(selection.volume > maxSelectionVolume) {
+			sender.userError("Selection too large! The maximum volume is $maxSelectionVolume.")
 			return
 		}
 
@@ -37,12 +37,13 @@ object SetPowerCommand : SLCommand() {
 			val z = blockPosition.z
 
 			val block = sender.world.getBlockAt(x, y, z)
-
+			sender.debug("checking block at $x $y $z")
 			if (!block.type.isWallSign) continue
+			val sign = block.state as? org.bukkit.block.Sign ?: continue
+			sender.debug("sign found at $x $y $z")
 
-			val sign = getBlockDataSafe(block.world, x, y, z) as? org.bukkit.block.Sign ?: continue
-
-			setPower(sign, amount, false)
+			setPower(sign, amount, true)
+			sender.debug("power sent")
 		}
 		sender.success("Set multiblock power to $amount.")
 	}
