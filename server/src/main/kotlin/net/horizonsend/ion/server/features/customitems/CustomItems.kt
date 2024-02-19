@@ -585,6 +585,7 @@ object CustomItems {
 			displayName = text("Fuel Cell").decoration(ITALIC, false)
 		)	{}
 	)
+
 	val FUEL_CONTROL = register(
 		object : MineralItem(
 			identifier = "FUEL_CONTROL",
@@ -593,6 +594,126 @@ object CustomItems {
 			displayName = text("Fuel Control").decoration(ITALIC, false).decoration(BOLD, true)
 		)	{}
 	)
+
+	val REACTIVE_COMPONENT = register(
+		object : MineralItem(
+			identifier = "REACTIVE_COMPONENT",
+			material = IRON_INGOT,
+			customModelData = 23,
+			displayName = text("Reactive Component").decoration(ITALIC, false)
+		) {}
+	)
+
+	val REACTIVE_HOUSING = register(
+		object : MineralItem(
+			identifier = "REACTIVE_HOUSING",
+			material = IRON_INGOT,
+			customModelData = 24,
+			displayName = text("Reactive Housing").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val REACTIVE_PLATING = register(
+		object : MineralItem(
+			identifier = "REACTIVE_PLATING",
+			material = IRON_INGOT,
+			customModelData = 25,
+			displayName = text("Reactive Plating").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val REACTIVE_CHASSIS = register(
+		object : MineralItem(
+			identifier = "REACTIVE_CHASSIS",
+			material = IRON_INGOT,
+			customModelData = 26,
+			displayName = text("Reactive Chassis").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val REACTIVE_MEMBRANE = register(
+		object : MineralItem(
+			identifier = "REACTIVE_MEMBRANE",
+			material = IRON_INGOT,
+			customModelData = 27,
+			displayName = text("Reactive Membrane").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val REACTIVE_ASSEMBLY = register(
+		object : MineralItem(
+			identifier = "REACTIVE_ASSEMBLY",
+			material = IRON_INGOT,
+			customModelData = 28,
+			displayName = text("Reactive assembly").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val FABRICATED_ASSEMBLY = register(
+		object : MineralItem(
+			identifier = "FABRICATED_ASSEMBLY",
+			material = IRON_INGOT,
+			customModelData = 29,
+			displayName = text("Fabricated Assembly").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val CIRCUIT_BOARD = register(
+		object : MineralItem(
+			identifier = "CIRCUIT_BOARD",
+			material = IRON_INGOT,
+			customModelData = 30,
+			displayName = text("Circuit Board").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val MOTHERBOARD = register(
+		object : MineralItem(
+			identifier = "MOTHERBOARD",
+			material = IRON_INGOT,
+			customModelData = 31,
+			displayName = text("Motherboard").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val REACTOR_CONTROL = register(
+		object : MineralItem(
+			identifier = "REACTOR_CONTROL",
+			material = IRON_INGOT,
+			customModelData = 32,
+			displayName = text("Reactor Control").decoration(ITALIC, false).decoration(BOLD, true)
+		)	{}
+	)
+
+	val SUPERCONDUCTOR = register(
+		object : MineralItem(
+			identifier = "SUPERCONDUCTOR",
+			material = IRON_INGOT,
+			customModelData = 33,
+			displayName = text("Superconductor").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val SUPERCONDUCTOR_BLOCK = register(
+		object : CustomBlockItem(
+			identifier = "SUPERCONDUCTOR_BLOCK",
+			material = IRON_BLOCK,
+			customModelData = 34,
+			displayName = text("Superconductor Block").decoration(ITALIC, false),
+			customBlockIdentifier = "SUPERCONDUCTOR_BLOCK"
+		)	{}
+	)
+
+	val SUPERCONDUCTOR_CORE = register(
+		object : MineralItem(
+			identifier = "SUPERCONDUCTOR_CORE",
+			material = IRON_BLOCK,
+			customModelData = 35,
+			displayName = text("Superconductor Core").decoration(ITALIC, false).decoration(BOLD, true)
+		)	{}
+	)
+
+
 
 	fun canisterName(gasName: Component): Component = text()
 		.append(gasName)

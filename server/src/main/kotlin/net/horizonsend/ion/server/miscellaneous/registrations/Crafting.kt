@@ -12,13 +12,16 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIV
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
+import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUIT_BOARD
 import net.horizonsend.ion.server.features.customitems.CustomItems.DETONATOR
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.FABRICATED_ASSEMBLY
 import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_ROD_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.customitems.CustomItems.GUN_BARREL
+import net.horizonsend.ion.server.features.customitems.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.customitems.CustomItems.OXYGEN_TANK
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL_RECEIVER
@@ -28,6 +31,13 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_TITANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_URANIUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_ASSEMBLY
+import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_CHASSIS
+import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_COMPONENT
+import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_HOUSING
+import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_MEMBRANE
+import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_PLATING
+import net.horizonsend.ion.server.features.customitems.CustomItems.REACTOR_CONTROL
 import net.horizonsend.ion.server.features.customitems.CustomItems.RIFLE
 import net.horizonsend.ion.server.features.customitems.CustomItems.RIFLE_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SHOTGUN_RECEIVER
@@ -36,6 +46,9 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SNIPER_RECEIV
 import net.horizonsend.ion.server.features.customitems.CustomItems.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
+import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTOR
+import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTOR_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTOR_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
@@ -43,6 +56,8 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_ROD
+import net.horizonsend.ion.server.features.nations.gui.item
+import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Material.AIR
@@ -547,12 +562,75 @@ object Crafting : IonServerComponent() {
 		itemStackShapelessRecipe("uraniumCore", URANIUM_CORE.constructItemStack()) {
 			addIngredient(ENRICHED_URANIUM_BLOCK.constructItemStack().asQuantity(9))
 		}
+
+		//Fuel Rod Core Crafting
 		itemStackShapelessRecipe("fuelRodCore", FUEL_ROD_CORE.constructItemStack()) {
 			addIngredient(URANIUM_ROD.constructItemStack().asQuantity(9))
 		}
 
 		itemStackShapelessRecipe("melonToSlices", ItemStack(Material.MELON_SLICE).asQuantity(4)){
 			addIngredient(MELON)
+		}
+
+		//Reactive Component Crafting
+		itemStackShapeRecipe("reactiveComponent", REACTIVE_COMPONENT.constructItemStack()) {
+			shape("xxx", "yyy", "xxx")
+
+			setIngredient('x', CYAN_TERRACOTTA )
+			setIngredient('y', SPONGE)
+		}
+
+		//Reactive Housing Crafting
+		itemStackShapeRecipe("reactiveHousing", REACTIVE_HOUSING.constructItemStack()) {
+			shape("xxx", "yyy", "xxx")
+
+			setIngredient('x', REDSTONE_BLOCK )
+			setIngredient('y', COPPER_BLOCK)
+		}
+
+		//Reactive Plating Crafting
+		itemStackShapelessRecipe("reactivePlating", REACTIVE_PLATING.constructItemStack()) {
+			addIngredient(REACTIVE_COMPONENT.constructItemStack())
+			addIngredient(REACTIVE_HOUSING.constructItemStack())
+		}
+
+		//Reactive Membrane Crafting
+		itemStackShapelessRecipe("reactiveMembrane", REACTIVE_MEMBRANE.constructItemStack()) {
+			addIngredient(REACTIVE_CHASSIS.constructItemStack().asQuantity(7))
+			addIngredient(CIRCUITRY.constructItemStack())
+			addIngredient(ENRICHED_URANIUM.constructItemStack())
+		}
+
+		//Reactive Assembly Crafting
+		itemStackShapelessRecipe("reactiveAssembly", REACTIVE_ASSEMBLY.constructItemStack()) {
+			addIngredient(REACTIVE_MEMBRANE.constructItemStack().asQuantity(9))
+		}
+
+		//Motherboard Crafting Recipe
+		itemStackShapelessRecipe("motherboard", MOTHERBOARD.constructItemStack()) {
+			addIngredient(CIRCUIT_BOARD.constructItemStack().asQuantity(9))
+		}
+
+		//Reactor Control Crafting
+		itemStackShapelessRecipe("reactorControl", REACTOR_CONTROL.constructItemStack()) {
+			addIngredient(FABRICATED_ASSEMBLY.constructItemStack().asQuantity(6))
+			addIngredient(MOTHERBOARD.constructItemStack().asQuantity(3))
+		}
+
+		//Superconductor Crafting
+		itemStackShapelessRecipe("superconductor", SUPERCONDUCTOR.constructItemStack().asQuantity(9)) {
+			addIngredient(SUPERCONDUCTOR_BLOCK.constructItemStack())
+		}
+
+		//Superconductor Block Crafting
+		itemStackShapelessRecipe("superconductorBlock", SUPERCONDUCTOR_BLOCK.constructItemStack()) {
+			addIngredient(SUPERCONDUCTOR.constructItemStack().asQuantity(9))
+		}
+
+		//Superconductor Core Crafting
+		itemStackShapelessRecipe("superconductorCore", SUPERCONDUCTOR_CORE.constructItemStack()) {
+			addIngredient(SUPERCONDUCTOR_BLOCK.constructItemStack())
+			addIngredient(MOTHERBOARD.constructItemStack().asQuantity(4))
 		}
 	}
 
