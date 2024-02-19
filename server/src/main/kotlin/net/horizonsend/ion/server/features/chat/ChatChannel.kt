@@ -140,7 +140,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		}
 	},
 
-	STAFF(text("Staff", AQUA), listOf("staff", "staffchat"), LIGHT_PURPLE) {
+	STAFF(text("Staff", AQUA), listOf("staff", "staffchat"), BLUE) {
 		override fun onChat(player: Player, event: AsyncChatEvent) {
 			if (!player.hasPermission("chat.channel.staff")) {
 				player.userError("You don't have access to that!")
