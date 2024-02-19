@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.DETONATOR
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.FABRICATED_ASSEMBLY
+import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_CONTROL
 import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_ROD_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_OXYGEN
@@ -38,6 +39,9 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_HOUS
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_MEMBRANE
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_PLATING
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTOR_CONTROL
+import net.horizonsend.ion.server.features.customitems.CustomItems.REACTOR_CORE
+import net.horizonsend.ion.server.features.customitems.CustomItems.REACTOR_FRAME
+import net.horizonsend.ion.server.features.customitems.CustomItems.REINFORCED_FRAME
 import net.horizonsend.ion.server.features.customitems.CustomItems.RIFLE
 import net.horizonsend.ion.server.features.customitems.CustomItems.RIFLE_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SHOTGUN_RECEIVER
@@ -45,6 +49,9 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SMB_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SNIPER_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGAZINE
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_ASSEMBLY
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_CHASSIS
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_MODULE
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTOR
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTOR_BLOCK
@@ -519,6 +526,27 @@ object Crafting : IonServerComponent() {
 		itemStackShapelessRecipe("uranium", URANIUM.constructItemStack().asQuantity(9)) {
 			addIngredient(URANIUM_BLOCK.constructItemStack())
 		}
+
+		//Steel Plate Crafting
+		itemStackShapelessRecipe("steelPlate", STEEL_PLATE.constructItemStack()) {
+			addIngredient(STEEL_BLOCK.constructItemStack().asQuantity(9))
+		}
+
+		//Steel Module Crafting
+		itemStackShapelessRecipe("steelModule", STEEL_MODULE.constructItemStack()) {
+			addIngredient(STEEL_CHASSIS.constructItemStack().asQuantity(9))
+		}
+
+		//Steel Assembly Crafting
+		itemStackShapelessRecipe("steelAssembly", STEEL_ASSEMBLY.constructItemStack()) {
+			addIngredient(STEEL_MODULE.constructItemStack().asQuantity(4))
+		}
+
+		//Reactor Frame Crafting
+		itemStackShapelessRecipe("reactorFrame", REACTOR_FRAME.constructItemStack()) {
+			addIngredient(REINFORCED_FRAME.constructItemStack().asQuantity(4))
+		}
+
 		// Enriched Uranium Crafting
 		itemStackShapelessRecipe("enrichedUranium", ENRICHED_URANIUM.constructItemStack().asQuantity(9)) {
 			addIngredient(ENRICHED_URANIUM_BLOCK.constructItemStack())
@@ -602,6 +630,16 @@ object Crafting : IonServerComponent() {
 		itemStackShapelessRecipe("superconductorCore", SUPERCONDUCTOR_CORE.constructItemStack()) {
 			addIngredient(SUPERCONDUCTOR_BLOCK.constructItemStack())
 			addIngredient(MOTHERBOARD.constructItemStack().asQuantity(4))
+		}
+
+		//Reactor Core Crafting
+		itemStackShapeRecipe("reactorCore", REACTOR_CORE.constructItemStack()) {
+			shape("wxw", "yzy", "wxw")
+
+			setIngredient('w', REACTOR_FRAME.constructItemStack())
+			setIngredient('x', REACTOR_CONTROL.constructItemStack())
+			setIngredient('y', FUEL_CONTROL.constructItemStack())
+			setIngredient('z', SUPERCONDUCTOR_CORE.constructItemStack())
 		}
 	}
 
