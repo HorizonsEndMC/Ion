@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.multiblock.fabricator
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.FABRICATED_ASSEMBLY
 import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_CELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_ROD_CORE
+import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_ASSEMBLY
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
@@ -130,6 +132,13 @@ abstract class FabricatorMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			event.isCancelled = false
 			fuel.subtract(1)
 			if (result == null) furnace.inventory.result = FUEL_CELL.constructItemStack()
+			else result.add(1)
+			PowerMachines.removePower(sign, 300)
+		}
+		else if (fuel.customItem == REACTIVE_ASSEMBLY) {
+			event.isCancelled = false
+			fuel.subtract(1)
+			if (result == null) furnace.inventory.result = FABRICATED_ASSEMBLY.constructItemStack()
 			else result.add(1)
 			PowerMachines.removePower(sign, 300)
 		}
