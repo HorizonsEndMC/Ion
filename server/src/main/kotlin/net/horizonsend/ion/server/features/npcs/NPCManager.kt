@@ -10,6 +10,9 @@ import org.bukkit.entity.EntityType
 import org.slf4j.Logger
 import java.util.UUID
 
+/**
+ * Handles the creation of NPCs, registry, and cleanup
+ **/
 class NPCManager(private val logger: Logger, val name: String) {
 	private lateinit var npcRegistry: NPCRegistry
 	var enabled = false
