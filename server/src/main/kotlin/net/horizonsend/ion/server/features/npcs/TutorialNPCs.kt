@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.npcs
 
 import kotlinx.serialization.Serializable
 import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.extensions.serverError
@@ -36,21 +37,27 @@ object TutorialNPCs : IonServerComponent(true) {
 
 	fun createNPC(location: Location, type: TutorialNPCType, uuid: UUID, save: Boolean = true) {
 		manager.createNPC(
-			legacyAmpersand().serialize(type.npcName),
+			legacyAmpersand().serialize(type.displayName),
 			uuid,
 			3000 + manager.allNPCs().size,
 			location
 		) callback@{ npc ->
 			Tasks.async {
-				npc.getOrAddTrait(SkinTrait::class.java).apply {
-					val skin = Skins["https://assets.horizonsend.net/training_droid.png"] ?: return@apply
+				val skin = Skins["https://assets.horizonsend.net/training_droid.png"] ?: return@async
 
-					setSkinPersistent("tutorial_droid", skin.signature, skin.value)
-				}
+				Tasks.sync {
+					npc.getOrAddTrait(SkinTrait::class.java).apply {
+						setSkinPersistent("tutorial_droid", skin.signature, skin.value)
+					}
 
-				npc.getOrAddTrait(LookClose::class.java).apply {
-					lookClose(true)
-					setRealisticLooking(true)
+					npc.getOrAddTrait(LookClose::class.java).apply {
+						lookClose(true)
+						setRealisticLooking(true)
+					}
+
+					npc.getOrAddTrait(HologramTrait::class.java).apply {
+						type.billboardText.map { legacyAmpersand().serialize(it) }.forEach(this::addLine)
+					}
 				}
 			}
 
