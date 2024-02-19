@@ -19,7 +19,9 @@ class FlamethrowerWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 
 	override val powerUsage: Int = balancing.powerUsage
 	override val length: Int = 8
-	override val angleRadians: Double = Math.toRadians(balancing.angleRadians)
+	override val angleRadiansHorizontal: Double = Math.toRadians(balancing.angleRadiansHorizontal)
+	override val angleRadiansVertical: Double = Math.toRadians(balancing.angleRadiansVertical)
+
 	override val convergeDist: Double = balancing.convergeDistance
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
