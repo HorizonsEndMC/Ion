@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
 import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.debugHighlightBlock
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isGlass
@@ -32,6 +33,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.data.type.Grindstone
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
@@ -132,13 +134,17 @@ object Pipes : IonServerComponent() {
 
 	fun isPipedInventory(material: Material): Boolean = inventoryTypes.contains(material)
 
-	fun isAnyPipe(material: Material): Boolean = material.isGlass || material.isGlassPane || material.isTintedGlass
+	fun isAnyPipe(material: Material): Boolean = material.isGlass || material.isGlassPane || isWildCard(material)
 
 	private fun isDirectionalPipe(material: Material): Boolean = material.isGlassPane
 
 	private fun isColoredPipe(material: Material): Boolean = material.isStainedGlass || material.isStainedGlassPane
 
 	private fun isTintedPipe(material: Material): Boolean = material.isTintedGlass
+
+	private fun isMergePipe(material: Material): Boolean = material == Material.GRINDSTONE
+
+	private fun isWildCard(material: Material): Boolean = isMergePipe(material) || isTintedPipe(material)
 
 	/**
 	 * Starts a pipe chain that continues until it goes too long,
@@ -186,14 +192,13 @@ object Pipes : IonServerComponent() {
 			if (data.distance > transportConfig.pipes.maxDistance) {
 				return
 			}
-
+			//confusedly the current coordinates of the random walk
 			val nx = data.x + data.direction.modX
 			val ny = data.y + data.direction.modY
 			val nz = data.z + data.direction.modZ
 
 			val nextType: Material = getBlockTypeSafe(data.world, nx, ny, nz) ?: return
 
-			debugHighlightBlock(data.x, data.y, data.z)
 			debugHighlightBlock(nx, ny, nz)
 
 			// if the next type is not even a pipe, end the chain
@@ -226,7 +231,10 @@ object Pipes : IonServerComponent() {
 					// if it's a pipe
 					isAnyPipe(adjacentType) -> {
 						if (canPipesTransfer(nextType, adjacentType)) {
-							sidePipes.add(sideFace)
+							if (isMergePipe(nextType)) {
+								handleMergePipe(data,nx,ny,nz,sidePipes, sideFace)
+							}
+							else sidePipes.add(sideFace)
 						}
 					}
 
@@ -340,6 +348,31 @@ object Pipes : IonServerComponent() {
 		sidePipes.add(sideFace)
 		sideFilters[sideFace] = filterData
 		sideFilterItems[sideFace] = combinedFilter
+	}
+	/** Helper function for filtering direction for grindstones by matching proposal with
+	 * grindstone direction
+	 * @param sideFace the proposed face its checking against
+	 * @param sidePipes the running list of next step directions*/
+	private fun handleMergePipe(
+		data: PipeChainData,
+		x: Int,
+		y: Int,
+		z: Int,
+		sidePipes: MutableList<BlockFace>,
+		sideFace: BlockFace
+	) {
+		//grindstones have unique block data that has to be handled in cases
+		val block: Grindstone = getBlockDataSafe(data.world,x,y,z) as Grindstone
+		val outFace: BlockFace = when {
+			block.attachedFace == org.bukkit.block.data.FaceAttachable.AttachedFace.CEILING ->
+				BlockFace.DOWN
+
+			block.attachedFace == org.bukkit.block.data.FaceAttachable.AttachedFace.FLOOR ->
+				BlockFace.UP
+
+			else -> block.facing
+		}
+		if (outFace == sideFace) sidePipes.add(sideFace)
 	}
 
 	private fun cacheFilterAndReschedule(
@@ -515,9 +548,10 @@ object Pipes : IonServerComponent() {
 	)
 
 	private fun canPipesTransfer(originType: Material, otherType: Material): Boolean =
-		(isAnyPipe(otherType) // it has to be any of the valid pipe types
-		&& (isColoredPipe(originType) == isColoredPipe(otherType)) // both are either colored pipes or not
-		&& colorMap[originType] == colorMap[otherType]) || (isTintedPipe(originType) || isTintedPipe(otherType))
+		isAnyPipe(otherType) && // it has to be any of the valid pipe types
+			((isColoredPipe(originType) == isColoredPipe(otherType) // both are either colored pipes or not
+		        && colorMap[originType] == colorMap[otherType])
+		    || (isWildCard(originType) || isWildCard(otherType)))
 
 
 	/**
