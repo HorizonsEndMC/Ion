@@ -358,6 +358,51 @@ object CustomItems {
 
 	val STEEL_PLATE = registerStackable("STEEL_PLATE", 10, text("Steel Plate"))
 
+	val STEEL_CHASSIS = register(
+		object : MineralItem(
+			identifier = "STEEL_CHASSIS",
+			material = IRON_INGOT,
+			customModelData = 41,
+			displayName = text("Steel Chassis").decoration(ITALIC, false)
+			)	{}
+	)
+
+	val STEEL_MODULE = register(
+		object : MineralItem(
+			identifier = "STEEL_MODULE",
+			material = IRON_INGOT,
+			customModelData = 42,
+			displayName = text("Steel Module").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val STEEL_ASSEMBLY = register(
+		object : MineralItem(
+			identifier = "STEEL_ASSEMBLY",
+			material = IRON_INGOT,
+			customModelData = 43,
+			displayName = text("Steel Assembly").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val REINFORCED_FRAME = register(
+		object : MineralItem(
+			identifier = "REINFORCED_FRAME",
+			material = IRON_INGOT,
+			customModelData = 44,
+			displayName = text("Reinforced Frame").decoration(ITALIC, false)
+		)	{}
+	)
+
+	val REACTOR_FRAME = register(
+		object : MineralItem(
+			identifier = "REACTOR_FRAME",
+			material = IRON_INGOT,
+			customModelData = 45,
+			displayName = text("Reactor Frame").decoration(ITALIC, false).decoration(BOLD, true)
+		)	{}
+	)
+
 	val ALUMINUM_INGOT = register(
 		object : MineralItem(
 			identifier = "ALUMINUM_INGOT",
@@ -707,9 +752,19 @@ object CustomItems {
 	val SUPERCONDUCTOR_CORE = register(
 		object : MineralItem(
 			identifier = "SUPERCONDUCTOR_CORE",
-			material = IRON_BLOCK,
+			material = IRON_INGOT,
 			customModelData = 35,
 			displayName = text("Superconductor Core").decoration(ITALIC, false).decoration(BOLD, true)
+		)	{}
+	)
+
+	val REACTOR_CORE = register(
+		object : CustomBlockItem(
+			identifier = "REACTOR_CORE",
+			material = IRON_BLOCK,
+			customModelData = 36,
+			displayName = text("Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
+			customBlockIdentifier = "REACTOR_CORE"
 		)	{}
 	)
 
