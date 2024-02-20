@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems.ADVANCED_CIRCUITY
 import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_PLATE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_BLOCK
@@ -12,8 +13,9 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIV
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
-import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUIT_BOARD
+import net.horizonsend.ion.server.features.customitems.CustomItems.CRUDE_FUEL
 import net.horizonsend.ion.server.features.customitems.CustomItems.DETONATOR
+import net.horizonsend.ion.server.features.customitems.CustomItems.ENHANCED_CIRCUITRY
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.FABRICATED_ASSEMBLY
@@ -22,7 +24,6 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_ROD_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.customitems.CustomItems.GUN_BARREL
-import net.horizonsend.ion.server.features.customitems.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.customitems.CustomItems.OXYGEN_TANK
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL_RECEIVER
@@ -453,6 +454,15 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', AIR)
 		}
 
+		// Crude Fuel Crafting
+		itemStackShapeRecipe("crude_fuel", CRUDE_FUEL.constructItemStack()) {
+			shape("xxx", "yzy", "xxx")
+
+			setIngredient('x', AIR)
+			setIngredient('y', GAS_CANISTER_EMPTY.constructItemStack())
+			setIngredient('z', DIAMOND)
+		}
+
 		// Detonator Crafting
 		itemStackShapeRecipe("detonator", DETONATOR.constructItemStack()) {
 			shape(" r ", "tut", " t ",)
@@ -605,15 +615,15 @@ object Crafting : IonServerComponent() {
 			addIngredient(REACTIVE_MEMBRANE.constructItemStack().asQuantity(9))
 		}
 
-		//Motherboard Crafting Recipe
-		itemStackShapelessRecipe("motherboard", MOTHERBOARD.constructItemStack()) {
-			addIngredient(CIRCUIT_BOARD.constructItemStack().asQuantity(9))
+		//Advanced Circuitry Crafting Recipe
+		itemStackShapelessRecipe("advancedCircuitry", ADVANCED_CIRCUITY.constructItemStack()) {
+			addIngredient(ENHANCED_CIRCUITRY.constructItemStack().asQuantity(9))
 		}
 
 		//Reactor Control Crafting
 		itemStackShapelessRecipe("reactorControl", REACTOR_CONTROL.constructItemStack()) {
 			addIngredient(FABRICATED_ASSEMBLY.constructItemStack().asQuantity(6))
-			addIngredient(MOTHERBOARD.constructItemStack().asQuantity(3))
+			addIngredient(ADVANCED_CIRCUITY.constructItemStack().asQuantity(3))
 		}
 
 		//Superconductor Crafting
@@ -629,7 +639,7 @@ object Crafting : IonServerComponent() {
 		//Superconductor Core Crafting
 		itemStackShapelessRecipe("superconductorCore", SUPERCONDUCTOR_CORE.constructItemStack()) {
 			addIngredient(SUPERCONDUCTOR_BLOCK.constructItemStack())
-			addIngredient(MOTHERBOARD.constructItemStack().asQuantity(4))
+			addIngredient(ADVANCED_CIRCUITY.constructItemStack().asQuantity(4))
 		}
 
 		//Reactor Core Crafting
