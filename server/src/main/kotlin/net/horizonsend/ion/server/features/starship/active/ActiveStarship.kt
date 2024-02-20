@@ -151,7 +151,8 @@ abstract class ActiveStarship (
 	val magazines = LinkedList<MagazineSubsystem>()
 	val gravityWells = LinkedList<GravityWellSubsystem>()
 	val drills = LinkedList<PlanetDrillSubsystem>()
-	val supercapReactor = LinkedList<SupercapReactorSubsystem>()
+	val supercapReactors = LinkedList<SupercapReactorSubsystem>()
+	val fuelTanks = LinkedList<FuelTankSubsystem>()
 
 	val weaponSets: HashMultimap<String, WeaponSubsystem> = HashMultimap.create()
 	val weaponSetSelections: HashBiMap<UUID, String> = HashBiMap.create()
