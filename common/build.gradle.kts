@@ -17,7 +17,7 @@ dependencies {
 	compileOnly("net.kyori:adventure-text-logger-slf4j:4.15.0")
 	compileOnly("net.kyori:adventure-text-minimessage:4.15.0")
 	compileOnly("net.kyori:adventure-text-serializer-plain:4.16.0")
-	compileOnly("net.kyori:adventure-text-serializer-gson:4.15.0")
+	compileOnly("net.kyori:adventure-text-serializer-gson:4.16.0")
 	compileOnly("net.kyori:adventure-text-serializer-legacy:4.16.0")
 
 	compileOnly("net.md-5:bungeecord-chat:1.20-R0.1")
