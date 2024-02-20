@@ -2,11 +2,11 @@ package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.server.features.starship.PilotedStarships.unpilot
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
-import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -14,7 +14,9 @@ import net.horizonsend.ion.server.features.starship.control.movement.PlayerStars
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.entityDamagerCache
 import net.horizonsend.ion.server.features.starship.subsystem.SupercapReactorSubsystem
+import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
+import net.horizonsend.ion.server.features.starship.subsystem.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -48,6 +50,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.syncRepeat(1L, 1L, this::chargeSubsystems)
 		Tasks.syncRepeat(5L, 5L, this::fireAutoWeapons)
 		Tasks.syncRepeat(60L, 60L, this::destroyLowHullIntegrityShips)
+		Tasks.syncRepeat(60L, 60L, this::unpilotFuellessBattlecruisers)
 		Tasks.syncRepeat(60L, 60L, this::destroyReactorlessBattlecruisers)
 		Tasks.syncRepeat(20L, 20L, this::tickPlayers)
 	}
@@ -115,10 +118,22 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 	}
 
+	private fun unpilotFuellessBattlecruisers() {
+		ActiveStarships.allControlledStarships().forEach { ship ->
+			if (ship.type == StarshipType.BATTLECRUISER) {
+				if (ship.fuelTanks.any{it.isFuelAvailable()}) return
+				else {
+					ship.userError("WARNING: Fuel depleted! Shutdown sequence initiated")
+					unpilot(ship)
+				}
+			}
+		}
+	}
+
 	private fun destroyReactorlessBattlecruisers() {
 		ActiveStarships.all().forEach { ship ->
 			if (ship.type == StarshipType.BATTLECRUISER) {
-				for (reactor: SupercapReactorSubsystem in ship.supercapReactor) {
+				for (reactor: SupercapReactorSubsystem in ship.supercapReactors) {
 					if (!reactor.isIntact()) {
 						ship.supercapReactorCount --
 					}
