@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.circuitfab
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
-import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUIT_BOARD
+import net.horizonsend.ion.server.features.customitems.CustomItems.ENHANCED_CIRCUITRY
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
@@ -102,7 +102,7 @@ abstract class CircuitfabMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 		if (fuel.customItem != CIRCUITRY) return
 		event.isCancelled = false
 		fuel.subtract(1)
-		if (result == null)  furnace.inventory.result = CIRCUIT_BOARD.constructItemStack()
+		if (result == null)  furnace.inventory.result = ENHANCED_CIRCUITRY.constructItemStack()
 		else result.add(1)
 		PowerMachines.removePower(sign, 300)
 	}
