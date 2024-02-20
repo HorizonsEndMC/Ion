@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblock
@@ -17,15 +18,8 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessSta
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
 import net.horizonsend.ion.server.features.multiblock.supercapreactor.SupercapReactorMultiblock
 import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.features.starship.subsystem.CryoSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.MagazineSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.PlanetDrillSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.*
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.SupercapReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.BoxShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
@@ -134,6 +128,10 @@ object SubsystemDetector {
 			is SupercapReactorMultiblock -> {
 				starship.subsystems += SupercapReactorSubsystem(starship, sign, multiblock)
 				starship.supercapReactorCount++
+			}
+
+			is FuelTankMultiblock -> {
+				starship.subsystems += FuelTankSubsystem(starship, sign, multiblock)
 			}
 
 			is HyperdriveMultiblock -> {
@@ -254,6 +252,7 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.magazines)
 		starship.subsystems.filterIsInstanceTo(starship.gravityWells)
 		starship.subsystems.filterIsInstanceTo(starship.drills)
-		starship.subsystems.filterIsInstanceTo(starship.supercapReactor)
+		starship.subsystems.filterIsInstanceTo(starship.supercapReactors)
+		starship.subsystems.filterIsInstanceTo(starship.fuelTanks)
 	}
 }
