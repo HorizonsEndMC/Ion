@@ -9,4 +9,6 @@ abstract class StarshipSubsystem(open val starship: ActiveStarship, var pos: Vec
 	 * @return True if it's undamaged, false if it's damaged beyond usability
 	 */
 	abstract fun isIntact(): Boolean
+
+	open fun tick() {}
 }

@@ -117,6 +117,8 @@ abstract class ActiveStarship (
 	/** Called on each server tick. */
 	fun tick() {
 		controller.tick()
+
+		subsystems.forEach { it.tick() }
 	}
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
