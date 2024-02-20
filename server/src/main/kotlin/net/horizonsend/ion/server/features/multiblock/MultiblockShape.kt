@@ -260,7 +260,7 @@ class MultiblockShape {
 		fun reactorCore() = customBlock(REACTOR_CORE)
 		fun stainedGlass() = filteredTypes { it.isStainedGlass }
 		fun anyGlass() = filteredTypes { it.isGlass }
-		fun seaLantern() = Material.SEA_LANTERN
+		fun seaLantern() = type(Material.SEA_LANTERN)
 		fun glassPane() = type(Material.GLASS_PANE)
 		fun stainedGlassPane() = filteredTypes { it.isStainedGlassPane }
 		fun anyGlassPane() = filteredTypes { it.isGlassPane }

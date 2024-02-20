@@ -28,12 +28,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.U
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.MagazineSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.PlanetDrillSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.*
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
@@ -144,6 +139,7 @@ abstract class ActiveStarship (
 
 	val subsystems = LinkedList<StarshipSubsystem>()
 	var drillCount = 0
+	var supercapReactorCount = 0
 
 	lateinit var reactor: ReactorSubsystem
 	val shields = LinkedList<ShieldSubsystem>()
@@ -155,6 +151,7 @@ abstract class ActiveStarship (
 	val magazines = LinkedList<MagazineSubsystem>()
 	val gravityWells = LinkedList<GravityWellSubsystem>()
 	val drills = LinkedList<PlanetDrillSubsystem>()
+	val supercapReactor = LinkedList<SupercapReactorSubsystem>()
 
 	val weaponSets: HashMultimap<String, WeaponSubsystem> = HashMultimap.create()
 	val weaponSetSelections: HashBiMap<UUID, String> = HashBiMap.create()
@@ -367,6 +364,7 @@ abstract class ActiveStarship (
 		}
 		hullIntegrity = currentBlockCount.toDouble() / initialBlockCount.toDouble()
 	}
+
 
 	fun getEntryRange(planet: CachedPlanet): Int {
 		return planet.atmosphereRadius + max(max.x - min.x, max.z - min.z) / 2 + 10
