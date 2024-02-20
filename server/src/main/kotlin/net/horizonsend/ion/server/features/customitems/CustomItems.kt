@@ -337,6 +337,24 @@ object CustomItems {
 		)	{}
 	)
 
+	val CRUDE_FUEL : MineralItem = register(
+		object : MineralItem(
+			identifier = "CRUDE_FUEL",
+			material = RAW_IRON,
+			customModelData = 421,
+			displayName = text("Crude Fuel").decoration(ITALIC, false)
+		), Smeltable { override val smeltResultIdentifier: String = "SHIP_FUEL" }
+	)
+
+	val REFINED_FUEL = register(
+		object : MineralItem(
+			identifier = "SHIP_FUEL",
+			material = IRON_INGOT,
+			customModelData = 422,
+			displayName = text("Refined Fuel").decoration(ITALIC, false)
+		)	{}
+	)
+
 	val STEEL_INGOT = register(
 		object : MineralItem(
 			identifier = "STEEL_INGOT",
@@ -703,21 +721,21 @@ object CustomItems {
 		)	{}
 	)
 
-	val CIRCUIT_BOARD = register(
+	val ENHANCED_CIRCUITRY = register(
 		object : MineralItem(
-			identifier = "CIRCUIT_BOARD",
+			identifier = "ENHANCED_CIRCUITRY",
 			material = IRON_INGOT,
 			customModelData = 30,
-			displayName = text("Circuit Board").decoration(ITALIC, false)
+			displayName = text("Enhanced Circuitry").decoration(ITALIC, false)
 		)	{}
 	)
 
-	val MOTHERBOARD = register(
+	val ADVANCED_CIRCUITY = register(
 		object : MineralItem(
-			identifier = "MOTHERBOARD",
+			identifier = "ADVANCED_CIRCUITRY",
 			material = IRON_INGOT,
 			customModelData = 31,
-			displayName = text("Motherboard").decoration(ITALIC, false)
+			displayName = text("Advanced Circuitry").decoration(ITALIC, false)
 		)	{}
 	)
 
