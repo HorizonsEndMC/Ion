@@ -7,7 +7,10 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_INGOT
 import net.horizonsend.ion.server.features.customblocks.CustomBlock
+import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_OXYGEN
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
@@ -22,20 +25,26 @@ abstract class OxygenFurnaceMultiblock	: Multiblock(), PowerStoringMultiblock, F
 		event.isBurning = false
 		event.burnTime = 200
 		val inventory = furnace.inventory
+		val result = inventory.result
 		val fuel = inventory.fuel
 		val smelting = inventory.smelting
+
 
 		if (smelting != null && smelting.type != Material.PRISMARINE_CRYSTALS) {
 			return
 		}
 
 		if (PowerMachines.getPower(sign) < 250) return
-		if (!furnace.inventory.containsAtLeast(ItemStack(Material.IRON_INGOT), 1)) return
-		if (fuel == null) return
+		if (fuel?.type == Material.IRON_INGOT) {
+			if (result == null) {
+				furnace.inventory.result = STEEL_INGOT.constructItemStack()
+			}
+			else furnace.inventory.result?.add(1)?.customItem?.constructItemStack()
+			furnace.inventory.fuel?.subtract(1)
+			PowerMachines.removePower(sign, 250)
+		}
 
-		furnace.inventory.addItem(STEEL_INGOT.constructItemStack())
-		furnace.inventory.fuel = furnace.inventory.fuel?.subtract(1)
-		PowerMachines.removePower(sign, 250)
+		else return
 	}
 
 	override val name = "oxygenfurnace"
@@ -73,12 +82,12 @@ abstract class OxygenFurnaceMultiblock	: Multiblock(), PowerStoringMultiblock, F
 		z(+2) {
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).oxygenTank()
+				x(+0).aluminumBlock()
 				x(+1).anyStairs()
 			}
 			y(+0) {
 				x(-1).anyStairs()
-				x(+0).oxygenTank()
+				x(+0).aluminumBlock()
 				x(+1).anyStairs()
 			}
 		}
