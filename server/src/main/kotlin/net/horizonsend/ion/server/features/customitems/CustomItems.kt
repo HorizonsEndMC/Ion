@@ -51,7 +51,7 @@ object CustomItems {
 		register(
 			object : ShellItem(
 				identifier = "UNLOADED_SHELL",
-				material = BONE,
+				material = IRON_INGOT,
 				customModelData = 511,
 				displayName = text("Unloaded Shell").decoration(ITALIC, false)
 			) {}
@@ -61,7 +61,7 @@ object CustomItems {
 		register(
 			object : ShellItem(
 				identifier = "LOADED_SHELL",
-				material = BONE,
+				material = IRON_INGOT,
 				customModelData = 512,
 				displayName = text("Loaded Shell").decoration(ITALIC, false)
 			) {}
@@ -340,7 +340,7 @@ object CustomItems {
 	val CRUDE_FUEL : MineralItem = register(
 		object : MineralItem(
 			identifier = "CRUDE_FUEL",
-			material = RAW_IRON,
+			material = IRON_INGOT,
 			customModelData = 421,
 			displayName = text("Crude Fuel").decoration(ITALIC, false)
 		), Smeltable { override val smeltResultIdentifier: String = "SHIP_FUEL" }
@@ -374,8 +374,14 @@ object CustomItems {
 			) {}
 	)
 
-	val STEEL_PLATE = registerStackable("STEEL_PLATE", 10, text("Steel Plate"))
-
+	val STEEL_PLATE = register(
+			object : MineralItem(
+					identifier = "STEEL_PLATE",
+					material = IRON_INGOT,
+					customModelData = 40,
+					displayName = text("Steel Plate").decoration(ITALIC, false)
+			)	{}
+	)
 	val STEEL_CHASSIS = register(
 		object : MineralItem(
 			identifier = "STEEL_CHASSIS",
