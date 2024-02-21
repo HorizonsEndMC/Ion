@@ -114,7 +114,7 @@ abstract class CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			sign: Sign
 	) {
 		event.isBurning = false
-		event.burnTime = 360000
+		event.burnTime = 200
 		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
 
