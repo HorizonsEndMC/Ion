@@ -70,6 +70,7 @@ import org.bukkit.Material.GLASS_PANE
 import org.bukkit.Material.GLOWSTONE
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GRINDSTONE
+import org.bukkit.Material.HAY_BLOCK
 import org.bukkit.Material.HOPPER
 import org.bukkit.Material.IRON_BARS
 import org.bukkit.Material.IRON_BLOCK
@@ -324,6 +325,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	CARROTS,
 	POTATOES,
 	BEETROOTS,
+	HAY_BLOCK,
 
 ).also {
 	it.addAll(CONCRETE_TYPES)
