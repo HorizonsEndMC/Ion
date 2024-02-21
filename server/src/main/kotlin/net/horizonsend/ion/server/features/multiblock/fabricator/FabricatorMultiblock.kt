@@ -31,7 +31,7 @@ abstract class FabricatorMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 				x(+1).ironBlock()
 				x(+2).anyStairs()
 			}
-			y(+1) {
+			y(+0) {
 				x(-2).anyStairs()
 				x(-1).craftingTable()
 				x(+0).machineFurnace()
@@ -103,7 +103,7 @@ abstract class FabricatorMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 	override val name = "fabricator"
 
 	override val signText = createSignText(
-			line1 = "&7Fabricator",
+			line1 = "&8Fabricator",
 			line2 = null,
 			line3 = null,
 			line4 = null
@@ -115,7 +115,7 @@ abstract class FabricatorMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			sign: Sign
 	) {
 		event.isBurning = false
-		event.burnTime = 720000
+		event.burnTime = 200
 		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
 

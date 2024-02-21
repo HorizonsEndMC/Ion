@@ -144,13 +144,17 @@ abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			furnace: Furnace,
 			sign: Sign
 	) {
+		println("1")
 		event.isBurning = false
 		event.burnTime = 200
 		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
+		println("2")
 
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
+		val result = furnace.inventory.result
+		println("3")
 
 		if (PowerMachines.getPower(sign) == 0 ||
 				smelting == null ||
@@ -167,13 +171,12 @@ abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 		val state = sign.block.getRelative(direction, 7).getState(false)
 				as? InventoryHolder ?: return
 		val inventory = state.inventory
-		if (!inventory.containsAtLeast(UNLOADED_TURRET_SHELL.constructItemStack(), 1)) {return}
-		if (!inventory.containsAtLeast(ItemStack(Material.GOLD_NUGGET), 1)) {return}
+		if (!state.inventory.containsAtLeast(UNLOADED_TURRET_SHELL.constructItemStack(), 1) || !state.inventory.containsAtLeast(ItemStack(Material.GOLD_NUGGET), 1)) return
 
-		event.isCancelled = false
-
-
-		furnace.inventory.addItem(LOADED_TURRET_SHELL.constructItemStack())
+		if (result == null) {
+			furnace.inventory.result = LOADED_TURRET_SHELL.constructItemStack()
+	}
+		else result.add(1)
 		inventory.removeItemAnySlot(UNLOADED_TURRET_SHELL.constructItemStack())
 		inventory.removeItemAnySlot(ItemStack(Material.GOLD_NUGGET))
 		PowerMachines.removePower(sign, 150)
