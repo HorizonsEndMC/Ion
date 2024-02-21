@@ -14,6 +14,7 @@ import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import javax.naming.Name
 
 object PowerMachines : IonServerComponent() {
 	override fun onEnable() {
@@ -26,9 +27,33 @@ object PowerMachines : IonServerComponent() {
 			Bukkit.addRecipe(recipe)
 		}
 
+		// Another hacky fix for turret ammo
+
+		val lapisLazuli = ItemStack(Material.LAPIS_LAZULI)
+		if (Bukkit.getRecipesFor(lapisLazuli).size >= 6) {
+			val key = NamespacedKey(IonServer, "bc_infrastructure_1")
+			val recipe = FurnaceRecipe(key, lapisLazuli, Material.PRISMARINE_CRYSTALS, 0.0f, 200)
+			Bukkit.addRecipe(recipe)
+		}
+
+		// Another hacky fix that fixes most BC infrastructure furnace recipes
+		val ironIngot = ItemStack(Material.IRON_INGOT)
+		if (Bukkit.getRecipesFor(ironIngot).size >= 28) {
+			val key = NamespacedKey(IonServer, "bc_infrastructure_2")
+			val recipe = FurnaceRecipe(key, ironIngot, Material.PRISMARINE_CRYSTALS, 0.0f, 200)
+			Bukkit.addRecipe(recipe)
+		}
+
+//		val oxidisedCopperBlock = ItemStack(Material.OXIDIZED_COPPER)
+//		if (Bukkit.getRecipesFor(oxidisedCopperBlock).size >= 0) {
+//			val key = NamespacedKey(IonServer, "bc_infrastructure_3")
+//			val recipe = FurnaceRecipe(key, oxidisedCopperBlock, Material.PRISMARINE_CRYSTALS, 0.0f, 200)
+//			Bukkit.addRecipe(recipe)
+//		}
+
 		// Another hacky fix that should be removed to make gas power plants work
 		val bone = ItemStack(Material.BONE)
-		if (Bukkit.getRecipesFor(bone).size == 0) {
+		if (Bukkit.getRecipesFor(bone).size >= 0) {
 			val key = NamespacedKey(IonServer, "gas_canisters")
 			val recipe = FurnaceRecipe(key, deadBush, Material.WARPED_FUNGUS_ON_A_STICK, 0.0f, 200)
 			Bukkit.addRecipe(recipe)
