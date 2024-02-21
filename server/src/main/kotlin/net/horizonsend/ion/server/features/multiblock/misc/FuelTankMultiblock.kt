@@ -54,7 +54,7 @@ object FuelTankMultiblock : Multiblock() {
 				x(+1).ironBlock()
 				x(+2).anyStairs()
 			}
-			y(+1) {
+			y(+0) {
 				x(-2).anyStairs()
 				x(-1).ironBlock()
 				x(+0).anyGlass()
