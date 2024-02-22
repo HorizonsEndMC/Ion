@@ -229,15 +229,21 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
+        val currentStarship = PilotedStarships[player]
+        val interdictionLocation = currentStarship?.centerOfMass?.toVector() ?: playerVector
+
         for (starship in starships) {
             val otherController = starship.controller
-            val vector = starship.centerOfMass.toVector()
+            val vector = when (otherController) {
+                is ActivePlayerController -> otherController.player.location.toVector()
+                else -> starship.centerOfMass.toVector()
+            }
 
             val distance = vector.distance(playerVector).toInt()
+            val interdictionDistance = starship.centerOfMass.toVector().distance(interdictionLocation).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
             val height = vector.y.toInt()
             val color = distanceColor(distance)
-            val currentStarship = PilotedStarships[player]
 
             contactsList.add(
                 ContactsData(
@@ -248,7 +254,7 @@ object ContactsSidebar {
                             autoTurretTextComponent(currentStarship, starship)
                         } else Component.empty(),
                         if (starship.isInterdicting) {
-                            interdictionTextComponent(distance, starship.balancing.interdictionRange, true)
+                            interdictionTextComponent(interdictionDistance, starship.balancing.interdictionRange, true)
                         } else Component.empty()
                     ),
                     heading = constructHeadingTextComponent(direction, color),
