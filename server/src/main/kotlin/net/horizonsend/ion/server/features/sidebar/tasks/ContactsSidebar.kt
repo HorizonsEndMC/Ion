@@ -117,10 +117,10 @@ object ContactsSidebar {
         return directionString.toString()
     }
 
-    // Main method for generating all contacts a player cna see
+    // Main method for generating all contacts a player can see
     fun getPlayerContacts(player: Player): List<ContactsData> {
         val contactsList: MutableList<ContactsData> = mutableListOf()
-        val playerVector = player.location.toVector()
+        val playerVector = PilotedStarships[player]?.centerOfMass?.toVector() ?: player.location.toVector()
 
         val starshipsEnabled = PlayerCache[player].contactsStarships
         val lastStarshipEnabled = PlayerCache[player].lastStarshipEnabled
@@ -231,10 +231,7 @@ object ContactsSidebar {
     ) {
         for (starship in starships) {
             val otherController = starship.controller
-            val vector = when (otherController) {
-                is ActivePlayerController -> otherController.player.location.toVector()
-                else -> starship.centerOfMass.toVector()
-            }
+            val vector = starship.centerOfMass.toVector()
 
             val distance = vector.distance(playerVector).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
