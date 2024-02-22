@@ -75,7 +75,7 @@ abstract class Tutorial {
 	}
 
 	protected fun moveToNextStep(player: Player) {
-		val phase: TutorialPhase? = playerPhases.remove(player.uniqueId)
+		val phase: TutorialPhase? = playerPhases[player.uniqueId]
 		requireNotNull(phase)
 
 		if (phase.announceCompletion) player.success("Completed $phase")
