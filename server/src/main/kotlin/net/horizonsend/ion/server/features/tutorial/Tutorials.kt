@@ -26,9 +26,7 @@ object Tutorials : IonServerComponent() {
 		tutorials.forEach { tutorial ->
 			tutorial.setup()
 
-			tutorial.phases.forEach {
-				it.setupHandlers()
-			}
+			tutorial.allPhases.forEach { it.setupHandlers() }
 		}
 	}
 
