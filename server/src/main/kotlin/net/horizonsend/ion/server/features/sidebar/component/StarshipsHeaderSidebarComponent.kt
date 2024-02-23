@@ -18,7 +18,7 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import org.bukkit.entity.Player
 
 class StarshipsHeaderSidebarComponent(starship: ActiveControlledStarship, player: Player) : SidebarComponent {
-    private val starshipName = starship.data.name ?: starship.type.displayName
+    private val starshipName = starship.getDisplayNamePlain()
     private val starshipIcon = starship.type.icon
     private val advancedStarshipInfo = PlayerCache[player.uniqueId].advancedStarshipInfo
     private val rotateCompass = PlayerCache[player.uniqueId].rotateCompass
