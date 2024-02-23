@@ -64,6 +64,7 @@ import java.util.function.Supplier
 import kotlin.math.roundToInt
 
 // budget minecraft registry lmao
+@Suppress("unused")
 object CustomItems {
 	// If we want to be extra fancy we can replace this with some fastutils thing later .
 	val ALL get() = customItems.values

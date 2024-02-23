@@ -16,23 +16,60 @@ import java.util.UUID
 abstract class Tutorial {
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
+	/*** Get the number position of this phase**/
+	protected fun getOrdinal(tutorialPhase: TutorialPhase): Int = phases.indexOf(tutorialPhase)
+
+	/*** Begin this tutorial for the player**/
+	abstract fun startTutorial(player: Player)
+
+	/*** End this tutorial for the player**/
+	abstract fun endTutorial(player: Player)
+
+	/**
+	 * Run at the initialization of the tutorial. Handle any code needed to set up the tutorial prior to use.
+	 **/
+	open fun setup() {}
+
+	/**
+	 * All the phases of this tutorial. Registered phases are added to this list.
+	 **/
+	protected val phases = mutableListOf<TutorialPhase>()
+
+	val allPhases get() = phases.toList()
+
 	protected  val playerPhases = mutableMapOf<UUID, TutorialPhase>()
 	protected  var readTimes = mutableMapOf<UUID, Long>()
 
-	abstract val phases: List<TutorialPhase>
-
+	/** First phase of the tutorial */
 	abstract val firstPhase: TutorialPhase
+	/** Last phase of the tutorial */
 	abstract val lastPhase: TutorialPhase
 
-	protected fun getOrdinal(tutorialPhase: TutorialPhase): Int = phases.indexOf(tutorialPhase)
-
-	abstract fun startTutorial(player: Player)
-	abstract fun endTutorial(player: Player)
-
-	open fun setup() {}
-
+	/**
+	 * Get the current phase of the player in this tutorial
+	 **/
 	fun getPhase(player: Player): TutorialPhase? = playerPhases[player.uniqueId]
 	fun isReading(player: Player): Boolean = (readTimes[player.uniqueId] ?: 0L) >= System.currentTimeMillis()
+
+	/**
+	 * Register this phase. Does not provide access to all available methods of tutorial phases. If those are needed, it should be created and registered manually.
+	 **/
+	fun registerSimplePhase(
+		vararg messages: TutorialMessage,
+		cancelEvent: Boolean = true,
+		announceCompletion: Boolean = false,
+		setupHandlers: TutorialPhase.() -> Unit,
+	): TutorialPhase {
+		val phase = object : TutorialPhase(this@Tutorial, *messages, cancelEvent = cancelEvent, announceCompletion = announceCompletion) {
+			override fun setupHandlers() {
+				setupHandlers.invoke(this)
+			}
+		}
+
+		phases.add(phase)
+
+		return phase
+	}
 
 	abstract class TutorialPhase(
 		val parent: Tutorial,
