@@ -60,7 +60,7 @@ dependencies {
     implementation("org.jgrapht:jgrapht-core:1.5.2")
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 
-	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.8.4")
+	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.9.0")
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }
