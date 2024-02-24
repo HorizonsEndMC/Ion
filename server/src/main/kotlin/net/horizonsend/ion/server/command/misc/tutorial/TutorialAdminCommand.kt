@@ -1,8 +1,9 @@
-package net.horizonsend.ion.server.command
+package net.horizonsend.ion.server.command.misc.tutorial
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.npcs.TutorialNPCs
 import net.horizonsend.ion.server.features.tutorial.npcs.TutorialNPCType
 import org.bukkit.entity.Player

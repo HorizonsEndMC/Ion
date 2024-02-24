@@ -98,6 +98,8 @@ object TutorialNPCs : IonServerComponent(true) {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {
+		if (!manager.contains(event.npc)) return
+
 		if (!IonServer.featureFlags.tutorials) {
 			event.clicker.serverError("Tutorials are not enabled on this server, this NPC was probably placed in error.")
 			return
