@@ -19,12 +19,12 @@ object TutorialCommand : SLCommand() {
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("tutorials") {
-			Tutorials.allTutorials().map { it.toString() }
+			Tutorials.allTutorials().map { tutorial -> tutorial.toString() }
 		}
 	}
 
 	@Subcommand("skip")
-	@CommandCompletion("tutorials")
+	@CommandCompletion("@tutorials")
 	fun onSkipPhase(sender: Player, tutorial: Tutorial) {
 		tutorial.getPhase(sender) ?: fail { "You are not currently in this tutorial" }
 
@@ -33,7 +33,7 @@ object TutorialCommand : SLCommand() {
 	}
 
 	@Subcommand("start")
-	@CommandCompletion("tutorials")
+	@CommandCompletion("@tutorials")
 	fun onStart(sender: Player, tutorial: Tutorial) {
 		sender.success("Starting tutorial ${tutorial::class.java.simpleName}")
 
