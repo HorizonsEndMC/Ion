@@ -13,7 +13,9 @@ import java.lang.ref.WeakReference
 
 object Tutorials : IonServerComponent() {
 	private val tutorials: Set<Tutorial> = setOf(
-		FlightTutorial
+		FlightTutorial,
+		//TODO IntroTutorial
+		// CombatTutorial
 	)
 
 	override fun onEnable() {
@@ -29,6 +31,8 @@ object Tutorials : IonServerComponent() {
 			tutorial.allPhases.forEach { it.setupHandlers() }
 		}
 	}
+
+	fun allTutorials() = tutorials.toList()
 
 	fun clearChunk(chunkReference: WeakReference<Chunk>) {
 		val chunk = chunkReference.get() ?: return

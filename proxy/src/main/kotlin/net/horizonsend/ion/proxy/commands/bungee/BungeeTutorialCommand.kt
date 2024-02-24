@@ -10,8 +10,8 @@ import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
-@CommandAlias("tutorial")
-class TutorialCommand : BaseCommand() {
+@CommandAlias("tutorialproxy|tproxy")
+class BungeeTutorialCommand : BaseCommand() {
 	@Default
 	fun onTest(sender: ProxiedPlayer) {
 		val wrapped = WrappedPlayer(sender)

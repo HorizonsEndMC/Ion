@@ -13,6 +13,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
+import net.horizonsend.ion.server.features.npcs.registries
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -107,6 +109,8 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	}
 
 	fun Player.hasProtection(): Boolean {
+		if (isCitizensLoaded && registries.any { it.getByUniqueId(uniqueId) != null }) return false
+
 		val player = PlayerCache[this]
 		val playerLevel = PlayerXPLevelCache[this]
 

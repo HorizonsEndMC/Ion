@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
+import io.papermc.paper.util.Tick
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.debug
@@ -42,6 +43,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.scheduler.BukkitRunnable
+import java.time.Duration
 import kotlin.reflect.jvm.isAccessible
 
 val vaultEconomy = try {
@@ -221,3 +223,5 @@ fun regeneratingBlockChange(source: Entity?, origin: Block, changedBlocks: Mutab
 
 	return blockExplodeEvent
 }
+
+fun Long.ticks(): Duration = Duration.of(this, Tick.tick())
