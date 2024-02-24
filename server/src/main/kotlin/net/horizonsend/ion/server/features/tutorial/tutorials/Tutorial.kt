@@ -2,9 +2,13 @@ package net.horizonsend.ion.server.features.tutorial.tutorials
 
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.tutorial.message.TutorialMessage
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
@@ -64,6 +68,18 @@ abstract class Tutorial {
 			override fun setupHandlers() {
 				setupHandlers.invoke(this)
 			}
+
+			val skipMessage = ofChildren(
+				text("Click "),
+				bracketed(text("this"))
+					.hoverEvent(text("/tutorial skip ${parent::class.java.simpleName}"))
+					.clickEvent(ClickEvent.runCommand("/tutorial skip ${parent::class.java.simpleName}")),
+				text(" button to skip to the next phase of the tutorial.")
+			)
+
+			override fun onStart(player: Player) {
+				player.sendMessage(skipMessage)
+			}
 		}
 
 		phases.add(phase)
@@ -111,7 +127,7 @@ abstract class Tutorial {
 		}
 	}
 
-	protected fun moveToNextStep(player: Player) {
+	fun moveToNextStep(player: Player) {
 		val phase: TutorialPhase? = playerPhases[player.uniqueId]
 		requireNotNull(phase)
 

@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.paste
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameSimple
+import net.kyori.adventure.text.Component.keybind
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
@@ -62,15 +63,15 @@ import java.time.Duration
 import kotlin.math.abs
 
 @Suppress("unused")
-object FlightTutorial : Tutorial() {
-	val GET_SHIP_CONTROLLER = registerSimplePhase(
-		PopupMessage(text("Tutorial", DARK_AQUA), text("You can leave by doing /tutorialexit", DARK_RED)),
-		PopupMessage(text("Tutorial", DARK_AQUA), ofChildren(HORIZONS_END, text(" has unique features to learn like spaceships", DARK_GREEN))),
-		PopupMessage(text("Tutorial", DARK_AQUA), text("This tutorial teaches you how to fly a spaceship!")),
+data object FlightTutorial : Tutorial() {
+	private val GET_SHIP_CONTROLLER = registerSimplePhase(
+		PopupMessage(subtitle = text("You can leave by doing /tutorialexit", DARK_RED)),
+		PopupMessage(subtitle = ofChildren(HORIZONS_END, text(" has unique features to learn like spaceships", DARK_GREEN))),
+		PopupMessage(subtitle = text("This tutorial teaches you how to fly a spaceship!")),
 		PopupMessage(text("Controller", BLUE), text("First, you need a ship controller")),
-		PopupMessage(text("Controller", BLUE), text("Ship controllers are needed to fly ships")),
-		PopupMessage(text("Controller", BLUE), text("You can always get one with /kit controller")),
-		PopupMessage(text("Controller", BLUE), text("Enter the command: /kit controller", GOLD, BOLD)),
+		PopupMessage(subtitle = text("Ship controllers are needed to fly ships")),
+		PopupMessage(subtitle = text("You can always get one with /kit controller")),
+		PopupMessage(subtitle = text("Enter the command: /kit controller", GOLD, BOLD)),
 		cancelEvent = false
 	) {
 		on<PlayerCommandPreprocessEvent>({ it.player }) on@{ event, player ->
@@ -85,10 +86,10 @@ object FlightTutorial : Tutorial() {
 		}
 	}
 
-	val PLACE_SHIP_COMPUTER = registerSimplePhase(
+	private val PLACE_SHIP_COMPUTER = registerSimplePhase(
 		PopupMessage(text("Computer", DARK_PURPLE), text("Now you need a ship computer")),
-		PopupMessage(text("Computer", DARK_PURPLE), text("Ship computers are used to start the ship")),
-		ActionMessage(text("Computer", DARK_PURPLE), text("You have been given one ship computer")) { player ->
+		PopupMessage(subtitle = text("Ship computers are used to start the ship")),
+		ActionMessage(subtitle = text("You have been given one ship computer")) { player ->
 			val item = ItemStack(Material.JUKEBOX, 1).setDisplayNameSimple("Starship Computer")
 
 			player.inventory.addItem(item).forEach { (_, leftover) ->
@@ -100,9 +101,9 @@ object FlightTutorial : Tutorial() {
 		on<BlockPlaceEvent>({ it.player }) { event, player -> if (event.block.type == Material.JUKEBOX) moveToNextStep(player) }
 	}
 
-	val OPEN_COMPUTER_MENU = registerSimplePhase(
+	private val OPEN_COMPUTER_MENU = registerSimplePhase(
 		PopupMessage(text("Computer Menu", DARK_AQUA), text("Ship computers are used via their menu")),
-		PopupMessage(text("Computer Menu", DARK_AQUA), text("Left click computer with controller (clock)", GOLD, BOLD))
+		PopupMessage(subtitle = text("Left click computer with controller (clock)", GOLD, BOLD))
 	) {
 		on<StarshipComputerOpenMenuEvent>({ it.player }) { _, player ->
 			moveToNextStep(player)
@@ -110,44 +111,44 @@ object FlightTutorial : Tutorial() {
 		}
 	}
 
-	val DETECT_SHIP = registerSimplePhase(
+	private val DETECT_SHIP = registerSimplePhase(
 		PopupMessage(text("Detection", GOLD), text("Now you need to detect the ship")),
-		PopupMessage(text("Detection", GOLD), text("Detecting determines which blocks are your ship")),
-		PopupMessage(text("Detection", GOLD), text("Some block types are detected, but not stone etc")),
-		PopupMessage(text("Detection", GOLD), text("Use the ship computer to detect")),
-		PopupMessage(text("Detection", GOLD), "<yellow><bold>Open the menu again & click <dark_purple><bold>Re-Detect".miniMessage())
+		PopupMessage(subtitle = text("Detecting determines which blocks are your ship")),
+		PopupMessage(subtitle = text("Some block types are detected, but not stone etc")),
+		PopupMessage(subtitle = text("Use the ship computer to detect")),
+		PopupMessage(subtitle = "<yellow><bold>Open the menu again & click <dark_purple><bold>Re-Detect".miniMessage())
 	) {
 		on<StarshipDetectedEvent>({ it.player }) { _, player ->
 			moveToNextStep(player)
 		}
 	}
 
-	val PILOT_SHIP = registerSimplePhase(
+	private val PILOT_SHIP = registerSimplePhase(
 		PopupMessage(text("Piloting", GREEN), text("Now you need to pilot the ship")),
-		PopupMessage(text("Piloting", GREEN), text("Ships only move while they are piloted")),
-		PopupMessage(text("Piloting", GREEN), text("Additionally, shields only work while piloted")),
-		PopupMessage(text("Piloting", GREEN), text("Right click computer with controller (clock)", GOLD, BOLD))
+		PopupMessage(subtitle = text("Ships only move while they are piloted")),
+		PopupMessage(subtitle = text("Additionally, shields only work while piloted")),
+		PopupMessage(subtitle = text("Right click computer with controller (clock)", GOLD, BOLD))
 	) {
 		on<StarshipPilotEvent>({ it.player }) { _, player -> moveToNextStep(player) }
 	}
 
-	val SHIFT_FLY_FORWARD = registerSimplePhase(
+	private val SHIFT_FLY_FORWARD = registerSimplePhase(
 		PopupMessage(text("Moving", LIGHT_PURPLE), text("You can move ships while piloted")),
-		PopupMessage(text("Moving", LIGHT_PURPLE), text("There are various ways to move ships")),
-		PopupMessage(text("Moving", LIGHT_PURPLE), text("The most basic way is 'shift' flying")),
-		PopupMessage(text("Moving", LIGHT_PURPLE), text("To shift fly, first hold your controller")),
-		PopupMessage(text("Moving", LIGHT_PURPLE), text("Then, hold the sneak key (default key shift)")),
-		PopupMessage(text("Moving", LIGHT_PURPLE), text("This moves you the way you're facing")),
-		PopupMessage(text("Moving", LIGHT_PURPLE), text("For practice, shift fly forwards")),
-		PopupMessage(text("Moving", LIGHT_PURPLE), text("Hold the controller, face the window, & sneak", GOLD, BOLD))
+		PopupMessage(subtitle = text("There are various ways to move ships")),
+		PopupMessage(subtitle = text("The most basic way is 'shift' flying")),
+		PopupMessage(subtitle = text("To shift fly, first hold your controller")),
+		PopupMessage(subtitle = text("Then, hold the sneak key (default key shift)")),
+		PopupMessage(subtitle = text("This moves you the way you're facing")),
+		PopupMessage(subtitle = text("For practice, shift fly forwards")),
+		PopupMessage(subtitle = text("Hold the controller, face the window, & sneak", GOLD, BOLD))
 	) {
 		on<StarshipTranslateEvent>({ it.starship.playerPilot }) { _, player -> moveToNextStep(player) }
 	}
 
-	val SHIFT_FLY_DOWN = registerSimplePhase(
+	private val SHIFT_FLY_DOWN = registerSimplePhase(
 		PopupMessage(text("Moving Down", DARK_GREEN), text("You can shift fly any direction, even down")),
-		PopupMessage(text("Moving Down", DARK_GREEN), text("Shift flying down lets you land on a planet")),
-		PopupMessage(text("Moving Down", DARK_GREEN), text("Hold the controller, face down, & sneak", GOLD, BOLD)),
+		PopupMessage(subtitle = text("Shift flying down lets you land on a planet")),
+		PopupMessage(subtitle = text("Hold the controller, face down, & sneak", GOLD, BOLD)),
 		cancelEvent = false // let them keep shift flying forward
 	) {
 		on<StarshipTranslateEvent>({ it.starship.playerPilot }) { event, player ->
@@ -159,51 +160,50 @@ object FlightTutorial : Tutorial() {
 		}
 	}
 
-	val TURN_RIGHT = registerSimplePhase(
+	private val TURN_RIGHT = registerSimplePhase(
 		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Besides moving, you can turn your ship")),
-		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Ships can face the 4 directions (N/E/S/W)")),
-		PopupMessage(text("Rotating", LIGHT_PURPLE), text("To turn your ship, you can use the helm sign")),
-		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Right click the sign with [helm] on it")),
-		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Then, holding the controller, click again")),
-		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Right click to turn right, left click for left")),
-		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Hold the controller, right click the helm sign", GOLD, BOLD))
-	) {
-		on<StarshipRotateEvent>({ it.starship.playerPilot }) { event, player ->
-			if (event.clockwise) moveToNextStep(player)
-		}
-	}
-
-	val TURN_LEFT = registerSimplePhase(
-		PopupMessage(text("Rotating", LIGHT_PURPLE), text("Now left click the helm sign", GOLD, BOLD)),
-		cancelEvent = false // let them rotate
+		PopupMessage(subtitle = text("To turn your ship, you can use the helm sign or via your ship controller.")),
+		PopupMessage(subtitle = ofChildren(text("Hold your controller and press the "), keybind("key.drop"), text(" key."))),
+		PopupMessage(subtitle = ofChildren(text("Then, still holding the controller, press "), keybind("key.swapOffhand"))),
+		PopupMessage(subtitle = ofChildren(keybind("key.drop"), text(" to turn left, "), keybind("key.swapOffhand"), text(" to turn right."))),
+		PopupMessage(subtitle = ofChildren(text("Hold the controller, and press ", GOLD, BOLD), keybind("key.drop", GOLD, BOLD), text(" to turn left.", GOLD, BOLD)))
 	) {
 		on<StarshipRotateEvent>({ it.starship.playerPilot }) { event, player ->
 			if (!event.clockwise) moveToNextStep(player)
 		}
 	}
 
-	val CRUISE_START = registerSimplePhase(
+	private val TURN_LEFT = registerSimplePhase(
+		PopupMessage(subtitle = ofChildren(text("Now press ", GOLD, BOLD), keybind("key.swapOffhand", GOLD, BOLD), text(" to turn right.", GOLD, BOLD))),
+		cancelEvent = false // let them rotate
+	) {
+		on<StarshipRotateEvent>({ it.starship.playerPilot }) { event, player ->
+			if (event.clockwise) moveToNextStep(player)
+		}
+	}
+
+	private val CRUISE_START = registerSimplePhase(
 		PopupMessage(text("Cruising", BLUE), text("Cruise to move steadily over long distances")),
-		PopupMessage(text("Cruising", BLUE), text("Cruising uses thrusters to determine speed")),
-		PopupMessage(text("Cruising", BLUE), text("To cruise, right click the [cruise] sign")),
-		PopupMessage(text("Cruising", BLUE), text("Right click again to cruise")),
-		PopupMessage(text("Cruising", BLUE), text("Cruising works forwards and diagonally of it")),
-		PopupMessage(text("Cruising", BLUE), text("If you can't face the right way, turn the ship")),
-		PopupMessage(text("Cruising", BLUE), text("Hold the controller & right click cruise sign", GOLD, BOLD))
+		PopupMessage(subtitle = text("Cruising uses thrusters to determine speed")),
+		PopupMessage(subtitle = text("To cruise, right click the [cruise] sign")),
+		PopupMessage(subtitle = text("Right click again to cruise")),
+		PopupMessage(subtitle = text("Cruising works forwards and diagonally of it")),
+		PopupMessage(subtitle = text("If you can't face the right way, turn the ship")),
+		PopupMessage(subtitle = text("Hold the controller & right click cruise sign", GOLD, BOLD))
 	) {
 		on<StarshipStartCruisingEvent>({ it.starship.playerPilot }) { event, player -> moveToNextStep(player) }
 	}
 
-	val CRUISE_STOP = registerSimplePhase(
+	private val CRUISE_STOP = registerSimplePhase(
 		PopupMessage(text("Stop Cruising", BLUE), text("Left click the cruise sign to stop", GOLD, BOLD))
 	) {
 		on<StarshipStopCruisingEvent>({ it.starship.playerPilot }) { event, player -> moveToNextStep(player) }
 	}
 
-	val ReleaseShip = registerSimplePhase(
+	private val ReleaseShip = registerSimplePhase(
 		PopupMessage(text("Releasing", GRAY), text("When done flying, release to stop piloting")),
-		PopupMessage(text("Releasing", GRAY), text("Releasing also lets you leave the ship")),
-		PopupMessage(text("Releasing", GRAY), text("Type /release or right click the computer", YELLOW, BOLD))
+		PopupMessage(subtitle = text("Releasing also lets you leave the ship")),
+		PopupMessage(subtitle = text("Type /release or right click the computer", YELLOW, BOLD))
 	) {
 		on<StarshipUnpilotEvent>({ (it.controller as? PlayerController)?.player }) { event, player ->
 			event.isCancelled = true
@@ -215,7 +215,7 @@ object FlightTutorial : Tutorial() {
 	override val firstPhase: TutorialPhase = GET_SHIP_CONTROLLER
 	override val lastPhase: TutorialPhase = ReleaseShip
 
-	private val WORLD_NAME: String = "FlightTutorial"
+	private const val WORLD_NAME: String = "FlightTutorial"
 
 	override fun setup() {
 		listen<StarshipRotateEvent> { event ->
