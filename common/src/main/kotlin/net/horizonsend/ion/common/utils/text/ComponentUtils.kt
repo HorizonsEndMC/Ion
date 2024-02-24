@@ -3,6 +3,7 @@ package net.horizonsend.ion.common.utils.text
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toText
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -71,3 +72,7 @@ fun text(string: String, decoration: TextDecoration): Component = text(string, s
 
 val HORIZONS_END = text("Horizon's End", HE_LIGHT_GRAY, BOLD)
 val HORIZONS_END_BRACKETED = bracketed(text("Horizon's End", HE_LIGHT_GRAY, BOLD))
+
+fun Audience.sendMessage(vararg message: Component) {
+	sendMessage(ofChildren(*message))
+}
