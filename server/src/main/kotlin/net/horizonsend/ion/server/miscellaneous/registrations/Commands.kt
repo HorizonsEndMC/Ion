@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.command.TutorialAdminCommand
 import net.horizonsend.ion.server.command.admin.AdminCommands
 import net.horizonsend.ion.server.command.admin.BatteryCommand
 import net.horizonsend.ion.server.command.admin.ConvertCommand
@@ -31,6 +30,8 @@ import net.horizonsend.ion.server.command.misc.RegenerateCommand
 import net.horizonsend.ion.server.command.misc.ShipFactoryCommand
 import net.horizonsend.ion.server.command.misc.ShuttleCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
+import net.horizonsend.ion.server.command.misc.tutorial.TutorialAdminCommand
+import net.horizonsend.ion.server.command.misc.tutorial.TutorialCommand
 import net.horizonsend.ion.server.command.nations.NationCommand
 import net.horizonsend.ion.server.command.nations.NationRelationCommand
 import net.horizonsend.ion.server.command.nations.SettlementCommand
@@ -64,7 +65,6 @@ import net.horizonsend.ion.server.command.starship.RainbowProjectileCommand
 import net.horizonsend.ion.server.command.starship.StarshipDebugCommand
 import net.horizonsend.ion.server.command.starship.StarshipInfoCommand
 import net.horizonsend.ion.server.command.starship.StarshipsCommand
-import net.horizonsend.ion.server.command.starship.TutorialStartStopCommand
 import net.horizonsend.ion.server.command.starship.ai.AIDebugCommand
 import net.horizonsend.ion.server.configuration.ConfigurationCommands
 import net.horizonsend.ion.server.features.client.commands.HudCommand
@@ -72,9 +72,9 @@ import net.horizonsend.ion.server.features.gui.custom.settings.commands.Settings
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection
 import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
 import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
-import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.player.NewPlayerProtection
 import net.horizonsend.ion.server.features.progression.achievements.AchievementsCommand
+import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarStarshipsCommand
@@ -132,7 +132,6 @@ val commands: List<SLCommand> = listOf(
 	BlueprintCommand,
 	StarshipDebugCommand,
 	AIDebugCommand,
-	TutorialStartStopCommand,
 	StarshipInfoCommand,
 
 	StarshipsCommand,
@@ -145,7 +144,7 @@ val commands: List<SLCommand> = listOf(
 	ConfigurationCommands,
 	WorldCommand,
 	ConvertCommand,
-	CustomItemCommand,
+	net.horizonsend.ion.server.features.customitems.commands.CustomItemCommand,
 	IonCommand,
 	SearchCommand,
 	CalcExpCommand,
@@ -173,5 +172,6 @@ val commands: List<SLCommand> = listOf(
 	SettingsCommand,
 
 	HelpCommand,
-	TutorialAdminCommand
+	TutorialAdminCommand,
+	TutorialCommand
 )

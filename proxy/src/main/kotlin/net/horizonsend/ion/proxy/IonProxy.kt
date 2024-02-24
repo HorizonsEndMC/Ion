@@ -7,9 +7,9 @@ import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.proxy.commands.bungee.BungeeInfoCommand
+import net.horizonsend.ion.proxy.commands.bungee.BungeeTutorialCommand
 import net.horizonsend.ion.proxy.commands.bungee.MessageCommand
 import net.horizonsend.ion.proxy.commands.bungee.ReplyCommand
-import net.horizonsend.ion.proxy.commands.bungee.TutorialCommand
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import net.horizonsend.ion.proxy.wrappers.WrappedProxy
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences
@@ -55,7 +55,7 @@ class IonProxy : Plugin() {
 			registerCommand(BungeeInfoCommand())
 			registerCommand(MessageCommand())
 			registerCommand(ReplyCommand())
-			registerCommand(TutorialCommand())
+			registerCommand(BungeeTutorialCommand())
 		}
 
 		DBManager.INITIALIZATION_COMPLETE = true
