@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.sidebar.command
 
 import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
@@ -16,7 +15,6 @@ import org.litote.kmongo.setValue
 
 @CommandAlias("sidebar")
 object SidebarWaypointsCommand : SLCommand() {
-    @Default
     @Suppress("unused")
     @Subcommand("route")
     fun defaultCase(

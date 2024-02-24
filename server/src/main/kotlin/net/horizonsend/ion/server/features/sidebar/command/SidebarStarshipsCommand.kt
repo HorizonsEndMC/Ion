@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.sidebar.command
 
 import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -15,7 +14,6 @@ import org.litote.kmongo.setValue
 
 @CommandAlias("sidebar")
 object SidebarStarshipsCommand : SLCommand() {
-    @Default
     @Subcommand("starship")
     @Suppress("unused")
     fun defaultCase(
