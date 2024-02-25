@@ -17,7 +17,7 @@ import net.horizonsend.ion.server.command.admin.debug
 object SetPowerCommand : SLCommand() {
 	@Default
 	@Suppress("unused")
-	fun onSetPower(sender: Player, amount: Int){
+	fun onSetPower(sender: Player, amount: Int, limited: Boolean){
 		val maxSelectionVolume = 200000
 		val selection = sender.getSelection() ?: return
 		if(selection.volume > maxSelectionVolume) {
@@ -41,7 +41,7 @@ object SetPowerCommand : SLCommand() {
 			val sign = block.state as? org.bukkit.block.Sign ?: continue
 			sender.debug("sign found at $x $y $z")
 
-			setPower(sign, amount, false)
+			setPower(sign, amount, !limited)
 			sender.debug("power sent")
 		}
 		sender.success("Set multiblock power to $amount.")
