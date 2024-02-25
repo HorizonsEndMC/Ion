@@ -20,6 +20,7 @@ import org.bukkit.Color
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityToggleGlideEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
@@ -194,5 +195,11 @@ object PowerArmorListener : SLEventListener() {
 					return
 				}
 		}
+	}
+
+	@EventHandler
+	fun onEntityToggleGlideEvent(event: EntityToggleGlideEvent) {
+		val player = event.entity as? Player ?: return
+		if(player.isGliding) event.isCancelled = true
 	}
 }
