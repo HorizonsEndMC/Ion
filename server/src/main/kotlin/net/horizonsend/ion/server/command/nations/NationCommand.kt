@@ -247,8 +247,11 @@ internal object NationCommand : SLCommand() {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.SETTLEMENT_INVITE)
 
-		val invitedSettlements = Nation.findPropById(nationId, Nation::invites)
-		sender.sendMessage(nationMessageFormat("Invited Settlements: {0}", invitedSettlements?.joinToString { SettlementCache[it].name }))
+		val invitedSettlements = Nation.findPropById(nationId, Nation::invites)?.toList() ?: fail { "Something has gone wrong with your nation, please contact an admin." }
+
+		if (invitedSettlements.isEmpty()) return@asyncCommand sender.sendMessage(nationMessageFormat("You do not have any invited settlements."))
+
+		sender.sendMessage(nationMessageFormat("Invited Settlements: {0}", invitedSettlements.joinToString { SettlementCache[it].name }))
 	}
 
 	@Suppress("unused")
