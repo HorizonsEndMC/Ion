@@ -70,7 +70,7 @@ data class SLPlayer(
 	var planetsEnabled: Boolean = true,
 	var starsEnabled: Boolean = true,
 	var beaconsEnabled: Boolean = true,
-	var stationsEnabled: Boolean = true,
+	var stationsEnabled: Boolean = false,
 	var bookmarksEnabled: Boolean = true,
 	var waypointsEnabled: Boolean = true,
 	var compactWaypoints: Boolean = true,

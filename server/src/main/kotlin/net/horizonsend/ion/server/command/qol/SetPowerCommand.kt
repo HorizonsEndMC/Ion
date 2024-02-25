@@ -40,7 +40,7 @@ object SetPowerCommand : SLCommand() {
 			if (!block.type.isWallSign) continue
 			val sign = block.state as? org.bukkit.block.Sign ?: continue
 			sender.debug("sign found at $x $y $z")
-
+      
 			setPower(sign, amount, !limited)
 			sender.debug("power sent")
 		}
