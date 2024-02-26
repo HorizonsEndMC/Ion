@@ -150,6 +150,15 @@ object Crafting : IonServerComponent() {
 			setIngredient('a', AIR)
 		}
 
+		// Nametag
+		shapedRecipe("nametag", NAME_TAG) {
+			shape("s","t","p")
+
+			setIngredient('s', STRING)
+			setIngredient('t', TRIPWIRE_HOOK)
+			setIngredient('p', PAPER)
+		}
+
 		// Iron Horse Armor
 		shapedRecipe("Iron_horse_armor", IRON_HORSE_ARMOR) {
 			shape("iai", "iii", "iai")
@@ -172,14 +181,6 @@ object Crafting : IonServerComponent() {
 
 			setIngredient('d', DIAMOND)
 			setIngredient('a', AIR)
-		}
-
-		// Name Tag
-		shapedRecipe("name_tag", NAME_TAG) {
-			shape("spp")
-
-			setIngredient('s', STRING)
-			setIngredient('p', PAPER)
 		}
 
 		// Ochre Froglight
