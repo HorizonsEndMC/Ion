@@ -26,7 +26,7 @@ class HyperspaceMovement(
 	val speed: Int,
 	val originWorld: World,
 	val dest: Location
-	) : BukkitRunnable() {
+) : BukkitRunnable() {
 	var x = ship.centerOfMass.x.toDouble()
 	val originX = x
 	var z = ship.centerOfMass.z.toDouble()
