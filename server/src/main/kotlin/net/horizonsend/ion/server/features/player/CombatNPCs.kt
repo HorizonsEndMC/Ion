@@ -4,18 +4,16 @@ import net.citizensnpcs.api.event.NPCDamageByEntityEvent
 import net.citizensnpcs.api.event.NPCDamageEvent
 import net.citizensnpcs.api.event.NPCDeathEvent
 import net.citizensnpcs.api.npc.NPC
-import net.citizensnpcs.api.npc.NPCRegistry
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.npcs.createNamedMemoryRegistry
+import net.horizonsend.ion.server.features.npcs.NPCManager
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.firsts
 import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.text.Component.text
@@ -23,7 +21,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
@@ -47,9 +44,11 @@ object CombatNPCs : IonServerComponent(true) {
 	private val inventories: MutableMap<Int, Array<ItemStack?>> = mutableMapOf()
 	val npcToPlayer = mutableMapOf<UUID, Pair<NPC, Location>>()
 
-	private lateinit var combatNpcRegistry: NPCRegistry
+	val manager = NPCManager(log, "CombatNPCs")
 
 	override fun onEnable() {
+		manager.enableRegistry()
+
 		// weirdness happens when someone already logged in logs on. this is my hacky fix.
 		val lastJoinMap = mutableMapOf<UUID, Long>()
 
@@ -60,8 +59,6 @@ object CombatNPCs : IonServerComponent(true) {
 
 			lastJoinMap[playerId] = System.currentTimeMillis()
 		}
-
-		combatNpcRegistry = createNamedMemoryRegistry(log, "combat-npcs")
 
 		//when a player quits, create a combat npc
 		listen<PlayerQuitEvent> { event ->
@@ -86,11 +83,15 @@ object CombatNPCs : IonServerComponent(true) {
 
 			val location = player.location
 
-			val npc = combatNpcRegistry.createNPC(EntityType.PLAYER, player.name, player.location)
-
-			npc.entity.customName(text("${player.name} [NPC]"))
-			npc.isProtected = false
-			npc.spawn(player.location)
+			val npc = manager.createNPC(
+				player.name,
+				UUID.randomUUID(),
+				3000 + manager.allNPCs().size,
+				player.location
+			) { npc ->
+				npc.entity.customName(text("${player.name} [NPC]"))
+				npc.isProtected = false
+			}
 
 			inventories[npc.id] = inventoryCopy
 			npcToPlayer[playerId] = npc to location
@@ -206,6 +207,7 @@ object CombatNPCs : IonServerComponent(true) {
 
 		listen<PlayerDeathEvent>(priority = EventPriority.LOWEST) { event ->
 			if (event.player.isCombatNpc()) return@listen
+
 			val data = SLPlayer[event.player]
 			if (data.wasKilled) {
 				event.drops.clear()
@@ -217,20 +219,19 @@ object CombatNPCs : IonServerComponent(true) {
 	}
 
 	override fun onDisable() {
-		npcToPlayer.values.firsts().forEach(CombatNPCs::destroyNPC)
+		manager.disableRegistry()
 	}
 
 	fun destroyNPC(npc: NPC): CompletableFuture<Unit> =
 		npc.storedLocation.world.getChunkAtAsync(npc.storedLocation).thenApply { _ ->
-			npc.storedLocation.chunk.removePluginChunkTicket(IonServer)
+			manager.removeNPC(npc.uniqueId)
 
-			npc.destroy()
-			combatNpcRegistry.deregister(npc)
+			npc.storedLocation.chunk.removePluginChunkTicket(IonServer)
 		}
 
 	/** Bukkit treats NPCs as Player **/
 	fun Player.isCombatNpc() : Boolean {
-		return combatNpcRegistry.getByUniqueId(uniqueId) == null
+		return manager.isNpc(this)
 	}
 }
 

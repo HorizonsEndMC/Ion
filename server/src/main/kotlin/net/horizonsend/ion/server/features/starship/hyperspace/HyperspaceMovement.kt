@@ -20,7 +20,7 @@ class HyperspaceMovement(
 	val speed: Int,
 	val originWorld: World,
 	val dest: Location
-	) : BukkitRunnable() {
+) : BukkitRunnable() {
 	var x = ship.centerOfMass.x.toDouble()
 	var z = ship.centerOfMass.z.toDouble()
 	private val direction = dest.toVector().subtract(ship.centerOfMass.toVector()).normalize()
