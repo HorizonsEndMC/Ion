@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toText
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -16,6 +17,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
+// Serialization
 /** Skip building the serializer */
 val miniMessage = MiniMessage.miniMessage()
 
@@ -28,13 +30,11 @@ val plainText = PlainTextComponentSerializer.plainText()
 /** Converts the provided Component to a string using the PlainText serializer. */
 fun ComponentLike.plainText(): String = plainText.serialize(this.asComponent())
 
+// Component manipulation
 operator fun Component.plus(other: ComponentLike): Component = this.append(other)
 
 /** Shorthand for Component#textOfChildren */
 fun ofChildren(vararg children: ComponentLike) = Component.textOfChildren(*children)
-
-/** Analogue of Any#toString */
-fun Any.toComponent(color: TextColor = WHITE, vararg decorations: TextDecoration): Component = text(toString(), color, *decorations)
 
 /**
  * Formats the number into credit format, so it is rounded to the nearest hundredth,
@@ -58,8 +58,15 @@ fun Iterable<ComponentLike>.join(separator: Component? = text(", ")): Component 
 	return builder.build()
 }
 
+fun text(string: String, decoration: TextDecoration): Component = text(string, style(decoration))
+
+/** Analogue of Any#toString */
+fun Any.toComponent(color: TextColor = WHITE, vararg decorations: TextDecoration): Component = text(toString(), color, *decorations)
+
 /** Returns an empty component if the provided component was null */
 fun Component?.orEmpty(): Component = this ?: empty()
+
+// Shortcuts
 
 // Allow static imports
 val OBFUSCATED = TextDecoration.OBFUSCATED
@@ -68,11 +75,12 @@ val STRIKETHROUGH = TextDecoration.STRIKETHROUGH
 val UNDERLINED = TextDecoration.UNDERLINED
 val ITALIC = TextDecoration.ITALIC
 
-fun text(string: String, decoration: TextDecoration): Component = text(string, style(decoration))
-
 val HORIZONS_END = text("Horizon's End", HE_LIGHT_GRAY, BOLD)
 val HORIZONS_END_BRACKETED = bracketed(text("Horizon's End", HE_LIGHT_GRAY, BOLD))
 
+// Audience utils
 fun Audience.sendMessage(vararg message: Component) {
 	sendMessage(ofChildren(*message))
 }
+
+fun Collection<Audience>.sendMessage(message: ComponentLike) = ForwardingAudience { this }.sendMessage(message)
