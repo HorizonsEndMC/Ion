@@ -87,6 +87,11 @@ abstract class Tutorial {
 		return phase
 	}
 
+	fun registerPhase(phase: TutorialPhase): TutorialPhase {
+		phases.add(phase)
+		return phase
+	}
+
 	abstract class TutorialPhase(
 		val parent: Tutorial,
 		vararg val messages: TutorialMessage,
