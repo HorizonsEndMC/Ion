@@ -7,16 +7,19 @@ import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.tutorial.tutorials.IntroTutorial
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component.text
+import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.litote.kmongo.combine
+import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOneById
 import java.util.Date
 import java.util.UUID
@@ -63,21 +66,20 @@ object JoinLeaveListener : SLEventListener() {
 					color = HEColorScheme.HE_LIGHT_ORANGE.value()
 				))
 
+				IntroTutorial.startTutorial(Bukkit.getPlayer(uuid) ?: return)
+
 				return
 			}
 
 			// only need to update last seen
 			data.lastKnownName == name -> {
-				SLPlayer.col.updateOneById(id, org.litote.kmongo.setValue(SLPlayer::lastSeen, now))
+				SLPlayer.col.updateOneById(id, setValue(SLPlayer::lastSeen, now))
 			}
 
 			// set both last seen, and username
 			else -> SLPlayer.col.updateOneById(
 				id,
-				combine(
-					org.litote.kmongo.setValue(SLPlayer::lastSeen, now),
-					org.litote.kmongo.setValue(SLPlayer::lastKnownName, name)
-				)
+				combine(setValue(SLPlayer::lastSeen, now), setValue(SLPlayer::lastKnownName, name))
 			)
 		}
 	}
