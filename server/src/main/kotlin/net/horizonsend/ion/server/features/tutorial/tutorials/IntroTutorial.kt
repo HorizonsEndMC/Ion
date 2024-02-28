@@ -42,7 +42,8 @@ object IntroTutorial : Tutorial() {
 	) {}
 
 	override fun startTutorial(player: Player) {
-
+		playerPhases[player.uniqueId] = FlightTutorial.firstPhase
+		startPhase(player, FlightTutorial.firstPhase)
 	}
 
 	override fun endTutorial(player: Player) {
