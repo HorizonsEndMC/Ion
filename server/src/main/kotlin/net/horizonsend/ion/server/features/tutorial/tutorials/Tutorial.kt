@@ -53,6 +53,7 @@ abstract class Tutorial {
 	 * Get the current phase of the player in this tutorial
 	 **/
 	fun getPhase(player: Player): TutorialPhase? = playerPhases[player.uniqueId]
+	fun isInTutorial(player: Player): Boolean = playerPhases.containsKey(player.uniqueId)
 	fun isReading(player: Player): Boolean = (readTimes[player.uniqueId] ?: 0L) >= System.currentTimeMillis()
 
 	/**
