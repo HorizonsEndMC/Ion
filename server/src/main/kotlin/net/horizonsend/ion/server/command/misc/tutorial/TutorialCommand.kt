@@ -37,7 +37,7 @@ object TutorialCommand : SLCommand() {
 	fun onStart(sender: Player, tutorial: Tutorial) {
 		sender.success("Starting tutorial ${tutorial::class.java.simpleName}")
 
-		if (tutorial.getPhase(sender) != null) fail { "You are already in this tutorial!" }
+		if (tutorial.isInTutorial(sender)) fail { "You are already in this tutorial!" }
 
 		tutorial.startTutorial(sender)
 	}
