@@ -192,6 +192,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val maxRange: Int =
 			(navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
 
+		if (Hyperspace.isWarmingUp(starship)) fail { "Starship is already warming up!" }
+
 		if (destination == "auto") {
 			val playerPath = WaypointManager.playerPaths[sender.uniqueId]
 			if (playerPath.isNullOrEmpty()) fail { "Route not set" }
