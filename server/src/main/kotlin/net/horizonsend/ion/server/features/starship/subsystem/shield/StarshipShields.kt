@@ -313,20 +313,28 @@ object StarshipShields : IonServerComponent() {
 			return false
 		}
 
-		protectedBlocks.addAll(containedBlocks)
-
+		// shield power that is consumed per shot
 		var usage: Int = (shield.getPowerUsage(power) * damagedPercent).toInt()
 
+		// If shield is enhanced, reduce shot power to 10%
 		if (shield.isReinforcementActive()) {
 			usage = (usage * 0.1f).toInt()
 		}
 
+		starship.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
+		shield.power -= usage
+
+		// do not protect blocks if shield power is lowered to 0
+		if (shield.power <= 0) {
+			return false
+		}
+
+		// protection check passed; add all blocks in shield to list
+		protectedBlocks.addAll(containedBlocks)
+
 		if (canFlare && protectedBlocks.isNotEmpty() && percent > 0.01f) {
 			addFlare(containedBlocks, shield, flaringBlocks, flaredBlocks, nmsLevel)
 		}
-
-		starship.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
-		shield.power = shield.power - usage
 
 		if (usage > 0) {
 			updatedStarships.add(starship)
