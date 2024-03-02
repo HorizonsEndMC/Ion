@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.command.qol
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Optional
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
@@ -17,9 +18,10 @@ import net.horizonsend.ion.server.command.admin.debug
 object SetPowerCommand : SLCommand() {
 	@Default
 	@Suppress("unused")
-	fun onSetPower(sender: Player, amount: Int){
+	fun onSetPower(sender: Player, amount: Int, @Optional restricted: Boolean?){
 		val maxSelectionVolume = 200000
 		val selection = sender.getSelection() ?: return
+		val limited = restricted ?: true
 		if(selection.volume > maxSelectionVolume) {
 			sender.userError("Selection too large! The maximum volume is $maxSelectionVolume.")
 			return
@@ -41,7 +43,7 @@ object SetPowerCommand : SLCommand() {
 			val sign = block.state as? org.bukkit.block.Sign ?: continue
 			sender.debug("sign found at $x $y $z")
 
-			setPower(sign, amount, false)
+			setPower(sign, amount, !limited)
 			sender.debug("power sent")
 		}
 		sender.success("Set multiblock power to $amount.")
