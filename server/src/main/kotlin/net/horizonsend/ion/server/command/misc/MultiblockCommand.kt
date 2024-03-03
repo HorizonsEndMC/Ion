@@ -48,8 +48,8 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		val face = sign.getFacing().oppositeFace
 
-		lastMatch.shape.getRequirementMap(face).forEach { (coords, requirementMap) ->
-			val (expected, requirement) = requirementMap
+		lastMatch.shape.getRequirementMap(face).forEach { (coords, requirement) ->
+			val expected =  requirement.example
 
 			val requirementX = coords.x
 			val requirementY = coords.y
@@ -87,7 +87,7 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 			val (x, y, z) = absolute
 
-			val blockData = requirement.first
+			val blockData = requirement.example
 
 			val existingBlock = sender.world.getBlockAt(x, y, z)
 
