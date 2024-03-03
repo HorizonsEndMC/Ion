@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.util
 
 import org.bukkit.ChunkSnapshot
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
 
 class BlockSnapshot(val x: Int, val y: Int, val z: Int, val type: Material, val data: BlockData) {
@@ -15,5 +16,7 @@ class BlockSnapshot(val x: Int, val y: Int, val z: Int, val type: Material, val 
 
 			return BlockSnapshot(x, y, z, getBlockType(localX, y, localZ), getBlockData(localX, y, localZ))
 		}
+
+		fun Block.snapshot(): BlockSnapshot = BlockSnapshot(x, y, z, type, blockData)
 	}
 }
