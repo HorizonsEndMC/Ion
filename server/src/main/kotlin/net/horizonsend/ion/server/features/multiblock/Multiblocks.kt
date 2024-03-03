@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
@@ -141,7 +142,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Location
 import org.bukkit.block.Sign
@@ -453,10 +454,7 @@ object Multiblocks : IonServerComponent() {
 
 			val command = "/multiblock check $tierName ${sign.x} ${sign.y} ${sign.z}"
 
-			val tierText = text().color(NamedTextColor.GRAY)
-				.append(text("["))
-				.append(text(tierName).color(NamedTextColor.DARK_GREEN).decorate(TextDecoration.BOLD))
-				.append(text("]"))
+			val tierText = bracketed(text(tierName, DARK_GREEN, TextDecoration.BOLD))
 				.clickEvent(ClickEvent.runCommand(command))
 				.hoverEvent(text(command).asHoverEvent())
 
