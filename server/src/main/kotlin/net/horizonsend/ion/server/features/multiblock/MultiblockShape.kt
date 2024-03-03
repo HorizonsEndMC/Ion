@@ -2,6 +2,9 @@ package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.multiblock.util.awaitAllValues
+import net.horizonsend.ion.server.features.multiblock.util.getBlockAsync
+import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.CRUISER_REACTOR_CORE
@@ -42,21 +45,20 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.minecraft.world.level.block.AbstractFurnaceBlock
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
+import org.bukkit.block.data.type.Furnace
 import org.bukkit.block.data.type.Slab
 import java.util.EnumSet
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
-/** Parameters: block, inward, load chunks */
-private typealias BlockRequirement = (Block, BlockFace, Boolean) -> Boolean
-
 class MultiblockShape {
 	// Cache of direction to requirement, so it doesn't need to be calculated every time based on the direction
-	private val requirements = mutableMapOf<BlockFace, MutableMap<Vec3i, Pair<BlockData, BlockRequirement>>>()
+	private val requirements = mutableMapOf<BlockFace, MutableMap<Vec3i, BlockRequirement>>()
 
 	var signCentered = false
 	private var ignoreDirection = false // ignore whether inward direction matches
@@ -168,7 +170,7 @@ class MultiblockShape {
 		}
 	}
 
-	fun getRequirementMap(inwardFace: BlockFace): MutableMap<Vec3i, Pair<BlockData, BlockRequirement>> {
+	fun getRequirementMap(inwardFace: BlockFace): MutableMap<Vec3i, BlockRequirement> {
 		return requirements.getOrPut(inwardFace) {
 			require(CARDINAL_BLOCK_FACES.contains(inwardFace)) { "Unsupported inward direction: $inwardFace" }
 			return@getOrPut mutableMapOf()
@@ -190,8 +192,7 @@ class MultiblockShape {
 	}
 
 	fun checkRequirementsSpecific(origin: Block, face: BlockFace, loadChunks: Boolean, particles: Boolean): Boolean {
-		return getRequirementMap(face).all { (offset, requirementMap) ->
-			val (_, requirement) = requirementMap
+		return getRequirementMap(face).all { (offset, requirement) ->
 			val x = offset.x
 			val y = offset.y
 			val z = offset.z
@@ -212,9 +213,29 @@ class MultiblockShape {
 		}
 	}
 
+	/**
+	 *
+	 * TODO
+	 **/
+	suspend fun checkRequirementsAsync(world: World, origin: Vec3i, inward: BlockFace, loadChunks: Boolean): Boolean {
+		val (originX, originY, originZ) = origin
+
+		val blocks = getRequirementMap(inward).map { (offset, _) ->
+			val (x, y, z) = offset
+
+			offset to getBlockAsync(world, originX + x, originY + y, originZ + z)
+		}.toMap().awaitAllValues()
+
+		return getRequirementMap(inward).all { (offset, requirement) ->
+			val block = blocks[offset]!!
+
+			requirement.checkAsync(block, inward, loadChunks)
+		}
+	}
+
 	private val allLocations = mutableSetOf<Vec3i>() // used for checking for duplicates
 
-	private fun addRequirement(right: Int, upward: Int, inward: Int, type: BlockData, requirement: BlockRequirement) {
+	private fun addRequirement(right: Int, upward: Int, inward: Int, requirement: BlockRequirement) {
 		if (!allLocations.add(Vec3i(right, upward, inward))) {
 			Exception("Multiblock ${javaClass.simpleName} has more than one block at $right, $upward, $inward!").printStackTrace()
 		}
@@ -226,27 +247,56 @@ class MultiblockShape {
 			val intTrio = Vec3i(x, upward, z)
 			val requirementMap = getRequirementMap(inwardFace)
 
-			requirementMap[intTrio] = type to requirement
+			requirementMap[intTrio] = requirement
 		}
 	}
 
 	@Suppress("unused")
 	class RequirementBuilder(val shape: MultiblockShape, val right: Int, val upward: Int, val inward: Int) {
-		private fun complete(type: BlockData, requirement: BlockRequirement) = shape.addRequirement(right, upward, inward, type, requirement)
+		private fun complete(requirement: BlockRequirement) = shape.addRequirement(right, upward, inward, requirement)
 
 		fun type(type: Material) {
-			complete(type.createBlockData()) { block, _, _ -> block.getTypeSafe() == type }
+			val requirement = BlockRequirement(
+				example = type.createBlockData(),
+				check = { block, _, loadChunks -> if (loadChunks) block.type == type else block.getTypeSafe() == type },
+				asyncCheck = { block, _, loadChunks -> getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.type == type }
+			)
+
+			complete(requirement)
 		}
 
 		fun anyType(vararg types: Material) {
 			val typeSet = EnumSet.copyOf(types.toList())
-			complete(types.first().createBlockData()) { block, _, loadChunks ->
-				typeSet.contains(if (loadChunks) block.type else block.getTypeSafe())
-			}
+
+			val requirement = BlockRequirement(
+				example = types.first().createBlockData(),
+				check = { block, _, loadChunks ->
+					typeSet.contains(if (loadChunks) block.type else block.getTypeSafe())
+				},
+				asyncCheck = { block, _, loadChunks ->
+					val type = getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.type
+
+					typeSet.contains(type)
+				}
+			)
+
+			complete(requirement)
 		}
 
 		fun customBlock(customBlock: CustomBlock) {
-			complete(customBlock.blockData) { block, _, _ -> CustomBlocks.getByBlock(block) === customBlock }
+			val requirement = BlockRequirement(
+				example = customBlock.blockData,
+				check = { block, _, loadChunks ->
+					if (loadChunks) CustomBlocks.getByBlock(block) else {
+						getBlockDataSafe(block.world, block.x, block.y, block.z)?.let { CustomBlocks.getByBlockData(it) }
+					} === customBlock
+				},
+				asyncCheck = { block, _, loadChunks ->
+					getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.let { CustomBlocks.getByBlockData(it.data) } === customBlock
+				}
+			)
+
+			complete(requirement)
 		}
 
 		fun anyType(types: Iterable<Material>) = anyType(*types.toList().toTypedArray())
@@ -280,26 +330,41 @@ class MultiblockShape {
 
 		fun anySlab() = filteredTypes { it.isSlab }
 		fun anyDoubleSlab() = complete(
-			Material.STONE_BRICK_SLAB.createBlockData().apply {
-				this as Slab
-				this.type = Slab.Type.DOUBLE
-			}
-		) { block, _, loadChunks ->
-			val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
-			return@complete blockData is Slab && blockData.type == Slab.Type.DOUBLE
-		}
+			BlockRequirement(
+				example = Material.STONE_BRICK_SLAB.createBlockData().apply {
+					this as Slab
+					this.type = Slab.Type.DOUBLE
+				},
+				check = { block, _, loadChunks ->
+					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
+					blockData is Slab && blockData.type == Slab.Type.DOUBLE
+				},
+				asyncCheck = { block, _, loadChunks ->
+					val blockData: BlockData? = getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.data
+					blockData is Slab && blockData.type == Slab.Type.DOUBLE
+				}
+			)
+		)
 		fun anySlabOrStairs() = filteredTypes { it.isSlab || it.isStairs }
 
-		fun terracottaOrDoubleslab() {
-			complete(
-				Material.TERRACOTTA.createBlockData()
-			) { block, _, loadChunks ->
-				val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
-				val blockType = if (loadChunks) block.type else block.getTypeSafe()
 
-				return@complete (blockData is Slab && blockData.type == Slab.Type.DOUBLE)
-					|| TERRACOTTA_TYPES.contains(blockType)
-			}
+		fun terracottaOrDoubleslab() {
+			BlockRequirement(
+				example = Material.TERRACOTTA.createBlockData(),
+				check = { block, _, loadChunks ->
+					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
+					val blockType = if (loadChunks) block.type else block.getTypeSafe()
+
+					(blockData is Slab && blockData.type == Slab.Type.DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
+				},
+				asyncCheck = { block, _, loadChunks ->
+					val blockSnapshot = getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)
+					val blockData = blockSnapshot?.data
+					val blockType = blockSnapshot?.type
+
+					(blockData is Slab && blockData.type == Slab.Type.DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
+				}
+			)
 		}
 
 		fun concrete() = filteredTypes { it.isConcrete }
@@ -381,14 +446,23 @@ class MultiblockShape {
 
 		fun lightningRod() = type(Material.LIGHTNING_ROD)
 
-		fun machineFurnace() = complete(Material.FURNACE.createBlockData()) { block, inward, loadChunks ->
-			val blockData = if (loadChunks) block.getNMSBlockData() else
-				getNMSBlockSateSafe(block.world, block.x, block.y, block.z) ?: return@complete false
+		fun machineFurnace() = complete(BlockRequirement(
+			example = Material.FURNACE.createBlockData(),
+			check = check@{ block, inward, loadChunks ->
+				val blockData = if (loadChunks) block.getNMSBlockData() else getNMSBlockDataSafe(block.world, block.x, block.y, block.z) ?: return@check false
 
-			if (blockData.bukkitMaterial != Material.FURNACE) return@complete false
-			val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace
-			return@complete facing == inward.oppositeFace
-		}
+				if (blockData.bukkitMaterial != Material.FURNACE) return@check false
+				val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace
+				return@check facing == inward.oppositeFace
+			},
+			asyncCheck = asyncCheck@{ block, inward, loadChunks ->
+				val blockData = getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.data as? Furnace ?: return@asyncCheck false
+
+				if (blockData.material != Material.FURNACE) return@asyncCheck false
+				val facing = blockData.facing
+				return@asyncCheck facing == inward.oppositeFace
+			}
+		))
 
 		fun solidBlock() = anyType(
 			Material.STONE_BRICKS,
