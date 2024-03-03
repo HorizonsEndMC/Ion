@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem
 
-import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.block.Sign

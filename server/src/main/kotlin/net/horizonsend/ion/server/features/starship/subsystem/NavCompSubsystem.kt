@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem
 
-import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import org.bukkit.block.Sign
 

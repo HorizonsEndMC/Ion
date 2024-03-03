@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
-import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import org.bukkit.block.Hopper

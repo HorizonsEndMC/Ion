@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.shield
 
-import net.horizonsend.ion.server.features.multiblock.particleshield.BoxShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace

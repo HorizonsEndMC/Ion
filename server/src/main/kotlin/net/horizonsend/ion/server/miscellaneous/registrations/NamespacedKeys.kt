@@ -44,6 +44,8 @@ object NamespacedKeys {
 	val COMBAT_NPC = key("combatnpc")
 
 	val MULTIBLOCK = key("multiblock")
+	val ADDITIONAL_MULTIBLOCK_DATA = key("additionalMultiblockData")
+	val MULTIBLOCK_ENTITY_DATA = key("multiblockEntityData")
 
 	val CUSTOM_ENTITY = key("custom_entity")
 

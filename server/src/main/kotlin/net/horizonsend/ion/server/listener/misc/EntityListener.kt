@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
+import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.entity.Ghast
 import org.bukkit.entity.Monster

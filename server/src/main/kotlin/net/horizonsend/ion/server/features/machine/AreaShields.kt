@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.machine
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.isInRange
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
@@ -163,8 +162,8 @@ object AreaShields : IonServerComponent() {
 				continue
 			}
 			val sign = block.getState(false) as Sign
-			val multiblock = Multiblocks[sign] as? AreaShield ?: continue
-			if (multiblock.radius != areaShields[shieldLocation]) continue
+			val multiblock = Multiblocks[sign] as? net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield ?: continue
+			if (multiblock.radius != areaShields.get(shieldLocation)) continue
 			var power = PowerMachines.getPower(sign)
 			if (power <= 0) continue
 			power -= blockList.size * 2
@@ -200,7 +199,7 @@ object AreaShields : IonServerComponent() {
 			val block = shieldLocation.block
 			if (!block.type.isWallSign) continue
 			val sign = block.getState(false) as Sign
-			val multiblock = Multiblocks[sign] as? AreaShield ?: continue
+			val multiblock = Multiblocks[sign] as? net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield ?: continue
 			if (multiblock.radius != areaShields[shieldLocation]) continue
 			if (PowerMachines.getPower(sign) > 0) event.isCancelled = true
 		}
