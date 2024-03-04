@@ -64,6 +64,7 @@ data class SLPlayer(
 	var achievements: Set<String> = setOf(),
 	var bounty: Double = 0.0,
 
+	var contactsDistance: Int = 6000,
 	var contactsEnabled: Boolean = true,
 	var contactsStarships: Boolean = true,
 	var lastStarshipEnabled: Boolean = true,

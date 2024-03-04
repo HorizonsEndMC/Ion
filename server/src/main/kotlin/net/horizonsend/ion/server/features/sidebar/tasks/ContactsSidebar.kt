@@ -3,13 +3,13 @@ package net.horizonsend.ion.server.features.sidebar.tasks
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
+import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
-import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
@@ -61,6 +61,10 @@ import org.bukkit.util.Vector
 import kotlin.math.abs
 
 object ContactsSidebar {
+    private fun getContactsDistanceSq(player: Player): Int {
+        return PlayerCache[player].contactsDistance.squared()
+    }
+
     private fun distanceColor(distance: Int): NamedTextColor {
         return when {
             distance < 500 -> RED
@@ -135,7 +139,7 @@ object ContactsSidebar {
         val starships: List<ActiveStarship> = if (starshipsEnabled) {
             ActiveStarships.all().filter {
                 it.world == player.world &&
-                        it.centerOfMass.toVector().distanceSquared(sourceVector) <= MainSidebar.CONTACTS_SQRANGE &&
+                        it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player) &&
                         it.controller !== ActiveStarships.findByPilot(player)?.controller &&
                         (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
             }
@@ -144,14 +148,14 @@ object ContactsSidebar {
         val planets: List<CachedPlanet> = if (planetsEnabled) {
             Space.getPlanets().filter {
                 it.spaceWorld == player.world && it.location.toVector()
-                    .distanceSquared(sourceVector) <= MainSidebar.CONTACTS_SQRANGE
+                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
         val stars: List<CachedStar> = if (starsEnabled) {
             Space.getStars().filter {
                 it.spaceWorld == player.world && it.location.toVector()
-                    .distanceSquared(sourceVector) <= MainSidebar.CONTACTS_SQRANGE
+                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
@@ -159,28 +163,28 @@ object ContactsSidebar {
             IonServer.configuration.beacons.filter {
                 it.spaceLocation.bukkitWorld() == player.world &&
                         it.spaceLocation.toLocation().toVector()
-                            .distanceSquared(sourceVector) <= MainSidebar.CONTACTS_SQRANGE
+                            .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
         val stations: List<CachedSpaceStation<*, *, *>> = if (stationsEnabled) {
             SpaceStationCache.all().filter {
                 it.world == player.world.name && Vector(it.x, 192, it.z)
-                    .distanceSquared(sourceVector) < MainSidebar.CONTACTS_SQRANGE
+                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
         val capturableStations: List<CachedCapturableStation> = if (stationsEnabled) {
             CapturableStationCache.stations.filter {
                 it.loc.world.name == player.world.name && it.loc.toVector()
-                    .distanceSquared(sourceVector) < MainSidebar.CONTACTS_SQRANGE
+                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
         val bookmarks: List<Bookmark> = if (bookmarksEnabled) {
             BookmarkCache.getAll().filter { bm -> bm.owner == player.slPlayerId }.filter {
                 it.worldName == player.world.name &&
-                        Vector(it.x, it.y, it.z).distanceSquared(sourceVector) <= MainSidebar.CONTACTS_SQRANGE
+                        Vector(it.x, it.y, it.z).distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
@@ -277,7 +281,7 @@ object ContactsSidebar {
 
         if (lastStarship != null &&
             lastStarship.world == player.world &&
-            lastStarship.toVector().distanceSquared(sourceVector) <= MainSidebar.CONTACTS_SQRANGE
+            lastStarship.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player)
         ) {
             val vector = lastStarship.toVector()
             val distance = vector.distance(sourceVector).toInt()

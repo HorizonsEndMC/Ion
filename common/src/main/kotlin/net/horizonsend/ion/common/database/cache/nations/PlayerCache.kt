@@ -38,6 +38,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var nationTag: String?,
 		var bounty: Double,
 
+		var contactsDistance: Int = 6000,
 		var contactsEnabled: Boolean = true,
 		var contactsStarships: Boolean = true,
 		var lastStarshipEnabled: Boolean = true,
@@ -129,6 +130,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val newLevel = it.int()
 					data.level = newLevel
+				}
+			}
+
+			change[SLPlayer::contactsDistance]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val contactsDistance = it.int()
+					data.contactsDistance = contactsDistance
 				}
 			}
 
@@ -319,6 +329,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			nationTag = nationTag,
 			bounty = data.bounty,
 			blockedPlayerIDs = data.blockedPlayerIDs,
+			contactsDistance = data.contactsDistance,
 			contactsEnabled = data.contactsEnabled,
 			contactsStarships = data.contactsStarships,
 			lastStarshipEnabled = data.lastStarshipEnabled,
