@@ -30,8 +30,8 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 	companion object {
 		const val MIN_LENGTH = 0
 		const val WAYPOINT_MAX_LENGTH = 30
-		private const val CONTACTS_RANGE = 6000
-		const val CONTACTS_SQRANGE = CONTACTS_RANGE * CONTACTS_RANGE
+		const val CONTACTS_RANGE = 6000
+		//const val CONTACTS_SQRANGE = CONTACTS_RANGE * CONTACTS_RANGE
 	}
 
 	fun tick() {
