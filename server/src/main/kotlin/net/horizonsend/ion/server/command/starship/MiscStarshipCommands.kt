@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
+import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
@@ -50,6 +51,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
+import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -649,6 +651,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@Description("Toggle all gravity wells on your starship")
 	fun onToggleGravwell(sender: Player) {
 		val starship = getStarshipPiloting(sender)
+		Interdiction.findGravityWell(starship) ?: fail { "Intact gravity well not found!" }
 
 		toggleGravityWell(starship)
 	}
