@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous.registrations
+package net.horizonsend.ion.server.miscellaneous.registrations.persistence
 
 import net.horizonsend.ion.server.IonServer
 import net.kyori.adventure.key.Key
@@ -78,6 +78,8 @@ object NamespacedKeys {
 
 	val FORBIDDEN_BLOCKS = key("forbidden_blocks")
 	val CARGO_CRATE = key("cargo_crate")
+
+	val STORED_MULTIBLOCK_ENTITIES = key("storedMultiblocKEntities")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
