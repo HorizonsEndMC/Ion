@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items
 
 import net.horizonsend.ion.server.features.gas.Gasses
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
