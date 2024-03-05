@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.gear.getPower
 import net.horizonsend.ion.server.features.gear.setPower
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
