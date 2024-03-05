@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.type.InteractableMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.SubsystemMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.misc.OdometerSubsystem
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text

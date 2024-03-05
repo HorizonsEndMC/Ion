@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.getMatchingMaterials
 import org.bukkit.Material
 import org.bukkit.SoundCategory

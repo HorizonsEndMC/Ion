@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
+import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -27,6 +28,53 @@ class IonWorld private constructor(
 	val world: World,
 	val starships: MutableList<ActiveStarship> = mutableListOf()
 ) {
+	/**
+	 * Key: The location of the chunk packed into a long
+	 *
+	 * Value: The IonChunk at that location
+	 **/
+	private val chunks: MutableMap<Long, IonChunk> = mutableMapOf()
+
+	/**
+	 * Gets the IonChunk at the specified coordinates if it is loaded
+	 **/
+	fun getChunk(x: Int, z: Int): IonChunk? {
+		val key = Chunk.getChunkKey(x, z)
+
+		return chunks[key]
+	}
+
+	/**
+	 * Gets the IonChunk at the specified key if it is loaded
+	 **/
+	fun getChunk(key: Long): IonChunk? {
+		return chunks[key]
+	}
+
+	/**
+	 * Adds the chunk
+	 **/
+	fun addChunk(chunk: IonChunk) {
+		if (chunks.containsKey(chunk.locationKey)) {
+			log.warn("Attempted to add a chunk that was already in the map!")
+		}
+
+		chunks[chunk.locationKey] = chunk
+	}
+
+	/**
+	 * Removes the chunk
+	 ***/
+	fun removeChunk(chunk: Chunk): IonChunk? {
+		val result = chunks.remove(chunk.chunkKey)
+
+		if (result == null) {
+			log.warn("Chunk removed that was not in the map!")
+		}
+
+		return result
+	}
+
 	/**
 	 * The world configuration
 	 *
@@ -118,10 +166,15 @@ class IonWorld private constructor(
 		fun onServerTickStartEvent(@Suppress("UNUSED_PARAMETER") event: ServerTickStartEvent) {
 			mainThreadCheck()
 
-			for (ionWorld in ionWorlds.values)
-			for (starship in ionWorld.starships) {
-				val result = runCatching(starship::tick).exceptionOrNull() ?: continue
-				log.warn("Exception while ticking starship!", result)
+			for (ionWorld in ionWorlds.values) {
+				for (starship in ionWorld.starships) {
+					val result = runCatching(starship::tick).exceptionOrNull() ?: continue
+					log.warn("Exception while ticking starship!", result)
+				}
+
+				for ((_, chunk) in ionWorld.chunks) {
+					chunk.tick()
+				}
 			}
 		}
 
@@ -132,7 +185,11 @@ class IonWorld private constructor(
 
 		@EventHandler
 		fun onWorldSave(event: WorldSaveEvent) {
-//			TODO
+			for (ionWorld in ionWorlds.values) {
+				for ((_, chunk) in ionWorld.chunks) {
+					chunk.save()
+				}
+			}
 		}
 
 		/** Gets the world's Ion counterpart */
