@@ -48,4 +48,14 @@ abstract class MultiblockEntity(
 
 		return store
 	}
+
+	/**
+	 * Called upon world tick
+	 **/
+	fun tick() {}
+
+	/**
+	 * Called upon world tick.
+	 **/
+	fun tickAsync() {}
 }
