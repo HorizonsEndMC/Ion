@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
+import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isValidYLevel
@@ -7,10 +9,11 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.block.sign.Side
+import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 
 abstract class Multiblock {
@@ -65,13 +68,42 @@ abstract class Multiblock {
 		originBlock: Block,
 		inward: BlockFace,
 		loadChunks: Boolean = true,
-		particles: Boolean = false
+		particles: Boolean = false,
 	): Boolean {
 		return shape.checkRequirements(originBlock, inward, loadChunks, particles)
 	}
 
+	suspend fun signMatchesStructureAsync(
+		signLocation: Location,
+		inward: BlockFace,
+		loadChunks: Boolean = true
+	): Boolean {
+		val world = signLocation.world
+
+		val x = signLocation.blockX + inward.modX
+		val y = signLocation.blockY + inward.modY
+		val z = signLocation.blockZ + inward.modZ
+
+		if (!isValidYLevel(y)) return false
+
+		val blockData: BlockData? = getBlockSnapshotAsync(world, x, y, z, loadChunks)?.data
+
+		if (blockData !is org.bukkit.block.data.type.Sign) return false
+
+		return blockMatchesStructureAsync(world, Vec3i(x, y, z), inward, loadChunks)
+	}
+
+	suspend fun blockMatchesStructureAsync(
+		originWorld: World,
+		origin: Vec3i,
+		inward: BlockFace,
+		loadChunks: Boolean = true
+	): Boolean {
+		return shape.checkRequirementsAsync(originWorld, origin, inward, loadChunks)
+	}
+
 	open fun matchesUndetectedSign(sign: Sign): Boolean {
-		return (sign.getSide(Side.FRONT).line(0) as TextComponent).content().equals("[$name]", ignoreCase = true)
+		return (sign.line(0) as TextComponent).content().equals("[$name]", ignoreCase = true)
 	}
 
 	open fun setupSign(player: Player, sign: Sign) {
@@ -80,7 +112,7 @@ abstract class Multiblock {
 		for (i in 0..3) {
 			val text = signText[i]
 			if (text != null) {
-				sign.getSide(Side.FRONT).line(i, text)
+				sign.line(i, text)
 			}
 		}
 
