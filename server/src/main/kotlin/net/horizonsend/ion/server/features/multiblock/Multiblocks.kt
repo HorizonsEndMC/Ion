@@ -62,6 +62,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.LandingGearMulti
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.ShipFactoryMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.TestMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.NavigationComputerMultiblockBasic
@@ -116,8 +117,11 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
@@ -266,7 +270,8 @@ object Multiblocks : IonServerComponent() {
 			HarvesterMultiblockTier3,
 
 			AntiAirCannonBaseMultiblock,
-			AntiAirCannonTurretMultiblock
+			AntiAirCannonTurretMultiblock,
+			TestMultiblock
 		)
 	}
 
@@ -385,6 +390,15 @@ object Multiblocks : IonServerComponent() {
 						event.player.rewardAchievement(Achievement.DETECT_MULTIBLOCK)
 
 						multiblock.setupSign(player, sign)
+
+						val (x, y, z) = Vec3i(sign.location).minus(Vec3i(sign.getFacing().modX, 0, sign.getFacing().modZ))
+
+						val chunkX = x.shr(4)
+						val chunkZ = z.shr(4)
+
+						val chunk = event.player.world.ion.getChunk(chunkX, chunkZ) ?: return@sync
+
+						chunk.addMultiblock(multiblock, x, y, z)
 
 						sign.persistentDataContainer.set(
 							NamespacedKeys.MULTIBLOCK,

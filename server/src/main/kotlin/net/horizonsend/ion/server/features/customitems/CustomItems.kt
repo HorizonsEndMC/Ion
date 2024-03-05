@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonato
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrowableCustomItem
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrownCustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component

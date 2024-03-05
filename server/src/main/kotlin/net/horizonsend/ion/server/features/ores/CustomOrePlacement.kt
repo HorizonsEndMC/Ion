@@ -5,8 +5,8 @@ import com.sk89q.worldedit.regions.Region
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.OrePlacementConfig
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Position
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i

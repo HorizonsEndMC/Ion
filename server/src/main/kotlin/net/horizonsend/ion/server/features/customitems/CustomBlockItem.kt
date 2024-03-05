@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.customitems
 
 import net.horizonsend.ion.server.features.customblocks.CustomBlock
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import org.bukkit.Material

@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.space.encounters
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.server.features.nations.gui.input
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.INACTIVE
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity

@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.screens.listeners.InventoryMoveItemLi
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
+import net.horizonsend.ion.server.features.world.IonChunk
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.listener.fixers.BiomeFixer9001
@@ -78,6 +79,7 @@ val listeners: List<Listener> = listOf(
 	InventoryDragListener(),
 	InventoryMoveItemListener(),
 	IonWorld,
+	IonChunk,
 	MiscListeners(),
 	WorldGenerationManager,
 	EncounterManager(),
