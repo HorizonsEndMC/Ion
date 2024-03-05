@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.world.environment.mobs
 
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ENTITY
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ENTITY
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.World
