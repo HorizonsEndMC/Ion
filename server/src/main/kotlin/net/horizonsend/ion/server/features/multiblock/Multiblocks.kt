@@ -1,6 +1,10 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.server.IonServerComponent
@@ -136,9 +140,10 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopQuadTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopTriTurretMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TurretBaseMultiblock
+import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
@@ -261,7 +266,6 @@ object Multiblocks : IonServerComponent() {
 			BottomIonTurretMultiblock,
 			TopQuadTurretMultiblock,
 			BottomQuadTurretMultiblock,
-			TurretBaseMultiblock,
 			HorizontalRocketStarshipWeaponMultiblock,
 			UpwardRocketStarshipWeaponMultiblock,
 			DownwardRocketStarshipWeaponMultiblock,
@@ -319,6 +323,8 @@ object Multiblocks : IonServerComponent() {
 			OdometerMultiblock
 		)
 	}
+
+	val context = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	private val multiblockCache: MutableMap<Location, Multiblock> = Object2ObjectOpenHashMap()
 
@@ -392,50 +398,70 @@ object Multiblocks : IonServerComponent() {
 		return sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)  == multiblock::class.simpleName
 	}
 
+	/**
+	 * The check for when someone right-clicks an undetected multiblock
+	 **/
 	@EventHandler(priority = EventPriority.HIGHEST)
-	fun onInteractMultiblockSign(event: PlayerInteractEvent) {
+	fun onInteractMultiblockSign(event: PlayerInteractEvent) = context.launch {
 		if (event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) {
-			return
+			return@launch
 		}
 
-		val sign = event.clickedBlock?.state as? Sign ?: return
+		val clickedBlock = event.clickedBlock ?: return@launch
+
+		val sign = getBukkitBlockState(clickedBlock, false) as? Sign ?: return@launch
+
+		// Don't bother checking detected multiblocks
+		if (sign.persistentDataContainer.has(NamespacedKeys.MULTIBLOCK)) return@launch
+
 		var lastMatch: Multiblock? = null
 		val player = event.player
 
 		if (!player.hasPermission("starlegacy.multiblock.detect")) {
 			player.userError("You don't have permission to detect multiblocks!")
-			return
+			return@launch
 		}
 
+		// Check all multiblocks
 		for (multiblock in multiblocks) {
+			// If it has the same sign text as the multiblock
 			if (multiblock.matchesUndetectedSign(sign)) {
+				// And is built properly
 				if (multiblock.signMatchesStructure(sign, particles = true)) {
+					// Check permissions here because different tiers might have the same text
 					multiblock.requiredPermission?.let {
-						if (!player.hasPermission(it)) return player.userError("You don't have permission to use that multiblock!")
+						if (!player.hasPermission(it)) player.userError("You don't have permission to use that multiblock!")
+						return@launch
 					}
 
-					event.player.rewardAchievement(Achievement.DETECT_MULTIBLOCK)
+					// Update everything that needs to be done sync
+					Tasks.sync {
+						event.player.rewardAchievement(Achievement.DETECT_MULTIBLOCK)
 
-					multiblock.setupSign(player, sign)
-					sign.persistentDataContainer.set(
-						NamespacedKeys.MULTIBLOCK,
-						PersistentDataType.STRING,
-						multiblock::class.simpleName!!
-					)
-					sign.isWaxed = true
-					sign.update()
-					return
+						multiblock.setupSign(player, sign)
+
+						sign.persistentDataContainer.set(
+							NamespacedKeys.MULTIBLOCK,
+							PersistentDataType.STRING,
+							multiblock::class.simpleName!! // Shouldn't be any anonymous multiblocks
+						)
+
+						sign.isWaxed = true
+						sign.update()
+					}
+
+					return@launch
 				} else {
+					// Store the multi that last matched sign text
 					lastMatch = multiblock
 				}
 			}
 		}
 
 		if (lastMatch != null) {
-			player.userError(
-				"Improperly built ${lastMatch.name}. Make sure every block is correctly placed!"
-			)
+			player.userError("Improperly built ${lastMatch.name}. Make sure every block is correctly placed!")
 
+			// Prompt the help command
 			setupCommand(player, sign, lastMatch)
 		}
 	}
@@ -458,9 +484,8 @@ object Multiblocks : IonServerComponent() {
 				.clickEvent(ClickEvent.runCommand(command))
 				.hoverEvent(text(command).asHoverEvent())
 
-			if (possibleTiers.indexOf(tier) != possibleTiers.size - 1) tierText.append(text(", "))
-
 			message.append(tierText)
+			if (possibleTiers.indexOf(tier) != possibleTiers.size - 1) message.append(text(", "))
 		}
 
 		player.sendMessage(message.build())
