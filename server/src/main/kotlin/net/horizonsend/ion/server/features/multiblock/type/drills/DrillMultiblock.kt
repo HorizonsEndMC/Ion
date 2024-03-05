@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultibloc
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.DRILL_USER
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DRILL_USER
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing

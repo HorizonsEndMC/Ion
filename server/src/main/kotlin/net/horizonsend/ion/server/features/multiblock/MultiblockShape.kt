@@ -468,7 +468,7 @@ class MultiblockShape {
 		fun machineFurnace() = complete(BlockRequirement(
 			example = Material.FURNACE.createBlockData(),
 			check = check@{ block, inward, loadChunks ->
-				val blockData = if (loadChunks) block.getNMSBlockData() else getNMSBlockDataSafe(block.world, block.x, block.y, block.z) ?: return@check false
+				val blockData = if (loadChunks) block.getNMSBlockData() else getNMSBlockSateSafe(block.world, block.x, block.y, block.z) ?: return@check false
 
 				if (blockData.bukkitMaterial != Material.FURNACE) return@check false
 				val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace

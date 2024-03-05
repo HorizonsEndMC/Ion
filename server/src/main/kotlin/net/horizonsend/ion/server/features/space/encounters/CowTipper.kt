@@ -4,13 +4,13 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
+import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
-import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
 import org.bukkit.Sound
 import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType

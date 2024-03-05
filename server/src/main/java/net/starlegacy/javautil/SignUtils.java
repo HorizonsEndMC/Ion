@@ -2,7 +2,7 @@ package net.starlegacy.javautil;
 
 import net.horizonsend.ion.server.IonServer;
 import net.horizonsend.ion.server.features.machine.PowerMachines;
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys;
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.nbt.CompoundTag;
