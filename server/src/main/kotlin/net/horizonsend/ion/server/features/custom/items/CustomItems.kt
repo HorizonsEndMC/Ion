@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.custom.items.throwables.ThrownDetonat
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.custom.items.throwables.objects.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.objects.ThrownCustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
@@ -404,25 +404,21 @@ object CustomItems {
 		}
 	)
 
-	val URANIUM_BLOCK = register(
-		object : CustomBlockItem(
-			identifier = "URANIUM_BLOCK",
-			material = IRON_BLOCK,
-			customModelData = 4,
-			displayName = text("Uranium Block").decoration(ITALIC, false),
-			customBlockIdentifier = "URANIUM_BLOCK"
-		) {}
-	)
+	val URANIUM_BLOCK = register(object : CustomBlockItem(
+		identifier = "URANIUM_BLOCK",
+		material = IRON_BLOCK,
+		customModelData = 4,
+		displayName = text("Uranium Block").decoration(ITALIC, false),
+		customBlockIdentifier = "URANIUM_BLOCK"
+	) {})
 
-	val RAW_URANIUM_BLOCK =
-		register(object : CustomBlockItem(
-			identifier = "RAW_URANIUM_BLOCK",
-			material = RAW_IRON_BLOCK,
-			customModelData = 4,
-			displayName = text("Raw Uranium Block").decoration(ITALIC, false),
-			customBlockIdentifier = "RAW_URANIUM_BLOCK"
-		) {}
-		)
+	val RAW_URANIUM_BLOCK = register(object : CustomBlockItem(
+		identifier = "RAW_URANIUM_BLOCK",
+		material = RAW_IRON_BLOCK,
+		customModelData = 4,
+		displayName = text("Raw Uranium Block").decoration(ITALIC, false),
+		customBlockIdentifier = "RAW_URANIUM_BLOCK"
+	) {})
 
 	// Minerals end
 
@@ -889,8 +885,7 @@ object CustomItems {
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun register(identifier: String, customModelData: Int, displayName: Component): CustomItem {
-		return register(object :
-			CustomItem(identifier) {
+		return register(object : CustomItem(identifier) {
 			override fun constructItemStack(): ItemStack {
 				return ItemStack(WARPED_FUNGUS_ON_A_STICK).updateMeta {
 					it.setCustomModelData(customModelData)
