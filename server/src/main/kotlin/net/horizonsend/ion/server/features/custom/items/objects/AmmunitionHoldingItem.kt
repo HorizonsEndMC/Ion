@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.custom.items.objects
 
 import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.AMMO
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.AMMO
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty

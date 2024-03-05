@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous.registrations
+package net.horizonsend.ion.server.miscellaneous.registrations.persistence
 
 import net.horizonsend.ion.server.IonServer
 import org.bukkit.NamespacedKey
@@ -75,6 +75,8 @@ object NamespacedKeys {
 	val TOOL_MODIFICATIONS = key("tool_modifications")
 
 	val FORBIDDEN_BLOCKS = key("forbidden_blocks")
+
+	val STORED_MULTIBLOCK_ENTITIES = key("storedMultiblocKEntities")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 }

@@ -8,8 +8,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.INACTIVE
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
