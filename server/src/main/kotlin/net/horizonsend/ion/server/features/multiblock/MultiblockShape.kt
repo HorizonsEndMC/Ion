@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.server.features.customblocks.CustomBlock
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks
-import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield10.buildStructure
 import net.horizonsend.ion.server.features.multiblock.util.awaitAllValues
 import net.horizonsend.ion.server.features.multiblock.util.getBlockAsync
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
@@ -91,9 +90,7 @@ class MultiblockShape {
 		)
 
 	/**
-	 * This is used for structuring it by y, z, x. See the area shield multiblocks for an example.
-	 *
-	 * @sample net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10.buildStructure
+	 * This is used for structuring it by y, z, x. See the area shield multiblocks for an example
 	 */
 	fun z(z: Int, block: Z.() -> Unit) = Z(
 		this,
@@ -209,10 +206,29 @@ class MultiblockShape {
 	}
 
 	/**
+	 * Checks all possible directions a multiblock face
 	 *
-	 * TODO
+	 *
 	 **/
-	suspend fun checkRequirementsAsync(world: World, origin: Vec3i, inward: BlockFace, loadChunks: Boolean): Boolean {
+	suspend fun checkRequirementsAsync(originWorld: World, origin: Vec3i, inward: BlockFace, loadChunks: Boolean): Boolean {
+		val realOrigin = if (signCentered) origin + Vec3i(inward.oppositeFace.modX, 0, inward.oppositeFace.modZ) else origin
+
+		// check all directions if ignoring direction
+		for (face in if (ignoreDirection) CARDINAL_BLOCK_FACES else listOf(inward)) {
+			if (checkRequirementsSpecificAsync(originWorld, realOrigin, face, loadChunks)) {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	/**
+	 * Checks a single direction of the multiblock
+	 *
+	 * TODO more documentation
+	 **/
+	suspend fun checkRequirementsSpecificAsync(world: World, origin: Vec3i, inward: BlockFace, loadChunks: Boolean): Boolean {
 		val (originX, originY, originZ) = origin
 
 		val blocks = getRequirementMap(inward).map { (offset, _) ->
@@ -260,7 +276,7 @@ class MultiblockShape {
 			complete(requirement)
 		}
 
-		fun anyType(vararg types: Material) {
+		fun anyType(vararg types: Material, edit: BlockRequirement.() -> Unit = {}) {
 			val typeSet = EnumSet.copyOf(types.toList())
 
 			val requirement = BlockRequirement(
@@ -276,6 +292,8 @@ class MultiblockShape {
 			)
 
 			complete(requirement)
+
+			edit(requirement)
 		}
 
 		fun customBlock(customBlock: CustomBlock) {
@@ -294,14 +312,14 @@ class MultiblockShape {
 			complete(requirement)
 		}
 
-		fun anyType(types: Iterable<Material>) = anyType(*types.toList().toTypedArray())
+		fun anyType(types: Iterable<Material>, edit: BlockRequirement.() -> Unit = {}) = anyType(*types.toList().toTypedArray(), edit = edit)
 
 		fun filteredTypes(filter: (Material) -> Boolean) = anyType(MATERIALS.filter(filter))
 
-		fun carbyne() = anyType(CONCRETE_TYPES)
+		fun carbyne() = anyType(CONCRETE_TYPES) { setExample(Material.GRAY_CONCRETE.createBlockData()) }
 
-		fun terracotta() = anyType(TERRACOTTA_TYPES)
-		fun stainedTerracotta() = anyType(STAINED_TERRACOTTA_TYPES)
+		fun terracotta() = anyType(TERRACOTTA_TYPES) { setExample(Material.CYAN_TERRACOTTA.createBlockData()) }
+		fun stainedTerracotta() = anyType(STAINED_TERRACOTTA_TYPES) { setExample(Material.CYAN_TERRACOTTA.createBlockData()) }
 
 		fun glass() = type(Material.GLASS)
 		fun stainedGlass() = filteredTypes { it.isStainedGlass }
