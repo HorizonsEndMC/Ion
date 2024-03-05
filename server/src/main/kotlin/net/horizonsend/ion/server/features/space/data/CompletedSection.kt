@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.space.data
 
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.BLOCKS
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.PALETTE
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Y
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.BLOCKS
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.PALETTE
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Y
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.minecraft.core.BlockPos

@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import kotlinx.serialization.SerializationException
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.ADDITIONAL_MULTIBLOCK_DATA
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.MULTIBLOCK
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.X
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Y
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Z
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.ADDITIONAL_MULTIBLOCK_DATA
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.X
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Y
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Z
 import org.bukkit.NamespacedKey
 import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer
 import org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry
@@ -37,7 +37,7 @@ class PersistentMultiblockData(val x: Int, val y: Int, val z: Int, val type: Mul
 			pdc.set(Y, INTEGER, complex.y)
 			pdc.set(Z, INTEGER, complex.z)
 
-			pdc.set(MULTIBLOCK, STRING, complex::class.java.simpleName)
+			pdc.set(MULTIBLOCK, STRING, complex.type::class.java.simpleName)
 
 			pdc.set(ADDITIONAL_MULTIBLOCK_DATA, TAG_CONTAINER, complex.additionalData)
 

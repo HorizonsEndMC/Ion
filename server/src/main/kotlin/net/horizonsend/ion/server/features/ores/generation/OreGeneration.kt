@@ -9,8 +9,8 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ores.OldOreData
 import net.horizonsend.ion.server.features.ores.generation.PlanetOreSettings.Companion.STAR_BALANCE
 import net.horizonsend.ion.server.features.ores.storage.OreData
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.ORE_DATA
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.ORE_DATA
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.minecraft.core.BlockPos
 import org.bukkit.Chunk
