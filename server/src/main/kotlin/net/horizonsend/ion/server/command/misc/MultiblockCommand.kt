@@ -46,8 +46,7 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("ion.multiblock.check")
 	@Suppress("unused")
 	fun onCheck(sender: Player, lastMatch: Multiblock, x: Int, y: Int, z: Int) {
-		val sign = sender.world.getBlockAt(x, y, z).state as? Sign
-			?: return sender.userError("Block at $x $y $z isn't a sign!")
+		val sign = sender.world.getBlockAt(x, y, z).state as? Sign ?: return sender.userError("Block at $x $y $z isn't a sign!")
 
 		val face = sign.getFacing().oppositeFace
 
