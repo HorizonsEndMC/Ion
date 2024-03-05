@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.space.encounters
 import fr.skytasul.guardianbeam.Laser
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity
 import net.horizonsend.ion.server.miscellaneous.utils.distance
