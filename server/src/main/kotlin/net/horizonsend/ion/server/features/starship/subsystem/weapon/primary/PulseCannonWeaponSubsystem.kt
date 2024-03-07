@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PulseLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.DyeColor
