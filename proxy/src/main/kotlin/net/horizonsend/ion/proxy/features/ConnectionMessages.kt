@@ -3,7 +3,7 @@ package net.horizonsend.ion.proxy.features
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.proxy.IonProxyComponent
 import net.horizonsend.ion.proxy.PLUGIN
-import net.horizonsend.ion.proxy.utils.Discord
+import net.horizonsend.ion.proxy.features.discord.Discord
 import net.horizonsend.ion.proxy.utils.isBanned
 import net.horizonsend.ion.proxy.utils.sendRichMessage
 import net.kyori.adventure.text.format.NamedTextColor

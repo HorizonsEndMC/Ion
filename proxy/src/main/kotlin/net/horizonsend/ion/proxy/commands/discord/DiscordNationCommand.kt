@@ -1,48 +1,47 @@
 package net.horizonsend.ion.proxy.commands.discord
 
-import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.Default
-import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
-import net.horizonsend.ion.proxy.commands.discord.annotations.ParamCompletion
+import net.horizonsend.ion.proxy.features.discord.DiscordCommand
+import net.horizonsend.ion.proxy.features.discord.DiscordSubcommand.Companion.subcommand
+import net.horizonsend.ion.proxy.features.discord.ExecutableCommand
+import net.horizonsend.ion.proxy.features.discord.SlashCommandManager
 import net.horizonsend.ion.proxy.messageEmbed
-import net.horizonsend.ion.proxy.utils.JDACommandManager
 import org.litote.kmongo.eq
 import java.util.Date
 
-@CommandAlias("nationinfo")
-@Description("Get information about a nation.")
-object DiscordNationInfoCommand : IonDiscordCommand() {
-	override fun onEnable(commandManager: JDACommandManager) {
-		commandManager.registerCommandCompletion("nations") { NationCache.all().map { it.name } }
+object DiscordNationCommand : DiscordCommand("nation", "Commands relating to nations") {
+	override fun setup(commandManager: SlashCommandManager) {
+		commandManager.registerCompletion("nations") { NationCache.all().map { it.name } }
+
+		registerSubcommand(onInfo)
 	}
 
-	@Default
-	@Suppress("Unused")
-	fun onNationInfo(
-		event: SlashCommandInteractionEvent,
-		@Description("Player's Name") @ParamCompletion("nations") name: String
-	) = asyncDiscordCommand(event) {
-		val nationId = resolveNation(name)
+	private val onInfo = subcommand(
+		"info",
+		"Get info about a nation",
+		listOf(ExecutableCommand.CommandField("nation", OptionType.STRING, "nations", "The name of the nation"))
+	) { event ->
+		val nationName = event.getOption("nation")?.asString ?: fail { "You must enter a nation name!" }
+
+		val nationId = resolveNation(nationName)
 		val nation = Nation.findById(nationId) ?: fail { "Failed to load data" }
 		val cached = NationCache[nationId]
 
 		val outposts = Territory.findProps(Territory::nation eq nationId, Territory::name)
 			.map { it[Territory::name] }
 
-		val outpostsField = if (outposts.count() > 0)
-			MessageEmbed.Field(
-				"Outposts (${outposts.count()})",
-				outposts.joinToString(),
-				false
-			) else null
+		val outpostsField = if (!outposts.none()) MessageEmbed.Field(
+			"Outposts (${outposts.count()})",
+			outposts.joinToString(),
+			false
+		) else null
 
 		val settlements: List<SettlementCache.SettlementData> = Nation.getSettlements(nationId)
 			.sortedByDescending { SLPlayer.count(SLPlayer::settlement eq it) }

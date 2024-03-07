@@ -2,10 +2,9 @@ package net.horizonsend.ion.proxy.commands.discord
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -14,24 +13,30 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
 import net.horizonsend.ion.proxy.PLUGIN
-import net.horizonsend.ion.proxy.commands.discord.annotations.ParamCompletion
+import net.horizonsend.ion.proxy.features.discord.DiscordCommand
+import net.horizonsend.ion.proxy.features.discord.DiscordSubcommand.Companion.subcommand
+import net.horizonsend.ion.proxy.features.discord.ExecutableCommand
+import net.horizonsend.ion.proxy.features.discord.SlashCommandManager
 import net.horizonsend.ion.proxy.messageEmbed
-import net.horizonsend.ion.proxy.utils.JDACommandManager
 
 @CommandAlias("playerinfo")
 @Description("Get information about a player.")
-object DiscordPlayerInfoCommand : IonDiscordCommand() {
-	override fun onEnable(commandManager: JDACommandManager) {
-		commandManager.registerCommandCompletion("onlinePlayers") { PLUGIN.proxy.players.map { it.name } }
-		commandManager.registerCommandCompletion("allPlayers") { SLPlayer.all().map { it.lastKnownName } }
+object DiscordPlayerCommand : DiscordCommand("player", "Commands relating to players") {
+	override fun setup(commandManager: SlashCommandManager) {
+		commandManager.registerCompletion("onlinePlayers") { PLUGIN.proxy.players.map { it.name } }
+		commandManager.registerCompletion("allPlayers") { SLPlayer.all().map { it.lastKnownName } }
+
+		registerSubcommand(onInfo)
+		registerSubcommand(DiscordPlayerListCommand.defaultReceiver)
 	}
 
-	@Default
-	@Suppress("Unused")
-	fun onPlayerInfo(
-		event: SlashCommandInteractionEvent,
-		@Description("Player's Name") @ParamCompletion("onlinePlayers") player: String
-	) = asyncDiscordCommand(event) {
+	private val onInfo = subcommand(
+		"info",
+		"Get info about a player",
+		listOf(ExecutableCommand.CommandField("player", OptionType.STRING, "allPlayers", "The name of the player"))
+	) { event ->
+		val player = event.getOption("player")?.asString ?: fail { "You must enter a nation!" }
+
 		val slPlayer = SLPlayer[player] ?: throw InvalidCommandArgument("Player $player not found!")
 
 		val settlementId: Oid<Settlement>? = slPlayer.settlement

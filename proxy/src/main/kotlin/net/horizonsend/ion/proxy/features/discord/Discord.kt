@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.utils
+package net.horizonsend.ion.proxy.features.discord
 
 import dev.vankka.mcdiscordreserializer.discord.DiscordSerializer
 import dev.vankka.mcdiscordreserializer.discord.DiscordSerializerOptions
@@ -17,10 +17,10 @@ import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.proxy.IonProxyComponent
 import net.horizonsend.ion.proxy.PLUGIN
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
-import net.horizonsend.ion.proxy.commands.discord.DiscordNationInfoCommand
-import net.horizonsend.ion.proxy.commands.discord.DiscordPlayerInfoCommand
-import net.horizonsend.ion.proxy.commands.discord.DiscordSettlementInfoCommand
-import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordNationCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordPlayerCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordPlayerListCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordSettlementCommand
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.KeybindComponent
 import net.kyori.adventure.text.TranslatableComponent
@@ -38,33 +38,39 @@ object Discord : IonProxyComponent() {
 	private val configuration get() = PLUGIN.discordConfiguration
 	private var enabled: Boolean = false
 	private var JDA: JDA? = null
-	private var commandManager: JDACommandManager? = null
+	var commandManager: SlashCommandManager? = null; private set
 
-	override fun onEnable() {
+	override fun onEnable() = PLUGIN.proxy.scheduler.async {
 		try {
 			val jda = JDABuilder.createLight(configuration.token)
 				.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setChunkingFilter(ChunkingFilter.ALL)
-				.disableCache(CacheFlag.values().toList())
+				.disableCache(CacheFlag.entries)
 				.setEnableShutdownHook(false)
 				.build()
+				.awaitReady()
 
-			JDA  = jda
-			commandManager = JDACommandManager(jda, configuration)
+			JDA = jda
 
-			commandManager?.registerGuildCommand(DiscordInfoCommand)
-			commandManager?.registerGuildCommand(PlayerListCommand)
-			commandManager?.registerGlobalCommand(DiscordPlayerInfoCommand)
-			commandManager?.registerGlobalCommand(DiscordSettlementInfoCommand)
-			commandManager?.registerGlobalCommand(DiscordNationInfoCommand)
-			commandManager?.build()
+			val commandManager = SlashCommandManager(jda, configuration)
+			this.commandManager = commandManager
+
+			commandManager.registerGlobalCommand(DiscordPlayerListCommand)
+			commandManager.registerGlobalCommand(DiscordPlayerCommand)
+			commandManager.registerGlobalCommand(DiscordNationCommand)
+			commandManager.registerGlobalCommand(DiscordSettlementCommand)
+			commandManager.registerGlobalCommand(DiscordInfoCommand)
+
+			commandManager.build()
 
 			enabled = true
 
-			PLUGIN.proxy.scheduler.repeat(5, 5, TimeUnit.SECONDS, ::updateBotPresence)
+			PLUGIN.proxy.scheduler.repeat(5, 5, TimeUnit.SECONDS, Discord::updateBotPresence)
 		} catch (e: Throwable) {
 			log.error("Failed to start JDA! $e")
+
+			e.printStackTrace()
 		}
 	}
 

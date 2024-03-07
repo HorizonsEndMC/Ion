@@ -1,35 +1,35 @@
 package net.horizonsend.ion.proxy.commands.discord
 
-import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.Default
-import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
-import net.horizonsend.ion.proxy.commands.discord.annotations.ParamCompletion
+import net.horizonsend.ion.proxy.features.discord.DiscordCommand
+import net.horizonsend.ion.proxy.features.discord.DiscordSubcommand.Companion.subcommand
+import net.horizonsend.ion.proxy.features.discord.ExecutableCommand
+import net.horizonsend.ion.proxy.features.discord.SlashCommandManager
 import net.horizonsend.ion.proxy.messageEmbed
-import net.horizonsend.ion.proxy.utils.JDACommandManager
 import org.litote.kmongo.eq
 import java.util.Date
 
-@CommandAlias("settlementinfo")
-@Description("Get information about a settlement.")
-object DiscordSettlementInfoCommand : IonDiscordCommand() {
-	override fun onEnable(commandManager: JDACommandManager) {
-		commandManager.registerCommandCompletion("settlements") { SettlementCache.all().map { it.name } }
+object DiscordSettlementCommand : DiscordCommand("settlement", "Settlement commands") {
+	override fun setup(commandManager: SlashCommandManager) {
+		commandManager.registerCompletion("settlements") { SettlementCache.all().map { it.name } }
+
+		registerSubcommand(onInfo)
 	}
 
-	@Default
-	@Suppress("Unused")
-	fun onSettlementInfo(
-		event: SlashCommandInteractionEvent,
-		@Description("Settlement's Name") @ParamCompletion("settlements") name: String
-	) = asyncDiscordCommand(event) {
+	private	val onInfo = subcommand(
+		"info",
+		"Get information about a settlement",
+		listOf(ExecutableCommand.CommandField("settlement", OptionType.STRING, "settlements", "The name of the settlement"))
+	) { event ->
+		val name = event.getOption("settlement")?.asString ?: fail { "You must enter a settlement name!" }
+
 		val settlementId = resolveSettlement(name)
 		val settlement = Settlement.findById(settlementId) ?: fail { "Failed to load data" }
 		val nation = settlement.nation?.let { NationCache[it] }
