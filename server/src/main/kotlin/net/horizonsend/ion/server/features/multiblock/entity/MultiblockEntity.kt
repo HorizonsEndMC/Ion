@@ -1,5 +1,6 @@
-package net.horizonsend.ion.server.features.multiblock
+package net.horizonsend.ion.server.features.multiblock.entity
 
+import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Location
 import org.bukkit.World
@@ -48,14 +49,4 @@ abstract class MultiblockEntity(
 
 		return store
 	}
-
-	/**
-	 * Called upon world tick
-	 **/
-	fun tick() {}
-
-	/**
-	 * Called upon world tick.
-	 **/
-	fun tickAsync() {}
 }
