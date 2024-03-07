@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomComponen
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
-import net.horizonsend.ion.server.miscellaneous.utils.isInside
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInside
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.GameMode
 import org.bukkit.Material

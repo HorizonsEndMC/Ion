@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.ai.spawning
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 
 /** An exception relating to a cause of a failed spawn. */

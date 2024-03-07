@@ -16,12 +16,12 @@ import net.horizonsend.ion.server.features.nations.gui.openConfirmMenu
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.actionAndMsg
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInRange
 import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.isInRange
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic

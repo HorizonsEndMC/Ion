@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 
 /**
  * A multiblock which has a corresponding multiblock entity
@@ -14,7 +15,7 @@ interface EntityMultiblock<T : MultiblockEntity> {
 	/**
 	 * Create the multiblock entity using the stored data
 	 **/
-	fun createEntity(data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int): T
+	fun createEntity(data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): T
 
 	fun getMultiblockEntity(world: World, x: Int, y: Int, z: Int): T? {
 		val chunkX = x.shr(4)

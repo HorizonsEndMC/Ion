@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.hyperdrive
 
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 
 object HyperdriveMultiblockClass2 : HyperdriveMultiblock() {
 	override val maxPower = 50_000
