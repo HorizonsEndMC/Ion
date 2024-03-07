@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.space.encounters
 
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.ENCOUNTER
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.INACTIVE
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.nbt.CompoundTag
 import org.bukkit.NamespacedKey
 import org.bukkit.World

@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.movement
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.add
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.add
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Chunk
 import org.bukkit.Location
