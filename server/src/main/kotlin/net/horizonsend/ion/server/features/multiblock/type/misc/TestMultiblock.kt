@@ -4,9 +4,9 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATE_DARK_RED
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
