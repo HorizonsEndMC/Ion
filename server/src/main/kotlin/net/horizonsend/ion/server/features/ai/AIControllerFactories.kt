@@ -22,8 +22,8 @@ import net.horizonsend.ion.server.features.ai.module.targeting.HighestDamagerTar
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceToVector
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import java.util.Optional
 import kotlin.random.Random

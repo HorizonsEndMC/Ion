@@ -11,7 +11,7 @@ abstract class SignlessStarshipWeaponMultiblock<TSubsystem : WeaponSubsystem> : 
 
 	override val name: String = javaClass.simpleName
 
-	override fun matchesSign(lines: Array<Component>): Boolean {
+	override fun matchesSign(lines: List<Component>): Boolean {
 		return false
 	}
 

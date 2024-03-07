@@ -16,6 +16,8 @@ import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.minecraft.nbt.ByteArrayTag
 import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.DoubleTag

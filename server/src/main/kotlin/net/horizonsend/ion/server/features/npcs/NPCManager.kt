@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.npcs
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
-import net.horizonsend.ion.server.miscellaneous.utils.loadChunkAsync
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.loadChunkAsync
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType

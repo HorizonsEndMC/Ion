@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultibloc
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
 abstract class PoweredMultiblockEntity(
@@ -13,8 +14,9 @@ abstract class PoweredMultiblockEntity(
 	z: Int,
 	world: World,
 	type: Multiblock,
+	signOffset: BlockFace,
 	private var power: Int
-) : MultiblockEntity(x, y, z, world, type) {
+) : MultiblockEntity(x, y, z, world, type, signOffset) {
 	init {
 	    require(type is PowerStoringMultiblock)
 	}

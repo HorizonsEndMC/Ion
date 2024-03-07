@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.type.defense.projectile.An
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.RotatingMultiblock
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component

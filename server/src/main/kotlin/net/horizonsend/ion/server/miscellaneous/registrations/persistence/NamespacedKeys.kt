@@ -45,8 +45,9 @@ object NamespacedKeys {
 	val COMBAT_NPC = key("combatnpc")
 
 	val MULTIBLOCK = key("multiblock")
-	val ADDITIONAL_MULTIBLOCK_DATA = key("additionalMultiblockData")
-	val MULTIBLOCK_ENTITY_DATA = key("multiblockEntityData")
+	val ADDITIONAL_MULTIBLOCK_DATA = key("additional_multiblock_data")
+	val MULTIBLOCK_ENTITY_DATA = key("multiblock_entity_data")
+	val MULTIBLOCK_SIGN_OFFSET = key("multiblock_sign_offset")
 
 	val CUSTOM_ENTITY = key("custom_entity")
 
@@ -77,7 +78,8 @@ object NamespacedKeys {
 
 	val FORBIDDEN_BLOCKS = key("forbidden_blocks")
 
-	val STORED_MULTIBLOCK_ENTITIES = key("storedMultiblocKEntities")
+	val STORED_MULTIBLOCK_ENTITIES = key("stored_multiblock_entities")
+	val EXTRACTOR_DATA = key("extractor_data")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
