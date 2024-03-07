@@ -7,10 +7,10 @@ import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import org.bukkit.Chunk
 import org.bukkit.World

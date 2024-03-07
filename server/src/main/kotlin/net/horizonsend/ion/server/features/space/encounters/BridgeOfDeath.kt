@@ -9,8 +9,8 @@ import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
