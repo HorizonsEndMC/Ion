@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.command.starship
 import co.aikar.commands.annotation.CommandAlias
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.kyori.adventure.text.Component

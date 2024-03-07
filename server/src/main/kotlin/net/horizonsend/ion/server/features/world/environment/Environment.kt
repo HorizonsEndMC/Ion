@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorModule
 import net.horizonsend.ion.server.features.gear.removePower
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
-import net.horizonsend.ion.server.miscellaneous.utils.isInside
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInside
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.GameMode
 import org.bukkit.Material

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous.utils
+package net.horizonsend.ion.server.miscellaneous.utils.coordinates
 
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared

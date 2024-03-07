@@ -12,12 +12,12 @@ import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isFence
 import net.horizonsend.ion.server.miscellaneous.utils.isLeaves
 import net.horizonsend.ion.server.miscellaneous.utils.isLog
 import net.horizonsend.ion.server.miscellaneous.utils.isWood
-import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.minecraft.core.BlockPos

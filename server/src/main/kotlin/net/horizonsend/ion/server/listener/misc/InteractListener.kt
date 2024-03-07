@@ -1,13 +1,10 @@
 package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.common.extensions.successActionMessage
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.gear.getPower
 import net.horizonsend.ion.server.features.gear.setPower
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
@@ -19,7 +16,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.EquipmentSlot
 
 object InteractListener : SLEventListener() {
 	// Put power into the sign if right clicking with a battery
@@ -73,22 +69,6 @@ object InteractListener : SLEventListener() {
 		}
 	}
 	 */
-
-	@EventHandler
-	fun handleMultiblockInteract(event: PlayerInteractEvent) {
-		if (event.hand != EquipmentSlot.HAND) return
-		if (event.action != Action.RIGHT_CLICK_BLOCK) return
-		val player = event.player
-
-		val sign = event.clickedBlock?.getState(false) as? Sign ?: return
-		(Multiblocks[sign, true, false] as? InteractableMultiblock)?.let { multiblock ->
-			(multiblock as Multiblock).requiredPermission?.let { permission ->
-				if (!player.hasPermission(permission)) return player.userError("You don't have permission to use that multiblock!")
-			}
-
-			multiblock.onSignInteract(sign, player, event)
-		}
-	}
 
 	// Disable beds
 	@EventHandler
