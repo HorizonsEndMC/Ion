@@ -17,8 +17,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getLocationNear
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandom
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandomOrNull
 import net.kyori.adventure.text.Component
