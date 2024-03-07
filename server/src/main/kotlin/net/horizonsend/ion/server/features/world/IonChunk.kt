@@ -7,13 +7,14 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.Entity
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.toBlockKey
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.ChunkUnloadEvent
 import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER_ARRAY
-import java.util.LinkedList
+import java.util.concurrent.ConcurrentHashMap
 
 class IonChunk(val inner: Chunk) {
 	val locationKey = inner.chunkKey
@@ -30,7 +31,7 @@ class IonChunk(val inner: Chunk) {
 		saveMultiblocks()
 	}
 
-	private val multiblockEntities: LinkedList<MultiblockEntity> = LinkedList()
+	private val multiblockEntities: ConcurrentHashMap<Long, MultiblockEntity> = ConcurrentHashMap()
 
 	private fun loadMultiblocks() {
 		val serialized = inner.persistentDataContainer.get(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES, TAG_CONTAINER_ARRAY) ?: return
@@ -50,8 +51,8 @@ class IonChunk(val inner: Chunk) {
 	 * Save the multiblock data back into the chunk
 	 **/
 	private fun saveMultiblocks() {
-		val array = multiblockEntities.map {
-			PersistentMultiblockData.toPrimitive(it.store(), inner.persistentDataContainer.adapterContext)
+		val array = multiblockEntities.map { (_, entity) ->
+			PersistentMultiblockData.toPrimitive(entity.store(), inner.persistentDataContainer.adapterContext)
 		}.toTypedArray()
 
 		inner.persistentDataContainer.set(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES, TAG_CONTAINER_ARRAY, array)
@@ -67,27 +68,30 @@ class IonChunk(val inner: Chunk) {
 
 		val entity = multiblock.createEntity(data, inner.world, x, y, z)
 
-		multiblockEntities.add(entity)
+		val key = toBlockKey(x, y, z)
+		multiblockEntities[key] = entity
 	}
 
 	fun getMultiblockEntity(x: Int, y: Int, z: Int): MultiblockEntity? {
-		return multiblockEntities.firstOrNull {
-			it.x == x && it.y == y && it.z == z
-		}
+		val key = toBlockKey(x, y, z)
+
+		return multiblockEntities[key]
 	}
 
 	/**
 	 * Loads a multiblock entity from storage
 	 **/
 	private fun loadMultiblockEntity(entity: MultiblockEntity) {
-		multiblockEntities.add(entity)
+		val key = toBlockKey(entity.x, entity.y, entity.z)
+
+		multiblockEntities[key] = entity
 	}
 
 	/**
 	 * Tick the stuff in the chunk
 	 **/
 	fun tick() {
-		multiblockEntities.forEach { it.tick() }
+		multiblockEntities.forEach { (_, entity) -> entity.tick() }
 	}
 
 	companion object : SLEventListener() {
