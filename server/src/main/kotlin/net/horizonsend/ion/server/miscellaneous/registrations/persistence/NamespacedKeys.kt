@@ -60,6 +60,7 @@ object NamespacedKeys {
 	val MATERIAL = key("material")
 
 	val STORED_MULTIBLOCK_ENTITIES = key("storedMultiblocKEntities")
+	val EXTRACTOR_DATA = key("extractorData")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 }
