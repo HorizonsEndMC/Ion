@@ -1,6 +1,8 @@
-package net.horizonsend.ion.server.features.multiblock
+package net.horizonsend.ion.server.features.multiblock.entity
 
 import kotlinx.serialization.SerializationException
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.ADDITIONAL_MULTIBLOCK_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.X
@@ -17,7 +19,7 @@ import org.bukkit.persistence.PersistentDataType.STRING
 import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER
 
 class PersistentMultiblockData(val x: Int, val y: Int, val z: Int, val type: Multiblock) {
-	constructor(x: Int, y: Int,  z: Int, type: Multiblock, additionalData: PersistentDataContainer) : this(x, y, z, type) {
+	constructor(x: Int, y: Int, z: Int, type: Multiblock, additionalData: PersistentDataContainer) : this(x, y, z, type) {
 		this.additionalData = additionalData
 	}
 
