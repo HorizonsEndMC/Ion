@@ -6,6 +6,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.machine.AreaShields
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos

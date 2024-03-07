@@ -26,7 +26,7 @@ import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpace
 import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
 import org.litote.kmongo.Id

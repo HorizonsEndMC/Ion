@@ -24,7 +24,7 @@ import net.horizonsend.ion.server.command.nations.settlementZones.SettlementZone
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.Location
 import org.bukkit.entity.Player

@@ -34,7 +34,7 @@ import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.createData
 import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
@@ -317,11 +317,11 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	fun tryPilot(
-		sender: Player,
-		origin: Vec3i,
-		type: StarshipType,
-		name: String,
-		callback: (ActiveControlledStarship) -> Unit = {}
+        sender: Player,
+        origin: Vec3i,
+        type: StarshipType,
+        name: String,
+        callback: (ActiveControlledStarship) -> Unit = {}
 	) {
 		val block = sender.world.getBlockAtKey(origin.toBlockKey())
 

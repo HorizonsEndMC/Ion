@@ -1,9 +1,12 @@
 package net.horizonsend.ion.server.features.multiblock.entity
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
 
 /**
  * @param x The absolute x position of this multiblock's origin location
@@ -19,7 +22,8 @@ abstract class MultiblockEntity(
 	val y: Int,
 	val z: Int,
 	val world: World,
-	val type: Multiblock
+	val type: Multiblock,
+	val signOffset: BlockFace
 ) {
 	/**
 	 * Returns the origin of this multiblock as a Location
@@ -44,9 +48,24 @@ abstract class MultiblockEntity(
 	 * This data is serialized and stored on the chunk when not loaded.
 	 **/
 	fun store(): PersistentMultiblockData {
-		val store = PersistentMultiblockData(x, y, z, type)
+		val store = PersistentMultiblockData(x, y, z, type, signOffset)
 		storeAdditionalData(store)
 
 		return store
+	}
+
+	/**
+	 * Gets the sign of this multiblock
+	 **/
+	suspend fun getSign(): Sign? {
+		val signLoc = Vec3i(x, y, z) + Vec3i(signOffset.modX, 0, signOffset.modZ)
+
+		return getBukkitBlockState(world.getBlockAt(signLoc.x, signLoc.y, signLoc.z), loadChunks = false) as? Sign
+	}
+
+	suspend fun isIntact(): Boolean {
+		val sign = getSign() ?: return false
+
+		return type.signMatchesStructureAsync(sign)
 	}
 }

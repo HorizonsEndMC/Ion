@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.active;
 
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i;
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.CoordinatesKt;
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -51,9 +52,9 @@ public class ActiveStarshipHitbox {
         boundsArray = new int[width][][];
 
         for (long key : blocks) {
-            int x = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyX(key) - minX;
-            int y = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyY(key) - minY;
-            int z = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyZ(key) - minZ;
+            int x = CoordinatesKt.blockKeyX(key) - minX;
+            int y = CoordinatesKt.blockKeyY(key) - minY;
+            int z = CoordinatesKt.blockKeyZ(key) - minZ;
 
             int[][] yBoundsArray = boundsArray[x];
 
@@ -84,13 +85,13 @@ public class ActiveStarshipHitbox {
         }
 
         long start = blocks.iterator().next();
-        int minX = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyX(start), minY = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyY(start), minZ = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyZ(start);
+        int minX = CoordinatesKt.blockKeyX(start), minY = CoordinatesKt.blockKeyY(start), minZ = CoordinatesKt.blockKeyZ(start);
         int maxX = minX, maxY = minY, maxZ = minZ;
 
         for (long key : blocks) {
-            int x = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyX(key);
-            int y = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyY(key);
-            int z = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyZ(key);
+            int x = CoordinatesKt.blockKeyX(key);
+            int y = CoordinatesKt.blockKeyY(key);
+            int z = CoordinatesKt.blockKeyZ(key);
 
             if (x < minX) minX = x;
             if (x > maxX) maxX = x;
