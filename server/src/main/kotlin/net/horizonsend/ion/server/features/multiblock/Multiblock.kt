@@ -132,4 +132,12 @@ abstract class Multiblock {
 	}
 
 	protected open fun onTransformSign(player: Player, sign: Sign) {}
+
+	companion object {
+		fun getOrigin(sign: Sign): Vec3i {
+			val face = sign.getFacing()
+
+			return Vec3i(sign.location).minus(Vec3i(face.modX, 0, face.modZ))
+		}
+	}
 }
