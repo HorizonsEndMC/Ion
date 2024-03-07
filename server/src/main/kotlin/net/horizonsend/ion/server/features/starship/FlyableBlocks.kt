@@ -48,6 +48,7 @@ import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.CREEPER_HEAD
+import org.bukkit.Material.CREEPER_WALL_HEAD
 import org.bukkit.Material.CRIMSON_FENCE_GATE
 import org.bukkit.Material.DAMAGED_ANVIL
 import org.bukkit.Material.DARK_OAK_FENCE_GATE
@@ -55,6 +56,7 @@ import org.bukkit.Material.DAYLIGHT_DETECTOR
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DISPENSER
 import org.bukkit.Material.DRAGON_HEAD
+import org.bukkit.Material.DRAGON_WALL_HEAD
 import org.bukkit.Material.DROPPER
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.ENDER_CHEST
@@ -98,6 +100,7 @@ import org.bukkit.Material.PEARLESCENT_FROGLIGHT
 import org.bukkit.Material.PISTON
 import org.bukkit.Material.PISTON_HEAD
 import org.bukkit.Material.PLAYER_HEAD
+import org.bukkit.Material.PLAYER_WALL_HEAD
 import org.bukkit.Material.POTATOES
 import org.bukkit.Material.POTTED_AZURE_BLUET
 import org.bukkit.Material.POTTED_BAMBOO
@@ -138,6 +141,7 @@ import org.bukkit.Material.SCULK
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SHROOMLIGHT
 import org.bukkit.Material.SKELETON_SKULL
+import org.bukkit.Material.SKELETON_WALL_SKULL
 import org.bukkit.Material.SMITHING_TABLE
 import org.bukkit.Material.SMOKER
 import org.bukkit.Material.SOUL_CAMPFIRE
@@ -161,6 +165,7 @@ import org.bukkit.Material.WAXED_WEATHERED_COPPER
 import org.bukkit.Material.WEATHERED_COPPER
 import org.bukkit.Material.WHEAT
 import org.bukkit.Material.WITHER_SKELETON_SKULL
+import org.bukkit.Material.WITHER_SKELETON_WALL_SKULL
 import org.bukkit.Material.ZOMBIE_HEAD
 import java.util.EnumSet
 
@@ -278,11 +283,16 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	SCULK,
 
 	PLAYER_HEAD,
+	PLAYER_WALL_HEAD,
 	DRAGON_HEAD,
+	DRAGON_WALL_HEAD,
 	CREEPER_HEAD,
+	CREEPER_WALL_HEAD,
 	ZOMBIE_HEAD,
 	WITHER_SKELETON_SKULL,
+	WITHER_SKELETON_WALL_SKULL,
 	SKELETON_SKULL,
+	SKELETON_WALL_SKULL,
 
 	DAMAGED_ANVIL,
 	CHIPPED_ANVIL,
