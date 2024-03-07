@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.starshipweapon
 
-import net.horizonsend.ion.server.features.multiblock.MultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import org.bukkit.World
 
