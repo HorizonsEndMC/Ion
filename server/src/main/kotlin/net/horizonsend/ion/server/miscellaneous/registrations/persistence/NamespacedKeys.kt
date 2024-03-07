@@ -73,6 +73,7 @@ object NamespacedKeys {
 	val HYPERSPACE_BLOCKS_TRAVELED = key("hyperspace_blocks_traveled")
 
 	val STORED_MULTIBLOCK_ENTITIES = key("storedMultiblocKEntities")
+	val EXTRACTOR_DATA = key("extractorData")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 }

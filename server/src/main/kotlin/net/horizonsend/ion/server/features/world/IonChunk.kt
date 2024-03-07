@@ -5,11 +5,14 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.type.TickingMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.TickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
+import net.horizonsend.ion.server.features.transport.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.ExtractorData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.EXTRACTOR_DATA
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockKey
 import org.bukkit.Chunk
 import org.bukkit.World
@@ -18,21 +21,28 @@ import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.ChunkUnloadEvent
 import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER_ARRAY
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 
 class IonChunk(private val inner: Chunk) {
 	val locationKey = inner.chunkKey
+
+	val originX = inner.x.shl(4)
+	val originZ = inner.z.shl(4)
 
 	//TODO
 	// - Wires
 	// - Ore upgrade
 	// -
 
+	val powerNetwork: ChunkPowerNetwork = ChunkPowerNetwork(this, getExtractorData(inner))
 
 	/**
 	 * Logic upon loading the chunk
 	 **/
 	fun onLoad() {
+		// Load all multiblocks from persistent data
 		loadMultiblocks()
+		collectTickedMultiblocks()
 	}
 
 	/**
@@ -74,6 +84,7 @@ class IonChunk(private val inner: Chunk) {
 			val ionWorld = chunk.world.ion
 
 			val ionChunk = IonChunk(chunk)
+
 			ionWorld.addChunk(ionChunk)
 
 			ionChunk.onLoad()
@@ -98,10 +109,16 @@ class IonChunk(private val inner: Chunk) {
 		operator fun get(world: World, x: Int, z: Int): IonChunk? {
 			return world.ion.getChunk(x, z)
 		}
+
+		private fun getExtractorData(chunk: Chunk): ExtractorData {
+			val extractors = chunk.persistentDataContainer.get(EXTRACTOR_DATA, ExtractorData)
+
+			return extractors ?: ExtractorData(ConcurrentLinkedQueue())
+		}
 	}
 
 	private val multiblockEntities: ConcurrentHashMap<Long, MultiblockEntity> = ConcurrentHashMap()
-	private val tickingMultiblocks: ConcurrentHashMap<Long, TickingMultiblock> = ConcurrentHashMap()
+	private val tickingMultiblockEntities: ConcurrentHashMap<Long, TickingMultiblockEntity> = ConcurrentHashMap()
 
 	/**
 	 * Add a new multiblock to the chunk data
@@ -109,8 +126,13 @@ class IonChunk(private val inner: Chunk) {
 	fun addMultiblock(multiblock: Multiblock, x: Int, y: Int, z: Int) {
 		val key = toBlockKey(x, y, z)
 
-		if (multiblock is TickingMultiblock) {
-			tickingMultiblocks[key] = multiblock
+		if (multiblockEntities.containsKey(key)) {
+			log.warn("Attempted to place a multiblock where one already existed!")
+			return
+		}
+
+		if (multiblock is TickingMultiblockEntity) {
+			tickingMultiblockEntities[key] = multiblock
 		}
 
 		if (multiblock !is EntityMultiblock<*>) return
@@ -122,6 +144,16 @@ class IonChunk(private val inner: Chunk) {
 		multiblockEntities[key] = entity
 	}
 
+	/**
+	 * Upon the removal of a multiblock sign
+	 **/
+	fun removeMultiblock(x: Int, y: Int, z: Int) {
+		val key = toBlockKey(x, y, z)
+
+		multiblockEntities.remove(key)
+		tickingMultiblockEntities.remove(key)
+	}
+
 	fun getMultiblockEntity(x: Int, y: Int, z: Int): MultiblockEntity? {
 		val key = toBlockKey(x, y, z)
 
@@ -129,7 +161,7 @@ class IonChunk(private val inner: Chunk) {
 	}
 
 	private fun tickMultiblocks() {
-		tickingMultiblocks.values.forEach {
+		tickingMultiblockEntities.values.forEach {
 			if (it.tickAsync) {
 				Multiblocks.context.launch { it.tick() }
 			} else {
@@ -152,6 +184,14 @@ class IonChunk(private val inner: Chunk) {
 			val entity = multiblock.createEntity(stored, inner.world, stored.x, stored.y, stored.z)
 
 			loadMultiblockEntity(entity)
+		}
+	}
+
+	private fun collectTickedMultiblocks() {
+		for ((location, multiblock) in multiblockEntities) {
+			if (multiblock !is TickingMultiblockEntity) continue
+
+			tickingMultiblockEntities[location] = multiblock
 		}
 	}
 

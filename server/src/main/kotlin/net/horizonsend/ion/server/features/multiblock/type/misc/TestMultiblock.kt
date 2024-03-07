@@ -10,8 +10,6 @@ import net.horizonsend.ion.server.features.multiblock.type.InteractableMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PIRATE_DARK_RED
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
@@ -54,7 +52,7 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		sign.line(2, player.inventory.itemInMainHand.displayName())
 
-		val origin = Vec3i(sign.location).minus(Vec3i(sign.getFacing().modX, 0, sign.getFacing().modZ))
+		val origin = getOrigin(sign)
 		val (x, y, z) = origin
 
 		val multi = getMultiblockEntity(sign.world, x, y, z)
