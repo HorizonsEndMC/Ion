@@ -11,8 +11,11 @@ class BlockSnapshot(val x: Int, val y: Int, val z: Int, val type: Material, val 
 			if (x shr 4 != getX()) return null
 			if (z shr 4 != getZ()) return null
 
-			val localX = x % 16
-			val localZ = z % 16
+			val chunkOriginX = getX().shl(4)
+			val chunkOriginZ = getZ().shl(4)
+
+			val localX = x - chunkOriginX
+			val localZ = z - chunkOriginZ
 
 			return BlockSnapshot(x, y, z, getBlockType(localX, y, localZ), getBlockData(localX, y, localZ))
 		}

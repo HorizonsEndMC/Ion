@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.ai.module.positioning
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 import kotlin.math.pow
