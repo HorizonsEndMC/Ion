@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.isInRange
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInRange
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.Bukkit
 import org.bukkit.Color

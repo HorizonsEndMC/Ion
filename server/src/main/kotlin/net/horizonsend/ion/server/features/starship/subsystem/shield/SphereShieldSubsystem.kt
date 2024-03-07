@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.shield
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.SphereShieldMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 

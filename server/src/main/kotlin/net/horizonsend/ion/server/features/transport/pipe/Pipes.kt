@@ -14,11 +14,11 @@ import net.horizonsend.ion.server.features.transport.transportConfig
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded

@@ -1,9 +1,9 @@
-package net.horizonsend.ion.server.features.multiblock.type
+package net.horizonsend.ion.server.features.multiblock.entity
 
 /**
  * Any multiblock that should be ticked along with the world
  **/
-interface TickingMultiblock {
+interface TickingMultiblockEntity {
 	/**
 	 * Whether the tick should be run async
 	 **/
@@ -12,5 +12,5 @@ interface TickingMultiblock {
 	/**
 	 * The logic that is run upon world tick
 	 **/
-	fun tick()
+	suspend fun tick()
 }

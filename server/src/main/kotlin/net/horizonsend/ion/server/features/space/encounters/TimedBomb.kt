@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.space.encounters
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
-import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
 import net.minecraft.nbt.CompoundTag
 import org.bukkit.Sound
 import org.bukkit.block.Chest

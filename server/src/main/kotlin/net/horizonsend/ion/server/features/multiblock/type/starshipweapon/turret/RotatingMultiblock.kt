@@ -5,8 +5,8 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -32,11 +32,11 @@ abstract class RotatingMultiblock : Multiblock() {
 	}
 
 	fun rotate(
-		origin: Vec3i,
-		world: World,
-		oldFace: BlockFace,
-		newFace: BlockFace,
-		callback: (sign: Vec3i, oldKeys: LongOpenHashSet, newKeys: LongOpenHashSet, newFace: BlockFace) -> Unit = { _, _, _, _ -> }
+        origin: Vec3i,
+        world: World,
+        oldFace: BlockFace,
+        newFace: BlockFace,
+        callback: (sign: Vec3i, oldKeys: LongOpenHashSet, newKeys: LongOpenHashSet, newFace: BlockFace) -> Unit = { _, _, _, _ -> }
 	): BlockFace {
 		val i = when (newFace) {
 			oldFace -> return oldFace

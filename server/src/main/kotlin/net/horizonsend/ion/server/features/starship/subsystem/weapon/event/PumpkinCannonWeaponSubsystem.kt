@@ -9,18 +9,18 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.PumpkinCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 class PumpkinCannonWeaponSubsystem(
-	starship: ActiveStarship,
-	pos: Vec3i,
-	override var face: BlockFace
+    starship: ActiveStarship,
+    pos: Vec3i,
+    override var face: BlockFace
 ) : WeaponSubsystem(starship, pos),
 	ManualWeaponSubsystem,
 	DirectionalSubsystem,

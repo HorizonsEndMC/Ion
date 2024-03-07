@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.SubsystemMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -16,7 +16,7 @@ object LandingGearMultiblock : Multiblock(), SubsystemMultiblock<LandingGearSubs
 
 	override val name: String = javaClass.simpleName
 
-	override fun matchesSign(lines: Array<Component>): Boolean {
+	override fun matchesSign(lines: List<Component>): Boolean {
 		return false
 	}
 

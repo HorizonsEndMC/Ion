@@ -21,6 +21,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldSaveEvent
 import org.bukkit.event.world.WorldUnloadEvent
+import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
 import kotlin.DeprecationLevel.ERROR
 
@@ -33,7 +34,7 @@ class IonWorld private constructor(
 	 *
 	 * Value: The IonChunk at that location
 	 **/
-	private val chunks: MutableMap<Long, IonChunk> = mutableMapOf()
+	private val chunks: ConcurrentHashMap<Long, IonChunk> = ConcurrentHashMap()
 
 	/**
 	 * Gets the IonChunk at the specified coordinates if it is loaded

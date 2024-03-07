@@ -18,8 +18,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.Controll
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.modules.AISinkMessageFactory
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
@@ -134,13 +134,13 @@ fun createFromClipboard(
 }
 
 private fun tryPilotWithController(
-	logger: Logger,
-	world: World,
-	origin: Vec3i,
-	type: StarshipType,
-	name: String,
-	createController: (ActiveControlledStarship) -> Controller,
-	callback: (ActiveControlledStarship) -> Unit = {}
+    logger: Logger,
+    world: World,
+    origin: Vec3i,
+    type: StarshipType,
+    name: String,
+    createController: (ActiveControlledStarship) -> Controller,
+    callback: (ActiveControlledStarship) -> Unit = {}
 ) {
 	val (x, y, z) = origin
 	val block = world.getBlockAt(x, y, z)

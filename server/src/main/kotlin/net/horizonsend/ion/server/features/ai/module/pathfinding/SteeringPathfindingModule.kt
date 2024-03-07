@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.ai.module.pathfinding
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.average
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.average
 import org.bukkit.util.Vector
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.function.Supplier

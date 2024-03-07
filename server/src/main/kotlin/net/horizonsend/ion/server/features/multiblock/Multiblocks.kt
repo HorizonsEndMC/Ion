@@ -5,8 +5,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
@@ -145,28 +145,28 @@ import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.kyori.adventure.text.Component.newline
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
-import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.Location
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.isSign
+import net.horizonsend.ion.server.miscellaneous.utils.toBlockKey
+import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import java.util.UUID
 
 object Multiblocks : IonServerComponent() {
-	private lateinit var multiblocks: List<Multiblock>
+	private val multiblocks: MutableMap<String, Multiblock> = mutableMapOf()
 
 	private fun initMultiblocks() {
-		multiblocks = listOf(
+		multiblocks.putAll(listOf(
 			CentrifugeMultiblock,
 			CompressorMultiblock,
 			FabricatorMultiblock,
@@ -325,12 +325,15 @@ object Multiblocks : IonServerComponent() {
 			BargeReactorMultiBlock,
 			OdometerMultiblock,
 			TestMultiblock
-		)
+		).associateBy { it.javaClass.simpleName })
 	}
 
 	val context = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
-	private val multiblockCache: MutableMap<Location, Multiblock> = Object2ObjectOpenHashMap()
+	/**
+	 * Map of world UUIDs to a map of block keys to Multiblock types
+	 **/
+	private val newMultiblockCache: MutableMap<UUID, MutableMap<Long, Multiblock>> = Object2ObjectOpenHashMap()
 
 	override fun onEnable() {
 		initMultiblocks()
@@ -338,68 +341,87 @@ object Multiblocks : IonServerComponent() {
 		log.info("Loaded ${multiblocks.size} multiblocks")
 	}
 
-	fun all(): List<Multiblock> = multiblocks
+	fun all(): List<Multiblock> = multiblocks.values.toList()
 
-	@JvmStatic
-	@JvmOverloads
-	operator fun get(sign: Sign, checkStructure: Boolean = true, loadChunks: Boolean = true): Multiblock?  {
-		val location: Location = sign.location
-		val pdc = sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)
+	/**
+	 * Get a multiblock from the sign
+	 **/
+	operator fun get(sign: Sign, checkStructure: Boolean = true, loadChunks: Boolean = false) = runBlocking {
+		getFromSignPosition(sign.world, sign.x, sign.y, sign.z, checkStructure, loadChunks)
+	}
 
-		val cached: Multiblock? = multiblockCache[location]
-		if (cached != null) {
-			val matchesSign = if (pdc != null) pdc == cached::class.simpleName else cached.matchesSign(sign.lines().toTypedArray())
+	/**
+	 * Get a multiblock from the sign position
+	 **/
+	operator fun get(world: World, x: Int, y: Int, z: Int, checkStructure: Boolean = true, loadChunks: Boolean = false) = runBlocking {
+		getFromSignPosition(world, x, y, z, checkStructure, loadChunks)
+	}
 
-			// one was already cached before
-			if (matchesSign && (!checkStructure || cached.signMatchesStructure(sign, loadChunks = loadChunks))) {
-				if (pdc == null) {
+	/**
+	 * Get a multiblock by its identifying name
+	 **/
+	operator fun get(name: String) = multiblocks[name]
+
+	/**
+	 * Checks against the multiblock cache for a multiblock at a position
+	 *
+	 * Only considers detected multiblocks
+	 **/
+	suspend fun getFromSignPosition(world: World, x: Int, y: Int, z: Int, checkStructure: Boolean, loadChunks: Boolean = false): Multiblock? {
+		val block = world.getBlockAt(x, y, z)
+
+		val cached = checkCache(world, x, y, z, checkStructure, loadChunks)
+
+		if (cached != null) return cached
+
+		val sign = getBukkitBlockState(block, loadChunks) as? Sign ?: return null
+
+		for ((name, multiblock) in multiblocks) {
+			if (!matchesPersistentDataContainer(sign.persistentDataContainer, multiblock)) {
+				if (!multiblock.matchesSign(sign.lines())) continue else Tasks.sync {
 					sign.persistentDataContainer.set(
 						NamespacedKeys.MULTIBLOCK,
 						PersistentDataType.STRING,
-						cached::class.simpleName!!
+						name
 					)
+					sign.isWaxed = true
 					sign.update(false, false)
 				}
-
-				// it still matches so returned the cached one
-				return cached
-			} else {
-				// it no longer matches so remove it, and re-detect it afterwards
-				multiblockCache.remove(location)
 			}
+
+			if (!multiblock.signMatchesStructureAsync(world, Vec3i(x, y, z), loadChunks)) continue;
+
+			return multiblock
 		}
 
-		for (multiblock in multiblocks) {
-			val matchesSign =
-				if (pdc != null) pdc == multiblock::class.simpleName else multiblock.matchesSign(sign.lines().toTypedArray())
-			if (matchesSign && (!checkStructure || multiblock.signMatchesStructure(sign, loadChunks = loadChunks))) {
-				if (pdc == null) {
-					sign.persistentDataContainer.set(
-						NamespacedKeys.MULTIBLOCK,
-						PersistentDataType.STRING,
-						multiblock::class.simpleName!!
-					)
-					sign.update(false, false)
-				}
+		return null;
+	}
 
-				if (checkStructure) {
-					multiblockCache[location] = multiblock
-				}
-				return multiblock
-			}
-		}
+	/**
+	 * Checks against the multiblock cache for a multiblock at a position
+	 **/
+	private suspend fun checkCache(world: World, x: Int, y: Int, z: Int, checkStructure: Boolean, loadChunks: Boolean): Multiblock? {
+		val worldCache = newMultiblockCache[world.uid] ?: return null
 
-		return null
+		val key = toBlockKey(x, y, z)
+
+		val possibleMultiblock = worldCache[key] ?: return null
+
+		if (checkStructure && !possibleMultiblock.signMatchesStructureAsync(world, Vec3i(x, y, z), loadChunks)) return null
+
+		return possibleMultiblock
 	}
 
 	fun getFromPDC(sign: Sign): Multiblock? {
 		val pdc = sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING) ?: return null
 
-		return multiblocks.firstOrNull { it::class.simpleName == pdc }
+		return multiblocks[pdc]
 	}
 
-	fun matchesPersistentDataContainer(sign: Sign, multiblock: Multiblock): Boolean {
-		return sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)  == multiblock::class.simpleName
+	fun matchesPersistentDataContainer(persistentDataContainer: PersistentDataContainer, multiblock: Multiblock): Boolean {
+		val value = persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING) ?: return false
+
+		return value == multiblock::class.simpleName
 	}
 
 	/**
@@ -427,7 +449,7 @@ object Multiblocks : IonServerComponent() {
 		}
 
 		// Check all multiblocks
-		for (multiblock in multiblocks) {
+		for ((_, multiblock) in multiblocks) {
 			// If it has the same sign text as the multiblock
 			if (multiblock.matchesUndetectedSign(sign)) {
 				// And is built properly
@@ -439,29 +461,7 @@ object Multiblocks : IonServerComponent() {
 					}
 
 					// Update everything that needs to be done sync
-					Tasks.sync {
-						event.player.rewardAchievement(Achievement.DETECT_MULTIBLOCK)
-
-						multiblock.setupSign(player, sign)
-
-						val (x, y, z) = Vec3i(sign.location).minus(Vec3i(sign.getFacing().modX, 0, sign.getFacing().modZ))
-
-						val chunkX = x.shr(4)
-						val chunkZ = z.shr(4)
-
-						val chunk = event.player.world.ion.getChunk(chunkX, chunkZ) ?: return@sync
-
-						chunk.addMultiblock(multiblock, x, y, z)
-
-						sign.persistentDataContainer.set(
-							NamespacedKeys.MULTIBLOCK,
-							PersistentDataType.STRING,
-							multiblock::class.simpleName!! // Shouldn't be any anonymous multiblocks
-						)
-
-						sign.isWaxed = true
-						sign.update()
-					}
+					createNewMultiblock(multiblock, sign, event.player)
 
 					return@launch
 				} else {
@@ -479,28 +479,65 @@ object Multiblocks : IonServerComponent() {
 		}
 	}
 
-	private fun setupCommand(player: Player, sign: Sign, lastMatch: Multiblock) {
-		val multiblockType = lastMatch.name
+	@EventHandler
+	fun onPlayerBreakBlock(event: BlockBreakEvent) = context.launch {
+		val player = event.player
+		if (getBlockTypeSafe(event.block.world, event.block.x, event.block.y, event.block.z)?.isSign == false) return@launch
 
-		val possibleTiers = multiblocks.filter { it.name == multiblockType }
+		val sign = getBukkitBlockState(event.block, false) as? Sign ?: return@launch
 
-		val message = text()
-			.append(text("Which type of $multiblockType are you trying to build? (Click one)"))
-			.append(newline())
+		val multiblock = getFromSignPosition(
+			sign.world,
+			sign.x,
+			sign.y,
+			sign.z,
+			checkStructure = true,
+			loadChunks = false
+		) ?: return@launch
 
-		for (tier in possibleTiers) {
-			val tierName = tier.javaClass.simpleName
+		removeMultiblock(multiblock, sign, player)
+	}
 
-			val command = "/multiblock check $tierName ${sign.x} ${sign.y} ${sign.z}"
+	/**
+	 * Called upon the creation of a new multiblock
+	 *
+	 * Handles the sign, registration
+	 **/
+	fun createNewMultiblock(multiblock: Multiblock, sign: Sign, detector: Player) = Tasks.sync {
+		detector.rewardAchievement(Achievement.DETECT_MULTIBLOCK)
 
-			val tierText = bracketed(text(tierName, DARK_GREEN, TextDecoration.BOLD))
-				.clickEvent(ClickEvent.runCommand(command))
-				.hoverEvent(text(command).asHoverEvent())
+		multiblock.setupSign(detector, sign)
 
-			message.append(tierText)
-			if (possibleTiers.indexOf(tier) != possibleTiers.size - 1) message.append(text(", "))
+		val (x, y, z) = Multiblock.getOrigin(sign)
+
+		val chunkX = x.shr(4)
+		val chunkZ = z.shr(4)
+
+		val chunk = sign.world.ion.getChunk(chunkX, chunkZ) ?: return@sync
+
+		sign.persistentDataContainer.set(
+			NamespacedKeys.MULTIBLOCK,
+			PersistentDataType.STRING,
+			multiblock::class.simpleName!! // Shouldn't be any anonymous multiblocks
+		)
+
+		sign.isWaxed = true
+
+		Tasks.sync {
+			sign.update()
 		}
 
-		player.sendMessage(message.build())
+		chunk.addMultiblock(multiblock, sign)
+	}
+
+	fun removeMultiblock(multiblock: Multiblock, sign: Sign, player: Player) = Tasks.sync  {
+		val (x, y, z) = Multiblock.getOrigin(sign)
+
+		val chunkX = x.shr(4)
+		val chunkZ = z.shr(4)
+
+		val chunk = sign.world.ion.getChunk(chunkX, chunkZ) ?: return@sync
+
+		chunk.removeMultiblock(x, y, z)
 	}
 }

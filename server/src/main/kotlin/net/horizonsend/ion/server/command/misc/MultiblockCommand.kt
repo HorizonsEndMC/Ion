@@ -9,14 +9,20 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -39,6 +45,34 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 			manager,
 			"multiblocks",
 			Multiblocks.all().joinToString("|") { it.javaClass.simpleName })
+	}
+
+	/**
+	 * Prompt the player to use the multiblock command
+	 **/
+	fun setupCommand(player: Player, sign: Sign, lastMatch: Multiblock) {
+		val multiblockType = lastMatch.name
+
+		val possibleTiers = Multiblocks.all().filter { it.name == multiblockType }
+
+		val message = Component.text()
+			.append(Component.text("Which type of $multiblockType are you trying to build? (Click one)"))
+			.append(Component.newline())
+
+		for (tier in possibleTiers) {
+			val tierName = tier.javaClass.simpleName
+
+			val command = "/multiblock check $tierName ${sign.x} ${sign.y} ${sign.z}"
+
+			val tierText = bracketed(Component.text(tierName, NamedTextColor.DARK_GREEN, TextDecoration.BOLD))
+				.clickEvent(ClickEvent.runCommand(command))
+				.hoverEvent(Component.text(command).asHoverEvent())
+
+			message.append(tierText)
+			if (possibleTiers.indexOf(tier) != possibleTiers.size - 1) message.append(Component.text(", "))
+		}
+
+		player.sendMessage(message.build())
 	}
 
 	@Subcommand("check")

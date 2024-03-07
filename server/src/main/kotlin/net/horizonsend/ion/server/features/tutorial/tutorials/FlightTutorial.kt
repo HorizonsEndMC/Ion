@@ -24,7 +24,7 @@ import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.tutorial.message.ActionMessage
 import net.horizonsend.ion.server.features.tutorial.message.PopupMessage
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.execConsoleCmd
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.paste
