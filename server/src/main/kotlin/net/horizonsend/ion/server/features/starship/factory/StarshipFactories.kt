@@ -16,8 +16,8 @@ import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.multiblock.type.misc.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.canAccess
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
 import net.horizonsend.ion.server.miscellaneous.utils.isSign

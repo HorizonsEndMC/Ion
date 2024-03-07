@@ -66,12 +66,12 @@ import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
