@@ -12,11 +12,13 @@ import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorModule
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.removePower
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import org.bukkit.Color
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageEvent
@@ -172,6 +174,7 @@ object PowerArmorListener : SLEventListener() {
 	@EventHandler
 	fun onToggleRocketBoosters(event: PlayerToggleSneakEvent) {
 		val player = event.player
+		if(ActiveStarships.findByPilot(player) != null && player.inventory.itemInMainHand.type == Material.CLOCK) return
 		for (item in player.inventory.armorContents) {
 			if (!PowerArmorManager.isPowerArmor(item) || getPower(item!!) == 0) continue
 			for (module in PowerArmorManager.getModules(item)) {
