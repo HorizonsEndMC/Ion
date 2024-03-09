@@ -62,7 +62,7 @@ import kotlin.math.abs
 
 object ContactsSidebar {
     private fun getContactsDistanceSq(player: Player): Int {
-        return PlayerCache[player].contactsDistance.squared()
+        return PlayerCache.getIfOnline(player)?.contactsDistance?.squared() ?: 0
     }
 
     private fun distanceColor(distance: Int): NamedTextColor {
@@ -81,8 +81,8 @@ object ContactsSidebar {
             is NoOpController -> return GRAY
             is AIController -> return DARK_GRAY
             is PlayerController -> {
-                val viewerNation = PlayerCache[player].nationOid ?: return GRAY
-                val otherNation = PlayerCache[otherController.player].nationOid ?: return GRAY
+                val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return GRAY
+                val otherNation = PlayerCache.getIfOnline(otherController.player)?.nationOid ?: return GRAY
                 return RelationCache[viewerNation, otherNation].color
             }
             else -> return GRAY
@@ -94,7 +94,7 @@ object ContactsSidebar {
             is CachedPlayerSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId)) GREEN else GRAY
             is CachedSettlementSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId)) GREEN else GRAY
             is CachedNationSpaceStation -> {
-                val viewerNation = PlayerCache[player].nationOid ?: return GRAY
+                val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return GRAY
                 val otherNation = station.owner
                 return RelationCache[viewerNation, otherNation].color
             }
@@ -103,7 +103,7 @@ object ContactsSidebar {
     }
 
     private fun capturableStationRelationColor(player: Player, station: CachedCapturableStation): NamedTextColor {
-        val viewerNation = PlayerCache[player].nationOid ?: return GRAY
+        val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return GRAY
         val otherNation = station.nation ?: return GRAY
         return RelationCache[viewerNation, otherNation].color
     }
@@ -127,13 +127,13 @@ object ContactsSidebar {
         val sourceVector = PilotedStarships[player]?.centerOfMass?.toVector() ?: player.location.toVector()
         val playerVector = player.location.toVector()
 
-        val starshipsEnabled = PlayerCache[player].contactsStarships
-        val lastStarshipEnabled = PlayerCache[player].lastStarshipEnabled
-        val planetsEnabled = PlayerCache[player].planetsEnabled
-        val starsEnabled = PlayerCache[player].starsEnabled
-        val beaconsEnabled = PlayerCache[player].beaconsEnabled
-        val stationsEnabled = PlayerCache[player].stationsEnabled
-        val bookmarksEnabled = PlayerCache[player].bookmarksEnabled
+        val starshipsEnabled = PlayerCache.getIfOnline(player)?.contactsStarships ?: true
+        val lastStarshipEnabled = PlayerCache.getIfOnline(player)?.lastStarshipEnabled ?: true
+        val planetsEnabled = PlayerCache.getIfOnline(player)?.planetsEnabled ?: true
+        val starsEnabled = PlayerCache.getIfOnline(player)?.starsEnabled ?: true
+        val beaconsEnabled = PlayerCache.getIfOnline(player)?.beaconsEnabled ?: true
+        val stationsEnabled = PlayerCache.getIfOnline(player)?.stationsEnabled ?: true
+        val bookmarksEnabled = PlayerCache.getIfOnline(player)?.bookmarksEnabled ?: true
 
         // identify contacts that should be displayed (enabled and in range)
         val starships: List<ActiveStarship> = if (starshipsEnabled) {
