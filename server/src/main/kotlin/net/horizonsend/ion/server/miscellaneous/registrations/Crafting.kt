@@ -61,6 +61,8 @@ import org.bukkit.Material.LIGHT_BLUE_WOOL
 import org.bukkit.Material.LIGHT_GRAY_WOOL
 import org.bukkit.Material.LIME_WOOL
 import org.bukkit.Material.MAGENTA_WOOL
+import org.bukkit.Material.MOSS_BLOCK
+import org.bukkit.Material.MOSS_CARPET
 import org.bukkit.Material.NETHER_WART
 import org.bukkit.Material.NETHER_WART_BLOCK
 import org.bukkit.Material.OAK_LOG
@@ -88,6 +90,8 @@ import org.bukkit.Material.WHITE_WOOL
 import org.bukkit.Material.YELLOW_WOOL
 import org.bukkit.Material.NAME_TAG
 import org.bukkit.Material.PAPER
+import org.bukkit.Material.PINK_TULIP
+import org.bukkit.Material.SPORE_BLOSSOM
 import org.bukkit.Material.TRIPWIRE_HOOK
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
@@ -185,6 +189,17 @@ object Crafting : IonServerComponent() {
 
 			setIngredient('a', AMETHYST_SHARD)
 			setIngredient('l', SHROOMLIGHT)
+			setIngredient('x', AIR)
+		}
+
+		// Spore Blossom
+		shapedRecipe("spore_blossom", SPORE_BLOSSOM) {
+			shape("xax", "ctc", "xmx")
+
+			setIngredient('a', AMETHYST_SHARD)
+			setIngredient('t', PINK_TULIP)
+			setIngredient('c', MOSS_CARPET)
+			setIngredient('m', MOSS_BLOCK)
 			setIngredient('x', AIR)
 		}
 
