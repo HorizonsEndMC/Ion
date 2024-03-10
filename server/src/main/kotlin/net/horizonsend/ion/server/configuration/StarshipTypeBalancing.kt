@@ -91,7 +91,7 @@ data class StarshipTypeBalancing(
 			),
 			pulseCannon = StarshipWeapons.StarshipWeapon(
 				canFire = true,
-				range = 180.0,
+				range = 170.0,
 				speed = 400.0,
 				areaShieldDamageMultiplier = 2.0,
 				starshipShieldDamageMultiplier = 2.0,
@@ -168,7 +168,7 @@ data class StarshipTypeBalancing(
 			),
 			pulseCannon = StarshipWeapons.StarshipWeapon(
 				canFire = true,
-				range = 180.0,
+				range = 170.0,
 				speed = 400.0,
 				areaShieldDamageMultiplier = 2.0,
 				starshipShieldDamageMultiplier = 2.0,
