@@ -7,16 +7,16 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrack
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLaserProjectile
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class AIHeavyLaserWeaponSubsystem(
-	starship: ActiveStarship,
-	pos: Vec3i,
-	face: BlockFace
+    starship: ActiveStarship,
+    pos: Vec3i,
+    face: BlockFace
 ) : TargetTrackingCannonWeaponSubsystem(starship, pos, face), HeavyWeaponSubsystem, PermissionWeaponSubsystem {
 	override val permission: String = "ion.weapon.ai"
 	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.aiHeavyLaser

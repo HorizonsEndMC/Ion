@@ -19,8 +19,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockSateSafe
@@ -235,13 +235,11 @@ class MultiblockShape {
 	 * TODO more documentation
 	 **/
 	suspend fun checkRequirementsSpecificAsync(world: World, origin: Vec3i, inward: BlockFace, loadChunks: Boolean): Boolean {
-		val (originX, originY, originZ) = origin
-
 		val blocks = getRequirementMap(inward).map { (offset, _) ->
-			val (x, y, z) = offset
+			val (x, y, z) = offset + origin
 
-			offset to getBlockAsync(world, originX + x, originY + y, originZ + z)
-		}.toMap().awaitAllValues()
+			offset to world.getBlockAt(x, y, z)
+		}.toMap()
 
 		return getRequirementMap(inward).all { (offset, requirement) ->
 			val block = blocks[offset]!!

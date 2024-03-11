@@ -12,5 +12,5 @@ interface TickingMultiblockEntity {
 	/**
 	 * The logic that is run upon world tick
 	 **/
-	fun tick()
+	suspend fun tick()
 }

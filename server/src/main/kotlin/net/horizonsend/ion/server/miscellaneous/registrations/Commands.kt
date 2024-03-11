@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.command.admin.BatteryCommand
 import net.horizonsend.ion.server.command.admin.ConvertCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
+import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
 import net.horizonsend.ion.server.command.admin.WorldCommand
@@ -143,6 +144,7 @@ val commands: List<SLCommand> = listOf(
 	SpaceGenCommand,
 	ConfigurationCommands,
 	WorldCommand,
+	IonChunkCommand,
 	ConvertCommand,
 	net.horizonsend.ion.server.features.customitems.commands.CustomItemCommand,
 	IonCommand,
