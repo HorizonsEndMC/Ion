@@ -3,9 +3,9 @@ package net.horizonsend.ion.server.features.starship.ai.module.combat
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getDirection
-import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getDirection
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import java.util.function.Supplier
 
 class StarfighterCombatModule(controller: AIController, targetingSupplier: Supplier<AITarget?>) : CombatModule(controller, targetingSupplier) {

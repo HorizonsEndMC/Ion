@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.customblocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.customitems.CustomItemListeners
 import net.horizonsend.ion.server.features.customitems.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
+import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListener
@@ -56,6 +57,7 @@ val listeners: List<Listener> = listOf(
 	EntityListener,
 	FurnaceListener,
 	InteractListener,
+	InteractableMultiblock,
 	InventoryListener,
 	BowHitListener,
 

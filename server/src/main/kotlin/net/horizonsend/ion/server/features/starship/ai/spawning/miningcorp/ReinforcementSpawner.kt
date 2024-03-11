@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.starship.ai.module.targeting.SingleTa
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getLocationNear
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location

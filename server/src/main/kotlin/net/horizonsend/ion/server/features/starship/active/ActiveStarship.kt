@@ -43,11 +43,11 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsy
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
@@ -74,11 +74,11 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 abstract class ActiveStarship (
-	world: World,
-	var blocks: LongOpenHashSet,
-	val mass: Double,
-	var centerOfMass: Vec3i,
-	private val hitbox: ActiveStarshipHitbox
+    world: World,
+    var blocks: LongOpenHashSet,
+    val mass: Double,
+    var centerOfMass: Vec3i,
+    private val hitbox: ActiveStarshipHitbox
 ) : ForwardingAudience {
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 

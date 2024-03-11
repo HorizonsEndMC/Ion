@@ -26,9 +26,9 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
@@ -49,13 +49,13 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
 class ActiveControlledStarship(
-	val data: StarshipData,
-	blocks: LongOpenHashSet,
-	mass: Double,
-	centerOfMass: Vec3i,
-	hitbox: ActiveStarshipHitbox,
+    val data: StarshipData,
+    blocks: LongOpenHashSet,
+    mass: Double,
+    centerOfMass: Vec3i,
+    hitbox: ActiveStarshipHitbox,
 	// map of carried ship to its blocks
-	carriedShips: Map<StarshipData, LongOpenHashSet>
+    carriedShips: Map<StarshipData, LongOpenHashSet>
 ) : ActiveStarship(
 	data.bukkitWorld(),
 	blocks,

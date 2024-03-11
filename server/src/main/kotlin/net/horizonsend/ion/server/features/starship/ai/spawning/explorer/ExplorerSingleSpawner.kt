@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocatio
 import net.horizonsend.ion.server.features.starship.ai.spawning.getNonProtectedPlayer
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
-import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getLocationNear
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 

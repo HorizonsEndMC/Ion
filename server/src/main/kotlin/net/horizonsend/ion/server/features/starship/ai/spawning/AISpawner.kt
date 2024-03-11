@@ -18,7 +18,7 @@ import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestT
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.ReinforcementSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Color
@@ -177,9 +177,9 @@ abstract class AISpawner(
 
 	/** An exception relating to a cause of a failed spawn. */
 	class SpawningException(
-		message: String,
-		val world: World,
-		val spawningLocation: Vec3i?,
+        message: String,
+        val world: World,
+        val spawningLocation: Vec3i?,
 	): Throwable(message) {
 		/** The locations of any placed blocks. Will be empty if the error occured before any were placed. */
 		var blockLocations: LongOpenHashSet = LongOpenHashSet()

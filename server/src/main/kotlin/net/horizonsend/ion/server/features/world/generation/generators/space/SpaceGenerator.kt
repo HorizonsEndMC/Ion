@@ -11,9 +11,9 @@ import net.horizonsend.ion.server.features.world.generation.WorldGenerationManag
 import net.horizonsend.ion.server.features.world.generation.generators.interfaces.WorldGenerator
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
-import net.horizonsend.ion.server.miscellaneous.utils.component1
-import net.horizonsend.ion.server.miscellaneous.utils.component2
-import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.component1
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.component2
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.minecraft.world.level.ChunkPos

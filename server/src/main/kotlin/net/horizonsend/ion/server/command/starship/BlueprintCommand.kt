@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.miscellaneous.*
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
 import org.bukkit.Location
@@ -266,11 +267,11 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	fun tryPilot(
-		sender: Player,
-		origin: Vec3i,
-		type: StarshipType,
-		name: String,
-		callback: (ActiveControlledStarship) -> Unit = {}
+        sender: Player,
+        origin: Vec3i,
+        type: StarshipType,
+        name: String,
+        callback: (ActiveControlledStarship) -> Unit = {}
 	) {
 		val block = sender.world.getBlockAtKey(origin.toBlockKey())
 

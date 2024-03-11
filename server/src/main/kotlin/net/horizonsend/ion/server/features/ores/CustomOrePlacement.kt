@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.OrePlacementConfig
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Position
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
