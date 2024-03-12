@@ -163,15 +163,7 @@ public class BlockPlacementRaw {
 
 		for (int y = 0; y < blocks.length; y++) {
 			int sectionY = y >> 4;
-
-			if (section == null || sectionY != section.bottomBlockY()) {
-				section = sections[sectionY];
-
-//                if (section == null) {
-//                    section = new LevelChunkSection(sectionY << 4, nmsChunk, nmsWorld, true);
-//                    sections[sectionY] = section;
-//                }
-			}
+			section = sections[sectionY];
 
 			BlockState[][] xBlocks = blocks[y];
 
@@ -218,7 +210,7 @@ public class BlockPlacementRaw {
 			return;
 		}
 
-		ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.getLightEngine(), null, new BitSet(bitmask), false, true);
+		ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.getLightEngine(), null, new BitSet(bitmask), true);
 		playerChunk.broadcast(packet, false);
 
 		nmsChunk.setUnsaved(true);

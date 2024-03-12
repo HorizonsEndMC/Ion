@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.client.networking
 
-import io.netty.buffer.Unpooled
-import net.horizonsend.ion.server.features.client.VoidNetwork
-import net.horizonsend.ion.server.features.client.networking.packets.*
+import net.horizonsend.ion.server.features.client.networking.packets.GetPosPacket
+import net.horizonsend.ion.server.features.client.networking.packets.HandshakePacket
+import net.horizonsend.ion.server.features.client.networking.packets.PlayerAdd
+import net.horizonsend.ion.server.features.client.networking.packets.PlayerRemove
+import net.horizonsend.ion.server.features.client.networking.packets.ShipData
+import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.minecraft.network.FriendlyByteBuf
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket
 import net.minecraft.resources.ResourceLocation
-import org.bukkit.Bukkit
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
 
 abstract class IonPacketHandler {
@@ -42,19 +42,19 @@ enum class Packets(
 	val id get() = handler.id
 
 	fun send(player: Player, vararg args: Any) {
-		(player as CraftPlayer).handle.connection.send(
-			ClientboundCustomPayloadPacket(
-				id,
-				FriendlyByteBuf(Unpooled.buffer()).apply { handler.s2c(this, player, *args) })
-		)
+//		(player as CraftPlayer).handle.connection.send( TODO
+//			ClientboundCustomPayloadPacket(
+//				id,
+//				FriendlyByteBuf(Unpooled.buffer()).apply { handler.s2c(this, player, *args) })
+//		)
 	}
 
 	fun broadcast(vararg args: Any) {
-		for (uuid in VoidNetwork.modUsers)
-			(Bukkit.getPlayer(uuid) as CraftPlayer).handle.connection.send(
-				ClientboundCustomPayloadPacket(
-					id,
-					FriendlyByteBuf(Unpooled.buffer()).apply { handler.s2c(this, Bukkit.getPlayer(uuid)!!, args) })
-			)
+//		for (uuid in VoidNetwork.modUsers) TODO
+//			(Bukkit.getPlayer(uuid) as CraftPlayer).handle.connection.send(
+//				ClientboundCustomPayloadPacket(
+//					id,
+//					FriendlyByteBuf(Unpooled.buffer()).apply { handler.s2c(this, Bukkit.getPlayer(uuid)!!, args) })
+//			)
 	}
 }

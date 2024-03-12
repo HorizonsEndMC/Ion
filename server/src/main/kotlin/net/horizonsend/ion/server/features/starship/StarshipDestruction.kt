@@ -223,7 +223,7 @@ object StarshipDestruction {
 				val below = world.getBlockAtKey(belowKey)
 				val belowData = below.blockData
 
-				if (belowData.nms.material.isLiquid) {
+				if (belowData.nms.liquid()) {
 					Hangars.dissipateBlock(world, belowKey)
 				} else if (!belowData.material.isAir) {
 					obstructedLocations.add(key)

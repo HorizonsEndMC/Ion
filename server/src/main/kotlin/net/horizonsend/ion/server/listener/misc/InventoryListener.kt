@@ -42,7 +42,7 @@ object InventoryListener : SLEventListener() {
 				}
 
 				cursor == null && clickedItem != null -> {
-					e.cursor = clickedItem
+					e.setCursor(clickedItem)
 					e.currentItem = null
 				}
 

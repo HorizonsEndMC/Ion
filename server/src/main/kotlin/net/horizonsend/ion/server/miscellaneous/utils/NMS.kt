@@ -15,9 +15,9 @@ import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
-import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
-import org.bukkit.craftbukkit.v1_19_R3.block.data.CraftBlockData
-import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_20_R3.CraftChunk
+import org.bukkit.craftbukkit.v1_20_R3.block.data.CraftBlockData
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 
 //region Access Extensions
 inline val BlockData.nms: BlockState get() = (this as CraftBlockData).state

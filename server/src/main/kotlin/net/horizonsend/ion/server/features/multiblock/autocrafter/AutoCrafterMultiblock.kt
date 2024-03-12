@@ -19,12 +19,13 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.CraftingContainer
 import net.minecraft.world.inventory.MenuType
+import net.minecraft.world.inventory.TransientCraftingContainer
 import net.minecraft.world.item.crafting.RecipeType
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
-import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.InventoryView
@@ -240,7 +241,7 @@ abstract class AutoCrafterMultiblock(
 	}
 
 	companion object {															  /* Items */
-		private val itemsField = CraftingContainer::class.java.getDeclaredField("c").apply { isAccessible = true }
+		private val itemsField = TransientCraftingContainer::class.java.getDeclaredField("c").apply { isAccessible = true }
 		private fun getItems(inventoryCrafting: CraftingContainer): NonNullList<NMSItemStack> {
 			@Suppress("UNCHECKED_CAST")
 			return itemsField.get(inventoryCrafting) as NonNullList<NMSItemStack>
@@ -249,7 +250,7 @@ abstract class AutoCrafterMultiblock(
 		private val recipeCache: LoadingCache<List<ItemStack?>, Optional<ItemStack>> = CacheBuilder.newBuilder().build(
 			CacheLoader.from { items ->
 				requireNotNull(items)
-				val inventoryCrafting = CraftingContainer(
+				val inventoryCrafting = TransientCraftingContainer(
 					object : AbstractContainerMenu(null as MenuType<*>?, -1) {
 						override fun quickMoveStack(player: Player, slot: Int): NMSItemStack = NMSItemStack.EMPTY
 						override fun stillValid(player: Player): Boolean = false
@@ -270,7 +271,7 @@ abstract class AutoCrafterMultiblock(
 
 				val result = MinecraftServer.getServer().recipeManager
 					.getRecipeFor(RecipeType.CRAFTING, inventoryCrafting, level)
-					.map { recipeCrafting -> recipeCrafting.assemble(inventoryCrafting, level.registryAccess()) }
+					.map { recipeCrafting -> recipeCrafting.value.assemble(inventoryCrafting, level.registryAccess()) }
 					.getOrNull()
 
 				return@from Optional.ofNullable(result?.asBukkitCopy())

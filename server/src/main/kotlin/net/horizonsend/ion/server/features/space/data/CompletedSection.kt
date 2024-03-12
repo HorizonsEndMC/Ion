@@ -51,12 +51,13 @@ data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, val
 
 	fun place(levelChunk: LevelChunk) {
 		val worldMin = levelChunk.level.minBuildHeight.shr(4)
+
 		val section = levelChunk.sections[y - worldMin]
 
 		val (chunkX, chunkZ) = levelChunk.pos
 		val chunkAbsoluteX = chunkX.shl(4)
 		val chunkAbsoluteZ = chunkZ.shl(4)
-		val sectionAbsoluteY = section.bottomBlockY()
+		val sectionAbsoluteY = (y - worldMin).shl(4)
 
 		for (x in 0..15) {
 			val absoluteX = x + chunkAbsoluteX

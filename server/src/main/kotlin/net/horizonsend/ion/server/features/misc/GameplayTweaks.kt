@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
-import org.bukkit.craftbukkit.v1_19_R3.util.CraftMagicNumbers
+import org.bukkit.craftbukkit.v1_20_R3.util.CraftMagicNumbers
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockExplodeEvent
@@ -131,21 +131,21 @@ object GameplayTweaks : IonServerComponent() {
 		}
 	}
 
-	private fun setBlastResistance(material: Material, durability: Float) {
+	private fun setBlastResistance(material: Material, resistance: Float) {
 		require(material.isBlock)
 
 		val block = CraftMagicNumbers.getBlock(material)
 		val field = BlockBehaviour::class.java.getDeclaredField("aH") // obfuscation for explosionResistance
 		field.isAccessible = true
-		field.set(block, durability)
+		field.set(block, resistance)
 
 		// For some reason, stairs, and stairs only have a parent block, from which the blast resistance is referenced from.
 		if (block is StairBlock) {
-			val baseField = StairBlock::class.java.getDeclaredField("H") // Parent block
+			val baseField = StairBlock::class.java.getDeclaredField("J") // Parent block
 			baseField.isAccessible = true
 			val baseBlock = baseField.get(block)
 
-			field.set(baseBlock, durability)
+			field.set(baseBlock, resistance)
 		}
 
 		// ignore if overridden
@@ -153,6 +153,6 @@ object GameplayTweaks : IonServerComponent() {
 			return
 		}
 
-		Mass[material] = durability * Mass.BLAST_RESIST_MASS_MULTIPLIER
+		Mass[material] = resistance * Mass.BLAST_RESIST_MASS_MULTIPLIER
 	}
 }

@@ -19,7 +19,7 @@ repositories {
 	maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
 	maven("https://repo.aikar.co/content/groups/aikar/") // ACF
 	maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
-	maven("https://repo.decalium.ru/releases")
+	maven("https://repo.decalium.ru/releases") // Persistent Data Types
 	maven("https://repo.xenondevs.xyz/releases") // InvUI
 	maven("https://repo.papermc.io/repository/maven-public/") // FAWE api
 
@@ -31,7 +31,7 @@ dependencies {
 
 	compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-20230607.154752-103")
 	// Platform
-	paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
+	paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
 
 	// Other Plugins
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("org.bukkit") /* Old Version */ }

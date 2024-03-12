@@ -8,7 +8,7 @@ import org.bukkit.entity.Player
 import java.util.UUID
 
 fun getPing(player: Player): Int {
-	return player.minecraft.connection.player.latency
+	return player.minecraft.connection.latency()
 }
 
 private fun isInvalid(offlinePlayer: OfflinePlayer) =
