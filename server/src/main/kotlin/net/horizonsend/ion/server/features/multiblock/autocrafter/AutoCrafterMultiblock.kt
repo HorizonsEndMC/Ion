@@ -14,13 +14,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.minecraft.core.NonNullList
-import net.minecraft.server.MinecraftServer
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.CraftingContainer
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.inventory.TransientCraftingContainer
-import net.minecraft.world.item.crafting.RecipeType
+import net.minecraft.world.level.block.CrafterBlock
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Furnace
@@ -31,7 +30,6 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 private const val POWER_USAGE_PER_INGREDIENT = 15
 
@@ -250,7 +248,8 @@ abstract class AutoCrafterMultiblock(
 		private val recipeCache: LoadingCache<List<ItemStack?>, Optional<ItemStack>> = CacheBuilder.newBuilder().build(
 			CacheLoader.from { items ->
 				requireNotNull(items)
-				val inventoryCrafting = TransientCraftingContainer(
+				// Create a fake crafting table
+				val craftingContainer = TransientCraftingContainer(
 					object : AbstractContainerMenu(null as MenuType<*>?, -1) {
 						override fun quickMoveStack(player: Player, slot: Int): NMSItemStack = NMSItemStack.EMPTY
 						override fun stillValid(player: Player): Boolean = false
@@ -260,8 +259,10 @@ abstract class AutoCrafterMultiblock(
 					3
 				)
 
-				val inventoryItems: NonNullList<NMSItemStack> = getItems(inventoryCrafting)
+				// Get the items of the container with reflection
+				val inventoryItems: NonNullList<NMSItemStack> = getItems(craftingContainer)
 
+				// Set the item in the slot of the dropper to the corresponding crafting square
 				for ((index: Int, material: ItemStack?) in items.withIndex()) {
 					val item: NMSItemStack = if (material != null) CBItemStack.asNMSCopy(material) else NMSItemStack.EMPTY
 					inventoryItems[index] = item
@@ -269,12 +270,10 @@ abstract class AutoCrafterMultiblock(
 
 				val level = Bukkit.getWorlds().first().minecraft
 
-				val result = MinecraftServer.getServer().recipeManager
-					.getRecipeFor(RecipeType.CRAFTING, inventoryCrafting, level)
-					.map { recipeCrafting -> recipeCrafting.value.assemble(inventoryCrafting, level.registryAccess()) }
-					.getOrNull()
-
-				return@from Optional.ofNullable(result?.asBukkitCopy())
+				// Get results for the recipe
+				CrafterBlock.getPotentialResults(level, craftingContainer).map {  recipe ->
+					recipe.assemble(craftingContainer, level.registryAccess()).asBukkitCopy()
+				}
 			}
 		)
 	}
