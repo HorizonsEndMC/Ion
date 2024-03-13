@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.autocrafter
 
+import net.minecraft.world.item.ItemStack as NMSItemStack
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack as CBItemStack
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -24,7 +26,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.InventoryView
@@ -278,6 +279,3 @@ abstract class AutoCrafterMultiblock(
 		)
 	}
 }
-
-private typealias CBItemStack = CraftItemStack
-private typealias NMSItemStack = net.minecraft.world.item.ItemStack
