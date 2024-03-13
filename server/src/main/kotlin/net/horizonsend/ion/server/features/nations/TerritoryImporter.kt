@@ -1,14 +1,15 @@
 package net.horizonsend.ion.server.features.nations
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.nations.region.packTerritoryPolygon
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.YamlConfiguration
 import java.awt.Point
 import java.awt.Polygon
 import java.io.File
+import kotlin.math.roundToLong
 
 object TerritoryImporter {
 	private data class UpdateData(val id: Oid<Territory>, val polygonData: ByteArray)
@@ -36,7 +37,7 @@ object TerritoryImporter {
 				val label = section.getString("label")!!
 				val points = section.getStringList("points").asSequence()
 					.map { it.split(" ").dropWhile { it.isEmpty() } }
-					.map { Point(Math.round(it[0].toDouble()).toInt(), Math.round(it[1].toDouble()).toInt()) }
+					.map { Point(it[0].toDouble().roundToLong().toInt(), it[1].toDouble().roundToLong().toInt()) }
 
 				val polygonData = buildPolygonData(points)
 

@@ -256,10 +256,6 @@ val privateerTemplates = arrayOf(
 	inflict
 )
 
-fun findPrivateerSpawnLocation(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location?  {
-	val nearPlayer = findSpawnLocationNearPlayer(configuration) ?: return null
-
-//	val world: World = nearPlayer.world
-
-	return nearPlayer
+fun findPrivateerSpawnLocation(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location? {
+	return findSpawnLocationNearPlayer(configuration)
 }

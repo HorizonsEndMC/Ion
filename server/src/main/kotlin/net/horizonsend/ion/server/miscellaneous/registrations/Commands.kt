@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.command.admin.BatteryCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
+import net.horizonsend.ion.server.command.admin.WorldCommand
 import net.horizonsend.ion.server.command.economy.BazaarCommand
 import net.horizonsend.ion.server.command.economy.CityNpcCommand
 import net.horizonsend.ion.server.command.economy.CollectedItemCommand
@@ -18,6 +19,7 @@ import net.horizonsend.ion.server.command.misc.BountyCommand
 import net.horizonsend.ion.server.command.misc.DyeCommand
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.command.misc.GlobalGameRuleCommand
+import net.horizonsend.ion.server.command.misc.HelpCommand
 import net.horizonsend.ion.server.command.misc.IonBroadcastCommand
 import net.horizonsend.ion.server.command.misc.ListCommand
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
@@ -25,6 +27,8 @@ import net.horizonsend.ion.server.command.misc.PlayerInfoCommand
 import net.horizonsend.ion.server.command.misc.RegenerateCommand
 import net.horizonsend.ion.server.command.misc.ShuttleCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
+import net.horizonsend.ion.server.command.misc.tutorial.TutorialAdminCommand
+import net.horizonsend.ion.server.command.misc.tutorial.TutorialCommand
 import net.horizonsend.ion.server.command.nations.NationCommand
 import net.horizonsend.ion.server.command.nations.NationRelationCommand
 import net.horizonsend.ion.server.command.nations.SettlementCommand
@@ -48,6 +52,7 @@ import net.horizonsend.ion.server.command.qol.CheckProtectionCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
+import net.horizonsend.ion.server.command.space.SpaceGenCommand
 import net.horizonsend.ion.server.command.space.SpaceWorldCommand
 import net.horizonsend.ion.server.command.space.StarCommand
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
@@ -56,20 +61,18 @@ import net.horizonsend.ion.server.command.starship.RainbowProjectileCommand
 import net.horizonsend.ion.server.command.starship.StarshipDebugCommand
 import net.horizonsend.ion.server.command.starship.StarshipInfoCommand
 import net.horizonsend.ion.server.command.starship.Starships
-import net.horizonsend.ion.server.command.starship.TutorialStartStopCommand
 import net.horizonsend.ion.server.command.starship.ai.AIDebugCommand
 import net.horizonsend.ion.server.command.starship.ai.AIStarshipTemplateBuilderCommand
 import net.horizonsend.ion.server.configuration.ConfigurationCommands
-import net.horizonsend.ion.server.features.achievements.AchievementsCommand
 import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
 import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection
+import net.horizonsend.ion.server.features.player.NewPlayerProtection
+import net.horizonsend.ion.server.features.progression.achievements.AchievementsCommand
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarStarshipsCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarWaypointsCommand
-import net.horizonsend.ion.server.features.space.generation.SpaceGenCommand
 import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 
 val commands: List<SLCommand> = listOf(
@@ -124,7 +127,6 @@ val commands: List<SLCommand> = listOf(
 	StarshipDebugCommand,
 	AIDebugCommand,
 	AIStarshipTemplateBuilderCommand,
-	TutorialStartStopCommand,
 	StarshipInfoCommand,
 
 	Starships,
@@ -135,6 +137,7 @@ val commands: List<SLCommand> = listOf(
 	MultiblockCommand,
 	SpaceGenCommand,
 	ConfigurationCommands,
+	WorldCommand,
 	ConvertCommand,
 	net.horizonsend.ion.server.features.customitems.commands.CustomItemCommand,
 	IonCommand,
@@ -158,5 +161,9 @@ val commands: List<SLCommand> = listOf(
 	BountyAdminCommand,
 
 	IonBroadcastCommand,
-	BlockCommand
+	BlockCommand,
+
+	HelpCommand,
+	TutorialAdminCommand,
+	TutorialCommand
 )

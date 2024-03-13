@@ -80,7 +80,7 @@ object CargoCrates : ManualCache() {
 
 		val oldCrates = CargoCrate.all()
 		val newNames = data.crates.map { it.name }
-		val newCrates = data.crates.associate { it.name to it }
+		val newCrates = data.crates.associateBy { it.name }
 
 		// remove crates that are not in the imported list
 		for (removed in CargoCrate.find(CargoCrate::name nin newNames).toList()) {

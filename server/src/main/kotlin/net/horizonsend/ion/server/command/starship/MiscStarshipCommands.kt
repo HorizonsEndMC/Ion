@@ -30,9 +30,8 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
@@ -50,6 +49,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.PlayerStars
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
@@ -308,17 +308,17 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				.append(massShadowInfo.description)
 				.append(newline())
 				.append(text("Location: "))
-				.append(text("${massShadowInfo.x}, ${massShadowInfo.z}", NamedTextColor.WHITE))
+				.append(text("${massShadowInfo.x}, ${massShadowInfo.z}", WHITE))
 				.append(newline())
 				.append(text("Gravity well radius: "))
-				.append(text(massShadowInfo.radius, NamedTextColor.WHITE))
+				.append(text(massShadowInfo.radius, WHITE))
 				.append(newline())
 				.append(text("Current distance from center: "))
-				.append(text(massShadowInfo.distance, NamedTextColor.WHITE))
+				.append(text(massShadowInfo.distance, WHITE))
 				.append(newline())
 				.append(text("Cruise direction to escape: "))
 				.append(text(directionString, NamedTextColor.GREEN))
-				.append(text(" (${(atan2(escapeVector.z, escapeVector.x) * 180 / PI).toInt()})", NamedTextColor.WHITE))
+				.append(text(" (${(atan2(escapeVector.z, escapeVector.x) * 180 / PI).toInt()})", WHITE))
 
 			starship.sendMessage(message)
 			return
@@ -602,7 +602,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		sender.sendMessage(ofChildren(text("Total Blocks in all ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalBlocks, HE_LIGHT_BLUE)))
 	}
 
-	@Suppress("unused")
 	@CommandAlias("usebeacon")
 	fun onUseBeacon(sender: Player) {
 		val ship = getStarshipRiding(sender) as? ActiveControlledStarship ?: return

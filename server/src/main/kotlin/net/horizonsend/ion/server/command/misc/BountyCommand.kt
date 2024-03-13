@@ -14,10 +14,11 @@ import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.bounties.Bounties
-import net.horizonsend.ion.server.features.bounties.BountiesMenu
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.progression.bounties.Bounties
+import net.horizonsend.ion.server.features.progression.bounties.BountiesMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -34,17 +35,20 @@ import org.litote.kmongo.inc
 
 @CommandAlias("bounty")
 object BountyCommand : SLCommand() {
+	private fun requireBountiesEnabled() = failIf(!IonServer.featureFlags.bounties) { "Bounties are disabled on this server!" }
+
 	@Default
 	@Subcommand("menu")
 	@Description("Open the bounty menu")
-	@Suppress("unused")
-	fun menu(sender: Player) = BountiesMenu.openMenuAsync(sender)
+	fun menu(sender: Player) {
+		requireBountiesEnabled()
+		BountiesMenu.openMenuAsync(sender)
+	}
 
 	@Subcommand("list")
 	@Description("List your active bounties")
-	@Suppress("unused")
 	fun list(sender: Player) = asyncCommand(sender) {
-		if (Bounties.isNotSurvival()) fail { "You can only do that on the Survival server!" }
+		requireBountiesEnabled()
 
 		val bountiesText = text()
 
@@ -68,8 +72,10 @@ object BountyCommand : SLCommand() {
 	@Description("Put a bounty on a player")
 	@CommandCompletion("@players")
 	@Default
-	@Suppress("unused")
 	fun put(sender: Player, targetName: String, amount: Double) = asyncCommand(sender) {
+		requireBountiesEnabled()
+		requireEconomyEnabled()
+
 		if (amount <= 50) fail { "The minimum amount is C50" }
 		if (Bounties.isNotSurvival()) fail { "You can only do that on the Survival server!" }
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
@@ -110,6 +116,9 @@ object BountyCommand : SLCommand() {
 	@CommandCompletion("@players")
 	@Suppress("unused")
 	fun claim(sender: Player, targetName: String, @Optional amount: Double? = null) = asyncCommand(sender) {
+		requireBountiesEnabled()
+		requireEconomyEnabled()
+
 		if (Bounties.isNotSurvival()) fail { "You can only do that on the Survival server!" }
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
 		if (target._id == sender.slPlayerId) fail { "You can't claim a bounty on yourself!" }
@@ -166,7 +175,6 @@ object BountyCommand : SLCommand() {
 	@Description("Get a player's bounty")
 	@CommandCompletion("@players")
 	@Default
-	@Suppress("unused")
 	fun get(sender: Player, targetName: String) = asyncCommand(sender) {
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
 

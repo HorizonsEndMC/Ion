@@ -5,5 +5,4 @@ pluginManagement.repositories {
 
 include("proxy")
 include("server")
-include("discord")
 include("common")

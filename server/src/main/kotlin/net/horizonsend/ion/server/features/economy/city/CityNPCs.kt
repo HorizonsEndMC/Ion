@@ -1,29 +1,26 @@
 package net.horizonsend.ion.server.features.economy.city
 
-import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.citizensnpcs.api.npc.NPC
-import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.npcs.NPCManager
+import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.createNamedMemoryRegistry
-import net.horizonsend.ion.server.miscellaneous.utils.isCitizensLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.loadChunkAsync
 import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -33,8 +30,8 @@ import java.util.UUID
  * Manages NPCs for cities, handles the synchronization of them with the worlds
  */
 object CityNPCs : IonServerComponent(true) {
+	val manager = NPCManager(log, "CityNPCs")
 
-	private lateinit var citizensRegistry: NPCRegistry
 	private val npcTypeMap = mutableMapOf<UUID, CityNPC.Type>()
 
 	// keep track of territories with bazaar npcs
@@ -48,23 +45,24 @@ object CityNPCs : IonServerComponent(true) {
 			log.info("Citizens hooked!")
 		}
 
+		manager.enableRegistry()
 		synchronizeNPCs()
 	}
 
 	override fun onDisable() {
 		// Citizens doesn't clear entities properly on reload.
 		// Our plugins are reload safe, so we must do it manually.
-		clearCitizensNpcs()
+		manager.disableRegistry()
 	}
 
 	fun getCityNpcType(npc: NPC): CityNPC.Type? = npcTypeMap[npc.uniqueId]
 
 	private data class NpcInfo(
-        val id: Oid<CityNPC>,
-        val name: String,
-        val location: Location,
-        val type: CityNPC.Type,
-        val skin: Skins.SkinData
+		val id: Oid<CityNPC>,
+		val name: String,
+		val location: Location,
+		val type: CityNPC.Type,
+		val skin: Skins.SkinData
 	)
 
 	/**
@@ -114,8 +112,7 @@ object CityNPCs : IonServerComponent(true) {
 
 		Tasks.sync {
 			npcTypeMap.clear()
-			clearCitizensNpcs()
-			citizensRegistry = createNamedMemoryRegistry("trade-city-npcs")
+			manager.clearNPCs()
 
 			val spawned = mutableSetOf<Oid<CityNPC>>()
 
@@ -123,21 +120,30 @@ object CityNPCs : IonServerComponent(true) {
 			npcInfo.forEachIndexed { index, info: NpcInfo ->
 				val location = info.location
 
-				val npc = citizensRegistry.createNPC(
-					EntityType.PLAYER,
+				val npc = manager.createNPC(
+					"${SLTextStyle.GOLD}${info.name}",
 					UUID.randomUUID(),
 					1000 + index,
-					"${SLTextStyle.GOLD}${info.name}"
-				)
-				npcTypeMap[npc.uniqueId] = info.type
+					location,
+					preCheck@{
+						if (!spawned.add(info.id)) {
+							log.warn("Spawn task called more than once for city NPC $info")
+							return@preCheck true
+						}
 
-				loadChunkAsync(location.world, location) {
-					if (!spawned.add(info.id)) {
-						log.warn("Spawn task called more than once for city NPC $info")
-						return@loadChunkAsync
+						false
+					}
+				) { npc ->
+					npc.getOrAddTrait(SkinTrait::class.java).apply {
+						setSkinPersistent(info.name, info.skin.signature, info.skin.value)
 					}
 
-					spawnNPC(location, npc, info)
+					npc.getOrAddTrait(LookClose::class.java).apply {
+						lookClose(true)
+						setRealisticLooking(true)
+					}
+
+					npc.isProtected = true
 				}
 
 				log.debug("Created NPC ${npc.uniqueId} (${npc.name})")
@@ -147,26 +153,13 @@ object CityNPCs : IonServerComponent(true) {
 		}
 	}
 
-	private fun spawnNPC(location: Location, npc: NPC, info: NpcInfo) {
-		npc.getTrait(SkinTrait::class.java).apply {
-			setSkinPersistent(info.name, info.skin.signature, info.skin.value)
-		}
-
-		npc.getTrait(LookClose::class.java).apply {
-			lookClose(true)
-			setRealisticLooking(true)
-		}
-
-		npc.isProtected = true
-
-		npc.spawn(location)
-	}
-
 	/**
 	 * Open shipment dialog when players click importer NPCs.
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {
+		if (!IonServer.featureFlags.economy) return
+
 		val player: Player = event.clicker
 		val npc: NPC = event.npc
 		log.info("clicked ${player.name} clicked npc ${npc.name}")
@@ -187,16 +180,4 @@ object CityNPCs : IonServerComponent(true) {
 			CityNPC.Type.MERCHANT -> Merchants.onClickMerchantNPC(player, cityInfo)
 		}
 	}
-
-	private fun clearCitizensNpcs() {
-		if (CityNPCs::citizensRegistry.isInitialized) {
-			citizensRegistry.toList().forEach { it.destroy() }
-			citizensRegistry.deregisterAll()
-			CitizensAPI.removeNamedNPCRegistry("trade-city-npcs")
-		}
-	}
-
-	fun Player.isCityNpc() = citizensRegistry.isNPC(this)
-
-	fun Player.isNpc() = CitizensAPI.getNPCRegistries().any { it.isNPC(this) }
 }

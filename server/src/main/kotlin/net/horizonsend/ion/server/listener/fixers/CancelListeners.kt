@@ -1,13 +1,8 @@
 package net.horizonsend.ion.server.listener.fixers
 
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
@@ -142,7 +137,7 @@ class CancelListeners : SLEventListener() {
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	@Suppress("Unused", "Deprecation")
+	@Suppress("Unused")
 	fun onPlayerKickEvent(event: PlayerKickEvent) {
 		// Really dumb solution for players being kicked due to "out of order chat messages"
 		if (event.reason.lowercase().contains("out-of-order")) {

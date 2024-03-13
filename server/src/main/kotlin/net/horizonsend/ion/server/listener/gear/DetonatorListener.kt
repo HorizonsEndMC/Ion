@@ -4,6 +4,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.damager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -18,6 +20,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
+import kotlin.math.max
 
 object DetonatorListener : SLEventListener() {
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -66,7 +69,7 @@ object DetonatorListener : SLEventListener() {
 			detonator.setGravity(false)
 			detonator.velocity = Vector(0, 0, 0)
 
-			Tasks.syncDelay(Math.max(1.0, 20 * 1.5 - detonator.ticksLived).toLong()) {
+			Tasks.syncDelay(max(1.0, 20 * 1.5 - detonator.ticksLived).toLong()) {
 				detonator.remove()
 
 				val blocks = ArrayList<Block>()
@@ -91,7 +94,7 @@ object DetonatorListener : SLEventListener() {
 				player.world.createExplosion(detonator, 1f, false, false)
 				player.world.playSound(detonator.location, Sound.ENTITY_GENERIC_EXPLODE, 10f, 0.5f)
 
-				if (!blockExplodeEvent.callEvent() && !detonator.world.name.contains("arena", ignoreCase = true)) {
+				if (!blockExplodeEvent.callEvent() && !detonator.world.hasFlag(WorldFlag.ARENA)) {
 					return@syncDelay
 				}
 

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.progression
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.misc.CombatNPCKillEvent
+import net.horizonsend.ion.server.features.player.CombatNPCKillEvent
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.damager

@@ -29,8 +29,6 @@ import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -38,6 +36,8 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.nations.utils.isSemiActive
+import net.horizonsend.ion.server.features.progression.achievements.Achievement
+import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
@@ -139,6 +139,8 @@ internal object NationCommand : SLCommand() {
 		blue: Int,
 		@Optional cost: Int?
 	) = asyncCommand(sender) {
+		requireEconomyEnabled()
+
 		val settlement = requireSettlementIn(sender)
 		requireSettlementLeader(sender, settlement)
 		requireNotInNation(sender)
@@ -245,8 +247,11 @@ internal object NationCommand : SLCommand() {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.SETTLEMENT_INVITE)
 
-		val invitedSettlements = Nation.findPropById(nationId, Nation::invites)
-		sender.sendMessage(nationMessageFormat("Invited Settlements: {0}", invitedSettlements?.joinToString { SettlementCache[it].name }))
+		val invitedSettlements = Nation.findPropById(nationId, Nation::invites)?.toList() ?: fail { "Something has gone wrong with your nation, please contact an admin." }
+
+		if (invitedSettlements.isEmpty()) return@asyncCommand sender.sendMessage(nationMessageFormat("You do not have any invited settlements."))
+
+		sender.sendMessage(nationMessageFormat("Invited Settlements: {0}", invitedSettlements.joinToString { SettlementCache[it].name }))
 	}
 
 	@Suppress("unused")
@@ -660,9 +665,9 @@ internal object NationCommand : SLCommand() {
 		val leaderRole = NationRole.getHighestRole(cached.leader)
 		val leaderRoleComp = leaderRole?.let { leader ->
 			text(leader.name).color(color(
-				@Suppress("Deprecation") leader.color.actualStyle.wrappedColor.color.red,
-				@Suppress("Deprecation") leader.color.actualStyle.wrappedColor.color.green,
-				@Suppress("Deprecation") leader.color.actualStyle.wrappedColor.color.blue
+				leader.color.actualStyle.wrappedColor.color.red,
+				leader.color.actualStyle.wrappedColor.color.green,
+				leader.color.actualStyle.wrappedColor.color.blue
 			))
 		} ?: text()
 		val leaderText = text("Leader: ")

@@ -328,6 +328,8 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("collect")
 	@Description("Collect the money from all of your items")
 	fun onCollect(sender: Player) = asyncCommand(sender) {
+		requireEconomyEnabled()
+
 		val senderId = sender.slPlayerId
 		val total = BazaarItem.collectMoney(senderId)
 		val count = BazaarItem.count(BazaarItem::seller eq senderId)
@@ -385,6 +387,8 @@ object BazaarCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("merchant buy")
 	fun onMerchantBuy(sender: Player, itemString: String, amount: Int) {
+		requireEconomyEnabled()
+
 		val item = validateItemString(itemString)
 		val npc = CityNpcCommand.requireNearbyNPC(sender, false)
 		failIf(npc.type != CityNPC.Type.MERCHANT) { "Nearest NPC is not a merchant" }

@@ -37,9 +37,7 @@ object LegacyBlockUtils {
 				if (getBlockTypeSafe(block.world, block.x, block.y, block.z)?.isAir == false) {
 					if (i != 0) {
 						val airBlock = originalBlock.getRelativeIfLoaded(direction, i - 1)
-						if (airBlocks != null) {
-							airBlocks.add(airBlock)
-						}
+						airBlocks?.add(airBlock)
 					}
 					continue@quickLoop
 				}

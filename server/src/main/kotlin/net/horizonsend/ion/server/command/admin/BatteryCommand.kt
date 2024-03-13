@@ -7,10 +7,10 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.misc.addPower
-import net.horizonsend.ion.server.features.misc.isPowerable
-import net.horizonsend.ion.server.features.misc.removePower
-import net.horizonsend.ion.server.features.misc.setPower
+import net.horizonsend.ion.server.features.gear.addPower
+import net.horizonsend.ion.server.features.gear.isPowerable
+import net.horizonsend.ion.server.features.gear.removePower
+import net.horizonsend.ion.server.features.gear.setPower
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack

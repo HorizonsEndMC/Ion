@@ -7,10 +7,10 @@ import net.citizensnpcs.trait.LookClose
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.npcs.createNamedMemoryRegistry
+import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
-import net.horizonsend.ion.server.miscellaneous.utils.createNamedMemoryRegistry
-import net.horizonsend.ion.server.miscellaneous.utils.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.loadChunkAsync
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -52,7 +52,7 @@ object Collectors : IonServerComponent(true) {
 		clearCitizenNPCs()
 		npcStationCache.clear()
 
-		citizensRegistry = createNamedMemoryRegistry(npcRegistryName)
+		citizensRegistry = createNamedMemoryRegistry(log, npcRegistryName)
 
 		for (ecoStation in EcoStation.all()) {
 			val world = Bukkit.getWorld(ecoStation.world) ?: continue

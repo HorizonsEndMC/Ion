@@ -5,8 +5,8 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.progression.achievements.Achievement
+import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
@@ -217,7 +217,6 @@ object Hyperspace : IonServerComponent() {
 			null
 		}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipActivated(event: StarshipActivatedEvent) {
 		val starship = event.starship
@@ -233,7 +232,6 @@ object Hyperspace : IonServerComponent() {
 		StarshipTeleportation.teleportStarship(starship, dest)
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipDeactivated(event: StarshipDeactivatedEvent) {
 		val starship = event.starship
@@ -254,19 +252,16 @@ object Hyperspace : IonServerComponent() {
 		event.isCancelled = true
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipTranslate(event: StarshipTranslateEvent) {
 		onStarshipMove(event)
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipRotate(event: StarshipRotateEvent) {
 		onStarshipMove(event)
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipEnterHyperspace(event: StarshipEnterHyperspaceEvent) {
 		val starship = event.starship
@@ -284,7 +279,6 @@ object Hyperspace : IonServerComponent() {
 			}
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onStarshipExitHyperspace(event: StarshipExitHyperspaceEvent) {
 		val movement = event.movement
