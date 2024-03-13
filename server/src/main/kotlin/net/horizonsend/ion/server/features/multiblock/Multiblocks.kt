@@ -365,6 +365,7 @@ object Multiblocks : IonServerComponent() {
 						PersistentDataType.STRING,
 						multiblock::class.simpleName!!
 					)
+					sign.isWaxed = true
 					sign.update()
 					return
 				} else {
