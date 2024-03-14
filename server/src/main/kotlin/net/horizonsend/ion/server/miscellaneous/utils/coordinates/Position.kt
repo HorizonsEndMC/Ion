@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous.utils
+package net.horizonsend.ion.server.miscellaneous.utils.coordinates
 
 @Deprecated("")
 data class Position<T : Number>(

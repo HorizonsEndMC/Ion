@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.TradeConfiguration
 import net.horizonsend.ion.server.features.ai.configuration.AISpawningConfiguration
+import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.EmptyChunkGenerator
@@ -27,7 +28,6 @@ import net.horizonsend.ion.server.miscellaneous.LegacyConfig
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.miscellaneous.registrations.listeners
-import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import org.bukkit.Bukkit
