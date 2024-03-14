@@ -57,7 +57,7 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 		z: Int,
 		signOffset: BlockFace,
 		var string: String
-	) : MultiblockEntity(x, y, z, world, TestMultiblock, signOffset), TickingMultiblockEntity {
+	) : MultiblockEntity(TestMultiblock, x, y, z, world, signOffset), TickingMultiblockEntity {
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			store.addAdditionalData(NamespacedKeys.key("test"), PersistentDataType.STRING, string)
 		}

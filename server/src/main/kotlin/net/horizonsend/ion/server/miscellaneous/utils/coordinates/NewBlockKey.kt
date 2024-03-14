@@ -1,6 +1,5 @@
-package net.horizonsend.ion.server.miscellaneous.utils
+package net.horizonsend.ion.server.miscellaneous.utils.coordinates
 
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.core.BlockPos
 
 /**

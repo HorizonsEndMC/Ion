@@ -24,7 +24,6 @@ import net.horizonsend.ion.server.features.multiblock.type.charger.ChargerMultib
 import net.horizonsend.ion.server.features.multiblock.type.charger.ChargerMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.charger.ChargerMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.defense.AntiAirCannonBaseMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.defense.AntiAirCannonTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.ConnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.DisconnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier1
@@ -123,9 +122,9 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockKey
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -272,7 +271,6 @@ object Multiblocks : IonServerComponent() {
 			HarvesterMultiblockTier3,
 
 			AntiAirCannonBaseMultiblock,
-			AntiAirCannonTurretMultiblock,
 			TestMultiblock
 		).associateBy { it.javaClass.simpleName })
 	}
