@@ -7,7 +7,8 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.miscellaneous.utils.Discord.asDiscord
+import net.horizonsend.ion.server.features.chat.Discord
+import net.horizonsend.ion.server.features.chat.Discord.asDiscord
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.litote.kmongo.id.WrappedObjectId
