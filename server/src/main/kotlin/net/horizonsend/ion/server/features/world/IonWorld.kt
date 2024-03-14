@@ -110,9 +110,6 @@ class IonWorld private constructor(
 
 	//TODO
 	// - Terrain Generator
-	// - IonChunks
-	//   - Wires
-	//   - Explosion Reversal
 	// - Area Shields
 	// -
 	// -
