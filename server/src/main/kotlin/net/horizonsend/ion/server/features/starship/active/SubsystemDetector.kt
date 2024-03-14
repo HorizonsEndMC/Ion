@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.LandingGearMultiblock
