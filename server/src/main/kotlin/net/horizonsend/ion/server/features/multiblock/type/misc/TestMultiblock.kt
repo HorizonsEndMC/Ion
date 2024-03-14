@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.type.InteractableMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
@@ -79,6 +80,10 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 		}
 
 		override val tickAsync: Boolean = true
+
+		override fun toString(): String {
+			return "TestMultiblockEntity[loc = ${Vec3i(x, y, z)}, signOffset = $signOffset, tickAsync = $tickAsync, string = $string]"
+		}
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
