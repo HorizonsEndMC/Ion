@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.entity
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.toBlockKey
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -34,6 +35,8 @@ abstract class MultiblockEntity(
 	 * Returns the origin of this multiblock as a Vec3i
 	 **/
 	val vec3i get() = Vec3i(x, y, z)
+
+	val locationKey = toBlockKey(x, y, z)
 
 	/**
 	 * Stores any additional data for this multiblock (e.g. power, owner, etc)
