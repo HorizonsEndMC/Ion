@@ -15,7 +15,7 @@ import org.bukkit.entity.Player
 object IonChunkCommand : SLCommand() {
 	@Subcommand("dumpEntities")
 	fun onDumpEntities(sender: Player, @Optional visual: Boolean?, @Optional page: Int?) {
-		val entities = sender.chunk.ion().getAllMultiblockEntities().toList()
+		val entities = sender.chunk.ion().multiblockManager.getAllMultiblockEntities().toList()
 
 		sender.sendMessage(formatPaginatedMenu(
 			entities.size,
@@ -26,7 +26,7 @@ object IonChunkCommand : SLCommand() {
 
 			val vec = toVec3i(key)
 
-			text("$vec : ${entity.type}")
+			text("$vec : $entity")
 		})
 
 		if (visual == true) {
@@ -35,6 +35,18 @@ object IonChunkCommand : SLCommand() {
 
 				sender.highlightBlock(vec, 30L)
 			}
+		}
+	}
+
+	@Subcommand("remove all")
+	fun onRemoveAll(sender: Player) {
+		val ionChunk = sender.chunk.ion()
+		val entities = ionChunk.multiblockManager.getAllMultiblockEntities()
+
+		for ((key, _) in entities) {
+			val (x, y, z) = toVec3i(key)
+
+			ionChunk.multiblockManager.removeMultiblockEntity(x, y, z)
 		}
 	}
 }
