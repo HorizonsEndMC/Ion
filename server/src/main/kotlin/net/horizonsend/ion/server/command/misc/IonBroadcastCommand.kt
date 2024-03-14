@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.subStringBetween
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.miscellaneous.utils.Discord
+import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 
