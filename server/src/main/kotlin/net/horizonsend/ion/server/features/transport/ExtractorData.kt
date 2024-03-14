@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.transport
 
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
 import java.util.concurrent.ConcurrentLinkedQueue

@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
+import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.client.display.modular.MultiBlockDisplay
@@ -92,7 +93,6 @@ import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
-import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 
 val components: List<IonComponent> = listOf(

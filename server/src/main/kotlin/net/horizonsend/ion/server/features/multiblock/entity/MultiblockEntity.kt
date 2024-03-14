@@ -3,9 +3,11 @@ package net.horizonsend.ion.server.features.multiblock.entity
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
@@ -19,12 +21,13 @@ import org.bukkit.block.Sign
  * @param type The type of multiblock this entity represents
  **/
 abstract class MultiblockEntity(
-	val x: Int,
-	val y: Int,
-	val z: Int,
-	val world: World,
 	val type: Multiblock,
-	val signOffset: BlockFace
+
+	var x: Int,
+	var y: Int,
+	var z: Int,
+	var world: World,
+	var signOffset: BlockFace
 ) {
 	/**
 	 * Returns the origin of this multiblock as a Location
@@ -70,5 +73,14 @@ abstract class MultiblockEntity(
 		val sign = getSign() ?: return false
 
 		return type.signMatchesStructureAsync(sign)
+	}
+
+	/**
+	 *
+	 **/
+	fun getBlockRelative(backFourth: Int, leftRight: Int, upDown: Int): Block {
+		val (x, y, z) = getRelative(vec3i, signOffset.oppositeFace, backFourth, leftRight, upDown)
+
+		return world.getBlockAt(x, y, z)
 	}
 }
