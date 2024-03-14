@@ -6,8 +6,8 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.world.IonChunk.Companion.ion
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
-import net.horizonsend.ion.server.miscellaneous.utils.toVec3i
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 
