@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous.utils
+package net.horizonsend.ion.server.features.chat
 
 import dev.vankka.mcdiscordreserializer.discord.DiscordSerializer
 import dev.vankka.mcdiscordreserializer.discord.DiscordSerializerOptions
