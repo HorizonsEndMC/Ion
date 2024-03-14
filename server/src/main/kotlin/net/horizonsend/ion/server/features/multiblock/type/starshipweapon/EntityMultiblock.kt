@@ -22,6 +22,6 @@ interface EntityMultiblock<T : MultiblockEntity> {
 		val chunkZ = z.shr(4)
 
 		@Suppress("UNCHECKED_CAST")
-		return world.ion.getChunk(chunkX, chunkZ)?.getMultiblockEntity(x, y, z) as T?
+		return world.ion.getChunk(chunkX, chunkZ)?.multiblockManager?.get(x, y, z) as T?
 	}
 }
