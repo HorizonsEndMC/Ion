@@ -3,13 +3,13 @@ package net.horizonsend.ion.server.miscellaneous.utils.coordinates
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.block.BlockFace
 
-fun toAbsolute(face: BlockFace, backFourth: Int, leftRight: Int, upDown: Int): Vec3i {
-	val right = face.rightFace
+fun toAbsolute(inwardFace: BlockFace, backFourth: Int, leftRight: Int, upDown: Int): Vec3i {
+	val rightFace = inwardFace.rightFace
 
 	return Vec3i(
-		x = (right.modX * leftRight) + (face.modX * backFourth),
+		x = rightFace.modX * leftRight + inwardFace.modX * backFourth,
 		y = upDown,
-		z = (right.modZ * leftRight) + (face.modZ * backFourth)
+		z = rightFace.modZ * leftRight + inwardFace.modZ * backFourth
 	)
 }
 
