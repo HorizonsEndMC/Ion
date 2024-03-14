@@ -18,7 +18,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.miscellaneous.utils.Discord
+import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component.newline

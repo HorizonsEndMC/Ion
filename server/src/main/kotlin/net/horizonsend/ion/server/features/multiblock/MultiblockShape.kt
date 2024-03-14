@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toAbsolute
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockSateSafe
@@ -40,7 +41,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.isStairs
 import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
 import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.isWool
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.minecraft.world.level.block.AbstractFurnaceBlock
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -255,10 +255,8 @@ class MultiblockShape {
 		}
 
 		CARDINAL_BLOCK_FACES.forEach { inwardFace ->
-			val rightFace = inwardFace.rightFace
-			val x = rightFace.modX * right + inwardFace.modX * inward
-			val z = rightFace.modZ * right + inwardFace.modZ * inward
-			val intTrio = Vec3i(x, upward, z)
+			val intTrio = toAbsolute(inwardFace, inward, right, upward)
+
 			val requirementMap = getRequirementMap(inwardFace)
 
 			requirementMap[intTrio] = requirement
