@@ -46,7 +46,7 @@ object Tutorials : IonServerComponent() {
 		for (oldSection in sections.withIndex()) {
 			val (y, _) = oldSection
 
- 			 sections[y] = LevelChunkSection(y, nmsChunk.biomeRegistry, nmsChunk.pos, nmsChunk.level)
+ 			 sections[y] = LevelChunkSection(nmsChunk.biomeRegistry, nmsChunk.level, nmsChunk.pos, y)
  		}
 	}
 }
