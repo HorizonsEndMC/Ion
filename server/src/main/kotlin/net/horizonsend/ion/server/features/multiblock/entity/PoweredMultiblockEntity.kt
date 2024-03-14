@@ -9,14 +9,14 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
 abstract class PoweredMultiblockEntity(
+	type: Multiblock,
 	x: Int,
 	y: Int,
 	z: Int,
 	world: World,
-	type: Multiblock,
 	signOffset: BlockFace,
 	private var power: Int
-) : MultiblockEntity(x, y, z, world, type, signOffset) {
+) : MultiblockEntity(type, x, y, z, world, signOffset) {
 	init {
 	    require(type is PowerStoringMultiblock)
 	}

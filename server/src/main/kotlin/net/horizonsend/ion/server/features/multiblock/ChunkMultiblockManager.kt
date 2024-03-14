@@ -8,9 +8,9 @@ import net.horizonsend.ion.server.features.multiblock.entity.TickingMultiblockEn
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.world.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockKey
 import org.bukkit.block.Sign
 import org.bukkit.persistence.PersistentDataType.LIST
 import org.slf4j.LoggerFactory
