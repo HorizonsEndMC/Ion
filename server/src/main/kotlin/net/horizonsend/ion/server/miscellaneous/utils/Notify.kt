@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.chat.Discord
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.litote.kmongo.id.WrappedObjectId
