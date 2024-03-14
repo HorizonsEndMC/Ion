@@ -107,6 +107,7 @@ import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonPrinter
 import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
@@ -508,13 +509,6 @@ object Multiblocks : IonServerComponent() {
 
 		multiblock.setupSign(detector, sign)
 
-		val (x, y, z) = Multiblock.getOrigin(sign)
-
-		val chunkX = x.shr(4)
-		val chunkZ = z.shr(4)
-
-		val chunk = sign.world.ion.getChunk(chunkX, chunkZ) ?: return@sync
-
 		sign.persistentDataContainer.set(
 			NamespacedKeys.MULTIBLOCK,
 			PersistentDataType.STRING,
@@ -527,9 +521,20 @@ object Multiblocks : IonServerComponent() {
 			sign.update()
 		}
 
-		chunk.addMultiblock(multiblock, sign)
+		if (multiblock is EntityMultiblock<*>) {
+			// Multiblock entities are stored inside the block that the sign is placed on
+			val (x, _, z) = Multiblock.getOrigin(sign)
+
+			val chunkX = x.shr(4)
+			val chunkZ = z.shr(4)
+
+			val chunk = sign.world.ion.getChunk(chunkX, chunkZ) ?: return@sync
+
+			chunk.multiblockManager.addNewMultiblockEntity(multiblock, sign)
+		}
 	}
 
+	/** Upon a multiblock being removed */
 	fun removeMultiblock(multiblock: Multiblock, sign: Sign, player: Player) = Tasks.sync  {
 		val (x, y, z) = Multiblock.getOrigin(sign)
 
@@ -538,6 +543,6 @@ object Multiblocks : IonServerComponent() {
 
 		val chunk = sign.world.ion.getChunk(chunkX, chunkZ) ?: return@sync
 
-		chunk.removeMultiblock(x, y, z)
+		chunk.multiblockManager.removeMultiblockEntity(x, y, z)
 	}
 }
