@@ -8,10 +8,10 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
-import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateItems
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentBalancing
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager
@@ -106,7 +106,7 @@ object TradeDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 							val importing = shipments.map { it.to.territoryId }.toSet().size
 							return@map "$exporterName: $importing"
 						}.joinToString()
-						})"
+						}<dark_purple>)"
 				)
 			}
 		}

@@ -22,6 +22,7 @@ repositories {
 	maven("https://repo.decalium.ru/releases") // Persistent Data Types
 	maven("https://repo.xenondevs.xyz/releases") // InvUI
 	maven("https://repo.papermc.io/repository/maven-public/") // FAWE api
+	maven("https://repo.codemc.io/repository/maven-snapshots/") // AnvilGUI
 
 	maven("https://repo.horizonsend.net/mirror")
 }
@@ -49,7 +50,7 @@ dependencies {
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.13")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("io.github.config4k:config4k:0.6.0")
-	implementation("net.wesjd:anvilgui:1.6.3-SNAPSHOT")
+	implementation("net.wesjd:anvilgui:1.9.2-SNAPSHOT")
 	implementation("io.github.skytasul:guardianbeam:2.3.6")
 	implementation("xyz.xenondevs.invui:invui:1.26")
 	implementation("club.minnced:discord-webhooks:0.8.4")

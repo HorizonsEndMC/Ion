@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
@@ -172,7 +173,7 @@ object ShipmentManager : IonServerComponent() {
 	}
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
-		player.input("Select amount of crates:") { _: Player, answer ->
+		player.input("Select amount of crates:".toComponent()) { _: Player, answer ->
 			val digit = answer.filter { it.isDigit() }
 			val amount = digit.toIntOrNull() ?: return@input "Amount must be an integer"
 
@@ -219,6 +220,7 @@ object ShipmentManager : IonServerComponent() {
 					return@sync player msg red("Shipment is not available")
 				}
 				completePurchase(player, shipment, item, count)
+				player.closeInventory()
 			}
 		}
 	}

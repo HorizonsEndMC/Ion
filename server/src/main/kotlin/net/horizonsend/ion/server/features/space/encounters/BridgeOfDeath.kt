@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.space.encounters
 
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.features.nations.gui.input
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
@@ -74,7 +75,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 			failed = true
 		}
 
-		event.player.input("What is your name?") { player, response ->
+		event.player.input("What is your name?".toComponent()) { player, response ->
 			if (response == player.name) return@input null
 			fail()
 
@@ -83,7 +84,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 
 		if (failed) return
 
-		event.player.input("What is your quest?") { _, _ ->
+		event.player.input("What is your quest?".toComponent()) { _, _ ->
 			null
 		}
 
@@ -101,7 +102,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 				else -> 0 to "What is your favorite color?"
 			}
 
-		event.player.input(prompt) { _, answer ->
+		event.player.input(prompt.toComponent()) { _, answer ->
 			when (id) {
 				2 ->
 					if (answer.contains("august", true) || answer.contains("2022", true))

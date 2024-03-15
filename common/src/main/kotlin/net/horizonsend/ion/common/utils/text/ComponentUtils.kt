@@ -31,7 +31,9 @@ operator fun Component.plus(other: ComponentLike): Component = this.append(other
 fun ofChildren(vararg children: ComponentLike) = Component.textOfChildren(*children)
 
 /** Analogue of Any#toString */
-fun Any.toComponent(color: TextColor = WHITE, vararg decorations: TextDecoration): Component = text(toString(), color, *decorations)
+@JvmOverloads
+fun Any.toComponent(vararg decorations: TextDecoration, color: TextColor = WHITE): Component = text(toString(), color, *decorations)
+fun Any.toComponent(color: TextColor = WHITE): Component = text(toString(), color)
 
 /**
  * Formats the number into credit format, so it is rounded to the nearest hundredth,
