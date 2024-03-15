@@ -45,6 +45,7 @@ dependencies {
 	compileOnly("xyz.xenondevs.invui:invui:1.43") // Downloaded via paper library manager for remapping
 
 	// Included Dependencies
+	implementation("com.google.guava:guava:33.1.0-jre")
 	implementation("com.manya:persistent-data-types:1.0.25")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
