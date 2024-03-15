@@ -10,11 +10,11 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class ExtractorData(
 	val extractorLocations: ConcurrentLinkedQueue<Vec3i>
 ) {
-	companion object : PersistentDataType<Array<Long>, ExtractorData> {
-		override fun getPrimitiveType(): Class<Array<Long>> = Array<Long>::class.java
+	companion object : PersistentDataType<LongArray, ExtractorData> {
+		override fun getPrimitiveType(): Class<LongArray> = LongArray::class.java
 		override fun getComplexType(): Class<ExtractorData> = ExtractorData::class.java
 
-		override fun fromPrimitive(primitive: Array<Long>, context: PersistentDataAdapterContext): ExtractorData {
+		override fun fromPrimitive(primitive: LongArray, context: PersistentDataAdapterContext): ExtractorData {
 			val list = ConcurrentLinkedQueue<Vec3i>()
 
 			for (key in primitive) {
@@ -24,8 +24,8 @@ class ExtractorData(
 			return ExtractorData(list)
 		}
 
-		override fun toPrimitive(complex: ExtractorData, context: PersistentDataAdapterContext): Array<Long> {
-			return complex.extractorLocations.map { toBlockKey(it) }.toTypedArray()
+		override fun toPrimitive(complex: ExtractorData, context: PersistentDataAdapterContext): LongArray {
+			return complex.extractorLocations.map { toBlockKey(it) }.toLongArray()
 		}
 	}
 }

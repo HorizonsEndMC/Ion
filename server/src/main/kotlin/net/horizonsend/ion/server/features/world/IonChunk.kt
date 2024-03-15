@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.world
 
 import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
-import net.horizonsend.ion.server.features.transport.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Chunk
@@ -16,13 +16,16 @@ class IonChunk(val inner: Chunk) {
 	val originX = inner.x.shl(4)
 	val originZ = inner.z.shl(4)
 
+	val x = inner.x
+	val z = inner.z
+
 	// TODO
 	//  - Wires
 	//  - Ore upgrader
 	//  - Explosion Reversal
 
 	val multiblockManager = ChunkMultiblockManager(this)
-	val powerNetwork: ChunkPowerNetwork = ChunkPowerNetwork(this)
+	val transportNetwork: ChunkTransportNetwork = ChunkTransportNetwork(this)
 
 	/**
 	 * Logic upon loading the chunk
@@ -49,7 +52,7 @@ class IonChunk(val inner: Chunk) {
 	 * Logic upon world tick
 	 **/
 	fun tick() {
-		powerNetwork.tick()
+		transportNetwork.tick()
 		multiblockManager.tick()
 	}
 
