@@ -78,5 +78,7 @@ object NamespacedKeys {
 	val STORED_MULTIBLOCK_ENTITIES = key("stored_multiblock_entities")
 	val EXTRACTOR_DATA = key("extractor_data")
 
+	val PROCESSING_PROGRESS = key("processing_progress")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 }
