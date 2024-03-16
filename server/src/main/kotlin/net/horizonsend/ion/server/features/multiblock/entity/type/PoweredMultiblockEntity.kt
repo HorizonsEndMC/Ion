@@ -1,29 +1,18 @@
-package net.horizonsend.ion.server.features.multiblock.entity
+package net.horizonsend.ion.server.features.multiblock.entity.type
 
-import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.World
-import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.persistence.PersistentDataType
 
-abstract class PoweredMultiblockEntity(
-	type: Multiblock,
-	x: Int,
-	y: Int,
-	z: Int,
-	world: World,
-	signOffset: BlockFace,
-	private var power: Int
-) : MultiblockEntity(type, x, y, z, world, signOffset) {
-	init {
-	    require(type is PowerStoringMultiblock)
-	}
+interface PoweredMultiblockEntity {
+	var power: Int
+	val type: PowerStoringMultiblock
 
-	val maxPower = (type as PowerStoringMultiblock).maxPower
-
-	private val prefixComponent = Component.text("E: ", NamedTextColor.YELLOW)
+	val maxPower get() = type.maxPower
 
 	fun setPower(amount: Int) {
 		val correctedPower = amount.coerceIn(0, maxPower)
@@ -69,5 +58,14 @@ abstract class PoweredMultiblockEntity(
 	 **/
 	fun canRemovePower(amount: Int): Boolean {
 		return getPower() - amount > 0
+	}
+
+	companion object {
+		private val prefixComponent = Component.text("E: ", NamedTextColor.YELLOW)
+	}
+
+	/** Store power data */
+	fun storePower(store: PersistentMultiblockData) {
+		store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, power)
 	}
 }

@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.transport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import net.horizonsend.ion.server.features.multiblock.entity.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.grid.PowerGrid
 import net.horizonsend.ion.server.features.world.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
