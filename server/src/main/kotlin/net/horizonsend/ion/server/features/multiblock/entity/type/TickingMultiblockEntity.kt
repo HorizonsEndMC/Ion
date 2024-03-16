@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.entity
+package net.horizonsend.ion.server.features.multiblock.entity.type
 
 /**
  * Any multiblock that should be ticked along with the world
