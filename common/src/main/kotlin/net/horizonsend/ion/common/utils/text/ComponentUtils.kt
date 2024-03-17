@@ -6,7 +6,9 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -59,3 +61,9 @@ fun Iterable<ComponentLike>.join(separator: Component? = text(", ")): Component 
 
 /** Returns an empty component if the provided component was null */
 fun Component?.orEmpty(): Component = this ?: empty()
+
+fun formatLink(showText: String, link: String): Component {
+	return text(showText, BLUE, TextDecoration.UNDERLINED)
+		.clickEvent(ClickEvent.openUrl(link))
+		.hoverEvent(text(link))
+}

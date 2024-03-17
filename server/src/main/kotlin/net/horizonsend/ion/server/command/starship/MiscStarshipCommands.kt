@@ -24,6 +24,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
@@ -51,7 +52,6 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
-import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -60,7 +60,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
@@ -696,9 +695,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 				sender.sendMessage(Component.textOfChildren(
 					text("Your schematic has been uploaded.", NamedTextColor.DARK_GREEN), newline(),
-					text("Click this link to download it", NamedTextColor.GREEN)
-						.hoverEvent(text(it.toString()))
-						.clickEvent(ClickEvent.openUrl(it.toString())),
+					formatLink("Click this link to download it", it.toString())
 				))
 			}
 		}
