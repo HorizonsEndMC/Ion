@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.features.misc.EventLogger
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
 import net.horizonsend.ion.server.features.misc.PacketHandler
 import net.horizonsend.ion.server.features.misc.Shuttles
+import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
@@ -198,5 +199,6 @@ val components: List<IonComponent> = listOf(
 
 	AntiAirCannons,
 	CustomOrePlacement,
-	CapturableStationCache
+	CapturableStationCache,
+	UnusedSoldShipPurge
 )
