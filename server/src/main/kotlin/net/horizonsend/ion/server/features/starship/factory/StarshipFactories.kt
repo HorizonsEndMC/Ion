@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
@@ -30,8 +31,10 @@ import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.starlegacy.javautil.SignUtils
+import org.apache.commons.collections4.map.PassiveExpiringMap
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Slab
@@ -39,14 +42,18 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
+import java.util.Collections.synchronizedMap
 import java.util.LinkedList
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 import kotlin.math.roundToInt
 
 object StarshipFactories : IonServerComponent() {
+	val missingMaterialsCache = synchronizedMap(PassiveExpiringMap<UUID, Map<PrintItem, Int>>(TimeUnit.MINUTES.toMillis(5L)))
+
 	@Synchronized
 	fun process(player: Player, sign: Sign, creditPrint: Boolean) {
 		val blueprintOwner = UUID.fromString(sign.getLine(1)).slPlayerId
@@ -116,17 +123,29 @@ object StarshipFactories : IonServerComponent() {
 
 	private fun sendMissing(printer: StarshipFactoryPrinter, player: Player): Boolean {
 		val missingItems = printer.missingItems
-		val missingCredits = printer.missingCredits
 
-		if (missingItems.isNotEmpty() || missingCredits > 0) {
-			if (missingItems.isNotEmpty()) {
-				player.userError("Missing Materials: ")
-				player.sendMessage(getPrintItemCountString(missingItems))
-			}
+		if (missingItems.isNotEmpty()) {
+			missingMaterialsCache[player.uniqueId] = missingItems
 
-			if (missingCredits > 0) {
-				player.userError("Missing Credits: ${missingCredits.toCreditsString()}")
-			}
+			val sorted = missingItems.entries.toList().sortedBy { it.value }
+
+			player.userError("Missing Materials: ")
+
+			player.sendMessage(formatPaginatedMenu(
+				entries = sorted.size,
+				command = "/shipfactory listmissing",
+				currentPage = 1,
+			) { index ->
+				val (item, count) = sorted[index]
+
+				return@formatPaginatedMenu ofChildren(
+					item.toComponent(color = RED),
+					text(": ", DARK_GRAY),
+					text(count, WHITE)
+				)
+			})
+
+			player.userError("Use <italic><underlined><click:run_command:/shipfactory listmissing all>/shipfactory listmissing all</click></italic> to list all missing materials in one message.")
 
 			return true
 		}

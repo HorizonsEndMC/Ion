@@ -60,6 +60,7 @@ dependencies {
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-modern:2.1.3")
     implementation("org.jgrapht:jgrapht-core:1.5.2")
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
+	implementation("org.apache.commons:commons-collections4:4.0")
 
 	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.9.1")
 
