@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -12,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.setNMSBlockData
 import net.minecraft.world.level.block.state.BlockState
+import net.starlegacy.javautil.SignUtils
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
@@ -26,7 +26,7 @@ class StarshipFactoryPrinter(
 	private val world: World,
 	private val inventory: Inventory,
 	private val blocks: Long2ObjectOpenHashMap<BlockData>,
-	private val signs: Long2ObjectOpenHashMap<Array<String>>,
+	private val signs: Long2ObjectOpenHashMap<SignUtils.SignData>,
 	private var availableCredits: Double = 0.0
 ) {
 	private val availableItems = mutableMapOf<PrintItem, Int>()
@@ -187,26 +187,14 @@ class StarshipFactoryPrinter(
 	}
 
 	private fun fillSigns() {
-		for ((key, lines) in signs) {
+		for ((key, data) in signs) {
 			if (!queue.containsKey(key)) {
 				continue
 			}
 
 			val sign = world.getBlockAtKey(key).state as Sign
-			for ((index, line) in lines.withIndex()) {
-				sign.setLine(index, line)
-			}
-			sign.update(false, false)
 
-			resetPower(sign)
+			data.applyTo(sign);
 		}
-	}
-
-	private fun resetPower(sign: Sign) {
-		if (PowerMachines.getPower(sign) <= 0) {
-			return
-		}
-
-		PowerMachines.setPower(sign, 0, fast = true)
 	}
 }
