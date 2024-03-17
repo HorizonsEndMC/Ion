@@ -28,7 +28,7 @@ object UnusedSoldShipPurge : IonServerComponent() {
 	}
 
 	// Inactive for 7 days
-	private val clearBeforeData get() = System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(7)
+	private val clearBeforeData get() = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)
 
 	fun purgeNoobShuttles() = Tasks.async {
 		val unused = PlayerStarshipData.find(and(
