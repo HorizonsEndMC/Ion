@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.schema.Cryopod
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
@@ -186,7 +185,7 @@ object SubsystemDetector {
 			}
 
 			if (subsystem is WeaponSubsystem && !subsystem.canCreateSubsystem()) {
-				feedbackDestination.userError("Could not create subsystem ${subsystem.name}!")
+//				feedbackDestination.userError("Could not create subsystem ${subsystem.name}!") TODO wait for preference system
 				continue
 			}
 
