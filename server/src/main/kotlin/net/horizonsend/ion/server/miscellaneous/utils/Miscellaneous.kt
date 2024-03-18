@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import com.mojang.math.Transformation
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.IonCommand
@@ -17,6 +18,7 @@ import net.minecraft.network.protocol.game.ClientboundSetBorderWarningDistancePa
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.network.ServerGamePacketListenerImpl
+import net.minecraft.world.entity.Display
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Slime
 import net.minecraft.world.level.block.Blocks
@@ -42,6 +44,8 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.scheduler.BukkitRunnable
+import org.joml.Quaternionf
+import org.joml.Vector3f
 import kotlin.reflect.jvm.isAccessible
 
 val vaultEconomy = try {
@@ -129,6 +133,21 @@ fun highlightBlock(bukkitPlayer: Player, pos: Vec3i, duration: Long) {
 	slime.entityData.refresh(player)
 
 	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(slime.id)) }
+}
+
+fun displayBlock(bukkitPlayer: Player, block: Block, pos: Vec3i, duration: Long) {
+	val player = bukkitPlayer.minecraft
+	val conn = player.connection
+	val blockEntity = Display.BlockDisplay(EntityType.BLOCK_DISPLAY, player.level()).apply {
+		setPos(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5)
+		this.blockState = block.blockData.nms
+		this.setTransformation(Transformation(Vector3f(0f), Quaternionf(), Vector3f(0.5f), Quaternionf()))
+	}
+
+	conn.send(ClientboundAddEntityPacket(blockEntity))
+	blockEntity.entityData.refresh(player)
+
+	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(blockEntity.id)) }
 }
 
 fun Audience.highlightBlock(pos: Vec3i, duration: Long) {
