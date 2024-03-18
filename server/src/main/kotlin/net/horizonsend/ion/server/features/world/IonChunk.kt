@@ -15,11 +15,17 @@ import org.bukkit.event.world.ChunkUnloadEvent
 class IonChunk(val inner: Chunk) {
 	val locationKey = inner.chunkKey
 
+	/** The origin X coordinate of this chunk (in real coordinates) **/
 	val originX = inner.x.shl(4)
+	/** The origin Z coordinate of this chunk (in real coordinates) **/
 	val originZ = inner.z.shl(4)
 
+	/** The X chunk coordinate **/
 	val x = inner.x
+	/** The Z chunk coordinate **/
 	val z = inner.z
+
+	val world get() = inner.world
 
 	val sections: Iterable<IndexedValue<LevelChunkSection>> get() = inner.minecraft.sections.withIndex()
 
