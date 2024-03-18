@@ -4,6 +4,8 @@ import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.transport.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.minecraft.world.level.chunk.LevelChunkSection
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.event.EventHandler
@@ -18,6 +20,8 @@ class IonChunk(val inner: Chunk) {
 
 	val x = inner.x
 	val z = inner.z
+
+	val sections: Iterable<IndexedValue<LevelChunkSection>> get() = inner.minecraft.sections.withIndex()
 
 	// TODO
 	//  - Wires
