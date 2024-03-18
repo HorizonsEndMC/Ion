@@ -80,6 +80,12 @@ val ADJACENT_BLOCK_FACES: Set<BlockFace> = ImmutableSet.of(
 	BlockFace.DOWN
 )
 
+val ADJACENT_PAIRS: Set<Set<BlockFace>> = ImmutableSet.of(
+	ImmutableSet.of(BlockFace.NORTH, BlockFace.SOUTH),
+	ImmutableSet.of(BlockFace.EAST, BlockFace.WEST),
+	ImmutableSet.of(BlockFace.NORTH, BlockFace.SOUTH)
+)
+
 val CARDINAL_BLOCK_FACES: Set<BlockFace> = ImmutableSet.of(
 	BlockFace.NORTH,
 	BlockFace.SOUTH,
