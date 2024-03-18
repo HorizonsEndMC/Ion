@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
-class PowerInputNode(
+abstract class PowerInputNode(
 	x: Int,
 	y: Int,
 	z: Int,
