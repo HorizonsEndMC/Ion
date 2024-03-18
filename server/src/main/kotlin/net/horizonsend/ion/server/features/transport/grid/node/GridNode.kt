@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.grid
+package net.horizonsend.ion.server.features.transport.grid.node
 
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.block.BlockFace

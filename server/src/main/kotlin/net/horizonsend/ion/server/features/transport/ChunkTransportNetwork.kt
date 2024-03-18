@@ -15,7 +15,7 @@ class ChunkTransportNetwork(
 	val chunk: IonChunk,
 ) {
 	// Each chunk gets a scope for parallelism
-	private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+	val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	val extractorData = getExtractorData(chunk.inner)
 
