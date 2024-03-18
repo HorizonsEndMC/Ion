@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.displayBlock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.minecraft.core.BlockPos
@@ -66,7 +67,7 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 			if (!requirementMet) {
 				val (xx, yy, zz) = Vec3i(relative.location)
 
-				highlightBlock(sender, Vec3i(xx, yy, zz), 5 * 20L)
+				displayBlock(sender, relative, Vec3i(xx, yy, zz), 5 * 20L)
 				sender.userError(
 					"Block at ${Vec3i(relative.location)} doesn't match! Expected ${expected.material}, found ${relative.type}."
 				)
