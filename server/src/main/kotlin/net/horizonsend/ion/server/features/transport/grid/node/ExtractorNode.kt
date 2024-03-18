@@ -1,10 +1,9 @@
-package net.horizonsend.ion.server.features.transport.grid.power
+package net.horizonsend.ion.server.features.transport.grid.node
 
-import net.horizonsend.ion.server.features.transport.grid.node.GridNode
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class PowerNode(
+class ExtractorNode(
 	override val x: Int,
 	override val y: Int,
 	override val z: Int,
