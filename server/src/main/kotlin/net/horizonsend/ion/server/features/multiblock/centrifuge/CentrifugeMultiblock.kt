@@ -12,7 +12,6 @@ import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
-import org.bukkit.inventory.ItemStack
 
 
 abstract class CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
@@ -115,8 +114,8 @@ abstract class CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 	) {
 		event.isBurning = false
 		event.burnTime = 200
-		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
+		furnace.cookSpeedMultiplier = 0.95 // TODO: improve implementation after multiblock rewrite
 
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
@@ -127,13 +126,25 @@ abstract class CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 				smelting.type != Material.PRISMARINE_CRYSTALS ||
 				fuel == null
 		) {
+			furnace.cookTime = 0
+			event.isCancelled = true
 			return
 		}
-		if (fuel.customItem != URANIUM) return
-		event.isCancelled = false
-		fuel.subtract(1)
-		if (result == null)  furnace.inventory.result = ENRICHED_URANIUM.constructItemStack()
-		else result.add(1)
-		PowerMachines.removePower(sign, 300)
+
+		if (fuel.customItem != URANIUM) {
+			furnace.cookTime = 0
+			event.isCancelled = true
+			return
+		}
+
+		// Produce new item if it is not the first burn event
+		if (furnace.cookTime >= 200) {
+			fuel.subtract(1)
+			if (result == null) furnace.inventory.result = ENRICHED_URANIUM.constructItemStack()
+			else result.add(1)
+			PowerMachines.removePower(sign, 300)
+			event.isCancelled = false
+		}
+		furnace.cookTime = 0
 	}
 }
