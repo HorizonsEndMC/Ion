@@ -10,6 +10,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.information
@@ -41,7 +42,7 @@ import java.io.File
 object RegenerateCommand : SLCommand() {
 	// The worlds in this folder are stripped down versions of worlds. Basically just renamed region folders
 	private val cleanWorldsFolder: File = IonServer.dataFolder.resolve("worlds")
-	private val scope = CoroutineScope(Dispatchers.Default)
+	private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 	private val blockStateCodec = ChunkSerializer.BLOCK_STATE_CODEC
 
 	@Subcommand("terrain")
