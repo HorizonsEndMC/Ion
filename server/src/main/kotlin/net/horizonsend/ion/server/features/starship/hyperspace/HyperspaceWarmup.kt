@@ -3,9 +3,11 @@ package net.horizonsend.ion.server.features.starship.hyperspace
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.informationAction
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -69,6 +71,15 @@ class HyperspaceWarmup(
 			return
 		}
 
+		if (!PilotedStarships.isPiloted(ship as ActiveControlledStarship)) {
+			// Do this separate since the unpiloted controller doesn't pass through information, if it duplicates, oh well
+			(ship.controller as? PlayerController)?.player?.userError("Starship became unpiloted, hyperspace warmup cancelled.")
+
+			ship.userError("Starship became unpiloted, hyperspace warmup cancelled.")
+
+			cancel()
+		}
+
 		displayParticles()
 
 		if (seconds < warmup) {
@@ -90,6 +101,7 @@ class HyperspaceWarmup(
 	private val particleRadius = ship.initialBlockCount.toDouble().pow(2.0/5.0)
 	private val startLocation = drive.pos.toLocation(ship.world)
 	private val count = maxOf(100, 50 / (seconds - warmup) + 20)
+
 	private fun displayParticles() {
 		ship.world.spawnParticle(
 			Particle.VIBRATION,
