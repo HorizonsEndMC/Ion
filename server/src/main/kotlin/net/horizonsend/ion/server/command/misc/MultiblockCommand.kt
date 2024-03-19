@@ -65,7 +65,7 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 			if (!requirementMet) {
 				val (xx, yy, zz) = Vec3i(relative.location)
 
-				displayBlock(sender, expected, Vec3i(xx, yy, zz), 5 * 20L, true)
+				displayBlock(sender, expected, Vec3i(xx, yy, zz), 0.5f, 5 * 20L, true)
 				sender.userError(
 					"Block at ${Vec3i(relative.location)} doesn't match! Expected ${expected.material}, found ${relative.type}."
 				)

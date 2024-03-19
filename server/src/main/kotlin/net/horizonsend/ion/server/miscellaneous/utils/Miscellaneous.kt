@@ -136,14 +136,15 @@ fun highlightBlock(bukkitPlayer: Player, pos: Vec3i, duration: Long) {
 	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(slime.id)) }
 }
 
-fun displayBlock(bukkitPlayer: Player, blockData: BlockData, pos: Vec3i, duration: Long, glow: Boolean) {
+fun displayBlock(bukkitPlayer: Player, blockData: BlockData, pos: Vec3i, scale: Float, duration: Long, glow: Boolean) {
 	val player = bukkitPlayer.minecraft
 	val conn = player.connection
+	val offset = (scale / 2) + 0.5
 	val blockEntity = Display.BlockDisplay(EntityType.BLOCK_DISPLAY, player.level()).apply {
-		setPos(pos.x + 0.25, pos.y + 0.25, pos.z + 0.25)
+		setPos(pos.x + offset, pos.y + offset, pos.z + offset)
 		setGlowingTag(glow)
 		this.blockState = blockData.nms
-		this.setTransformation(Transformation(Vector3f(0f), Quaternionf(), Vector3f(0.5f), Quaternionf()))
+		this.setTransformation(Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf()))
 	}
 
 	conn.send(ClientboundAddEntityPacket(blockEntity))
