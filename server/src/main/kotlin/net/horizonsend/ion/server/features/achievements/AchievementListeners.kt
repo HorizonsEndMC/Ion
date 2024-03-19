@@ -87,57 +87,57 @@ class AchievementListeners : SLEventListener() {
 				"kovfefe" -> Achievement.PLANET_KOVFEFE
 				else -> return
 			}
-		)
-
-		val achievements = playerData.achievements.map { Achievement.valueOf(it) }
-
-		if (achievements.containsAll(
-				listOf(
-					Achievement.PLANET_CHANDRA,
-					Achievement.PLANET_LUXITERNA,
-					Achievement.PLANET_HERDOLI,
-					Achievement.PLANET_RUBACIEA,
-					Achievement.PLANET_ILIUS
-				)
-			)
 		) {
-			player.rewardAchievement(Achievement.SYSTEM_ASTERI)
-		}
+			val achievements = playerData.achievements.map { Achievement.valueOf(it) }
 
-		if (achievements.containsAll(
-				listOf(
-					Achievement.PLANET_ARET,
-					Achievement.PLANET_VASK,
-					Achievement.PLANET_AERACH,
-					Achievement.PLANET_GAHARA
+			if (achievements.containsAll(
+					listOf(
+						Achievement.PLANET_CHANDRA,
+						Achievement.PLANET_LUXITERNA,
+						Achievement.PLANET_HERDOLI,
+						Achievement.PLANET_RUBACIEA,
+						Achievement.PLANET_ILIUS
+					)
 				)
-			)
-		) {
-			player.rewardAchievement(Achievement.SYSTEM_REGULUS)
-		}
+			) {
+				player.rewardAchievement(Achievement.SYSTEM_ASTERI)
+			}
 
-		if (achievements.containsAll(
-				listOf(
-					Achievement.PLANET_QATRA,
-					Achievement.PLANET_LIODA,
-					Achievement.PLANET_KOVFEFE,
-					Achievement.PLANET_TURMS
+			if (achievements.containsAll(
+					listOf(
+						Achievement.PLANET_ARET,
+						Achievement.PLANET_VASK,
+						Achievement.PLANET_AERACH,
+						Achievement.PLANET_GAHARA
+					)
 				)
-			)
-		) {
-			player.rewardAchievement(Achievement.SYSTEM_SIRIUS)
-		}
+			) {
+				player.rewardAchievement(Achievement.SYSTEM_REGULUS)
+			}
 
-		if (achievements.containsAll(
-				listOf(
-					Achievement.PLANET_DAMKOTH,
-					Achievement.PLANET_CHIMGARA,
-					Achievement.PLANET_KRIO,
-					Achievement.PLANET_ISIK
+			if (achievements.containsAll(
+					listOf(
+						Achievement.PLANET_QATRA,
+						Achievement.PLANET_LIODA,
+						Achievement.PLANET_KOVFEFE,
+						Achievement.PLANET_TURMS
+					)
 				)
-			)
-		) {
-			player.rewardAchievement(Achievement.SYSTEM_ILIOS)
+			) {
+				player.rewardAchievement(Achievement.SYSTEM_SIRIUS)
+			}
+
+			if (achievements.containsAll(
+					listOf(
+						Achievement.PLANET_DAMKOTH,
+						Achievement.PLANET_CHIMGARA,
+						Achievement.PLANET_KRIO,
+						Achievement.PLANET_ISIK
+					)
+				)
+			) {
+				player.rewardAchievement(Achievement.SYSTEM_ILIOS)
+			}
 		}
 	}
 }
