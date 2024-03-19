@@ -30,7 +30,7 @@ repositories {
 dependencies {
 	implementation(project(":common"))
 
-	compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-20230607.154752-103")
+	compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-20231207.202833-1")
 	// Platform
 	paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
 

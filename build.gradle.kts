@@ -32,7 +32,7 @@ fun downloadJenkinsArtifact(domain: String, project: String, filter: String, loc
 }
 
 fun downloadModrinthArtifact(project: String) {
-	val targetVersion = "1.19.4"
+	val targetVersion = "1.20.4"
 	val targetLoader = "paper"
 
 	print("Downloading $project... ")
