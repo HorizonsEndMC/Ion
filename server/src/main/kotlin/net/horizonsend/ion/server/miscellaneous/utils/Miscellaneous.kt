@@ -124,26 +124,27 @@ fun areaDebugMessage(x: Number, y: Number, z: Number, msg: String) {
 fun highlightBlock(bukkitPlayer: Player, pos: Vec3i, duration: Long) {
 	val player = bukkitPlayer.minecraft
 	val conn = player.connection
-	val slime = Slime(EntityType.SLIME, player.level()).apply {
-			setPos(pos.x + 0.5, pos.y.toDouble(), pos.z + 0.5)
-			setGlowingTag(true)
-			isInvisible = true
-		}
+	val blockEntity = Display.BlockDisplay(EntityType.BLOCK_DISPLAY, player.level()).apply {
+		setPos(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
+		this.blockState = getBlockDataSafe(bukkitPlayer.location.world, pos.x, pos.y, pos.z)?.nms ?: return
+		setGlowingTag(true)
+		isInvisible = true
+	}
 
-	conn.send(ClientboundAddEntityPacket(slime))
-	slime.entityData.refresh(player)
+	conn.send(ClientboundAddEntityPacket(blockEntity))
+	blockEntity.entityData.refresh(player)
 
-	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(slime.id)) }
+	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(blockEntity.id)) }
 }
 
 fun displayBlock(bukkitPlayer: Player, blockData: BlockData, pos: Vec3i, scale: Float, duration: Long, glow: Boolean) {
 	val player = bukkitPlayer.minecraft
 	val conn = player.connection
-	val offset = (scale / 2) + 0.5
+	val offset = (-scale / 2) + 0.5
 	val blockEntity = Display.BlockDisplay(EntityType.BLOCK_DISPLAY, player.level()).apply {
 		setPos(pos.x + offset, pos.y + offset, pos.z + offset)
-		setGlowingTag(glow)
 		this.blockState = blockData.nms
+		setGlowingTag(glow)
 		this.setTransformation(Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf()))
 	}
 
