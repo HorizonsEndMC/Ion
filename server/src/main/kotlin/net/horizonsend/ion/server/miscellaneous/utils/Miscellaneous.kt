@@ -121,43 +121,42 @@ fun areaDebugMessage(x: Number, y: Number, z: Number, msg: String) {
 	}
 }
 
-fun highlightBlock(bukkitPlayer: Player, pos: Vec3i, duration: Long) {
+fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Entity, duration: Long) {
 	val player = bukkitPlayer.minecraft
 	val conn = player.connection
-	val blockEntity = Display.BlockDisplay(EntityType.BLOCK_DISPLAY, player.level()).apply {
-		setPos(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
-		this.blockState = getBlockDataSafe(bukkitPlayer.location.world, pos.x, pos.y, pos.z)?.nms ?: return
-		setGlowingTag(true)
-		isInvisible = true
-	}
 
-	conn.send(ClientboundAddEntityPacket(blockEntity))
-	blockEntity.entityData.refresh(player)
+	conn.send(ClientboundAddEntityPacket(entity))
+	entity.entityData.refresh(player)
 
-	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(blockEntity.id)) }
+	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(entity.id)) }
 }
 
-fun displayBlock(bukkitPlayer: Player, blockData: BlockData, pos: Vec3i, scale: Float, duration: Long, glow: Boolean) {
+fun highlightBlock(bukkitPlayer: Player, pos: Vec3i): net.minecraft.world.entity.Entity {
 	val player = bukkitPlayer.minecraft
-	val conn = player.connection
+	return Slime(EntityType.SLIME, player.level()).apply {
+		setPos(pos.x + 0.5, pos.y.toDouble(), pos.z + 0.5)
+		this.setSize(1, true)
+		setGlowingTag(true)
+		isInvisible = true
+
+	}
+}
+
+fun displayBlock(bukkitPlayer: Player, blockData: BlockData, pos: Vec3i, scale: Float, glow: Boolean): net.minecraft.world.entity.Entity {
+	val player = bukkitPlayer.minecraft
 	val offset = (-scale / 2) + 0.5
-	val blockEntity = Display.BlockDisplay(EntityType.BLOCK_DISPLAY, player.level()).apply {
+	return Display.BlockDisplay(EntityType.BLOCK_DISPLAY, player.level()).apply {
 		setPos(pos.x + offset, pos.y + offset, pos.z + offset)
 		this.blockState = blockData.nms
 		setGlowingTag(glow)
 		this.setTransformation(Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf()))
 	}
-
-	conn.send(ClientboundAddEntityPacket(blockEntity))
-	blockEntity.entityData.refresh(player)
-
-	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(blockEntity.id)) }
 }
 
 fun Audience.highlightBlock(pos: Vec3i, duration: Long) {
 	when (this) {
-		is Player -> highlightBlock(this, pos, duration)
-		is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) { highlightBlock(player, pos, duration) }
+		is Player -> sendEntityPacket(this, highlightBlock(this, pos), duration)
+		is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) { sendEntityPacket(player, highlightBlock(player, pos), duration) }
 	}
 }
 

@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
+import net.horizonsend.ion.server.miscellaneous.utils.sendEntityPacket
 import net.horizonsend.ion.server.miscellaneous.utils.toVec3i
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -65,7 +66,7 @@ object SearchCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		for (pos in res.keys) {
-			highlightBlock(player, pos.toVec3i(), 10 * 20)
+			sendEntityPacket(player, highlightBlock(player, pos.toVec3i()), 10 * 20)
 		}
 
 		player.sendRichMessage(
