@@ -134,7 +134,7 @@ fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.En
 fun highlightBlock(bukkitPlayer: Player, pos: Vec3i): net.minecraft.world.entity.Entity {
 	val player = bukkitPlayer.minecraft
 	return Slime(EntityType.SLIME, player.level()).apply {
-		setPos(pos.x + 0.5, pos.y.toDouble(), pos.z + 0.5)
+		setPos(pos.x + 0.5, pos.y + 0.25, pos.z + 0.5)
 		this.setSize(1, true)
 		setGlowingTag(true)
 		isInvisible = true
