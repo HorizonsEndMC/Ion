@@ -43,7 +43,7 @@ object SetPowerCommand : SLCommand() {
 			val sign = block.state as? org.bukkit.block.Sign ?: continue
 			sender.debug("sign found at $x $y $z")
 
-			setPower(sign, amount, limited)
+			setPower(sign, amount, !limited)
 			sender.debug("power sent")
 		}
 		sender.success("Set multiblock power to $amount.")
