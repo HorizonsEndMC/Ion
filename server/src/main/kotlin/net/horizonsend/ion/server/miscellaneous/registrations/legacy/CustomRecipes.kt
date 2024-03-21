@@ -32,6 +32,7 @@ import org.bukkit.Material
 import org.bukkit.Material.CHAINMAIL_HELMET
 import org.bukkit.Material.COAL
 import org.bukkit.Material.COPPER_INGOT
+import org.bukkit.Material.DARK_PRISMARINE
 import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.EMERALD
 import org.bukkit.Material.ENDER_PEARL
@@ -45,10 +46,13 @@ import org.bukkit.Material.GLOWSTONE_DUST
 import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.PINK_TULIP
 import org.bukkit.Material.PRISMARINE_CRYSTALS
+import org.bukkit.Material.RED_TERRACOTTA
 import org.bukkit.Material.REDSTONE
 import org.bukkit.Material.SEA_LANTERN
+import org.bukkit.Material.SNIFFER_EGG
 import org.bukkit.Material.SPIDER_EYE
 import org.bukkit.Material.STICK
+import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.WARPED_PLANKS
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
@@ -281,6 +285,18 @@ object CustomRecipes : IonServerComponent() {
 				'w' to materialChoice(WARPED_PLANKS),
 				'o' to materialChoice(ENDER_PEARL),
 				's' to materialChoice(END_STONE)
+			)
+		)
+	}
+	private fun registerSnifferEggRecipe() {
+		registerShapedRecipe(
+			"sniffer_egg",
+			ItemStack(SNIFFER_EGG, 1),
+			"rdr", "ded", "rdr",
+			ingredients = mapOf(
+				'r' to materialChoice(RED_TERRACOTTA),
+				'd' to materialChoice(DARK_PRISMARINE),
+				'e' to materialChoice(TURTLE_EGG)
 			)
 		)
 	}
