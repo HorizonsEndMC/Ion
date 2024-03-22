@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.sidebar.command
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
+import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreak
@@ -21,6 +22,9 @@ import net.horizonsend.ion.server.features.sidebar.SidebarIcon.PLANET_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.ROUTE_SEGMENT_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STAR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STATION_ICON
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.displayBillboardText
+import net.horizonsend.ion.server.miscellaneous.utils.sendEntityPacket
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -45,6 +49,16 @@ object SidebarCommand : SLCommand() {
         )
 
         sender.sendMessage(body)
+    }
+
+    @Subcommand("component")
+    @Suppress("unused")
+    fun onComponentTest(sender: Player, /*string: String, @Optional opacity: Int = 128*/) {
+        sendEntityPacket(
+            sender,
+            displayBillboardText(sender, Vec3i(sender.location), 1f, text(COMPASS_NEEDLE_ICON.text).font(Sidebar.fontKey), 0),
+            5 * 20L
+        )
     }
 
     private fun starshipComponents(player: Player) : Component {
