@@ -176,7 +176,7 @@ object ContactsSidebar {
 
         val capturableStations: List<CachedCapturableStation> = if (stationsEnabled) {
             CapturableStationCache.stations.filter {
-                it.loc.world.name == player.world.name && it.loc.toVector()
+                it.loc.world != null && it.loc.world.name == player.world.name && it.loc.toVector()
                     .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
