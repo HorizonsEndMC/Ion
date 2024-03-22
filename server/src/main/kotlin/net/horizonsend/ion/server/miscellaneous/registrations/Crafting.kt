@@ -64,8 +64,6 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_ROD
-import net.horizonsend.ion.server.features.nations.gui.item
-import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Material.AIR
@@ -76,7 +74,9 @@ import org.bukkit.Material.BLUE_WOOL
 import org.bukkit.Material.BROWN_WOOL
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
+import org.bukkit.Material.CYAN_TERRACOTTA
 import org.bukkit.Material.CYAN_WOOL
+import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.GLASS
@@ -118,9 +118,9 @@ import org.bukkit.Material.SADDLE
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SHROOMLIGHT
 import org.bukkit.Material.SLIME_BALL
+import org.bukkit.Material.SPONGE
 import org.bukkit.Material.STICK
 import org.bukkit.Material.STRING
-import org.bukkit.Material.TRIPWIRE
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WHITE_WOOL
 import org.bukkit.Material.YELLOW_WOOL
