@@ -5,6 +5,8 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships.unpilot
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.customitems.GasCanister
+import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
@@ -52,6 +54,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.syncRepeat(60L, 60L, this::unpilotFuellessBattlecruisers)
 		Tasks.syncRepeat(60L, 60L, this::destroyReactorlessBattlecruisers)
 		Tasks.syncRepeat(20L, 20L, this::tickPlayers)
+		Tasks.syncRepeat(200L, 200L, this::consumeBattlecruiserFuel)
 	}
 
 	private fun deactivateUnpilotedPlayerStarships() {
@@ -113,6 +116,18 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			ship.updateHullIntegrity()
 			if (ship.hullIntegrity < MAX_SAFE_HULL_INTEGRITY) {
 				StarshipDestruction.destroy(ship)
+			}
+		}
+	}
+
+	private fun consumeBattlecruiserFuel() {
+		ActiveStarships.all().forEach {	ship ->
+			if (ship.type == StarshipType.BATTLECRUISER) {
+				for (tank : FuelTankSubsystem in ship.fuelTanks) {
+					if (tank.tryConsumeFuel(GAS_CANISTER_HYDROGEN)) {
+						return
+					}
+				}
 			}
 		}
 	}
