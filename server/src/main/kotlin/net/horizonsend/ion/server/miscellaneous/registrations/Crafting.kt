@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIV
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
-import net.horizonsend.ion.server.features.customitems.CustomItems.CRUDE_FUEL
 import net.horizonsend.ion.server.features.customitems.CustomItems.DETONATOR
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENHANCED_CIRCUITRY
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM
@@ -383,15 +382,6 @@ object Crafting : IonServerComponent() {
 			setIngredient('i', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('g', GLASS_PANE)
 			setIngredient('x', AIR)
-		}
-
-		// Crude Fuel Crafting
-		itemStackShapeRecipe("crude_fuel", CRUDE_FUEL.constructItemStack()) {
-			shape("xxx", "yzy", "xxx")
-
-			setIngredient('x', AIR)
-			setIngredient('y', GAS_CANISTER_EMPTY.constructItemStack())
-			setIngredient('z', DIAMOND)
 		}
 
 		// Detonator Crafting

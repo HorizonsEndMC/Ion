@@ -84,13 +84,13 @@ abstract class CircuitfabMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 		event.isBurning = false
 		event.burnTime = 200
 		event.isCancelled = false
-		furnace.cookSpeedMultiplier = 0.95 // TODO: improve implementation after multiblock rewrite
+		furnace.cookSpeedMultiplier = 0.00277777777 // TODO: improve implementation after multiblock rewrite
 
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
 		val result = furnace.inventory.result
 
-		if (PowerMachines.getPower(sign) == 0 ||
+		if (PowerMachines.getPower(sign) <= 100000 ||
 				smelting == null ||
 				smelting.type != Material.PRISMARINE_CRYSTALS ||
 				fuel == null
@@ -111,7 +111,7 @@ abstract class CircuitfabMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			fuel.subtract(1)
 			if (result == null) furnace.inventory.result = ENHANCED_CIRCUITRY.constructItemStack()
 			else result.add(1)
-			PowerMachines.removePower(sign, 300)
+			PowerMachines.removePower(sign, 100000)
 		}
 		furnace.cookTime = 0
 	}

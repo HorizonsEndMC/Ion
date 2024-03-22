@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.features.multiblock.oxygenfurnace.StandardOxygenFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.centrifuge.StandardCentrifugeMultiblock
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
@@ -89,7 +88,6 @@ import net.horizonsend.ion.server.features.multiblock.printer.CarbonPrinterMulti
 import net.horizonsend.ion.server.features.multiblock.printer.CarbonProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.printer.GlassPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.printer.TechnicalPrinterMultiblock
-import net.horizonsend.ion.server.features.multiblock.refinery.StandardRefineryMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
@@ -141,8 +139,6 @@ object Multiblocks : IonServerComponent() {
 
 	private fun initMultiblocks() {
 		multiblocks = listOf(
-			StandardOxygenFurnaceMultiblock,
-			StandardRefineryMultiblock,
 			StandardCentrifugeMultiblock,
 			StandardCompressorMultiblock,
 			StandardFabricatorMultiblock,
