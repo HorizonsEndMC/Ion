@@ -2,12 +2,15 @@ package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.mojang.math.Transformation
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
+import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
@@ -150,6 +153,18 @@ fun displayBlock(bukkitPlayer: Player, blockData: BlockData, pos: Vec3i, scale: 
 		this.blockState = blockData.nms
 		setGlowingTag(glow)
 		this.setTransformation(Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf()))
+	}
+}
+
+fun displayBillboardText(bukkitPlayer: Player, pos: Vec3i, scale: Float, text: Component, opacity: Byte): net.minecraft.world.entity.Entity {
+	val player = bukkitPlayer.minecraft
+	return Display.TextDisplay(EntityType.TEXT_DISPLAY, player.level()).apply {
+		setPos(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
+		this.setTransformation(Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf()))
+		this.text = PaperAdventure.asVanilla(text)
+		this.textOpacity = opacity
+		this.billboardConstraints = Display.BillboardConstraints.CENTER
+		this.entityData.set(Display.TextDisplay.DATA_BACKGROUND_COLOR_ID, 0x00000000)
 	}
 }
 
