@@ -9,8 +9,11 @@ import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -123,7 +126,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 
 		if (world1 != world2 && !world2.toString().contains("hyperspace", ignoreCase=true)) {
-			EnterPlanetEvent(world1, world2, starship.controller).callEvent()
+			if (starship.type == StarshipType.BATTLECRUISER) starship.userError("Battlecruisers can't enter planets!")
+			else EnterPlanetEvent(world1, world2, starship.controller).callEvent()
 		}
 	}
 

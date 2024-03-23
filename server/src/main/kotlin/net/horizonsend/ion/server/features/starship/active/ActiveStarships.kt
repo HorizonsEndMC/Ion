@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
+import net.horizonsend.ion.server.features.starship.StarshipType.BATTLECRUISER
 import net.horizonsend.ion.server.features.starship.StarshipType.SPEEDER
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent

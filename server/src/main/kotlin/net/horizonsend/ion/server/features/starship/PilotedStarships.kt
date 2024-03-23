@@ -11,7 +11,10 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -404,6 +407,12 @@ object PilotedStarships : IonServerComponent() {
 
 			if (activePlayerStarship.drillCount > 16) {
 				player.userError("Ships can not have more that 16 drills! Count: ${activePlayerStarship.drillCount}")
+				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+				return@activateAsync
+			}
+
+			if (activePlayerStarship.type == StarshipType.BATTLECRUISER && (!SpaceWorlds.contains(activePlayerStarship.world) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
+				player.userError("Battlecruisers can only be piloted in space!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
