@@ -6,13 +6,14 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.grid.node.Consolidatable
 import net.horizonsend.ion.server.features.transport.grid.node.GridNode
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class AbstractGrid(val network: ChunkTransportNetwork) {
+abstract class Grid(val network: ChunkTransportNetwork) {
 	val nodes: ConcurrentHashMap<Long, GridNode> = ConcurrentHashMap()
+	val world get() = network.chunk.world
 
 	val grids: Nothing = TODO("Grid system")
 
@@ -33,6 +34,8 @@ abstract class AbstractGrid(val network: ChunkTransportNetwork) {
 	 **/
 	abstract fun loadNode(block: BlockSnapshot): GridNode?
 
+	abstract fun processBlockChange(previous: BlockSnapshot, new: BlockSnapshot)
+
 	/**
 	 *
 	 **/
@@ -43,6 +46,7 @@ abstract class AbstractGrid(val network: ChunkTransportNetwork) {
 	 **/
 	fun build() = network.scope.launch {
 		collectAllNodes().join()
+		collectNeighbors()
 		consolidateNodes()
 		buildGraph()
 	}
@@ -83,7 +87,6 @@ abstract class AbstractGrid(val network: ChunkTransportNetwork) {
 					val node = loadNode(snapshot) ?: continue
 
 					nodes[toBlockKey(realX, realY, realZ)] = node
-					collectNeighbors(node)
 				}
 			}
 		}
@@ -92,16 +95,8 @@ abstract class AbstractGrid(val network: ChunkTransportNetwork) {
 	/**
 	 * Get the neighbors of a node
 	 **/
-	private fun collectNeighbors(node: GridNode) {
-		for (direction in ADJACENT_BLOCK_FACES) {
-			val newX = node.x + direction.modX
-			val newY = node.y + direction.modY
-			val newZ = node.z + direction.modZ
-
-			val possibleNode = nodes[toBlockKey(newX, newY, newZ)] ?: continue
-
-			node.neighbors[direction] = possibleNode
-		}
+	private fun collectNeighbors() {
+		nodes.values.forEach { node -> node.collectNeighbors() }
 	}
 
 	/**
@@ -110,7 +105,9 @@ abstract class AbstractGrid(val network: ChunkTransportNetwork) {
 	 * e.g. a straight section may be represented as a single node
 	 **/
 	private fun consolidateNodes() {
-		nodes.forEach { (_, node) -> node.consolidate() }
+		nodes.forEach { (_, node) ->
+			if (node is Consolidatable) node.consolidate()
+		}
 	}
 
 	/**
@@ -118,5 +115,10 @@ abstract class AbstractGrid(val network: ChunkTransportNetwork) {
 	 **/
 	private fun buildGraph() {
 		//TODO
+	}
+
+	fun getNode(x: Int, y: Int, z: Int): GridNode? {
+		val key = toBlockKey(x, y, z)
+		return nodes[key]
 	}
 }
