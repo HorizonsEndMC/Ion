@@ -3,12 +3,11 @@ package net.horizonsend.ion.server.features.transport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.transport.grid.power.PowerGrid
+import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.features.transport.grid.PowerGrid
 import net.horizonsend.ion.server.features.world.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Chunk
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class ChunkTransportNetwork(
@@ -19,37 +18,28 @@ class ChunkTransportNetwork(
 
 	val extractorData = getExtractorData(chunk.inner)
 
-	val poweredMultiblockEntities = ConcurrentHashMap<Long, PoweredMultiblockEntity>()
-	val powerGrid = PowerGrid(extractorData)
+	val powerGrid = PowerGrid(this)
+	val pipeGrid = PowerGrid(this) // TODO
+	val gasGrid = PowerGrid(this) // TODO
 
 	init {
 	    setup()
 	}
 
 	private fun setup() {
-		collectPowerMultiblockEntities()
+		powerGrid.setup()
+		pipeGrid.setup()
+		gasGrid.setup()
 	}
 
 	fun tick() {
-		for ((location, extractor) in extractorData.extractorLocations) {
-
-		}
+		scope.launch { powerGrid.tick() }
+		scope.launch { pipeGrid.tick() }
+		scope.launch { gasGrid.tick() }
 	}
 
 	fun save() {
 
-	}
-
-	private fun tickExtractors() {
-
-	}
-
-	private fun collectPowerMultiblockEntities() {
-		chunk.multiblockManager.getAllMultiblockEntities().forEach { (key, entity) ->
-			if (entity !is PoweredMultiblockEntity) return@forEach
-
-			poweredMultiblockEntities[key] = entity
-		}
 	}
 
 	private fun getExtractorData(chunk: Chunk): ExtractorData {
