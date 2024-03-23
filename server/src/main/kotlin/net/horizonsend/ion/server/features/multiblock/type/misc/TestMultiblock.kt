@@ -70,7 +70,7 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 			val sign = getSign()
 
 			if (sign == null) {
-				IonServer.slF4JLogger.warn("No sign at ticking multiblock! [$x, $y, $z] $signOffset")
+				IonServer.slF4JLogger.warn("No sign at ticking multiblock! [$x, $y, $z] $signDirection")
 				return
 			}
 
@@ -82,7 +82,7 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 		override val tickAsync: Boolean = true
 
 		override fun toString(): String {
-			return "TestMultiblockEntity[loc = ${Vec3i(x, y, z)}, signOffset = $signOffset, tickAsync = $tickAsync, string = $string]"
+			return "TestMultiblockEntity[loc = ${Vec3i(x, y, z)}, signOffset = $signDirection, tickAsync = $tickAsync, string = $string]"
 		}
 	}
 
