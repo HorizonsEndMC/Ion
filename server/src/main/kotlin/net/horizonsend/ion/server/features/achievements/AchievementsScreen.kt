@@ -1,14 +1,14 @@
 package net.horizonsend.ion.server.features.achievements
 
 import io.papermc.paper.adventure.PaperAdventure
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.features.screens.TextScreen
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.math.ceil

@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toText
+import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
@@ -255,7 +256,7 @@ object StarshipComputers : IonServerComponent() {
 			items.add(
 				guiButton(Material.BEACON) {
 					player.closeInventory()
-					player.input("Enter player name:") {p, input ->
+					player.input("Enter player name:".toComponent()) { p, input ->
 						Tasks.async {
 							val id = SLPlayer.findIdByName(input)
 							if (id == null) {
@@ -268,6 +269,7 @@ object StarshipComputers : IonServerComponent() {
 									addToSet(PlayerStarshipData::pilots, id)
 								)
 								player.success("Added $input as a pilot to starship.")
+								player.closeInventory()
 							}
 						}
 
@@ -300,7 +302,7 @@ object StarshipComputers : IonServerComponent() {
 
 	private fun startRename(player: Player, data: StarshipData) {
 		player.closeInventory()
-		player.input("Enter new ship name:") { r, input ->
+		player.input("Enter new ship name:".toComponent()) { r, input ->
 			Tasks.async {
 				val serialized = MiniMessage.miniMessage().deserialize(input)
 

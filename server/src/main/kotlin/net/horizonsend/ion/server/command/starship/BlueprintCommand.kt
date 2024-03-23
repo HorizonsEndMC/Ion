@@ -318,7 +318,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			map[printItem] = map.getOrDefault(printItem, 0) + amount
 		}
 
-		sender.sendRichMessage(StarshipFactories.getPrintItemCountString(map))
+		sender.sendMessage(StarshipFactories.getPrintItemCountString(map))
 	}
 
 	@Suppress("Unused")

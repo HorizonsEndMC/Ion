@@ -1,24 +1,25 @@
 package net.horizonsend.ion.proxy.commands.discord
 
-import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.Default
-import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.proxy.PLUGIN
+import net.horizonsend.ion.proxy.features.discord.DiscordCommand
+import net.horizonsend.ion.proxy.features.discord.DiscordSubcommand
+import net.horizonsend.ion.proxy.features.discord.SlashCommandManager
 import net.horizonsend.ion.proxy.messageEmbed
 import net.md_5.bungee.api.ProxyServer
 
-@CommandAlias("playerlist")
-@Description("List online players.")
-object PlayerListCommand : IonDiscordCommand() {
+object DiscordPlayerListCommand : DiscordCommand("playerlist", "List all players") {
 	val proxy: ProxyServer = PLUGIN.getProxy()
 
-	@Default
-	@Suppress("Unused")
-	fun onPlayerListCommand(event: SlashCommandInteractionEvent) = asyncDiscordCommand(event) {
-		event.replyEmbeds(
-			messageEmbed(
+	override fun setup(commandManager: SlashCommandManager) {
+		registerDefaultReceiver(defaultReceiver)
+	}
+
+	val defaultReceiver = object : DiscordSubcommand("list", "list all players", listOf()) {
+		override fun execute(event: SlashCommandInteractionEvent) = asyncDiscordCommand(event) {
+			event.replyEmbeds(messageEmbed(
+				title = "Horizon's End Players",
 				fields = proxy.serversCopy.values
 					.filter { it.players.isNotEmpty() }
 					.map { server ->
@@ -27,14 +28,13 @@ object PlayerListCommand : IonDiscordCommand() {
 						MessageEmbed.Field(
 							"$serverName *(${server.players.size} online)*",
 							server.players.joinToString("\n", "", "") {
-								it.name.replace("_", "\\_")
-							},
+								it.name.replace("_", "\\_") },
 							true
 						)
 					}
 					.ifEmpty { null },
 				description = if (proxy.onlineCount == 0) "*No players online*" else "${proxy.onlineCount} total players."
-			)
-		).setEphemeral(true).queue()
+			)).setEphemeral(true).queue()
+		}
 	}
 }

@@ -38,7 +38,8 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 		return Vec3i(pos.x + face.modX * distance, pos.y + face.modY * distance, pos.z + face.modZ * distance)
 	}
 
-	protected abstract val angleRadians: Double
+	protected abstract val angleRadiansHorizontal: Double
+	protected abstract val angleRadiansVertical: Double
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
 		val fireDir = target.clone()
@@ -49,10 +50,10 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 		var pitch = atan(-fireDir.y / sqrt(fireDir.x.pow(2) + fireDir.z.pow(2)))
 		val baseYaw = atan2(-face.modX.toDouble(), face.modZ.toDouble())
 		val yawDiff = atan2(sin(yaw - baseYaw), cos(yaw - baseYaw))
-		if (abs(yawDiff) > angleRadians) {
-			yaw = baseYaw + sign(yawDiff) * angleRadians
+		if (abs(yawDiff) > angleRadiansHorizontal) {
+			yaw = baseYaw + sign(yawDiff) * angleRadiansHorizontal
 		}
-		pitch = pitch.coerceIn(-angleRadians, angleRadians)
+		pitch = pitch.coerceIn(-angleRadiansVertical, angleRadiansVertical)
 
 		val xz = cos(pitch)
 		val x = -xz * sin(yaw)

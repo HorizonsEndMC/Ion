@@ -25,7 +25,7 @@ class AlienSpawner : BasicSpawner(
 
 	companion object {
 		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
-			miniMessageSpawnMessage = "<$ALIEN_ACCENT>An unknown starship signature is being broadcast in {1} at {3}, {4}",
+			miniMessageSpawnMessage = "<$ALIEN_ACCENT>An unknown starship signature is being broadcast in {4} at {1}, {3}",
 			pointChance = 0.5,
 			pointThreshold = 20 * 60 * 7,
 			minDistanceFromPlayer = 2500.0,

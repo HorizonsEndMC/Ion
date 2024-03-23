@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.economy.BazaarCommand
@@ -70,7 +71,7 @@ object Bazaars : IonServerComponent() {
 
 			val searchButton = guiButton(Material.NAME_TAG) {
 				Tasks.sync {
-					player.input("Enter Item Name") { _, input ->
+					player.input("Enter Item Name".toComponent()) { _, input ->
 						val searchBackButton = guiButton(Material.IRON_DOOR) {
 							Tasks.sync {
 								openMainMenu(territoryId, player, remote)

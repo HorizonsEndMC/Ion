@@ -121,6 +121,7 @@ abstract class CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 		val fuel = furnace.inventory.fuel
 		val result = furnace.inventory.result
 
+
 		if (PowerMachines.getPower(sign) <= 100 ||
 				smelting == null ||
 				smelting.type != Material.PRISMARINE_CRYSTALS ||

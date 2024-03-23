@@ -1,13 +1,9 @@
 package net.horizonsend.ion.server.listener.fixers
 
-import net.horizonsend.ion.common.extensions.information
+import io.papermc.paper.event.player.PlayerOpenSignEvent
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
@@ -175,5 +171,10 @@ class CancelListeners : SLEventListener() {
 		}
 	}
 
-	//TODO cancel recipes requiring iron supplied with custom items
+	@EventHandler
+	fun onPlayerEditSign(event: PlayerOpenSignEvent) {
+		if (event.cause == PlayerOpenSignEvent.Cause.INTERACT) {
+			event.isCancelled = true
+		}
+	}
 }

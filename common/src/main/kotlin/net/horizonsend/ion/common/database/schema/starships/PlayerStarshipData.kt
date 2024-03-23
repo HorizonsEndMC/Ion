@@ -34,7 +34,9 @@ data class PlayerStarshipData(
 	override var containedChunks: Set<Long>? = null,
 
 	override var lastUsed: Long = System.currentTimeMillis(),
-	override var isLockEnabled: Boolean = false
+	override var isLockEnabled: Boolean = false,
+
+	var shipDealerInformation: ShipDealerInformation? = null
 ) : StarshipData {
 	companion object : StarshipDataCompanion<PlayerStarshipData>(
 		PlayerStarshipData::class,
@@ -58,6 +60,12 @@ data class PlayerStarshipData(
 		fun findByPilot(playerId: SLPlayerId) =
 			find(or(PlayerStarshipData::captain eq playerId, PlayerStarshipData::pilots contains playerId))
 	}
+
+	data class ShipDealerInformation(
+		val soldType: String,
+		val soldTime: Long,
+		val creationBlockKey: Long
+	)
 
 	@Suppress("UNCHECKED_CAST")
 	override fun companion(): StarshipDataCompanion<StarshipData> = Companion as StarshipDataCompanion<StarshipData>

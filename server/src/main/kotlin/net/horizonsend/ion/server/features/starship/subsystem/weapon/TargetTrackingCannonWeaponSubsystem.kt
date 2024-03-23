@@ -11,7 +11,8 @@ abstract class TargetTrackingCannonWeaponSubsystem(
     face: BlockFace
 ) : CannonWeaponSubsystem(starship, pos, face) {
 	override val convergeDist: Double = 0.0 // not needed since the adjusted direction is overridden
-	override val angleRadians: Double = Math.toRadians(180.0) // unrestricted
+	override val angleRadiansHorizontal: Double = Math.toRadians(180.0) // unrestricted
+	override val angleRadiansVertical: Double = Math.toRadians(180.0)
 	protected abstract val aimDistance: Int
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {

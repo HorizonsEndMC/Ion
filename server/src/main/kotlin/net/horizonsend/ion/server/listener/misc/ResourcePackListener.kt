@@ -2,10 +2,13 @@ package net.horizonsend.ion.server.listener.misc
 
 import com.google.common.io.BaseEncoding
 import net.horizonsend.ion.common.extensions.serverError
-import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
+import net.horizonsend.ion.common.utils.text.formatLink
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.text.Component.text
 import org.bukkit.GameMode
 import org.bukkit.Material.CHAINMAIL_BOOTS
 import org.bukkit.Material.CHAINMAIL_CHESTPLATE
@@ -57,9 +60,10 @@ class ResourcePackListener : SLEventListener() {
 	fun onPlayerResourcePackStatusEvent(event: PlayerResourcePackStatusEvent) {
 		if (event.status != PlayerResourcePackStatusEvent.Status.ACCEPTED) return
 
-		event.player.userError(
-			"Please consider downloading the resource pack for better login times! <click:open_url:'https://github.com/HorizonsEndMC/ResourcePack'>https://github.com/HorizonsEndMC/ResourcePack</click>"
-		)
+		event.player.sendMessage(ofChildren(
+			text("You can load in instantly by downloading the texture pack yourself at ", HE_LIGHT_BLUE),
+			formatLink("this link!", "https://github.com/HorizonsEndMC/ResourcePack")
+		))
 	}
 
 	@EventHandler

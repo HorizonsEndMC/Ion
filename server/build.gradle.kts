@@ -19,9 +19,10 @@ repositories {
 	maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
 	maven("https://repo.aikar.co/content/groups/aikar/") // ACF
 	maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
-	maven("https://repo.decalium.ru/releases")
+	maven("https://repo.decalium.ru/releases") // Persistent Data Types
 	maven("https://repo.xenondevs.xyz/releases") // InvUI
 	maven("https://repo.papermc.io/repository/maven-public/") // FAWE api
+	maven("https://repo.codemc.io/repository/maven-snapshots/") // AnvilGUI
 
 	maven("https://repo.horizonsend.net/mirror")
 }
@@ -29,9 +30,9 @@ repositories {
 dependencies {
 	implementation(project(":common"))
 
-	compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-20230607.154752-103")
+	compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-20231207.202833-1")
 	// Platform
-	paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
+	paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
 
 	// Other Plugins
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("org.bukkit") /* Old Version */ }
@@ -49,18 +50,19 @@ dependencies {
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.13")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("io.github.config4k:config4k:0.6.0")
-	implementation("net.wesjd:anvilgui:1.6.3-SNAPSHOT")
-	implementation("io.github.skytasul:guardianbeam:2.3.5")
-	implementation("xyz.xenondevs.invui:invui:1.25")
+	implementation("net.wesjd:anvilgui:1.9.2-SNAPSHOT")
+	implementation("io.github.skytasul:guardianbeam:2.3.6")
+	implementation("xyz.xenondevs.invui:invui:1.26")
 	implementation("club.minnced:discord-webhooks:0.8.4")
-	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-extra-kotlin:2.0.0-RC12")
-	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.0.0-RC12")
-	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-implementation:2.0.0-RC12")
-	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-modern:2.0.0-RC12")
+	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-extra-kotlin:2.1.3")
+	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.1.3")
+	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-implementation:2.1.3")
+	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-modern:2.1.3")
     implementation("org.jgrapht:jgrapht-core:1.5.2")
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
+	implementation("org.apache.commons:commons-collections4:4.0")
 
-	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.8.4")
+	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.9.1")
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }

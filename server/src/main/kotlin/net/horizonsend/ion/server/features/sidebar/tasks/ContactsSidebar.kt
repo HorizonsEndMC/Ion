@@ -3,13 +3,13 @@ package net.horizonsend.ion.server.features.sidebar.tasks
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
+import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
-import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
@@ -61,6 +61,10 @@ import org.bukkit.util.Vector
 import kotlin.math.abs
 
 object ContactsSidebar {
+    private fun getContactsDistanceSq(player: Player): Int {
+        return PlayerCache.getIfOnline(player)?.contactsDistance?.squared() ?: 0
+    }
+
     private fun distanceColor(distance: Int): NamedTextColor {
         return when {
             distance < 500 -> RED
@@ -77,8 +81,8 @@ object ContactsSidebar {
             is NoOpController -> return GRAY
             is AIController -> return DARK_GRAY
             is PlayerController -> {
-                val viewerNation = PlayerCache[player].nationOid ?: return GRAY
-                val otherNation = PlayerCache[otherController.player].nationOid ?: return GRAY
+                val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return GRAY
+                val otherNation = PlayerCache.getIfOnline(otherController.player)?.nationOid ?: return GRAY
                 return RelationCache[viewerNation, otherNation].color
             }
             else -> return GRAY
@@ -90,7 +94,7 @@ object ContactsSidebar {
             is CachedPlayerSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId)) GREEN else GRAY
             is CachedSettlementSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId)) GREEN else GRAY
             is CachedNationSpaceStation -> {
-                val viewerNation = PlayerCache[player].nationOid ?: return GRAY
+                val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return GRAY
                 val otherNation = station.owner
                 return RelationCache[viewerNation, otherNation].color
             }
@@ -99,7 +103,7 @@ object ContactsSidebar {
     }
 
     private fun capturableStationRelationColor(player: Player, station: CachedCapturableStation): NamedTextColor {
-        val viewerNation = PlayerCache[player].nationOid ?: return GRAY
+        val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return GRAY
         val otherNation = station.nation ?: return GRAY
         return RelationCache[viewerNation, otherNation].color
     }
@@ -117,24 +121,25 @@ object ContactsSidebar {
         return directionString.toString()
     }
 
-    // Main method for generating all contacts a player cna see
+    // Main method for generating all contacts a player can see
     fun getPlayerContacts(player: Player): List<ContactsData> {
         val contactsList: MutableList<ContactsData> = mutableListOf()
+        val sourceVector = PilotedStarships[player]?.centerOfMass?.toVector() ?: player.location.toVector()
         val playerVector = player.location.toVector()
 
-        val starshipsEnabled = PlayerCache[player].contactsStarships
-        val lastStarshipEnabled = PlayerCache[player].lastStarshipEnabled
-        val planetsEnabled = PlayerCache[player].planetsEnabled
-        val starsEnabled = PlayerCache[player].starsEnabled
-        val beaconsEnabled = PlayerCache[player].beaconsEnabled
-        val stationsEnabled = PlayerCache[player].stationsEnabled
-        val bookmarksEnabled = PlayerCache[player].bookmarksEnabled
+        val starshipsEnabled = PlayerCache.getIfOnline(player)?.contactsStarships ?: true
+        val lastStarshipEnabled = PlayerCache.getIfOnline(player)?.lastStarshipEnabled ?: true
+        val planetsEnabled = PlayerCache.getIfOnline(player)?.planetsEnabled ?: true
+        val starsEnabled = PlayerCache.getIfOnline(player)?.starsEnabled ?: true
+        val beaconsEnabled = PlayerCache.getIfOnline(player)?.beaconsEnabled ?: true
+        val stationsEnabled = PlayerCache.getIfOnline(player)?.stationsEnabled ?: true
+        val bookmarksEnabled = PlayerCache.getIfOnline(player)?.bookmarksEnabled ?: true
 
         // identify contacts that should be displayed (enabled and in range)
         val starships: List<ActiveStarship> = if (starshipsEnabled) {
             ActiveStarships.all().filter {
                 it.world == player.world &&
-                        it.centerOfMass.toVector().distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE &&
+                        it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player) &&
                         it.controller !== ActiveStarships.findByPilot(player)?.controller &&
                         (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
             }
@@ -143,14 +148,14 @@ object ContactsSidebar {
         val planets: List<CachedPlanet> = if (planetsEnabled) {
             Space.getPlanets().filter {
                 it.spaceWorld == player.world && it.location.toVector()
-                    .distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE
+                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
         val stars: List<CachedStar> = if (starsEnabled) {
             Space.getStars().filter {
                 it.spaceWorld == player.world && it.location.toVector()
-                    .distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE
+                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
@@ -158,28 +163,28 @@ object ContactsSidebar {
             IonServer.configuration.beacons.filter {
                 it.spaceLocation.bukkitWorld() == player.world &&
                         it.spaceLocation.toLocation().toVector()
-                            .distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE
+                            .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
         val stations: List<CachedSpaceStation<*, *, *>> = if (stationsEnabled) {
             SpaceStationCache.all().filter {
                 it.world == player.world.name && Vector(it.x, 192, it.z)
-                    .distanceSquared(playerVector) < MainSidebar.CONTACTS_SQRANGE
+                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
         val capturableStations: List<CachedCapturableStation> = if (stationsEnabled) {
             CapturableStationCache.stations.filter {
                 it.loc.world.name == player.world.name && it.loc.toVector()
-                    .distanceSquared(playerVector) < MainSidebar.CONTACTS_SQRANGE
+                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
         val bookmarks: List<Bookmark> = if (bookmarksEnabled) {
             BookmarkCache.getAll().filter { bm -> bm.owner == player.slPlayerId }.filter {
                 it.worldName == player.world.name &&
-                        Vector(it.x, it.y, it.z).distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE
+                        Vector(it.x, it.y, it.z).distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
         } else listOf()
 
@@ -190,28 +195,28 @@ object ContactsSidebar {
         }
 
         if (lastStarshipEnabled) {
-            addLastStarshipContact(player, playerVector, contactsList)
+            addLastStarshipContact(player, sourceVector, contactsList)
         }
 
         if (planetsEnabled) {
-            addPlanetContacts(planets, playerVector, contactsList)
+            addPlanetContacts(planets, sourceVector, contactsList)
         }
 
         if (starsEnabled) {
-            addStarContacts(stars, playerVector, contactsList)
+            addStarContacts(stars, sourceVector, contactsList)
         }
 
         if (beaconsEnabled) {
-            addBeaconContacts(beacons, playerVector, contactsList)
+            addBeaconContacts(beacons, sourceVector, contactsList)
         }
 
         if (stationsEnabled) {
-            addStationContacts(stations, playerVector, contactsList, player)
-            addCapturableStationContacts(capturableStations, playerVector, contactsList, player)
+            addStationContacts(stations, sourceVector, contactsList, player)
+            addCapturableStationContacts(capturableStations, sourceVector, contactsList, player)
         }
 
         if (bookmarksEnabled) {
-            addBookmarkContacts(bookmarks, playerVector, contactsList)
+            addBookmarkContacts(bookmarks, sourceVector, contactsList)
         }
 
         // append spaces
@@ -229,6 +234,9 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
+        val currentStarship = PilotedStarships[player]
+        val interdictionLocation = currentStarship?.centerOfMass?.toVector() ?: playerVector
+
         for (starship in starships) {
             val otherController = starship.controller
             val vector = when (otherController) {
@@ -237,10 +245,10 @@ object ContactsSidebar {
             }
 
             val distance = vector.distance(playerVector).toInt()
+            val interdictionDistance = starship.centerOfMass.toVector().distance(interdictionLocation).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
             val height = vector.y.toInt()
             val color = distanceColor(distance)
-            val currentStarship = PilotedStarships[player]
 
             contactsList.add(
                 ContactsData(
@@ -251,7 +259,7 @@ object ContactsSidebar {
                             autoTurretTextComponent(currentStarship, starship)
                         } else Component.empty(),
                         if (starship.isInterdicting) {
-                            interdictionTextComponent(distance, starship.balancing.interdictionRange, true)
+                            interdictionTextComponent(interdictionDistance, starship.balancing.interdictionRange, true)
                         } else Component.empty()
                     ),
                     heading = constructHeadingTextComponent(direction, color),
@@ -266,18 +274,18 @@ object ContactsSidebar {
 
     private fun addLastStarshipContact(
         player: Player,
-        playerVector: Vector,
+        sourceVector: Vector,
         contactsList: MutableList<ContactsData>
     ) {
         val lastStarship = LastPilotedStarship.map[player.uniqueId]
 
         if (lastStarship != null &&
             lastStarship.world == player.world &&
-            lastStarship.toVector().distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE
+            lastStarship.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player)
         ) {
             val vector = lastStarship.toVector()
-            val distance = vector.distance(playerVector).toInt()
-            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val distance = vector.distance(sourceVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
             val color = distanceColor(distance)
 
@@ -298,13 +306,13 @@ object ContactsSidebar {
 
     private fun addPlanetContacts(
         planets: List<CachedPlanet>,
-        playerVector: Vector,
+        sourceVector: Vector,
         contactsList: MutableList<ContactsData>
     ) {
         for (planet in planets) {
             val vector = planet.location.toVector()
-            val distance = vector.distance(playerVector).toInt()
-            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val distance = vector.distance(sourceVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
             val color = distanceColor(distance)
 
@@ -331,13 +339,13 @@ object ContactsSidebar {
 
     private fun addStarContacts(
         stars: List<CachedStar>,
-        playerVector: Vector,
+        sourceVector: Vector,
         contactsList: MutableList<ContactsData>
     ) {
         for (star in stars) {
             val vector = star.location.toVector()
-            val distance = vector.distance(playerVector).toInt()
-            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val distance = vector.distance(sourceVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
             val color = distanceColor(distance)
 
@@ -364,13 +372,13 @@ object ContactsSidebar {
 
     private fun addBeaconContacts(
         beacons: List<ServerConfiguration.HyperspaceBeacon>,
-        playerVector: Vector,
+        sourceVector: Vector,
         contactsList: MutableList<ContactsData>
     ) {
         for (beacon in beacons) {
             val vector = beacon.spaceLocation.toVector()
-            val distance = vector.distance(playerVector).toInt()
-            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val distance = vector.distance(sourceVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
             val color = distanceColor(distance)
 
@@ -391,14 +399,14 @@ object ContactsSidebar {
 
     private fun addStationContacts(
         stations: List<CachedSpaceStation<*, *, *>>,
-        playerVector: Vector,
+        sourceVector: Vector,
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
         for (station in stations) {
             val vector = Vector(station.x, 192, station.z)
-            val distance = vector.distance(playerVector).toInt()
-            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val distance = vector.distance(sourceVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
             val color = distanceColor(distance)
 
@@ -419,14 +427,14 @@ object ContactsSidebar {
 
     private fun addCapturableStationContacts(
         capturableStations: List<CachedCapturableStation>,
-        playerVector: Vector,
+        sourceVector: Vector,
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
         for (station in capturableStations) {
             val vector = station.loc.toVector()
-            val distance = vector.distance(playerVector).toInt()
-            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val distance = vector.distance(sourceVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
             val color = distanceColor(distance)
 
@@ -449,13 +457,13 @@ object ContactsSidebar {
 
     private fun addBookmarkContacts(
         bookmarks: List<Bookmark>,
-        playerVector: Vector,
+        sourceVector: Vector,
         contactsList: MutableList<ContactsData>
     ) {
         for (bookmark in bookmarks) {
             val vector = Vector(bookmark.x, bookmark.y, bookmark.z)
-            val distance = vector.distance(playerVector).toInt()
-            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val distance = vector.distance(sourceVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
             val color = distanceColor(distance)
 

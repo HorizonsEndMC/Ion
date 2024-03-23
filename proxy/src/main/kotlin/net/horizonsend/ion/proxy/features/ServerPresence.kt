@@ -11,10 +11,13 @@ import net.md_5.bungee.event.EventPriority
 import java.net.URL
 import javax.imageio.ImageIO
 
+/**
+ * @see com.comphenix.protocol.utility.MinecraftProtocolVersion
+ **/
 object ServerPresence : IonProxyComponent() {
-	private const val primaryVersion = 762
-	private const val primaryVersionName = "1.19.4"
-	private val allowedVersions = intArrayOf(759, 760, 761, 762, 763, 764)
+	private const val primaryVersion = 765
+	private const val primaryVersionName = "1.20.4"
+	private val allowedVersions = intArrayOf(759, 760, 761, 762, 763, 764, 765, 765)
 
 	private val messages =
 		URL("https://raw.githubusercontent.com/HorizonsEndMC/MOTDs/main/MOTD")

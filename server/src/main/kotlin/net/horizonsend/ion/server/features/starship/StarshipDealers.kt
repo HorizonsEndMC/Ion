@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -108,7 +109,13 @@ object StarshipDealers : IonServerComponent() {
 			shipLastBuy[player.uniqueId] = currentTimeMillis()
 			lastBuyTimes[ship] = shipLastBuy
 
-			BlueprintCommand.tryPilot(player, vec3i, ship.shipType, ship.displayName)
+			BlueprintCommand.tryPilot(player, vec3i, ship.shipType, ship.displayName) {
+				(it.data as PlayerStarshipData).shipDealerInformation = PlayerStarshipData.ShipDealerInformation(
+					soldType = ship.schematicName,
+					soldTime = currentTimeMillis(),
+					creationBlockKey = it.data.blockKey
+				)
+			}
 
 			player.success("Successfully bought a ${ship.schematicName} (Cost: ${ship.price}\n Remaining Balance: ${player.getMoneyBalance()})")
 

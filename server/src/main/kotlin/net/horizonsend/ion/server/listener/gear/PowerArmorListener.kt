@@ -3,28 +3,31 @@ package net.horizonsend.ion.server.listener.gear
 import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
-import java.time.Instant
-import java.util.Locale
-import java.util.UUID
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorModule
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.removePower
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import org.bukkit.Color
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityToggleGlideEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
+import java.time.Instant
+import java.util.Locale
+import java.util.UUID
 
 private val lastMoved = HashMap<UUID, Long>()
 
@@ -171,6 +174,7 @@ object PowerArmorListener : SLEventListener() {
 	@EventHandler
 	fun onToggleRocketBoosters(event: PlayerToggleSneakEvent) {
 		val player = event.player
+		if(ActiveStarships.findByPilot(player) != null && player.inventory.itemInMainHand.type == Material.CLOCK) return
 		for (item in player.inventory.armorContents) {
 			if (!PowerArmorManager.isPowerArmor(item) || getPower(item!!) == 0) continue
 			for (module in PowerArmorManager.getModules(item)) {
@@ -194,5 +198,19 @@ object PowerArmorListener : SLEventListener() {
 					return
 				}
 		}
+	}
+
+	@EventHandler
+	fun onEntityToggleGlideEvent(event: EntityToggleGlideEvent) {
+		val player = event.entity as? Player ?: return
+		if(player.isGliding && player.isSneaking) event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onPlayerRocketBootDamage(event: EntityDamageEvent) {
+		if (event.entity !is Player) return
+		if (event.cause != EntityDamageEvent.DamageCause.FLY_INTO_WALL) return
+
+		event.isCancelled = true
 	}
 }

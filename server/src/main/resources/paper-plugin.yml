@@ -1,6 +1,6 @@
 name: "Ion"
 version: "Unspecified"
-api-version: "1.19"
+api-version: "1.20"
 
 bootstrapper: net.horizonsend.ion.server.miscellaneous.IonBootstrapper
 main: net.horizonsend.ion.server.IonServer

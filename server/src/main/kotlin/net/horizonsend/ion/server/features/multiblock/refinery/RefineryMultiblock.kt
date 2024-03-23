@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.refinery
 
-
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
@@ -11,6 +10,7 @@ import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
+
 
 //abstract class RefineryMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 //	override fun MultiblockShape.buildStructure() {

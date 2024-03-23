@@ -5,7 +5,6 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
-import net.minecraft.world.item.DyeableArmorItem
 import net.horizonsend.ion.server.miscellaneous.utils.enumValueOfOrNull
 import net.horizonsend.ion.server.miscellaneous.utils.isBed
 import net.horizonsend.ion.server.miscellaneous.utils.isCarpet
@@ -16,10 +15,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isGlazedTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isWool
+import net.minecraft.world.item.DyeableArmorItem
 import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*

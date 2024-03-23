@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
+import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -149,4 +150,8 @@ object Interdiction : IonServerComponent() {
 			passenger.alert("Gravity pulse has been invoked by ${player.name}.")
 		}
 	}
+
+	fun findGravityWell(starship: ActiveStarship): GravityWellSubsystem? = starship.gravityWells.asSequence()
+		.filter { it.isIntact() }
+		.lastOrNull()
 }

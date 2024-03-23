@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getSphereBlocks
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_19_R3.util.CraftMagicNumbers
+import org.bukkit.craftbukkit.v1_20_R3.util.CraftMagicNumbers
 
 class CachedStar(
     val databaseId: Oid<Star>,

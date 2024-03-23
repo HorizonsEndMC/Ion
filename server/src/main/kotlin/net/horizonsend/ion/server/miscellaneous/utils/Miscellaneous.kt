@@ -34,10 +34,10 @@ import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorldBorder
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_20_R3.CraftChunk
+import org.bukkit.craftbukkit.v1_20_R3.CraftWorld
+import org.bukkit.craftbukkit.v1_20_R3.CraftWorldBorder
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockExplodeEvent
@@ -119,7 +119,7 @@ fun areaDebugMessage(x: Number, y: Number, z: Number, msg: String) {
 fun highlightBlock(bukkitPlayer: Player, pos: Vec3i, duration: Long) {
 	val player = bukkitPlayer.minecraft
 	val conn = player.connection
-	val slime = Slime(EntityType.SLIME, player.level).apply {
+	val slime = Slime(EntityType.SLIME, player.level()).apply {
 			setPos(pos.x + 0.5, pos.y.toDouble(), pos.z + 0.5)
 			setGlowingTag(true)
 			isInvisible = true

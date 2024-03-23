@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.ChunkPos
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
+import org.bukkit.craftbukkit.v1_20_R3.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.WorldInitEvent

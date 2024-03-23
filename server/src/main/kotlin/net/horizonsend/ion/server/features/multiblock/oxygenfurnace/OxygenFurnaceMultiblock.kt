@@ -12,6 +12,7 @@ import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 
+
 //abstract class OxygenFurnaceMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 //	abstract val speed: Double
 //

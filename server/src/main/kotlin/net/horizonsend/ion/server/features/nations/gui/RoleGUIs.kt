@@ -3,8 +3,12 @@ package net.horizonsend.ion.server.features.nations.gui
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
+import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.TextDecoration
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -41,7 +45,7 @@ private fun InventoryClickEvent.createRoleMenu(commandName: String) {
 	var name = ""
 	var color = ChatColor.BLUE
 	playerClicker.inputs(
-		AnvilInput("Name") { _, r ->
+		AnvilInput(text("Name")) { _, r ->
 			when {
 				!r.isAlphanumeric() -> "Must be alphanumeric"
 				r.length !in 3..20 -> "Must be from 3 to 20 characters"
@@ -50,7 +54,7 @@ private fun InventoryClickEvent.createRoleMenu(commandName: String) {
 				}
 			}
 		},
-		AnvilInput("Color") { _, r ->
+		AnvilInput("<rainbow>Color".miniMessage()) { _, r ->
 			try {
 				color = ChatColor.valueOf(r)
 			} catch (e: Exception) {
@@ -58,7 +62,7 @@ private fun InventoryClickEvent.createRoleMenu(commandName: String) {
 			}
 			return@AnvilInput null
 		},
-		AnvilInput("Weight") { p, r ->
+		AnvilInput("Weight".toComponent(TextDecoration.BOLD)) { p, r ->
 			if ((r.toIntOrNull() ?: return@AnvilInput "Must be a number")
 				!in 0..1000
 			) {
@@ -90,7 +94,7 @@ fun editRoleGUI(
 			// Name Button
 			addItem(
 				guiButton(Material.NAME_TAG) {
-					playerClicker.input("Name") { p, r ->
+					playerClicker.input("Name".toComponent()) { p, r ->
 						when {
 							!r.isAlphanumeric() -> "Must be alphanumeric"
 							r.length !in 3..20 -> "Must be from 3 to 20 characters"
@@ -106,7 +110,7 @@ fun editRoleGUI(
 			// Color Button
 			addItem(
 				guiButton(Material.INK_SAC) {
-					playerClicker.input("Color") { p, r ->
+					playerClicker.input("<rainbow>Color".miniMessage()) { p, r ->
 						try {
 							val color = ChatColor.valueOf(r)
 
@@ -124,7 +128,7 @@ fun editRoleGUI(
 			// Weight Button
 			addItem(
 				guiButton(Material.ANVIL) {
-					playerClicker.input("Weight") { p, r ->
+					playerClicker.input("Weight".toComponent(TextDecoration.BOLD)) { p, r ->
 						if ((r.toIntOrNull() ?: return@input "Must be a number")
 							!in 0..1000
 						) {

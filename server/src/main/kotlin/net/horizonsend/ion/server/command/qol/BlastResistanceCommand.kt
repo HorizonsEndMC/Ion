@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_19_R3.util.CraftMagicNumbers
+import org.bukkit.craftbukkit.v1_20_R3.util.CraftMagicNumbers
 import org.bukkit.entity.Player
 
 @CommandAlias("blastresistance")

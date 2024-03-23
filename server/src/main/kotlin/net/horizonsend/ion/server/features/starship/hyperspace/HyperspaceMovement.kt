@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.hyperspace
 
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.informationAction
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
@@ -56,7 +57,7 @@ class HyperspaceMovement(
 			if (shadow != null) {
 				ship.onlinePassengers.forEach { player ->
 					player.alertAction(
-						"Ship caught by a mass shadow! Mass Shadow: ${shadow.description} at ${shadow.x}, ${shadow.z} " +
+						"Ship caught by a mass shadow! Mass Shadow: ${shadow.description.plainText()} at ${shadow.x}, ${shadow.z} " +
 								"with radius ${shadow.radius} (${shadow.distance} blocks away)"
 					)
 				}

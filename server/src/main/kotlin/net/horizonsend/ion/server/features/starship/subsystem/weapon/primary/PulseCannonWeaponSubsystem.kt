@@ -24,7 +24,8 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 
 	override val powerUsage: Int = balancing.powerUsage
 	override val length: Int = balancing.length
-	override val angleRadians: Double = Math.toRadians(balancing.angleRadians) // unrestricted
+	override val angleRadiansHorizontal: Double = Math.toRadians(balancing.angleRadiansHorizontal)
+	override val angleRadiansVertical: Double = Math.toRadians(balancing.angleRadiansVertical) // unrestricted
 	override val convergeDist: Double = balancing.convergeDistance
 	override val extraDistance: Int = balancing.extraDistance
 

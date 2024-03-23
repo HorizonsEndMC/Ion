@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.command.misc.ListCommand
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.command.misc.PlayerInfoCommand
 import net.horizonsend.ion.server.command.misc.RegenerateCommand
+import net.horizonsend.ion.server.command.misc.ShipFactoryCommand
 import net.horizonsend.ion.server.command.misc.ShuttleCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.command.nations.NationCommand
@@ -65,6 +66,7 @@ import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
 import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
+import net.horizonsend.ion.server.features.sidebar.command.SidebarCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarStarshipsCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarWaypointsCommand
@@ -147,6 +149,7 @@ val commands: List<SLCommand> = listOf(
 
 	AchievementsCommand,
 	BlastResistanceCommand,
+	SidebarCommand,
 	SidebarContactsCommand,
 	SidebarWaypointsCommand,
 	SidebarStarshipsCommand,
@@ -156,5 +159,6 @@ val commands: List<SLCommand> = listOf(
 	BountyAdminCommand,
 
 	IonBroadcastCommand,
-	BlockCommand
+	BlockCommand,
+	ShipFactoryCommand
 )

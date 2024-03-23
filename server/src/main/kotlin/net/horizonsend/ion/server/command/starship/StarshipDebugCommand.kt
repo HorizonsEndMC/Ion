@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -146,5 +147,11 @@ object StarshipDebugCommand : SLCommand() {
 		sender.information(ship.controller.toString())
 
 		(ship.controller as? AIController)?.let { sender.userError("Target: ${(it.modules["targeting"] as? TargetingModule)?.findTarget()}") }
+	}
+
+	@Subcommand("purge now")
+	fun onPurge(sender: Player) {
+		sender.information("purging")
+		UnusedSoldShipPurge.purgeNoobShuttles()
 	}
 }

@@ -7,8 +7,8 @@ import java.net.URL
 plugins {
 	id("com.github.johnrengelman.shadow") version "8.1.1" apply false
 
-	kotlin("plugin.serialization") version "1.9.22" apply false
-	kotlin("jvm") version "1.9.22" apply false
+	kotlin("plugin.serialization") version "1.9.23" apply false
+	kotlin("jvm") version "1.9.23" apply false
 }
 
 // TODO: Use Json
@@ -32,7 +32,7 @@ fun downloadJenkinsArtifact(domain: String, project: String, filter: String, loc
 }
 
 fun downloadModrinthArtifact(project: String) {
-	val targetVersion = "1.19.4"
+	val targetVersion = "1.20.4"
 	val targetLoader = "paper"
 
 	print("Downloading $project... ")

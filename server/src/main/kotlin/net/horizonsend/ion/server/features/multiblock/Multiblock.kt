@@ -83,6 +83,7 @@ abstract class Multiblock {
 			}
 		}
 
+		sign.isWaxed = true
 		sign.update()
 	}
 

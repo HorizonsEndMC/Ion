@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.sidebar.command
 
 import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -10,14 +9,12 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import org.bukkit.entity.Player
-import org.litote.kmongo.set
-import org.litote.kmongo.setTo
 import org.litote.kmongo.setValue
 
 @CommandAlias("sidebar")
 object SidebarContactsCommand : SLCommand() {
-	@Default
 	@Subcommand("contacts")
 	@Suppress("unused")
 	fun defaultCase(
@@ -45,13 +42,23 @@ object SidebarContactsCommand : SLCommand() {
 	}
 
 	@Suppress("unused")
+	@Subcommand("contacts distance")
+	fun onSetContactsDistance(
+		sender: Player,
+		distance: Int?
+	) {
+		val newDistance = distance?.coerceIn(0, MainSidebar.CONTACTS_RANGE) ?: MainSidebar.CONTACTS_RANGE
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsDistance, newDistance))
+		sender.success(("Changed contacts distance to $newDistance"))
+	}
+
+	@Suppress("unused")
 	@Subcommand("contacts starship")
 	fun onToggleStarship(
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
 		val contactsStarships = toggle ?: !PlayerCache[sender].contactsStarships
-		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::contactsStarships setTo contactsStarships))
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsStarships, contactsStarships))
 		sender.success("Changed starship visibility to $contactsStarships")
 	}

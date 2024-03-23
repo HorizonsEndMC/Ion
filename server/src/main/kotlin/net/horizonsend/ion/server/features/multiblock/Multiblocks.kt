@@ -88,6 +88,7 @@ import net.horizonsend.ion.server.features.multiblock.printer.CarbonPrinterMulti
 import net.horizonsend.ion.server.features.multiblock.printer.CarbonProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.printer.GlassPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.printer.TechnicalPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.refinery.StandardRefineryMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
@@ -139,6 +140,7 @@ object Multiblocks : IonServerComponent() {
 
 	private fun initMultiblocks() {
 		multiblocks = listOf(
+
 			StandardCentrifugeMultiblock,
 			StandardCompressorMultiblock,
 			StandardFabricatorMultiblock,
@@ -383,6 +385,7 @@ object Multiblocks : IonServerComponent() {
 						PersistentDataType.STRING,
 						multiblock::class.simpleName!!
 					)
+					sign.isWaxed = true
 					sign.update()
 					return
 				} else {

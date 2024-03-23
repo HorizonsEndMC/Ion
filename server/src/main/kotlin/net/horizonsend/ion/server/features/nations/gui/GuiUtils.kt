@@ -15,6 +15,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson
 import net.md_5.bungee.api.ChatColor.RED
 import net.wesjd.anvilgui.AnvilGUI
 import org.bukkit.Bukkit
@@ -107,7 +109,7 @@ fun ChestGui.withPane(pane: Pane): ChestGui {
 
 typealias AnvilInputAction = (Player, String) -> String?
 
-class AnvilInput(val question: String, action: AnvilInputAction) {
+class AnvilInput(val question: Component, action: AnvilInputAction) {
 	val action: AnvilInputAction
 
 	init {
@@ -122,14 +124,20 @@ class AnvilInput(val question: String, action: AnvilInputAction) {
 	}
 }
 
-fun Player.input(question: String, action: AnvilInputAction) = Tasks.sync {
+fun Player.input(question: Component, action: AnvilInputAction) = Tasks.sync {
 	AnvilGUI.Builder()
 		.plugin(IonServer)
-		.title(question)
+		.jsonTitle(gson().serialize(question))
 		.text(".")
-		.onComplete { player, field ->
+		.onClick { _, snapshot ->
+			val field = snapshot.text
 			val stripped = field.substringAfter('.')
-			AnvilGUI.Response.text(action(player, stripped))
+
+			val response = AnvilGUI.ResponseAction { _, player ->
+				AnvilGUI.ResponseAction.replaceInputText(action(player, stripped))
+			}
+
+			mutableListOf(response)
 		}
 		.open(this)
 }

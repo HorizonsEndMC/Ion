@@ -10,7 +10,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.chat.Component
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.Container
 import net.minecraft.world.Nameable
@@ -20,7 +19,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.LecternBlock
 import net.minecraft.world.level.block.entity.LecternBlockEntity
-import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
 
 object Searcher {
@@ -48,9 +47,9 @@ object Searcher {
 		if (positions.isNotEmpty()) {
 			val packet = FoundS2C(positions)
 
-			player.minecraft.connection.send(
-				ClientboundCustomPayloadPacket(FoundS2C.ID, packet)
-			)
+//			player.minecraft.connection.send(
+//				ClientboundCustomPayloadPacket(FoundS2C.ID, packet)
+//			)
 		} else {
 			player.information("Item not found")
 		}

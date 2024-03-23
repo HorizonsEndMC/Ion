@@ -35,8 +35,9 @@ object Starships : net.horizonsend.ion.server.command.SLCommand() {
 				val ownedBy =
 					if (it.captain != sender.slPlayerId) " owned by <aqua>${SLPlayer[it.captain]?.lastKnownName}</aqua>" else ""
 				val serverUnknown = if (it.serverName == null) " <red>(Unspecified ServerType)</red>" else ""
+				val starshipName = if (it.name != null) "${it.name}, " else ""
 
-				"${it.starshipType.formatted()} at <green>$x</green>, <green>$y</green>, <green>$z</green> @ <gold>${it.levelName}</gold>$ownedBy$serverUnknown"
+				"$starshipName${it.starshipType.formatted()} at <green>$x</green>, <green>$y</green>, <green>$z</green> @ <gold>${it.levelName}</gold>$ownedBy$serverUnknown"
 			}
 		)
 	}

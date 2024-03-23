@@ -24,6 +24,7 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import org.bukkit.entity.Player
 
 class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
+    private val contactsDistance = PlayerCache[player].contactsDistance
     private val starshipsEnabled = PlayerCache[player].contactsStarships
     private val lastStarshipEnabled = PlayerCache[player].lastStarshipEnabled
 	private val planetsEnabled = PlayerCache[player].planetsEnabled
@@ -40,6 +41,8 @@ class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
         val line = ofChildren(
             text("Contacts").style(style(BOLD).color(YELLOW)),
             text(" | ", DARK_GRAY),
+            text(contactsDistance, AQUA),
+            space(),
             text(GUNSHIP_ICON.text, getColor(starshipsEnabled)).font(Sidebar.fontKey),
             space(),
             text(GENERIC_STARSHIP_ICON.text, getColor(lastStarshipEnabled)).font(Sidebar.fontKey),

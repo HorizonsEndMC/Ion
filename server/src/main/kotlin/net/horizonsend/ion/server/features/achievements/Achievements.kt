@@ -14,7 +14,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.litote.kmongo.addToSet
 
-fun Player.rewardAchievement(achievement: Achievement) = Tasks.async {
+fun Player.rewardAchievement(achievement: Achievement, callback: () -> Unit = {}) = Tasks.async {
 	if (!LegacySettings.master) return@async
 
 	val playerData = SLPlayer[this]
@@ -47,4 +47,6 @@ fun Player.rewardAchievement(achievement: Achievement) = Tasks.async {
 	)
 
 	playSound(location, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f)
+
+	callback()
 }

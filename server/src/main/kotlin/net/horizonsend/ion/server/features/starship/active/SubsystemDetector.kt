@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.schema.Cryopod
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
+import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.FuelTankMultiblock
@@ -17,8 +17,16 @@ import net.horizonsend.ion.server.features.multiblock.particleshield.SphereShiel
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
 import net.horizonsend.ion.server.features.multiblock.supercapreactor.SupercapReactorMultiblock
-import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.features.starship.subsystem.*
+import net.horizonsend.ion.server.features.starship.subsystem.CryoSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.MagazineSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.PlanetDrillSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.SupercapReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.BoxShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
@@ -155,6 +163,10 @@ object SubsystemDetector {
 				val cryo = Cryopod[Vec3i(sign.location), sign.world.name] ?: return
 				starship.subsystems += CryoSubsystem(starship, sign, multiblock, cryo)
 			}
+
+			is GravityWellMultiblock -> {
+				starship.subsystems += GravityWellSubsystem(starship, sign, multiblock)
+			}
 		}
 	}
 
@@ -187,7 +199,7 @@ object SubsystemDetector {
 			}
 
 			if (subsystem is WeaponSubsystem && !subsystem.canCreateSubsystem()) {
-				feedbackDestination.userError("Could not create subsystem ${subsystem.name}!")
+//				feedbackDestination.userError("Could not create subsystem ${subsystem.name}!") TODO wait for preference system
 				continue
 			}
 

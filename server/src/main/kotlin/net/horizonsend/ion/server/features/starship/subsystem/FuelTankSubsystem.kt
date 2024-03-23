@@ -12,10 +12,12 @@ import org.bukkit.inventory.ItemStack
 
 class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTankMultiblock) :
 		AbstractMultiblockSubsystem<FuelTankMultiblock>(starship, sign, multiblock) {
+      
+      
 	fun isFuelAvailable(): Boolean {
 		val inventory = getInventory()
 				?: return false
-
+    
 		return inventory.containsAtLeast(GAS_CANISTER_HYDROGEN.constructItemStack(), 1)
 	}
 
