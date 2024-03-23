@@ -17,7 +17,7 @@ interface InteractableMultiblock {
 
 	companion object : SLEventListener() {
 		@EventHandler
-		fun onPlayerInteract(event: PlayerInteractEvent) = Multiblocks.context.launch {
+		fun onPlayerInteract(event: PlayerInteractEvent) = Multiblocks.multiblockCoroutineScope.launch {
 			if (event.hand != EquipmentSlot.HAND) return@launch
 			if (event.action != Action.RIGHT_CLICK_BLOCK) return@launch
 			val player = event.player

@@ -19,6 +19,11 @@ abstract class AbstractGrid(val network: ChunkTransportNetwork) {
 	/**
 	 *
 	 **/
+	open fun setup() {}
+
+	/**
+	 *
+	 **/
 	abstract fun isNode(block: BlockSnapshot): Boolean
 
 	/**
@@ -28,8 +33,10 @@ abstract class AbstractGrid(val network: ChunkTransportNetwork) {
 	 **/
 	abstract fun loadNode(block: BlockSnapshot): GridNode?
 
-	// TODO maybe move this to a member function of grid node
-	abstract fun shouldConsolidate(node: GridNode)
+	/**
+	 *
+	 **/
+	abstract fun tick()
 
 	/**
 	 * Builds the grid TODO better documentation
@@ -103,7 +110,7 @@ abstract class AbstractGrid(val network: ChunkTransportNetwork) {
 	 * e.g. a straight section may be represented as a single node
 	 **/
 	private fun consolidateNodes() {
-		//TODO
+		nodes.forEach { (_, node) -> node.consolidate() }
 	}
 
 	/**
