@@ -4,11 +4,14 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
+import net.horizonsend.ion.common.extensions.alertSubtitle
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
+import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -280,7 +283,7 @@ object PilotedStarships : IonServerComponent() {
 
 	fun tryPilot(player: Player, data: StarshipData, callback: (ActiveControlledStarship) -> Unit = {}): Boolean {
 		if (data !is PlayerStarshipData) {
-			player.userError("You cannot pilot a non-player starship!")
+			player.userErrorTitle("You cannot pilot a non-player starship!")
 
 			return false
 		}
@@ -323,7 +326,7 @@ object PilotedStarships : IonServerComponent() {
 			}
 
 			if (!activeStarship.isWithinHitbox(player)) {
-				player.userError("You need to be inside the ship to pilot it")
+				player.userErrorAction("You need to be inside the ship to pilot it")
 				return false
 			}
 
@@ -397,20 +400,20 @@ object PilotedStarships : IonServerComponent() {
 			}
 
 			if (!activePlayerStarship.isWithinHitbox(player)) {
-				player.userError("You need to be inside the ship to pilot it")
+				player.userErrorAction("You need to be inside the ship to pilot it.")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
 
 			if (activePlayerStarship.drillCount > 16) {
-				player.userError("Ships can not have more that 16 drills! Count: ${activePlayerStarship.drillCount}")
+				player.userErrorAction("Ships cannot have more than 16 drills! Count: ${activePlayerStarship.drillCount}")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
 
 			val miningLasers = activePlayerStarship.subsystems.filterIsInstance<MiningLaserSubsystem>()
 			if (miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {
-				player.userError("Your starship can only support tier ${activePlayerStarship.type.miningLaserTier} mining lasers!")
+				player.userErrorAction("Your starship can only support tier ${activePlayerStarship.type.miningLaserTier} mining lasers!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
@@ -445,7 +448,7 @@ object PilotedStarships : IonServerComponent() {
 
 		if (!StarshipUnpilotEvent(starship, controller).callEvent()) return false
 		if (Hyperspace.isMoving(starship)) {
-			starship.userError("Cannot release while moving through hyperspace! You'd be lost to the void!")
+			starship.alertSubtitle("Cannot release while in hyperspace!")
 			return false
 		}
 
