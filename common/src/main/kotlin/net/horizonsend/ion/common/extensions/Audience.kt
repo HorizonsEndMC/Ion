@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor.color
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
+import net.kyori.adventure.title.Title
 
 var prefixProvider: (Audience) -> String = { "" }
 
@@ -29,6 +30,9 @@ private fun Audience.actionMessage(message: String, color: Int, loggingFunction:
 	loggedMessage(message, color, loggingFunction)
 	action(message, color)
 }
+
+private fun Audience.title(message: String, color: Int) = showTitle(Title.title(construct(message,color), construct(" ",color)))
+private fun Audience.subtitle(message: String, color: Int) = showTitle(Title.title(construct(" ",color), construct(message,color)))
 
 // Messages //
 fun Audience.serverError(message: String) = loggedMessage(message, Colors.SERVER_ERROR, logger::error)
@@ -56,3 +60,19 @@ fun Audience.informationActionMessage(message: String) = actionMessage(message, 
 fun Audience.specialActionMessage(message: String) = actionMessage(message, Colors.SPECIAL)
 fun Audience.successActionMessage(message: String) = actionMessage(message, Colors.SUCCESS)
 fun Audience.hintActionMessage(message: String) = actionMessage(message, Colors.HINT) {}
+
+// Titles //
+fun Audience.serverErrorTitle(message: String) = title(message, Colors.SERVER_ERROR)
+fun Audience.userErrorTitle(message: String) = title(message, Colors.USER_ERROR)
+fun Audience.alertTitle(message: String) = title(message, Colors.ALERT)
+fun Audience.informationTitle(message: String) = title(message, Colors.INFORMATION)
+fun Audience.specialTitle(message: String) = title(message, Colors.SPECIAL)
+fun Audience.successTitle(message: String) = title(message, Colors.SUCCESS)
+
+// Subtitles //
+fun Audience.serverErrorSubtitle(message: String) = subtitle(message, Colors.SERVER_ERROR)
+fun Audience.userErrorSubtitle(message: String) = subtitle(message, Colors.USER_ERROR)
+fun Audience.alertSubtitle(message: String) = subtitle(message, Colors.ALERT)
+fun Audience.informationSubtitle(message: String) = subtitle(message, Colors.INFORMATION)
+fun Audience.specialSubtitle(message: String) = subtitle(message, Colors.SPECIAL)
+fun Audience.successSubtitle(message: String) = subtitle(message, Colors.SUCCESS)

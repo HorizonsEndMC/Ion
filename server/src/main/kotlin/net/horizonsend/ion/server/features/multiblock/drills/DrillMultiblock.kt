@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.drills
 
-import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.alertSubtitle
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
@@ -154,7 +155,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			?: return
 
 		if (furnace.inventory.let { it.fuel == null || it.smelting?.type != Material.PRISMARINE_CRYSTALS }) {
-			event.player.userError(
+			event.player.userErrorAction(
 				"You need Prismarine Crystals in both slots of the furnace!"
 			)
 			return
@@ -231,7 +232,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		val drills = lastDrillCount.getOrDefault(player.uniqueId, 1)
 
 		if (drills > 16) {
-			player.userError("You cannot use more than 16 drills at once!")
+			player.userErrorAction("You cannot use more than 16 drills at once!")
 			return
 		}
 
@@ -243,7 +244,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		val power = PowerMachines.getPower(sign, true)
 		if (power == 0) {
 			setUser(sign, null)
-			player.alert("Your drill at ${sign.location.toVector()} ran out of power! It was disabled.")
+			player.alertSubtitle("Your drill at ${sign.location.toVector()} ran out of power! It was disabled.")
 			return
 		}
 
@@ -268,7 +269,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 				return@breakBlocks testEvent.callEvent()
 			},
 			{
-				player.userErrorAction("Not enough space.")
+				player.userErrorSubtitle("Not enough space.")
 
 				setUser(sign, null)
 			}

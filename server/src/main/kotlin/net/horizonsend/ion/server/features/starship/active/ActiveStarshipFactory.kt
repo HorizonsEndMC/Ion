@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.active
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.ComponentMessageException
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -156,7 +157,7 @@ object ActiveStarshipFactory {
 			starship.subsystems.remove(weapon)
 			val pos = weapon.pos
 
-			feedbackDestination.userError("${weapon.name} at $pos is facing $face, but is forward-only and forward is ${starship.forward}")
+			feedbackDestination.userErrorAction("${weapon.name} at $pos is facing $face, but is forward-only and forward is ${starship.forward}")
 		}
 	}
 }
