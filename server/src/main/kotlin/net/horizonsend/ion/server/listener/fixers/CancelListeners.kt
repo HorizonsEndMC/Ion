@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.minecraft.world.entity.item.ItemEntity
 import org.bukkit.Material
+import org.bukkit.entity.Enderman
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockDispenseEvent
@@ -16,6 +17,7 @@ import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.block.BlockPistonRetractEvent
+import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PotionSplashEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
@@ -176,5 +178,12 @@ class CancelListeners : SLEventListener() {
 		if (event.cause == PlayerOpenSignEvent.Cause.INTERACT) {
 			event.isCancelled = true
 		}
+	}
+
+	@EventHandler
+	fun onEndermanGrief(event: EntityChangeBlockEvent) {
+		if (event.entity !is Enderman) return
+
+		event.isCancelled = true
 	}
 }
