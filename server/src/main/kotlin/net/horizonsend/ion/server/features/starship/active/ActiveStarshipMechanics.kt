@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
@@ -130,7 +131,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	fun onBlockBreak(event: BlockBreakEvent) {
 		if (ActiveStarships.findByBlock(event.block) != null) {
 			event.isCancelled = true
-			event.player.userError("That block is part of an active starship!")
+			event.player.userErrorAction("That block is part of an active starship!")
 		}
 	}
 
@@ -143,16 +144,16 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			return
 		}
 		event.isCancelled = true
-		player.userError("Can't leave piloted ship. To leave, use /stopriding.")
+		player.userErrorAction("Can't leave piloted ship. To leave, use /stopriding.")
 		// a tick later
 		Tasks.sync {
 			if (!starship.isWithinHitbox(player)) {
 				if (PilotedStarships[player] == starship) {
 					PilotedStarships.unpilot(starship)
-					player.userError("You got outside of the ship, so it was unpiloted!")
+					player.userErrorAction("You got outside of the ship, so it was unpiloted!")
 				} else {
 					starship.removePassenger(player.uniqueId)
-					player.userError("You got outside of the ship, so you're no longer riding it!")
+					player.userErrorAction("You got outside of the ship, so you're no longer riding it!")
 				}
 			}
 		}

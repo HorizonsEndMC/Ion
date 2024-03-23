@@ -1,9 +1,10 @@
 package net.horizonsend.ion.server.features.starship.subsystem
 
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
-import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.alertSubtitle
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.common.extensions.informationAction
+import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.machine.PowerMachines
@@ -124,7 +125,7 @@ class MiningLaserSubsystem(
 				// Less than but not equal to because it will increase by 1
 				if (alreadyFiring < starship.type.maxMiningLasers) {
 					isFiring = true
-					starship.information("Enabled mining laser at $pos")
+					starship.informationAction("Enabled mining laser at $pos")
 					startFiringSequence()
 				} else {
 					starship.information("Your ship can only fire ${starship.type.maxMiningLasers} mining lasers at once!")
@@ -134,7 +135,7 @@ class MiningLaserSubsystem(
 
 			false -> {
 				isFiring = false
-				starship.information("Disabled mining laser at $pos")
+				starship.informationAction("Disabled mining laser at $pos")
 				starship
 				cancelTask()
 			}
@@ -221,7 +222,7 @@ class MiningLaserSubsystem(
 		val power = PowerMachines.getPower(sign, true)
 
 		if (power == 0) {
-			starship.alert("Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} ran out of power and was disabled!")
+			starship.alertSubtitle("Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} ran out of power and was disabled!")
 
 			setFiring(false)
 			return
@@ -270,7 +271,7 @@ class MiningLaserSubsystem(
 				controller.canDestroyBlock(it) && event
 			},
 			{
-				starship.userErrorAction("Not enough space!")
+				starship.userErrorSubtitle("Not enough space!")
 			}
 		)
 
