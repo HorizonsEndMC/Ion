@@ -95,6 +95,7 @@ object GameplayTweaks : IonServerComponent() {
 		setBlastResistance(Material.CRYING_OBSIDIAN, 8.0f)
 		setBlastResistance(Material.NETHERITE_BLOCK, 8.0f)
 		setBlastResistance(Material.BROWN_MUSHROOM_BLOCK, 6.0f)
+		setBlastResistance(Material.LAPIS_BLOCK, 6.0f)
 		setBlastResistance(Material.FURNACE, 6.0f)
 		setBlastResistance(Material.DISPENSER, 6.0f)
 		setBlastResistance(Material.IRON_TRAPDOOR, 6.0f)
