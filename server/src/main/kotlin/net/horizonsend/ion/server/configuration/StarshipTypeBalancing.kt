@@ -19,7 +19,7 @@ data class StarshipTypeBalancing(
 	val shuttle: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 5,
 		maxSneakFlyAccel = 2,
-		interdictionRange = 300,
+		interdictionRange = 0,
 		hyperspaceRangeMultiplier = 1.2,
 		shieldPowerMultiplier = 1.0
 	),
@@ -55,7 +55,7 @@ data class StarshipTypeBalancing(
 	val starfighter: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 4,
 		maxSneakFlyAccel = 4,
-		interdictionRange = 600,
+		interdictionRange = 0,
 		hyperspaceRangeMultiplier = 1.5,
 		shieldPowerMultiplier = 1.0
 	),
@@ -91,12 +91,12 @@ data class StarshipTypeBalancing(
 			),
 			pulseCannon = StarshipWeapons.StarshipWeapon(
 				canFire = true,
-				range = 180.0,
+				range = 170.0,
 				speed = 400.0,
 				areaShieldDamageMultiplier = 2.0,
 				starshipShieldDamageMultiplier = 2.0,
 				particleThickness = 0.6,
-				explosionPower = 1.85625f,
+				explosionPower = 2.2f,
 				volume = 10,
 				pitch = 0.5f,
 				soundName = "entity.firework_rocket.blast_far",
@@ -168,12 +168,12 @@ data class StarshipTypeBalancing(
 			),
 			pulseCannon = StarshipWeapons.StarshipWeapon(
 				canFire = true,
-				range = 180.0,
+				range = 170.0,
 				speed = 400.0,
 				areaShieldDamageMultiplier = 2.0,
 				starshipShieldDamageMultiplier = 2.0,
 				particleThickness = 0.4,
-				explosionPower = 1.875f,
+				explosionPower = 2.0f,
 				volume = 10,
 				pitch = 0.5f,
 				soundName = "entity.firework_rocket.blast_far",
