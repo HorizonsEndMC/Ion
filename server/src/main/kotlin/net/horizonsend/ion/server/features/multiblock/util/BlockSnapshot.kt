@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.util
 
 import kotlinx.coroutines.runBlocking
+import net.horizonsend.ion.server.features.customblocks.CustomBlock
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import org.bukkit.Bukkit
 import org.bukkit.ChunkSnapshot
 import org.bukkit.Material
@@ -17,6 +19,8 @@ class BlockSnapshot(val world: World, val x: Int, val y: Int, val z: Int, val ty
 	val block: Block get() {
 		return world.getBlockAt(x, y, z)
 	}
+
+	val customBlock: CustomBlock? get() = CustomBlocks.getByBlockData(data)
 
 	companion object {
 		fun ChunkSnapshot.getBlockSnapshot(x: Int, y: Int, z: Int): BlockSnapshot? {

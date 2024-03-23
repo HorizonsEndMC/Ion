@@ -6,7 +6,7 @@ import org.bukkit.NamespacedKey
 abstract class NamespaceTransferGrid(
 	network: ChunkTransportNetwork,
 	vararg namespaces: NamespacedKey
-) : AbstractGrid(network) {
+) : Grid(network) {
 	val valueKeys = setOf(*namespaces)
 
 	fun isTransferable(resourceKey: NamespacedKey): Boolean = valueKeys.contains(resourceKey)
