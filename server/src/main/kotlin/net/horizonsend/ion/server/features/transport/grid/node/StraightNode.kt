@@ -16,7 +16,7 @@ class StraightNode(
 	override val y: Int,
 	override val z: Int,
 	override val neighbors: ConcurrentHashMap<BlockFace, GridNode> = ConcurrentHashMap(),
-	val positions: Set<Long>
+	val positions: Set<Long> = setOf()
 ) : GridNode {
 	override fun consolidate() {
 		// Check neighbors in straight line
