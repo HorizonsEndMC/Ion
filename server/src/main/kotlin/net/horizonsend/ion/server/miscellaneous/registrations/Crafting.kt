@@ -129,6 +129,8 @@ import org.bukkit.Material.PAPER
 import org.bukkit.Material.PINK_TULIP
 import org.bukkit.Material.SPORE_BLOSSOM
 import org.bukkit.Material.TRIPWIRE_HOOK
+import net.horizonsend.ion.server.features.nations.gui.item
+import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack

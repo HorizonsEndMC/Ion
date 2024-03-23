@@ -12,6 +12,7 @@ import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.inventory.ItemStack
 
 
 abstract class CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
@@ -120,7 +121,6 @@ abstract class CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
 		val result = furnace.inventory.result
-
 
 		if (PowerMachines.getPower(sign) <= 100 ||
 				smelting == null ||

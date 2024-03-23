@@ -10,10 +10,13 @@ import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.entity.Item
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.inventory.ItemStack
 
 abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override fun MultiblockShape.buildStructure() {

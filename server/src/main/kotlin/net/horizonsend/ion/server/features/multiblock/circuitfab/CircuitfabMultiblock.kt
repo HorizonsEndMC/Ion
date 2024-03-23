@@ -12,6 +12,9 @@ import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.entity.Item
+import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.inventory.ItemStack
 
 
 abstract class CircuitfabMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {

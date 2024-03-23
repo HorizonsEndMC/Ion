@@ -2,12 +2,14 @@ package net.horizonsend.ion.server.features.multiblock.ammoloader
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.LOADED_TURRET_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.isEmpty
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
@@ -163,6 +165,7 @@ abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 		event.isCancelled = false
 
 		// Process if it cooked long enough (avoids the item from processing immediately)
+
 		val direction = sign.getFacing().oppositeFace
 		val state = sign.block.getRelative(direction, 7).getState(false)
 				as? InventoryHolder ?: return

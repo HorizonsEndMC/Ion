@@ -52,7 +52,8 @@ class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTa
 
 
 		return false
-	}
+    
+    }
 
 	private fun getInventory(): Inventory? {
 		if (!isIntact()) {
