@@ -76,7 +76,6 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableAirloc
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.LandingGearMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.LargeTractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.OdometerMultiblock
@@ -152,6 +151,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import org.bukkit.World
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -165,176 +165,7 @@ import java.util.UUID
 
 object Multiblocks : IonServerComponent() {
 	private val multiblocks: MutableMap<String, Multiblock> = mutableMapOf()
-
-	private fun initMultiblocks() {
-		multiblocks.putAll(listOf(
-			CentrifugeMultiblock,
-			CompressorMultiblock,
-			FabricatorMultiblock,
-			CircuitfabMultiblock,
-			PlatePressMultiblock,
-			GasFurnaceMultiblock,
-
-			GeneratorMultiblockTier1,
-			GeneratorMultiblockTier2,
-			GeneratorMultiblockTier3,
-
-			PowerFurnaceMultiblockTier1,
-			PowerFurnaceMultiblockTier2,
-			PowerFurnaceMultiblockTier3,
-
-			PowerBankMultiblockTier1,
-			PowerBankMultiblockTier2,
-			PowerBankMultiblockTier3,
-
-			PowerCellMultiblock,
-
-			ChargerMultiblockTier1,
-			ChargerMultiblockTier2,
-			ChargerMultiblockTier3,
-
-			HyperdriveMultiblockClass1,
-			HyperdriveMultiblockClass2,
-			HyperdriveMultiblockClass3,
-			HyperdriveMultiblockClass4,
-
-			NavigationComputerMultiblockBasic,
-			VerticalNavigationComputerMultiblockAdvanced,
-			HorizontalNavigationComputerMultiblockAdvanced,
-
-			ShieldMultiblockClass08Right,
-			ShieldMultiblockClass08Left,
-			ShieldMultiblockClass20,
-			ShieldMultiblockClass30,
-			ShieldMultiblockClass65,
-			ShieldMultiblockClass85,
-			ShieldMultiblockClass08i,
-			BoxShieldMultiblock,
-			EventShieldMultiblock,
-
-			CarbonProcessorMultiblock,
-
-			CarbonPrinterMultiblock,
-			TechnicalPrinterMultiblock,
-			GlassPrinterMultiblock,
-			ArmorPrinterMultiblock,
-
-			DisconnectedDockingTubeMultiblock,
-			ConnectedDockingTubeMultiblock,
-
-			CryoPodMultiblock,
-			FuelTankMultiblock,
-			MagazineMultiblock,
-			AirlockMultiblock,
-			ExpandableAirlock,
-			TractorBeamMultiblock,
-			LargeTractorBeamMultiblock,
-
-			ShipFactoryMultiblock,
-
-			DrillMultiblockTier1,
-			DrillMultiblockTier2,
-			DrillMultiblockTier3,
-
-			StandardGravityWellMultiblock,
-			AmplifiedGravityWellMultiblock,
-
-			AreaShield5,
-			AreaShield10,
-			AreaShield20,
-			AreaShield30,
-
-			MobDefender,
-
-			StandardAmmoPressMultiblock,
-			AmmoLoaderMultiblock,
-			MissileLoaderMultiblock,
-
-			LaserCannonStarshipWeaponMultiblock,
-			PlasmaCannonStarshipWeaponMultiblock,
-			PulseCannonStarshipWeaponMultiblock,
-			HeavyLaserStarshipWeaponMultiblock,
-			AIHeavyLaserStarshipWeaponMultiblock,
-			AIPhaserStarshipWeaponMultiblock,
-			TorpedoStarshipWeaponMultiblock,
-			PointDefenseStarshipWeaponMultiblockTop,
-			PointDefenseStarshipWeaponMultiblockSide,
-			PointDefenseStarshipWeaponMultiblockBottom,
-			TopLightTurretMultiblock,
-			BottomLightTurretMultiblock,
-			TopHeavyTurretMultiblock,
-			BottomHeavyTurretMultiblock,
-			TopTriTurretMultiblock,
-			BottomTriTurretMultiblock,
-			TopIonTurretMultiblock,
-			BottomIonTurretMultiblock,
-			TopQuadTurretMultiblock,
-			BottomQuadTurretMultiblock,
-			HorizontalRocketStarshipWeaponMultiblock,
-			UpwardRocketStarshipWeaponMultiblock,
-			DownwardRocketStarshipWeaponMultiblock,
-			PhaserStarshipWeaponMultiblock,
-			MiniPhaserStarshipWeaponMultiblock,
-			SonicMissileWeaponMultiblock,
-			DecomposerMultiblock,
-			DisposalMultiblock,
-			MiningLaserMultiblockTier1Top,
-			MiningLaserMultiblockTier1Bottom,
-			MiningLaserMultiblockTier1Side,
-			MiningLaserMultiblockTier2Top,
-			MiningLaserMultiblockTier2Bottom,
-			MiningLaserMultiblockTier2Side,
-			MiningLaserMultiblockTier3Top,
-			MiningLaserMultiblockTier3Bottom,
-			MiningLaserMultiblockTier3Side,
-			MiningLaserMultiblockTier4Top,
-			MiningLaserMultiblockTier4Bottom,
-			MiningLaserMultiblockTier4Side,
-			TopArsenalStarshipWeaponMultiblock,
-			BottomArsenalStarshipWeaponMultiblock,
-
-			ItemSplitterMultiblock,
-			GasCollectorMultiblock,
-			GasPowerPlantMultiblock,
-			VentMultiblock,
-
-			LandingGearMultiblock,
-
-			AutoCrafterMultiblockTier1,
-			AutoCrafterMultiblockTier2,
-			AutoCrafterMultiblockTier3,
-
-			HorizontalPumpkinCannonStarshipWeaponMultiblock,
-			CthulhuBeamStarshipWeaponMultiblockBottom,
-			CthulhuBeamStarshipWeaponMultiblockTop,
-			CthulhuBeamStarshipWeaponMultiblockSide,
-			FlamethrowerStarshipWeaponMultiblock,
-			CapitalBeamStarshipWeaponMultiblock,
-
-			PlanterMultiblockTier1,
-			PlanterMultiblockTier2,
-			PlanterMultiblockTier3,
-			HarvesterMultiblockTier1,
-			HarvesterMultiblockTier2,
-			HarvesterMultiblockTier3,
-
-			AntiAirCannonBaseMultiblock,
-//			AntiAirCannonTurretMultiblock,
-
-			BattleCruiserReactorMultiblock,
-			CruiserReactorMultiblock,
-			BargeReactorMultiBlock,
-			OdometerMultiblock,
-			TestMultiblock
-		).associateBy { it.javaClass.simpleName })
-	}
-
-	val context = CoroutineScope(Dispatchers.Default + SupervisorJob())
-
-	/**
-	 * Map of world UUIDs to a map of block keys to Multiblock types
-	 **/
-	private val newMultiblockCache: MutableMap<UUID, MutableMap<Long, Multiblock>> = Object2ObjectOpenHashMap()
+	val multiblockCoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	override fun onEnable() {
 		initMultiblocks()
@@ -342,7 +173,226 @@ object Multiblocks : IonServerComponent() {
 		log.info("Loaded ${multiblocks.size} multiblocks")
 	}
 
+	private fun initMultiblocks() {
+		registerMultiblock(CentrifugeMultiblock)
+		registerMultiblock(CompressorMultiblock)
+		registerMultiblock(FabricatorMultiblock)
+		registerMultiblock(CircuitfabMultiblock)
+		registerMultiblock(PlatePressMultiblock)
+		registerMultiblock(GasFurnaceMultiblock)
+
+		registerMultiblock(GeneratorMultiblockTier1)
+		registerMultiblock(GeneratorMultiblockTier2)
+		registerMultiblock(GeneratorMultiblockTier3)
+
+		registerMultiblock(PowerFurnaceMultiblockTier1)
+		registerMultiblock(PowerFurnaceMultiblockTier2)
+		registerMultiblock(PowerFurnaceMultiblockTier3)
+
+		registerMultiblock(PowerBankMultiblockTier1)
+		registerMultiblock(PowerBankMultiblockTier2)
+		registerMultiblock(PowerBankMultiblockTier3)
+
+		registerMultiblock(PowerCellMultiblock)
+		registerMultiblock(ChargerMultiblockTier1)
+		registerMultiblock(ChargerMultiblockTier2)
+		registerMultiblock(ChargerMultiblockTier3)
+
+		registerMultiblock(HyperdriveMultiblockClass1)
+		registerMultiblock(HyperdriveMultiblockClass2)
+		registerMultiblock(HyperdriveMultiblockClass3)
+		registerMultiblock(HyperdriveMultiblockClass4)
+
+		registerMultiblock(NavigationComputerMultiblockBasic)
+		registerMultiblock(VerticalNavigationComputerMultiblockAdvanced)
+		registerMultiblock(HorizontalNavigationComputerMultiblockAdvanced)
+
+		registerMultiblock(ShieldMultiblockClass08Right)
+		registerMultiblock(ShieldMultiblockClass08Left)
+		registerMultiblock(ShieldMultiblockClass20)
+		registerMultiblock(ShieldMultiblockClass30)
+		registerMultiblock(ShieldMultiblockClass65)
+		registerMultiblock(ShieldMultiblockClass85)
+		registerMultiblock(ShieldMultiblockClass08i)
+		registerMultiblock(BoxShieldMultiblock)
+		registerMultiblock(EventShieldMultiblock)
+
+		registerMultiblock(CarbonProcessorMultiblock)
+
+		registerMultiblock(CarbonPrinterMultiblock)
+		registerMultiblock(TechnicalPrinterMultiblock)
+		registerMultiblock(GlassPrinterMultiblock)
+		registerMultiblock(ArmorPrinterMultiblock)
+
+		registerMultiblock(DisconnectedDockingTubeMultiblock)
+		registerMultiblock(ConnectedDockingTubeMultiblock)
+
+		registerMultiblock(CryoPodMultiblock)
+		registerMultiblock(FuelTankMultiblock)
+		registerMultiblock(MagazineMultiblock)
+		registerMultiblock(AirlockMultiblock)
+		registerMultiblock(ExpandableAirlock)
+		registerMultiblock(TractorBeamMultiblock)
+
+		registerMultiblock(ShipFactoryMultiblock)
+
+		registerMultiblock(DrillMultiblockTier1)
+		registerMultiblock(DrillMultiblockTier2)
+		registerMultiblock(DrillMultiblockTier3)
+
+		registerMultiblock(StandardGravityWellMultiblock)
+		registerMultiblock(AmplifiedGravityWellMultiblock)
+
+		registerMultiblock(AreaShield5)
+		registerMultiblock(AreaShield10)
+		registerMultiblock(AreaShield20)
+		registerMultiblock(AreaShield30)
+
+		registerMultiblock(MobDefender)
+
+		registerMultiblock(StandardAmmoPressMultiblock)
+		registerMultiblock(AmmoLoaderMultiblock)
+		registerMultiblock(MissileLoaderMultiblock)
+
+		registerMultiblock(LaserCannonStarshipWeaponMultiblock)
+		registerMultiblock(PlasmaCannonStarshipWeaponMultiblock)
+		registerMultiblock(PulseCannonStarshipWeaponMultiblock)
+		registerMultiblock(HeavyLaserStarshipWeaponMultiblock)
+		registerMultiblock(AIHeavyLaserStarshipWeaponMultiblock)
+		registerMultiblock(AIPhaserStarshipWeaponMultiblocK)
+		registerMultiblock(TorpedoStarshipWeaponMultiblock)
+		registerMultiblock(PointDefenseStarshipWeaponMultiblockTop)
+		registerMultiblock(PointDefenseStarshipWeaponMultiblockSide)
+		registerMultiblock(PointDefenseStarshipWeaponMultiblockBottom)
+		registerMultiblock(TopLightTurretMultiblock)
+		registerMultiblock(BottomLightTurretMultiblock)
+		registerMultiblock(TopHeavyTurretMultiblock)
+		registerMultiblock(BottomHeavyTurretMultiblock)
+		registerMultiblock(TopTriTurretMultiblock)
+		registerMultiblock(BottomTriTurretMultiblock)
+		registerMultiblock(TopIonTurretMultiblock)
+		registerMultiblock(BottomIonTurretMultiblock)
+		registerMultiblock(TopQuadTurretMultiblock)
+		registerMultiblock(BottomQuadTurretMultiblock)
+		registerMultiblock(HorizontalRocketStarshipWeaponMultiblock)
+		registerMultiblock(UpwardRocketStarshipWeaponMultiblock)
+		registerMultiblock(DownwardRocketStarshipWeaponMultiblock)
+		registerMultiblock(PhaserStarshipWeaponMultiblock)
+		registerMultiblock(MiniPhaserStarshipWeaponMultiblock)
+		registerMultiblock(SonicMissileWeaponMultiblock)
+		registerMultiblock(DecomposerMultiblock)
+		registerMultiblock(DisposalMultiblock)
+		registerMultiblock(MiningLaserMultiblockTier1Top)
+		registerMultiblock(MiningLaserMultiblockTier1Bottom)
+		registerMultiblock(MiningLaserMultiblockTier1Side)
+		registerMultiblock(MiningLaserMultiblockTier2Top)
+		registerMultiblock(MiningLaserMultiblockTier2Bottom)
+		registerMultiblock(MiningLaserMultiblockTier2Side)
+		registerMultiblock(MiningLaserMultiblockTier3Top)
+		registerMultiblock(MiningLaserMultiblockTier3Bottom)
+		registerMultiblock(MiningLaserMultiblockTier3Side)
+		registerMultiblock(MiningLaserMultiblockTier4Top)
+		registerMultiblock(MiningLaserMultiblockTier4Bottom)
+		registerMultiblock(MiningLaserMultiblockTier4Side)
+
+		registerMultiblock(ItemSplitterMultiblock)
+		registerMultiblock(GasCollectorMultiblock)
+		registerMultiblock(GasPowerPlantMultiblock)
+		registerMultiblock(VentMultiblock)
+
+		registerMultiblock(LandingGearMultiblock)
+
+		registerMultiblock(AutoCrafterMultiblockTier1)
+		registerMultiblock(AutoCrafterMultiblockTier2)
+		registerMultiblock(AutoCrafterMultiblockTier3)
+
+		registerMultiblock(HorizontalPumpkinCannonStarshipWeaponMultiblock)
+		registerMultiblock(CthulhuBeamStarshipWeaponMultiblockBottom)
+		registerMultiblock(CthulhuBeamStarshipWeaponMultiblockTop)
+		registerMultiblock(CthulhuBeamStarshipWeaponMultiblockSide)
+		registerMultiblock(FlamethrowerStarshipWeaponMultiblock)
+		registerMultiblock(CapitalBeamStarshipWeaponMultiblock)
+
+		registerMultiblock(PlanterMultiblockTier1)
+		registerMultiblock(PlanterMultiblockTier2)
+		registerMultiblock(PlanterMultiblockTier3)
+		registerMultiblock(HarvesterMultiblockTier1)
+		registerMultiblock(HarvesterMultiblockTier2)
+		registerMultiblock(HarvesterMultiblockTier3)
+
+		registerMultiblock(AntiAirCannonBaseMultiblock)
+		registerMultiblock(BattleCruiserReactorMultiblock)
+		registerMultiblock(CruiserReactorMultiblock)
+		registerMultiblock(BargeReactorMultiBlock)
+		registerMultiblock(OdometerMultiblock)
+		registerMultiblock(TestMultiblock)
+	}
+
+	private fun registerMultiblock(multiblock: Multiblock) {
+		val name = multiblock.javaClass.simpleName ?: throw IllegalArgumentException("Provided anonymous multiblock class!")
+
+		if (multiblocks.containsKey(name)) {
+			throw IllegalArgumentException("Attempted to register duplicate multiblock name! Exisitng: ${multiblocks[name]}, new: $multiblock")
+		}
+
+		multiblocks[name] = multiblock
+	}
+
+	private fun registerAlternateName(name: String, multiblock: Multiblock) {
+		if (multiblocks.containsKey(name)) {
+			throw IllegalArgumentException("Attempted to register duplicate multiblock name! Exisitng: ${multiblocks[name]}, new: $multiblock")
+		}
+
+		multiblocks[name] = multiblock
+	}
+
+	// Access
+
+	/**
+	 * Get a multiblock by its identifying name
+	 **/
+	fun getMultiblockByName(name: String): Multiblock = multiblocks[name]!!
+
+	/** Check if a sign has been registered as a multiblock, if so, return that value */
+	fun getFromPDC(sign: Sign): Multiblock? {
+		return getFromPDC(sign.persistentDataContainer)
+	}
+
+	/** Check if a pdc, if so, return that value */
+	fun getFromPDC(pdc: PersistentDataContainer): Multiblock? {
+		val data = pdc.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING) ?: return null
+
+		return getMultiblockByName(data)
+	}
+
+	/**
+	 * Get all registered multiblocks
+	 **/
 	fun all(): List<Multiblock> = multiblocks.values.toList()
+
+	// End access
+
+	/**
+	 * Map of world UUIDs to a map of block keys to Multiblock types
+	 *
+	 *  - world
+	 *      |- blockKey to Multiblock
+	 **/
+	private val multiblockLocationCache: MutableMap<UUID, MutableMap<Long, Multiblock>> = Object2ObjectOpenHashMap()
+
+	/**
+	 * Get a previously found multiblock at this location
+	 **/
+	fun getCached(world: World, x: Int, y: Int, z: Int): Multiblock? {
+		return getCached(world, toBlockKey(x, y, z))
+	}
+
+	/**
+	 * Get a previously found multiblock at this location
+	 **/
+	fun getCached(world: World, key: Long): Multiblock? {
+		return multiblockLocationCache.getOrPut(world.uid) { Object2ObjectOpenHashMap() }[key]
+	}
 
 	/**
 	 * Get a multiblock from the sign
@@ -357,11 +407,6 @@ object Multiblocks : IonServerComponent() {
 	operator fun get(world: World, x: Int, y: Int, z: Int, checkStructure: Boolean = true, loadChunks: Boolean = false) = runBlocking {
 		getFromSignPosition(world, x, y, z, checkStructure, loadChunks)
 	}
-
-	/**
-	 * Get a multiblock by its identifying name
-	 **/
-	operator fun get(name: String) = multiblocks[name]
 
 	/**
 	 * Checks against the multiblock cache for a multiblock at a position
@@ -379,7 +424,7 @@ object Multiblocks : IonServerComponent() {
 
 		for ((name, multiblock) in multiblocks) {
 			if (!matchesPersistentDataContainer(sign.persistentDataContainer, multiblock)) {
-				if (!multiblock.matchesSign(sign.lines())) continue else Tasks.sync {
+				if (!multiblock.matchesSign(sign.getSide(Side.FRONT).lines())) continue else Tasks.sync {
 					sign.persistentDataContainer.set(
 						NamespacedKeys.MULTIBLOCK,
 						PersistentDataType.STRING,
@@ -402,7 +447,7 @@ object Multiblocks : IonServerComponent() {
 	 * Checks against the multiblock cache for a multiblock at a position
 	 **/
 	private suspend fun checkCache(world: World, x: Int, y: Int, z: Int, checkStructure: Boolean, loadChunks: Boolean): Multiblock? {
-		val worldCache = newMultiblockCache[world.uid] ?: return null
+		val worldCache = multiblockLocationCache[world.uid] ?: return null
 
 		val key = toBlockKey(x, y, z)
 
@@ -413,13 +458,7 @@ object Multiblocks : IonServerComponent() {
 		return possibleMultiblock
 	}
 
-	fun getFromPDC(sign: Sign): Multiblock? {
-		val pdc = sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING) ?: return null
-
-		return multiblocks[pdc]
-	}
-
-	fun matchesPersistentDataContainer(persistentDataContainer: PersistentDataContainer, multiblock: Multiblock): Boolean {
+	private fun matchesPersistentDataContainer(persistentDataContainer: PersistentDataContainer, multiblock: Multiblock): Boolean {
 		val value = persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING) ?: return false
 
 		return value == multiblock::class.simpleName
@@ -429,13 +468,10 @@ object Multiblocks : IonServerComponent() {
 	 * The check for when someone right-clicks an undetected multiblock
 	 **/
 	@EventHandler(priority = EventPriority.HIGHEST)
-	fun onInteractMultiblockSign(event: PlayerInteractEvent) = context.launch {
-		if (event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) {
-			return@launch
-		}
+	fun tryDetectMultiblock(event: PlayerInteractEvent) = multiblockCoroutineScope.launch {
+		if (event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) return@launch
 
 		val clickedBlock = event.clickedBlock ?: return@launch
-
 		val sign = getBukkitBlockState(clickedBlock, false) as? Sign ?: return@launch
 
 		// Don't bother checking detected multiblocks
@@ -449,27 +485,24 @@ object Multiblocks : IonServerComponent() {
 			return@launch
 		}
 
-		// Check all multiblocks
-		for ((_, multiblock) in multiblocks) {
-			// If it has the same sign text as the multiblock
-			if (multiblock.matchesUndetectedSign(sign)) {
-				// And is built properly
-				if (multiblock.signMatchesStructure(sign, particles = true)) {
-					// Check permissions here because different tiers might have the same text
-					multiblock.requiredPermission?.let {
-						if (!player.hasPermission(it)) player.userError("You don't have permission to use that multiblock!")
-						return@launch
-					}
-
-					// Update everything that needs to be done sync
-					createNewMultiblock(multiblock, sign, event.player)
-
+		// Check all multiblocks with a matching undetected sign
+		for ((_, multiblock) in multiblocks.filterValues { it.matchesUndetectedSign(sign) }) {
+			// And is built properly
+			if (multiblock.signMatchesStructure(sign, particles = true)) {
+				// Check permissions here because different tiers might have the same text
+				multiblock.requiredPermission?.let {
+					if (!player.hasPermission(it)) player.userError("You don't have permission to use that multiblock!")
 					return@launch
-				} else {
-					// Store the multi that last matched sign text
-					lastMatch = multiblock
 				}
+
+				// Update everything that needs to be done sync
+				createNewMultiblock(multiblock, sign, event.player)
+
+				return@launch
 			}
+
+			// Store the multi that last matched sign text
+			lastMatch = multiblock
 		}
 
 		if (lastMatch != null) {
@@ -481,8 +514,7 @@ object Multiblocks : IonServerComponent() {
 	}
 
 	@EventHandler
-	fun onPlayerBreakBlock(event: BlockBreakEvent) = context.launch {
-		val player = event.player
+	fun onPlayerBreakBlock(event: BlockBreakEvent) = multiblockCoroutineScope.launch {
 		if (getBlockTypeSafe(event.block.world, event.block.x, event.block.y, event.block.z)?.isSign == false) return@launch
 
 		val sign = getBukkitBlockState(event.block, false) as? Sign ?: return@launch
@@ -496,7 +528,7 @@ object Multiblocks : IonServerComponent() {
 			loadChunks = false
 		) ?: return@launch
 
-		removeMultiblock(multiblock, sign, player)
+		removeMultiblock(multiblock, sign)
 	}
 
 	/**
@@ -535,7 +567,7 @@ object Multiblocks : IonServerComponent() {
 	}
 
 	/** Upon a multiblock being removed */
-	fun removeMultiblock(multiblock: Multiblock, sign: Sign, player: Player) = Tasks.sync  {
+	fun removeMultiblock(multiblock: Multiblock, sign: Sign) = Tasks.sync  {
 		val (x, y, z) = Multiblock.getOrigin(sign)
 
 		val chunkX = x.shr(4)
