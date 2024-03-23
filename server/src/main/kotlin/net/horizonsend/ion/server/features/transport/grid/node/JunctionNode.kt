@@ -1,5 +1,17 @@
 package net.horizonsend.ion.server.features.transport.grid.node
 
-abstract class JunctionNode : GridNode {
+import net.horizonsend.ion.server.features.transport.grid.AbstractGrid
+import org.bukkit.block.BlockFace
+import java.util.concurrent.ConcurrentHashMap
 
+class JunctionNode(
+	override val parent: AbstractGrid,
+	override val x: Int,
+	override val y: Int,
+	override val z: Int,
+	override val neighbors: ConcurrentHashMap<BlockFace, GridNode> = ConcurrentHashMap()
+) : GridNode {
+	override fun consolidate() {
+		return
+	}
 }
