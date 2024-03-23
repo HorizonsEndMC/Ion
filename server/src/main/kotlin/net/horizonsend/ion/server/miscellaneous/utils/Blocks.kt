@@ -80,10 +80,10 @@ val ADJACENT_BLOCK_FACES: Set<BlockFace> = ImmutableSet.of(
 	BlockFace.DOWN
 )
 
-val ADJACENT_PAIRS: Set<Set<BlockFace>> = ImmutableSet.of(
-	ImmutableSet.of(BlockFace.NORTH, BlockFace.SOUTH),
-	ImmutableSet.of(BlockFace.EAST, BlockFace.WEST),
-	ImmutableSet.of(BlockFace.NORTH, BlockFace.SOUTH)
+val ADJACENT_PAIRS: Map<Axis, Set<BlockFace>> = mapOf(
+	Axis.Z to ImmutableSet.of(BlockFace.NORTH, BlockFace.SOUTH),
+	Axis.X to ImmutableSet.of(BlockFace.EAST, BlockFace.WEST),
+	Axis.Y to ImmutableSet.of(BlockFace.UP, BlockFace.DOWN)
 )
 
 val CARDINAL_BLOCK_FACES: Set<BlockFace> = ImmutableSet.of(
@@ -116,6 +116,14 @@ val BlockFace.axis: Axis
 		BlockFace.NORTH, BlockFace.SOUTH -> Axis.Z
 		BlockFace.EAST, BlockFace.WEST -> Axis.X
 		BlockFace.UP, BlockFace.DOWN -> Axis.Y
+		else -> error("Unsupported axis for BlockFace: $this")
+	}
+
+val Axis.faces: Pair<BlockFace, BlockFace>
+	get() = when (this) {
+		Axis.Z -> BlockFace.NORTH to BlockFace.SOUTH
+		Axis.X -> BlockFace.EAST to BlockFace.WEST
+		Axis.Y -> BlockFace.UP to BlockFace.DOWN
 		else -> error("Unsupported axis for BlockFace: $this")
 	}
 
