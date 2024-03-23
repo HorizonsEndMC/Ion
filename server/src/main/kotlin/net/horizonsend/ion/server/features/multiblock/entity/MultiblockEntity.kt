@@ -19,6 +19,8 @@ import org.bukkit.block.Sign
  * @param world The world this multiblock is in
  *
  * @param type The type of multiblock this entity represents
+ *
+ * @param signDirection The direction to find the sign from the origin block (the block the sign is placed on)
  **/
 abstract class MultiblockEntity(
 	val type: Multiblock,
@@ -27,7 +29,7 @@ abstract class MultiblockEntity(
 	var y: Int,
 	var z: Int,
 	var world: World,
-	var signOffset: BlockFace
+	var signDirection: BlockFace
 ) {
 	/**
 	 * Returns the origin of this multiblock as a Location
@@ -54,7 +56,7 @@ abstract class MultiblockEntity(
 	 * This data is serialized and stored on the chunk when not loaded.
 	 **/
 	fun store(): PersistentMultiblockData {
-		val store = PersistentMultiblockData(x, y, z, type, signOffset)
+		val store = PersistentMultiblockData(x, y, z, type, signDirection)
 		storeAdditionalData(store)
 
 		return store
@@ -64,7 +66,7 @@ abstract class MultiblockEntity(
 	 * Gets the sign of this multiblock
 	 **/
 	suspend fun getSign(): Sign? {
-		val signLoc = Vec3i(x, y, z) + Vec3i(signOffset.modX, 0, signOffset.modZ)
+		val signLoc = Vec3i(x, y, z) + Vec3i(signDirection.modX, 0, signDirection.modZ)
 
 		return getBukkitBlockState(world.getBlockAt(signLoc.x, signLoc.y, signLoc.z), loadChunks = false) as? Sign
 	}
@@ -79,7 +81,7 @@ abstract class MultiblockEntity(
 	 *
 	 **/
 	fun getBlockRelative(backFourth: Int, leftRight: Int, upDown: Int): Block {
-		val (x, y, z) = getRelative(vec3i, signOffset.oppositeFace, backFourth, leftRight, upDown)
+		val (x, y, z) = getRelative(vec3i, signDirection.oppositeFace, backFourth, leftRight, upDown)
 
 		return world.getBlockAt(x, y, z)
 	}

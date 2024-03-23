@@ -103,3 +103,17 @@ fun <T> Iterable<T>.weightedRandomOrNull(random: Random = ThreadLocalRandom.curr
 }
 
 fun <T> Iterable<T>.weightedRandom(random: Random = ThreadLocalRandom.current().asKotlinRandom(), selector: (T) -> Double): T = weightedRandomOrNull(random, selector) ?: throw NoSuchElementException()
+
+// Idk why I did this
+operator fun <A> Pair<A, A>.iterator(): Iterator<A> = object : Iterator<A> {
+	var current: Boolean = false
+
+	override fun hasNext(): Boolean {
+		return !current
+	}
+
+	override fun next(): A {
+		current = true
+		return second
+	}
+}
