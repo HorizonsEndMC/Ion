@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.grid.power
+package net.horizonsend.ion.server.features.transport.grid.node.power
 
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.grid.node.GridNode
