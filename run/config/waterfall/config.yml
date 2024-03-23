@@ -1,4 +1,3 @@
-enforce_secure_profile: false
 listeners:
 - query_port: 25577
   priorities:
@@ -15,8 +14,10 @@ listeners:
   ping_passthrough: false
   query_enabled: false
   proxy_protocol: false
-remote_ping_cache: -1
-network_compression_threshold: 256
+groups:
+  md_5:
+  - admin
+connection_throttle_limit: 3
 permissions:
   default:
   - bungeecord.command.server
@@ -27,26 +28,26 @@ permissions:
   - bungeecord.command.ip
   - bungeecord.command.reload
   - bungeecord.command.kick
-log_pings: true
-connection_throttle_limit: 3
-server_connect_timeout: 5000
-timeout: 30000
-stats: 797aab79-2230-4340-be83-926d44fb400c
-player_limit: -1
-ip_forward: true
-groups:
-  md_5:
-  - admin
-remote_ping_timeout: 5000
-connection_throttle: 4000
 log_commands: false
+network_compression_threshold: 256
+timeout: 30000
+log_pings: true
 prevent_proxy_connections: false
+connection_throttle: 4000
+enforce_secure_profile: false
 online_mode: true
-forge_support: true
-disabled_commands:
-- disabledcommandhere
+stats: 797aab79-2230-4340-be83-926d44fb400c
+ip_forward: true
 servers:
   paper:
     address: paper:25565
     motd: '&1Just another Waterfall - Forced Host'
     restricted: false
+reject_transfers: false
+server_connect_timeout: 5000
+forge_support: true
+disabled_commands:
+- disabledcommandhere
+remote_ping_cache: -1
+remote_ping_timeout: 5000
+player_limit: -1

@@ -7,11 +7,11 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
-import net.horizonsend.ion.server.miscellaneous.utils.sendEntityPacket
 import net.horizonsend.ion.server.miscellaneous.utils.toVec3i
 import org.bukkit.Material
 import org.bukkit.entity.Player

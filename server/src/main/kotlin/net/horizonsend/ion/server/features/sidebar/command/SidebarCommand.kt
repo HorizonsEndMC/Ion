@@ -11,6 +11,9 @@ import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createTextDisplay
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.COMPASS_NEEDLE_ICON
@@ -22,8 +25,6 @@ import net.horizonsend.ion.server.features.sidebar.SidebarIcon.PLANET_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.ROUTE_SEGMENT_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STAR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STATION_ICON
-import net.horizonsend.ion.server.miscellaneous.utils.createTextDisplay
-import net.horizonsend.ion.server.miscellaneous.utils.sendEntityPacket
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -62,7 +63,7 @@ object SidebarCommand : SLCommand() {
 
         sendEntityPacket(
             sender,
-            billboardText.handle.apply { setPos(sender.eyeLocation.x, sender.eyeLocation.y, sender.eyeLocation.z) },
+            billboardText.getNMSData(sender.eyeLocation.x, sender.eyeLocation.y, sender.eyeLocation.z),
             5 * 20L
         )
     }

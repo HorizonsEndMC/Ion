@@ -1,26 +1,19 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
-import com.mojang.math.Transformation
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.machine.AreaShields
-import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundSetBorderWarningDistancePacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.network.ServerGamePacketListenerImpl
-import net.minecraft.world.entity.Display
-import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.monster.Slime
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.StructureBlock
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -36,18 +29,14 @@ import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.block.data.BlockData
 import org.bukkit.craftbukkit.v1_20_R3.CraftChunk
 import org.bukkit.craftbukkit.v1_20_R3.CraftWorld
 import org.bukkit.craftbukkit.v1_20_R3.CraftWorldBorder
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.scheduler.BukkitRunnable
-import org.joml.Quaternionf
-import org.joml.Vector3f
 import kotlin.reflect.jvm.isAccessible
 
 val vaultEconomy = try {
@@ -100,10 +89,6 @@ fun runnable(e: BukkitRunnable.() -> Unit): BukkitRunnable = object : BukkitRunn
 fun <T : Entity> World.castSpawnEntity(location: Location, type: org.bukkit.entity.EntityType) =
 	this.spawnEntity(location, type) as T
 
-fun debugHighlightBlock(x: Number, y: Number, z: Number, duration: Long = 5L) = debugAudience.highlightBlock(Vec3i(x.toInt(), y.toInt(), z.toInt()), duration)
-fun debugHighlightBlock(pos: Vec3i, duration: Long = 5L) = debugAudience.highlightBlock(pos, duration)
-fun debugHighlightBlocks(blocks: Collection<Vec3i>, duration: Long = 5L) = debugAudience.highlightBlocks(blocks, duration)
-
 val debugAudience: ForwardingAudience = ForwardingAudience { IonCommand.debugEnabledPlayers }
 
 fun areaDebugMessage(x: Number, y: Number, z: Number, msg: String) {
@@ -120,52 +105,6 @@ fun areaDebugMessage(x: Number, y: Number, z: Number, msg: String) {
 
 		it.debug(msg)
 	}
-}
-
-fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Entity, duration: Long) {
-	val player = bukkitPlayer.minecraft
-	val conn = player.connection
-
-	conn.send(ClientboundAddEntityPacket(entity))
-	entity.entityData.refresh(player)
-
-	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(entity.id)) }
-}
-
-fun highlightBlock(bukkitPlayer: Player, pos: Vec3i): net.minecraft.world.entity.Entity {
-	val player = bukkitPlayer.minecraft
-	return Slime(EntityType.SLIME, player.level()).apply {
-		setPos(pos.x + 0.5, pos.y + 0.25, pos.z + 0.5)
-		this.setSize(1, true)
-		setGlowingTag(true)
-		isInvisible = true
-
-	}
-}
-
-fun displayBlock(bukkitPlayer: Player, blockData: BlockData, pos: Vec3i, scale: Float, glow: Boolean): net.minecraft.world.entity.Entity {
-	val player = bukkitPlayer.minecraft
-	val offset = (-scale / 2) + 0.5
-	return Display.BlockDisplay(EntityType.BLOCK_DISPLAY, player.level()).apply {
-		setPos(pos.x + offset, pos.y + offset, pos.z + offset)
-		this.blockState = blockData.nms
-		setGlowingTag(glow)
-		this.setTransformation(Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf()))
-	}
-}
-
-fun createTextDisplay(player: Player): CraftTextDisplay =
-	CraftTextDisplay(player.minecraft.server.server, Display.TextDisplay(EntityType.TEXT_DISPLAY, player.minecraft.level()))
-
-fun Audience.highlightBlock(pos: Vec3i, duration: Long) {
-	when (this) {
-		is Player -> sendEntityPacket(this, highlightBlock(this, pos), duration)
-		is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) { sendEntityPacket(player, highlightBlock(player, pos), duration) }
-	}
-}
-
-fun Audience.highlightBlocks(positions: Collection<Vec3i>, duration: Long) {
-	for (pos in positions) this.highlightBlock(pos, duration)
 }
 
 fun buildStructureBlock(minPoint: Vec3i, maxPoint: Vec3i, message: String = ""): Pair<BlockState, StructureBlockEntity> {
