@@ -6,12 +6,12 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
-import net.horizonsend.ion.server.miscellaneous.utils.sendEntityPacket
 import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
 import net.minecraft.nbt.CompoundTag
 import org.bukkit.Material

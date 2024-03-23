@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.pipe
 
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.debugHighlightBlock
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.GasCanister
 import net.horizonsend.ion.server.features.gas.type.GasFuel
@@ -19,7 +20,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
 import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.debugHighlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
