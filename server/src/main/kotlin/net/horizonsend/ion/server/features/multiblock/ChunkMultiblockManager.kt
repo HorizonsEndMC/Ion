@@ -49,7 +49,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 
 	private fun handleMultiblockTick(multiblock: TickingMultiblockEntity): Boolean = try {
 		if (multiblock.tickAsync) {
-			Multiblocks.context.launch { multiblock.tick() }
+			Multiblocks.multiblockCoroutineScope.launch { multiblock.tick() }
 		} else runBlocking { multiblock.tick() }
 
 		true
@@ -103,7 +103,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	/**
 	 * Save the multiblock data back into the chunk
 	 **/
-	private fun saveMultiblocks() = Multiblocks.context.launch {
+	private fun saveMultiblocks() = Multiblocks.multiblockCoroutineScope.launch {
 		val array = multiblockEntities.map { (_, entity) ->
 			PersistentMultiblockData.toPrimitive(entity.store(), chunk.inner.persistentDataContainer.adapterContext)
 		}
