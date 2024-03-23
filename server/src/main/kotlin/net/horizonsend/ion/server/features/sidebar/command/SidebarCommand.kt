@@ -22,8 +22,7 @@ import net.horizonsend.ion.server.features.sidebar.SidebarIcon.PLANET_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.ROUTE_SEGMENT_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STAR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STATION_ICON
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.displayBillboardText
+import net.horizonsend.ion.server.miscellaneous.utils.createTextDisplay
 import net.horizonsend.ion.server.miscellaneous.utils.sendEntityPacket
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
@@ -34,6 +33,8 @@ import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import org.bukkit.Color
+import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 
 @CommandAlias("sidebar")
@@ -53,10 +54,15 @@ object SidebarCommand : SLCommand() {
 
     @Subcommand("component")
     @Suppress("unused")
-    fun onComponentTest(sender: Player, /*string: String, @Optional opacity: Int = 128*/) {
+    fun onComponentTest(sender: Player) {
+        val billboardText = createTextDisplay(sender)
+        billboardText.text(text(COMPASS_NEEDLE_ICON.text).font(Sidebar.fontKey))
+        billboardText.backgroundColor = Color.fromARGB(0x00000000)
+        billboardText.billboard = Display.Billboard.CENTER
+
         sendEntityPacket(
             sender,
-            displayBillboardText(sender, Vec3i(sender.location), 1f, text(COMPASS_NEEDLE_ICON.text).font(Sidebar.fontKey), 0),
+            billboardText.handle.apply { setPos(sender.eyeLocation.x, sender.eyeLocation.y, sender.eyeLocation.z) },
             5 * 20L
         )
     }
