@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.GasCanister
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_HYDROGEN
+import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
@@ -16,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.entityDamagerCache
 import net.horizonsend.ion.server.features.starship.subsystem.SupercapReactorSubsystem
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.subsystem.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
@@ -52,9 +54,9 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.syncRepeat(5L, 5L, this::fireAutoWeapons)
 		Tasks.syncRepeat(60L, 60L, this::destroyLowHullIntegrityShips)
 		Tasks.syncRepeat(60L, 60L, this::unpilotFuellessBattlecruisers)
+		Tasks.syncRepeat(200L, 200L, this::consumeBattlecruiserFuel)
 		Tasks.syncRepeat(60L, 60L, this::destroyReactorlessBattlecruisers)
 		Tasks.syncRepeat(20L, 20L, this::tickPlayers)
-		Tasks.syncRepeat(200L, 200L, this::consumeBattlecruiserFuel)
 	}
 
 	private fun deactivateUnpilotedPlayerStarships() {
@@ -134,7 +136,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 	private fun unpilotFuellessBattlecruisers() {
 		ActiveStarships.allControlledStarships().forEach { ship ->
-			if (ship.type == StarshipType.BATTLECRUISER) {
+			if (ship.type == StarshipType.BATTLECRUISER && ship.playerPilot != null) {
 				if (ship.fuelTanks.any{it.isFuelAvailable()}) return
 				else {
 					ship.userError("WARNING: Fuel depleted! Shutdown sequence initiated")

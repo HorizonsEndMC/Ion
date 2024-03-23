@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem
 
+import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_HYDROGEN
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses.EMPTY_CANISTER
 import net.horizonsend.ion.server.features.multiblock.misc.FuelTankMultiblock
@@ -12,13 +14,19 @@ import org.bukkit.inventory.ItemStack
 
 class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTankMultiblock) :
 		AbstractMultiblockSubsystem<FuelTankMultiblock>(starship, sign, multiblock) {
-      
-      
 	fun isFuelAvailable(): Boolean {
 		val inventory = getInventory()
 				?: return false
-    
-		return inventory.containsAtLeast(GAS_CANISTER_HYDROGEN.constructItemStack(), 1)
+
+		if (inventory.isEmpty) return false
+
+		// couldn't make it work with .containsatleast due to some wacky stuff with gas durability
+		for (item in inventory) {
+			if (item?.customItem == GAS_CANISTER_HYDROGEN) {
+				return true
+			}
+		}
+		return false
 	}
 
 	fun tryConsumeFuel(
@@ -26,34 +34,24 @@ class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTa
 	): Boolean {
 		val inventory = getInventory()
 				?: return false
-
-		if (!inventory.containsAtLeast(GAS_CANISTER_HYDROGEN.constructItemStack(), 1)) {
-			return false
-		}
-		else {
-			for (item in inventory) {
-				if (item == GAS_CANISTER_HYDROGEN) {
-					val fuelFill = fuelType.getFill(item)
-					if (fuelFill <= 0) {
-						item.subtract()
-						inventory.addItem(EMPTY_CANISTER)
-					}
-					if (fuelFill - 60 <= 0) {
-						item.subtract()
-						inventory.addItem(EMPTY_CANISTER)
-					}
-					else {
-						fuelType.setFill(item, fuelFill - 60)
-						return true
-					}
+		if (inventory.isEmpty) return false
+		for (item in inventory) {
+			if (item?.customItem == GAS_CANISTER_HYDROGEN) {
+				val fuelFill = fuelType.getFill(item)
+				if (fuelFill <= 0) {
+					item.subtract(1)
+					inventory.addItem(EMPTY_CANISTER)
+				} else if (fuelFill - 60 <= 0) {
+					item.subtract(1)
+					inventory.addItem(EMPTY_CANISTER)
+				} else {
+					fuelType.setFill(item, fuelFill - 60)
+					return true
 				}
 			}
 		}
-
-
 		return false
-    
-    }
+	}
 
 	private fun getInventory(): Inventory? {
 		if (!isIntact()) {

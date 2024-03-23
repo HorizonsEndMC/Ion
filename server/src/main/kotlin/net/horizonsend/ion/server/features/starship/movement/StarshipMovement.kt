@@ -126,8 +126,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 
 		if (world1 != world2 && !world2.toString().contains("hyperspace", ignoreCase=true)) {
-			if (starship.type == StarshipType.BATTLECRUISER) starship.userError("Battlecruisers can't enter planets!")
-			else EnterPlanetEvent(world1, world2, starship.controller).callEvent()
+			EnterPlanetEvent(world1, world2, starship.controller).callEvent()
 		}
 	}
 
