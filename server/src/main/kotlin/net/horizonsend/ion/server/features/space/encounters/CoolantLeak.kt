@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Z
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
+import net.horizonsend.ion.server.miscellaneous.utils.sendEntityPacket
 import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
 import net.minecraft.nbt.CompoundTag
 import org.bukkit.Material
@@ -83,7 +84,7 @@ object CoolantLeak : Encounter(identifier = "coolant_leak") {
 		var iteration = 0
 		val leverPos = getLever(chest)
 
-		highlightBlock(event.player, leverPos.below(), (MAX_ATTEMPTS * 2).toLong())
+		sendEntityPacket(event.player, highlightBlock(event.player, leverPos.below()), (MAX_ATTEMPTS * 2).toLong())
 
 		val iceTypes = listOf(
 			Material.ICE,
