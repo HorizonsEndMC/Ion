@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.grid.node
+package net.horizonsend.ion.server.features.transport.node
 
 /**
  * A node that may be consolidated.
