@@ -76,6 +76,7 @@ import org.bukkit.Material.HAY_BLOCK
 import org.bukkit.Material.HOPPER
 import org.bukkit.Material.IRON_BARS
 import org.bukkit.Material.IRON_BLOCK
+import org.bukkit.Material.JACK_O_LANTERN
 import org.bukkit.Material.JUKEBOX
 import org.bukkit.Material.JUNGLE_FENCE_GATE
 import org.bukkit.Material.LADDER
@@ -220,6 +221,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	LADDER,
 	DAYLIGHT_DETECTOR,
 	NETHER_PORTAL,
+	JACK_O_LANTERN,
 
 	OBSERVER,
 	REPEATER,
