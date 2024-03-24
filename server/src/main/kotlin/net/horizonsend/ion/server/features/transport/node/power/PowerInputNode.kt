@@ -1,21 +1,29 @@
-package net.horizonsend.ion.server.features.transport.grid.power.node
+package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.transport.grid.node.GridNode
+import net.horizonsend.ion.server.features.transport.grid.Grid
+import net.horizonsend.ion.server.features.transport.node.GridNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class PowerInputNode(
-	x: Int,
-	y: Int,
-	z: Int,
-	neighbors: ConcurrentHashMap<BlockFace, GridNode> = ConcurrentHashMap()
-) : PowerNode(x, y, z, neighbors) {
+class PowerInputNode(
+	override val parentGrid: Grid,
+	override val x: Int,
+	override val y: Int,
+	override val z: Int,
+	override val transferableNeighbors: ConcurrentHashMap<BlockFace, GridNode> = ConcurrentHashMap(),
+	override val multiblocks: Collection<PoweredMultiblockEntity>
+) : GridNode, PowerNode {
 	/**
 	 * Gets the multiblocks to which this can input power
 	 **/
 	suspend fun getMultiblocks(): Collection<PoweredMultiblockEntity> = TODO()
+
+	override fun isTransferableTo(offset: BlockFace, node: GridNode): Boolean {
+		// May only accept power
+		return false
+	}
 
 	companion object {
 		/**
