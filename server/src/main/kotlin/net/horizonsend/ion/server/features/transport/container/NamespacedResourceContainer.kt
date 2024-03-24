@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.container
 
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.RESOURCE_AMOUNT
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.RESOURCE_CAPACITY_MAX
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.RESOURCE_CAPACITY_MIN
@@ -148,6 +149,9 @@ class NamespacedResourceContainer(
 
 			return container
 		}
+
+		fun powerContainer(maxPower: Int): NamespacedResourceContainer =
+			NamespacedResourceContainer(mapOf(NamespacedKeys.POWER to ResourceData(minAmount = 0, maxAmount = maxPower)))
 	}
 
 	data class ResourceData(
