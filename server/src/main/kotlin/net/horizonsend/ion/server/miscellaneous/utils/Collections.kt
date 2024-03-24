@@ -117,3 +117,14 @@ operator fun <A> Pair<A, A>.iterator(): Iterator<A> = object : Iterator<A> {
 		return second
 	}
 }
+
+/**
+ * Set a value in a map, or remove it if provided null
+ **/
+fun <K, V> MutableMap<K, V>.setOrRemove(key: K, value: V?) {
+	if (value == null) {
+		remove(key)
+	} else {
+		set(key, value)
+	}
+}
