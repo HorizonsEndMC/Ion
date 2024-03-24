@@ -1,15 +1,14 @@
-package net.horizonsend.ion.server.features.transport.grid.power
+package net.horizonsend.ion.server.features.transport.grid
 
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.transport.ChunkTransportNetwork
-import net.horizonsend.ion.server.features.transport.grid.Grid
-import net.horizonsend.ion.server.features.transport.grid.node.GridNode
-import net.horizonsend.ion.server.features.transport.grid.node.JunctionNode
-import net.horizonsend.ion.server.features.transport.grid.node.LinearNode
-import net.horizonsend.ion.server.features.transport.grid.power.node.PowerExtractorNode
-import net.horizonsend.ion.server.features.transport.grid.power.node.PowerInputNode
+import net.horizonsend.ion.server.features.transport.node.GridNode
+import net.horizonsend.ion.server.features.transport.node.general.JunctionNode
+import net.horizonsend.ion.server.features.transport.node.general.LinearNode
+import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
+import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.miscellaneous.utils.isRedstoneLamp
 import org.bukkit.Material
 import org.bukkit.block.data.Directional
@@ -37,7 +36,7 @@ class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
 			block.type == Material.CRAFTING_TABLE -> PowerExtractorNode(this, x, y, z)
 
 			// Add power to storage
-			block.type == Material.NOTE_BLOCK -> PowerInputNode()
+			block.type == Material.NOTE_BLOCK -> PowerInputNode(this, x, y, z)
 
 			// Straight wires
 			block.type == Material.END_ROD -> LinearNode(this, x, y, z, block.data as Directional)
@@ -62,6 +61,10 @@ class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
 	}
 
 	override fun processBlockChange(previous: BlockSnapshot, new: BlockSnapshot) {
+
+	}
+
+	fun removeNode(key: Long) {
 
 	}
 

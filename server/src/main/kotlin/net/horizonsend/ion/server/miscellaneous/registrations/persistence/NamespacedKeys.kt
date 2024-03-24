@@ -56,7 +56,7 @@ object NamespacedKeys {
 
 	@Deprecated("") val ORE_CHECK = key("oreCheck")
 
-	@Deprecated("") val POWER = key("power")
+	val POWER = key("power")
 
 	val TUBE_BUTTONS = key("tube_buttons")
 	val MATERIAL = key("material")
