@@ -337,24 +337,6 @@ object CustomItems {
 		)	{}
 	)
 
-	val CRUDE_FUEL : MineralItem = register(
-		object : MineralItem(
-			identifier = "CRUDE_FUEL",
-			material = IRON_INGOT,
-			customModelData = 421,
-			displayName = text("Crude Fuel").decoration(ITALIC, false)
-		), Smeltable { override val smeltResultIdentifier: String = "SHIP_FUEL" }
-	)
-
-	val REFINED_FUEL = register(
-		object : MineralItem(
-			identifier = "SHIP_FUEL",
-			material = IRON_INGOT,
-			customModelData = 422,
-			displayName = text("Refined Fuel").decoration(ITALIC, false)
-		)	{}
-	)
-
 	val STEEL_INGOT = register(
 		object : MineralItem(
 			identifier = "STEEL_INGOT",
