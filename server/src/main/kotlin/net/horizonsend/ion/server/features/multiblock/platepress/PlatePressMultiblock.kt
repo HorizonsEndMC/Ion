@@ -18,7 +18,6 @@ import org.bukkit.entity.Item
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.ItemStack
 
-
 abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -122,45 +121,60 @@ abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			furnace: Furnace,
 			sign: Sign
 	) {
-
 		event.isBurning = false
 		event.burnTime = 200
-		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
+		furnace.cookSpeedMultiplier = 0.00277777777 // TODO: improve implementation after multiblock rewrite
 
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
 		val result = furnace.inventory.result
 
-
-		if (PowerMachines.getPower(sign) == 0 ||
+		if (PowerMachines.getPower(sign) <= 100000 ||
 				smelting == null ||
 				smelting.type != Material.PRISMARINE_CRYSTALS ||
 				fuel == null
 		) {
+			furnace.cookTime = 0
+			event.isCancelled = true
 			return
+		}
 
-		}
-		if (fuel.customItem == REACTIVE_PLATING) {
-			event.isCancelled = false
-			fuel.subtract(1)
-			if (result == null) {
-				furnace.inventory.result = REACTIVE_CHASSIS.constructItemStack()
+		if (furnace.cookTime >= 200) {
+			when (fuel.customItem) {
+				REACTIVE_PLATING -> {
+					event.isCancelled = false
+					if (result == null) furnace.inventory.result = REACTIVE_CHASSIS.constructItemStack()
+					else if (result.customItem == REACTIVE_CHASSIS) result.add(1)
+					else {
+						furnace.cookTime = 0
+						event.isCancelled = true
+						return
+					}
+					fuel.subtract(1)
+					PowerMachines.removePower(sign, 100000)
+				}
+
+				STEEL_PLATE -> {
+					event.isCancelled = false
+					if (result == null) furnace.inventory.result = STEEL_CHASSIS.constructItemStack()
+					else if (result.customItem == STEEL_CHASSIS) result.add(1)
+					else {
+						furnace.cookTime = 0
+						event.isCancelled = true
+						return
+					}
+					fuel.subtract(1)
+					PowerMachines.removePower(sign, 100000)
+				}
+
+				else -> {
+					furnace.cookTime = 0
+					event.isCancelled = true
+					return
+				}
 			}
-			else {
-				result.add(1)
-			}
-			PowerMachines.removePower(sign, 300)
 		}
-		else if (fuel.customItem == STEEL_PLATE) {
-			event.isCancelled = false
-			fuel.subtract(1)
-			if (result == null) furnace.inventory.result = STEEL_CHASSIS.constructItemStack()
-			else result.add(1)
-			PowerMachines.removePower(sign, 300)
-		}
-		else{
-			return
-		}
+		furnace.cookTime = 0
 	}
 }

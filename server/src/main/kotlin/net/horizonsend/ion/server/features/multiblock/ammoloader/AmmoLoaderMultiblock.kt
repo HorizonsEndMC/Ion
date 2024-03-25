@@ -2,21 +2,18 @@ package net.horizonsend.ion.server.features.multiblock.ammoloader
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.LOADED_TURRET_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.isEmpty
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-
 
 abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override fun MultiblockShape.buildStructure() {
@@ -144,17 +141,14 @@ abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			furnace: Furnace,
 			sign: Sign
 	) {
-		println("1")
 		event.isBurning = false
 		event.burnTime = 200
-		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
-		println("2")
+		furnace.cookSpeedMultiplier = 0.95 // TODO: improve implementation after multiblock rewrite
 
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
 		val result = furnace.inventory.result
-		println("3")
 
 		if (PowerMachines.getPower(sign) == 0 ||
 				smelting == null ||
@@ -162,24 +156,37 @@ abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 				fuel == null ||
 				fuel.type != Material.PRISMARINE_CRYSTALS
 		) {
+			furnace.cookTime = 0
+			event.isCancelled = true
 			return
 		}
 		event.isCancelled = false
 
+		// Process if it cooked long enough (avoids the item from processing immediately)
 
 		val direction = sign.getFacing().oppositeFace
 		val state = sign.block.getRelative(direction, 7).getState(false)
 				as? InventoryHolder ?: return
 		val inventory = state.inventory
-		if (!state.inventory.containsAtLeast(UNLOADED_TURRET_SHELL.constructItemStack(), 1) || !state.inventory.containsAtLeast(ItemStack(Material.GOLD_NUGGET), 1)) return
+		if (!state.inventory.containsAtLeast(
+				UNLOADED_TURRET_SHELL.constructItemStack(),
+				1
+			) || !state.inventory.containsAtLeast(ItemStack(Material.GOLD_NUGGET), 1)
+		) {
+			furnace.cookTime = 0
+			event.isCancelled = true
+			return
+		}
 
-		if (result == null) {
-			furnace.inventory.result = LOADED_TURRET_SHELL.constructItemStack()
-	}
-		else result.add(1)
-		inventory.removeItemAnySlot(UNLOADED_TURRET_SHELL.constructItemStack())
-		inventory.removeItemAnySlot(ItemStack(Material.GOLD_NUGGET))
-		PowerMachines.removePower(sign, 150)
-		event.isCancelled = false
+		// Produce new item if it is not the first burn event
+		if (furnace.cookTime >= 200) {
+			if (result == null) {
+				furnace.inventory.result = LOADED_TURRET_SHELL.constructItemStack()
+			} else result.add(1)
+			inventory.removeItemAnySlot(UNLOADED_TURRET_SHELL.constructItemStack())
+			inventory.removeItemAnySlot(ItemStack(Material.GOLD_NUGGET))
+			PowerMachines.removePower(sign, 150)
+		}
+		furnace.cookTime = 0
 	}
 }
