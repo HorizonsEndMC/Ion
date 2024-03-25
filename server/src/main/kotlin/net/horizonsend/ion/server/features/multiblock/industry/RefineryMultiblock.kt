@@ -1,15 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.refinery
-
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
-import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
-import org.bukkit.Material
-import org.bukkit.block.Furnace
-import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
+package net.horizonsend.ion.server.features.multiblock.industry
 
 
 //abstract class RefineryMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {

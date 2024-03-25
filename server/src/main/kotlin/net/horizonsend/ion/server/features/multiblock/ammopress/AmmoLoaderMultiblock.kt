@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.ammoloader
+package net.horizonsend.ion.server.features.multiblock.ammopress
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.LOADED_TURRET_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
@@ -15,7 +15,9 @@ import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 
-abstract class AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+	override val maxPower = 250_000
+
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
