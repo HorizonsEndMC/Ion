@@ -43,7 +43,7 @@ object FuelTankMultiblock : Multiblock() {
 				x(-1).titaniumBlock()
 				x(+0).redstoneBlock()
 				x(+1).titaniumBlock()
-				x(+1).titaniumBlock()
+				x(+2).titaniumBlock()
 			}
 		}
 		z(+2) {
