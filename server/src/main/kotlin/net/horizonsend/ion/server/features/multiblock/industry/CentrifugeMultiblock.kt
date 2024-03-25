@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.centrifuge
+package net.horizonsend.ion.server.features.multiblock.industry
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
@@ -12,10 +12,11 @@ import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
-import org.bukkit.inventory.ItemStack
 
 
-abstract class CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+object CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+	override val maxPower: Int = 300_000
+
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {

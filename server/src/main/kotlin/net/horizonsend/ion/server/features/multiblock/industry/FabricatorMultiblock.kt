@@ -1,13 +1,11 @@
-package net.horizonsend.ion.server.features.multiblock.fabricator
+package net.horizonsend.ion.server.features.multiblock.industry
 
-import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.FABRICATED_ASSEMBLY
 import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_CELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_ROD_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_ASSEMBLY
 import net.horizonsend.ion.server.features.customitems.CustomItems.REINFORCED_FRAME
 import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_ASSEMBLY
-import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
@@ -18,10 +16,11 @@ import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
-import org.bukkit.inventory.ItemStack
 
 
-abstract class FabricatorMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+object FabricatorMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+	override val maxPower = 300_000
+
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
