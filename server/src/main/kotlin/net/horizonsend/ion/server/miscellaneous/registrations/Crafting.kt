@@ -4,8 +4,11 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.ADVANCED_CIRCUITY
-import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_INGOT
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_PLATE
+import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE_BLOCK
@@ -48,17 +51,14 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SNIPER_RECEIV
 import net.horizonsend.ion.server.features.customitems.CustomItems.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_ASSEMBLY
-import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_CHASSIS
-import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_MODULE
-import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_PLATE
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTOR
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTOR_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTOR_CORE
-import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
+import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
@@ -100,15 +100,12 @@ import org.bukkit.Material.MAGENTA_WOOL
 import org.bukkit.Material.MELON
 import org.bukkit.Material.MOSS_BLOCK
 import org.bukkit.Material.MOSS_CARPET
-import org.bukkit.Material.NAME_TAG
 import org.bukkit.Material.NETHER_WART
 import org.bukkit.Material.NETHER_WART_BLOCK
 import org.bukkit.Material.OAK_LOG
 import org.bukkit.Material.OCHRE_FROGLIGHT
 import org.bukkit.Material.ORANGE_WOOL
-import org.bukkit.Material.PAPER
 import org.bukkit.Material.PEARLESCENT_FROGLIGHT
-import org.bukkit.Material.PINK_TULIP
 import org.bukkit.Material.PINK_WOOL
 import org.bukkit.Material.PRISMARINE
 import org.bukkit.Material.PRISMARINE_BRICKS
@@ -123,13 +120,18 @@ import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SHROOMLIGHT
 import org.bukkit.Material.SLIME_BALL
 import org.bukkit.Material.SPONGE
-import org.bukkit.Material.SPORE_BLOSSOM
 import org.bukkit.Material.STICK
 import org.bukkit.Material.STRING
-import org.bukkit.Material.TRIPWIRE_HOOK
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WHITE_WOOL
 import org.bukkit.Material.YELLOW_WOOL
+import org.bukkit.Material.NAME_TAG
+import org.bukkit.Material.PAPER
+import org.bukkit.Material.PINK_TULIP
+import org.bukkit.Material.SPORE_BLOSSOM
+import org.bukkit.Material.TRIPWIRE_HOOK
+import net.horizonsend.ion.server.features.nations.gui.item
+import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
@@ -592,7 +594,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("reactiveComponent", REACTIVE_COMPONENT.constructItemStack()) {
 			shape("xxx", "yyy", "xxx")
 
-			setIngredient('x', CYAN_TERRACOTTA)
+			setIngredient('x', CYAN_TERRACOTTA )
 			setIngredient('y', SPONGE)
 		}
 
