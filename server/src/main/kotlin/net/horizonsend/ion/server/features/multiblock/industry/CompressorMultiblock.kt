@@ -1,24 +1,22 @@
-package net.horizonsend.ion.server.features.multiblock.platepress
+package net.horizonsend.ion.server.features.multiblock.industry
 
-import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_CHASSIS
-import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_PLATING
-import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_CHASSIS
-import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_PLATE
+import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_CORE
+import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_ROD
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Item
 import org.bukkit.event.inventory.FurnaceBurnEvent
-import org.bukkit.inventory.ItemStack
 
-abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+
+object CompressorMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+	override val maxPower = 300_000
+
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
@@ -34,9 +32,9 @@ abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 		}
 		z(+1) {
 			y(-1) {
-				x(-1).goldBlock()
+				x(-1).netheriteBlock()
 				x(+0).endRod()
-				x(+1).goldBlock()
+				x(+1).netheriteBlock()
 			}
 			y(+0) {
 				x(-1).ironBlock()
@@ -46,9 +44,9 @@ abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 		}
 		z(+2) {
 			y(-1) {
-				x(-1).goldBlock()
+				x(-1).netheriteBlock()
 				x(+0).endRod()
-				x(+1).goldBlock()
+				x(+1).netheriteBlock()
 			}
 			y(+0) {
 				x(-1).anyGlassPane()
@@ -61,18 +59,18 @@ abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 				x(-1).anyGlass()
 				x(+0).sponge()
 				x(+1).anyGlass()
-				}
+			}
 			y(+0) {
 				x(-1).anyGlass()
-				x(+0).anvil()
+				x(+0).lodestone()
 				x(+1).anyGlass()
 			}
 		}
 		z(+4) {
 			y(-1) {
-				x(-1).goldBlock()
+				x(-1).netheriteBlock()
 				x(+0).endRod()
-				x(+1).goldBlock()
+				x(+1).netheriteBlock()
 			}
 			y(+0) {
 				x(-1).anyGlassPane()
@@ -82,9 +80,9 @@ abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 		}
 		z(+5) {
 			y(-1) {
-				x(-1).goldBlock()
+				x(-1).netheriteBlock()
 				x(+0).endRod()
-				x(+1).goldBlock()
+				x(+1).netheriteBlock()
 			}
 			y(+0) {
 				x(-1).ironBlock()
@@ -107,10 +105,10 @@ abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 	}
 
 
-	override val name = "platepress"
+	override val name = "compressor"
 
 	override val signText = createSignText(
-			line1 = "&5Plate Press",
+			line1 = "&6Compressor",
 			line2 = null,
 			line3 = null,
 			line4 = null
@@ -140,40 +138,17 @@ abstract class PlatePressMultiblock	: Multiblock(), PowerStoringMultiblock, Furn
 			return
 		}
 
+		if (fuel.customItem != URANIUM_CORE) {
+			furnace.cookTime = 0
+			event.isCancelled = true
+			return
+		}
+
 		if (furnace.cookTime >= 200) {
-			when (fuel.customItem) {
-				REACTIVE_PLATING -> {
-					event.isCancelled = false
-					if (result == null) furnace.inventory.result = REACTIVE_CHASSIS.constructItemStack()
-					else if (result.customItem == REACTIVE_CHASSIS) result.add(1)
-					else {
-						furnace.cookTime = 0
-						event.isCancelled = true
-						return
-					}
-					fuel.subtract(1)
-					PowerMachines.removePower(sign, 100000)
-				}
-
-				STEEL_PLATE -> {
-					event.isCancelled = false
-					if (result == null) furnace.inventory.result = STEEL_CHASSIS.constructItemStack()
-					else if (result.customItem == STEEL_CHASSIS) result.add(1)
-					else {
-						furnace.cookTime = 0
-						event.isCancelled = true
-						return
-					}
-					fuel.subtract(1)
-					PowerMachines.removePower(sign, 100000)
-				}
-
-				else -> {
-					furnace.cookTime = 0
-					event.isCancelled = true
-					return
-				}
-			}
+			fuel.subtract(1)
+			if (result == null) furnace.inventory.result = URANIUM_ROD.constructItemStack()
+			else result.add(1)
+			PowerMachines.removePower(sign, 100000)
 		}
 		furnace.cookTime = 0
 	}

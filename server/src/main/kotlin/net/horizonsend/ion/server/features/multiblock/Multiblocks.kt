@@ -1,14 +1,12 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.features.multiblock.centrifuge.StandardCentrifugeMultiblock
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.multiblock.ammopress.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.ammopress.StandardAmmoPressMultiblock
-import net.horizonsend.ion.server.features.multiblock.ammoloader.StandardAmmoLoaderMultiblock
-import net.horizonsend.ion.server.features.multiblock.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield20
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield30
@@ -19,16 +17,12 @@ import net.horizonsend.ion.server.features.multiblock.autocrafter.AutoCrafterMul
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.circuitfab.StandardCircuitfabMultiblock
-import net.horizonsend.ion.server.features.multiblock.compressor.StandardCompressorMultiblock
 import net.horizonsend.ion.server.features.multiblock.defense.AntiAirCannonBaseMultiblock
-import net.horizonsend.ion.server.features.multiblock.defense.AntiAirCannonTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.dockingtube.ConnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.dockingtube.DisconnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.fabricator.StandardFabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.farming.harvester.HarvesterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.farming.harvester.HarvesterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.farming.harvester.HarvesterMultiblockTier3
@@ -47,6 +41,11 @@ import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMulti
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblockClass2
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblockClass3
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblockClass4
+import net.horizonsend.ion.server.features.multiblock.industry.CentrifugeMultiblock
+import net.horizonsend.ion.server.features.multiblock.industry.CircuitfabMultiblock
+import net.horizonsend.ion.server.features.multiblock.industry.CompressorMultiblock
+import net.horizonsend.ion.server.features.multiblock.industry.FabricatorMultiblock
+import net.horizonsend.ion.server.features.multiblock.industry.PlatePressMultiblock
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Bottom
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Top
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier2Bottom
@@ -57,6 +56,7 @@ import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DisposalMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
@@ -75,7 +75,6 @@ import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMulti
 import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMultiblockClass30
 import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMultiblockClass65
 import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMultiblockClass85
-import net.horizonsend.ion.server.features.multiblock.platepress.StandardPlatePressMultiblock
 import net.horizonsend.ion.server.features.multiblock.powerbank.PowerBankMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.powerbank.PowerBankMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.powerbank.PowerBankMultiblockTier3
@@ -88,7 +87,6 @@ import net.horizonsend.ion.server.features.multiblock.printer.CarbonPrinterMulti
 import net.horizonsend.ion.server.features.multiblock.printer.CarbonProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.printer.GlassPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.printer.TechnicalPrinterMultiblock
-import net.horizonsend.ion.server.features.multiblock.refinery.StandardRefineryMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
@@ -140,12 +138,11 @@ object Multiblocks : IonServerComponent() {
 
 	private fun initMultiblocks() {
 		multiblocks = listOf(
-      
-			StandardCentrifugeMultiblock,
-			StandardCompressorMultiblock,
-			StandardFabricatorMultiblock,
-			StandardCircuitfabMultiblock,
-			StandardPlatePressMultiblock,
+			CentrifugeMultiblock,
+			CompressorMultiblock,
+			FabricatorMultiblock,
+			CircuitfabMultiblock,
+			PlatePressMultiblock,
 
 			GeneratorMultiblockTier1,
 			GeneratorMultiblockTier2,
@@ -217,7 +214,7 @@ object Multiblocks : IonServerComponent() {
 			MobDefender,
 
 			StandardAmmoPressMultiblock,
-			StandardAmmoLoaderMultiblock,
+			AmmoLoaderMultiblock,
 
 			LaserCannonStarshipWeaponMultiblock,
 			PlasmaCannonStarshipWeaponMultiblock,
@@ -277,7 +274,7 @@ object Multiblocks : IonServerComponent() {
 			HarvesterMultiblockTier3,
 
 			AntiAirCannonBaseMultiblock,
-			AntiAirCannonTurretMultiblock,
+//			AntiAirCannonTurretMultiblock,
 
 			SupercapReactorMultiblock
 		)
