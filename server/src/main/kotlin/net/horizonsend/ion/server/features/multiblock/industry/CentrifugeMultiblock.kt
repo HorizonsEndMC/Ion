@@ -14,7 +14,7 @@ import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 
 
-object CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val maxPower: Int = 300_000
 
 	override fun MultiblockShape.buildStructure() {
@@ -65,54 +65,54 @@ object CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 				x(+1).anyStairs()
 				x(+2).ironBlock()
 			}
-		z(+3) {
-			y(-1) {
-				x(-2).anyGlassPane()
-				x(-1).copperBlock()
-				x(+0).endRod()
-				x(+1).copperBlock()
-				x(+2).anyGlassPane()
+			z(+3) {
+				y(-1) {
+					x(-2).anyGlassPane()
+					x(-1).copperBlock()
+					x(+0).endRod()
+					x(+1).copperBlock()
+					x(+2).anyGlassPane()
+				}
+				y(+0) {
+					x(-2).anyGlassPane()
+					x(-1).anyStairs()
+					x(+0).anyStairs()
+					x(+1).anyStairs()
+					x(+2).anyGlassPane()
+				}
 			}
-			y(+0) {
-				x(-2).anyGlassPane()
-				x(-1).anyStairs()
-				x(+0).anyStairs()
-				x(+1).anyStairs()
-				x(+2).anyGlassPane()
+			z(+4) {
+				y(-1) {
+					x(-2).steelBlock()
+					x(-1).anyGlassPane()
+					x(+0).sponge()
+					x(+1).anyGlassPane()
+					x(+2).steelBlock()
+				}
+				y(+0) {
+					x(-2).steelBlock()
+					x(-1).anyGlassPane()
+					x(+0).ironBlock()
+					x(+1).anyGlassPane()
+					x(+2).steelBlock()
+				}
 			}
 		}
-		z(+4) {
-			y(-1) {
-				x(-2).steelBlock()
-				x(-1).anyGlassPane()
-				x(+0).sponge()
-				x(+1).anyGlassPane()
-				x(+2).steelBlock()
-			}
-			y(+0) {
-				x(-2).steelBlock()
-				x(-1).anyGlassPane()
-				x(+0).ironBlock()
-				x(+1).anyGlassPane()
-				x(+2).steelBlock()
-			}
-		}
-		}
-		}
+	}
 
 	override val name = "centrifuge"
 
 	override val signText = createSignText(
-			line1 = "&6Centrifuge",
-			line2 = null,
-			line3 = null,
-			line4 = null
+		line1 = "&6Centrifuge",
+		line2 = null,
+		line3 = null,
+		line4 = null
 	)
 
 	override fun onFurnaceTick(
-			event: FurnaceBurnEvent,
-			furnace: Furnace,
-			sign: Sign
+		event: FurnaceBurnEvent,
+		furnace: Furnace,
+		sign: Sign,
 	) {
 		event.isBurning = false
 		event.burnTime = 200
@@ -124,9 +124,9 @@ object CentrifugeMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		val result = furnace.inventory.result
 
 		if (PowerMachines.getPower(sign) <= 100 ||
-				smelting == null ||
-				smelting.type != Material.PRISMARINE_CRYSTALS ||
-				fuel == null
+			smelting == null ||
+			smelting.type != Material.PRISMARINE_CRYSTALS ||
+			fuel == null
 		) {
 			furnace.cookTime = 0
 			event.isCancelled = true

@@ -14,7 +14,7 @@ import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 
 
-object CircuitfabMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+object CircuitfabMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val maxPower = 300_000
 
 	override fun MultiblockShape.buildStructure() {
@@ -72,16 +72,16 @@ object CircuitfabMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 	override val name = "circuitfab"
 
 	override val signText = createSignText(
-			line1 = "&6Circuitfab",
-			line2 = null,
-			line3 = null,
-			line4 = null
+		line1 = "&6Circuitfab",
+		line2 = null,
+		line3 = null,
+		line4 = null
 	)
 
 	override fun onFurnaceTick(
-			event: FurnaceBurnEvent,
-			furnace: Furnace,
-			sign: Sign
+		event: FurnaceBurnEvent,
+		furnace: Furnace,
+		sign: Sign,
 	) {
 		event.isBurning = false
 		event.burnTime = 200
@@ -93,9 +93,9 @@ object CircuitfabMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		val result = furnace.inventory.result
 
 		if (PowerMachines.getPower(sign) <= 100000 ||
-				smelting == null ||
-				smelting.type != Material.PRISMARINE_CRYSTALS ||
-				fuel == null
+			smelting == null ||
+			smelting.type != Material.PRISMARINE_CRYSTALS ||
+			fuel == null
 		) {
 			furnace.cookTime = 0
 			event.isCancelled = true
