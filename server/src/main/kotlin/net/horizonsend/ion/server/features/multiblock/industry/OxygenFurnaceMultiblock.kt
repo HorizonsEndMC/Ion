@@ -79,7 +79,7 @@ package net.horizonsend.ion.server.features.multiblock.industry
 //			return
 //		}
 
-		// Produce new item if it is not the first burn event
+// Produce new item if it is not the first burn event
 //		if (furnace.cookTime >= 200) {
 //			if (result == null) furnace.inventory.result = STEEL_INGOT.constructItemStack()
 //			else result.add(1)
