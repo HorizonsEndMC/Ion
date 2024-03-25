@@ -43,6 +43,11 @@ class ReactorSubsystem(
 				continue
 			}
 
+			if (shield.destroyed) {
+				shield.power = 0
+				continue
+			}
+
 			val fraction = ((missing.toDouble() / totalMissing.toDouble()) * shieldPower).roundToInt()
 			shield.power += min(missing, fraction)
 		}
