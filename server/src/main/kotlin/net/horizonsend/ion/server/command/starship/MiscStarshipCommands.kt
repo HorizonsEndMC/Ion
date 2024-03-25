@@ -133,10 +133,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("loadship")
 	@CommandPermission("starships.loadship")
 	@CommandCompletion("@players")
-	fun onLoadShip(sender: Player, player: String, world: String) = asyncCommand(sender) {
+	fun onLoadShip(sender: Player, player: String, world: World) = asyncCommand(sender) {
 		val uuid = resolveOfflinePlayer(player)
 		redis {
-			val key = "starships.lastpiloted.$uuid.${world.lowercase(Locale.getDefault())}"
+			val key = "starships.lastpiloted.$uuid.${world.name.lowercase(Locale.getDefault())}"
 
 			failIf(!exists(key)) { "$player doesn't have a ship saved for /loadship in $world" }
 
