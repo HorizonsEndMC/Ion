@@ -9,18 +9,10 @@ import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.player.PlayerCommandPreprocessEvent
 
 object EventLogger : IonServerComponent() {
 	override fun onEnable() {
 		val webhook = ServerConfiguration.eventLoggerWebhook ?: return
-
-		listen<PlayerCommandPreprocessEvent> { event ->
-			val player = event.player
-
-			DutyModeMonitor.record(player, "**executed command**: ${event.message}", webhook)
-		}
-
 		listen<PlayerDeathEvent> { event ->
 			val player = event.player
 
@@ -39,7 +31,7 @@ object EventLogger : IonServerComponent() {
 			val player = event.player
 
 			val starship = event.starship
-			DutyModeMonitor.record(player, "*piloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)", webhook)
+			DutyModeMonitor.record(player, "**piloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)", webhook)
 		}
 
 		listen<StarshipUnpilotEvent> { event ->
