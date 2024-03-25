@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.features.multiblock.oxygenfurnace.StandardOxygenFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.centrifuge.StandardCentrifugeMultiblock
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
@@ -141,8 +140,7 @@ object Multiblocks : IonServerComponent() {
 
 	private fun initMultiblocks() {
 		multiblocks = listOf(
-			StandardOxygenFurnaceMultiblock,
-			StandardRefineryMultiblock,
+      
 			StandardCentrifugeMultiblock,
 			StandardCompressorMultiblock,
 			StandardFabricatorMultiblock,
