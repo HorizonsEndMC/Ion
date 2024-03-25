@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.client.display
 
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createDisplayBlock
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createBlockDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -89,7 +89,7 @@ object ClientDisplayEntities {
         glow: Boolean = false
     ): Display.BlockDisplay {
 
-        val block = createDisplayBlock(player)
+        val block = createBlockDisplay(player)
         val offset = (-scale / 2) + 0.5
         block.block = blockData
         block.isGlowing = glow
