@@ -1,16 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.oxygenfurnace
-
-import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
-import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_INGOT
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
-import org.bukkit.Material
-import org.bukkit.block.Furnace
-import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
+package net.horizonsend.ion.server.features.multiblock.industry
 
 
 //abstract class OxygenFurnaceMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
