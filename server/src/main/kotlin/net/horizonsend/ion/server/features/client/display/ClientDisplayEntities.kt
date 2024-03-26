@@ -111,16 +111,23 @@ object ClientDisplayEntities {
      */
     fun displayPlanetEntity(
         player: Player,
+        distance: Double,
         direction: Vector
     ): Display.ItemDisplay {
 
+        /**
+         * Equation for getting the scale of a planet display entity. Maximum (0, 25) and horizontal asymptote at x = 5.
+         */
+        fun scale(distance: Double) = ((100000000 / ((0.0625 * distance * distance) + 5000000)) + 5).toFloat()
+
         val item = createItemDisplay(player)
         // render the entity from 1 chunk away
-        val renderDistance = min(player.viewDistance - 1, Bukkit.getWorlds()[0].viewDistance - 1) * 16
+        val renderDistance = min(player.clientViewDistance - 1, Bukkit.getWorlds()[0].viewDistance - 1) * 16
 
         item.itemStack = CustomItems.PLANET_ICON_ARET.itemStack(1)
         item.billboard = Billboard.CENTER
         item.viewRange = 5.0f
+        item.transformation = Transformation(Vector3f(), Quaternionf(), Vector3f(scale(distance)), Quaternionf())
         // use the direction vector to offset the entity's position from the player
         val position = player.eyeLocation.toVector().add(direction.clone().normalize().multiply(renderDistance))
 
