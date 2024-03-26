@@ -34,7 +34,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             // send packet
             ClientDisplayEntities.sendEntityPacket(
                 player,
-                ClientDisplayEntities.displayPlanetEntity(player, distance, direction),
+                ClientDisplayEntities.displayPlanetEntity(player, distance, direction) ?: continue,
                 PLANET_UPDATE_RATE
             )
         }

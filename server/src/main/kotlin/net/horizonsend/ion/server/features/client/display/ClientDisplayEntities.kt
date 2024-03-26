@@ -107,29 +107,46 @@ object ClientDisplayEntities {
      * Creates a client-side ItemDisplay entity for rendering planet icons in space.
      * @return the NMS ItemDisplay object
      * @param player the player that the entity should be visible to
+     * @param distance the distance that the planet is to the player
      * @param direction the direction that the entity will render from with respect to the player
      */
     fun displayPlanetEntity(
         player: Player,
         distance: Double,
         direction: Vector
-    ): Display.ItemDisplay {
+    ): Display.ItemDisplay? {
 
         /**
-         * Equation for getting the scale of a planet display entity. Maximum (0, 25) and horizontal asymptote at x = 5.
+         * Equation for getting the scale of a planet display entity. Maximum (0, 50) and horizontal asymptote at x = 5.
          */
-        fun scale(distance: Double) = ((100000000 / ((0.0625 * distance * distance) + 5000000)) + 5).toFloat()
+        fun scale(distance: Double) = ((250000000 / ((0.015625 * distance * distance) + 5555555)) + 5).toFloat()
+
+        /**
+         * Equation for getting the factor of the planet scaling to maintain apparent visual scale depending on
+         * the player's view distance. Calculated assuming that the display entity will, at most, take up 1/3 of
+         * the player's screen at a view distance of 10 (160 blocks); y = 1.5h * x / 160h, where h is the apparent
+         * visual height of the display entity and x is the view distance of the player in blocks.
+         */
+        fun viewDistanceFactor(viewDistance: Int) = (0.15 * viewDistance).toFloat()
 
         val item = createItemDisplay(player)
-        // render the entity from 1 chunk away
-        val renderDistance = min(player.clientViewDistance - 1, Bukkit.getWorlds()[0].viewDistance - 1) * 16
+        // render the entity at the player's max client side view distance, minus 8 blocks
+        val entityRenderDistance = (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 8
+        // do not render if the planet is closer than the entity render distance
+        if (distance < entityRenderDistance) return null
 
         item.itemStack = CustomItems.PLANET_ICON_ARET.itemStack(1)
         item.billboard = Billboard.CENTER
         item.viewRange = 5.0f
-        item.transformation = Transformation(Vector3f(), Quaternionf(), Vector3f(scale(distance)), Quaternionf())
+        item.transformation = Transformation(
+            Vector3f(),
+            Quaternionf(),
+            Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
+            Quaternionf()
+        )
+
         // use the direction vector to offset the entity's position from the player
-        val position = player.eyeLocation.toVector().add(direction.clone().normalize().multiply(renderDistance))
+        val position = player.eyeLocation.toVector().add(direction.clone().normalize().multiply(entityRenderDistance))
 
         return item.getNMSData(position)
     }
