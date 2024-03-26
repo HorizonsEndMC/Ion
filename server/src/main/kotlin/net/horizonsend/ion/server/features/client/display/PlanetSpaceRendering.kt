@@ -27,16 +27,20 @@ object PlanetSpaceRendering : IonServerComponent() {
         if (!SpaceWorlds.contains(player.world)) return
 
         val planetList = Space.getPlanets().filter { it.spaceWorld == player.world }
+        val playerDisplayEntities = ClientDisplayEntities[player.uniqueId] ?: return
+
         for (planet in planetList) {
             val distance = player.location.toVector().distance(planet.location.toVector())
             val direction = planet.location.toVector().subtract(player.location.toVector()).normalize()
 
-            // send packet
-            ClientDisplayEntities.sendEntityPacket(
-                player,
-                ClientDisplayEntities.displayPlanetEntity(player, distance, direction) ?: continue,
-                PLANET_UPDATE_RATE
-            )
+            if (playerDisplayEntities[planet.name] == null) {
+                // send packet
+                ClientDisplayEntities.sendDisplayEntityPacket(
+                    player,
+                    ClientDisplayEntities.createPlanetEntity(player, distance, direction) ?: continue,
+                    planet.name
+                )
+            }
         }
     }
 }

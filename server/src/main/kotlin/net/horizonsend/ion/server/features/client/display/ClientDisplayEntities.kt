@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.client.display
 
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createBlockDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createItemDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
@@ -19,19 +20,50 @@ import org.bukkit.Bukkit
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Display.*
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import java.util.UUID
 import kotlin.math.min
 
 /**
  * Functions for creating client-side display entities.
  */
-object ClientDisplayEntities {
+object ClientDisplayEntities : IonServerComponent() {
 
     /**
-     * Sends a client-side entity to a client.
+     * Map to store display entity information associated with each player.
+     */
+    private val map = mutableMapOf<UUID, MutableMap<String, Display>>()
+
+    operator fun get(uuid: UUID?): MutableMap<String, Display>? = map[uuid]
+
+    /* TODO : I don't like how this is organized; maybe make a better overload in the future, or some way to
+              differenetiate between client-side display entities vs. client-side non-display entities? */
+
+    /**
+     * Sends a client-side display entity to a client that lasts indefinitely. Has an identifier to reference the entity
+     * in the future.
+     * @param bukkitPlayer the player that the entity should be visible to
+     * @param identifier the identifier of the entity
+     * @param entity the NMS entity to send
+     */
+    fun sendDisplayEntityPacket(bukkitPlayer: Player, entity: Display, identifier: String) {
+        val player = bukkitPlayer.minecraft
+        val conn = player.connection
+
+        conn.send(ClientboundAddEntityPacket(entity))
+        entity.entityData.refresh(player)
+
+        map[bukkitPlayer.uniqueId]?.set(identifier, entity)
+    }
+
+    /**
+     * Sends a client-side entity to a client that lasts for a set duration.
      * @param bukkitPlayer the player that the entity should be visible to
      * @param entity the NMS entity to send
      * @param duration the duration that the entity should be visible for
@@ -44,6 +76,15 @@ object ClientDisplayEntities {
         entity.entityData.refresh(player)
 
         Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(entity.id)) }
+    }
+
+    // TODO : Work on this at home
+    fun transformDisplayEntityPacket(bukkitPlayer: Player, entity: Display) {
+        val player = bukkitPlayer.minecraft
+        val conn = player.connection
+
+        conn.send(ClientboundAddEntityPacket(entity))
+        entity.entityData.refresh(player)
     }
 
     /**
@@ -110,7 +151,7 @@ object ClientDisplayEntities {
      * @param distance the distance that the planet is to the player
      * @param direction the direction that the entity will render from with respect to the player
      */
-    fun displayPlanetEntity(
+    fun createPlanetEntity(
         player: Player,
         distance: Double,
         direction: Vector
@@ -149,5 +190,27 @@ object ClientDisplayEntities {
         val position = player.eyeLocation.toVector().add(direction.clone().normalize().multiply(entityRenderDistance))
 
         return item.getNMSData(position)
+    }
+
+    /**
+     * Handler that adds a new entry to the DisplayEntityData map when a player joins the server.
+     * @param event PlayerJoinEvent
+     */
+    @Suppress("unused")
+    @EventHandler
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        map[event.player.uniqueId] = mutableMapOf()
+    }
+
+    /**
+     * Handler that removes an entry from the DisplayEntityData map when a player leaves the server.
+     * @param event PlayerQuitEvent
+     */
+    @Suppress("unused")
+    @EventHandler
+    fun onPlayerLeave(event: PlayerQuitEvent) {
+        if (map[event.player.uniqueId] != null) {
+            map.remove(event.player.uniqueId)
+        }
     }
 }
