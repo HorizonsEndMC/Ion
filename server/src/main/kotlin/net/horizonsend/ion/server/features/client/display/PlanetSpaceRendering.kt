@@ -28,13 +28,13 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         val planetList = Space.getPlanets().filter { it.spaceWorld == player.world }
         for (planet in planetList) {
-            // direction = the normalized vector that points from the player's location to the planet
-            val direction = player.location.toVector().add(planet.location.toVector()).normalize()
+            val distance = player.location.toVector().distance(planet.location.toVector())
+            val direction = planet.location.toVector().subtract(player.location.toVector()).normalize()
 
             // send packet
             ClientDisplayEntities.sendEntityPacket(
                 player,
-                ClientDisplayEntities.displayPlanetEntity(player, direction),
+                ClientDisplayEntities.displayPlanetEntity(player, distance, direction),
                 PLANET_UPDATE_RATE
             )
         }
