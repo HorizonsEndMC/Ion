@@ -61,6 +61,7 @@ import org.bukkit.Material.LIGHT_BLUE_WOOL
 import org.bukkit.Material.LIGHT_GRAY_WOOL
 import org.bukkit.Material.LIME_WOOL
 import org.bukkit.Material.MAGENTA_WOOL
+import org.bukkit.Material.MELON
 import org.bukkit.Material.MOSS_BLOCK
 import org.bukkit.Material.MOSS_CARPET
 import org.bukkit.Material.NETHER_WART
@@ -477,6 +478,10 @@ object Crafting : IonServerComponent() {
 		// Raw Uranium Crafting
 		itemStackShapelessRecipe("rawUranium", RAW_URANIUM.constructItemStack().asQuantity(9)) {
 			addIngredient(RAW_URANIUM_BLOCK.constructItemStack())
+		}
+
+		itemStackShapelessRecipe("melonToSlices", ItemStack(Material.MELON_SLICE).asQuantity(4)){
+			addIngredient(MELON)
 		}
 	}
 
