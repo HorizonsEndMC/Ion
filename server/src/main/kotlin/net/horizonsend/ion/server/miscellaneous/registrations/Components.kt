@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.PlanetSpaceRendering
 import net.horizonsend.ion.server.features.client.whereisit.mod.ModNetworking
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
@@ -202,5 +203,6 @@ val components: List<IonComponent> = listOf(
 	CustomOrePlacement,
 	CapturableStationCache,
 	UnusedSoldShipPurge,
+	ClientDisplayEntities,
 	PlanetSpaceRendering
 )
