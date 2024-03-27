@@ -34,12 +34,12 @@ object PlanetSpaceRendering : IonServerComponent() {
             val direction = planet.location.toVector().subtract(player.location.toVector()).normalize()
 
             if (playerDisplayEntities[planet.name] == null) {
-                // send packet
-                ClientDisplayEntities.sendDisplayEntityPacket(
-                    player,
-                    ClientDisplayEntities.createPlanetEntity(player, distance, direction) ?: continue,
-                    planet.name
-                )
+                // send packet and create the planet entity
+                val entity = ClientDisplayEntities.createPlanetEntity(player, planet.name, distance, direction) ?: continue
+                ClientDisplayEntities.sendEntityPacket(player, entity)
+            }
+            else {
+                ClientDisplayEntities.updatePlanetEntity(player, planet.name, distance, direction)
             }
         }
     }
