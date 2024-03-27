@@ -17,9 +17,7 @@ import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Slime
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.block.data.BlockData
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftItemDisplay
 import org.bukkit.entity.Display.Billboard
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -53,7 +51,7 @@ object ClientDisplayEntities : IonServerComponent() {
      * @param bukkitPlayer the player that the entity should be visible to
      * @param entity the NMS entity to send
      */
-    fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display) {
+    fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Entity) {
         val player = bukkitPlayer.minecraft
         val conn = player.connection
 
@@ -201,17 +199,25 @@ object ClientDisplayEntities : IonServerComponent() {
 
         val nmsEntity = map[player.uniqueId]?.get(identifier) ?: return
 
-        val transformation = com.mojang.math.Transformation(
-            Vector3f(),
-            Quaternionf(),
-            Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
-            Quaternionf()
-        )
+        // remove entity if it is in an unloaded chunk or different world (this causes the entity client-side to despawn?)
+        if (!nmsEntity.isChunkLoaded || nmsEntity.level().world.name != player.world.name) {
+            map[player.uniqueId]?.remove(identifier)
+            return
+        }
+        else {
+            val transformation = com.mojang.math.Transformation(
+                Vector3f(),
+                Quaternionf(),
+                Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
+                Quaternionf()
+            )
 
-        val position = player.eyeLocation.toVector().add(direction.clone().normalize().multiply(entityRenderDistance))
+            val position =
+                player.eyeLocation.toVector().add(direction.clone().normalize().multiply(entityRenderDistance))
 
-        moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
-        transformDisplayEntityPacket(player, nmsEntity, transformation)
+            moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
+            transformDisplayEntityPacket(player, nmsEntity, transformation)
+        }
     }
 
     /**
