@@ -13,12 +13,14 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
-import net.minecraft.world.entity.Display
+import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Slime
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.block.data.BlockData
-import org.bukkit.entity.Display.*
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftItemDisplay
+import org.bukkit.entity.Display.Billboard
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
@@ -38,9 +40,9 @@ object ClientDisplayEntities : IonServerComponent() {
     /**
      * Map to store display entity information associated with each player.
      */
-    private val map = mutableMapOf<UUID, MutableMap<String, Display>>()
+    private val map = mutableMapOf<UUID, MutableMap<String, net.minecraft.world.entity.Display>>()
 
-    operator fun get(uuid: UUID?): MutableMap<String, Display>? = map[uuid]
+    operator fun get(uuid: UUID?): MutableMap<String, net.minecraft.world.entity.Display>? = map[uuid]
 
     /* TODO : I don't like how this is organized; maybe make a better overload in the future, or some way to
               differenetiate between client-side display entities vs. client-side non-display entities? */
@@ -49,17 +51,14 @@ object ClientDisplayEntities : IonServerComponent() {
      * Sends a client-side display entity to a client that lasts indefinitely. Has an identifier to reference the entity
      * in the future.
      * @param bukkitPlayer the player that the entity should be visible to
-     * @param identifier the identifier of the entity
      * @param entity the NMS entity to send
      */
-    fun sendDisplayEntityPacket(bukkitPlayer: Player, entity: Display, identifier: String) {
+    fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display) {
         val player = bukkitPlayer.minecraft
         val conn = player.connection
 
         conn.send(ClientboundAddEntityPacket(entity))
         entity.entityData.refresh(player)
-
-        map[bukkitPlayer.uniqueId]?.set(identifier, entity)
     }
 
     /**
@@ -78,12 +77,22 @@ object ClientDisplayEntities : IonServerComponent() {
         Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(entity.id)) }
     }
 
-    // TODO : Work on this at home
-    fun transformDisplayEntityPacket(bukkitPlayer: Player, entity: Display) {
+    private fun moveDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, x: Double, y: Double, z: Double) {
+        entity.teleportTo(x, y, z)
+
         val player = bukkitPlayer.minecraft
         val conn = player.connection
 
-        conn.send(ClientboundAddEntityPacket(entity))
+        conn.send(ClientboundTeleportEntityPacket(entity))
+
+        if (entity.isChunkLoaded) println("in a chunk")
+    }
+
+    private fun transformDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, transformation: com.mojang.math.Transformation) {
+        val player = bukkitPlayer.minecraft
+
+        entity.setTransformation(transformation)
+
         entity.entityData.refresh(player)
     }
 
@@ -106,7 +115,9 @@ object ClientDisplayEntities : IonServerComponent() {
     fun Audience.highlightBlock(pos: Vec3i, duration: Long) {
         when (this) {
             is Player -> sendEntityPacket(this, highlightBlock(this, pos), duration)
-            is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) { sendEntityPacket(player, highlightBlock(player, pos), duration) }
+            is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) {
+                sendEntityPacket(player, highlightBlock(player, pos), duration)
+            }
         }
     }
 
@@ -133,7 +144,7 @@ object ClientDisplayEntities : IonServerComponent() {
         pos: Vector,
         scale: Float = 1.0f,
         glow: Boolean = false
-    ): Display.BlockDisplay {
+    ): net.minecraft.world.entity.Display.BlockDisplay {
 
         val block = createBlockDisplay(player)
         val offset = (-scale / 2) + 0.5
@@ -153,43 +164,54 @@ object ClientDisplayEntities : IonServerComponent() {
      */
     fun createPlanetEntity(
         player: Player,
+        identifier: String,
         distance: Double,
         direction: Vector
-    ): Display.ItemDisplay? {
+    ): net.minecraft.world.entity.Display.ItemDisplay? {
 
-        /**
-         * Equation for getting the scale of a planet display entity. Maximum (0, 50) and horizontal asymptote at x = 5.
-         */
-        fun scale(distance: Double) = ((250000000 / ((0.015625 * distance * distance) + 5555555)) + 5).toFloat()
-
-        /**
-         * Equation for getting the factor of the planet scaling to maintain apparent visual scale depending on
-         * the player's view distance. Calculated assuming that the display entity will, at most, take up 1/3 of
-         * the player's screen at a view distance of 10 (160 blocks); y = 1.5h * x / 160h, where h is the apparent
-         * visual height of the display entity and x is the view distance of the player in blocks.
-         */
-        fun viewDistanceFactor(viewDistance: Int) = (0.15 * viewDistance).toFloat()
-
-        val item = createItemDisplay(player)
-        // render the entity at the player's max client side view distance, minus 8 blocks
-        val entityRenderDistance = (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 8
+        val entity = createItemDisplay(player)
+        val entityRenderDistance = getViewDistanceEdge(player)
         // do not render if the planet is closer than the entity render distance
         if (distance < entityRenderDistance) return null
 
-        item.itemStack = CustomItems.PLANET_ICON_ARET.itemStack(1)
-        item.billboard = Billboard.CENTER
-        item.viewRange = 5.0f
-        item.transformation = Transformation(
+        entity.itemStack = CustomItems.PLANET_ICON_ARET.itemStack(1)
+        entity.billboard = Billboard.CENTER
+        entity.viewRange = 5.0f
+        entity.transformation = Transformation(
+            Vector3f(),
+            Quaternionf(),
+            Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
+            Quaternionf()
+        )
+        entity.interpolationDuration = 20
+
+        // use the direction vector to offset the entity's position from the player
+        val position = player.eyeLocation.toVector().add(direction.clone().normalize().multiply(entityRenderDistance))
+        val nmsEntity = entity.getNMSData(position)
+        map[player.uniqueId]?.set(identifier, nmsEntity)
+
+        return nmsEntity
+    }
+
+    fun updatePlanetEntity(player: Player, identifier: String, distance: Double, direction: Vector) {
+
+        val entityRenderDistance = getViewDistanceEdge(player)
+        // do not render if the planet is closer than the entity render distance
+        if (distance < entityRenderDistance) return
+
+        val nmsEntity = map[player.uniqueId]?.get(identifier) ?: return
+
+        val transformation = com.mojang.math.Transformation(
             Vector3f(),
             Quaternionf(),
             Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
             Quaternionf()
         )
 
-        // use the direction vector to offset the entity's position from the player
         val position = player.eyeLocation.toVector().add(direction.clone().normalize().multiply(entityRenderDistance))
 
-        return item.getNMSData(position)
+        moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
+        transformDisplayEntityPacket(player, nmsEntity, transformation)
     }
 
     /**
@@ -213,4 +235,22 @@ object ClientDisplayEntities : IonServerComponent() {
             map.remove(event.player.uniqueId)
         }
     }
+
+    /**
+     * Equation for getting the scale of a planet display entity. Maximum (0, 50) and horizontal asymptote at x = 5.
+     */
+    private fun scale(distance: Double) = ((250000000 / ((0.015625 * distance * distance) + 5555555)) + 5).toFloat()
+
+    /**
+     * Equation for getting the factor of the planet scaling to maintain apparent visual scale depending on
+     * the player's view distance. Calculated assuming a default view distance of 10 (160 blocks); 0.5h / 160 = h` / x,
+     * where h is the apparent visual height of the display entity, h` is the apparent visual height of the display
+     * entity after transformation, and x is the view distance of the player in blocks.
+     */
+    private fun viewDistanceFactor(viewDistance: Int) = (0.003125 * viewDistance).toFloat()
+
+    /**
+     * Function for getting the distance from the edge of the player's view distance, minus several blocks.
+     */
+    private fun getViewDistanceEdge(player: Player) = (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 8
 }
