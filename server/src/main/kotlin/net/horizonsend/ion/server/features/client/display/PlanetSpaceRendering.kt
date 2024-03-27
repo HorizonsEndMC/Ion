@@ -33,11 +33,13 @@ object PlanetSpaceRendering : IonServerComponent() {
             val distance = player.location.toVector().distance(planet.location.toVector())
             val direction = planet.location.toVector().subtract(player.location.toVector()).normalize()
 
+            // entity does not exist yet; create it
             if (playerDisplayEntities[planet.name] == null) {
                 // send packet and create the planet entity
                 val entity = ClientDisplayEntities.createPlanetEntity(player, planet.name, distance, direction) ?: continue
                 ClientDisplayEntities.sendEntityPacket(player, entity)
             }
+            // entity exists; update position
             else {
                 ClientDisplayEntities.updatePlanetEntity(player, planet.name, distance, direction)
             }
