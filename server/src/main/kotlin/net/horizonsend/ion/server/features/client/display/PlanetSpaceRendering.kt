@@ -8,7 +8,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 object PlanetSpaceRendering : IonServerComponent() {
-    private const val PLANET_UPDATE_RATE = 20L
+    private const val PLANET_UPDATE_RATE = 10L
 
     override fun onEnable() {
         Tasks.syncRepeat(0L, PLANET_UPDATE_RATE) {
@@ -36,8 +36,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             // entity does not exist yet; create it
             if (playerDisplayEntities[planet.name] == null) {
                 // send packet and create the planet entity
-                val entity = ClientDisplayEntities.createPlanetEntity(player, planet.name, distance, direction) ?: continue
-                ClientDisplayEntities.sendEntityPacket(player, entity)
+                ClientDisplayEntities.createPlanetEntity(player, planet.name, distance, direction) ?: continue
             }
             // entity exists; update position
             else {

@@ -162,6 +162,7 @@ object ClientDisplayEntities : IonServerComponent() {
      * Creates a client-side ItemDisplay entity for rendering planet icons in space.
      * @return the NMS ItemDisplay object
      * @param player the player that the entity should be visible to
+     * @param identifier the string used to retrieve the entity later
      * @param distance the distance that the planet is to the player
      * @param direction the direction that the entity will render from with respect to the player
      */
@@ -178,25 +179,41 @@ object ClientDisplayEntities : IonServerComponent() {
         if (distance < entityRenderDistance) return null
 
         entity.itemStack = CustomItems.PLANET_ICON_ARET.itemStack(1)
-        entity.billboard = Billboard.CENTER
+        entity.billboard = Billboard.FIXED
         entity.viewRange = 5.0f
+        entity.interpolationDuration = 20
+        entity.teleportDuration = 20
+
+        // calculate position and offset
+        val position = player.eyeLocation.toVector()
+        val offset = direction.clone().normalize().multiply(entityRenderDistance)
+
+        // apply transformation
         entity.transformation = Transformation(
-            Vector3f(),
+            offset.toVector3f(),
             Quaternionf(),
             Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
             Quaternionf()
         )
-        entity.interpolationDuration = 20
 
-        // use the direction vector to offset the entity's position from the player
-        val position = player.eyeLocation.toVector().add(direction.clone().normalize().multiply(entityRenderDistance))
-        val nmsEntity = entity.getNMSData(position)
+        val nmsEntity = entity.getNMSData()
+
+        sendEntityPacket(player, nmsEntity)
+        moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
         map[player.uniqueId]?.set(identifier, nmsEntity)
 
         println("CREATING ENTITY: ${nmsEntity.id}")
         return nmsEntity
     }
 
+    /**
+     * Updates a client-side ItemDisplay for rendering planet icons in space
+     * @return the NMS ItemDisplay object
+     * @param player the player that the entity should be visible to
+     * @param identifier the string used to retrieve the entity later
+     * @param distance the distance that the planet is to the player
+     * @param direction the direction that the entity will render from with respect to the player
+     */
     fun updatePlanetEntity(player: Player, identifier: String, distance: Double, direction: Vector) {
 
         val entityRenderDistance = getViewDistanceEdge(player)
@@ -214,14 +231,17 @@ object ClientDisplayEntities : IonServerComponent() {
             return
         }
         else {
+            // calculate position and offset
+            val position = player.eyeLocation.toVector()
+            val offset = direction.clone().normalize().multiply(entityRenderDistance)
+
+            // apply transformation
             val transformation = com.mojang.math.Transformation(
-                Vector3f(),
+                offset.toVector3f(),
                 Quaternionf(),
                 Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
                 Quaternionf()
             )
-
-            val position = player.eyeLocation.toVector().add(direction.clone().normalize().multiply(entityRenderDistance))
 
             println("UPDATING ENTITY: ${nmsEntity.id}")
             println("map: ${map[player.uniqueId]}")
