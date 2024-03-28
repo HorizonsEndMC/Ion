@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
+import org.joml.AxisAngle4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.util.UUID
@@ -181,8 +182,8 @@ object ClientDisplayEntities : IonServerComponent() {
         entity.itemStack = CustomItems.PLANET_ICON_ARET.itemStack(1)
         entity.billboard = Billboard.FIXED
         entity.viewRange = 5.0f
-        entity.interpolationDuration = 20
-        entity.teleportDuration = 20
+        entity.interpolationDuration = 10
+        entity.teleportDuration = 10
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
@@ -191,9 +192,9 @@ object ClientDisplayEntities : IonServerComponent() {
         // apply transformation
         entity.transformation = Transformation(
             offset.toVector3f(),
-            Quaternionf(),
+            rotateToFaceVector(offset.toVector3f()),
             Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
-            Quaternionf()
+            AxisAngle4f()
         )
 
         val nmsEntity = entity.getNMSData()
@@ -238,7 +239,7 @@ object ClientDisplayEntities : IonServerComponent() {
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
-                Quaternionf(),
+                Quaternionf(rotateToFaceVector(offset.toVector3f())),
                 Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
                 Quaternionf()
             )
@@ -275,6 +276,8 @@ object ClientDisplayEntities : IonServerComponent() {
 
     /**
      * Equation for getting the scale of a planet display entity. Maximum (0, 50) and horizontal asymptote at x = 5.
+     * @return a scale size for planet display entities
+     * @param distance the distance at which the player is from the planet
      */
     private fun scale(distance: Double) = ((250000000 / ((0.015625 * distance * distance) + 5555555)) + 5).toFloat()
 
@@ -283,11 +286,32 @@ object ClientDisplayEntities : IonServerComponent() {
      * the player's view distance. Calculated assuming a default view distance of 10 (160 blocks); 0.5h / 160 = h` / x,
      * where h is the apparent visual height of the display entity, h` is the apparent visual height of the display
      * entity after transformation, and x is the view distance of the player in blocks.
+     * @return a scaling factor useful for maintaining the apparent size of objects as they are rendered closer
+     * or further away
+     * @param viewDistance the distance at which the object is being rendered
      */
     private fun viewDistanceFactor(viewDistance: Int) = (0.003125 * viewDistance).toFloat()
 
     /**
      * Function for getting the distance from the edge of the player's view distance, minus several blocks.
+     * @return the view distance of a player in blocks, minus some offset
+     * @param player the player to get the view distance from
      */
     private fun getViewDistanceEdge(player: Player) = (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 16
+
+    /**
+     * Function for getting the axis-angle representation of a rotation where an object faces a desired direction.
+     * @return the axis-angle representation to get the desired rotation
+     * @param direction the direction that an object should face
+     */
+    private fun rotateToFaceVector(direction: Vector3f): AxisAngle4f {
+        // Assuming initial rotation vector is facing SOUTH (+z direction)
+        val initVector = Vector3f(0f, 0f, 1f)
+        // cross product of initial and final vectors will give the axis of rotation
+        val cross = initVector.cross(direction)
+        // angle between vectors to determine the rotation needed (in radians)
+        val angle = initVector.angle(direction)
+        // return the axis-angle representation
+        return AxisAngle4f(angle, cross)
+    }
 }
