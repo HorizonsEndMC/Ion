@@ -83,6 +83,8 @@ object ClientDisplayEntityFactory {
     fun createItemDisplay(player: Player): CraftItemDisplay =
         CraftItemDisplay(player.minecraft.server.server, Display.ItemDisplay(EntityType.ITEM_DISPLAY, player.minecraft.level()))
 
+    fun ItemDisplay.getNMSData(): Display.ItemDisplay = (this as CraftItemDisplay).handle
+
     /**
      * Converts a Bukkit ItemDisplay to a NMS ItemDisplay.
      * @return an NMS ItemDisplay
