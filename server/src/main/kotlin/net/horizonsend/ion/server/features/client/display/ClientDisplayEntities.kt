@@ -82,8 +82,6 @@ object ClientDisplayEntities : IonServerComponent() {
         val conn = player.connection
 
         conn.send(ClientboundTeleportEntityPacket(entity))
-
-        if (entity.isChunkLoaded) println("in a chunk")
     }
 
     private fun transformDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, transformation: com.mojang.math.Transformation) {
@@ -92,6 +90,13 @@ object ClientDisplayEntities : IonServerComponent() {
         entity.setTransformation(transformation)
 
         entity.entityData.refresh(player)
+    }
+
+    private fun deleteDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display) {
+        val player = bukkitPlayer.minecraft
+        val conn = player.connection
+
+        conn.send(ClientboundRemoveEntitiesPacket(entity.id))
     }
 
     /**
@@ -188,19 +193,23 @@ object ClientDisplayEntities : IonServerComponent() {
         val nmsEntity = entity.getNMSData(position)
         map[player.uniqueId]?.set(identifier, nmsEntity)
 
+        println("CREATING ENTITY: ${nmsEntity.id}")
         return nmsEntity
     }
 
     fun updatePlanetEntity(player: Player, identifier: String, distance: Double, direction: Vector) {
 
         val entityRenderDistance = getViewDistanceEdge(player)
-        // do not render if the planet is closer than the entity render distance
-        if (distance < entityRenderDistance) return
 
         val nmsEntity = map[player.uniqueId]?.get(identifier) ?: return
 
         // remove entity if it is in an unloaded chunk or different world (this causes the entity client-side to despawn?)
-        if (!nmsEntity.isChunkLoaded || nmsEntity.level().world.name != player.world.name) {
+        // also do not render if the planet is closer than the entity render distance
+        if (!nmsEntity.isChunkLoaded ||
+            nmsEntity.level().world.name != player.world.name ||
+            distance < entityRenderDistance
+            ) {
+            deleteDisplayEntityPacket(player, nmsEntity)
             map[player.uniqueId]?.remove(identifier)
             return
         }
@@ -212,8 +221,10 @@ object ClientDisplayEntities : IonServerComponent() {
                 Quaternionf()
             )
 
-            val position =
-                player.eyeLocation.toVector().add(direction.clone().normalize().multiply(entityRenderDistance))
+            val position = player.eyeLocation.toVector().add(direction.clone().normalize().multiply(entityRenderDistance))
+
+            println("UPDATING ENTITY: ${nmsEntity.id}")
+            println("map: ${map[player.uniqueId]}")
 
             moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
             transformDisplayEntityPacket(player, nmsEntity, transformation)
@@ -258,5 +269,5 @@ object ClientDisplayEntities : IonServerComponent() {
     /**
      * Function for getting the distance from the edge of the player's view distance, minus several blocks.
      */
-    private fun getViewDistanceEdge(player: Player) = (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 8
+    private fun getViewDistanceEdge(player: Player) = (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 16
 }
