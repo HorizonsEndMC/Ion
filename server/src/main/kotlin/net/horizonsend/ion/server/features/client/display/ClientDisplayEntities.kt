@@ -197,10 +197,10 @@ object ClientDisplayEntities : IonServerComponent() {
             AxisAngle4f()
         )
 
-        val nmsEntity = entity.getNMSData()
+        // position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
+        val nmsEntity = entity.getNMSData(position.x, position.y, position.z)
 
         sendEntityPacket(player, nmsEntity)
-        moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
         map[player.uniqueId]?.set(identifier, nmsEntity)
 
         return nmsEntity
