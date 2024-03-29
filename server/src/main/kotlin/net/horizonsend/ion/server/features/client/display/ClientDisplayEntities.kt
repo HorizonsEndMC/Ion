@@ -2,9 +2,7 @@ package net.horizonsend.ion.server.features.client.display
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createBlockDisplay
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createItemDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
-import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -16,9 +14,7 @@ import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Slime
-import org.bukkit.Bukkit
 import org.bukkit.block.data.BlockData
-import org.bukkit.entity.Display.Billboard
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
@@ -29,7 +25,6 @@ import org.joml.AxisAngle4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.util.UUID
-import kotlin.math.min
 
 /**
  * Functions for creating client-side display entities.
@@ -76,7 +71,7 @@ object ClientDisplayEntities : IonServerComponent() {
         Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(entity.id)) }
     }
 
-    private fun moveDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, x: Double, y: Double, z: Double) {
+    fun moveDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, x: Double, y: Double, z: Double) {
         entity.teleportTo(x, y, z)
 
         val player = bukkitPlayer.minecraft
@@ -85,7 +80,7 @@ object ClientDisplayEntities : IonServerComponent() {
         conn.send(ClientboundTeleportEntityPacket(entity))
     }
 
-    private fun transformDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, transformation: com.mojang.math.Transformation) {
+    fun transformDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, transformation: com.mojang.math.Transformation) {
         val player = bukkitPlayer.minecraft
 
         entity.setTransformation(transformation)
@@ -93,7 +88,7 @@ object ClientDisplayEntities : IonServerComponent() {
         entity.entityData.refresh(player)
     }
 
-    private fun deleteDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display) {
+    fun deleteDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display) {
         val player = bukkitPlayer.minecraft
         val conn = player.connection
 
@@ -160,95 +155,6 @@ object ClientDisplayEntities : IonServerComponent() {
     }
 
     /**
-     * Creates a client-side ItemDisplay entity for rendering planet icons in space.
-     * @return the NMS ItemDisplay object
-     * @param player the player that the entity should be visible to
-     * @param identifier the string used to retrieve the entity later
-     * @param distance the distance that the planet is to the player
-     * @param direction the direction that the entity will render from with respect to the player
-     */
-    fun createPlanetEntity(
-        player: Player,
-        identifier: String,
-        distance: Double,
-        direction: Vector
-    ): net.minecraft.world.entity.Display.ItemDisplay? {
-
-        val entity = createItemDisplay(player)
-        val entityRenderDistance = getViewDistanceEdge(player)
-        // do not render if the planet is closer than the entity render distance
-        if (distance < entityRenderDistance) return null
-
-        entity.itemStack = CustomItems.AERACH.constructItemStack()
-        entity.billboard = Billboard.FIXED
-        entity.viewRange = 5.0f
-        entity.interpolationDuration = 10
-        entity.teleportDuration = 10
-
-        // calculate position and offset
-        val position = player.eyeLocation.toVector()
-        val offset = direction.clone().normalize().multiply(entityRenderDistance)
-
-        // apply transformation
-        entity.transformation = Transformation(
-            offset.toVector3f(),
-            rotateToFaceVector(offset.toVector3f()),
-            Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
-            AxisAngle4f()
-        )
-
-        // position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
-        val nmsEntity = entity.getNMSData(position.x, position.y, position.z)
-
-        sendEntityPacket(player, nmsEntity)
-        map[player.uniqueId]?.set(identifier, nmsEntity)
-
-        return nmsEntity
-    }
-
-    /**
-     * Updates a client-side ItemDisplay for rendering planet icons in space
-     * @return the NMS ItemDisplay object
-     * @param player the player that the entity should be visible to
-     * @param identifier the string used to retrieve the entity later
-     * @param distance the distance that the planet is to the player
-     * @param direction the direction that the entity will render from with respect to the player
-     */
-    fun updatePlanetEntity(player: Player, identifier: String, distance: Double, direction: Vector) {
-
-        val entityRenderDistance = getViewDistanceEdge(player)
-
-        val nmsEntity = map[player.uniqueId]?.get(identifier) ?: return
-
-        // remove entity if it is in an unloaded chunk or different world (this causes the entity client-side to despawn?)
-        // also do not render if the planet is closer than the entity render distance
-        if (!nmsEntity.isChunkLoaded ||
-            nmsEntity.level().world.name != player.world.name ||
-            distance < entityRenderDistance
-            ) {
-            deleteDisplayEntityPacket(player, nmsEntity)
-            map[player.uniqueId]?.remove(identifier)
-            return
-        }
-        else {
-            // calculate position and offset
-            val position = player.eyeLocation.toVector()
-            val offset = direction.clone().normalize().multiply(entityRenderDistance)
-
-            // apply transformation
-            val transformation = com.mojang.math.Transformation(
-                offset.toVector3f(),
-                Quaternionf(rotateToFaceVector(offset.toVector3f())),
-                Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
-                Quaternionf()
-            )
-
-            moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
-            transformDisplayEntityPacket(player, nmsEntity, transformation)
-        }
-    }
-
-    /**
      * Handler that adds a new entry to the DisplayEntityData map when a player joins the server.
      * @param event PlayerJoinEvent
      */
@@ -271,36 +177,11 @@ object ClientDisplayEntities : IonServerComponent() {
     }
 
     /**
-     * Equation for getting the scale of a planet display entity. Maximum (0, 100) and horizontal asymptote at x = 5.
-     * @return a scale size for planet display entities
-     * @param distance the distance at which the player is from the planet
-     */
-    private fun scale(distance: Double) = ((500000000 / ((0.03125 * distance * distance) + 5250000)) + 5).toFloat()
-
-    /**
-     * Equation for getting the factor of the planet scaling to maintain apparent visual scale depending on
-     * the player's view distance. Calculated assuming a default view distance of 10 (160 blocks); 0.5h / 160 = h` / x,
-     * where h is the apparent visual height of the display entity, h` is the apparent visual height of the display
-     * entity after transformation, and x is the view distance of the player in blocks.
-     * @return a scaling factor useful for maintaining the apparent size of objects as they are rendered closer
-     * or further away
-     * @param viewDistance the distance at which the object is being rendered
-     */
-    private fun viewDistanceFactor(viewDistance: Int) = (0.003125 * viewDistance).toFloat()
-
-    /**
-     * Function for getting the distance from the edge of the player's view distance, minus several blocks.
-     * @return the view distance of a player in blocks, minus some offset
-     * @param player the player to get the view distance from
-     */
-    private fun getViewDistanceEdge(player: Player) = (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 16
-
-    /**
      * Function for getting the axis-angle representation of a rotation where an object faces a desired direction.
      * @return the axis-angle representation to get the desired rotation
      * @param direction the direction that an object should face
      */
-    private fun rotateToFaceVector(direction: Vector3f): AxisAngle4f {
+    fun rotateToFaceVector(direction: Vector3f): AxisAngle4f {
         // Assuming initial rotation vector is facing SOUTH (+z direction)
         val initVector = Vector3f(0f, 0f, 1f)
         // cross product of initial and final vectors will give the axis of rotation
