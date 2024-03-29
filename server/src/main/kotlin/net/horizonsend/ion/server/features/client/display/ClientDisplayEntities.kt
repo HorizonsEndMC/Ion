@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createBlockDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createItemDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -179,7 +179,7 @@ object ClientDisplayEntities : IonServerComponent() {
         // do not render if the planet is closer than the entity render distance
         if (distance < entityRenderDistance) return null
 
-        entity.itemStack = CustomItems.PLANET_ICON_ARET.itemStack(1)
+        entity.itemStack = CustomItems.AERACH.constructItemStack()
         entity.billboard = Billboard.FIXED
         entity.viewRange = 5.0f
         entity.interpolationDuration = 10

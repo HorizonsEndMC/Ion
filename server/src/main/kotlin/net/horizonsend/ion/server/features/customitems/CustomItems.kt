@@ -537,6 +537,34 @@ object CustomItems {
 
 	// Throwables end
 
+	// Planets start
+	val AERACH = register("AERACH", 5000, text("Aerach"))
+	val ARET = register("ARET", 5001, text("Aret"))
+	val CHANDRA = register("CHANDRA", 5002, text("Chandra"))
+	val CHIMGARA = register("CHIMGARA", 5003, text("Chimgara"))
+	val DAMKOTH = register("DAMKOTH", 5004, text("Damkoth"))
+	val DISTERRA = register("DISTERRA", 5005, text("Disterra"))
+	val EDEN = register("EDEN", 5006, text("Eden"))
+	val GAHARA = register("GAHARA", 5007, text("Gahara"))
+	val HERDOLI = register("HERDOLI", 5008, text("Herdoli"))
+	val ILIUS = register("ILIUS", 5009, text("Ilius"))
+	val ISIK = register("ISIK", 5010, text("Isik"))
+	val KOVFEFE = register("KOVFEFE", 5011, text("Kovfefe"))
+	val KRIO = register("KRIO", 5012, text("Krio"))
+	val LIODA = register("LIODA", 5013, text("Lioda"))
+	val LUXITERNA = register("LUXITERNA", 5014, text("Luxiterna"))
+	val QATRA = register("QATRA", 5015, text("Qatra"))
+	val RUBACIEA = register("RUBACIEA", 5016, text("Rubaciea"))
+	val TURMS = register("TURMS", 5017, text("Turms"))
+	val VASK = register("VASK", 5018, text("Vask"))
+
+	val ASTERI = register("ASTERI", 5100, text("Asteri"))
+	val HORIZON = register("HORIZON", 5101, text("Horizon"))
+	val ILIOS = register("ILIOS", 5102, text("Ilios"))
+	val REGULUS = register("REGULUS", 5103, text("Regulus"))
+	val SIRIUS = register("SIRIUS", 5104, text("Sirius"))
+	// Planets end
+
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun register(identifier: String, customModelData: Int, displayName: Component): CustomItem {
 		return register(object : CustomItem(identifier) {
