@@ -271,11 +271,11 @@ object ClientDisplayEntities : IonServerComponent() {
     }
 
     /**
-     * Equation for getting the scale of a planet display entity. Maximum (0, 50) and horizontal asymptote at x = 5.
+     * Equation for getting the scale of a planet display entity. Maximum (0, 100) and horizontal asymptote at x = 5.
      * @return a scale size for planet display entities
      * @param distance the distance at which the player is from the planet
      */
-    private fun scale(distance: Double) = ((250000000 / ((0.015625 * distance * distance) + 5555555)) + 5).toFloat()
+    private fun scale(distance: Double) = ((500000000 / ((0.03125 * distance * distance) + 5250000)) + 5).toFloat()
 
     /**
      * Equation for getting the factor of the planet scaling to maintain apparent visual scale depending on
