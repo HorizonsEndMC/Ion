@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.entity.Display
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
 import org.joml.AxisAngle4f
@@ -47,11 +48,13 @@ object PlanetSpaceRendering : IonServerComponent() {
         // do not render if the planet is closer than the entity render distance
         if (distance < entityRenderDistance) return null
 
-        entity.itemStack = CustomItems.AERACH.constructItemStack()
+        entity.itemStack = getPlanetItemStack(identifier)
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
         entity.interpolationDuration = 10
         entity.teleportDuration = 10
+        println("identifier: $identifier")
+        println("entity.itemStack: ${entity.itemStack}")
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
@@ -141,6 +144,35 @@ object PlanetSpaceRendering : IonServerComponent() {
      */
     private fun getViewDistanceEdge(player: Player) = (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 16
 
+    private fun getPlanetItemStack(name: String): ItemStack = when (name) {
+        "Aerach" -> CustomItems.AERACH
+        "Aret" -> CustomItems.ARET
+        "Chandra" -> CustomItems.CHANDRA
+        "Damkoth" -> CustomItems.DAMKOTH
+        "Disterra" -> CustomItems.DISTERRA
+        "Eden" -> CustomItems.EDEN
+        "Gahara" -> CustomItems.GAHARA
+        "Herdoli" -> CustomItems.HERDOLI
+        "Ilius" -> CustomItems.ILIUS
+        "Isik" -> CustomItems.ISIK
+        "Kovfefe" -> CustomItems.KOVFEFE
+        "Krio" -> CustomItems.KRIO
+        "Lioda" -> CustomItems.LIODA
+        "Luxiterna" -> CustomItems.LUXITERNA
+        "Qatra" -> CustomItems.QATRA
+        "Rubaciea" -> CustomItems.RUBACIEA
+        "Turms" -> CustomItems.TURMS
+        "Vask" -> CustomItems.VASK
+
+        "Asteri" -> CustomItems.ASTERI
+        "EdenHack" -> CustomItems.HORIZON
+        "Ilios" -> CustomItems.ILIOS
+        "Regulus" -> CustomItems.REGULUS
+        "Sirius" -> CustomItems.SIRIUS
+
+        else -> CustomItems.AERACH
+    }.constructItemStack()
+
     /**
      * Renders client-side ItemEntity planets for each player.
      * @param player the player to send objects to
@@ -164,6 +196,22 @@ object PlanetSpaceRendering : IonServerComponent() {
             // entity exists; update position
             else {
                 updatePlanetEntity(player, planet.name, distance, direction)
+            }
+        }
+
+        val starList = Space.getStars().filter { it.spaceWorld == player.world }
+        for (star in starList) {
+            val distance = player.location.toVector().distance(star.location.toVector())
+            val direction = star.location.toVector().subtract(player.location.toVector()).normalize()
+
+            // entity does not exist yet; create it
+            if (playerDisplayEntities[star.name] == null) {
+                // send packet and create the planet entity
+                createPlanetEntity(player, star.name, distance, direction) ?: continue
+            }
+            // entity exists; update position
+            else {
+                updatePlanetEntity(player, star.name, distance, direction)
             }
         }
     }
