@@ -203,7 +203,6 @@ object ClientDisplayEntities : IonServerComponent() {
         moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
         map[player.uniqueId]?.set(identifier, nmsEntity)
 
-        println("CREATING ENTITY: ${nmsEntity.id}")
         return nmsEntity
     }
 
@@ -243,9 +242,6 @@ object ClientDisplayEntities : IonServerComponent() {
                 Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
                 Quaternionf()
             )
-
-            println("UPDATING ENTITY: ${nmsEntity.id}")
-            println("map: ${map[player.uniqueId]}")
 
             moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
             transformDisplayEntityPacket(player, nmsEntity, transformation)
@@ -308,7 +304,7 @@ object ClientDisplayEntities : IonServerComponent() {
         // Assuming initial rotation vector is facing SOUTH (+z direction)
         val initVector = Vector3f(0f, 0f, 1f)
         // cross product of initial and final vectors will give the axis of rotation
-        val cross = initVector.cross(direction)
+        val cross = (initVector.clone() as Vector3f).cross(direction.normalize()).normalize()
         // angle between vectors to determine the rotation needed (in radians)
         val angle = initVector.angle(direction)
         // return the axis-angle representation
