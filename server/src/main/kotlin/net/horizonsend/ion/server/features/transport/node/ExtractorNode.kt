@@ -10,7 +10,8 @@ abstract class ExtractorNode<T>(
 	override val x: Int,
 	override val y: Int,
 	override val z: Int,
-	override val transferableNeighbors: ConcurrentHashMap<BlockFace, GridNode> = ConcurrentHashMap()
 ) : GridNode {
+	override val transferableNeighbors: ConcurrentHashMap<BlockFace, GridNode> = ConcurrentHashMap()
+
 	abstract fun getExtractableInventories(): Collection<ResourceContainer<T>>
 }
