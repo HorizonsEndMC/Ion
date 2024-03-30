@@ -233,12 +233,12 @@ data class ServerConfiguration(
 			val weight: Int,
 			val type: String,
 			val namePool: Map<String, Int> = mapOf(),
-			val onHand: Gear? = null,
-			val offHand: Gear? = null,
-			val helmet: Gear? = null,
-			val chestPlate: Gear? = null,
-			val leggings: Gear? = null,
-			val boots: Gear? = null,
+			val onHand: DroppedItem? = null,
+			val offHand: DroppedItem? = null,
+			val helmet: DroppedItem? = null,
+			val chestPlate: DroppedItem? = null,
+			val leggings: DroppedItem? = null,
+			val boots: DroppedItem? = null,
 		) {
 			@Transient
 			val nameList: WeightedRandomList<String> = WeightedRandomList(namePool)
@@ -251,8 +251,9 @@ data class ServerConfiguration(
 		 * Not the end of the world, but could be improved upon
 		 **/
 		@Serializable
-		data class Gear(
+		data class DroppedItem(
 			val itemString: String,
+			val amount: Int = 1,
 			val dropChance: Float,
 		)
 
