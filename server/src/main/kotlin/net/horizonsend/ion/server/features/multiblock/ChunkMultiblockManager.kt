@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import org.bukkit.block.Sign
+import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType.LIST
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentHashMap
@@ -116,7 +117,18 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	 * Load the multiblocks from the persistent data container upon chunk load.
 	 **/
 	private fun loadMultiblocks() {
-		val serialized = chunk.inner.persistentDataContainer.get(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES, LIST.dataContainers()) ?: return
+		val serialized = try {
+			chunk.inner.persistentDataContainer.get(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES, LIST.dataContainers()) ?: return
+		} catch (e: IllegalArgumentException) {
+			log.warn("Could not load chunks multiblocks for $chunk")
+			if (e.message == "The found tag instance (NBTTagList) cannot store List") {
+				log.info("Found outdated list tag, removing")
+
+				chunk.inner.persistentDataContainer.remove(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES)
+			}
+
+			listOf<PersistentDataContainer>()
+		}
 
 		for (serializedMultiblockData in serialized) {
 			val stored = PersistentMultiblockData.fromPrimitive(serializedMultiblockData, chunk.inner.persistentDataContainer.adapterContext)

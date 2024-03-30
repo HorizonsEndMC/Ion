@@ -9,7 +9,7 @@ import org.bukkit.block.Sign
 import org.bukkit.persistence.PersistentDataType
 
 interface PoweredMultiblockEntity {
-	var power: Int
+	var powerUnsafe: Int
 	val type: PowerStoringMultiblock
 
 	val maxPower get() = type.maxPower
@@ -17,11 +17,11 @@ interface PoweredMultiblockEntity {
 	fun setPower(amount: Int) {
 		val correctedPower = amount.coerceIn(0, maxPower)
 
-		power = correctedPower
+		powerUnsafe = correctedPower
 	}
 
 	fun getPower(): Int {
-		return power
+		return powerUnsafe
 	}
 
 	/**
@@ -66,6 +66,6 @@ interface PoweredMultiblockEntity {
 
 	/** Store power data */
 	fun storePower(store: PersistentMultiblockData) {
-		store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, power)
+		store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, powerUnsafe)
 	}
 }
