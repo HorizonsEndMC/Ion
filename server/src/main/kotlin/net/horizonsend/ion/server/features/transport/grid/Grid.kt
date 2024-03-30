@@ -15,17 +15,12 @@ abstract class Grid(val network: ChunkTransportNetwork) {
 	val nodes: ConcurrentHashMap<Long, GridNode> = ConcurrentHashMap()
 	val world get() = network.chunk.world
 
-	val grids: Nothing = TODO("Grid system")
+//	val grids: Nothing = TODO("Grid system")
 
 	/**
 	 *
 	 **/
 	open fun setup() {}
-
-	/**
-	 *
-	 **/
-	abstract fun isNode(block: BlockSnapshot): Boolean
 
 	/**
 	 * Handle the creation / loading of the node into memory
@@ -34,7 +29,7 @@ abstract class Grid(val network: ChunkTransportNetwork) {
 	 **/
 	abstract fun loadNode(block: BlockSnapshot): GridNode?
 
-	abstract fun processBlockChange(previous: BlockSnapshot, new: BlockSnapshot)
+	abstract fun processBlockChange(key: Long, new: BlockSnapshot)
 
 	/**
 	 *
@@ -81,8 +76,6 @@ abstract class Grid(val network: ChunkTransportNetwork) {
 					val realZ = originZ + z
 
 					val snapshot = getBlockSnapshotAsync(network.chunk.world, realX, realY, realZ) ?: continue
-
-					if (!isNode(snapshot)) continue
 
 					val node = loadNode(snapshot) ?: continue
 
