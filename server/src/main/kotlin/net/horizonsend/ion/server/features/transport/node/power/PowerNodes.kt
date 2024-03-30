@@ -6,5 +6,5 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultibl
  *
  **/
 interface PowerNode {
-	val multiblocks: Collection<PoweredMultiblockEntity>
+	val multiblocks: MutableList<PoweredMultiblockEntity>
 }

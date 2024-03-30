@@ -11,7 +11,14 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 import org.bukkit.block.data.BlockData
 
-class BlockSnapshot(val world: World, val x: Int, val y: Int, val z: Int, val type: Material, val data: BlockData) {
+class BlockSnapshot(
+	val world: World,
+	val x: Int,
+	val y: Int,
+	val z: Int,
+	val type: Material,
+	val data: BlockData
+) {
 	val state: BlockState? get() {
 		return runBlocking { getBukkitBlockState(block, false) }
 	}
@@ -21,6 +28,8 @@ class BlockSnapshot(val world: World, val x: Int, val y: Int, val z: Int, val ty
 	}
 
 	val customBlock: CustomBlock? get() = CustomBlocks.getByBlockData(data)
+
+	val redstonePower: Int get() = block.blockPower
 
 	companion object {
 		fun ChunkSnapshot.getBlockSnapshot(x: Int, y: Int, z: Int): BlockSnapshot? {
@@ -33,7 +42,9 @@ class BlockSnapshot(val world: World, val x: Int, val y: Int, val z: Int, val ty
 			val localX = x - chunkOriginX
 			val localZ = z - chunkOriginZ
 
-			return BlockSnapshot(Bukkit.getWorld(worldName)!!, x, y, z, getBlockType(localX, y, localZ), getBlockData(localX, y, localZ))
+			val world = Bukkit.getWorld(worldName)!!
+
+			return BlockSnapshot(world, x, y, z, getBlockType(localX, y, localZ), getBlockData(localX, y, localZ))
 		}
 
 		fun Block.snapshot(): BlockSnapshot = BlockSnapshot(world, x, y, z, type, blockData)

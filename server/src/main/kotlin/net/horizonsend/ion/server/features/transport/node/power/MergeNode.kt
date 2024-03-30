@@ -1,19 +1,13 @@
-package net.horizonsend.ion.server.features.transport.node.general
+package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.features.transport.grid.Grid
 import net.horizonsend.ion.server.features.transport.node.ExtractorNode
 import net.horizonsend.ion.server.features.transport.node.GridNode
 import net.horizonsend.ion.server.features.transport.step.Step
-import net.horizonsend.ion.server.features.transport.step.TransferStatus
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ThreadLocalRandom
-import kotlin.random.asKotlinRandom
 
-/**
- * An omnidirectional node
- **/
-class JunctionNode(
+class MergeNode(
 	override val parentGrid: Grid,
 	override val x: Int,
 	override val y: Int,
@@ -26,20 +20,6 @@ class JunctionNode(
 	}
 
 	override fun processStep(step: Step) {
-		val neighbor = transferableNeighbors
-			.entries
-			.filter { it.key != step.direction }
-			.randomOrNull(ThreadLocalRandom.current().asKotlinRandom())
-
-		if (neighbor == null) {
-			step.status = TransferStatus.BLOCKED
-
-			return
-		}
-
-		val (offset, node) = neighbor
-
-		step.direction = offset
-		step.currentNode = node
+		TODO("Not yet implemented")
 	}
 }

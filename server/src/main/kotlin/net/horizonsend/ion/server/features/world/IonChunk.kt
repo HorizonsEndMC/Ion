@@ -9,6 +9,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.event.EventHandler
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.ChunkUnloadEvent
 
@@ -77,8 +78,16 @@ class IonChunk(val inner: Chunk) {
 			unregisterChunk(event.chunk)
 		}
 
+		@EventHandler
+		fun onBlockBreak(event: BlockBreakEvent) {
+			val ionChunk = event.block.chunk.ion()
+			ionChunk.transportNetwork.processBlockChange(event)
+		}
+
 		/**
 		 * Handles the creation, registration and loading of the chunk in the IonWorld
+		 *
+		 * It is imperative that every exception generated be handled
 		 **/
 		private fun registerChunk(chunk: Chunk): IonChunk {
 			val ionWorld = chunk.world.ion
@@ -111,5 +120,9 @@ class IonChunk(val inner: Chunk) {
 		}
 
 		fun Chunk.ion(): IonChunk = this.world.ion.getChunk(chunkKey)!!
+	}
+
+	override fun toString(): String {
+		return "IonChunk[$x, $z]"
 	}
 }

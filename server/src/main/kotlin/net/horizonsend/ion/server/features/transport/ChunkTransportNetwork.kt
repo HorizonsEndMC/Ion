@@ -4,10 +4,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
+import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot.Companion.snapshot
 import net.horizonsend.ion.server.features.transport.grid.PowerGrid
 import net.horizonsend.ion.server.features.world.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.Chunk
+import org.bukkit.event.block.BlockBreakEvent
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class ChunkTransportNetwork(
@@ -40,6 +44,21 @@ class ChunkTransportNetwork(
 
 	fun save() {
 
+	}
+
+	fun processBlockChange(event: BlockBreakEvent) {
+		val block = event.block
+
+		val key = toBlockKey(block.x, block.y, block.z)
+		val snapshot = block.snapshot()
+
+		processBlockChange(key, snapshot)
+	}
+
+	fun processBlockChange(key: Long, new: BlockSnapshot) {
+		powerGrid.processBlockChange(key, new)
+		pipeGrid.processBlockChange(key, new)
+		gasGrid.processBlockChange(key, new)
 	}
 
 	private fun getExtractorData(chunk: Chunk): ExtractorData {

@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.transport.grid.Grid
 import net.horizonsend.ion.server.features.transport.node.Consolidatable
 import net.horizonsend.ion.server.features.transport.node.GridNode
+import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.faces
@@ -35,6 +36,10 @@ class LinearNode(
 	override fun isTransferableTo(offset: BlockFace, node: GridNode): Boolean {
 		// Only allow transfer to wires along the same axis
 		return offset.axis == axis
+	}
+
+	override fun processStep(step: Step) {
+		TODO("Not yet implemented")
 	}
 
 	override fun consolidate() {
