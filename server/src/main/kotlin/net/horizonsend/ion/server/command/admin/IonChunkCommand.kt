@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.command.admin
 
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
@@ -47,6 +48,25 @@ object IonChunkCommand : SLCommand() {
 			val (x, y, z) = toVec3i(key)
 
 			ionChunk.multiblockManager.removeMultiblockEntity(x, y, z)
+		}
+	}
+
+	@Subcommand("dump nodes")
+	@CommandCompletion("power|item|gas")
+	fun dumpNodes(sender: Player, network: String) {
+		val ionChunk = sender.chunk.ion()
+
+		val grid = when (network) {
+			"power" -> ionChunk.transportNetwork.powerGrid
+			"item" -> ionChunk.transportNetwork.pipeGrid
+			"gas" -> ionChunk.transportNetwork.gasGrid
+			 else -> fail { "invalid network" }
+		}
+
+		grid.nodes.forEach { (t, u) ->
+			val vec = toVec3i(u.key)
+
+			sender.highlightBlock(vec, 50L)
 		}
 	}
 }
