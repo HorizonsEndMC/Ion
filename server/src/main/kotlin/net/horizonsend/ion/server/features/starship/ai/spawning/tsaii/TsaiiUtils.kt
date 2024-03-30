@@ -105,8 +105,10 @@ private fun tsaiiTemplate(
 		miniMessageName = miniMessageName,
 		type = type,
 		controllerFactory = controllerFactory,
-		xpMultiplier = xpMultiplier,
-		creditReward = creditReward,
+		rewardProviders = listOf(
+			AISpawningConfiguration.AIStarshipTemplate.SLXPRewardProviderConfiguration(xpMultiplier),
+			AISpawningConfiguration.AIStarshipTemplate.CreditRewardProviderConfiguration(creditReward),
+		),
 		manualWeaponSets = manualWeaponSets,
 		autoWeaponSets = autoWeaponSets
 	)

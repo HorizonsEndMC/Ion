@@ -52,7 +52,7 @@ object Bazaars : IonServerComponent() {
 	val strings = mutableListOf<String>().apply {
 		addAll(Material.values().filter { it.isItem && !it.isLegacy }.map { it.name })
 		addAll(LegacyCustomItems.all().map { it.id })
-		addAll(net.horizonsend.ion.server.features.customitems.CustomItems.identifiers)
+		addAll(CustomItems.identifiers)
 	}
 
     fun onClickBazaarNPC(player: Player, city: TradeCityData) {
