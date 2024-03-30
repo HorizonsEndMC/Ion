@@ -41,9 +41,14 @@ class AIRewardsProvider(val starship: ActiveStarship, val template: AISpawningCo
 
 		for ((damager, data) in dataMap.entries) {
 			val (points, _) = data
-			val player = (damager as? PlayerDamager)?.player ?: continue // shouldn't happen
+			val player = damager.player
 
-			processDamagerRewards(damager, points, sum)
+			try {
+				processDamagerRewards(damager, points, sum)
+			} catch (e: Throwable) {
+				log.error("Exception processing damager rewards: ${e.message}!")
+				e.printStackTrace()
+			}
 
 			if (points.get() > 0) player.rewardAchievement(Achievement.KILL_SHIP)
 		}
@@ -52,7 +57,7 @@ class AIRewardsProvider(val starship: ActiveStarship, val template: AISpawningCo
 	private fun processDamagerRewards(damager: PlayerDamager, points: AtomicInteger, pointsSum: Int) {
 		val killedSize = starship.initialBlockCount.toDouble()
 
-		val percent = points.get() / pointsSum
+		val percent = points.get().toDouble() / pointsSum.toDouble()
 		val xp = ((sqrt(killedSize.pow(2.0) / sqrt(killedSize * 0.00005))) * percent * template.xpMultiplier).toInt()
 		val money = template.creditReward * percent
 
