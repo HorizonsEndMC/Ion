@@ -88,6 +88,14 @@ object ClientDisplayEntities : IonServerComponent() {
         entity.entityData.refresh(player)
     }
 
+    fun highlightDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, glowing: Boolean) {
+        val player = bukkitPlayer.minecraft
+
+        entity.setGlowingTag(glowing)
+
+        entity.entityData.refresh(player)
+    }
+
     fun deleteDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display) {
         val player = bukkitPlayer.minecraft
         val conn = player.connection

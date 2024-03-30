@@ -563,6 +563,8 @@ object CustomItems {
 	val ILIOS = register("ILIOS", 5102, text("Ilios"))
 	val REGULUS = register("REGULUS", 5103, text("Regulus"))
 	val SIRIUS = register("SIRIUS", 5104, text("Sirius"))
+
+	val PLANET_SELECTOR = register("PLANET_SELECTOR", 5900, text("PLANET_SELECTOR"))
 	// Planets end
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.

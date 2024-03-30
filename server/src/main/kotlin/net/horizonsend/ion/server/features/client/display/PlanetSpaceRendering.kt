@@ -15,10 +15,19 @@ import org.bukkit.util.Vector
 import org.joml.AxisAngle4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import kotlin.math.PI
 import kotlin.math.min
 
 object PlanetSpaceRendering : IonServerComponent() {
+    // How often the planet display entities should update in ticks
     private const val PLANET_UPDATE_RATE = 10L
+    // The threshold for "hovering" over a planet, in radians
+    private const val PLANET_SELECTOR_ANGLE_THRESHOLD = 5.0 / 180.0 * PI
+    // These vars are for saving the info of the closest
+    private var lowestAngle: Float = Float.MAX_VALUE
+    private var planetSelectorDistance: Int? = null
+    private var planetSelectorDirection: Vector? = null
+    private var planetSelectorScale: Float? = null
 
     override fun onEnable() {
         Tasks.syncRepeat(0L, PLANET_UPDATE_RATE) {
@@ -51,10 +60,8 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.itemStack = getPlanetItemStack(identifier)
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        entity.interpolationDuration = 10
-        entity.teleportDuration = 10
-        println("identifier: $identifier")
-        println("entity.itemStack: ${entity.itemStack}")
+        entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
@@ -85,7 +92,7 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @param distance the distance that the planet is to the player
      * @param direction the direction that the entity will render from with respect to the player
      */
-    private fun updatePlanetEntity(player: Player, identifier: String, distance: Double, direction: Vector) {
+    private fun updatePlanetEntity(player: Player, identifier: String, distance: Double, direction: Vector, highlight: Boolean = true) {
 
         val entityRenderDistance = getViewDistanceEdge(player)
 
@@ -105,18 +112,108 @@ object PlanetSpaceRendering : IonServerComponent() {
             // calculate position and offset
             val position = player.eyeLocation.toVector()
             val offset = direction.clone().normalize().multiply(entityRenderDistance)
+            val scale = scale(distance)
 
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
                 Quaternionf(ClientDisplayEntities.rotateToFaceVector(offset.toVector3f())),
-                Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
+                Vector3f(scale * viewDistanceFactor(entityRenderDistance)),
+                Quaternionf()
+            )
+
+            ClientDisplayEntities.moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
+            ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)
+
+            if (highlight) {
+                // angle in radians
+                val angle = player.location.direction.angle(offset)
+                // set the lowest angle vars if there is a closer entity to the player's cursor
+                if (angle < PLANET_SELECTOR_ANGLE_THRESHOLD && lowestAngle > angle) {
+                    lowestAngle = angle
+                    planetSelectorDistance = entityRenderDistance - 8
+                    planetSelectorDirection = direction
+                    planetSelectorScale = scale
+                }
+            }
+        }
+    }
+
+    private fun createPlanetSelectorEntity(
+        player: Player,
+        distance: Int,
+        direction: Vector,
+        scale: Float
+    ): net.minecraft.world.entity.Display.ItemDisplay {
+
+        val entity = ClientDisplayEntityFactory.createItemDisplay(player)
+
+        entity.itemStack = CustomItems.PLANET_SELECTOR.constructItemStack()
+        entity.billboard = Display.Billboard.FIXED
+        entity.viewRange = 5.0f
+        entity.interpolationDuration = 0
+        entity.brightness = Display.Brightness(15, 15)
+        entity.teleportDuration = 0
+
+        // calculate position and offset
+        val position = player.eyeLocation.toVector()
+        val offset = direction.clone().normalize().multiply(distance)
+
+        // apply transformation
+        entity.transformation = Transformation(
+            offset.toVector3f(),
+            ClientDisplayEntities.rotateToFaceVector(offset.toVector3f()),
+            Vector3f(scale * viewDistanceFactor(distance)),
+            AxisAngle4f()
+        )
+
+        // position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
+        val nmsEntity = entity.getNMSData(position.x, position.y, position.z)
+
+        ClientDisplayEntities.sendEntityPacket(player, nmsEntity)
+        ClientDisplayEntities.highlightDisplayEntityPacket(player, nmsEntity, true)
+        ClientDisplayEntities[player.uniqueId]?.set("planetSelector", nmsEntity)
+
+        return nmsEntity
+    }
+
+    private fun updatePlanetSelectorEntity(player: Player, distance: Int, direction: Vector, scale: Float) {
+
+        val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get("planetSelector") ?: return
+
+        // remove entity if it is in an unloaded chunk or different world (this causes the entity client-side to despawn?)
+        // also do not render if the planet is closer than the entity render distance
+        if (!nmsEntity.isChunkLoaded ||
+            nmsEntity.level().world.name != player.world.name
+        ) {
+            ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
+            ClientDisplayEntities[player.uniqueId]?.remove("planetSelector")
+            return
+        }
+        else {
+            // calculate position and offset
+            val position = player.eyeLocation.toVector()
+            val offset = direction.clone().normalize().multiply(distance)
+
+            // apply transformation
+            val transformation = com.mojang.math.Transformation(
+                offset.toVector3f(),
+                Quaternionf(ClientDisplayEntities.rotateToFaceVector(offset.toVector3f())),
+                Vector3f(scale * viewDistanceFactor(distance)),
                 Quaternionf()
             )
 
             ClientDisplayEntities.moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
             ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)
         }
+    }
+
+    private fun deletePlanetSelectorEntity(player: Player) {
+
+        val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get("planetSelector") ?: return
+
+        ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
+        ClientDisplayEntities[player.uniqueId]?.remove("planetSelector")
     }
 
     /**
@@ -184,17 +281,20 @@ object PlanetSpaceRendering : IonServerComponent() {
         val planetList = Space.getPlanets().filter { it.spaceWorld == player.world }
         val playerDisplayEntities = ClientDisplayEntities[player.uniqueId] ?: return
 
+        lowestAngle = Float.MAX_VALUE
+        planetSelectorDistance = null
+        planetSelectorDirection = null
+
         for (planet in planetList) {
             val distance = player.location.toVector().distance(planet.location.toVector())
             val direction = planet.location.toVector().subtract(player.location.toVector()).normalize()
 
-            // entity does not exist yet; create it
             if (playerDisplayEntities[planet.name] == null) {
+                // entity does not exist yet; create it
                 // send packet and create the planet entity
                 createPlanetEntity(player, planet.name, distance, direction) ?: continue
-            }
-            // entity exists; update position
-            else {
+            } else {
+                // entity exists; update position
                 updatePlanetEntity(player, planet.name, distance, direction)
             }
         }
@@ -204,15 +304,27 @@ object PlanetSpaceRendering : IonServerComponent() {
             val distance = player.location.toVector().distance(star.location.toVector())
             val direction = star.location.toVector().subtract(player.location.toVector()).normalize()
 
-            // entity does not exist yet; create it
             if (playerDisplayEntities[star.name] == null) {
+                // entity does not exist yet; create it
                 // send packet and create the planet entity
                 createPlanetEntity(player, star.name, distance, direction) ?: continue
+            } else {
+                // entity exists; update position
+                updatePlanetEntity(player, star.name, distance, direction, false)
             }
-            // entity exists; update position
-            else {
-                updatePlanetEntity(player, star.name, distance, direction)
+        }
+
+        if (lowestAngle < Float.MAX_VALUE && planetSelectorDistance != null && planetSelectorDirection != null && planetSelectorScale != null) {
+            if (playerDisplayEntities["planetSelector"] == null) {
+                // planet should be selected but the planet selector doesn't exist yet
+                createPlanetSelectorEntity(player, planetSelectorDistance!!, planetSelectorDirection!!, planetSelectorScale!!)
+            } else {
+                // planet selector already exists
+                updatePlanetSelectorEntity(player, planetSelectorDistance!!, planetSelectorDirection!!, planetSelectorScale!!)
             }
+        } else {
+            // planet is not selected; delete selector if it exists
+            deletePlanetSelectorEntity(player)
         }
     }
 }
