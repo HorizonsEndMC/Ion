@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
-import net.horizonsend.ion.server.features.starship.modules.AIRewardsProvider
 import net.horizonsend.ion.server.features.starship.modules.AISinkMessageFactory
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -67,12 +66,12 @@ fun createAIShipFromTemplate(
 		template.type,
 		template.miniMessageName,
 		createController
-	) {
-		it.speedLimit = template.maxSpeed
-		it.rewardsProvider = AIRewardsProvider(it, template)
-		it.sinkMessageFactory = AISinkMessageFactory(it)
+	) { starship ->
+		starship.speedLimit = template.maxSpeed
+		starship.rewardsProviders.addAll(template.rewardProviders.map { it.createRewardsProvider(starship, template) })
+		starship.sinkMessageFactory = AISinkMessageFactory(starship)
 
-		callback(it)
+		callback(starship)
 	}
 }
 
