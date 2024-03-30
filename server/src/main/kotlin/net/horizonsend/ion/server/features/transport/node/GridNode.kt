@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node
 
 import net.horizonsend.ion.server.features.transport.grid.Grid
+import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.setOrRemove
@@ -38,6 +39,24 @@ interface GridNode {
 	}
 
 	/**
+	 * Notify neighbors of this node's existence
+	 **/
+	fun notifyNeighbors() {
+		// In every adjacent direction
+		for (direction in ADJACENT_BLOCK_FACES) {
+			val newX = x + direction.modX
+			val newY = y + direction.modY
+			val newZ = z + direction.modZ
+
+			// All nodes should already be collected
+			val possibleNode = parentGrid.getNode(newX, newY, newZ) ?: continue
+
+			possibleNode.transferableNeighbors.clear()
+			possibleNode.collectNeighbors()
+		}
+	}
+
+	/**
 	 * Notifies this node of a changed neighbor
 	 *
 	 * Will handle adding it to the transferable list, if able
@@ -54,6 +73,8 @@ interface GridNode {
 
 	/**
 	 * Whether a power transfer may take place between these two nodes
+	 *
+	 * Used when initially building relations
 	 **/
 	fun isTransferableTo(offset: BlockFace, node: GridNode): Boolean
 
@@ -74,4 +95,6 @@ interface GridNode {
 			parentGrid.nodes.setOrRemove(key, new)
 		}
 	}
+
+	fun processStep(step: Step)
 }
