@@ -19,7 +19,6 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotat
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
 import net.horizonsend.ion.server.features.starship.modules.SinkMessageFactory
-import net.horizonsend.ion.server.features.starship.modules.StandardRewardsProvider
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -43,6 +42,7 @@ import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.lang.Math.cbrt
+import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
@@ -67,7 +67,7 @@ class ActiveControlledStarship(
 
 	override val type: StarshipType = data.starshipType.actualType
 	override val balancing = type.balancingSupplier.get()
-	override var rewardsProvider: RewardsProvider = StandardRewardsProvider(this)
+	override val rewardsProviders: LinkedList<RewardsProvider> = LinkedList<RewardsProvider>()
 	override var sinkMessageFactory: MessageFactory = SinkMessageFactory(this)
 
 	override val interdictionRange: Int = balancing.interdictionRange

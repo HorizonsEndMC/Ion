@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.ai.spawning.alien.AlienSpawner
@@ -19,6 +20,10 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.Privat
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.privateerTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.tsaiiTemplates
+import net.horizonsend.ion.server.features.starship.modules.AICreditRewardProvider
+import net.horizonsend.ion.server.features.starship.modules.AIItemRewardProvider
+import net.horizonsend.ion.server.features.starship.modules.AIXPRewardProvider
+import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import org.apache.commons.lang.math.DoubleRange
 import org.bukkit.Bukkit
@@ -133,8 +138,10 @@ data class AISpawningConfiguration(
 
 		var controllerFactory: String = "STARFIGHTER",
 
-		var xpMultiplier: Double = 1.0,
-		var creditReward: Double = 100.0,
+		val rewardProviders: List<AIRewardsProviderConfiguration> = listOf(
+			CreditRewardProviderConfiguration(creditReward = 100.0),
+			SLXPRewardProviderConfiguration(xpMultiplier = 1.0),
+		),
 
 		var maxSpeed: Int = -1,
 		var engagementRange: Double = 500.0,
@@ -182,5 +189,37 @@ data class AISpawningConfiguration(
 			val broadcastMessage: String?,
 			val configuration: AISpawnerConfiguration
 		)
+
+		@Serializable
+		data class CreditRewardProviderConfiguration(
+			val creditReward: Double
+		) : AIRewardsProviderConfiguration {
+			override fun createRewardsProvider(starship: ActiveControlledStarship, template: AIStarshipTemplate): RewardsProvider {
+				return AICreditRewardProvider(starship, this)
+			}
+		}
+
+		@Serializable
+		data class SLXPRewardProviderConfiguration(
+			val xpMultiplier: Double
+		) : AIRewardsProviderConfiguration {
+			override fun createRewardsProvider(starship: ActiveControlledStarship, template: AIStarshipTemplate): RewardsProvider {
+				return AIXPRewardProvider(starship, this)
+			}
+		}
+
+		@Serializable
+		data class ItemRewardProviderConfiguration(
+			val items: List<ServerConfiguration.PlanetSpawnConfig.DroppedItem>
+		) : AIRewardsProviderConfiguration {
+			override fun createRewardsProvider(starship: ActiveControlledStarship, template: AIStarshipTemplate): RewardsProvider {
+				return AIItemRewardProvider(starship, this)
+			}
+		}
+
+		@Serializable
+		sealed interface AIRewardsProviderConfiguration {
+			fun createRewardsProvider(starship: ActiveControlledStarship, template: AIStarshipTemplate): RewardsProvider
+		}
 	}
 }
