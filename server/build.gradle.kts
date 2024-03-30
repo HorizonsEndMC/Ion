@@ -44,7 +44,6 @@ dependencies {
 	compileOnly("net.luckperms:api:5.4")
 
 	// Included Dependencies
-	implementation("com.google.guava:guava:33.1.0-jre")
 	implementation("com.manya:persistent-data-types:1.0.25")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
