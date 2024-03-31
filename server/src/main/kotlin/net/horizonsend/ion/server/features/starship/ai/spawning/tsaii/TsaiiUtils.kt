@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.tsaii
 
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
+import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories.registerFactory
@@ -108,6 +110,11 @@ private fun tsaiiTemplate(
 		rewardProviders = listOf(
 			AISpawningConfiguration.AIStarshipTemplate.SLXPRewardProviderConfiguration(xpMultiplier),
 			AISpawningConfiguration.AIStarshipTemplate.CreditRewardProviderConfiguration(creditReward),
+			AISpawningConfiguration.AIStarshipTemplate.ItemRewardProviderConfiguration(listOf(
+				ServerConfiguration.PlanetSpawnConfig.DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 0.5f, amount = 10),
+				ServerConfiguration.PlanetSpawnConfig.DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 0.25f, amount = 15),
+				ServerConfiguration.PlanetSpawnConfig.DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 0.12f, amount = 20),
+			)),
 		),
 		manualWeaponSets = manualWeaponSets,
 		autoWeaponSets = autoWeaponSets

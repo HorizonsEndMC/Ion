@@ -1,6 +1,12 @@
 package net.horizonsend.ion.server.configuration
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
+import net.horizonsend.ion.server.features.starship.subsystem.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.SupercapReactorSubsystem
+import java.util.LinkedList
 import kotlin.math.PI
 
 @Serializable
@@ -263,6 +269,18 @@ data class StarshipTypeBalancing(
 				applyCooldownToAll = true,
 				minBlockCount = 17500
 			)
+		),
+		requiredMultiblocks = listOf(
+			RequiredSubsystemInfo(
+				SupercapReactorSubsystem::class.java,
+				1,
+				"Battlecruisers require a reactor to pilot!"
+			),
+			RequiredSubsystemInfo(
+				FuelTankSubsystem::class.java,
+				1,
+				"Battlecruisers require fuel to pilot!"
+			)
 		)
 	),
 	val battleship: StarshipBalancing = StarshipBalancing(
@@ -424,8 +442,24 @@ data class StarshipBalancing(
 	val interdictionRange: Int,
 	val hyperspaceRangeMultiplier: Double,
 	val cruiseSpeedMultiplier: Double = 1.0,
-	val shieldPowerMultiplier: Double = 1.0
+	val shieldPowerMultiplier: Double = 1.0,
+
+	val requiredMultiblocks: List<RequiredSubsystemInfo> = listOf()
 )
+
+@Serializable
+data class RequiredSubsystemInfo(
+	@Serializable(with = SubsystemSerializer::class) val subsystem: Class<out @Contextual StarshipSubsystem>,
+	val requiredAmount: Int,
+	val failMessage: String
+) {
+	/**
+	 * Tests whether the starship subsystems contain necessary multiblocks
+	 **/
+	fun checkRequirements(subsystems: LinkedList<StarshipSubsystem>): Boolean {
+		return (subsystems.groupBy { it.javaClass }[subsystem]?.count() ?: 0) >= requiredAmount
+	}
+}
 
 @Serializable
 class StarshipWeapons(
@@ -923,7 +957,8 @@ class StarshipWeapons(
 	 * @param forwardOnly Whether this weapon can only fire in the direction the starship is facing.
 	 *
 	 * Cannon specific
-	 * @param angleRadians For cannon type weapons. Controls the aiming distance.
+	 * @param angleRadiansVertical For cannon type weapons. Controls the aiming distance.
+	 * @param angleRadiansHorizontal For cannon type weapons. Controls the aiming distance.
 	 * @param convergeDistance For cannon type weapons. Controls the distance at which the firing arcs converge on a point.
 	 *
 	 * Heavy weapons
