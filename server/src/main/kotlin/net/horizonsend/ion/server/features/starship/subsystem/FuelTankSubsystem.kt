@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.ItemStack
 import kotlin.math.min
 
 class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTankMultiblock) :
@@ -15,30 +16,24 @@ class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTa
 	var fuelAvailable = true; private set
 	var ticks = 0
 
-	override fun tick() {
-		ticks++;
-
-		if (ticks % 200 != 0) return
-
-		fuelAvailable = tryConsumeFuel()
-	}
-
 	/**
 	 * Searches the inventory and tries to remove the remaining amount of fuel
 	 *
-	 * Returns whether the fuel could be removed
+	 * Returns the amount of fuel consumed
 	 **/
-	fun tryConsumeFuel(): Boolean {
-		val inventory = getInventory() ?: return false
-		if (inventory.isEmpty) return false
+	fun tryConsumeFuel(toConsume: Int): Int {
+		var remaining = toConsume
 
-		val fuelCanisters = inventory.filter { it.customItem == GAS_CANISTER_HYDROGEN }
+		val inventory = getInventory() ?: return 0
+		if (inventory.isEmpty) return 0
 
-		if (fuelCanisters.isEmpty()) return false;
+		val fuelCanisters = inventory.filter { item: ItemStack? ->
+			item?.customItem == GAS_CANISTER_HYDROGEN
+		}
+
+		if (fuelCanisters.isEmpty()) return 0
 
 		val byFuel = fuelCanisters.map { it to GAS_CANISTER_HYDROGEN.getFill(it) }.sortedByDescending { it.second }
-
-		var remaining = FUEL_CONSUMPTION
 
 		for ((itemStack, fuelAmount) in byFuel) {
 			val toRemove = min(remaining, fuelAmount)
@@ -49,7 +44,8 @@ class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTa
 			if (remaining == 0) break
 		}
 
-		return remaining <= 0
+		if (remaining >= 0) fuelAvailable = false
+		return toConsume - remaining
 	}
 
 	private fun getInventory(): Inventory? {
@@ -65,9 +61,5 @@ class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTa
 				?: return null
 
 		return inventoryHolder.inventory
-	}
-
-	companion object {
-		private const val FUEL_CONSUMPTION = 60
 	}
 }
