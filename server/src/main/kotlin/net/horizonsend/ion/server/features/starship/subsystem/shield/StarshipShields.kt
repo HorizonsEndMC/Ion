@@ -123,10 +123,8 @@ object StarshipShields : IonServerComponent() {
 
 	private fun updateShieldBars() {
 		val iterator = updatedStarships.iterator()
-
 		while (iterator.hasNext()) {
 			val ship = iterator.next()
-
 			if (ship is ActiveControlledStarship) {
 				updateShieldBars(ship)
 			}
@@ -143,12 +141,9 @@ object StarshipShields : IonServerComponent() {
 
 			for (subsystem in ship.shields) {
 				if (subsystem.name != name) continue
-
 				amount++
 				isReinforced = subsystem.isReinforcementActive()
-
 				val subsystemPercent = subsystem.powerRatio
-
 				total += subsystemPercent
 				percents.add(subsystemPercent)
 			}
