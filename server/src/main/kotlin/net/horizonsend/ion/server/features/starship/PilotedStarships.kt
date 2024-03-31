@@ -424,12 +424,16 @@ object PilotedStarships : IonServerComponent() {
 				return@activateAsync
 			}
 
-			if (activePlayerStarship.type == StarshipType.BATTLECRUISER && activePlayerStarship.supercapReactorCount < 1) {
-				player.userError("Battlecruisers require a reactor to pilot!")
-				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
-				return@activateAsync
+			// Check required subsystems
+			for (requiredSubsystem in activePlayerStarship.balancing.requiredMultiblocks) {
+				if (!requiredSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+					player.userError("Subsystem requirement not met! ${requiredSubsystem.failMessage}")
+					DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+					return@activateAsync
+				}
 			}
 
+			// Limit mining laser tiers and counts
 			val miningLasers = activePlayerStarship.subsystems.filterIsInstance<MiningLaserSubsystem>()
 			if (miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {
 				player.userErrorAction("Your starship can only support tier ${activePlayerStarship.type.miningLaserTier} mining lasers!")
