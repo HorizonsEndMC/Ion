@@ -371,8 +371,8 @@ data class StarshipTypeBalancing(
 	),
 	val aiGunship: StarshipBalancing = gunship,
 	val aiCorvette: StarshipBalancing = StarshipBalancing(
-		sneakFlyAccelDistance = 20,
-		maxSneakFlyAccel = 20,
+		sneakFlyAccelDistance = 5,
+		maxSneakFlyAccel = 5,
 		interdictionRange = 1800,
 		hyperspaceRangeMultiplier = 1.7,
 		weapons = corvette.weapons
