@@ -1,15 +1,12 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.extensions.alert
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.features.starship.PilotedStarships.unpilot
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.PilotedStarships.unpilot
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -116,7 +113,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 	}
 
-	const val BATTLECRUISER_FUEL_CONSUMPTION = 60
+	const val BATTLECRUISER_FUEL_CONSUMPTION = 20
 
 	private fun handleBattlecruiserMechanics() {
 		val battlecruisers = ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER }
@@ -133,7 +130,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			if (remaining <= 0) return@forEach
 
 			battlecruiser.alert("WARNING: Fuel depleted! Shutdown sequence initiated")
-			unpilot(battlecruiser as ActiveControlledStarship)
+			PilotedStarships.unpilot(battlecruiser as ActiveControlledStarship)
 		}
 
 		// Destroy without intact reactors
