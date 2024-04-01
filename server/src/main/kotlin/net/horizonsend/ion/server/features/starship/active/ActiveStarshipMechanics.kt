@@ -113,7 +113,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 	}
 
-	const val BATTLECRUISER_FUEL_CONSUMPTION = 20
+	const val BATTLECRUISER_FUEL_CONSUMPTION = 18
 
 	private fun handleBattlecruiserMechanics() {
 		val battlecruisers = ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER }
