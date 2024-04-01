@@ -41,12 +41,18 @@ abstract class GasCanister(
 	}
 
 	fun setFill(itemStack: ItemStack, newValue: Int) {
+		if (newValue <= 0) return replaceWithEmpty(itemStack)
+
 		itemStack.editMeta {
 			it.persistentDataContainer.set(NamespacedKeys.GAS, PersistentDataType.INTEGER, newValue)
 			it.lore(listOf(lore(maximumFill, newValue)))
 			it.isUnbreakable = false
 			(it as Damageable).damage = (itemStack.type.maxDurability - newValue.toDouble() / maximumFill * itemStack.type.maxDurability).roundToInt()
 		}
+	}
+
+	fun replaceWithEmpty(itemStack: ItemStack) {
+		itemStack.itemMeta = CustomItems.GAS_CANISTER_EMPTY.constructItemStack().itemMeta
 	}
 
 	fun getFill(itemStack: ItemStack): Int =

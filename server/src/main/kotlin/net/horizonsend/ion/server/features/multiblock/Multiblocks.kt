@@ -45,6 +45,7 @@ import net.horizonsend.ion.server.features.multiblock.industry.CentrifugeMultibl
 import net.horizonsend.ion.server.features.multiblock.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.CompressorMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.FabricatorMultiblock
+import net.horizonsend.ion.server.features.multiblock.industry.OxygenFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.PlatePressMultiblock
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Bottom
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Top
@@ -143,6 +144,7 @@ object Multiblocks : IonServerComponent() {
 			FabricatorMultiblock,
 			CircuitfabMultiblock,
 			PlatePressMultiblock,
+			OxygenFurnaceMultiblock,
 
 			GeneratorMultiblockTier1,
 			GeneratorMultiblockTier2,
