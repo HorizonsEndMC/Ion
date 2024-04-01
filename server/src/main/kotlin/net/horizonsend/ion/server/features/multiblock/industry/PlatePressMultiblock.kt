@@ -105,7 +105,6 @@ object PlatePressMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		}
 	}
 
-
 	override val name = "platepress"
 
 	override val signText = createSignText(
