@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.gas
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_OXYGEN
-import net.horizonsend.ion.server.features.customitems.CustomItems.STEEL_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses.EMPTY_CANISTER
@@ -21,7 +19,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Effect
-import org.bukkit.Material
 import org.bukkit.block.Container
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
@@ -169,44 +166,6 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 
 		val fuelItem = inventory.smelting ?: return
 		val oxidizerItem = inventory.fuel ?: return
-		val result = furnace.inventory.result
-
-		if (PowerMachines.getPower(sign) <= maxPower) {
-			event.isBurning = true
-			furnace.burnTime = 200
-			furnace.cookTime = (-1000).toShort()
-
-			if (furnace.inventory.fuel == ItemStack(Material.IRON_INGOT) && inventory.smelting == GAS_CANISTER_OXYGEN) {
-				if (PowerMachines.getPower(sign) == 0 ||
-						fuelItem.type != Material.PRISMARINE_CRYSTALS
-				) {
-					furnace.cookTime = 0
-					event.isCancelled = true
-					return
-				}
-
-				if (oxidizerItem.type != Material.IRON_INGOT ||
-						oxidizerItem.customItem != null) {
-					furnace.cookTime = 0
-					event.isCancelled = true
-					return
-				}
-
-				// Produce new item if it is not the first burn event
-				if (furnace.cookTime >= 200) {
-					if (inventory.result == null) furnace.inventory.result = STEEL_INGOT.constructItemStack()
-					else result?.add(1)
-					furnace.inventory.fuel?.subtract(1)
-					PowerMachines.removePower(sign, 250)
-				}
-				furnace.cookTime = 0
-			}
-
-		}
-		else {
-			furnace.world.playEffect(furnace.location.add(0.5, 0.5, 0.5), Effect.SMOKE, 4)
-		}
-
 
 		val fuel = (fuelItem.customItem as? GasCanister) ?: return
 		val oxidizer = (oxidizerItem.customItem as? GasCanister) ?: return
