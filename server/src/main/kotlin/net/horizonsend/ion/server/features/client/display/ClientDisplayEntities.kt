@@ -71,6 +71,14 @@ object ClientDisplayEntities : IonServerComponent() {
         Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(entity.id)) }
     }
 
+    /**
+     * Sends a packet to a client-side entity to teleport it.
+     * @param bukkitPlayer the player with the targeted entity
+     * @param entity the NMS entity to edit
+     * @param x the x-coordinate to teleport the entity to
+     * @param y the y-coordinate to teleport the entity to
+     * @param z the z-coordinate to teleport the entity to
+     */
     fun moveDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, x: Double, y: Double, z: Double) {
         entity.teleportTo(x, y, z)
 
@@ -80,6 +88,12 @@ object ClientDisplayEntities : IonServerComponent() {
         conn.send(ClientboundTeleportEntityPacket(entity))
     }
 
+    /**
+     * Sends a packet to a client-side entity to change the transformation of it.
+     * @param bukkitPlayer the player with the targeted entity
+     * @param entity the NMS entity to edit
+     * @param transformation the new transformation assigned to the entity
+     */
     fun transformDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, transformation: com.mojang.math.Transformation) {
         val player = bukkitPlayer.minecraft
 
@@ -88,6 +102,12 @@ object ClientDisplayEntities : IonServerComponent() {
         entity.entityData.refresh(player)
     }
 
+    /**
+     * Sends a packet to a client-side entity to change the glow status of it.
+     * @param bukkitPlayer the player with the targeted entity
+     * @param entity the NMS entity to edit
+     * @param glowing enable or disable the entity's glow
+     */
     fun highlightDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, glowing: Boolean) {
         val player = bukkitPlayer.minecraft
 
@@ -96,7 +116,12 @@ object ClientDisplayEntities : IonServerComponent() {
         entity.entityData.refresh(player)
     }
 
-    fun deleteDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display) {
+    /**
+     * Sends a packet to a client-side entity to delete it.
+     * @param bukkitPlayer the player with the targeted entity
+     * @param entity the NMS entity to delete
+     */
+    fun deleteDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Entity) {
         val player = bukkitPlayer.minecraft
         val conn = player.connection
 

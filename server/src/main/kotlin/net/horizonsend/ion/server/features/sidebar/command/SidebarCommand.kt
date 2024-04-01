@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.sidebar.command
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
-import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreak
@@ -11,9 +10,6 @@ import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createTextDisplay
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.COMPASS_NEEDLE_ICON
@@ -34,8 +30,6 @@ import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
-import org.bukkit.Color
-import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 
 @CommandAlias("sidebar")
@@ -51,21 +45,6 @@ object SidebarCommand : SLCommand() {
         )
 
         sender.sendMessage(body)
-    }
-
-    @Subcommand("component")
-    @Suppress("unused")
-    fun onComponentTest(sender: Player) {
-        val billboardText = createTextDisplay(sender)
-        billboardText.text(text(COMPASS_NEEDLE_ICON.text).font(Sidebar.fontKey))
-        billboardText.backgroundColor = Color.fromARGB(0x00000000)
-        billboardText.billboard = Display.Billboard.CENTER
-
-        sendEntityPacket(
-            sender,
-            billboardText.getNMSData(sender.eyeLocation.x, sender.eyeLocation.y, sender.eyeLocation.z),
-            5 * 20L
-        )
     }
 
     private fun starshipComponents(player: Player) : Component {
