@@ -218,10 +218,27 @@ object ClientDisplayEntities : IonServerComponent() {
         // Assuming initial rotation vector is facing SOUTH (+z direction)
         val initVector = Vector3f(0f, 0f, 1f)
         // cross product of initial and final vectors will give the axis of rotation
-        val cross = (initVector.clone() as Vector3f).cross(direction.normalize()).normalize()
+        val cross = (initVector.clone() as Vector3f).cross((direction.clone() as Vector3f).normalize()).normalize()
         // angle between vectors to determine the rotation needed (in radians)
         val angle = initVector.angle(direction)
         // return the axis-angle representation
         return AxisAngle4f(angle, cross)
+    }
+
+    /**
+     * Function for getting the axis-angle representation of a rotation where an object faces a desired direction.
+     * Only rotates around the y-axis.
+     * @return the axis-angle representation to get the desired rotation
+     * @param direction the direction that an object should face
+     */
+    fun rotateToFaceVector2d(direction: Vector3f): AxisAngle4f {
+        // Assuming initial rotation vector is facing SOUTH (+z direction)
+        val initVector = Vector3f(0f, 0f, 1f)
+        // create a new vector with no y-component
+        val flattenedDirection = (direction.clone() as Vector3f).apply { this.y = 0f }
+        // angle between vectors to determine the rotation needed (in radians)
+        val angle = if (flattenedDirection.x > 0) initVector.angle(flattenedDirection) else initVector.angle(flattenedDirection) * -1
+        // return the axis-angle representation, with the axis of rotation around the y-axis
+        return AxisAngle4f(angle, Vector3f(0f, 1f, 0f))
     }
 }
