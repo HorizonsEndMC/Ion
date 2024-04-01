@@ -81,7 +81,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         // apply transformation
         entity.transformation = Transformation(
             offset.toVector3f(),
-            ClientDisplayEntities.rotateToFaceVector(offset.toVector3f()),
+            ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
             Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
             AxisAngle4f()
         )
@@ -128,7 +128,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
-                Quaternionf(ClientDisplayEntities.rotateToFaceVector(offset.toVector3f())),
+                Quaternionf(ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f())),
                 Vector3f(scale * viewDistanceFactor(entityRenderDistance)),
                 Quaternionf()
             )
@@ -184,7 +184,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         // apply transformation
         entity.transformation = Transformation(
             offset.toVector3f(),
-            ClientDisplayEntities.rotateToFaceVector(offset.toVector3f()),
+            ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
             Vector3f(scale * viewDistanceFactor(distance)),
             AxisAngle4f()
         )
@@ -230,7 +230,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
-                Quaternionf(ClientDisplayEntities.rotateToFaceVector(offset.toVector3f())),
+                Quaternionf(ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f())),
                 Vector3f(scale * viewDistanceFactor(distance)),
                 Quaternionf()
             )
@@ -287,7 +287,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         // apply transformation
         entity.transformation = Transformation(
             offset.toVector3f(),
-            ClientDisplayEntities.rotateToFaceVector(offset.toVector3f()).apply { this.angle += PI.toFloat() },
+            ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()).apply { this.angle += PI.toFloat() },
             Vector3f(scale * viewDistanceFactor(distance)),
             AxisAngle4f()
         )
@@ -297,7 +297,6 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         ClientDisplayEntities.sendEntityPacket(player, nmsEntity)
         ClientDisplayEntities[player.uniqueId]?.set("planetSelectorText", nmsEntity)
-        println("CREATED planetSelectorText")
 
         return nmsEntity
     }
@@ -323,7 +322,6 @@ object PlanetSpaceRendering : IonServerComponent() {
         ) {
             ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
             ClientDisplayEntities[player.uniqueId]?.remove("planetSelectorText")
-            println("REMOVED planetSelectorText")
             return
         }
         else {
@@ -335,14 +333,13 @@ object PlanetSpaceRendering : IonServerComponent() {
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
-                Quaternionf(ClientDisplayEntities.rotateToFaceVector(offset.toVector3f()).apply { this.angle += PI.toFloat() }),
+                Quaternionf(ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()).apply { this.angle += PI.toFloat() }),
                 Vector3f(scale * viewDistanceFactor(distance)),
                 Quaternionf()
             )
 
             ClientDisplayEntities.moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
             ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)
-            println("UPDATED planetSelectorText: text: $name")
         }
     }
 
@@ -356,7 +353,6 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
         ClientDisplayEntities[player.uniqueId]?.remove("planetSelectorText")
-        println("REMOVED planetSelectorText")
     }
 
     /**
