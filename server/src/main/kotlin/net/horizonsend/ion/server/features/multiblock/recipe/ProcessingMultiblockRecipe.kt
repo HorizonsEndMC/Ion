@@ -32,14 +32,14 @@ class ProcessingMultiblockRecipe<T: Multiblock>(
 	}
 
 	override fun execute(multiblock: T, sign: Sign, inventory: Inventory) {
-		// Return if enough ingredients are not present
-		if (!checkAndConsume(input, multiblock, sign, inventory)) return
-
 		inventory as FurnaceInventory
 
 		if (!LegacyItemUtils.canFit(inventory, result)) {
 			return
 		}
+
+		// Return if enough ingredients are not present
+		if (!checkAndConsume(input, multiblock, sign, inventory)) return
 
 		inventory.result?.add(1) ?: { inventory.result = result }
 	}
