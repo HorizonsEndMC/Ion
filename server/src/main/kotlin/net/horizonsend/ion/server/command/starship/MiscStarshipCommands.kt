@@ -31,6 +31,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.client.display.PlanetSpaceRendering
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
@@ -155,7 +156,13 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("jump")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
 	fun onJump(sender: Player) {
-		sender.userError("/jump <planet>, /jump <hyperspace gate> or /jump <x> <z>")
+		val selectedPlanetData = PlanetSpaceRendering.planetSelectorDataMap[sender.uniqueId]
+		if (selectedPlanetData != null) {
+			// player is looking at a planet in their HUD
+			onJump(sender, selectedPlanetData.name, null)
+		} else {
+			sender.userError("/jump <planet>, /jump <hyperspace gate> or /jump <x> <z>")
+		}
 	}
 
 	@Suppress("unused")
@@ -308,17 +315,17 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				.append(massShadowInfo.description)
 				.append(newline())
 				.append(text("Location: "))
-				.append(text("${massShadowInfo.x}, ${massShadowInfo.z}", NamedTextColor.WHITE))
+				.append(text("${massShadowInfo.x}, ${massShadowInfo.z}", WHITE))
 				.append(newline())
 				.append(text("Gravity well radius: "))
-				.append(text(massShadowInfo.radius, NamedTextColor.WHITE))
+				.append(text(massShadowInfo.radius, WHITE))
 				.append(newline())
 				.append(text("Current distance from center: "))
-				.append(text(massShadowInfo.distance, NamedTextColor.WHITE))
+				.append(text(massShadowInfo.distance, WHITE))
 				.append(newline())
 				.append(text("Cruise direction to escape: "))
 				.append(text(directionString, NamedTextColor.GREEN))
-				.append(text(" (${(atan2(escapeVector.z, escapeVector.x) * 180 / PI).toInt()})", NamedTextColor.WHITE))
+				.append(text(" (${(atan2(escapeVector.z, escapeVector.x) * 180 / PI).toInt()})", WHITE))
 
 			starship.sendMessage(message)
 			return
