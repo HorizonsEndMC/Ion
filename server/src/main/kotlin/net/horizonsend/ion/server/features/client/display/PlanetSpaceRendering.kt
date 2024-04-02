@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFac
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -473,7 +474,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         }
 
         // Rendering planet selector
-        if (lowestAngle < Float.MAX_VALUE && planetSelectorName != null && planetSelectorDistance != null && planetSelectorDirection != null && planetSelectorScale != null) {
+        if (PilotedStarships[player] != null && lowestAngle < Float.MAX_VALUE && planetSelectorName != null && planetSelectorDistance != null && planetSelectorDirection != null && planetSelectorScale != null) {
             if (playerDisplayEntities["planetSelector"] == null) {
                 // planet should be selected but the planet selector doesn't exist yet
                 createPlanetSelectorEntity(player, planetSelectorDistance!!, planetSelectorDirection!!, planetSelectorScale!!)
