@@ -15,7 +15,7 @@ class ItemIngredient(val ingredient: ItemStack, val amount: Int) : MultiblockRec
 	}
 
 	override fun consume(multiblock: Multiblock, sign: Sign, input: Inventory) {
-		val items = input.filter { it.isSimilar(ingredient) }
+		val items = input.filter { it?.isSimilar(ingredient) == true }
 
 		var remaining = amount
 
