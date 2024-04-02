@@ -65,37 +65,37 @@ object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 				x(+1).anyStairs()
 				x(+2).ironBlock()
 			}
-			z(+3) {
-				y(-1) {
-					x(-2).anyGlassPane()
-					x(-1).copperBlock()
-					x(+0).endRod()
-					x(+1).copperBlock()
-					x(+2).anyGlassPane()
-				}
-				y(+0) {
-					x(-2).anyGlassPane()
-					x(-1).anyStairs()
-					x(+0).anyStairs()
-					x(+1).anyStairs()
-					x(+2).anyGlassPane()
-				}
+		}
+		z(+3) {
+			y(-1) {
+				x(-2).anyGlassPane()
+				x(-1).copperBlock()
+				x(+0).endRod()
+				x(+1).copperBlock()
+				x(+2).anyGlassPane()
 			}
-			z(+4) {
-				y(-1) {
-					x(-2).steelBlock()
-					x(-1).anyGlassPane()
-					x(+0).sponge()
-					x(+1).anyGlassPane()
-					x(+2).steelBlock()
-				}
-				y(+0) {
-					x(-2).steelBlock()
-					x(-1).anyGlassPane()
-					x(+0).ironBlock()
-					x(+1).anyGlassPane()
-					x(+2).steelBlock()
-				}
+			y(+0) {
+				x(-2).anyGlassPane()
+				x(-1).anyStairs()
+				x(+0).anyStairs()
+				x(+1).anyStairs()
+				x(+2).anyGlassPane()
+			}
+		}
+		z(+4) {
+			y(-1) {
+				x(-2).steelBlock()
+				x(-1).anyGlassPane()
+				x(+0).sponge()
+				x(+1).anyGlassPane()
+				x(+2).steelBlock()
+			}
+			y(+0) {
+				x(-2).steelBlock()
+				x(-1).anyGlassPane()
+				x(+0).ironBlock()
+				x(+1).anyGlassPane()
+				x(+2).steelBlock()
 			}
 		}
 	}
