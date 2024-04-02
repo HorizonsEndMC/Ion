@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -173,13 +174,13 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.itemStack = CustomItems.PLANET_SELECTOR.constructItemStack()
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        entity.interpolationDuration = 0
+        entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
-        entity.teleportDuration = 0
+        entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
-        val offset = direction.clone().normalize().multiply(distance - 4)
+        val offset = direction.clone().normalize().multiply(distance - 1)
 
         // apply transformation
         entity.transformation = Transformation(
@@ -225,7 +226,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         else {
             // calculate position and offset
             val position = player.eyeLocation.toVector()
-            val offset = direction.clone().normalize().multiply(distance - 4)
+            val offset = direction.clone().normalize().multiply(distance - 1)
 
             // apply transformation
             val transformation = com.mojang.math.Transformation(
@@ -276,13 +277,14 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.text(ofChildren(Component.text(name), Component.text(" /jump", NamedTextColor.GREEN)))
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        entity.interpolationDuration = 0
+        entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
-        entity.teleportDuration = 0
+        entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
+        entity.backgroundColor = Color.fromARGB(0x00000000)
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
-        val offset = direction.clone().normalize().multiply(distance - 8).apply { this.y -= 32 }
+        val offset = direction.clone().normalize().multiply(distance - 2).apply { this.y -= getTextOffset(scale, player) }
 
         // apply transformation
         entity.transformation = Transformation(
@@ -328,7 +330,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             nmsEntity.text = PaperAdventure.asVanilla(ofChildren(Component.text(name), Component.text(" /jump", NamedTextColor.GREEN)))
             // calculate position and offset
             val position = player.eyeLocation.toVector()
-            val offset = direction.clone().normalize().multiply(distance - 8).apply { this.y -= 32 }
+            val offset = direction.clone().normalize().multiply(distance - 2).apply { this.y -= getTextOffset(scale, player) }
 
             // apply transformation
             val transformation = com.mojang.math.Transformation(
@@ -379,6 +381,14 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @param player the player to get the view distance from
      */
     private fun getViewDistanceEdge(player: Player) = (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 16
+
+    /**
+     * Function for getting the distance offset that the planet selector text should be lowered by.
+     * @return the distance between the center of the planet selector and the planet selector text
+     * @param scale the scale of the planet selector text
+     * @param player the affected player
+     */
+    private fun getTextOffset(scale: Float, player: Player) = 0.48 * scale * (min(player.clientViewDistance.toDouble(), Bukkit.getWorlds()[0].viewDistance.toDouble()) / 10.0)
 
     /**
      * Gets the associated custom item from the planet's name.
