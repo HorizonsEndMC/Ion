@@ -9,9 +9,9 @@ import kotlin.math.min
 
 class GasCanisterIngredient(val canister: GasCanister, val amount: Int) : MultiblockRecipeIngredient {
 	override fun checkRequirement(multiblock: Multiblock, sign: Sign, input: Inventory): Boolean {
-		if (!input.containsAtLeast(canister.constructItemStack(), amount)) return false
+		if (!input.any { it?.customItem?.identifier == canister.identifier }) return false
 
-		val canisters = input.filter { it.customItem?.identifier == canister.identifier }
+		val canisters = input.filter { it?.customItem?.identifier == canister.identifier }
 
 		if (canisters.isEmpty()) return false
 
@@ -19,7 +19,7 @@ class GasCanisterIngredient(val canister: GasCanister, val amount: Int) : Multib
 	}
 
 	override fun consume(multiblock: Multiblock, sign: Sign, input: Inventory) {
-		val items = input.filter { it.customItem?.identifier == canister.identifier }.associateWith { canister.getFill(it) }
+		val items = input.filter { it?.customItem?.identifier == canister.identifier }.associateWith { canister.getFill(it) }
 
 		var remaining = amount
 
