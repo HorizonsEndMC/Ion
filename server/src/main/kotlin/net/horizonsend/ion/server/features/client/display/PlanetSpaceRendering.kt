@@ -21,6 +21,7 @@ import org.bukkit.util.Vector
 import org.joml.AxisAngle4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import java.util.*
 import kotlin.math.PI
 import kotlin.math.min
 
@@ -30,11 +31,8 @@ object PlanetSpaceRendering : IonServerComponent() {
     // The threshold for "hovering" over a planet, in radians
     private const val PLANET_SELECTOR_ANGLE_THRESHOLD = 5.0 / 180.0 * PI
     // These vars are for saving the info of the closest
-    private var lowestAngle: Float = Float.MAX_VALUE
-    private var planetSelectorName: String? = null
-    private var planetSelectorDistance: Int? = null
-    private var planetSelectorDirection: Vector? = null
-    private var planetSelectorScale: Float? = null
+    private val lowestAngleMap = mutableMapOf<UUID, Float>()
+    val planetSelectorDataMap = mutableMapOf<UUID, PlanetSelectorData>()
 
     /**
      * Runs when the server starts. Schedules a task to render the planet entities for each player.
@@ -103,9 +101,9 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @param identifier the string used to retrieve the entity later
      * @param distance the distance that the planet is to the player
      * @param direction the direction that the entity will render from with respect to the player
-     * @param highlight if this entity should be selectable by the player
+     * @param selectable if this entity should be selectable by the player
      */
-    private fun updatePlanetEntity(player: Player, identifier: String, distance: Double, direction: Vector, highlight: Boolean = true) {
+    private fun updatePlanetEntity(player: Player, identifier: String, distance: Double, direction: Vector, selectable: Boolean = true) {
 
         val entityRenderDistance = getViewDistanceEdge(player)
 
@@ -138,16 +136,13 @@ object PlanetSpaceRendering : IonServerComponent() {
             ClientDisplayEntities.moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
             ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)
 
-            if (highlight) {
+            if (selectable) {
                 // angle in radians
                 val angle = player.location.direction.angle(offset)
                 // set the lowest angle vars if there is a closer entity to the player's cursor
-                if (angle < PLANET_SELECTOR_ANGLE_THRESHOLD && lowestAngle > angle) {
-                    lowestAngle = angle
-                    planetSelectorName = identifier
-                    planetSelectorDistance = entityRenderDistance
-                    planetSelectorDirection = direction
-                    planetSelectorScale = scale
+                if (angle < PLANET_SELECTOR_ANGLE_THRESHOLD && lowestAngleMap[player.uniqueId] != null && lowestAngleMap[player.uniqueId]!! > angle) {
+                    lowestAngleMap[player.uniqueId] = angle
+                    planetSelectorDataMap[player.uniqueId] = PlanetSelectorData(identifier, entityRenderDistance, direction, scale)
                 }
             }
         }
@@ -157,18 +152,9 @@ object PlanetSpaceRendering : IonServerComponent() {
      * Creates a client-side ItemDisplay entity for displaying a planet selector in space.
      * @return the NMS ItemDisplay object
      * @param player the player that the entity should be visible to
-     * @param distance the distance that the entity should be rendered at with respect to the player. Obtained from
-     * [updatePlanetEntity]
-     * @param direction the direction that the entity will render from with respect to the player. Obtained from
-     * [updatePlanetEntity]
-     * @param scale the scale that the entity will render at. Obtained from [updatePlanetEntity]
+     * @param data the planet selection data to update with
      */
-    private fun createPlanetSelectorEntity(
-        player: Player,
-        distance: Int,
-        direction: Vector,
-        scale: Float
-    ): net.minecraft.world.entity.Display.ItemDisplay {
+    private fun createPlanetSelectorEntity(player: Player, data: PlanetSelectorData): net.minecraft.world.entity.Display.ItemDisplay {
 
         val entity = ClientDisplayEntityFactory.createItemDisplay(player)
 
@@ -181,13 +167,13 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
-        val offset = direction.clone().normalize().multiply(distance - 1)
+        val offset = data.direction.clone().normalize().multiply(data.distance - 1)
 
         // apply transformation
         entity.transformation = Transformation(
             offset.toVector3f(),
             ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
-            Vector3f(scale * viewDistanceFactor(distance)),
+            Vector3f(data.scale * viewDistanceFactor(data.distance)),
             AxisAngle4f()
         )
 
@@ -205,13 +191,9 @@ object PlanetSpaceRendering : IonServerComponent() {
      * Updates a client-side ItemDisplay for rendering a planet selector in space
      * @return the NMS ItemDisplay object
      * @param player the player that the entity should be visible to
-     * @param distance the distance that the entity should be rendered at with respect to the player. Obtained from
-     * [updatePlanetEntity]
-     * @param direction the direction that the entity will render from with respect to the player. Obtained from
-     * [updatePlanetEntity]
-     * @param scale the scale that the entity will render at. Obtained from [updatePlanetEntity]
+     * @param data the planet selection data to update with
      */
-    private fun updatePlanetSelectorEntity(player: Player, distance: Int, direction: Vector, scale: Float) {
+    private fun updatePlanetSelectorEntity(player: Player, data: PlanetSelectorData) {
 
         val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get("planetSelector") ?: return
 
@@ -227,13 +209,13 @@ object PlanetSpaceRendering : IonServerComponent() {
         else {
             // calculate position and offset
             val position = player.eyeLocation.toVector()
-            val offset = direction.clone().normalize().multiply(distance - 1)
+            val offset = data.direction.clone().normalize().multiply(data.distance - 1)
 
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
                 Quaternionf(ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f())),
-                Vector3f(scale * viewDistanceFactor(distance)),
+                Vector3f(data.scale * viewDistanceFactor(data.distance)),
                 Quaternionf()
             )
 
@@ -252,30 +234,21 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
         ClientDisplayEntities[player.uniqueId]?.remove("planetSelector")
+
+        planetSelectorDataMap.remove(player.uniqueId)
     }
 
     /**
      * Creates a client-side TextDisplay entity for displaying a planet selector in space.
      * @return the NMS ItemDisplay object
      * @param player the player that the entity should be visible to
-     * @param name the text of the text entity
-     * @param distance the distance that the entity should be rendered at with respect to the player. Obtained from
-     * [updatePlanetEntity]
-     * @param direction the direction that the entity will render from with respect to the player. Obtained from
-     * [updatePlanetEntity]
-     * @param scale the scale that the entity will render at. Obtained from [updatePlanetEntity]
+     * @param data the planet selection data to update with
      */
-    private fun createPlanetSelectorTextEntity(
-        player: Player,
-        name: String,
-        distance: Int,
-        direction: Vector,
-        scale: Float
-    ): net.minecraft.world.entity.Display.TextDisplay {
+    private fun createPlanetSelectorTextEntity(player: Player, data: PlanetSelectorData): net.minecraft.world.entity.Display.TextDisplay {
 
         val entity = ClientDisplayEntityFactory.createTextDisplay(player)
 
-        entity.text(ofChildren(Component.text(name), Component.text(" /jump", NamedTextColor.GREEN)))
+        entity.text(ofChildren(Component.text(data.name), Component.text(" /jump", NamedTextColor.GREEN)))
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
         entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
@@ -285,13 +258,13 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
-        val offset = direction.clone().normalize().multiply(distance - 2).apply { this.y -= getTextOffset(scale, player) }
+        val offset = data.direction.clone().normalize().multiply(data.distance - 2).apply { this.y -= getTextOffset(data.scale, player) }
 
         // apply transformation
         entity.transformation = Transformation(
             offset.toVector3f(),
             ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()).apply { this.angle += PI.toFloat() },
-            Vector3f(scale * viewDistanceFactor(distance)),
+            Vector3f(data.scale * viewDistanceFactor(data.distance)),
             AxisAngle4f()
         )
 
@@ -308,13 +281,9 @@ object PlanetSpaceRendering : IonServerComponent() {
      * Updates a client-side ItemDisplay for rendering a planet selector in space
      * @return the NMS ItemDisplay object
      * @param player the player that the entity should be visible to
-     * @param distance the distance that the entity should be rendered at with respect to the player. Obtained from
-     * [updatePlanetEntity]
-     * @param direction the direction that the entity will render from with respect to the player. Obtained from
-     * [updatePlanetEntity]
-     * @param scale the scale that the entity will render at. Obtained from [updatePlanetEntity]
+     * @param data the planet selection data to update with
      */
-    private fun updatePlanetSelectorTextEntity(player: Player, name: String, distance: Int, direction: Vector, scale: Float) {
+    private fun updatePlanetSelectorTextEntity(player: Player, data: PlanetSelectorData) {
 
         val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get("planetSelectorText") as net.minecraft.world.entity.Display.TextDisplay? ?: return
 
@@ -328,16 +297,16 @@ object PlanetSpaceRendering : IonServerComponent() {
             return
         }
         else {
-            nmsEntity.text = PaperAdventure.asVanilla(ofChildren(Component.text(name), Component.text(" /jump", NamedTextColor.GREEN)))
+            nmsEntity.text = PaperAdventure.asVanilla(ofChildren(Component.text(data.name), Component.text(" /jump", NamedTextColor.GREEN)))
             // calculate position and offset
             val position = player.eyeLocation.toVector()
-            val offset = direction.clone().normalize().multiply(distance - 2).apply { this.y -= getTextOffset(scale, player) }
+            val offset = data.direction.clone().normalize().multiply(data.distance - 2).apply { this.y -= getTextOffset(data.scale, player) }
 
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
                 Quaternionf(ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()).apply { this.angle += PI.toFloat() }),
-                Vector3f(scale * viewDistanceFactor(distance)),
+                Vector3f(data.scale * viewDistanceFactor(data.distance)),
                 Quaternionf()
             )
 
@@ -438,9 +407,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         val playerDisplayEntities = ClientDisplayEntities[player.uniqueId] ?: return
 
         // Reset planet selector information
-        lowestAngle = Float.MAX_VALUE
-        planetSelectorDistance = null
-        planetSelectorDirection = null
+        lowestAngleMap[player.uniqueId] = Float.MAX_VALUE
 
         // Rendering planets
         for (planet in planetList) {
@@ -474,15 +441,15 @@ object PlanetSpaceRendering : IonServerComponent() {
         }
 
         // Rendering planet selector
-        if (PilotedStarships[player] != null && lowestAngle < Float.MAX_VALUE && planetSelectorName != null && planetSelectorDistance != null && planetSelectorDirection != null && planetSelectorScale != null) {
+        if (PilotedStarships[player] != null && planetSelectorDataMap[player.uniqueId] != null) {
             if (playerDisplayEntities["planetSelector"] == null) {
                 // planet should be selected but the planet selector doesn't exist yet
-                createPlanetSelectorEntity(player, planetSelectorDistance!!, planetSelectorDirection!!, planetSelectorScale!!)
-                createPlanetSelectorTextEntity(player, planetSelectorName!!, planetSelectorDistance!!, planetSelectorDirection!!, planetSelectorScale!!)
+                createPlanetSelectorEntity(player, planetSelectorDataMap[player.uniqueId]!!)
+                createPlanetSelectorTextEntity(player, planetSelectorDataMap[player.uniqueId]!!)
             } else {
                 // planet selector already exists
-                updatePlanetSelectorEntity(player, planetSelectorDistance!!, planetSelectorDirection!!, planetSelectorScale!!)
-                updatePlanetSelectorTextEntity(player, planetSelectorName!!, planetSelectorDistance!!, planetSelectorDirection!!, planetSelectorScale!!)
+                updatePlanetSelectorEntity(player, planetSelectorDataMap[player.uniqueId]!!)
+                updatePlanetSelectorTextEntity(player, planetSelectorDataMap[player.uniqueId]!!)
             }
         } else {
             // planet is not selected; delete selector if it exists
@@ -490,4 +457,11 @@ object PlanetSpaceRendering : IonServerComponent() {
             deletePlanetSelectorTextEntity(player)
         }
     }
+
+    data class PlanetSelectorData(
+        val name: String,
+        val distance: Int,
+        val direction: Vector,
+        val scale: Float
+    )
 }
