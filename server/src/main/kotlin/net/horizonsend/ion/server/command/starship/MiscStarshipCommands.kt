@@ -161,7 +161,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			// player is looking at a planet in their HUD
 			onJump(sender, selectedPlanetData.name, null)
 		} else {
-			sender.userError("/jump <planet>, /jump <hyperspace gate> or /jump <x> <z>")
+			sender.userError("Invalid destination. Type /jump while looking at a planet, or /jump <planet>, /jump <hyperspace gate> or /jump <x> <z>")
 		}
 	}
 
