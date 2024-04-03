@@ -21,7 +21,7 @@ import org.bukkit.util.Vector
 import org.joml.AxisAngle4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
-import java.util.*
+import java.util.UUID
 import kotlin.math.PI
 import kotlin.math.min
 
@@ -441,7 +441,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         }
 
         // Rendering planet selector
-        if (PilotedStarships[player] != null && planetSelectorDataMap[player.uniqueId] != null) {
+        if (PilotedStarships[player] != null && lowestAngleMap[player.uniqueId] != null && lowestAngleMap[player.uniqueId]!! < Float.MAX_VALUE) {
             if (playerDisplayEntities["planetSelector"] == null) {
                 // planet should be selected but the planet selector doesn't exist yet
                 createPlanetSelectorEntity(player, planetSelectorDataMap[player.uniqueId]!!)
