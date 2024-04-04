@@ -70,7 +70,7 @@ object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 			return
 		}
 
-		recipe.execute(this, sign, furnace.inventory)
+		recipe.execute(sign, furnace.inventory)
 
 		furnace.cookTime = 0
 	}

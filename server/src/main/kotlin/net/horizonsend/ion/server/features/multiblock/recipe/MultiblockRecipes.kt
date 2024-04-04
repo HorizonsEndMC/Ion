@@ -22,25 +22,28 @@ object MultiblockRecipes : IonServerComponent() {
 	private val recipes: ConcurrentHashMap<Multiblock, LinkedList<MultiblockRecipe<*>>> = ConcurrentHashMap()
 
 	val URANIUM_ENRICHMENT = registerRecipe(CentrifugeMultiblock, ProcessingMultiblockRecipe(
-		60L * 20L, // 1 minute
-		ItemIngredient(CustomItems.URANIUM, 1),
-		CentrifugeMultiblock,
-		CustomItems.ENRICHED_URANIUM.constructItemStack()
+		multiblock = CentrifugeMultiblock,
+		time = 60L * 20L,
+		smelting = ItemIngredient(CustomItems.URANIUM, 1),
+		result = CustomItems.ENRICHED_URANIUM.constructItemStack(),
+		resources = listOf(power(100)),
 	))
 
 	val URANIUM_CORE_COMPRESSION = registerRecipe(CentrifugeMultiblock, ProcessingMultiblockRecipe(
-		60L * 60L * 20L, // 1 hour
-		ItemIngredient(CustomItems.URANIUM_CORE, 1),
-		CompressorMultiblock,
-		CustomItems.URANIUM_ROD.constructItemStack()
+		multiblock = CompressorMultiblock,
+		time = 60L * 60L * 20L,
+		smelting = ItemIngredient(CustomItems.URANIUM_CORE, 1),
+		result = CustomItems.URANIUM_ROD.constructItemStack(),
+		resources = listOf(power(100_000)),
 	))
 
 	val STEEL_PRODUCTION = registerRecipe(GasFurnaceMultiblock, FurnaceMultiblockRecipe(
+		multiblock = GasFurnaceMultiblock,
+		time = 200L,
 		smelting = ItemIngredient(ItemStack(Material.IRON_INGOT), 1),
 		fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 100),
 		resources = listOf(power(150)),
-		GasFurnaceMultiblock,
-		CustomItems.STEEL_INGOT.constructItemStack()
+		result = CustomItems.STEEL_INGOT.constructItemStack()
 	))
 
 	/**
@@ -58,6 +61,6 @@ object MultiblockRecipes : IonServerComponent() {
 		@Suppress("UNCHECKED_CAST")
 		val recipesFor = (recipes[multiblock] as? LinkedList<MultiblockRecipe<T>>) ?: return null
 
-		return recipesFor.firstOrNull { it.matches(multiblock, sign, inventory) }
+		return recipesFor.firstOrNull { it.matches(sign, inventory) }
 	}
 }
