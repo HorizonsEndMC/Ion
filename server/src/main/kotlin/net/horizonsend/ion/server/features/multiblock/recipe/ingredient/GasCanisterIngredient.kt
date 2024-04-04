@@ -4,33 +4,17 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.GasCanister
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import org.bukkit.block.Sign
-import org.bukkit.inventory.Inventory
-import kotlin.math.min
+import org.bukkit.inventory.ItemStack
 
-class GasCanisterIngredient(val canister: GasCanister, val amount: Int) : MultiblockRecipeIngredient {
-	override fun checkRequirement(multiblock: Multiblock, sign: Sign, input: Inventory): Boolean {
-		if (!input.any { it?.customItem?.identifier == canister.identifier }) return false
+class GasCanisterIngredient(private val canister: GasCanister, val amount: Int) : MultiblockRecipeIngredient, ItemConsumable {
+	override fun checkRequirement(multiblock: Multiblock, sign: Sign, itemStack: ItemStack?): Boolean {
+		if (itemStack == null) return false
+		if (itemStack.customItem != canister) return false
 
-		val canisters = input.filter { it?.customItem?.identifier == canister.identifier }
-
-		if (canisters.isEmpty()) return false
-
-		return canisters.sumOf { canister.getFill(it) } >= amount
+		return canister.getFill(itemStack) >= amount
 	}
 
-	override fun consume(multiblock: Multiblock, sign: Sign, input: Inventory) {
-		val items = input.filter { it?.customItem?.identifier == canister.identifier }.associateWith { canister.getFill(it) }
-
-		var remaining = amount
-
-		for ((itemStack, fill) in items) {
-			val toRemove = min(remaining, fill)
-
-			canister.setFill(itemStack, fill - toRemove)
-
-			remaining -= toRemove
-
-			if (remaining == 0) break
-		}
+	override fun consume(multiblock: Multiblock, sign: Sign, itemStack: ItemStack) {
+		canister.setFill(itemStack, canister.getFill(itemStack) - amount)
 	}
 }
