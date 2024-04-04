@@ -215,14 +215,19 @@ object ClientDisplayEntities : IonServerComponent() {
      * @param direction the direction that an object should face
      */
     fun rotateToFaceVector(direction: Vector3f): AxisAngle4f {
-        // Assuming initial rotation vector is facing SOUTH (+z direction)
-        val initVector = Vector3f(0f, 0f, 1f)
-        // cross product of initial and final vectors will give the axis of rotation
-        val cross = (initVector.clone() as Vector3f).cross((direction.clone() as Vector3f).normalize()).normalize()
+        // method obtained from:
+        // https://math.stackexchange.com/questions/3322434/how-to-remove-roll-from-axis-angle-rotation
+
+        // start with an upward-facing vector
+        val yAxis = Vector3f(0f, 1f, 0f)
+        // get the local right-facing vector by crossing direction with the global y-axis
+        val right = (direction.clone() as Vector3f).normalize().cross(yAxis.clone() as Vector3f).normalize()
+        // get the local up-facing vector by crossing direction with the local right-facing vector
+        val rotAxis = (direction.clone() as Vector3f).normalize().cross(right.clone() as Vector3f).normalize()
         // angle between vectors to determine the rotation needed (in radians)
-        val angle = initVector.angle(direction)
+        val angle = Vector3f(0f, 0f, 1f).angle(direction)
         // return the axis-angle representation
-        return AxisAngle4f(angle, cross)
+        return AxisAngle4f(angle, rotAxis)
     }
 
     /**
