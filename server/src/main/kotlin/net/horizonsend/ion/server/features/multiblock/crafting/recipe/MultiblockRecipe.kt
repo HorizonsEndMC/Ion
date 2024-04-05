@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.recipe
+package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import org.bukkit.block.Sign
