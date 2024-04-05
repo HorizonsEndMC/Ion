@@ -1,11 +1,13 @@
-package net.horizonsend.ion.server.features.multiblock.recipe
+package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.recipe.ingredient.ItemConsumable
-import net.horizonsend.ion.server.features.multiblock.recipe.ingredient.MultiblockRecipeIngredient
-import net.horizonsend.ion.server.features.multiblock.recipe.ingredient.ResourceIngredient
+import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ItemConsumable
+import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.MultiblockRecipeIngredient
+import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ResourceIngredient
+import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -24,7 +26,7 @@ class ProcessingMultiblockRecipe<T: Multiblock>(
 	val smelting: MultiblockRecipeIngredient,
 	override val result: ItemStack,
 	private val resources: List<ResourceIngredient> = listOf(),
-) : MultiblockRecipe<T> {
+) : MultiblockRecipe<T>, FurnaceEventHandler {
 	val cookTimeMultiplier = 200.0 / time.toDouble()
 
 	init {
@@ -39,6 +41,9 @@ class ProcessingMultiblockRecipe<T: Multiblock>(
 	override fun execute(sign: Sign, inventory: Inventory) {
 		inventory as FurnaceInventory
 
+		val holder = inventory.holder!!
+		if (!(holder.blockData as org.bukkit.block.data.type.Furnace).isLit) return
+
 		if ((inventory.result?.amount ?: 0) >= result.maxStackSize) return
 
 		// Return if enough ingredients are not present
@@ -50,12 +55,13 @@ class ProcessingMultiblockRecipe<T: Multiblock>(
 
 		if (smelting is ItemConsumable) smelting.consume(multiblock, sign, inventory.smelting!!)
 
-		val holder = inventory.holder!!
-		holder.cookTimeTotal = 200
-		holder.cookTime = 0
-		holder.cookSpeedMultiplier = cookTimeMultiplier
-		holder.burnTime = 200
-
 		resources.forEach { it.consume(multiblock, sign) }
+	}
+
+	override fun handleFurnaceEvent(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
+		event.isBurning = false
+		event.burnTime = 200
+		event.isCancelled = false
+		furnace.cookSpeedMultiplier = cookTimeMultiplier
 	}
 }
