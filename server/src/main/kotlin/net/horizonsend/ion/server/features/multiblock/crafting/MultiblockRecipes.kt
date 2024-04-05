@@ -1,14 +1,18 @@
-package net.horizonsend.ion.server.features.multiblock.recipe
+package net.horizonsend.ion.server.features.multiblock.crafting
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.GasCanisterIngredient
+import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ItemIngredient
+import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ResourceIngredient
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.FurnaceMultiblockRecipe
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.ProcessingMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.CompressorMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.GasFurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.recipe.ingredient.GasCanisterIngredient
-import net.horizonsend.ion.server.features.multiblock.recipe.ingredient.ItemIngredient
-import net.horizonsend.ion.server.features.multiblock.recipe.ingredient.ResourceIngredient
+import net.horizonsend.ion.server.features.multiblock.industry.PlatePressMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Material
 import org.bukkit.block.Sign
@@ -21,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap
 object MultiblockRecipes : IonServerComponent() {
 	private val recipes: ConcurrentHashMap<Multiblock, LinkedList<MultiblockRecipe<*>>> = ConcurrentHashMap()
 
-	val URANIUM_ENRICHMENT = registerRecipe(CentrifugeMultiblock, ProcessingMultiblockRecipe(
+	val URANIUM_ENRICHMENT = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = CentrifugeMultiblock,
 		time = 60L * 20L,
 		smelting = ItemIngredient(CustomItems.URANIUM, 1),
@@ -29,7 +33,7 @@ object MultiblockRecipes : IonServerComponent() {
 		resources = listOf(power(100)),
 	))
 
-	val URANIUM_CORE_COMPRESSION = registerRecipe(CentrifugeMultiblock, ProcessingMultiblockRecipe(
+	val URANIUM_CORE_COMPRESSION = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = CompressorMultiblock,
 		time = 60L * 60L * 20L,
 		smelting = ItemIngredient(CustomItems.URANIUM_CORE, 1),
@@ -37,7 +41,7 @@ object MultiblockRecipes : IonServerComponent() {
 		resources = listOf(power(100_000)),
 	))
 
-	val STEEL_PRODUCTION = registerRecipe(GasFurnaceMultiblock, FurnaceMultiblockRecipe(
+	val STEEL_PRODUCTION = registerRecipe(FurnaceMultiblockRecipe(
 		multiblock = GasFurnaceMultiblock,
 		time = 200L,
 		smelting = ItemIngredient(ItemStack(Material.IRON_INGOT), 1),
@@ -46,13 +50,29 @@ object MultiblockRecipes : IonServerComponent() {
 		result = CustomItems.STEEL_INGOT.constructItemStack()
 	))
 
+	val REACTIVE_PLATING_PRESSING = registerRecipe(ProcessingMultiblockRecipe(
+		multiblock = PlatePressMultiblock,
+		time = 60L * 60L * 20L,
+		smelting = ItemIngredient(CustomItems.REACTIVE_PLATING, 1),
+		resources = listOf(power(100_000)),
+		result = CustomItems.REACTIVE_CHASSIS.constructItemStack()
+	))
+
+	val STEEL_PLATE_PRESSING = registerRecipe(ProcessingMultiblockRecipe(
+		multiblock = PlatePressMultiblock,
+		time = 600L /* * 60L * 20L */,
+		smelting = ItemIngredient(CustomItems.STEEL_PLATE, 1),
+		resources = listOf(power(100_000)),
+		result = CustomItems.STEEL_CHASSIS.constructItemStack()
+	))
+
 	/**
 	 * Add a power ingredient
 	 **/
 	private fun power(amount: Int) = ResourceIngredient(NamespacedKeys.POWER, amount)
 
-	private fun <T: Multiblock> registerRecipe(multiblock: Multiblock, recipe: MultiblockRecipe<T>): MultiblockRecipe<T> {
-		recipes.getOrPut(multiblock) { LinkedList() }.add(recipe)
+	private fun <T: Multiblock> registerRecipe(recipe: MultiblockRecipe<T>): MultiblockRecipe<T> {
+		recipes.getOrPut(recipe.multiblock) { LinkedList() }.add(recipe)
 
 		return recipe
 	}
