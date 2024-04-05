@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.recipe.ingredient
+package net.horizonsend.ion.server.features.multiblock.crafting.ingredient
 
 import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.features.multiblock.Multiblock
