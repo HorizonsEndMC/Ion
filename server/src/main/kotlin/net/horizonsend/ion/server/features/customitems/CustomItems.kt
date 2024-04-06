@@ -578,26 +578,23 @@ object CustomItems {
 		displayName = text("Uranium Rod").decoration(ITALIC, false)
 	)
 
-	val FUEL_ROD_CORE = register(object : MineralItem(
+	val FUEL_ROD_CORE = register(
 		identifier = "FUEL_ROD_CORE",
-		material = IRON_INGOT,
 		customModelData = 20,
 		displayName = text("Fuel Rod Core").decoration(ITALIC, false)
-	) {})
+	)
 
-	val FUEL_CELL = register(object : MineralItem(
+	val FUEL_CELL = register(
 		identifier = "FUEL_CELL",
-		material = IRON_INGOT,
 		customModelData = 21,
 		displayName = text("Fuel Cell").decoration(ITALIC, false)
-	) {})
+	)
 
-	val FUEL_CONTROL = register(object : MineralItem(
+	val FUEL_CONTROL = register(
 		identifier = "FUEL_CONTROL",
-		material = IRON_INGOT,
 		customModelData = 22,
 		displayName = text("Fuel Control").decoration(ITALIC, false).decoration(BOLD, true)
-	) {})
+	)
 
 	val REACTIVE_COMPONENT = register(
 		identifier = "REACTIVE_COMPONENT",
