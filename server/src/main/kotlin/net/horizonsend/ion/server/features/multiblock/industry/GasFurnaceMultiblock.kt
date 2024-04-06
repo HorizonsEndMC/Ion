@@ -60,5 +60,7 @@ object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
 		handleRecipe(this, event, furnace, sign)
+
+		//TODO empty canister discarding
 	}
 }
