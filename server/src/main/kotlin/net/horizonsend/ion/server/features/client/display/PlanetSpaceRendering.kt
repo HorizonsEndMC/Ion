@@ -113,7 +113,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         // also do not render if the planet is closer than the entity render distance
         if (!nmsEntity.isChunkLoaded ||
             nmsEntity.level().world.name != player.world.name ||
-            distance < entityRenderDistance
+            distance < (entityRenderDistance * 2)
         ) {
             ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
             ClientDisplayEntities[player.uniqueId]?.remove(identifier)
@@ -332,7 +332,7 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @return a scale size for planet display entities
      * @param distance the distance at which the player is from the planet
      */
-    private fun scale(distance: Double) = ((500000000 / ((0.03125 * distance * distance) + 5250000)) + 5).toFloat()
+    private fun scale(distance: Double) = ((500000000 / ((0.0625 * distance * distance) + 5250000)) + 5).toFloat()
 
     /**
      * Equation for getting the factor of the planet scaling to maintain apparent visual scale depending on
