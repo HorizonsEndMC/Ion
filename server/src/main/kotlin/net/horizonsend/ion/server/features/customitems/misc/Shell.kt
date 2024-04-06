@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.customitems.shipammo.objects
+package net.horizonsend.ion.server.features.customitems.misc
 
 import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys

@@ -5,12 +5,12 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ItemConsumable
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.MultiblockRecipeIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ResourceIngredient
+import net.horizonsend.ion.server.features.multiblock.crafting.result.MultiblockRecipeResult
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.ItemStack
 
 /**
  * A multiblock recipe that takes one ingredient, and produces one result
@@ -22,13 +22,10 @@ import org.bukkit.inventory.ItemStack
  **/
 class ProcessingMultiblockRecipe<T: Multiblock>(
 	override val multiblock: T,
-	val time: Long,
 	val smelting: MultiblockRecipeIngredient,
-	override val result: ItemStack,
+	override val result: MultiblockRecipeResult,
 	private val resources: List<ResourceIngredient> = listOf(),
 ) : MultiblockRecipe<T>, FurnaceEventHandler {
-	val cookTimeMultiplier = 200.0 / time.toDouble()
-
 	init {
 	    require(multiblock is FurnaceMultiblock)
 	}
@@ -44,14 +41,14 @@ class ProcessingMultiblockRecipe<T: Multiblock>(
 		val holder = inventory.holder!!
 		if (!(holder.blockData as org.bukkit.block.data.type.Furnace).isLit) return
 
-		if ((inventory.result?.amount ?: 0) >= result.maxStackSize) return
+		if (!result.canFit(this, inventory, sign)) return
 
 		// Return if enough ingredients are not present
 		if (!smelting.checkRequirement(multiblock, sign, inventory.smelting)) return
 
 		if (resources.any { !it.checkRequirement(multiblock, sign, null) }) return
 
-		inventory.result?.add(1) ?: run { inventory.result = result.asQuantity(1) }
+		result.execute(this, inventory, sign)
 
 		if (smelting is ItemConsumable) smelting.consume(multiblock, sign, inventory.smelting!!)
 
@@ -62,6 +59,5 @@ class ProcessingMultiblockRecipe<T: Multiblock>(
 		event.isBurning = false
 		event.burnTime = 200
 		event.isCancelled = false
-		furnace.cookSpeedMultiplier = cookTimeMultiplier
 	}
 }

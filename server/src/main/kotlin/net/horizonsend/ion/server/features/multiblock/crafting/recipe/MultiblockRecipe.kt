@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.crafting.result.MultiblockRecipeResult
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.ItemStack
 
 interface MultiblockRecipe<out T: Multiblock> {
 	val multiblock: T
-	val result: ItemStack
+	val result: MultiblockRecipeResult
 
 	fun matches(sign: Sign, inventory: Inventory): Boolean
 
