@@ -4,12 +4,12 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ItemConsumable
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.MultiblockRecipeIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ResourceIngredient
+import net.horizonsend.ion.server.features.multiblock.crafting.result.MultiblockRecipeResult
 import org.bukkit.block.Sign
 import org.bukkit.block.data.type.Furnace
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.ItemStack
 
 /**
  * Recipes that use both slots of a furnace
@@ -18,14 +18,11 @@ import org.bukkit.inventory.ItemStack
  **/
 class FurnaceMultiblockRecipe<out T: Multiblock>(
 	override val multiblock: T,
-	val time: Long,
 	val smelting: MultiblockRecipeIngredient,
 	val fuel: MultiblockRecipeIngredient,
 	private val resources: List<ResourceIngredient> = listOf(),
-	override val result: ItemStack
+	override val result: MultiblockRecipeResult
 ) : MultiblockRecipe<T>, FurnaceEventHandler {
-	private val cookTimeMultiplier = 200.0 / time.toDouble()
-
 	override fun matches(sign: Sign, inventory: Inventory): Boolean {
 		inventory as FurnaceInventory
 
@@ -41,7 +38,7 @@ class FurnaceMultiblockRecipe<out T: Multiblock>(
 		val holder = inventory.holder!!
 		if (!(holder.blockData as Furnace).isLit) return
 
-		if ((inventory.result?.amount ?: 0) >= result.maxStackSize) return
+		if (!result.canFit(this, inventory, sign)) return
 
 		// Return if enough ingredients are not present
 		if (!smelting.checkRequirement(multiblock, sign, inventory.smelting)) return
@@ -49,7 +46,7 @@ class FurnaceMultiblockRecipe<out T: Multiblock>(
 
 		if (resources.any { !it.checkRequirement(multiblock, sign, null) }) return
 
-		inventory.result?.add(1) ?: run { inventory.result = result.asQuantity(1) }
+		result.execute(this, inventory, sign)
 
 		if (smelting is ItemConsumable) smelting.consume(multiblock, sign, inventory.smelting!!)
 		if (fuel is ItemConsumable) fuel.consume(multiblock, sign, inventory.fuel!!)
@@ -61,6 +58,5 @@ class FurnaceMultiblockRecipe<out T: Multiblock>(
 		event.isBurning = false
 		event.burnTime = 200
 		event.isCancelled = false
-		furnace.cookSpeedMultiplier = cookTimeMultiplier
 	}
 }

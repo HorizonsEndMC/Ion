@@ -13,10 +13,14 @@ interface FurnaceMultiblock {
 	 * Handle the execution of a recipe
 	 **/
 	fun handleRecipe(multiblock: Multiblock, event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
+		event.isCancelled = true
+
 		val recipe = MultiblockRecipes.getRecipe(multiblock, sign, furnace.inventory) ?: run {
 			event.burnTime = 500
 			return
 		}
+
+		println("Multiblock $this used recipe $recipe")
 
 		if (recipe is FurnaceEventHandler) recipe.handleFurnaceEvent(event, furnace, sign)
 		recipe.execute(sign, furnace.inventory)
