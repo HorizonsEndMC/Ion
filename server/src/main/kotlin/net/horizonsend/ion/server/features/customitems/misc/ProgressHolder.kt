@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.customitems.misc
 
-import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.customitems.CustomItem
@@ -30,7 +29,7 @@ object ProgressHolder : CustomItem("PROGRESS_HOLDER") {
 		val example = result.constructItemStack()
 
 		return ItemStack(example.type).updateMeta {
-			it.displayName(ofChildren(text("Assembling ", GRAY, TextDecoration.ITALIC), bracketed(example.displayName())))
+			it.displayName(ofChildren(text("Assembling ", GRAY, TextDecoration.ITALIC), example.displayName()))
 			it.lore(listOf(ofChildren(
 				text("Progress: ", GRAY, TextDecoration.ITALIC),
 				text(percentFormat.format(0.0), HE_LIGHT_GRAY, TextDecoration.ITALIC)
@@ -38,6 +37,7 @@ object ProgressHolder : CustomItem("PROGRESS_HOLDER") {
 			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
 			it.persistentDataContainer.set(NamespacedKeys.PROGRESS, PersistentDataType.DOUBLE, 0.0)
 			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM_RESULT, PersistentDataType.STRING, result.identifier)
+			it.setCustomModelData(example.itemMeta.customModelData)
 		}
 	}
 
@@ -58,11 +58,16 @@ object ProgressHolder : CustomItem("PROGRESS_HOLDER") {
 
 	/**
 	 * Sets the progress of this custom item
+	 *
+	 * @return whether the item was completed
 	 **/
-	fun setProgress(itemStack: ItemStack, progress: Double) {
-		if (itemStack.customItem !is ProgressHolder) return
+	fun setProgress(itemStack: ItemStack, progress: Double): Boolean {
+		if (itemStack.customItem !is ProgressHolder) return false
 
-		if (progress >= 1.0) return complete(itemStack)
+		if (progress >= 1.0) return run {
+			complete(itemStack)
+			true
+		}
 
 		itemStack.updateMeta {
 			it.lore(listOf(ofChildren(
@@ -71,6 +76,8 @@ object ProgressHolder : CustomItem("PROGRESS_HOLDER") {
 			)))
 			it.persistentDataContainer.set(NamespacedKeys.PROGRESS, PersistentDataType.DOUBLE, progress)
 		}
+
+		return false
 	}
 
 	/**
