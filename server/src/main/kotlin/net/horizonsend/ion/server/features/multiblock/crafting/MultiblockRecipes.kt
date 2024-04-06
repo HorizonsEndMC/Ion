@@ -3,12 +3,15 @@ package net.horizonsend.ion.server.features.multiblock.crafting
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ConsumedItemIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.GasCanisterIngredient
-import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ItemIngredient
+import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ProgressHolderItemIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ResourceIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.FurnaceMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.ProcessingMultiblockRecipe
+import net.horizonsend.ion.server.features.multiblock.crafting.result.ItemResult
+import net.horizonsend.ion.server.features.multiblock.crafting.result.ProgressItemResult
 import net.horizonsend.ion.server.features.multiblock.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.CompressorMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.GasFurnaceMultiblock
@@ -27,43 +30,38 @@ object MultiblockRecipes : IonServerComponent() {
 
 	val URANIUM_ENRICHMENT = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = CentrifugeMultiblock,
-		time = 60L * 20L,
-		smelting = ItemIngredient(CustomItems.URANIUM, 1),
-		result = CustomItems.ENRICHED_URANIUM.constructItemStack(),
+		smelting = ConsumedItemIngredient(CustomItems.URANIUM, 1),
+		result = ItemResult(CustomItems.ENRICHED_URANIUM),
 		resources = listOf(power(100)),
 	))
 
 	val URANIUM_CORE_COMPRESSION = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = CompressorMultiblock,
-		time = 60L * 60L * 20L,
-		smelting = ItemIngredient(CustomItems.URANIUM_CORE, 1),
-		result = CustomItems.URANIUM_ROD.constructItemStack(),
+		smelting = ConsumedItemIngredient(CustomItems.URANIUM_CORE, 1),
+		result = ItemResult(CustomItems.URANIUM_ROD),
 		resources = listOf(power(100_000)),
 	))
 
 	val STEEL_PRODUCTION = registerRecipe(FurnaceMultiblockRecipe(
 		multiblock = GasFurnaceMultiblock,
-		time = 200L,
-		smelting = ItemIngredient(ItemStack(Material.IRON_INGOT), 1),
+		smelting = ConsumedItemIngredient(ItemStack(Material.IRON_INGOT), 1),
 		fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 100),
 		resources = listOf(power(150)),
-		result = CustomItems.STEEL_INGOT.constructItemStack()
+		result = ItemResult(CustomItems.STEEL_INGOT)
 	))
 
 	val REACTIVE_PLATING_PRESSING = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = PlatePressMultiblock,
-		time = 60L * 60L * 20L,
-		smelting = ItemIngredient(CustomItems.REACTIVE_PLATING, 1),
-		resources = listOf(power(100_000)),
-		result = CustomItems.REACTIVE_CHASSIS.constructItemStack()
+		smelting = ConsumedItemIngredient(CustomItems.REACTIVE_PLATING, 1),
+		resources = listOf(power(100_000 / 60 * 60 * 20)),
+		result = ProgressItemResult(CustomItems.REACTIVE_CHASSIS, 60L * 60L * 20L)
 	))
 
 	val STEEL_PLATE_PRESSING = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = PlatePressMultiblock,
-		time = 600L /* * 60L * 20L */,
-		smelting = ItemIngredient(CustomItems.STEEL_PLATE, 1),
-		resources = listOf(power(100_000)),
-		result = CustomItems.STEEL_CHASSIS.constructItemStack()
+		smelting = ProgressHolderItemIngredient(ConsumedItemIngredient(CustomItems.STEEL_PLATE, 1), CustomItems.STEEL_CHASSIS),
+		resources = listOf(power(100_000 / 60 * 60 * 20)),
+		result = ProgressItemResult(CustomItems.STEEL_CHASSIS, 60L * 60L * 20L)
 	))
 
 	/**

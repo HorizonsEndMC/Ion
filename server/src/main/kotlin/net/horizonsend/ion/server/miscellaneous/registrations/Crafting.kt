@@ -19,9 +19,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.FABRICATED_AS
 import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_CONTROL
 import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_ROD_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY
-import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.customitems.CustomItems.GUN_BARREL
-import net.horizonsend.ion.server.features.customitems.CustomItems.OXYGEN_TANK
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.RAW_ALUMINUM
@@ -146,11 +144,6 @@ import org.bukkit.inventory.ShapelessRecipe
 
 object Crafting : IonServerComponent() {
 	override fun onEnable() {
-		//Oxygen Tank
-		itemStackShapelessRecipe("oxygenTank", OXYGEN_TANK.constructItemStack()) {
-			addIngredient(GAS_CANISTER_OXYGEN.constructItemStack().asQuantity(9))
-		}
-
 		itemStackShapelessRecipe("steelBlock", STEEL_BLOCK.constructItemStack()) {
 			addIngredient(STEEL_INGOT.constructItemStack().asQuantity(9))
 		}
