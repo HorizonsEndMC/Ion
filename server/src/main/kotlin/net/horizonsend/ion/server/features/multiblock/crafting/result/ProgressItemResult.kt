@@ -8,13 +8,13 @@ import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import kotlin.math.ceil
 
 /**
  * This item will convert into the result custom item after the amount of ticks provided (Assuming no lag and a 200 tick interval on the furnace)
  **/
 class ProgressItemResult<R: CustomItem>(val result: R, private val time: Long) : ActionResult {
-	private val increment = ceil(200.0 / time.toDouble()).toInt()
+	// 200 is the standard furnace tick interval
+	private val increment = 200.0 / time.toDouble()
 
 	override fun execute(recipe: MultiblockRecipe<*>, craftingInventory: Inventory, sign: Sign) {
 		if (craftingInventory !is FurnaceInventory) return
