@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 /**
  * This item will convert into the result custom item after the amount of ticks provided (Assuming no lag and a 200 tick interval on the furnace)
  **/
-class ProgressItemResult<R: CustomItem>(val result: R, private val time: Long) : ActionResult {
+class ProgressItemResult<R: CustomItem>(val result: R, time: Long) : ActionResult {
 	// 200 is the standard furnace tick interval
 	private val increment = 200.0 / time.toDouble()
 
