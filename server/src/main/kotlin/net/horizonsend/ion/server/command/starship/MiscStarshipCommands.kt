@@ -543,6 +543,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("unused")
 	@CommandAlias("listships")
+	@CommandCompletion("ai|player|all")
 	@CommandPermission("starships.listships")
 	fun onListShips(sender: Player, @Optional option: String?) {
 		var totalShips = 0
