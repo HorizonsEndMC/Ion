@@ -70,9 +70,9 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.itemStack = getPlanetItemStack(identifier)
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
-        entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
@@ -161,9 +161,9 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.itemStack = CustomItems.PLANET_SELECTOR.constructItemStack()
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
-        entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
@@ -251,9 +251,9 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.text(ofChildren(Component.text(data.name), Component.text(" /jump", NamedTextColor.GREEN)))
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
-        entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
         entity.backgroundColor = Color.fromARGB(0x00000000)
 
         // calculate position and offset
