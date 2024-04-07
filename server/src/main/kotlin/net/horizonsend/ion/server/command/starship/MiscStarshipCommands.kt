@@ -46,6 +46,7 @@ import net.horizonsend.ion.server.features.starship.StarshipSchematic
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -543,14 +544,19 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("unused")
 	@CommandAlias("listships")
 	@CommandPermission("starships.listships")
-	fun onListShips(sender: Player) {
+	fun onListShips(sender: Player, @Optional option: String?) {
 		var totalShips = 0
 		var totalBlocks = 0
 
 		sender.sendMessage(lineBreakWithCenterText(text("Active Starships", HE_LIGHT_ORANGE)))
 		val senderNation = PlayerCache[sender].nationOid
+		val starships = when (option) {
+			"player" -> ActiveStarships.all().filter { it.controller is PlayerController }
+			"ai" -> ActiveStarships.all().filter { it.controller is AIController }
+			else -> ActiveStarships.all()
+		}
 
-		for (starship in ActiveStarships.all()) {
+		for (starship in starships) {
 			val controller = starship.controller
 
 			val pilot: Player? = starship.playerPilot
