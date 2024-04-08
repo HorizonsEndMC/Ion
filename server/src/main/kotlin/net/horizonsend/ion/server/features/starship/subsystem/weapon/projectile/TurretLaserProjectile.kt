@@ -21,7 +21,9 @@ class TurretLaserProjectile(
 	override val soundName: String,
 	override val balancing: StarshipWeapons.ProjectileBalancing?,
 	shooter: Damager
+
 ) : LaserProjectile(ship, loc, dir, shooter) {
 
 	override val volume: Int = (range / 16).toInt()
+
 }

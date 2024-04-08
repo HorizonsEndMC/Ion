@@ -251,6 +251,7 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 
 			val loc = point.toLocation(world).toCenterLocation()
 
+
 			TurretLaserProjectile(
 				starship,
 				loc,
