@@ -214,20 +214,36 @@ object ClientDisplayEntities : IonServerComponent() {
      * @return the axis-angle representation to get the desired rotation
      * @param direction the direction that an object should face
      */
-    fun rotateToFaceVector(direction: Vector3f): AxisAngle4f {
-        // method obtained from:
-        // https://math.stackexchange.com/questions/3322434/how-to-remove-roll-from-axis-angle-rotation
+    fun rotateToFaceVector(direction: Vector3f): Quaternionf {
+        // Two rotations are necessary:
+        // - the first rotation rolls the object around the z-axis so that the object's local x-axis is
+        // aligned with the eventual axis of rotation
+        // - the second rotation rotates the object around the axis of rotation and results in the finished rotation
 
-        // start with an upward-facing vector
-        val yAxis = Vector3f(0f, 1f, 0f)
-        // get the local right-facing vector by crossing direction with the global y-axis
-        val right = (direction.clone() as Vector3f).normalize().cross(yAxis.clone() as Vector3f).normalize()
-        // get the local up-facing vector by crossing direction with the local right-facing vector
-        val rotAxis = (direction.clone() as Vector3f).normalize().cross(right.clone() as Vector3f).normalize()
-        // angle between vectors to determine the rotation needed (in radians)
-        val angle = Vector3f(0f, 0f, 1f).angle(direction)
-        // return the axis-angle representation
-        return AxisAngle4f(angle, rotAxis)
+        // Find the axis of rotation and final rotation angle
+
+        // Assuming initial rotation vector is facing SOUTH (+z direction)
+        val globalZAxis = Vector3f(0f, 0f, 1f)
+        // cross product of initial and final vectors will give the axis of rotation
+        val cross = (globalZAxis.clone() as Vector3f).cross((direction.clone() as Vector3f).normalize()).normalize()
+        // angle between the initial vector and final vector to determine the rotation needed (in radians)
+        val angle = globalZAxis.angle(direction)
+        // get the quaternion to rotate the object to face the initial vector
+        val secondRotation = Quaternionf(AxisAngle4f(angle, cross))
+
+        // Find the roll amount
+
+        // If initial rotation vector is always SOUTH, the axis of rotation (cross) will always be orthogonal to UP
+        // (+y direction)
+        val globalYAxis = Vector3f(0f, 1f, 0f)
+        // angle between the y-axis and the axis of rotation; used to remove the roll from the object (so only
+        // yaw and pitch remain) (in radians)
+        val rollAngle = globalYAxis.angle(cross)
+        // get the quaternion to roll the object
+        val firstRotation = Quaternionf(AxisAngle4f(rollAngle, globalZAxis))
+
+        // Combine the two rotations
+        return firstRotation.mul(secondRotation)
     }
 
     /**
@@ -238,11 +254,11 @@ object ClientDisplayEntities : IonServerComponent() {
      */
     fun rotateToFaceVector2d(direction: Vector3f): AxisAngle4f {
         // Assuming initial rotation vector is facing SOUTH (+z direction)
-        val initVector = Vector3f(0f, 0f, 1f)
+        val globalZAxis = Vector3f(0f, 0f, 1f)
         // create a new vector with no y-component
         val flattenedDirection = (direction.clone() as Vector3f).apply { this.y = 0f }
         // angle between vectors to determine the rotation needed (in radians)
-        val angle = if (flattenedDirection.x > 0) initVector.angle(flattenedDirection) else initVector.angle(flattenedDirection) * -1
+        val angle = if (flattenedDirection.x > 0) globalZAxis.angle(flattenedDirection) else globalZAxis.angle(flattenedDirection) * -1
         // return the axis-angle representation, with the axis of rotation around the y-axis
         return AxisAngle4f(angle, Vector3f(0f, 1f, 0f))
     }
