@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.util.Vector
 
@@ -31,8 +30,9 @@ class IonTurretProjectile(
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		val vector = dir.clone().normalize().multiply(travel)
-
-		for (location in helixAroundVector(oldLocation, vector, 5.0, 150, wavelength = 1.0)) {
+		val particle = Particle.REDSTONE
+		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
+		for (location in helixAroundVector(oldLocation, vector, 0.3, 150, wavelength = 1.0)) {
 			loc.world.spawnParticle(
 					Particle.SOUL_FIRE_FLAME,
 					location,
@@ -41,14 +41,12 @@ class IonTurretProjectile(
 					0.5,
 					0.5,
 					0.0,
-					Material.SOUL_FIRE.createBlockData(),
+					null,
 					true
 			)
 		}
-	}
-	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-		val particle = Particle.REDSTONE
-		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
-		loc.world.spawnParticle(particle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
+		loc.world.spawnParticle(particle, loc.x,loc.y,loc.z, 1, 0.0, 0.0, 0.0, 0.5, dustOptions, true)
 	}
 }
+
+

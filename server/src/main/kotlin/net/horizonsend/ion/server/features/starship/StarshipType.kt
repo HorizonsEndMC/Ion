@@ -248,7 +248,7 @@ enum class StarshipType(
 			menuItemMaterial = Material.COPPER_BLOCK,
 			isWarship = true,
 			color = "#FFD700",
-			overridePermission = "ion.ships.override.60",
+			overridePermission = "ion.ships.override.70",
 			dynmapIcon = "cruiser",
 			maxMiningLasers = 1,
 			miningLaserTier = 1,

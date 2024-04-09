@@ -236,7 +236,7 @@ data class StarshipTypeBalancing(
 		maxSneakFlyAccel = 3,
 		interdictionRange = 3100,
 		hyperspaceRangeMultiplier = 1.9,
-		cruiseSpeedMultiplier = 0.94,
+		cruiseSpeedMultiplier = 0.98,
 		shieldPowerMultiplier = 1.0,
 		weapons = StarshipWeapons(
 			ionTurret = StarshipWeapons.StarshipWeapon(
@@ -714,7 +714,7 @@ class StarshipWeapons(
 		angleRadiansVertical = 0.0,
 		convergeDistance = 0.0,
 		extraDistance = 0,
-		fireCooldownMillis = 500,
+		fireCooldownMillis = 250,
 		boostChargeSeconds = 0,
 		applyCooldownToAll = true,
 		aimDistance = 0,
