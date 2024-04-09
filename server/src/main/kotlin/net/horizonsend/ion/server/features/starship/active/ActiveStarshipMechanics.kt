@@ -121,8 +121,9 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 	private fun handleBattlecruiserMechanics() {
 		val battlecruisers = ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER }
+		val cruisersAndBattlecruisers = ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER || it.type == StarshipType.CRUISER }
 		// Consume fuel
-		battlecruisers.filter { it.controller is ActivePlayerController }.forEach { battlecruiser: ActiveStarship ->
+		cruisersAndBattlecruisers.filter { it.controller is ActivePlayerController }.forEach { battlecruiser: ActiveStarship ->
 			var remaining = BATTLECRUISER_FUEL_CONSUMPTION
 
 			for (fuelTank in battlecruiser.fuelTanks) {

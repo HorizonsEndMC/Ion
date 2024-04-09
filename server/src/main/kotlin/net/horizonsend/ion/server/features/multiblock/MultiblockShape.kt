@@ -257,7 +257,7 @@ class MultiblockShape {
 
 		fun glass() = type(Material.GLASS)
 		fun anvil() = type(Material.ANVIL)
-		fun reactorCore() = customBlock(REACTOR_CORE)
+		fun reactorCore() = customBlock(CustomBlocks.REACTOR_CORE)
 		fun stainedGlass() = filteredTypes { it.isStainedGlass }
 		fun anyGlass() = filteredTypes { it.isGlass }
 		fun seaLantern() = type(Material.SEA_LANTERN)
@@ -327,7 +327,6 @@ class MultiblockShape {
 
 		fun titaniumBlock() = customBlock(CustomBlocks.TITANIUM_BLOCK)
 		fun aluminumBlock() = customBlock(CustomBlocks.ALUMINUM_BLOCK)
-		fun oxygenTank() = customBlock(CustomBlocks.OXYGEN_TANK)
 		fun chetheriteBlock() = customBlock(CustomBlocks.CHETHERITE_BLOCK)
 		fun steelBlock() = customBlock(CustomBlocks.STEEL_BLOCK)
 		fun wireInputComputer() = type(Wires.INPUT_COMPUTER_BLOCK)

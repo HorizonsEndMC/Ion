@@ -293,6 +293,13 @@ data class StarshipTypeBalancing(
 				maxBlockCount = 16000,
 				minBlockCount = 6500
 			),
+		),
+		requiredMultiblocks = listOf(
+			RequiredSubsystemInfo(
+				FuelTankSubsystem::class.java,
+				1,
+				"Cruisers require a fuel tank to pilot!"
+			)
 		)
 	),
 	val battlecruiser: StarshipBalancing = StarshipBalancing(
