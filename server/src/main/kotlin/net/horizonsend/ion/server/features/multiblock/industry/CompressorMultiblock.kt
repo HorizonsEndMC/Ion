@@ -17,6 +17,15 @@ import org.bukkit.event.inventory.FurnaceBurnEvent
 object CompressorMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val maxPower = 300_000
 
+	override val name = "compressor"
+
+	override val signText = createSignText(
+		line1 = "&6Compressor",
+		line2 = null,
+		line3 = null,
+		line4 = null
+	)
+
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
@@ -104,52 +113,11 @@ object CompressorMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		}
 	}
 
-
-	override val name = "compressor"
-
-	override val signText = createSignText(
-		line1 = "&6Compressor",
-		line2 = null,
-		line3 = null,
-		line4 = null
-	)
-
 	override fun onFurnaceTick(
 		event: FurnaceBurnEvent,
 		furnace: Furnace,
 		sign: Sign,
 	) {
-		event.isBurning = false
-		event.burnTime = 200
-		event.isCancelled = false
-		furnace.cookSpeedMultiplier = 0.00277777777 // TODO: improve implementation after multiblock rewrite
-
-		val smelting = furnace.inventory.smelting
-		val fuel = furnace.inventory.fuel
-		val result = furnace.inventory.result
-
-		if (PowerMachines.getPower(sign) <= 100000 ||
-			smelting == null ||
-			smelting.type != Material.PRISMARINE_CRYSTALS ||
-			fuel == null
-		) {
-			furnace.cookTime = 0
-			event.isCancelled = true
-			return
-		}
-
-		if (fuel.customItem != URANIUM_CORE) {
-			furnace.cookTime = 0
-			event.isCancelled = true
-			return
-		}
-
-		if (furnace.cookTime >= 200) {
-			fuel.subtract(1)
-			if (result == null) furnace.inventory.result = URANIUM_ROD.constructItemStack()
-			else result.add(1)
-			PowerMachines.removePower(sign, 100000)
-		}
-		furnace.cookTime = 0
+		handleRecipe(this, event, furnace, sign)
 	}
 }

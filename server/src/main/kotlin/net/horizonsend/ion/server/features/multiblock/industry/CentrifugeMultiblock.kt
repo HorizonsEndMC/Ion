@@ -65,37 +65,37 @@ object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 				x(+1).anyStairs()
 				x(+2).ironBlock()
 			}
-			z(+3) {
-				y(-1) {
-					x(-2).anyGlassPane()
-					x(-1).copperBlock()
-					x(+0).endRod()
-					x(+1).copperBlock()
-					x(+2).anyGlassPane()
-				}
-				y(+0) {
-					x(-2).anyGlassPane()
-					x(-1).anyStairs()
-					x(+0).anyStairs()
-					x(+1).anyStairs()
-					x(+2).anyGlassPane()
-				}
+		}
+		z(+3) {
+			y(-1) {
+				x(-2).anyGlassPane()
+				x(-1).copperBlock()
+				x(+0).endRod()
+				x(+1).copperBlock()
+				x(+2).anyGlassPane()
 			}
-			z(+4) {
-				y(-1) {
-					x(-2).steelBlock()
-					x(-1).anyGlassPane()
-					x(+0).sponge()
-					x(+1).anyGlassPane()
-					x(+2).steelBlock()
-				}
-				y(+0) {
-					x(-2).steelBlock()
-					x(-1).anyGlassPane()
-					x(+0).ironBlock()
-					x(+1).anyGlassPane()
-					x(+2).steelBlock()
-				}
+			y(+0) {
+				x(-2).anyGlassPane()
+				x(-1).anyStairs()
+				x(+0).anyStairs()
+				x(+1).anyStairs()
+				x(+2).anyGlassPane()
+			}
+		}
+		z(+4) {
+			y(-1) {
+				x(-2).steelBlock()
+				x(-1).anyGlassPane()
+				x(+0).sponge()
+				x(+1).anyGlassPane()
+				x(+2).steelBlock()
+			}
+			y(+0) {
+				x(-2).steelBlock()
+				x(-1).anyGlassPane()
+				x(+0).ironBlock()
+				x(+1).anyGlassPane()
+				x(+2).steelBlock()
 			}
 		}
 	}
@@ -114,39 +114,6 @@ object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		furnace: Furnace,
 		sign: Sign,
 	) {
-		event.isBurning = false
-		event.burnTime = 200
-		event.isCancelled = false
-		furnace.cookSpeedMultiplier = 0.16666666666 // TODO: improve implementation after multiblock rewrite
-
-		val smelting = furnace.inventory.smelting
-		val fuel = furnace.inventory.fuel
-		val result = furnace.inventory.result
-
-		if (PowerMachines.getPower(sign) <= 100 ||
-			smelting == null ||
-			smelting.type != Material.PRISMARINE_CRYSTALS ||
-			fuel == null
-		) {
-			furnace.cookTime = 0
-			event.isCancelled = true
-			return
-		}
-
-		if (fuel.customItem != URANIUM) {
-			furnace.cookTime = 0
-			event.isCancelled = true
-			return
-		}
-
-		// Produce new item if it is not the first burn event
-		if (furnace.cookTime >= 200) {
-			fuel.subtract(1)
-			if (result == null) furnace.inventory.result = ENRICHED_URANIUM.constructItemStack()
-			else result.add(1)
-			PowerMachines.removePower(sign, 100)
-			event.isCancelled = false
-		}
-		furnace.cookTime = 0
+		handleRecipe(this, event, furnace, sign)
 	}
 }

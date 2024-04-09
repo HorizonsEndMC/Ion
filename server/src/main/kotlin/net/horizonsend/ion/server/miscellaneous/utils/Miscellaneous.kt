@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import com.mojang.math.Transformation
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.IonCommand
@@ -17,6 +18,7 @@ import net.minecraft.network.protocol.game.ClientboundSetBorderWarningDistancePa
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.network.ServerGamePacketListenerImpl
+import net.minecraft.world.entity.Display
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Slime
 import net.minecraft.world.level.block.Blocks
@@ -34,6 +36,7 @@ import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.block.Block
+import org.bukkit.block.data.BlockData
 import org.bukkit.craftbukkit.v1_20_R3.CraftChunk
 import org.bukkit.craftbukkit.v1_20_R3.CraftWorld
 import org.bukkit.craftbukkit.v1_20_R3.CraftWorldBorder
@@ -42,6 +45,8 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.scheduler.BukkitRunnable
+import org.joml.Quaternionf
+import org.joml.Vector3f
 import kotlin.reflect.jvm.isAccessible
 
 val vaultEconomy = try {
@@ -116,25 +121,42 @@ fun areaDebugMessage(x: Number, y: Number, z: Number, msg: String) {
 	}
 }
 
-fun highlightBlock(bukkitPlayer: Player, pos: Vec3i, duration: Long) {
+fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Entity, duration: Long) {
 	val player = bukkitPlayer.minecraft
 	val conn = player.connection
-	val slime = Slime(EntityType.SLIME, player.level()).apply {
-			setPos(pos.x + 0.5, pos.y.toDouble(), pos.z + 0.5)
-			setGlowingTag(true)
-			isInvisible = true
-		}
 
-	conn.send(ClientboundAddEntityPacket(slime))
-	slime.entityData.refresh(player)
+	conn.send(ClientboundAddEntityPacket(entity))
+	entity.entityData.refresh(player)
 
-	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(slime.id)) }
+	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(entity.id)) }
+}
+
+fun highlightBlock(bukkitPlayer: Player, pos: Vec3i): net.minecraft.world.entity.Entity {
+	val player = bukkitPlayer.minecraft
+	return Slime(EntityType.SLIME, player.level()).apply {
+		setPos(pos.x + 0.5, pos.y + 0.25, pos.z + 0.5)
+		this.setSize(1, true)
+		setGlowingTag(true)
+		isInvisible = true
+
+	}
+}
+
+fun displayBlock(bukkitPlayer: Player, blockData: BlockData, pos: Vec3i, scale: Float, glow: Boolean): net.minecraft.world.entity.Entity {
+	val player = bukkitPlayer.minecraft
+	val offset = (-scale / 2) + 0.5
+	return Display.BlockDisplay(EntityType.BLOCK_DISPLAY, player.level()).apply {
+		setPos(pos.x + offset, pos.y + offset, pos.z + offset)
+		this.blockState = blockData.nms
+		setGlowingTag(glow)
+		this.setTransformation(Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf()))
+	}
 }
 
 fun Audience.highlightBlock(pos: Vec3i, duration: Long) {
 	when (this) {
-		is Player -> highlightBlock(this, pos, duration)
-		is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) { highlightBlock(player, pos, duration) }
+		is Player -> sendEntityPacket(this, highlightBlock(this, pos), duration)
+		is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) { sendEntityPacket(player, highlightBlock(player, pos), duration) }
 	}
 }
 

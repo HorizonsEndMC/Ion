@@ -61,7 +61,7 @@ open class StandardRewardsProvider(protected val starship: ActiveStarship) : Rew
 	protected open fun processDamagerRewards(damager: Damager, points: AtomicInteger, lastDamaged: Long, pointsSum: Int) {
 		val killedSize = starship.initialBlockCount.toDouble()
 
-		val percent = points.get() / pointsSum
+		val percent = points.get().toDouble() / pointsSum.toDouble()
 		val xp = ((sqrt(killedSize.pow(2.0) / sqrt(killedSize * 0.00005))) * percent).toInt()
 
 		if (xp > 0) {

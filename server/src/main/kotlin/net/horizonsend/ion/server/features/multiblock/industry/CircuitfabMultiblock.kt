@@ -15,6 +15,14 @@ import org.bukkit.event.inventory.FurnaceBurnEvent
 
 
 object CircuitfabMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+	override val name = "circuitfab"
+
+	override val signText = createSignText(
+		line1 = "&6Circuitfab",
+		line2 = null,
+		line3 = null,
+		line4 = null
+	)
 	override val maxPower = 300_000
 
 	override fun MultiblockShape.buildStructure() {
@@ -68,53 +76,11 @@ object CircuitfabMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		}
 	}
 
-
-	override val name = "circuitfab"
-
-	override val signText = createSignText(
-		line1 = "&6Circuitfab",
-		line2 = null,
-		line3 = null,
-		line4 = null
-	)
-
 	override fun onFurnaceTick(
 		event: FurnaceBurnEvent,
 		furnace: Furnace,
 		sign: Sign,
 	) {
-		event.isBurning = false
-		event.burnTime = 200
-		event.isCancelled = false
-		furnace.cookSpeedMultiplier = 0.00277777777 // TODO: improve implementation after multiblock rewrite
-
-		val smelting = furnace.inventory.smelting
-		val fuel = furnace.inventory.fuel
-		val result = furnace.inventory.result
-
-		if (PowerMachines.getPower(sign) <= 100000 ||
-			smelting == null ||
-			smelting.type != Material.PRISMARINE_CRYSTALS ||
-			fuel == null
-		) {
-			furnace.cookTime = 0
-			event.isCancelled = true
-			return
-		}
-
-		if (fuel.customItem != CIRCUITRY) {
-			furnace.cookTime = 0
-			event.isCancelled = true
-			return
-		}
-
-		// Produce new item if it is not the first burn event
-		if (furnace.cookTime >= 200) {
-			fuel.subtract(1)
-			if (result == null) furnace.inventory.result = ENHANCED_CIRCUITRY.constructItemStack()
-			else result.add(1)
-			PowerMachines.removePower(sign, 100000)
-		}
-		furnace.cookTime = 0
+		handleRecipe(this, event, furnace, sign)
 	}
 }

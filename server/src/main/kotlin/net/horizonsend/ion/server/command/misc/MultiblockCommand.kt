@@ -12,10 +12,10 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.displayBlock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
-import net.minecraft.core.BlockPos
-import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
+import net.horizonsend.ion.server.miscellaneous.utils.sendEntityPacket
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -66,7 +66,7 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 			if (!requirementMet) {
 				val (xx, yy, zz) = Vec3i(relative.location)
 
-				highlightBlock(sender, Vec3i(xx, yy, zz), 5 * 20L)
+				sendEntityPacket(sender, displayBlock(sender, expected, Vec3i(xx, yy, zz), 0.5f, true), 10 * 20L)
 				sender.userError(
 					"Block at ${Vec3i(relative.location)} doesn't match! Expected ${expected.material}, found ${relative.type}."
 				)

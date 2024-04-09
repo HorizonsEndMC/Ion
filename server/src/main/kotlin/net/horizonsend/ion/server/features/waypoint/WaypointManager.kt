@@ -277,7 +277,7 @@ object WaypointManager : IonServerComponent() {
             val newVertex = WaypointVertex(
                 name = bookmark.name,
                 icon = SidebarIcon.BOOKMARK_ICON.text.first(),
-                loc = Location(Bukkit.getWorld(bookmark.worldName), bookmark.x.toDouble(), bookmark.y.toDouble(), bookmark.z.toDouble()),
+                loc = Location(Bukkit.getWorld(bookmark.worldName) ?: continue, bookmark.x.toDouble(), bookmark.y.toDouble(), bookmark.z.toDouble()),
                 linkedWaypoint = null
             )
             graph.addVertex(newVertex)

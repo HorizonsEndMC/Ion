@@ -1,8 +1,7 @@
 package net.horizonsend.ion.server.features.economy.city
 
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.enumValue
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.nullable
@@ -10,6 +9,8 @@ import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.string
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import java.util.concurrent.ConcurrentHashMap
 
@@ -42,6 +43,12 @@ object TradeCities : IonServerComponent() {
 				} else {
 					cities.remove(data.territory)
 				}
+			}
+
+			change[Settlement::name]?.let {
+				val data: SettlementCache.SettlementData = SettlementCache[id]
+				val city = cities[data.territory] ?: return@let
+				city.displayName = it.string()
 			}
 		}
 		Settlement.watchDeletes { change ->

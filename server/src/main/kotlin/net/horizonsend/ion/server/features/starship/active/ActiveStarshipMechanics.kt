@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.active
 
-import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
@@ -11,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships.unpilot
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.entityDamagerCache
@@ -48,9 +50,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.syncRepeat(1L, 1L, this::chargeSubsystems)
 		Tasks.syncRepeat(5L, 5L, this::fireAutoWeapons)
 		Tasks.syncRepeat(60L, 60L, this::destroyLowHullIntegrityShips)
-		Tasks.syncRepeat(60L, 60L, this::unpilotFuellessBattlecruisers)
-		Tasks.syncRepeat(200L, 200L, this::consumeBattlecruiserFuel)
-		Tasks.syncRepeat(60L, 60L, this::destroyReactorlessBattlecruisers)
+		Tasks.syncRepeat(60L, 60L, this::handleBattlecruiserMechanics)
 		Tasks.syncRepeat(20L, 20L, this::tickPlayers)
 	}
 
@@ -117,42 +117,31 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 	}
 
-	private fun consumeBattlecruiserFuel() {
-		ActiveStarships.all().forEach {	ship ->
-			if (ship.type == StarshipType.BATTLECRUISER) {
-				for (tank : FuelTankSubsystem in ship.fuelTanks) {
-					if (tank.tryConsumeFuel(GAS_CANISTER_HYDROGEN)) {
-						return
-					}
-				}
-			}
-		}
-	}
+	const val BATTLECRUISER_FUEL_CONSUMPTION = 18
 
-	private fun unpilotFuellessBattlecruisers() {
-		ActiveStarships.allControlledStarships().forEach { ship ->
-			if (ship.type == StarshipType.BATTLECRUISER && ship.playerPilot != null) {
-				if (ship.fuelTanks.any{it.isFuelAvailable()}) return
-				else {
-					ship.userError("WARNING: Fuel depleted! Shutdown sequence initiated")
-					unpilot(ship)
-				}
-			}
-		}
-	}
+	private fun handleBattlecruiserMechanics() {
+		val battlecruisers = ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER }
+		// Consume fuel
+		battlecruisers.filter { it.controller is ActivePlayerController }.forEach { battlecruiser: ActiveStarship ->
+			var remaining = BATTLECRUISER_FUEL_CONSUMPTION
 
-	private fun destroyReactorlessBattlecruisers() {
-		ActiveStarships.all().forEach { ship ->
-			if (ship.type == StarshipType.BATTLECRUISER) {
-				for (reactor: SupercapReactorSubsystem in ship.supercapReactors) {
-					if (!reactor.isIntact()) {
-						ship.supercapReactorCount --
-					}
-					if (ship.supercapReactorCount < 1) {
-						ship.userError("All reactors are down, ship explosion imminent!")
-						StarshipDestruction.destroy(ship)
-					}
-				}
+			for (fuelTank in battlecruiser.fuelTanks) {
+				remaining -= fuelTank.tryConsumeFuel(remaining)
+
+				if (remaining <= 0) break
+			}
+
+			if (remaining <= 0) return@forEach
+
+			battlecruiser.alert("WARNING: Fuel depleted! Shutdown sequence initiated")
+			PilotedStarships.unpilot(battlecruiser as ActiveControlledStarship)
+		}
+
+		// Destroy without intact reactors
+		battlecruisers.forEach { ship ->
+			if (ship.supercapReactors.none { it.isIntact() }) {
+				ship.alert("All reactors are down, ship explosion imminent!")
+				StarshipDestruction.destroy(ship)
 			}
 		}
 	}
@@ -178,7 +167,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	fun onBlockBreak(event: BlockBreakEvent) {
 		if (ActiveStarships.findByBlock(event.block) != null) {
 			event.isCancelled = true
-			event.player.userError("That block is part of an active starship!")
+			event.player.userErrorAction("That block is part of an active starship!")
 		}
 	}
 
@@ -191,16 +180,16 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			return
 		}
 		event.isCancelled = true
-		player.userError("Can't leave piloted ship. To leave, use /stopriding.")
+		player.userErrorAction("Can't leave piloted ship. To leave, use /stopriding.")
 		// a tick later
 		Tasks.sync {
 			if (!starship.isWithinHitbox(player)) {
 				if (PilotedStarships[player] == starship) {
 					PilotedStarships.unpilot(starship)
-					player.userError("You got outside of the ship, so it was unpiloted!")
+					player.userErrorAction("You got outside of the ship, so it was unpiloted!")
 				} else {
 					starship.removePassenger(player.uniqueId)
-					player.userError("You got outside of the ship, so you're no longer riding it!")
+					player.userErrorAction("You got outside of the ship, so you're no longer riding it!")
 				}
 			}
 		}

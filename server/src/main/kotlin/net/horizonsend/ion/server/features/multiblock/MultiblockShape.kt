@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.server.features.customblocks.CustomBlock
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks.REACTOR_CORE
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10.buildStructure
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.Wires
@@ -10,8 +11,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks.REACTOR_CORE
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
-import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
@@ -35,7 +36,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
 import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.isWool
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-
 import net.minecraft.world.level.block.AbstractFurnaceBlock
 import org.bukkit.Material
 import org.bukkit.Particle

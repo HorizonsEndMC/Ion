@@ -4,14 +4,16 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
+import net.horizonsend.ion.common.extensions.alertSubtitle
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
+import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -27,6 +29,7 @@ import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.features.starship.modules.StandardRewardsProvider
 import net.horizonsend.ion.server.features.starship.subsystem.LandingGearSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
@@ -111,6 +114,11 @@ object PilotedStarships : IonServerComponent() {
 		ActiveStarships.findByPilot(player)?.controller?.let { check(!map.containsKey(it)) { "${player.name} is already piloting a starship" } }
 		check(starship.isWithinHitbox(player)) { "${player.name} is not in their ship!" }
 		removeFromCurrentlyRidingShip(player)
+
+		// Add the rewards provider if not present
+		if (starship.rewardsProviders.none { it is StandardRewardsProvider }) {
+			starship.rewardsProviders.add(StandardRewardsProvider(starship))
+		}
 
 		pilot(starship, ActivePlayerController(player, starship)) { ship ->
 			saveLoadshipData(ship, player)
@@ -283,7 +291,7 @@ object PilotedStarships : IonServerComponent() {
 
 	fun tryPilot(player: Player, data: StarshipData, callback: (ActiveControlledStarship) -> Unit = {}): Boolean {
 		if (data !is PlayerStarshipData) {
-			player.userError("You cannot pilot a non-player starship!")
+			player.userErrorTitle("You cannot pilot a non-player starship!")
 
 			return false
 		}
@@ -326,7 +334,7 @@ object PilotedStarships : IonServerComponent() {
 			}
 
 			if (!activeStarship.isWithinHitbox(player)) {
-				player.userError("You need to be inside the ship to pilot it")
+				player.userErrorAction("You need to be inside the ship to pilot it")
 				return false
 			}
 
@@ -400,13 +408,13 @@ object PilotedStarships : IonServerComponent() {
 			}
 
 			if (!activePlayerStarship.isWithinHitbox(player)) {
-				player.userError("You need to be inside the ship to pilot it")
+				player.userErrorAction("You need to be inside the ship to pilot it.")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
 
 			if (activePlayerStarship.drillCount > 16) {
-				player.userError("Ships can not have more that 16 drills! Count: ${activePlayerStarship.drillCount}")
+				player.userErrorAction("Ships cannot have more than 16 drills! Count: ${activePlayerStarship.drillCount}")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
@@ -417,15 +425,19 @@ object PilotedStarships : IonServerComponent() {
 				return@activateAsync
 			}
 
-			if (activePlayerStarship.type == StarshipType.BATTLECRUISER && activePlayerStarship.supercapReactorCount < 1) {
-				player.userError("Battlecruisers require a reactor to pilot!")
-				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
-				return@activateAsync
+			// Check required subsystems
+			for (requiredSubsystem in activePlayerStarship.balancing.requiredMultiblocks) {
+				if (!requiredSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+					player.userError("Subsystem requirement not met! ${requiredSubsystem.failMessage}")
+					DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+					return@activateAsync
+				}
 			}
 
+			// Limit mining laser tiers and counts
 			val miningLasers = activePlayerStarship.subsystems.filterIsInstance<MiningLaserSubsystem>()
 			if (miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {
-				player.userError("Your starship can only support tier ${activePlayerStarship.type.miningLaserTier} mining lasers!")
+				player.userErrorAction("Your starship can only support tier ${activePlayerStarship.type.miningLaserTier} mining lasers!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
@@ -460,7 +472,7 @@ object PilotedStarships : IonServerComponent() {
 
 		if (!StarshipUnpilotEvent(starship, controller).callEvent()) return false
 		if (Hyperspace.isMoving(starship)) {
-			starship.userError("Cannot release while moving through hyperspace! You'd be lost to the void!")
+			starship.alertSubtitle("Cannot release while in hyperspace!")
 			return false
 		}
 

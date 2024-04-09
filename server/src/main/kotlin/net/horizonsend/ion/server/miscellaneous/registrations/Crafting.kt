@@ -96,6 +96,7 @@ import org.bukkit.Material.LIGHT_BLUE_WOOL
 import org.bukkit.Material.LIGHT_GRAY_WOOL
 import org.bukkit.Material.LIME_WOOL
 import org.bukkit.Material.MAGENTA_WOOL
+import org.bukkit.Material.MELON
 import org.bukkit.Material.MOSS_BLOCK
 import org.bukkit.Material.MOSS_CARPET
 import org.bukkit.Material.NAME_TAG
@@ -137,11 +138,6 @@ import org.bukkit.inventory.ShapelessRecipe
 
 object Crafting : IonServerComponent() {
 	override fun onEnable() {
-		//Oxygen Tank
-		itemStackShapelessRecipe("oxygenTank", OXYGEN_TANK.constructItemStack()) {
-			addIngredient(GAS_CANISTER_OXYGEN.constructItemStack().asQuantity(9))
-		}
-
 		itemStackShapelessRecipe("steelBlock", STEEL_BLOCK.constructItemStack()) {
 			addIngredient(STEEL_INGOT.constructItemStack().asQuantity(9))
 		}
@@ -582,6 +578,9 @@ object Crafting : IonServerComponent() {
 			addIngredient(URANIUM_ROD.constructItemStack().asQuantity(9))
 		}
 
+		itemStackShapelessRecipe("melonToSlices", ItemStack(Material.MELON_SLICE).asQuantity(4)){
+			addIngredient(MELON)
+		}
 		//Reactive Component Crafting
 		itemStackShapeRecipe("reactiveComponent", REACTIVE_COMPONENT.constructItemStack()) {
 			shape("xxx", "yyy", "xxx")

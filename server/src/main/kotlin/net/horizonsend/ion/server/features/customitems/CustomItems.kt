@@ -8,7 +8,8 @@ import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.features.customitems.minerals.Smeltable
 import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralItem
-import net.horizonsend.ion.server.features.customitems.shipammo.objects.ShellItem
+import net.horizonsend.ion.server.features.customitems.misc.ProgressHolder
+import net.horizonsend.ion.server.features.customitems.misc.ShellItem
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrowableCustomItem
@@ -29,7 +30,16 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
-import org.bukkit.Material.*
+import org.bukkit.Material.DIAMOND_HOE
+import org.bukkit.Material.GOLDEN_HOE
+import org.bukkit.Material.HEART_OF_THE_SEA
+import org.bukkit.Material.IRON_BLOCK
+import org.bukkit.Material.IRON_HOE
+import org.bukkit.Material.IRON_INGOT
+import org.bukkit.Material.IRON_ORE
+import org.bukkit.Material.RAW_IRON
+import org.bukkit.Material.RAW_IRON_BLOCK
+import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.block.Dispenser
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
@@ -44,53 +54,40 @@ object CustomItems {
 	val ALL get() = customItems.values
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
-
 	// Ship Ammunition Start
 
-	val UNLOADED_TURRET_SHELL =
-		register(
-			object : ShellItem(
-				identifier = "UNLOADED_SHELL",
-				material = IRON_INGOT,
-				customModelData = 511,
-				displayName = text("Unloaded Shell").decoration(ITALIC, false)
-			) {}
-		)
+	val UNLOADED_TURRET_SHELL = register(object : ShellItem(
+		identifier = "UNLOADED_SHELL",
+		material = IRON_INGOT,
+		customModelData = 511,
+		displayName = text("Unloaded Shell").decoration(ITALIC, false)
+	) {})
 
-	val LOADED_TURRET_SHELL =
-		register(
-			object : ShellItem(
-				identifier = "LOADED_SHELL",
-				material = IRON_INGOT,
-				customModelData = 512,
-				displayName = text("Loaded Shell").decoration(ITALIC, false)
-			) {}
-		)
+	val LOADED_TURRET_SHELL = register(object : ShellItem(
+		identifier = "LOADED_SHELL",
+		material = IRON_INGOT,
+		customModelData = 512,
+		displayName = text("Loaded Shell").decoration(ITALIC, false)
+	) {})
 
 	// Ship Ammunition End
 	// Magazines Start
 
-	val STANDARD_MAGAZINE =
-		register(
-			object : Magazine<PVPBalancingConfiguration.EnergyWeapons.AmmoStorage>(
-				identifier = "STANDARD_MAGAZINE",
-				material = WARPED_FUNGUS_ON_A_STICK,
-				customModelData = 1,
-				displayName = text("Standard Magazine").decoration(ITALIC, false),
-				balancingSupplier = IonServer.pvpBalancing.energyWeapons::standardMagazine
-			) {}
-		)
+	val STANDARD_MAGAZINE = register(object : Magazine<PVPBalancingConfiguration.EnergyWeapons.AmmoStorage>(
+		identifier = "STANDARD_MAGAZINE",
+		material = WARPED_FUNGUS_ON_A_STICK,
+		customModelData = 1,
+		displayName = text("Standard Magazine").decoration(ITALIC, false),
+		balancingSupplier = IonServer.pvpBalancing.energyWeapons::standardMagazine
+	) {})
 
-	val SPECIAL_MAGAZINE =
-		register(
-			object : Magazine<PVPBalancingConfiguration.EnergyWeapons.AmmoStorage>(
-				identifier = "SPECIAL_MAGAZINE",
-				material = WARPED_FUNGUS_ON_A_STICK,
-				customModelData = 2,
-				displayName = text("Special Magazine").decoration(ITALIC, false),
-				balancingSupplier = IonServer.pvpBalancing.energyWeapons::specialMagazine
-			) {}
-		)
+	val SPECIAL_MAGAZINE = register(object : Magazine<PVPBalancingConfiguration.EnergyWeapons.AmmoStorage>(
+		identifier = "SPECIAL_MAGAZINE",
+		material = WARPED_FUNGUS_ON_A_STICK,
+		customModelData = 2,
+		displayName = text("Special Magazine").decoration(ITALIC, false),
+		balancingSupplier = IonServer.pvpBalancing.energyWeapons::specialMagazine
+	) {})
 
 	// Magazines End
 	// Guns Start
@@ -327,15 +324,6 @@ object CustomItems {
 		) {}
 	)
 
-	val OXYGEN_TANK = register(
-		object : CustomBlockItem(
-			identifier = "OXYGEN_TANK",
-			material = IRON_BLOCK,
-			customModelData = 601,
-			displayName = text("Oxygen Tank").decoration(ITALIC, false),
-			customBlockIdentifier = "OXYGEN_TANK"
-		)	{}
-	)
 
 	val STEEL_INGOT = register(
 		object : MineralItem(
@@ -357,56 +345,40 @@ object CustomItems {
 	)
 
 	val STEEL_PLATE = register(
-			object : MineralItem(
-					identifier = "STEEL_PLATE",
-					material = IRON_INGOT,
-					customModelData = 40,
-					displayName = text("Steel Plate").decoration(ITALIC, false)
-			)	{}
+
+		identifier = "STEEL_PLATE",
+		customModelData = 40,
+		displayName = text("Steel Plate").decoration(ITALIC, false)
 	)
+
 	val STEEL_CHASSIS = register(
-		object : MineralItem(
-			identifier = "STEEL_CHASSIS",
-			material = IRON_INGOT,
-			customModelData = 41,
-			displayName = text("Steel Chassis").decoration(ITALIC, false)
-			)	{}
+		identifier = "STEEL_CHASSIS",
+		customModelData = 41,
+		displayName = text("Steel Chassis").decoration(ITALIC, false)
 	)
 
 	val STEEL_MODULE = register(
-		object : MineralItem(
-			identifier = "STEEL_MODULE",
-			material = IRON_INGOT,
-			customModelData = 42,
-			displayName = text("Steel Module").decoration(ITALIC, false)
-		)	{}
+		identifier = "STEEL_MODULE",
+		customModelData = 42,
+		displayName = text("Steel Module").decoration(ITALIC, false)
 	)
 
 	val STEEL_ASSEMBLY = register(
-		object : MineralItem(
-			identifier = "STEEL_ASSEMBLY",
-			material = IRON_INGOT,
-			customModelData = 43,
-			displayName = text("Steel Assembly").decoration(ITALIC, false)
-		)	{}
+		identifier = "STEEL_ASSEMBLY",
+		customModelData = 43,
+		displayName = text("Steel Assembly").decoration(ITALIC, false)
 	)
 
 	val REINFORCED_FRAME = register(
-		object : MineralItem(
-			identifier = "REINFORCED_FRAME",
-			material = IRON_INGOT,
-			customModelData = 44,
-			displayName = text("Reinforced Frame").decoration(ITALIC, false)
-		)	{}
+		identifier = "REINFORCED_FRAME",
+		customModelData = 44,
+		displayName = text("Reinforced Frame").decoration(ITALIC, false)
 	)
 
 	val REACTOR_FRAME = register(
-		object : MineralItem(
-			identifier = "REACTOR_FRAME",
-			material = IRON_INGOT,
-			customModelData = 45,
-			displayName = text("Reactor Frame").decoration(ITALIC, false).decoration(BOLD, true)
-		)	{}
+		identifier = "REACTOR_FRAME",
+		customModelData = 45,
+		displayName = text("Reactor Frame").decoration(ITALIC, false).decoration(BOLD, true)
 	)
 
 	val ALUMINUM_INGOT = register(
@@ -572,8 +544,7 @@ object CustomItems {
 		) {}
 	)
 
-	val RAW_URANIUM_BLOCK = register(
-		object : CustomBlockItem(
+	val RAW_URANIUM_BLOCK = register(object : CustomBlockItem(
 			identifier = "RAW_URANIUM_BLOCK",
 			material = RAW_IRON_BLOCK,
 			customModelData = 4,
@@ -582,199 +553,139 @@ object CustomItems {
 		) {}
 	)
 
-	val ENRICHED_URANIUM = register(
-		object: MineralItem(
-			identifier = "ENRICHED_URANIUM",
-			material = IRON_INGOT,
-			customModelData = 17,
-			displayName = text("Enriched Uranium").decoration(ITALIC, false)
-		)	{}
-	)
 
-	val ENRICHED_URANIUM_BLOCK = register(
-		object: CustomBlockItem(
-			identifier = "ENRICHED_URANIUM_BLOCK",
-			material = IRON_BLOCK,
-			customModelData = 17,
-			displayName = text("Enriched Uranium Block").decoration(ITALIC, false),
-			customBlockIdentifier = "ENRICHED_URANIUM_BLOCK"
-			)	{}
-	)
+	val ENRICHED_URANIUM = register(object: MineralItem(
+		identifier = "ENRICHED_URANIUM",
+		material = IRON_INGOT,
+		customModelData = 17,
+		displayName = text("Enriched Uranium").decoration(ITALIC, false)
+	) {})
+
+	val ENRICHED_URANIUM_BLOCK = register(object: CustomBlockItem(
+		identifier = "ENRICHED_URANIUM_BLOCK",
+		material = IRON_BLOCK,
+		customModelData = 17,
+		displayName = text("Enriched Uranium Block").decoration(ITALIC, false),
+		customBlockIdentifier = "ENRICHED_URANIUM_BLOCK"
+	) {})
 
 	val URANIUM_CORE = register(
-		object : MineralItem(
-			identifier = "URANIUM_CORE",
-			material = IRON_INGOT,
-			customModelData = 18,
-			displayName = text("Uranium Core").decoration(ITALIC, false)
-		)	{}
+		identifier = "URANIUM_CORE",
+		customModelData = 18,
+		displayName = text("Uranium Core").decoration(ITALIC, false)
 	)
 
 	val URANIUM_ROD = register(
-		object : MineralItem(
-			identifier = "URANIUM_ROD",
-			material = IRON_INGOT,
-			customModelData = 19,
-			displayName = text("Uranium Rod").decoration(ITALIC, false)
-		)	{}
+		identifier = "URANIUM_ROD",
+		customModelData = 19,
+		displayName = text("Uranium Rod").decoration(ITALIC, false)
 	)
 
 	val FUEL_ROD_CORE = register(
-		object : MineralItem(
-			identifier = "FUEL_ROD_CORE",
-			material = IRON_INGOT,
-			customModelData = 20,
-			displayName = text("Fuel Rod Core").decoration(ITALIC, false)
-		)	{}
+		identifier = "FUEL_ROD_CORE",
+		customModelData = 20,
+		displayName = text("Fuel Rod Core").decoration(ITALIC, false)
 	)
 
 	val FUEL_CELL = register(
-		object : MineralItem(
-			identifier = "FUEL_CELL",
-			material = IRON_INGOT,
-			customModelData = 21,
-			displayName = text("Fuel Cell").decoration(ITALIC, false)
-		)	{}
+		identifier = "FUEL_CELL",
+		customModelData = 21,
+		displayName = text("Fuel Cell").decoration(ITALIC, false)
 	)
 
 	val FUEL_CONTROL = register(
-		object : MineralItem(
-			identifier = "FUEL_CONTROL",
-			material = IRON_INGOT,
-			customModelData = 22,
-			displayName = text("Fuel Control").decoration(ITALIC, false).decoration(BOLD, true)
-		)	{}
+		identifier = "FUEL_CONTROL",
+		customModelData = 22,
+		displayName = text("Fuel Control").decoration(ITALIC, false).decoration(BOLD, true)
 	)
 
 	val REACTIVE_COMPONENT = register(
-		object : MineralItem(
-			identifier = "REACTIVE_COMPONENT",
-			material = IRON_INGOT,
-			customModelData = 23,
-			displayName = text("Reactive Component").decoration(ITALIC, false)
-		) {}
+		identifier = "REACTIVE_COMPONENT",
+		customModelData = 23,
+		displayName = text("Reactive Component").decoration(ITALIC, false)
 	)
 
 	val REACTIVE_HOUSING = register(
-		object : MineralItem(
-			identifier = "REACTIVE_HOUSING",
-			material = IRON_INGOT,
-			customModelData = 24,
-			displayName = text("Reactive Housing").decoration(ITALIC, false)
-		)	{}
+		identifier = "REACTIVE_HOUSING",
+		customModelData = 24,
+		displayName = text("Reactive Housing").decoration(ITALIC, false)
 	)
 
 	val REACTIVE_PLATING = register(
-		object : MineralItem(
-			identifier = "REACTIVE_PLATING",
-			material = IRON_INGOT,
-			customModelData = 25,
-			displayName = text("Reactive Plating").decoration(ITALIC, false)
-		)	{}
+		identifier = "REACTIVE_PLATING",
+		customModelData = 25,
+		displayName = text("Reactive Plating").decoration(ITALIC, false)
 	)
 
 	val REACTIVE_CHASSIS = register(
-		object : MineralItem(
-			identifier = "REACTIVE_CHASSIS",
-			material = IRON_INGOT,
-			customModelData = 26,
-			displayName = text("Reactive Chassis").decoration(ITALIC, false)
-		)	{}
+		identifier = "REACTIVE_CHASSIS",
+		customModelData = 26,
+		displayName = text("Reactive Chassis").decoration(ITALIC, false)
 	)
 
 	val REACTIVE_MEMBRANE = register(
-		object : MineralItem(
-			identifier = "REACTIVE_MEMBRANE",
-			material = IRON_INGOT,
-			customModelData = 27,
-			displayName = text("Reactive Membrane").decoration(ITALIC, false)
-		)	{}
+		identifier = "REACTIVE_MEMBRANE",
+		customModelData = 27,
+		displayName = text("Reactive Membrane").decoration(ITALIC, false)
 	)
 
 	val REACTIVE_ASSEMBLY = register(
-		object : MineralItem(
-			identifier = "REACTIVE_ASSEMBLY",
-			material = IRON_INGOT,
-			customModelData = 28,
-			displayName = text("Reactive assembly").decoration(ITALIC, false)
-		)	{}
+		identifier = "REACTIVE_ASSEMBLY",
+		customModelData = 28,
+		displayName = text("Reactive assembly").decoration(ITALIC, false)
 	)
 
 	val FABRICATED_ASSEMBLY = register(
-		object : MineralItem(
-			identifier = "FABRICATED_ASSEMBLY",
-			material = IRON_INGOT,
-			customModelData = 29,
-			displayName = text("Fabricated Assembly").decoration(ITALIC, false)
-		)	{}
+		identifier = "FABRICATED_ASSEMBLY",
+		customModelData = 29,
+		displayName = text("Fabricated Assembly").decoration(ITALIC, false)
 	)
 
 	val ENHANCED_CIRCUITRY = register(
-		object : MineralItem(
-			identifier = "ENHANCED_CIRCUITRY",
-			material = IRON_INGOT,
-			customModelData = 30,
-			displayName = text("Enhanced Circuitry").decoration(ITALIC, false)
-		)	{}
+		identifier = "ENHANCED_CIRCUITRY",
+		customModelData = 30,
+		displayName = text("Enhanced Circuitry").decoration(ITALIC, false)
 	)
 
 	val ADVANCED_CIRCUITY = register(
-		object : MineralItem(
-			identifier = "ADVANCED_CIRCUITRY",
-			material = IRON_INGOT,
-			customModelData = 31,
-			displayName = text("Advanced Circuitry").decoration(ITALIC, false)
-		)	{}
+		identifier = "ADVANCED_CIRCUITRY",
+		customModelData = 31,
+		displayName = text("Advanced Circuitry").decoration(ITALIC, false)
 	)
 
 	val REACTOR_CONTROL = register(
-		object : MineralItem(
-			identifier = "REACTOR_CONTROL",
-			material = IRON_INGOT,
-			customModelData = 32,
-			displayName = text("Reactor Control").decoration(ITALIC, false).decoration(BOLD, true)
-		)	{}
+		identifier = "REACTOR_CONTROL",
+		customModelData = 32,
+		displayName = text("Reactor Control").decoration(ITALIC, false).decoration(BOLD, true)
 	)
 
 	val SUPERCONDUCTOR = register(
-		object : MineralItem(
-			identifier = "SUPERCONDUCTOR",
-			material = IRON_INGOT,
-			customModelData = 33,
-			displayName = text("Superconductor").decoration(ITALIC, false)
-		)	{}
+		identifier = "SUPERCONDUCTOR",
+		customModelData = 33,
+		displayName = text("Superconductor").decoration(ITALIC, false)
 	)
 
-	val SUPERCONDUCTOR_BLOCK = register(
-		object : CustomBlockItem(
-			identifier = "SUPERCONDUCTOR_BLOCK",
-			material = IRON_BLOCK,
-			customModelData = 34,
-			displayName = text("Superconductor Block").decoration(ITALIC, false),
-			customBlockIdentifier = "SUPERCONDUCTOR_BLOCK"
-		)	{}
-	)
+	val SUPERCONDUCTOR_BLOCK = register(object : CustomBlockItem(
+		identifier = "SUPERCONDUCTOR_BLOCK",
+		material = IRON_BLOCK,
+		customModelData = 34,
+		displayName = text("Superconductor Block").decoration(ITALIC, false),
+		customBlockIdentifier = "SUPERCONDUCTOR_BLOCK"
+	) {})
 
 	val SUPERCONDUCTOR_CORE = register(
-		object : MineralItem(
-			identifier = "SUPERCONDUCTOR_CORE",
-			material = IRON_INGOT,
-			customModelData = 35,
-			displayName = text("Superconductor Core").decoration(ITALIC, false).decoration(BOLD, true)
-		)	{}
+		identifier = "SUPERCONDUCTOR_CORE",
+		customModelData = 35,
+		displayName = text("Superconductor Core").decoration(ITALIC, false).decoration(BOLD, true)
 	)
 
-	val REACTOR_CORE = register(
-		object : CustomBlockItem(
-			identifier = "REACTOR_CORE",
-			material = IRON_BLOCK,
-			customModelData = 36,
-			displayName = text("Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
-			customBlockIdentifier = "REACTOR_CORE"
-		)	{}
-	)
-
-
+	val REACTOR_CORE = register(object : CustomBlockItem(
+		identifier = "REACTOR_CORE",
+		material = IRON_BLOCK,
+		customModelData = 36,
+		displayName = text("Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
+		customBlockIdentifier = "REACTOR_CORE"
+	) {})
 
 	fun canisterName(gasName: Component): Component = text()
 		.append(gasName)
@@ -831,6 +742,8 @@ object CustomItems {
 
 	// Throwables end
 
+	val PROGRESS_HOLDER = register(ProgressHolder)
+
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun registerStackable(identifier: String, customModelData: Int, displayName: Component): CustomItem {
 		return register(object : CustomItem(identifier) {
@@ -843,7 +756,6 @@ object CustomItems {
 			}
 		})
 	}
-
 
 	private fun register(identifier: String, customModelData: Int, displayName: Component): CustomItem {
 		return register(object : CustomItem(identifier) {

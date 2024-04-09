@@ -135,7 +135,6 @@ object SubsystemDetector {
 
 			is SupercapReactorMultiblock -> {
 				starship.subsystems += SupercapReactorSubsystem(starship, sign, multiblock)
-				starship.supercapReactorCount++
 			}
 
 			is FuelTankMultiblock -> {

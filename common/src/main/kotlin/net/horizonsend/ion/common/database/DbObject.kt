@@ -150,7 +150,7 @@ abstract class DbObjectCompanion<T : DbObject, ID : Id<T>>(
 					}
 					change = cursor.next()
 				} catch (e: MongoException) {
-					if (e.message == "state should be: open") {
+					if (e.message == "Cursor has been closed") {
 						// TODO: Find better solution to this
 						break
 					} else {
