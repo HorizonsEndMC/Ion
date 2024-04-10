@@ -94,6 +94,8 @@ class SlashCommandManager(private val jda: JDA, private val configuration: Disco
 		log.info("${event.user.name} issued ${if (event.isGuildCommand) "guild" else "global"}" +
 				" command: ${event.fullCommandName} ${event.options.map { "${it.name}: ${it.asString}" }}")
 
+		event.deferReply(true)
+
 		val executor = getCommand(event)
 
 		if (executor == null) {
