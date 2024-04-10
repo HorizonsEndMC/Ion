@@ -57,7 +57,7 @@ dependencies {
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-extra-kotlin:2.1.3")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.1.3")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-implementation:2.1.3")
-	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-modern:2.1.3")
+	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-modern:2.1.4")
     implementation("org.jgrapht:jgrapht-core:1.5.2")
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 	implementation("org.apache.commons:commons-collections4:4.4")
