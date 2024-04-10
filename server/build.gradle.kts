@@ -62,7 +62,7 @@ dependencies {
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 	implementation("org.apache.commons:commons-collections4:4.4")
 
-	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.9.1")
+	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.9.2")
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }
