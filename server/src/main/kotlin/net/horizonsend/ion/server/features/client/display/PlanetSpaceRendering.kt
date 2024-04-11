@@ -18,7 +18,6 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
-import org.joml.AxisAngle4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.util.UUID
@@ -65,7 +64,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         val entity = ClientDisplayEntityFactory.createItemDisplay(player)
         val entityRenderDistance = getViewDistanceEdge(player)
         // do not render if the planet is closer than the entity render distance
-        if (distance < entityRenderDistance) return null
+        if (distance < entityRenderDistance * 2) return null
 
         entity.itemStack = getPlanetItemStack(identifier)
         entity.billboard = Display.Billboard.FIXED
@@ -83,7 +82,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             offset.toVector3f(),
             ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
             Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
-            AxisAngle4f()
+            Quaternionf()
         )
 
         // position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
@@ -113,7 +112,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         // also do not render if the planet is closer than the entity render distance
         if (!nmsEntity.isChunkLoaded ||
             nmsEntity.level().world.name != player.world.name ||
-            distance < (entityRenderDistance * 2)
+            distance < entityRenderDistance * 2
         ) {
             ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
             ClientDisplayEntities[player.uniqueId]?.remove(identifier)
@@ -128,7 +127,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
-                Quaternionf(ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f())),
+                ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
                 Vector3f(scale * viewDistanceFactor(entityRenderDistance)),
                 Quaternionf()
             )
@@ -174,7 +173,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             offset.toVector3f(),
             ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
             Vector3f(data.scale * viewDistanceFactor(data.distance)),
-            AxisAngle4f()
+            Quaternionf()
         )
 
         // position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
@@ -214,7 +213,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
-                Quaternionf(ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f())),
+                ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
                 Vector3f(data.scale * viewDistanceFactor(data.distance)),
                 Quaternionf()
             )
@@ -263,9 +262,9 @@ object PlanetSpaceRendering : IonServerComponent() {
         // apply transformation
         entity.transformation = Transformation(
             offset.toVector3f(),
-            ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()).apply { this.angle += PI.toFloat() },
+            ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f().mul(-1f)),
             Vector3f(data.scale * viewDistanceFactor(data.distance)),
-            AxisAngle4f()
+            Quaternionf()
         )
 
         // position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
@@ -305,7 +304,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
-                Quaternionf(ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()).apply { this.angle += PI.toFloat() }),
+                ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f().mul(-1f)),
                 Vector3f(data.scale * viewDistanceFactor(data.distance)),
                 Quaternionf()
             )
@@ -411,6 +410,7 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         // Rendering planets
         for (planet in planetList) {
+            println("rendering ${planet.name}")
             val distance = player.location.toVector().distance(planet.location.toVector())
             val direction = planet.location.toVector().subtract(player.location.toVector()).normalize()
 
