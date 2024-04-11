@@ -19,6 +19,7 @@ class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 	override val angleRadiansVertical: Double = Math.toRadians(balancing.angleRadiansVertical)
 	override val convergeDist: Double = balancing.convergeDistance
 	override val extraDistance: Int = balancing.extraDistance
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return this.face == starship.forward

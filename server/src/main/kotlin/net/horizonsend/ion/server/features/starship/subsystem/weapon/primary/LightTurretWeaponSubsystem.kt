@@ -23,6 +23,7 @@ class LightTurretWeaponSubsystem(
 
 	override val powerUsage: Int = balancing.powerUsage
 	override val inaccuracyRadians: Double = Math.toRadians(balancing.inaccuracyRadians)
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 
 	override val range: Double get() = multiblock.getRange(starship)
 

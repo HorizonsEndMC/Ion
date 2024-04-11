@@ -19,6 +19,7 @@ class LaserCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 	override val angleRadiansHorizontal: Double = Math.toRadians(balancing.angleRadiansHorizontal)
 	override val angleRadiansVertical: Double = Math.toRadians(balancing.angleRadiansVertical)
 	override val convergeDist: Double = balancing.convergeDistance
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		starship.debug("face: $face weapon facing: ${this.face}")
