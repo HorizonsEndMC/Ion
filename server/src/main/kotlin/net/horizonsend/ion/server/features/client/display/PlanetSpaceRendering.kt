@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -147,7 +148,7 @@ object PlanetSpaceRendering : IonServerComponent() {
                 Quaternionf()
             )
 
-            ClientDisplayEntities.moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
+            ClientDisplayEntities.moveDisplayEntityPacket(player.minecraft, nmsEntity, position.x, position.y, position.z)
             ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)
 
             if (selectable) {
@@ -251,7 +252,7 @@ object PlanetSpaceRendering : IonServerComponent() {
                 Quaternionf()
             )
 
-            ClientDisplayEntities.moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
+            ClientDisplayEntities.moveDisplayEntityPacket(player.minecraft, nmsEntity, position.x, position.y, position.z)
             ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)
         }
     }
@@ -353,7 +354,7 @@ object PlanetSpaceRendering : IonServerComponent() {
                 Quaternionf()
             )
 
-            ClientDisplayEntities.moveDisplayEntityPacket(player, nmsEntity, position.x, position.y, position.z)
+            ClientDisplayEntities.moveDisplayEntityPacket(player.minecraft, nmsEntity, position.x, position.y, position.z)
             ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)
         }
     }

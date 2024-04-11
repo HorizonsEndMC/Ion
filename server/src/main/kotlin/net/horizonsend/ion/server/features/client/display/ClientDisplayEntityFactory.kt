@@ -1,8 +1,11 @@
 package net.horizonsend.ion.server.features.client.display
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Display
 import net.minecraft.world.entity.EntityType
+import org.bukkit.craftbukkit.v1_20_R3.CraftServer
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftBlockDisplay
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftItemDisplay
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
@@ -50,10 +53,10 @@ object ClientDisplayEntityFactory {
      * without spawning in the world. Recommended to use only for client-side rendering; use the BlockDisplay
      * interface instead of spawning the entity in the world.
      * @return the BlockDisplay entity object
-     * @param player the player that the entity will be visible to
+     * @param level the level that the entity will be in to
      */
-    fun createBlockDisplay(player: Player): CraftBlockDisplay =
-        CraftBlockDisplay(player.minecraft.server.server, Display.BlockDisplay(EntityType.BLOCK_DISPLAY, player.minecraft.level()))
+    fun createBlockDisplay(level: ServerLevel): CraftBlockDisplay =
+        CraftBlockDisplay(IonServer.server as CraftServer, Display.BlockDisplay(EntityType.BLOCK_DISPLAY, level))
 
     /**
      * Converts a Bukkit BlockDisplay to a NMS BlockDisplay.
