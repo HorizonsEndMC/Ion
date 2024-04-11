@@ -392,9 +392,9 @@ abstract class ActiveStarship (
 	val damagers = mutableMapOf<Damager, ShipKillXP.ShipDamageData>()
 	fun lastDamagedOrNull(): Long? = damagers.maxOfOrNull { it.value.lastDamaged }
 
-	fun addToDamagers(damager: Damager) {
+	fun addToDamagers(damager: Damager, points: Int = 1) {
 		val data = damagers.getOrPut(damager) { ShipKillXP.ShipDamageData() }
-		data.points.incrementAndGet()
+		data.points.getAndAdd(points)
 		data.lastDamaged = System.currentTimeMillis()
 
 		debug("$damager added to damagers")

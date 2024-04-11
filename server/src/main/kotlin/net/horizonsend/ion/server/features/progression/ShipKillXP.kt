@@ -10,6 +10,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -36,7 +37,7 @@ object ShipKillXP : IonServerComponent() {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onPlayerDeath(event: PlayerDeathEvent) {
 		val player: Player = event.entity
-		val killer: Player? = player.killer
+		val killer: Entity? = (player.lastDamageCause as? EntityDamageByEntityEvent)?.damager
 
 		onPlayerKilled(player.uniqueId, killer)
 	}
@@ -44,7 +45,7 @@ object ShipKillXP : IonServerComponent() {
 	private fun onPlayerKilled(killed: UUID, killer: Entity?) {
 		val killedStarship = ActiveStarships.findByPilot(killed) ?: return
 
-		killer?.let { killedStarship.addToDamagers(killer.damager()) }
+		killer?.let { killedStarship.addToDamagers(killer.damager(), 10_000) }
 
 		onShipKill(killedStarship)
 	}
@@ -55,7 +56,8 @@ object ShipKillXP : IonServerComponent() {
 				ship "${starship.getDisplayNamePlain()}" killed at ${starship.centerOfMass}.
 				Pilot: ${starship.controller}.
 				Damagers: ${starship.damagers.entries.joinToString { "(Damager: ${it.key}, Points: ${it.value.points})" }}
-				Reward Providers: ${starship.rewardsProviders.joinToString { it.javaClass.simpleName }}
+				Rewards provider: ${starship.rewardsProvider}
+				Sink message factory: ${starship.sinkMessageFactory}
 			""".trimIndent()
 		)
 
