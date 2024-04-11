@@ -20,5 +20,6 @@ class HeavyTurretWeaponSubsystem(
 
 	override val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyRadians)
 	override val powerUsage: Int get() = balancing.powerUsage / 3
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 
 }
