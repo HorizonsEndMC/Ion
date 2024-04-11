@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import com.mojang.math.Transformation
 import net.horizonsend.ion.common.utils.miscellaneous.d
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.nations.gui.item
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
@@ -37,14 +38,15 @@ interface DisplayEntityProjectile {
 	var oldLocation: Location
 
 	fun updateDisplayEntity(newLocation: Location, velocity: Vector) {
+		velocity.multiply(3)
 		//Ripped from https://github.com/PimvanderLoos/AnimatedArchitecture/blob/master/animatedarchitecture-spigot/spigot-core/src/main/java/nl/pim16aap2/animatedarchitecture/spigot/core/animation/BlockDisplayHelper.java#L66
 		//The code I stole this from used its own vector thing called a rotation, but this should work fine
-		val (pitch, yaw) = vectorToPitchYaw(velocity)
+		val (pitch, yaw) = vectorToPitchYaw(velocity.clone())
 		var differencePitch: Double =
 			(toMinecraftAngle(getPitchBetweenLocations(originLocation, newLocation).toDouble() - pitch))//Idek
 		var differenceYaw: Double = (newLocation.yaw - yaw).toDouble()
 
-		//We get the difference in angle, no idea why, but we dont use roll, the code I stole this from did use roll, should work tho
+		//We get the difference in angle, no idea why, but we dont use roll, the code I stole this` from did use roll, should work tho
 		//the values we get are between 0-360, we need them to be between -180 to 180
 		//Quaternions dont use a point in space that they try rotate too, they use pitch and yaw to figure out how much to rotate by
 		//thats why its important to supply the difference in pitch and yaw, as thats how much we want to rotate it by
@@ -56,35 +58,20 @@ interface DisplayEntityProjectile {
 		val differenceYawRadians = Math.toRadians(differenceYaw).toFloat()
 
 		//Couldnt tell you wtf is happening here, some archaic magic anyways
-		val transformation = Matrix4f().translate(
-			Vector3f(-0.5F, -0.5F, -0.5F)
-		).rotate(fromPitchYaw(differencePitchRadians, differenceYawRadians)).translate(
-			Vector3f(0.5F, 0.5F, 0.5F)
-		)
+		val transformation = Matrix4f().rotate(fromPitchYaw(differencePitchRadians, differenceYawRadians))
 		//Get the translation needed from the originalLocation
 		val translation = newLocation.toVector().subtract(originLocation.toVector()).toVector3f()
 			.sub(transformation.getTranslation(Vector3f())) //Get how much we need to offset the displayEntity, and do some archaic magic with the transformation
-		val leftRotation = transformation.getUnnormalizedRotation(Quaternionf())
+		val invertedVector = velocity.clone().multiply(-1).toVector3f().normalize()
 		val trans = Transformation(
 			translation,
-			toQuaternion(0.0, pitch.d(),-toMinecraftAngle(yaw.d())),
+			ClientDisplayEntities.rotateToFaceVector(invertedVector),
 			Vector3f(1.0f, 1.0f, 2.0f),
 			Quaternionf()
 		) //Set the new transformation
-		//displayEntity.interpolationDelay = 0 //How long until the new transformation takes effect
-		//displayEntity.interpolationDuration =
-		//	1 //This is how long it'll take the displayEntity to reach the new translation/rotation
-
-		val list: MutableList<DataValue<*>> = ArrayList()
-		list.add(DataValue.create(EntityDataAccessor(8, EntityDataSerializers.INT), 1))
-		list.add(DataValue.create(EntityDataAccessor(9, EntityDataSerializers.INT), 1))
-		list.add(DataValue.create(EntityDataAccessor(13, EntityDataSerializers.QUATERNION), leftRotation))
-		//Right Rotation, we dont need to use it
-		list.add(DataValue.create(EntityDataAccessor(14, EntityDataSerializers.QUATERNION), Quaternionf()))
-		list.add(DataValue.create(EntityDataAccessor(11, EntityDataSerializers.VECTOR3), translation))
-		list.add(DataValue.create(EntityDataAccessor(12, EntityDataSerializers.VECTOR3), Vector3f(1.0f, 1.0f, 2.0f)))
 
 		displayEntity?.setTransformation(trans)
+		displayEntity?.transformationInterpolationDuration = 3
 		val packet = ClientboundSetEntityDataPacket(displayEntity?.id ?: return,
 			displayEntity?.entityData?.packDirty()!!
 		)
@@ -117,6 +104,7 @@ interface DisplayEntityProjectile {
 	}
 
 	fun makeDisplayEntity() {
+		displayEntity?.lerpHeadTo(0f, 0)
 		for (playerBukkit in Bukkit.getServer().onlinePlayers) {
 			val player = (playerBukkit as CraftPlayer)
 			val connection = player.handle.connection
@@ -129,21 +117,5 @@ interface DisplayEntityProjectile {
 			connection.send(ClientboundAddEntityPacket(itemDisplay))
 			itemDisplay.entityData.refresh(player.handle)
 		}
-	}
-
-
-	fun toQuaternion(roll: Double, pitch: Double, yaw: Double): Quaternionf{
-		val cr = cos(Math.toRadians(roll)*0.5)
-		val sr = sin(Math.toRadians(roll) * 0.5)
-		val cp = cos(Math.toRadians(pitch) * 0.5)
-		val sp = sin(Math.toRadians(pitch) * 0.5)
-		val cy = cos(Math.toRadians(yaw) * 0.5)
-		val sy = sin(Math.toRadians(yaw) * 0.5)
-		return Quaternionf(
-			sr*cp*cy - cr*sp*sy,
-			cr*sp*cy + sr*cp*sy,
-			cr*cp*sy - sr*sp*cy,
-			cr*cp*cy + sr*sp*sy
-		)
 	}
 }
