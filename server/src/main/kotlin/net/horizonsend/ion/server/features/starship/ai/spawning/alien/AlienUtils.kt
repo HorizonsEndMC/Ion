@@ -12,8 +12,8 @@ import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestT
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.TargetingModule
 import net.kyori.adventure.text.format.TextColor
 
-val ALIEN_STANDARD = TextColor.fromHexString("#8E32A8")!!
-val ALIEN_ACCENT = TextColor.fromHexString("#9B42F5")!!
+val ALIEN_STANDARD = TextColor.fromHexString("#225C85")!!
+val ALIEN_ACCENT = TextColor.fromHexString("#42E6F5")!!
 
 @Suppress("unused")
 val alienFrig = registerFactory("ALIEN_FRIGATE") {
@@ -46,18 +46,12 @@ private fun alienTemplateFormat(
 	engagementRadius: Double = 2500.0,
 	manualWeaponSets: MutableSet<AISpawningConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf(),
 	autoWeaponSets: MutableSet<AISpawningConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf(),
-	reinforcementInformation: AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation? = null
+	reinforcementInformation: AISpawningConfiguration.AIStarshipTemplate.ReinforcementInformation? = null,
+	smackInformation: AISpawningConfiguration.AIStarshipTemplate.SmackInformation? = null
 ): AISpawningConfiguration.AIStarshipTemplate {
 	return AISpawningConfiguration.AIStarshipTemplate(
 		color = ALIEN_STANDARD.value(),
-		smackInformation = null,
-//		radiusMessageInformation = AISpawningConfiguration.AIStarshipTemplate.RadiusMessageInformation(
-//			prefix = MINING_CORP_SMACK_PREFIX,
-//			messages = mapOf(
-//				engagementRadius * 1.5 to "<#FFA500>You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.",
-//				engagementRadius to "<RED>You have violated restricted airspace. Your vessel will be fired upon."
-//			)
-//		),
+		smackInformation = smackInformation,
 		maxSpeed = -1,
 		reinforcementInformation = reinforcementInformation,
 
@@ -283,6 +277,23 @@ val verdolithReinforced = alienTemplateFormat(
 					ships = mapOf(verdolithReinforcement.identifier to 2)
 				)
 			)
+		)
+	),
+	smackInformation = AISpawningConfiguration.AIStarshipTemplate.SmackInformation(
+		prefix = "",
+		messages = listOf(
+			"<$ALIEN_STANDARD>Intercepting hostile transmissions. Adapting swarm behavior to disrupt enemy communications.",
+			"<$ALIEN_STANDARD>Evasive maneuvers engaged; navigating hostile terrain.",
+			"<$ALIEN_STANDARD>Near-field barrier corroded under hostile fire. Re-routing aortal flow to priority organs.",
+			"<$ALIEN_STANDARD>Deploying attack swarm.",
+			"<$ALIEN_STANDARD>Hostile vessel subsystem lock-on confirmed. Firing.",
+			"<$ALIEN_STANDARD>Combat pattern analysis transmitted to nearest Hive.",
+			"<$ALIEN_STANDARD>Hostile vessel damaged.",
+			"<$ALIEN_STANDARD>Hive directive received, switching designation: Hunter-Seeker.",
+			"<$ALIEN_STANDARD>Releasing attack swarm.",
+			"<$ALIEN_STANDARD>Attack vector plotted.",
+			"<$ALIEN_STANDARD>Engaging defensive maneuvers.",
+			"<$ALIEN_STANDARD>Re-routing aortal flow to drone locomotion systems."
 		)
 	)
 )
