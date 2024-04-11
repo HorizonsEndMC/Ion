@@ -188,9 +188,9 @@ abstract class SimpleProjectile(
 			if (otherStarship == starship || !otherStarship.contains(x, y, z)) continue
 
 			otherStarship.damagers.getOrPut(shooter) { ShipKillXP.ShipDamageData() }.points.incrementAndGet()
-			onImpactStarship(otherStarship)
+			onImpactStarship(otherStarship, block.location)
 		}
 	}
 
-	open fun onImpactStarship(starship: ActiveStarship) {}
+	open fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {}
 }
