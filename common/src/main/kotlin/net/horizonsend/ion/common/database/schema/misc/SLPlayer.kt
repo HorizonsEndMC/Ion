@@ -79,6 +79,9 @@ data class SLPlayer(
 	var advancedStarshipInfo: Boolean = false,
 	var rotateCompass: Boolean = false,
 
+	var hudPlanetsImage: Boolean = true,
+	var hudPlanetsSelector: Boolean = true,
+
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 ) : DbObject {
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(

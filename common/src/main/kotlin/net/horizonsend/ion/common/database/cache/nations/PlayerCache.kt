@@ -55,6 +55,9 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var advancedStarshipInfo: Boolean = false,
 		var rotateCompass: Boolean = false,
 
+		var hudPlanetsImage: Boolean = true,
+		var hudPlanetsSelector: Boolean = true,
+
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
 
@@ -259,6 +262,24 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::hudPlanetsImage]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val hudPlanetsImage = it.boolean()
+					data.hudPlanetsImage = hudPlanetsImage
+				}
+			}
+
+			change[SLPlayer::hudPlanetsSelector]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val hudPlanetsSelector = it.boolean()
+					data.hudPlanetsSelector = hudPlanetsSelector
+				}
+			}
+
 			change[SLPlayer::bounty]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -342,7 +363,9 @@ abstract class AbstractPlayerCache : ManualCache() {
 			compactWaypoints = data.compactWaypoints,
 			starshipsEnabled = data.starshipsEnabled,
 			advancedStarshipInfo = data.advancedStarshipInfo,
-			rotateCompass = data.rotateCompass
+			rotateCompass = data.rotateCompass,
+			hudPlanetsImage = data.hudPlanetsImage,
+			hudPlanetsSelector = data.hudPlanetsSelector
 		)
 	}
 
