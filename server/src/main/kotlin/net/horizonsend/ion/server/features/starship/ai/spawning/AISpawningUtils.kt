@@ -13,7 +13,10 @@ import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.ai.module.misc.GlowModule
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.modules.AIRewardsProvider
 import net.horizonsend.ion.server.features.starship.modules.AISinkMessageFactory
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -70,6 +73,7 @@ fun createAIShipFromTemplate(
 		starship.speedLimit = template.maxSpeed
 		starship.rewardsProviders.addAll(template.rewardProviders.map { it.createRewardsProvider(starship, template) })
 		starship.sinkMessageFactory = AISinkMessageFactory(starship)
+		(starship.controller as AIController).modules["Glow"] = GlowModule(starship.controller as AIController)
 
 		callback(starship)
 	}

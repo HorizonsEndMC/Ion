@@ -12,6 +12,8 @@ import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Slime
 import org.bukkit.Bukkit
@@ -60,12 +62,11 @@ object ClientDisplayEntities : IonServerComponent() {
 
     /**
      * Sends a client-side entity to a client that lasts for a set duration.
-     * @param bukkitPlayer the player that the entity should be visible to
+     * @param player the player that the entity should be visible to
      * @param entity the NMS entity to send
      * @param duration the duration that the entity should be visible for
      */
-    fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Entity, duration: Long) {
-        val player = bukkitPlayer.minecraft
+    fun sendEntityPacket(player: ServerPlayer, entity: net.minecraft.world.entity.Entity, duration: Long) {
         val conn = player.connection
 
         conn.send(ClientboundAddEntityPacket(entity))
@@ -75,21 +76,30 @@ object ClientDisplayEntities : IonServerComponent() {
     }
 
     /**
+     * Sends a client-side entity to a client that lasts for a set duration.
+     * @param bukkitPlayer the player that the entity should be visible to
+     * @param entity the NMS entity to send
+     * @param duration the duration that the entity should be visible for
+     */
+    fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Entity, duration: Long) {
+		sendEntityPacket(bukkitPlayer.minecraft, entity, duration)
+    }
+
+    /**
      * Sends a packet to a client-side entity to teleport it.
-     * @param bukkitPlayer the player with the targeted entity
+     * @param player the player with the targeted entity
      * @param entity the NMS entity to edit
      * @param x the x-coordinate to teleport the entity to
      * @param y the y-coordinate to teleport the entity to
      * @param z the z-coordinate to teleport the entity to
      */
-    fun moveDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Display, x: Double, y: Double, z: Double) {
-        entity.teleportTo(x, y, z)
+    fun moveDisplayEntityPacket(player: ServerPlayer, entity: net.minecraft.world.entity.Display, x: Double, y: Double, z: Double) {
+		entity.teleportTo(x, y, z)
 
-        val player = bukkitPlayer.minecraft
-        val conn = player.connection
+		val conn = player.connection
 
-        conn.send(ClientboundTeleportEntityPacket(entity))
-    }
+		conn.send(ClientboundTeleportEntityPacket(entity))
+	}
 
     /**
      * Sends a packet to a client-side entity to change the transformation of it.
@@ -125,7 +135,15 @@ object ClientDisplayEntities : IonServerComponent() {
      * @param entity the NMS entity to delete
      */
     fun deleteDisplayEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Entity) {
-        val player = bukkitPlayer.minecraft
+        deleteDisplayEntityPacket(bukkitPlayer.minecraft, entity)
+    }
+
+	/**
+     * Sends a packet to a client-side entity to delete it.
+     * @param player the player with the targeted entity
+     * @param entity the NMS entity to delete
+     */
+    fun deleteDisplayEntityPacket(player: ServerPlayer, entity: net.minecraft.world.entity.Entity) {
         val conn = player.connection
 
         conn.send(ClientboundRemoveEntitiesPacket(entity.id))
@@ -134,27 +152,27 @@ object ClientDisplayEntities : IonServerComponent() {
     /**
      * Creates a glowing block outline.
      * @return an invisible, glowing NMS slime object that represents the glowing outline
-     * @param player the player that the entity should be visible to
+     * @param level the level of the entity
      * @param pos the position of the entity
      */
-    fun highlightBlock(player: Player, pos: Vec3i): net.minecraft.world.entity.Entity {
-        return Slime(EntityType.SLIME, player.minecraft.level()).apply {
+    fun highlightBlock(level: ServerLevel, pos: Vec3i): net.minecraft.world.entity.Entity {
+        return Slime(EntityType.SLIME, level).apply {
             setPos(pos.x + 0.5, pos.y + 0.25, pos.z + 0.5)
             this.setSize(1, true)
             setGlowingTag(true)
             isInvisible = true
-
         }
     }
 
     fun Audience.highlightBlock(pos: Vec3i, duration: Long) {
-        when (this) {
-            is Player -> sendEntityPacket(this, highlightBlock(this, pos), duration)
-            is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) {
-                sendEntityPacket(player, highlightBlock(player, pos), duration)
-            }
-        }
-    }
+		@Suppress("OverrideOnly")
+		when (this) {
+			is Player -> sendEntityPacket(this, highlightBlock(this.world.minecraft, pos), duration)
+			is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) {
+				sendEntityPacket(player, highlightBlock(player.world.minecraft, pos), duration)
+			}
+		}
+	}
 
     private fun Audience.highlightBlocks(positions: Collection<Vec3i>, duration: Long) {
         for (pos in positions) this.highlightBlock(pos, duration)
@@ -167,21 +185,21 @@ object ClientDisplayEntities : IonServerComponent() {
     /**
      * Creates a client-side block object.
      * @return the NMS BlockDisplay object
-     * @param player the player that the entity should be visible to
+     * @param level the level that the entity should be in
      * @param blockData the block information to use
      * @param pos the position of the entity
      * @param scale the size of the entity
      * @param glow if the BlockDisplay should glow
      */
     fun displayBlock(
-        player: Player,
-        blockData: BlockData,
-        pos: Vector,
-        scale: Float = 1.0f,
-        glow: Boolean = false
+		level: ServerLevel,
+		blockData: BlockData,
+		pos: Vector,
+		scale: Float = 1.0f,
+		glow: Boolean = false
     ): net.minecraft.world.entity.Display.BlockDisplay {
 
-        val block = createBlockDisplay(player)
+        val block = createBlockDisplay(level)
         val offset = (-scale / 2) + 0.5
         block.block = blockData
         block.isGlowing = glow
