@@ -13,7 +13,7 @@ abstract class StickyParticleProjectile(
 ) : ParticleProjectile(starship, loc, dir, shooter) {
 	var embeddedShip: ActiveStarship? = null
 
-	override fun onImpactStarship(starship: ActiveStarship) {
+	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		if (embeddedShip != null) return
 
 		embeddedShip = starship
