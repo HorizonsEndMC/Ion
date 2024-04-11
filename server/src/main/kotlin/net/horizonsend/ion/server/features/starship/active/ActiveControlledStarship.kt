@@ -172,6 +172,8 @@ class ActiveControlledStarship(
 
 			PilotedStarships.unpilot(this)
 			DeactivatedPlayerStarships.deactivateAsync(this)
+
+			return false
 		}
 
 		return true
