@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyZ
@@ -41,8 +42,8 @@ object UnusedSoldShipPurge : IonServerComponent() {
 		for (data in unused) {
 			val dealerInfo = data.shipDealerInformation!!
 
-			// If they've moved it, don't clear it
-			if (dealerInfo.creationBlockKey != data.blockKey) continue
+			// If they've moved it more than 100 blocks, don't clear it
+			if (Vec3i(dealerInfo.creationBlockKey).distance(Vec3i(data.blockKey)) > 100) continue
 
 			tasks += clearShip(data)
 		}
