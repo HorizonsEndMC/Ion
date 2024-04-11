@@ -25,6 +25,7 @@ import org.joml.AxisAngle4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.util.UUID
+import kotlin.math.atan2
 
 /**
  * Functions for creating client-side display entities.
@@ -215,10 +216,11 @@ object ClientDisplayEntities : IonServerComponent() {
      * @param direction the direction that an object should face
      */
     fun rotateToFaceVector(direction: Vector3f): Quaternionf {
-        // Two rotations are necessary:
-        // - the first rotation rolls the object around the z-axis so that the object's local x-axis is
-        // aligned with the eventual axis of rotation
-        // - the second rotation rotates the object around the axis of rotation and results in the finished rotation
+        // Attempt with axis-angle representation
+        // Two rotations are necessary (global transforms assumed):
+        // - the first rotation rotates the object around the axis of rotation and results in the finished rotation
+        // - the second rotation rolls the object around the direction vector so that the object's local y-axis is
+        // aligned as close as possible to the global y-axis
 
         // Find the axis of rotation and final rotation angle
 
@@ -229,21 +231,36 @@ object ClientDisplayEntities : IonServerComponent() {
         // angle between the initial vector and final vector to determine the rotation needed (in radians)
         val angle = globalZAxis.angle(direction)
         // get the quaternion to rotate the object to face the initial vector
-        val secondRotation = Quaternionf(AxisAngle4f(angle, cross))
+        val firstRotation = Quaternionf(AxisAngle4f(angle, cross))
 
         // Find the roll amount
 
-        // If initial rotation vector is always SOUTH, the axis of rotation (cross) will always be orthogonal to UP
-        // (+y direction)
-        val globalYAxis = Vector3f(0f, 1f, 0f)
-        // angle between the y-axis and the axis of rotation; used to remove the roll from the object (so only
-        // yaw and pitch remain) (in radians)
-        val rollAngle = globalYAxis.angle(cross)
-        // get the quaternion to roll the object
-        val firstRotation = Quaternionf(AxisAngle4f(rollAngle, globalZAxis))
+        // Method derived from:
+        // https://math.stackexchange.com/questions/2548811/find-an-angle-to-rotate-a-vector-around-a-ray-so-that-the-vector-gets-as-close-a
 
+        // In the answer above, this is vector B (the vector to get close to)
+        val globalYAxis = Vector3f(0f, 1f, 0f)
+        // Vector U is the direction vector given
+        // Vector A (the vector to rotate) == Vector E due to A and U already being perpendicular
+        // Rotating the global Y axis using the firstRotation transform gets the local Y axis
+        val localYAxis = (globalYAxis.clone() as Vector3f).rotate(firstRotation)
+        // Vector F (U cross E), equivalent to the local X axis here
+        val localXAxis = (direction.clone() as Vector3f).cross((localYAxis.clone() as Vector3f).normalize()).normalize()
+        // Theta = arc tangent 2(B dot F, B dot E)
+        val rollAngle = atan2(globalYAxis.dot(localXAxis), globalYAxis.dot(localYAxis))
+
+        // get the quaternion to roll the object
+        val secondRotation = Quaternionf(AxisAngle4f(rollAngle, (direction.clone() as Vector3f).normalize()))
         // Combine the two rotations
-        return firstRotation.mul(secondRotation)
+
+        // When multiplying quaternions together, going from right to left applies the quaternions in that order,
+        // assuming rotation from the global PoV (the rotation axes do not need to factor in previous rotations).
+        // Going from left to right is equivalent if rotations are applied in that order from a local PoV (the
+        // rotation axes must follow previous rotations).
+        //
+        // This implementation assumes rotation on the global axes, which is why secondRotation appears first and
+        // secondRotation uses the direction vector as its axis of rotation (instead of the local Z axis).
+        return secondRotation.mul(firstRotation)
     }
 
     /**
@@ -252,7 +269,7 @@ object ClientDisplayEntities : IonServerComponent() {
      * @return the axis-angle representation to get the desired rotation
      * @param direction the direction that an object should face
      */
-    fun rotateToFaceVector2d(direction: Vector3f): AxisAngle4f {
+    fun rotateToFaceVector2d(direction: Vector3f): Quaternionf {
         // Assuming initial rotation vector is facing SOUTH (+z direction)
         val globalZAxis = Vector3f(0f, 0f, 1f)
         // create a new vector with no y-component
@@ -260,6 +277,6 @@ object ClientDisplayEntities : IonServerComponent() {
         // angle between vectors to determine the rotation needed (in radians)
         val angle = if (flattenedDirection.x > 0) globalZAxis.angle(flattenedDirection) else globalZAxis.angle(flattenedDirection) * -1
         // return the axis-angle representation, with the axis of rotation around the y-axis
-        return AxisAngle4f(angle, Vector3f(0f, 1f, 0f))
+        return Quaternionf(AxisAngle4f(angle, Vector3f(0f, 1f, 0f)))
     }
 }
