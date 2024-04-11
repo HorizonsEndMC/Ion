@@ -165,7 +165,10 @@ fun findSpawnLocationNearPlayer(
 	val occupiedWorlds = configuration.worldWeightedRandomList.filterTo(filteredList) { isSystemOccupied(it.getWorld()) }
 	val world = (occupiedWorlds.randomOrNull() ?: return null).getWorld()
 
-	val player = world.players.filter(playerFilter).randomOrNull() ?: return null
+	val player = world.players
+		.filter { player -> PilotedStarships.isPiloting(player) }
+		.filter(playerFilter)
+		.randomOrNull() ?: return null
 
 	var iterations = 0
 

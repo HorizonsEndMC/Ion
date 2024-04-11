@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.Steeri
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestTargetingModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.TargetingModule
-import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PRIVATEER_MEDIUM_TEAL
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.bulwark
@@ -25,7 +24,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
-import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
@@ -157,12 +155,6 @@ fun ServerConfiguration.AsteroidConfig.AsteroidFeature.randomPosition(): Vector 
 		origin.y.toDouble(),
 		sin(radians) + distance,
 	)
-}
-
-fun findMiningCorpSpawnPosition(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location? {
-	val locationNearPlayer = findSpawnLocationNearPlayer(configuration) ?: return null
-
-	return locationNearPlayer
 }
 
 val ostrich = basicMiningCorpTemplate(

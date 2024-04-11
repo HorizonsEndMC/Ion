@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AISpawnerConfiguration
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AISpawnerTier
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIWorldSettings
+import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -15,7 +16,7 @@ class MiningCorpSpawner : BasicSpawner(
 	"MINING_CORP_SINGLE",
 	IonServer.aiSpawningConfiguration.spawners::miningCorp,
 ) {
-	override fun findSpawnLocation(): Location? = findMiningCorpSpawnPosition(configuration)
+	override fun findSpawnLocation(): Location? = findSpawnLocationNearPlayer(configuration)
 
 	override val spawnMessage: Component = ofChildren(
 		text("The ", HE_MEDIUM_GRAY),

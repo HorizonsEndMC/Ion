@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.findPrivateerSpawnLocation
+import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -13,7 +13,7 @@ class TsaiiSpawner : BasicSpawner(
 	"TSAII_ATTACK",
 	IonServer.aiSpawningConfiguration.spawners::tsaii,
 ) {
-	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
+	override fun findSpawnLocation(): Location? = findSpawnLocationNearPlayer(configuration)
 
 	override val spawnMessage: Component = ofChildren(
 		Component.text("[", HEColorScheme.HE_LIGHT_GRAY),

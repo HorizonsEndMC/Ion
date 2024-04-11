@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
+import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -12,7 +13,7 @@ class PrivateerSpawner : BasicSpawner(
 	"PRIVATEER_SINGLE",
 	IonServer.aiSpawningConfiguration.spawners::privateer,
 ) {
-	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
+	override fun findSpawnLocation(): Location? = findSpawnLocationNearPlayer(configuration)
 
 	override val spawnMessage: Component = ofChildren(
 		Component.text("{3} ", HEColorScheme.HE_LIGHT_GRAY),
