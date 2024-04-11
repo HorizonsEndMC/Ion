@@ -14,9 +14,7 @@ import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisSt
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.StandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestTargetingModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.TargetingModule
-import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
 import net.kyori.adventure.text.format.TextColor
-import org.bukkit.Location
 
 val PRIVATEER_LIGHTER_TEAL = TextColor.fromHexString("#48e596")!!
 val PRIVATEER_LIGHT_TEAL = TextColor.fromHexString("#5DD097")!!
@@ -257,11 +255,3 @@ val privateerTemplates = arrayOf(
 	furious,
 	inflict
 )
-
-fun findPrivateerSpawnLocation(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location?  {
-	val nearPlayer = findSpawnLocationNearPlayer(configuration) ?: return null
-
-//	val world: World = nearPlayer.world
-
-	return nearPlayer
-}
