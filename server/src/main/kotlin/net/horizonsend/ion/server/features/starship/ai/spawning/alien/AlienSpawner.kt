@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.findPrivateerSpawnLocation
+import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -21,7 +21,7 @@ class AlienSpawner : BasicSpawner(
 		text(" An unknown starship signature is being broadcast, proceed with extreme caution.", ALIEN_STANDARD)
 	)
 
-	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
+	override fun findSpawnLocation(): Location? = findSpawnLocationNearPlayer(configuration)
 
 	companion object {
 		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
