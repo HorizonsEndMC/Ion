@@ -5,9 +5,9 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Optional
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.RISKY_PROMPT
+import net.horizonsend.ion.common.utils.text.commandPrompt
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.SLCommand
@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.entity.Player
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.pull
@@ -70,9 +69,7 @@ object BlockCommand : SLCommand() {
 			val entry = blocked[index]
 			val name = SLPlayer.getName(entry)
 
-			val unBlock = bracketed(text("unblock", HE_LIGHT_ORANGE))
-				.clickEvent(ClickEvent.runCommand("/unblock $name"))
-				.hoverEvent(text("/unblock $name"))
+			val unBlock = commandPrompt("unblock", RISKY_PROMPT, "/unblock $name")
 
 			template(text("{0} {1}"), name, unBlock)
 		}

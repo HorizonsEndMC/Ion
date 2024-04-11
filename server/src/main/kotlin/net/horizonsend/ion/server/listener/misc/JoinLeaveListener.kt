@@ -60,7 +60,7 @@ object JoinLeaveListener : SLEventListener() {
 				Discord.sendEmbed(IonServer.discordSettings.globalChannel, Embed(
 					title = "New player!",
 					description = "Welcome $name to the server!",
-					color = HEColorScheme.HE_LIGHT_ORANGE.rgb()
+					color = HEColorScheme.HE_LIGHT_ORANGE.value()
 				))
 
 				return

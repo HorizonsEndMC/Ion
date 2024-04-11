@@ -67,3 +67,8 @@ fun formatLink(showText: String, link: String): Component {
 		.clickEvent(ClickEvent.openUrl(link))
 		.hoverEvent(text(link))
 }
+
+val ITALIC = TextDecoration.ITALIC
+val BOLD = TextDecoration.BOLD
+val UNDERLINED = TextDecoration.UNDERLINED
+val STRIKETHROUGH = TextDecoration.STRIKETHROUGH

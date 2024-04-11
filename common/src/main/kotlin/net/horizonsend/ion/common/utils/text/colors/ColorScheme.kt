@@ -18,7 +18,11 @@ class HEColorScheme(override val adventure: TextColor): PresetColor {
 interface PresetColor : TextColor {
 	val adventure: TextColor
 
-	fun rgb(): Int = adventure.value()
-	fun hexString(): String = adventure.asHexString()
 	override fun value(): Int = adventure.value()
+
+	companion object {
+		fun presetColor(value: String): PresetColor = object : PresetColor {
+			override val adventure: TextColor = TextColor.fromHexString(value)!!
+		}
+	}
 }

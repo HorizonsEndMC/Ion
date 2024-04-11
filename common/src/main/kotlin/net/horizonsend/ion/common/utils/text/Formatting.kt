@@ -268,3 +268,12 @@ fun formatPaginatedMenu(
 ) {
 	entries[it]
 }
+
+/**
+ * include leading slash
+ **/
+fun commandPrompt(shownText: String, color: TextColor, command: String): Component {
+	return bracketed(text(shownText, color, ITALIC))
+		.hoverEvent(text(command))
+		.clickEvent(ClickEvent.runCommand(command))
+}
