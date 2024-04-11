@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.misc
 
+import club.minnced.discord.webhook.WebhookClient
+import club.minnced.discord.webhook.WebhookClientBuilder
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.ServerConfiguration
 import net.horizonsend.ion.server.features.bounties.Bounties.hasActive
@@ -12,7 +14,24 @@ import org.bukkit.event.entity.PlayerDeathEvent
 
 object EventLogger : IonServerComponent() {
 	override fun onEnable() {
-		val webhook = ServerConfiguration.eventLoggerWebhook ?: return
+		val url = ServerConfiguration.eventLoggerWebhook ?: return
+		val builder = WebhookClientBuilder(url)
+
+		val client: WebhookClient =  try {
+			builder.setThreadFactory { job ->
+				val thread = Thread(job)
+				thread.name = "Hello"
+				thread.isDaemon = true
+				thread
+			}
+
+			builder.setWait(true)
+
+			builder.build()
+		} catch (e: Exception) {
+			return
+		}
+
 		listen<PlayerDeathEvent> { event ->
 			val player = event.player
 
@@ -21,9 +40,9 @@ object EventLogger : IonServerComponent() {
 			val bounty = killer?.let { hasActive(player.slPlayerId, killer.slPlayerId) } ?: false
 
 			DutyModeMonitor.record(
+				client,
 				player,
-				"**died**: killer: ${event.player.killer}, nearby players: ${event.player.location.getNearbyPlayers(50.0).joinToString { it.name }}, bounty: $bounty",
-				webhook
+				"**died**: killer: ${event.player.killer}, nearby players: ${event.player.location.getNearbyPlayers(50.0).joinToString { it.name }}, bounty: $bounty"
 			)
 		}
 
@@ -31,7 +50,7 @@ object EventLogger : IonServerComponent() {
 			val player = event.player
 
 			val starship = event.starship
-			DutyModeMonitor.record(player, "**piloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)", webhook)
+			DutyModeMonitor.record(client, player, "**piloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)")
 		}
 
 		listen<StarshipUnpilotEvent> { event ->
@@ -40,7 +59,7 @@ object EventLogger : IonServerComponent() {
 			if (controller !is PlayerController) return@listen
 
 			val starship = event.starship
-			DutyModeMonitor.record(controller.player, "**unpiloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)", webhook)
+			DutyModeMonitor.record(client, controller.player, "**unpiloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)")
 		}
 	}
 }

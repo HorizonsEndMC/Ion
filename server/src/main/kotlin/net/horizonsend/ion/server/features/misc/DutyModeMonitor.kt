@@ -20,7 +20,23 @@ object DutyModeMonitor : IonServerComponent() {
 	private fun isInDutyMode(player: Player) = player.hasPermission("group.dutymode")
 
 	override fun onEnable() {
-		val webhook = ServerConfiguration.dutyModeMonitorWebhook ?: return
+		val url = ServerConfiguration.dutyModeMonitorWebhook ?: return
+		val builder = WebhookClientBuilder(url)
+
+		val client: WebhookClient =  try {
+			builder.setThreadFactory { job ->
+				val thread = Thread(job)
+				thread.name = "Hello"
+				thread.isDaemon = true
+				thread
+			}
+
+			builder.setWait(true)
+
+			builder.build()
+		} catch (e: Exception) {
+			return
+		}
 
 		listen<PlayerCommandPreprocessEvent> { event ->
 			val player = event.player
@@ -29,7 +45,7 @@ object DutyModeMonitor : IonServerComponent() {
 				return@listen
 			}
 
-			record(player, "**executed command**: ${event.message}", webhook)
+			record(client, player, "**executed command**: ${event.message}")
 		}
 
 		listen<PlayerGameModeChangeEvent> { event ->
@@ -39,7 +55,7 @@ object DutyModeMonitor : IonServerComponent() {
 				return@listen
 			}
 
-			record(player, "**changed game mode**: ${event.player.gameMode} -> ${event.newGameMode}", webhook)
+			record(client, player, "**changed game mode**: ${event.player.gameMode} -> ${event.newGameMode}")
 		}
 
 		listen<PlayerChangedWorldEvent> { event ->
@@ -49,7 +65,7 @@ object DutyModeMonitor : IonServerComponent() {
 				return@listen
 			}
 
-			record(player, "**changed world**: ${event.from} -> ${event.player.world}", webhook)
+			record(client, player, "**changed world**: ${event.from} -> ${event.player.world}")
 		}
 
 		listen<InventoryClickEvent> { event ->
@@ -60,12 +76,12 @@ object DutyModeMonitor : IonServerComponent() {
 			}
 
 			record(
+				client,
 				player,
 				"**Added to their creative inventory**: inventoryType=${event.inventory.type}, " +
 				"slotType=${event.slotType}, " +
 				"slot=${event.slot}, " +
 				"newItem/cursor=${event.cursor}",
-				webhook
 			)
 		}
 
@@ -77,7 +93,7 @@ object DutyModeMonitor : IonServerComponent() {
 			}
 
 			val starship = event.starship
-			record(player, "*piloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)", webhook)
+			record(client, player, "*piloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)")
 		}
 
 		listen<StarshipUnpilotEvent> { event ->
@@ -90,7 +106,7 @@ object DutyModeMonitor : IonServerComponent() {
 			}
 
 			val starship = event.starship
-			record(controller.player, "**unpiloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)", webhook)
+			record(client, controller.player, "**unpiloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)")
 		}
 	}
 
@@ -99,19 +115,7 @@ object DutyModeMonitor : IonServerComponent() {
 		.lowercase()
 		.startsWith("dutymode")
 
-	fun record(player: Player, content: String, url: String) {
-		val builder = WebhookClientBuilder(url)
-
-		builder.setThreadFactory { job ->
-			val thread = Thread(job)
-			thread.name = "Hello"
-			thread.isDaemon = true
-			thread
-		}
-
-		builder.setWait(true)
-
-		val client: WebhookClient = builder.build()
+	fun record(client: WebhookClient, player: Player, content: String) {
 		val name = player.name
 		val uuid = player.uniqueId
 
