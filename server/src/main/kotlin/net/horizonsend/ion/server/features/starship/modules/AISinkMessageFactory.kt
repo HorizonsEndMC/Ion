@@ -28,8 +28,14 @@ class AISinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactor
 		// First person got the final blow
 		val sortedByTime = data.toList()
 			.filter { (damager, data) ->
-				if (damager is AIShipDamager && damager.starship.controller is NoOpController) return@filter false
-				if (data.lastDamaged < ShipKillXP.damagerExpiration) return@filter false
+				if (damager is AIShipDamager && damager.starship.controller is NoOpController) {
+					IonServer.slF4JLogger.warn("Removed AI damager $damager")
+					return@filter false
+				}
+				if (data.lastDamaged < ShipKillXP.damagerExpiration) {
+					IonServer.slF4JLogger.warn("Removed expired damager $damager")
+					return@filter false
+				}
 
 				true
 			}

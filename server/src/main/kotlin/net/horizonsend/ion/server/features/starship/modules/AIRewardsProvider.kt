@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.modules
 
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
@@ -23,12 +24,21 @@ class AIRewardsProvider(val starship: ActiveStarship, val template: AISpawningCo
 		val map = mutableMapOf<PlayerDamager, ShipKillXP.ShipDamageData>()
 
 		starship.damagers.mapNotNullTo(map) filter@{ (damager, data) ->
-			if (damager !is PlayerDamager) return@filter null
-			if (data.lastDamaged < ShipKillXP.damagerExpiration) return@filter null
+			if (damager !is PlayerDamager) {
+				IonServer.slF4JLogger.warn("Removed Non-player damager $damager")
+				return@filter null
+			}
+			if (data.lastDamaged < ShipKillXP.damagerExpiration) {
+				IonServer.slF4JLogger.warn("Removed AI damager $damager")
+				return@filter null
+			}
 
 			// require they be online to get xp
 			// if they have this perm, e.g. someone in dutymode or on creative, they don't get xp
-			if (damager.player.hasPermission("starships.noxp")) return@filter null
+			if (damager.player.hasPermission("starships.noxp")) {
+				IonServer.slF4JLogger.warn("Removed Player damager with noxp $damager")
+				return@filter null
+			}
 
 			damager to data
 		}
@@ -55,6 +65,7 @@ class AIRewardsProvider(val starship: ActiveStarship, val template: AISpawningCo
 	}
 
 	private fun processDamagerRewards(damager: PlayerDamager, points: AtomicInteger, pointsSum: Int) {
+		log.info("Giving $damager $points points out of $pointsSum total")
 		val killedSize = starship.initialBlockCount.toDouble()
 
 		val percent = points.get().toDouble() / pointsSum.toDouble()

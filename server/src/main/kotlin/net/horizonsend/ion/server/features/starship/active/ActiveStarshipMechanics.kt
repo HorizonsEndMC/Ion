@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.active
 
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
