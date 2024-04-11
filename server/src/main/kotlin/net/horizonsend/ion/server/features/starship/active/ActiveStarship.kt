@@ -254,6 +254,7 @@ abstract class ActiveStarship (
 		return ThrustData(acceleration, speed)
 	}
 
+
 	fun calculateHitbox() {
 		this.hitbox.calculate(this.blocks)
 	}
@@ -354,6 +355,8 @@ abstract class ActiveStarship (
 			else -> error("Can't get thruster data for $dx $dz")
 		}
 	}
+
+
 
 	fun updatePower(sender: String, shield: Int, weapon: Int, thruster: Int) {
 		reactor.powerDistributor.setDivision(shield / 100.0, weapon / 100.0, thruster / 100.0)
