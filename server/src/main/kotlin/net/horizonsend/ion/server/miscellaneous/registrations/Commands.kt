@@ -62,6 +62,7 @@ import net.horizonsend.ion.server.command.starship.ai.AIDebugCommand
 import net.horizonsend.ion.server.command.starship.ai.AIStarshipTemplateBuilderCommand
 import net.horizonsend.ion.server.configuration.ConfigurationCommands
 import net.horizonsend.ion.server.features.achievements.AchievementsCommand
+import net.horizonsend.ion.server.features.client.commands.HudCommand
 import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
 import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection
@@ -155,6 +156,7 @@ val commands: List<SLCommand> = listOf(
 	SidebarStarshipsCommand,
     WaypointCommand,
 	BookmarkCommand,
+	HudCommand,
     BountyCommand,
 	BountyAdminCommand,
 
