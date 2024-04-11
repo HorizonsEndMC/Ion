@@ -48,7 +48,7 @@ class ArsenalRocketProjectile(
 	override fun tick() {
 		delta = (System.nanoTime() - lastTick) / 1_000_000_000.0 // Convert to seconds
 		//Only difference between these two is that for the first 2 seconds, the missile will try to go up to clear the silo and ship
-		if (age< randomInt(5,12)){
+		if (age< randomInt(10,15)){
 			age++
 			val predictedNewLoc = loc.clone().add(0.0, delta * speed/2, 0.0)
 			if (!predictedNewLoc.isChunkLoaded) {
@@ -90,52 +90,6 @@ class ArsenalRocketProjectile(
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		destroyDisplayEntity()
 		super.impact(newLoc, block, entity)
-	}
-
-	override fun updateDisplayEntity(newLocation: Location, velocity: Vector) {
-		//Ripped from https://github.com/PimvanderLoos/AnimatedArchitecture/blob/master/animatedarchitecture-spigot/spigot-core/src/main/java/nl/pim16aap2/animatedarchitecture/spigot/core/animation/BlockDisplayHelper.java#L66
-		//The code I stole this from used its own vector thing called a rotation, but this should work fine
-		val (pitch, yaw) = vectorToPitchYaw(velocity)
-		var differencePitch: Double =
-			(toMinecraftAngle(getPitchBetweenLocations(originLocation, newLocation).toDouble() - pitch))//Idek
-		var differenceYaw: Double = (newLocation.yaw - yaw).toDouble()
-
-		//We get the difference in angle, no idea why, but we dont use roll, the code I stole this from did use roll, should work tho
-		//the values we get are between 0-360, we need them to be between -180 to 180
-		//Quaternions dont use a point in space that they try rotate too, they use pitch and yaw to figure out how much to rotate by
-		//thats why its important to supply the difference in pitch and yaw, as thats how much we want to rotate it by
-		differencePitch = -toMinecraftAngle(differencePitch) //minus because for some ungodly reason it was inverted
-		differenceYaw = toMinecraftAngle(differenceYaw)
-
-		//We can only use radians
-		val differencePitchRadians = Math.toRadians(differencePitch).toFloat()
-		val differenceYawRadians = Math.toRadians(differenceYaw).toFloat()
-
-		//Couldnt tell you wtf is happening here, some archaic magic anyways
-		val transformation = Matrix4f().translate(
-			Vector3f(-0.5F, -0.5F, -0.5F)
-		).rotate(fromPitchYaw(differencePitchRadians, differenceYawRadians)).translate(
-			Vector3f(0.5F, 0.5F, 0.5F)
-		)
-		//Get the translation needed from the originalLocation
-		val translation = newLocation.toVector().subtract(originLocation.toVector()).toVector3f()
-			.sub(transformation.getTranslation(Vector3f())) //Get how much we need to offset the displayEntity, and do some archaic magic with the transformation
-		val leftRotation = transformation.getUnnormalizedRotation(Quaternionf())
-		val trans = com.mojang.math.Transformation(
-			translation,
-			leftRotation,
-			Vector3f(1.0f, 1.0f, 2.0f),
-			Quaternionf()
-		)
-		displayEntity?.setTransformation(trans)
-		val packet = ClientboundSetEntityDataPacket(displayEntity?.id ?: return,
-			displayEntity?.entityData?.packDirty()!!
-		)
-
-		Bukkit.getServer().onlinePlayers.forEach {
-			(it as CraftPlayer).handle.connection.send(packet)
-			displayEntity?.entityData?.refresh(it.handle)
-		}
 	}
 }
 
