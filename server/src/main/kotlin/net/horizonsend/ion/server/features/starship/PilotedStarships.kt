@@ -189,6 +189,8 @@ object PilotedStarships : IonServerComponent() {
 		return true
 	}
 
+	fun isPiloting(player: Player): Boolean = map.any { (controller, _) -> (controller is ActivePlayerController) && controller.player == player }
+
 	fun canTakeControl(starship: ActiveControlledStarship, player: Player): Boolean {
 		return (starship.controller as? PlayerController)?.player?.uniqueId == player.uniqueId
 	}
