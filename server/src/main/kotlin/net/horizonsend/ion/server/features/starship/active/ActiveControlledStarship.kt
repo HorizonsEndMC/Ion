@@ -3,9 +3,12 @@ package net.horizonsend.ion.server.features.starship.active
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
+import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -164,6 +167,11 @@ class ActiveControlledStarship(
 			sneakMovements = 0
 			lastBlockedTime = System.currentTimeMillis()
 			return false
+		} catch (e: Throwable) {
+			serverError("There was an unhandled exception during movement, releasing to prevent damage")
+
+			PilotedStarships.unpilot(this)
+			DeactivatedPlayerStarships.deactivateAsync(this)
 		}
 
 		return true
