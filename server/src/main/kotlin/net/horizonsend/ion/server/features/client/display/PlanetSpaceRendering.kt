@@ -32,6 +32,9 @@ object PlanetSpaceRendering : IonServerComponent() {
     // The threshold for "hovering" over a planet, in radians
     private const val PLANET_SELECTOR_ANGLE_THRESHOLD = 5.0 / 180.0 * PI
 
+    // The reduced rate at which stars should decrease in scale as the player moves away
+    private const val STAR_SCALE_FACTOR = 0.25
+
     // These vars are for saving the info of the closest
     private val lowestAngleMap = mutableMapOf<UUID, Float>()
     val planetSelectorDataMap = mutableMapOf<UUID, PlanetSelectorData>()
@@ -490,10 +493,10 @@ object PlanetSpaceRendering : IonServerComponent() {
                 if (playerDisplayEntities[star.name] == null) {
                     // entity does not exist yet; create it
                     // send packet and create the planet entity
-                    createPlanetEntity(player, star.name, distance, direction, scaleFactor = 0.25) ?: continue
+                    createPlanetEntity(player, star.name, distance, direction, scaleFactor = STAR_SCALE_FACTOR) ?: continue
                 } else {
                     // entity exists; update position
-                    updatePlanetEntity(player, star.name, distance, direction, scaleFactor = 0.25, selectable = false)
+                    updatePlanetEntity(player, star.name, distance, direction, scaleFactor = STAR_SCALE_FACTOR, selectable = false)
                 }
             } else if (playerDisplayEntities[star.name] != null) {
                 deletePlanetEntity(player, star.name)
