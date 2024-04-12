@@ -69,7 +69,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         /* Start with the Bukkit entity first as the NMS entity has private values that are easier to set by working off
          * the Bukkit wrapper first */
         val entity = ClientDisplayEntityFactory.createItemDisplay(player)
-        val entityRenderDistance = getViewDistanceEdge(player)
+        val entityRenderDistance = ClientDisplayEntities.getViewDistanceEdge(player)
         // do not render if the planet is closer than the entity render distance
         if (distance < entityRenderDistance * 2) return null
 
@@ -89,7 +89,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.transformation = Transformation(
             offset.toVector3f(),
             ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
-            Vector3f(scale * viewDistanceFactor(entityRenderDistance)),
+            Vector3f(scale * ClientDisplayEntities.viewDistanceFactor(entityRenderDistance)),
             Quaternionf()
         )
 
@@ -119,9 +119,8 @@ object PlanetSpaceRendering : IonServerComponent() {
         selectable: Boolean = true
     ) {
 
-        val entityRenderDistance = getViewDistanceEdge(player)
-
         val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get(identifier) ?: return
+        val entityRenderDistance = ClientDisplayEntities.getViewDistanceEdge(player)
 
         // remove entity if it is in an unloaded chunk or different world (this causes the entity client-side to despawn?)
         // also do not render if the planet is closer than the entity render distance
@@ -142,7 +141,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
                 ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
-                Vector3f(scale * viewDistanceFactor(entityRenderDistance)),
+                Vector3f(scale * ClientDisplayEntities.viewDistanceFactor(entityRenderDistance)),
                 Quaternionf()
             )
 
@@ -203,7 +202,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.transformation = Transformation(
             offset.toVector3f(),
             ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
-            Vector3f(data.scale * viewDistanceFactor(data.distance)),
+            Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
             Quaternionf()
         )
 
@@ -245,7 +244,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
                 ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
-                Vector3f(data.scale * viewDistanceFactor(data.distance)),
+                Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
                 Quaternionf()
             )
 
@@ -298,7 +297,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.transformation = Transformation(
             offset.toVector3f(),
             ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f().mul(-1f)),
-            Vector3f(data.scale * viewDistanceFactor(data.distance)),
+            Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
             Quaternionf()
         )
 
@@ -347,7 +346,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
                 ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f().mul(-1f)),
-                Vector3f(data.scale * viewDistanceFactor(data.distance)),
+                Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
                 Quaternionf()
             )
 
@@ -383,25 +382,6 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @param scale the current scale of the planet
      */
     private fun offsetMod(scale: Float) = scale * -0.02
-
-    /**
-     * Equation for getting the factor of the planet scaling to maintain apparent visual scale depending on
-     * the player's view distance. Calculated assuming a default view distance of 10 (160 blocks); 0.5h / 160 = h` / x,
-     * where h is the apparent visual height of the display entity, h` is the apparent visual height of the display
-     * entity after transformation, and x is the view distance of the player in blocks.
-     * @return a scaling factor useful for maintaining the apparent size of objects as they are rendered closer
-     * or further away
-     * @param viewDistance the distance at which the object is being rendered
-     */
-    private fun viewDistanceFactor(viewDistance: Int) = (0.003125 * viewDistance).toFloat()
-
-    /**
-     * Function for getting the distance from the edge of the player's view distance, minus several blocks.
-     * @return the view distance of a player in blocks, minus some offset
-     * @param player the player to get the view distance from
-     */
-    private fun getViewDistanceEdge(player: Player) =
-        (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 16
 
     /**
      * Function for getting the distance offset that the planet selector text should be lowered by.
