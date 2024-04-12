@@ -16,6 +16,8 @@ import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.entity.Display
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
@@ -164,6 +166,7 @@ object PlanetSpaceRendering : IonServerComponent() {
     /**
      * Deletes a client-side ItemDisplay planet
      * @param player the player to delete the planet for
+     * @param identifier the identifier of the entity to delete
      */
     private fun deletePlanetEntity(player: Player, identifier: String) {
 
@@ -506,6 +509,16 @@ object PlanetSpaceRendering : IonServerComponent() {
             deletePlanetSelectorEntity(player)
             deletePlanetSelectorTextEntity(player)
         }
+    }
+
+    /**
+     * Event handler that updates HUD planets when a player teleports.
+     * @param event PlayerTeleportEvent
+     */
+    @Suppress("unused")
+    @EventHandler
+    private fun onPlayerTeleport(event: PlayerTeleportEvent) {
+        renderPlanets(event.player)
     }
 
     data class PlanetSelectorData(
