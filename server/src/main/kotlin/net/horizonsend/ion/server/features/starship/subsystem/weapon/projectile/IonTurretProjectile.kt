@@ -51,7 +51,6 @@ class IonTurretProjectile(
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		val shipsThrusters = starship.thrusters
-		val shipsWeapons = starship.weapons
 		for(thruster in shipsThrusters){
 			if (impactLocation.distance(thruster.pos.toLocation(starship.world)) <= 5) {
 				shipsThrusters.remove(thruster)
@@ -60,13 +59,6 @@ class IonTurretProjectile(
 					shipsThrusters.add(thruster)
 					starship.generateThrusterMap()
 				}
-			}
-		}
-		for(weapon in shipsWeapons) {
-			if (impactLocation.distance(weapon.pos.toLocation(starship.world)) <= 5) {
-				weapon.lastFire -= 2500000000
-				println(System.nanoTime() - weapon.lastFire)
-				println(weapon.isCooledDown())
 			}
 		}
 	}
