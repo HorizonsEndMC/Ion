@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.client.display
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.space.Space
@@ -27,8 +28,10 @@ import kotlin.math.min
 object PlanetSpaceRendering : IonServerComponent() {
     // How often the planet display entities should update in ticks
     private const val PLANET_UPDATE_RATE = 10L
+
     // The threshold for "hovering" over a planet, in radians
     private const val PLANET_SELECTOR_ANGLE_THRESHOLD = 5.0 / 180.0 * PI
+
     // These vars are for saving the info of the closest
     private val lowestAngleMap = mutableMapOf<UUID, Float>()
     val planetSelectorDataMap = mutableMapOf<UUID, PlanetSelectorData>()
@@ -102,7 +105,13 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @param direction the direction that the entity will render from with respect to the player
      * @param selectable if this entity should be selectable by the player
      */
-    private fun updatePlanetEntity(player: Player, identifier: String, distance: Double, direction: Vector, selectable: Boolean = true) {
+    private fun updatePlanetEntity(
+        player: Player,
+        identifier: String,
+        distance: Double,
+        direction: Vector,
+        selectable: Boolean = true
+    ) {
 
         val entityRenderDistance = getViewDistanceEdge(player)
 
@@ -117,8 +126,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
             ClientDisplayEntities[player.uniqueId]?.remove(identifier)
             return
-        }
-        else {
+        } else {
             // calculate position and offset
             val position = player.eyeLocation.toVector()
             val offset = direction.clone().normalize().multiply(entityRenderDistance)
@@ -141,10 +149,23 @@ object PlanetSpaceRendering : IonServerComponent() {
                 // set the lowest angle vars if there is a closer entity to the player's cursor
                 if (angle < PLANET_SELECTOR_ANGLE_THRESHOLD && lowestAngleMap[player.uniqueId] != null && lowestAngleMap[player.uniqueId]!! > angle) {
                     lowestAngleMap[player.uniqueId] = angle
-                    planetSelectorDataMap[player.uniqueId] = PlanetSelectorData(identifier, entityRenderDistance, direction, scale)
+                    planetSelectorDataMap[player.uniqueId] =
+                        PlanetSelectorData(identifier, entityRenderDistance, direction, scale)
                 }
             }
         }
+    }
+
+    /**
+     * Deletes a client-side ItemDisplay planet
+     * @param player the player to delete the planet for
+     */
+    private fun deletePlanetEntity(player: Player, identifier: String) {
+
+        val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get(identifier) ?: return
+
+        ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
+        ClientDisplayEntities[player.uniqueId]?.remove(identifier)
     }
 
     /**
@@ -153,7 +174,10 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @param player the player that the entity should be visible to
      * @param data the planet selection data to update with
      */
-    private fun createPlanetSelectorEntity(player: Player, data: PlanetSelectorData): net.minecraft.world.entity.Display.ItemDisplay {
+    private fun createPlanetSelectorEntity(
+        player: Player,
+        data: PlanetSelectorData
+    ): net.minecraft.world.entity.Display.ItemDisplay {
 
         val entity = ClientDisplayEntityFactory.createItemDisplay(player)
 
@@ -204,8 +228,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
             ClientDisplayEntities[player.uniqueId]?.remove("planetSelector")
             return
-        }
-        else {
+        } else {
             // calculate position and offset
             val position = player.eyeLocation.toVector()
             val offset = data.direction.clone().normalize().multiply(data.distance - 1)
@@ -243,7 +266,10 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @param player the player that the entity should be visible to
      * @param data the planet selection data to update with
      */
-    private fun createPlanetSelectorTextEntity(player: Player, data: PlanetSelectorData): net.minecraft.world.entity.Display.TextDisplay {
+    private fun createPlanetSelectorTextEntity(
+        player: Player,
+        data: PlanetSelectorData
+    ): net.minecraft.world.entity.Display.TextDisplay {
 
         val entity = ClientDisplayEntityFactory.createTextDisplay(player)
 
@@ -257,7 +283,8 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
-        val offset = data.direction.clone().normalize().multiply(data.distance - 2).apply { this.y -= getTextOffset(data.scale, player) }
+        val offset = data.direction.clone().normalize().multiply(data.distance - 2)
+            .apply { this.y -= getTextOffset(data.scale, player) }
 
         // apply transformation
         entity.transformation = Transformation(
@@ -284,7 +311,9 @@ object PlanetSpaceRendering : IonServerComponent() {
      */
     private fun updatePlanetSelectorTextEntity(player: Player, data: PlanetSelectorData) {
 
-        val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get("planetSelectorText") as net.minecraft.world.entity.Display.TextDisplay? ?: return
+        val nmsEntity =
+            ClientDisplayEntities[player.uniqueId]?.get("planetSelectorText") as net.minecraft.world.entity.Display.TextDisplay?
+                ?: return
 
         // remove entity if it is in an unloaded chunk or different world (this causes the entity client-side to despawn?)
         // also do not render if the planet is closer than the entity render distance
@@ -294,12 +323,17 @@ object PlanetSpaceRendering : IonServerComponent() {
             ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
             ClientDisplayEntities[player.uniqueId]?.remove("planetSelectorText")
             return
-        }
-        else {
-            nmsEntity.text = PaperAdventure.asVanilla(ofChildren(Component.text(data.name), Component.text(" /jump", NamedTextColor.GREEN)))
+        } else {
+            nmsEntity.text = PaperAdventure.asVanilla(
+                ofChildren(
+                    Component.text(data.name),
+                    Component.text(" /jump", NamedTextColor.GREEN)
+                )
+            )
             // calculate position and offset
             val position = player.eyeLocation.toVector()
-            val offset = data.direction.clone().normalize().multiply(data.distance - 2).apply { this.y -= getTextOffset(data.scale, player) }
+            val offset = data.direction.clone().normalize().multiply(data.distance - 2)
+                .apply { this.y -= getTextOffset(data.scale, player) }
 
             // apply transformation
             val transformation = com.mojang.math.Transformation(
@@ -349,7 +383,8 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @return the view distance of a player in blocks, minus some offset
      * @param player the player to get the view distance from
      */
-    private fun getViewDistanceEdge(player: Player) = (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 16
+    private fun getViewDistanceEdge(player: Player) =
+        (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 16
 
     /**
      * Function for getting the distance offset that the planet selector text should be lowered by.
@@ -357,7 +392,8 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @param scale the scale of the planet selector text
      * @param player the affected player
      */
-    private fun getTextOffset(scale: Float, player: Player) = 0.48 * scale * (min(player.clientViewDistance.toDouble(), Bukkit.getWorlds()[0].viewDistance.toDouble()) / 10.0)
+    private fun getTextOffset(scale: Float, player: Player) =
+        0.48 * scale * (min(player.clientViewDistance.toDouble(), Bukkit.getWorlds()[0].viewDistance.toDouble()) / 10.0)
 
     /**
      * Gets the associated custom item from the planet's name.
@@ -408,51 +444,68 @@ object PlanetSpaceRendering : IonServerComponent() {
         // Reset planet selector information
         lowestAngleMap[player.uniqueId] = Float.MAX_VALUE
 
+        val hudPlanetsImageEnabled = PlayerCache[player].hudPlanetsImage
+        val hudPlanetsSelectorEnabled = PlayerCache[player].hudPlanetsSelector
+
         // Rendering planets
         for (planet in planetList) {
-            println("rendering ${planet.name}")
-            val distance = player.location.toVector().distance(planet.location.toVector())
-            val direction = planet.location.toVector().subtract(player.location.toVector()).normalize()
+            if (hudPlanetsImageEnabled) {
+                val distance = player.location.toVector().distance(planet.location.toVector())
+                val direction = planet.location.toVector().subtract(player.location.toVector()).normalize()
 
-            if (playerDisplayEntities[planet.name] == null) {
-                // entity does not exist yet; create it
-                // send packet and create the planet entity
-                createPlanetEntity(player, planet.name, distance, direction) ?: continue
-            } else {
-                // entity exists; update position
-                updatePlanetEntity(player, planet.name, distance, direction)
+                if (playerDisplayEntities[planet.name] == null) {
+                    // entity does not exist yet; create it
+                    // send packet and create the planet entity
+                    createPlanetEntity(player, planet.name, distance, direction) ?: continue
+                } else {
+                    // entity exists; update position
+                    updatePlanetEntity(player, planet.name, distance, direction)
+                }
+            } else if (playerDisplayEntities[planet.name] != null) {
+                deletePlanetEntity(player, planet.name)
             }
         }
 
         // Rendering stars
         val starList = Space.getStars().filter { it.spaceWorld == player.world }
         for (star in starList) {
-            val distance = player.location.toVector().distance(star.location.toVector())
-            val direction = star.location.toVector().subtract(player.location.toVector()).normalize()
+            if (hudPlanetsImageEnabled) {
+                val distance = player.location.toVector().distance(star.location.toVector())
+                val direction = star.location.toVector().subtract(player.location.toVector()).normalize()
 
-            if (playerDisplayEntities[star.name] == null) {
-                // entity does not exist yet; create it
-                // send packet and create the planet entity
-                createPlanetEntity(player, star.name, distance, direction) ?: continue
-            } else {
-                // entity exists; update position
-                updatePlanetEntity(player, star.name, distance, direction, false)
+                if (playerDisplayEntities[star.name] == null) {
+                    // entity does not exist yet; create it
+                    // send packet and create the planet entity
+                    createPlanetEntity(player, star.name, distance, direction) ?: continue
+                } else {
+                    // entity exists; update position
+                    updatePlanetEntity(player, star.name, distance, direction, false)
+                }
+            } else if (playerDisplayEntities[star.name] != null) {
+                deletePlanetEntity(player, star.name)
             }
         }
 
         // Rendering planet selector
-        if (PilotedStarships[player] != null && lowestAngleMap[player.uniqueId] != null && lowestAngleMap[player.uniqueId]!! < Float.MAX_VALUE) {
-            if (playerDisplayEntities["planetSelector"] == null) {
-                // planet should be selected but the planet selector doesn't exist yet
-                createPlanetSelectorEntity(player, planetSelectorDataMap[player.uniqueId]!!)
-                createPlanetSelectorTextEntity(player, planetSelectorDataMap[player.uniqueId]!!)
+        if (hudPlanetsSelectorEnabled) {
+            if (PilotedStarships[player] != null && lowestAngleMap[player.uniqueId] != null &&
+                lowestAngleMap[player.uniqueId]!! < Float.MAX_VALUE
+            ) {
+                if (playerDisplayEntities["planetSelector"] == null) {
+                    // planet should be selected but the planet selector doesn't exist yet
+                    createPlanetSelectorEntity(player, planetSelectorDataMap[player.uniqueId]!!)
+                    createPlanetSelectorTextEntity(player, planetSelectorDataMap[player.uniqueId]!!)
+                } else {
+                    // planet selector already exists
+                    updatePlanetSelectorEntity(player, planetSelectorDataMap[player.uniqueId]!!)
+                    updatePlanetSelectorTextEntity(player, planetSelectorDataMap[player.uniqueId]!!)
+                }
             } else {
-                // planet selector already exists
-                updatePlanetSelectorEntity(player, planetSelectorDataMap[player.uniqueId]!!)
-                updatePlanetSelectorTextEntity(player, planetSelectorDataMap[player.uniqueId]!!)
+                // planet is not selected; delete selector if it exists
+                deletePlanetSelectorEntity(player)
+                deletePlanetSelectorTextEntity(player)
             }
-        } else {
-            // planet is not selected; delete selector if it exists
+        } else if (playerDisplayEntities["planetSelector"] != null) {
             deletePlanetSelectorEntity(player)
             deletePlanetSelectorTextEntity(player)
         }
