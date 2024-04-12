@@ -14,6 +14,7 @@ import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Slime
+import org.bukkit.Bukkit
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -26,6 +27,7 @@ import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.util.UUID
 import kotlin.math.atan2
+import kotlin.math.min
 
 /**
  * Functions for creating client-side display entities.
@@ -279,4 +281,25 @@ object ClientDisplayEntities : IonServerComponent() {
         // return the axis-angle representation, with the axis of rotation around the y-axis
         return Quaternionf(AxisAngle4f(angle, Vector3f(0f, 1f, 0f)))
     }
+
+    /**
+     * Function for getting the distance from the edge of the player's view distance, minus several blocks.
+     * @return the view distance of a player in blocks, minus some offset
+     * @param player the player to get the view distance from
+     */
+    fun getViewDistanceEdge(player: Player) =
+        (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 16
+
+
+
+    /**
+     * Equation for getting the factor of an entity's scaling to maintain apparent visual scale depending on
+     * the player's view distance. Calculated assuming a default view distance of 10 (160 blocks); 0.5h / 160 = h` / x,
+     * where h is the apparent visual height of the display entity, h` is the apparent visual height of the display
+     * entity after transformation, and x is the view distance of the player in blocks.
+     * @return a scaling factor useful for maintaining the apparent size of objects as they are rendered closer
+     * or further away
+     * @param viewDistance the distance at which the object is being rendered
+     */
+    fun viewDistanceFactor(viewDistance: Int) = (0.003125 * viewDistance).toFloat()
 }
