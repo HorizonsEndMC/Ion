@@ -59,7 +59,8 @@ object PlanetSpaceRendering : IonServerComponent() {
         player: Player,
         identifier: String,
         distance: Double,
-        direction: Vector
+        direction: Vector,
+        scaleFactor: Double = 1.0
     ): net.minecraft.world.entity.Display.ItemDisplay? {
 
         /* Start with the Bukkit entity first as the NMS entity has private values that are easier to set by working off
@@ -78,7 +79,7 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
-        val scale = scale(distance)
+        val scale = scale(distance, scaleFactor)
         val offset = direction.clone().normalize().multiply(entityRenderDistance + offsetMod(scale))
 
         // apply transformation
@@ -111,6 +112,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         identifier: String,
         distance: Double,
         direction: Vector,
+        scaleFactor: Double = 1.0,
         selectable: Boolean = true
     ) {
 
@@ -130,7 +132,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         } else {
             // calculate position and offset
             val position = player.eyeLocation.toVector()
-            val scale = scale(distance)
+            val scale = scale(distance, scaleFactor)
             val offset = direction.clone().normalize().multiply(entityRenderDistance + offsetMod(scale))
 
             // apply transformation
@@ -367,8 +369,10 @@ object PlanetSpaceRendering : IonServerComponent() {
      * Equation for getting the scale of a planet display entity. Maximum (0, 100) and horizontal asymptote at x = 5.
      * @return a scale size for planet display entities
      * @param distance the distance at which the player is from the planet
+     * @param scaleReductionFactor adjust the rate at which the curve is reduced
      */
-    private fun scale(distance: Double) = ((500000000 / ((0.0625 * distance * distance) + 5250000)) + 5).toFloat()
+    private fun scale(distance: Double, scaleReductionFactor: Double) = ((500000000 /
+            ((0.0625 * distance * distance * scaleReductionFactor) + 5250000)) + 5).toFloat()
 
     /**
      * Equation for modifying the distance offset of a planet display entity. When added to the offset, decreases the
@@ -486,10 +490,10 @@ object PlanetSpaceRendering : IonServerComponent() {
                 if (playerDisplayEntities[star.name] == null) {
                     // entity does not exist yet; create it
                     // send packet and create the planet entity
-                    createPlanetEntity(player, star.name, distance, direction) ?: continue
+                    createPlanetEntity(player, star.name, distance, direction, scaleFactor = 0.25) ?: continue
                 } else {
                     // entity exists; update position
-                    updatePlanetEntity(player, star.name, distance, direction, false)
+                    updatePlanetEntity(player, star.name, distance, direction, scaleFactor = 0.25, selectable = false)
                 }
             } else if (playerDisplayEntities[star.name] != null) {
                 deletePlanetEntity(player, star.name)
