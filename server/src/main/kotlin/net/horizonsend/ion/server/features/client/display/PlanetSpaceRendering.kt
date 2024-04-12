@@ -78,13 +78,14 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
-        val offset = direction.clone().normalize().multiply(entityRenderDistance)
+        val scale = scale(distance)
+        val offset = direction.clone().normalize().multiply(entityRenderDistance + offsetMod(scale))
 
         // apply transformation
         entity.transformation = Transformation(
             offset.toVector3f(),
             ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
-            Vector3f(scale(distance) * viewDistanceFactor(entityRenderDistance)),
+            Vector3f(scale * viewDistanceFactor(entityRenderDistance)),
             Quaternionf()
         )
 
@@ -129,8 +130,8 @@ object PlanetSpaceRendering : IonServerComponent() {
         } else {
             // calculate position and offset
             val position = player.eyeLocation.toVector()
-            val offset = direction.clone().normalize().multiply(entityRenderDistance)
             val scale = scale(distance)
+            val offset = direction.clone().normalize().multiply(entityRenderDistance + offsetMod(scale))
 
             // apply transformation
             val transformation = com.mojang.math.Transformation(
@@ -190,7 +191,8 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
-        val offset = data.direction.clone().normalize().multiply(data.distance - 1)
+        // subtract 1 to ensure it is rendered before the planet
+        val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 1)
 
         // apply transformation
         entity.transformation = Transformation(
@@ -231,7 +233,8 @@ object PlanetSpaceRendering : IonServerComponent() {
         } else {
             // calculate position and offset
             val position = player.eyeLocation.toVector()
-            val offset = data.direction.clone().normalize().multiply(data.distance - 1)
+            // subtract 1 to ensure it is rendered before the planet
+            val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 1)
 
             // apply transformation
             val transformation = com.mojang.math.Transformation(
@@ -283,7 +286,7 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
-        val offset = data.direction.clone().normalize().multiply(data.distance - 2)
+        val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 2)
             .apply { this.y -= getTextOffset(data.scale, player) }
 
         // apply transformation
@@ -332,7 +335,7 @@ object PlanetSpaceRendering : IonServerComponent() {
             )
             // calculate position and offset
             val position = player.eyeLocation.toVector()
-            val offset = data.direction.clone().normalize().multiply(data.distance - 2)
+            val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 2)
                 .apply { this.y -= getTextOffset(data.scale, player) }
 
             // apply transformation
@@ -366,6 +369,13 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @param distance the distance at which the player is from the planet
      */
     private fun scale(distance: Double) = ((500000000 / ((0.0625 * distance * distance) + 5250000)) + 5).toFloat()
+
+    /**
+     * Equation for modifying the distance offset of a planet display entity. When added to the offset, decreases the
+     * distance by a maximum of two blocks depending on the scale of the planet.
+     * @param scale the current scale of the planet
+     */
+    private fun offsetMod(scale: Float) = scale * -0.02
 
     /**
      * Equation for getting the factor of the planet scaling to maintain apparent visual scale depending on
