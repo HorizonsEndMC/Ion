@@ -35,6 +35,12 @@ object HyperspaceRendering : IonServerComponent() {
         }
     }
 
+    /**
+     * Creates a client-side BlockDisplay entity for rendering a hyperspace wall
+     * @returns the NMS BlockDisplay object
+     * @param player the player that the entity should be visible to
+     * @param blockFace the BlockFace that the wall should face
+     */
     private fun createHyperspaceWallEntity(
         player: Player,
         blockFace: BlockFace
@@ -57,7 +63,7 @@ object HyperspaceRendering : IonServerComponent() {
         val transformationOffset = (-scale / 2) + 0.5
         val offset = direction.clone().normalize().apply {
             x = x * entityRenderDistance + transformationOffset
-            z = z * entityRenderDistance + transformationOffset
+            y = y * entityRenderDistance + transformationOffset
         }
         val identifier = hyperspaceIdentifierConstructor(blockFace)
 
@@ -77,6 +83,12 @@ object HyperspaceRendering : IonServerComponent() {
         return nmsEntity
     }
 
+    /**
+     * Updates a client-side BlockDisplay for rendering a hyperspace wall
+     * @param player the player that the entity should be visible to
+     * @param blockFace the BlockFace that the entity should face
+     * @param identifier the string used to retrieve the entity later
+     */
     private fun updateHyperspaceWallEntity(
         player: Player,
         blockFace: BlockFace,
@@ -96,9 +108,11 @@ object HyperspaceRendering : IonServerComponent() {
             // calculate position and offset
             val position = player.eyeLocation.toVector()
             val direction = blockFace.direction
+            val scale = HYPERSPACE_WALL_SCALE * ClientDisplayEntities.viewDistanceFactor(entityRenderDistance)
+            val transformationOffset = (-scale / 2) + 0.5
             val offset = direction.clone().normalize().apply {
-                x *= entityRenderDistance
-                z *= entityRenderDistance
+                x = x * entityRenderDistance + transformationOffset
+                y = y * entityRenderDistance + transformationOffset
             }
             val oldTransformation = (nmsEntity.bukkitEntity as CraftBlockDisplay).transformation
 
@@ -115,6 +129,11 @@ object HyperspaceRendering : IonServerComponent() {
         }
     }
 
+    /**
+     * Deletes a client-side BlockDisplay hyperspace wall
+     * @param player the player to delete the hyperspace wall for
+     * @param identifier the identifier of the entity to delete
+     */
     private fun deleteHyperspaceWallEntity(player: Player, identifier: String) {
 
         val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get(identifier) ?: return
@@ -123,8 +142,16 @@ object HyperspaceRendering : IonServerComponent() {
         ClientDisplayEntities[player.uniqueId]?.remove(identifier)
     }
 
+    /**
+     * Gets the identifier for the hyperspace wall facing a direction
+     * @param blockFace the BlockFace that the hyperspace wall is facing
+     */
     private fun hyperspaceIdentifierConstructor(blockFace: BlockFace) = "hyperspace${blockFace.name}"
 
+    /**
+     * Renders client-side BlockDisplay hyperspace walls for each player.
+     * @param player the player to send objects to
+     */
     private fun renderHyperspace(player: Player) {
         val playerDisplayEntities = ClientDisplayEntities[player.uniqueId] ?: return
 
