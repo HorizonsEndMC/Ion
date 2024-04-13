@@ -80,7 +80,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.viewRange = 5.0f
         //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
-        //entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
+        entity.teleportDuration = 0
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
@@ -194,7 +194,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.viewRange = 5.0f
         //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
-        //entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
+        entity.teleportDuration = 0
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
@@ -288,7 +288,7 @@ object PlanetSpaceRendering : IonServerComponent() {
         entity.viewRange = 5.0f
         //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
-        //entity.teleportDuration = PLANET_UPDATE_RATE.toInt()
+        entity.teleportDuration = 0
         entity.backgroundColor = Color.fromARGB(0x00000000)
 
         // calculate position and offset
@@ -518,7 +518,9 @@ object PlanetSpaceRendering : IonServerComponent() {
     @Suppress("unused")
     @EventHandler
     private fun onPlayerTeleport(event: PlayerTeleportEvent) {
-        renderPlanets(event.player)
+        Tasks.sync {
+            renderPlanets(event.player)
+        }
     }
 
     data class PlanetSelectorData(
