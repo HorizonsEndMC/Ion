@@ -92,7 +92,7 @@ object StarshipCruising : IonServerComponent() {
 		val oldVelocity = starship.cruiseData.velocity.clone()
 
 		if (oldVelocity.x.roundToInt() != 0 || oldVelocity.z.roundToInt() != 0) {
-			var (accel, maxSpeed) = starship.getThrustData(oldVelocity.x.roundToInt(), oldVelocity.x.roundToInt())
+			var (accel, maxSpeed) = starship.getThrustData(oldVelocity.x.roundToInt(), oldVelocity.z.roundToInt())
 
 			maxSpeed /= 2
 			maxSpeed = (maxSpeed * starship.balancing.cruiseSpeedMultiplier).toInt()
