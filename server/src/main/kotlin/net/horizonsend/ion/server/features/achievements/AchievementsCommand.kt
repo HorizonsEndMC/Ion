@@ -13,10 +13,9 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.customGuiBackground
 import net.horizonsend.ion.common.utils.text.customGuiHeader
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.rightJustify
 import net.horizonsend.ion.common.utils.text.shiftToLeftOfComponent
 import net.horizonsend.ion.common.utils.text.shiftToLine
-import net.horizonsend.ion.common.utils.text.shiftToRightGuiEdge
-import net.horizonsend.ion.common.utils.text.withLeftShift
 import net.horizonsend.ion.common.utils.text.withRightShift
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.screens.TextScreen
@@ -75,13 +74,16 @@ object AchievementsCommand : SLCommand() {
 		sender.openScreen(TextScreen(ofChildren(
 			customGuiBackground(0xF8FF.toChar()),
 			customGuiHeader(name),
-			Component.text("Weekend chores").color(NamedTextColor.RED).shiftToLine(1).shiftToRightGuiEdge()
-				.append(Component.text("bruh").color(NamedTextColor.BLACK).withLeftShift().shiftToLeftOfComponent())
-				.shiftToLeftOfComponent(),
-			Component.text("- Mop floors").color(NamedTextColor.GOLD).withRightShift(21).shiftToLine(2).shiftToLeftOfComponent(),
-			Component.text("- Do laundry").color(NamedTextColor.YELLOW).withRightShift(21).shiftToLine(3).shiftToLeftOfComponent(),
-			Component.text("- Be inconspicuous").color(NamedTextColor.GREEN).withRightShift(21).shiftToLine(4).shiftToLeftOfComponent(),
-			Component.text("- Sleep for 8 hrs").color(NamedTextColor.BLUE).withRightShift(21).shiftToLine(5).shiftToLeftOfComponent(),
+			Component.text("Weekend chores").color(NamedTextColor.RED).shiftToLine(1)
+				.rightJustify(Component.text("bruh")).shiftToLeftOfComponent(),
+			Component.text("- Mop floors").color(NamedTextColor.GOLD).withRightShift(21).shiftToLine(2)
+				.rightJustify(Component.text("DONE", NamedTextColor.GREEN)).shiftToLeftOfComponent(),
+			Component.text("- Do laundry").color(NamedTextColor.YELLOW).withRightShift(21).shiftToLine(3)
+				.rightJustify(Component.text("NOT DONE", NamedTextColor.RED)).shiftToLeftOfComponent(),
+			Component.text("- Be inconspicuous").color(NamedTextColor.GREEN).withRightShift(21).shiftToLine(4)
+				.rightJustify(Component.text("IN PROGRESS", NamedTextColor.GOLD)).shiftToLeftOfComponent(),
+			Component.text("- Sleep for 8 hrs").color(NamedTextColor.BLUE).withRightShift(21).shiftToLine(5)
+				.rightJustify(Component.text("CANCELLED", NamedTextColor.DARK_RED)).shiftToLeftOfComponent(),
 		)))
 	}
 }
