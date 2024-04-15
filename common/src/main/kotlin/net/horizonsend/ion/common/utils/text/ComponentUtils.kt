@@ -178,6 +178,12 @@ fun Component.shiftToLeftOfComponent(offset: Int): Component = this.shiftLeft(th
 fun Component.shiftToRightGuiEdge(): Component = this.shiftRight(RIGHT_EDGE_SHIFT - this.plainText().minecraftLength)
 
 /**
+ * Appends a component with right justification
+ * @param component the component to append
+ */
+fun Component.rightJustify(component: Component): Component = this.shiftToRightGuiEdge().append(component.withLeftShift())
+
+/**
  * Add a downward shift to the entire Component
  * @param shift number of pixels to shift between 1 and 110
  */
