@@ -454,6 +454,24 @@ fun helixAroundVector(
 	offsetRadians: Double = 0.0
 ): List<Location> {
 	val points = mutableListOf<Location>()
+
+	helixAroundVector(origin, direction, radius, limPoints, step, wavelength, offsetRadians) {
+		points += it
+	}
+
+	return  points
+}
+
+fun helixAroundVector(
+	origin: Location,
+	direction: Vector,
+	radius: Double,
+	limPoints: Int,
+	step: Double = 2 * PI,
+	wavelength: Double = 1.0,
+	offsetRadians: Double = 0.0,
+	consumer: Consumer<Location>
+) {
 	val theta = (2 * PI)
 	val progression = step / theta
 
@@ -467,10 +485,8 @@ fun helixAroundVector(
 		val y = pointAlong.y + (radius * cos(distance * wavelength) * i.y) + (radius * sin(distance * wavelength) * j.y) + (progression * progress * k.y)
 		val z = pointAlong.z + (radius * cos(distance * wavelength) * i.z) + (radius * sin(distance * wavelength) * j.z) + (progression * progress * k.z)
 
-		points += Location(origin.world, x, y, z)
+		consumer.accept(Location(origin.world, x, y, z))
 	}
-
-	return  points
 }
 
 fun Collection<Vector>.average(): Vector {
