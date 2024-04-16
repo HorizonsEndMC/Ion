@@ -147,19 +147,19 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 
 
 			IonTurretProjectile(
-					starship,
-					loc,
-					dir,
-					speed,
-					shooter.color,
-					getRange(starship),
-					getParticleThickness(starship),
-					getExplosionPower(starship),
-					getStarshipShieldDamageMultiplier(starship),
-					getAreaShieldDamageMultiplier(starship),
-					getSound(starship),
-					starship.balancing.weapons.heavyTurret, // Not used by anything
-					shooter
+				starship,
+				loc,
+				dir,
+				speed,
+				shooter.color,
+				getRange(starship),
+				getParticleThickness(starship),
+				getExplosionPower(starship),
+				getStarshipShieldDamageMultiplier(starship),
+				getAreaShieldDamageMultiplier(starship),
+				getSound(starship),
+				starship.balancing.weapons.heavyTurret, // Not used by anything
+				shooter
 			).fire()
 		}
 	}
