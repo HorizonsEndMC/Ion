@@ -1,15 +1,13 @@
-package net.horizonsend.ion.server.features.starship
+package net.horizonsend.ion.server.features.starship.destruction
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongIterator
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.d
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.SpaceWorlds
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
-import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
@@ -24,149 +22,89 @@ import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.util.Vector
 import java.util.LinkedList
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-object StarshipDestruction {
-	const val MAX_SAFE_HULL_INTEGRITY = 0.8
+/**
+ * Makes the ship fall / drift while slowly exploding
+ **/
+open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
+	private val blocks = starship.blocks
+	private val velocity: Vector = Vector()
 
-	/**
-	 * 1984 the ship
-	 *
-	 * If urgent, all will be done on the main thread.
-	 **/
-	fun vanish(starship: ActiveStarship, urgent: Boolean = false) {
-		if (starship.isExploding) {
-			return
-		}
+	private val sinking = LongOpenHashSet(blocks)
+	private val newSinking = LinkedBlockingQueue<Long>()
 
-		starship.isExploding = true
+	private val placements = Long2ObjectOpenHashMap<BlockState>(sinking.size)
+	private var iterator = sinking.iterator()
 
-		if (urgent) {
-			vanishShip(starship)
-			return
-		}
+	private val obstructedLocs = LongOpenHashSet()
 
-		if (starship is ActiveControlledStarship) {
-			DeactivatedPlayerStarships.deactivateAsync(starship) {
-				DeactivatedPlayerStarships.destroyAsync(starship.data) {
-					vanishShip(starship)
-				}
-			}
-		} else {
-			vanishShip(starship)
-		}
-	}
+	private val maxIteration = sqrt(blocks.size.toDouble())
 
-	private fun vanishShip(starship: ActiveStarship) {
-		val air = Material.AIR.createBlockData().nms
-		val queue = Long2ObjectOpenHashMap<BlockState>(starship.initialBlockCount)
-		starship.blocks.associateWithTo(queue) { air }
-		BlockPlacement.placeImmediate(starship.world, queue)
-	}
+	private var iteration = 0
+	private val world = starship.world
 
-	fun destroy(starship: ActiveStarship) {
-		if (starship.isExploding) {
-			return
-		}
-		if (!StarshipExplodeEvent(starship).callEvent()) {
-			return
-		}
-
-		starship.isExploding = true
-
-		if (starship is ActiveControlledStarship) {
-			DeactivatedPlayerStarships.deactivateAsync(starship) {
-				DeactivatedPlayerStarships.destroyAsync(starship.data) {
-					destroyShip(starship)
-				}
-			}
-		} else {
-			destroyShip(starship)
-		}
-	}
-
-	private fun destroyShip(starship: ActiveStarship) {
+	override fun setup() {
 		val world = starship.world
 		val blocks = starship.blocks
 
 		if (SpaceWorlds.contains(world)) {
 			val random = Random(blocks.hashCode())
 
-			val randomVelocity = Vec3i(
-				random.nextInt(-2, 2),
-				random.nextInt(-2, 2),
-				random.nextInt(-2, 2)
-			)
-
-			sink(world, blocks, randomVelocity)
+			velocity.setX(random.nextDouble(-2.0, 2.0))
+			velocity.setY(random.nextDouble(-2.0, 2.0))
+			velocity.setZ(random.nextDouble(-2.0, 2.0))
 		} else {
-			sink(world, blocks)
+			velocity.setY(-1.0)
 		}
 	}
 
-	private val air = Material.AIR.createBlockData()
-	private val limitPerTick = TimeUnit.MILLISECONDS.toNanos(10)
+	override fun tick() {
+		iteration++
 
-	private fun sink(world: World, blocks: LongOpenHashSet, velocity: Vec3i = Vec3i(0, -1, 0)) {
-		val sinking = LongOpenHashSet(blocks)
-
-		val newSinking = LinkedBlockingQueue<Long>()
-
-		val placements = Long2ObjectOpenHashMap<BlockState>(sinking.size)
-
-		var iterator = sinking.iterator()
-		val obstructedLocs = LongOpenHashSet()
-
-		val maxIteration = sqrt(blocks.size.toDouble())
-		var iteration = 0
-
-		Tasks.bukkitRunnable {
-			iteration++
-
-			if (iteration > maxIteration) {
-				cancel()
-				Tasks.sync {
-					explode(world, blocks)
-				}
+		if (iteration > maxIteration) {
+			cancel()
+			Tasks.sync {
+				explode(starship.world, blocks)
 			}
+		}
 
-			if (!processSinkQueue(iterator, obstructedLocs, world, newSinking, sinking, placements, velocity)) {
-				return@bukkitRunnable
+		if (!processSinkQueue(iterator, obstructedLocs, world, newSinking, sinking, placements, Vec3i(velocity))) {
+			return
+		}
+
+		placements.clear()
+
+		removeBlocksAroundObstructed(newSinking, obstructedLocs)
+
+		val randomBlock = blocks.random()
+		val x = blockKeyX(randomBlock).toDouble()
+		val y = blockKeyY(randomBlock).toDouble()
+		val z = blockKeyZ(randomBlock).toDouble()
+
+		if (isBlockLoaded(world, x, y, z)) {
+			Tasks.sync { world.createExplosion(x, y, z, 8.0f) }
+		}
+
+		sinking.clear()
+		sinking.addAll(newSinking)
+		iterator = sinking.iterator()
+		blocks.removeAll(placements.keys)
+		blocks.addAll(newSinking)
+
+		if (newSinking.isEmpty()) {
+			cancel()
+			Tasks.sync {
+				explode(world, blocks)
 			}
-
-			placements.clear()
-
-			removeBlocksAroundObstructed(newSinking, obstructedLocs)
-
-			val randomBlock = blocks.random()
-			val x = blockKeyX(randomBlock).toDouble()
-			val y = blockKeyY(randomBlock).toDouble()
-			val z = blockKeyZ(randomBlock).toDouble()
-
-			if (isBlockLoaded(world, x, y, z)) {
-				Tasks.sync { world.createExplosion(x, y, z, 8.0f) }
-			}
-
-			sinking.clear()
-			sinking.addAll(newSinking)
-			iterator = sinking.iterator()
-			blocks.removeAll(placements.keys)
-			blocks.addAll(newSinking)
-
-			if (newSinking.isEmpty()) {
-				cancel()
-				Tasks.sync {
-					explode(world, blocks)
-				}
-			} else {
-				newSinking.clear()
-			}
-		}.runTaskTimerAsynchronously(IonServer, 20L, 20L)
+		} else {
+			newSinking.clear()
+		}
 	}
 
 	private fun processSinkQueue(
@@ -309,5 +247,10 @@ object StarshipDestruction {
 				}
 			}
 		}
+	}
+
+	companion object {
+		private val air = Material.AIR.createBlockData()
+		private val limitPerTick = TimeUnit.MILLISECONDS.toNanos(10)
 	}
 }
