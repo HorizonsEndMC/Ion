@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
@@ -29,7 +28,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.math.abs
 import kotlin.math.min
-import kotlin.math.roundToInt
 import kotlin.math.sign
 
 object StarshipCruising : IonServerComponent() {
@@ -91,18 +89,7 @@ object StarshipCruising : IonServerComponent() {
 
 		val oldVelocity = starship.cruiseData.velocity.clone()
 
-		if (oldVelocity.x.roundToInt() != 0 || oldVelocity.z.roundToInt() != 0) {
-			var (accel, maxSpeed) = starship.getThrustData(oldVelocity.x.roundToInt(), oldVelocity.z.roundToInt())
-
-			maxSpeed /= 2
-			maxSpeed = (maxSpeed * starship.balancing.cruiseSpeedMultiplier).toInt()
-
-			starship.cruiseData.accel = accel
-			starship.cruiseData.targetSpeed = maxSpeed
-			starship.cruiseData.targetDir
-		}
 		starship.cruiseData.accelerate(starship.speedLimit, starship.reactor.powerDistributor.thrusterPortion)
-
 		val velocity = starship.cruiseData.velocity
 		val speed = velocity.length()
 
@@ -115,7 +102,6 @@ object StarshipCruising : IonServerComponent() {
 				text(speed.roundToHundredth(), NamedTextColor.AQUA),
 				text("/", NamedTextColor.GRAY),
 				text(targetSpeed, NamedTextColor.DARK_AQUA)
-
 			))
 
 			if (starship.isInterdicting) {
