@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.ai.spawning
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
+import net.horizonsend.ion.server.features.ai.module.misc.GlowModule
 import net.horizonsend.ion.server.features.ai.starship.StarshipTemplate
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.space.Space
@@ -14,6 +15,7 @@ import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.modules.AISinkMessageFactory
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -53,6 +55,7 @@ fun createAIShipFromTemplate(
 ) = createShipFromTemplate(logger, template.starshipInfo, location, createController) { starship ->
 	starship.rewardsProviders.addAll(template.rewardProviders.map { it.createRewardsProvider(starship, template) })
 	starship.sinkMessageFactory = AISinkMessageFactory(starship)
+	(starship.controller as AIController).modules["Glow"] = GlowModule(starship.controller as AIController)
 
 	callback(starship)
 }
