@@ -7,10 +7,10 @@ import org.bukkit.Material
 object SupercapReactorMultiblock : Multiblock() {
 	override val name: String = "reactor"
 	override val signText = createSignText(
-			"&4Reactor",
-			"&aOnline",
-			null,
-			null
+			"&7-=[&c==&a==&b==&7]=-",
+			"&0Supercapital",
+			"&7&cFusion Reactor&7",
+			"&7-=[&c==&a==&b==&7]=-"
 	)
 
 	override fun MultiblockShape.buildStructure() {
