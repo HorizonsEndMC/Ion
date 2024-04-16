@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.ai
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import org.bukkit.event.EventHandler
 
