@@ -133,7 +133,7 @@ object CustomBlocks {
 		identifier = "REACTOR_CORE",
 		blockData = mushroomBlockData(setOf(NORTH, UP, WEST)),
 		tool = "pickaxe",
-		drops = customItemDrop("REACTOR_CORE")
+		drops = listOf()
 	))
 
     private fun customItemDrop(identifier: String, amount: Int = 1): List<ItemStack> {
@@ -149,6 +149,8 @@ object CustomBlocks {
     }
 
     val identifiers = customBlocks.keys
+
+	val Block.customBlock get(): CustomBlock? = getByBlock(this)
 
     fun getByIdentifier(identifier: String): CustomBlock? = customBlocks[identifier]
 

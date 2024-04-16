@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
+import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
 import net.kyori.adventure.text.Component
@@ -15,30 +16,32 @@ import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
 enum class StarshipType(
-		val displayName: String,
-		val icon: String = SidebarIcon.GENERIC_STARSHIP_ICON.text,
-		val color: String,
-		val dynmapIcon: String = "anchor",
+	val displayName: String,
+	val icon: String = SidebarIcon.GENERIC_STARSHIP_ICON.text,
+	val color: String,
+	val dynmapIcon: String = "anchor",
 
-		val minSize: Int,
-		val maxSize: Int,
+	val minSize: Int,
+	val maxSize: Int,
 
-		val minLevel: Int,
-		val overridePermission: String,
+	val minLevel: Int,
+	val overridePermission: String,
 
-		val containerPercent: Double,
-		val concretePercent: Double = 0.3,
-		val crateLimitMultiplier: Double,
+	val containerPercent: Double,
+	val concretePercent: Double = 0.3,
+	val crateLimitMultiplier: Double,
 
-		menuItemMaterial: Material,
-		val isWarship: Boolean,
-		val eventship: Boolean = false,
-		val poweroverrider: Double = 1.0,
+	menuItemMaterial: Material,
+	val isWarship: Boolean,
+	val eventship: Boolean = false,
+	val poweroverrider: Double = 1.0,
 
-		val maxMiningLasers: Int = 0,
-		val miningLaserTier: Int = 0,
+	val maxMiningLasers: Int = 0,
+	val miningLaserTier: Int = 0,
 
-		val balancingSupplier: Supplier<StarshipBalancing>
+	val sinkProvider: SinkProvider.SinkProviders = SinkProvider.SinkProviders.STANDARD,
+
+	val balancingSupplier: Supplier<StarshipBalancing>
 ) {
 	SPEEDER(
 			displayName = "Speeder",
@@ -287,6 +290,7 @@ enum class StarshipType(
 			maxMiningLasers = 1,
 			miningLaserTier = 1,
 			overridePermission = "ion.ships.override.battlecruiser",
+			sinkProvider = SinkProvider.SinkProviders.BATTLECRUISER,
 			balancingSupplier = IonServer.starshipBalancing::battlecruiser
 	),
 	AI_BATTLECRUISER(
@@ -305,6 +309,7 @@ enum class StarshipType(
 			miningLaserTier = 1,
 			concretePercent = 0.0,
 			overridePermission = "ion.ships.ai.battlecruiser",
+			sinkProvider = SinkProvider.SinkProviders.BATTLECRUISER,
 			balancingSupplier = IonServer.starshipBalancing::aiBattlecruiser
 	),
 	BATTLESHIP(

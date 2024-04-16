@@ -5,8 +5,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStartCruisingEvent
