@@ -54,6 +54,30 @@ object AITemplateRegistry {
 		))
 		.build()
 	)
+
+	val TERALITH = registerTemplate(builder(
+			identifier = "TERALITH",
+			template = StarshipTemplateRegistry.TERALITH,
+			controllerFactory = AIControllerFactories.frigate,
+			engagementRange = 2500.0
+		)
+		.addFactionConfiguration(AIFaction.WATCHERS)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(18000.0))
+		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+			activationThreshold = 0.75,
+			delay = 100L,
+			broadcastMessage = "<italic><$WATCHER_STANDARD>You cannot decipher the transmission from the incoming alien ship",
+			reinforcementShips = listOf(spawnChance(VERDOLITH_REINFORCEMENT, 1.0))
+		))
+		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+			activationThreshold = 0.25,
+			delay = 100L,
+			broadcastMessage = "<italic><$WATCHER_STANDARD>You cannot decipher the transmission from the incoming alien ship",
+			reinforcementShips = listOf(spawnChance(VERDOLITH_REINFORCEMENT, 1.0))
+		))
+		.build()
+	)
 	// END_WATCHER
 	// START_吃饭人
 	val MALINGSHU_REINFORCEMENT = registerTemplate(builder(

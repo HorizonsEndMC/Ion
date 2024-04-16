@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHE
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人_STANDARD
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_BATTLECRUISER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_CORVETTE
+import net.horizonsend.ion.server.features.starship.StarshipType.AI_DESTROYER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_FRIGATE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_GUNSHIP
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_LIGHT_FREIGHTER
@@ -68,6 +69,30 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			engagementRangeMax = 550.0
 		)
 		),
+	))
+
+	val TERALITH = registerTemplate(StarshipTemplate(
+		schematicName = "Teralith",
+		type = AI_DESTROYER,
+		miniMessageName = miniMessage(text("Teralith", WATCHER_STANDARD)),
+		manualWeaponSets = mutableSetOf(
+			WeaponSet(
+				name = "phaser",
+				engagementRangeMin = 0.0,
+				engagementRangeMax = 220.0
+			),
+			WeaponSet(
+				name = "manual",
+				engagementRangeMin = 220.0,
+				engagementRangeMax = 550.0
+			),
+		),
+		autoWeaponSets = mutableSetOf(
+			WeaponSet(
+			name = "auto",
+			engagementRangeMin = 250.0,
+			engagementRangeMax = 550.0
+		))
 	))
 
 	// END_WATCHERS

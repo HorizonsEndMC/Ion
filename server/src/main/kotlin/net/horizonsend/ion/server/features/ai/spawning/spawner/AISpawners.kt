@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MALINGSHU_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBAO_REINFORCED
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TERALITH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOLITH_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.spawnChance
 
@@ -44,7 +45,8 @@ object AISpawners : IonServerComponent() {
 				minDistanceFromPlayer = 2500.0,
 				maxDistanceFromPlayer = 4500.0,
 				templates = listOf(
-					spawnChance(VERDOLITH_REINFORCED, 1.0),
+					spawnChance(VERDOLITH_REINFORCED, 0.75),
+					spawnChance(TERALITH, 0.25)
 				)
 			),
 			WorldSettings(
@@ -53,7 +55,8 @@ object AISpawners : IonServerComponent() {
 				minDistanceFromPlayer = 2500.0,
 				maxDistanceFromPlayer = 4500.0,
 				templates = listOf(
-					spawnChance(VERDOLITH_REINFORCED, 1.0),
+					spawnChance(VERDOLITH_REINFORCED, 0.75),
+					spawnChance(TERALITH, 0.25)
 				)
 			)
 		)
@@ -539,7 +542,7 @@ object AISpawners : IonServerComponent() {
 		)
 	))
 
-	fun <T: AISpawner> registerSpawner(spawner: T): T {
+	private fun <T: AISpawner> registerSpawner(spawner: T): T {
 		AISpawningManager.spawners += spawner
 
 		return spawner
