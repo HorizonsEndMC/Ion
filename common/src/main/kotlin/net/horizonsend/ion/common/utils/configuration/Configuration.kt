@@ -32,6 +32,20 @@ object Configuration {
 		return configuration
 	}
 
+	@OptIn(ExperimentalSerializationApi::class)
+	inline fun <reified T> loadOrDefault(directory: File, fileName: String, default: T): T {
+		directory.mkdirs()
+		val file = directory.resolve(fileName)
+
+		val configuration: T = if (file.exists()) json.decodeFromStream(file.inputStream()) else default
+
+		try { save(configuration, directory, fileName) } catch (_: IOException) {
+			System.err.println("Couldn't re-save configuration, this could cause problems later!")
+		}
+
+		return configuration
+	}
+
 	inline fun <reified T> parse(text: String): T {
 		return json.decodeFromString<T>(text)
 	}

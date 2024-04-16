@@ -103,7 +103,7 @@ abstract class ActiveStarship (
 
 	var pilotDisconnectLocation: Vec3i? = null
 
-	abstract var rewardsProvider: RewardsProvider
+	abstract val rewardsProviders: LinkedList<RewardsProvider>
 	abstract var sinkMessageFactory: MessageFactory
 
 	/**

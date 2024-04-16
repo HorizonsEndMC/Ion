@@ -46,6 +46,7 @@ import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.lang.Math.cbrt
+import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
@@ -70,7 +71,7 @@ class ActiveControlledStarship(
 
 	override val type: StarshipType = data.starshipType.actualType
 	override val balancing = type.balancingSupplier.get()
-	override var rewardsProvider: RewardsProvider = StandardRewardsProvider(this)
+	override val rewardsProviders: LinkedList<RewardsProvider> = LinkedList<RewardsProvider>().apply { add(StandardRewardsProvider(this@ActiveControlledStarship)) }
 	override var sinkMessageFactory: MessageFactory = SinkMessageFactory(this)
 
 	override val interdictionRange: Int = balancing.interdictionRange

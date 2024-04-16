@@ -8,9 +8,11 @@ import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.entityDamagerCache
+import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -181,6 +183,15 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 
 		event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onAIUnpilot(event: StarshipUnpilotedEvent) {
+		val starship = event.starship
+
+		if (starship.controller !is AIController && !starship.isExploding) return
+
+		StarshipDestruction.vanish(starship)
 	}
 
 	private fun tickPlayers() {
