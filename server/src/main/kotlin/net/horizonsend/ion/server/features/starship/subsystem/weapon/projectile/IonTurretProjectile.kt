@@ -32,17 +32,18 @@ class IonTurretProjectile(
 		val vector = dir.clone().normalize().multiply(travel)
 		val particle = Particle.REDSTONE
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
-		for (location in helixAroundVector(oldLocation, vector, 0.3, 150, wavelength = 1.0)) {
+
+		helixAroundVector(oldLocation, vector, 0.3, 20, wavelength = 1.0) {
 			loc.world.spawnParticle(
-					Particle.SOUL_FIRE_FLAME,
-					location,
-					0,
-					0.5,
-					0.5,
-					0.5,
-					0.0,
-					null,
-					true
+				Particle.SOUL_FIRE_FLAME,
+				it,
+				0,
+				0.5,
+				0.5,
+				0.5,
+				0.0,
+				null,
+				true
 			)
 		}
 
