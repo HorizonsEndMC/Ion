@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
 import org.bukkit.Color
 import org.bukkit.Location
@@ -46,20 +45,17 @@ class IonTurretProjectile(
 					true
 			)
 		}
+
 		loc.world.spawnParticle(particle, loc.x, loc.y, loc.z, 1, 0.0, 0.0, 0.0, 0.5, dustOptions, true)
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		val shipsThrusters = starship.thrusters
-		for(thruster in shipsThrusters){
-			if (impactLocation.distance(thruster.pos.toLocation(starship.world)) <= 8) {
-				shipsThrusters.remove(thruster)
-				starship.generateThrusterMap()
-				Tasks.syncDelay(100L) {
-					shipsThrusters.add(thruster)
-					starship.generateThrusterMap()
-				}
-			}
+
+		for (thruster in shipsThrusters) {
+			if (impactLocation.distance(thruster.pos.toLocation(starship.world)) > 8) continue
+
+			thruster.lastIonTurretLimited = System.currentTimeMillis()
 		}
 	}
 }

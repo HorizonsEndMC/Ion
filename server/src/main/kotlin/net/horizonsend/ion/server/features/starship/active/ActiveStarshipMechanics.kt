@@ -116,9 +116,12 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	const val BATTLECRUISER_FUEL_CONSUMPTION = 18
 
 	private fun handleBattlecruiserMechanics() {
-		val battlecruisers = ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER }
 		// Consume fuel
-		battlecruisers.filter { it.controller is ActivePlayerController }.forEach { battlecruiser: ActiveStarship ->
+		ActiveStarships.all()
+			.filter { it.type == StarshipType.BATTLECRUISER || it.type == StarshipType.CRUISER }
+			.filter { it.controller is ActivePlayerController }
+			.forEach { battlecruiser: ActiveStarship ->
+
 			var remaining = BATTLECRUISER_FUEL_CONSUMPTION
 
 			for (fuelTank in battlecruiser.fuelTanks) {
@@ -134,7 +137,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 
 		// Destroy without intact reactors
-		battlecruisers.forEach { ship ->
+		ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER }.forEach { ship ->
 			if (ship.supercapReactors.none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)

@@ -34,7 +34,7 @@ object StarshipCruising : IonServerComponent() {
 	const val SECONDS_PER_CRUISE = 2.0
 
 	class CruiseData(
-		starship: ActiveControlledStarship,
+		private val starship: ActiveControlledStarship,
 		var velocity: Vector = Vector(),
 		var targetSpeed: Int = 0,
 		var targetDir: Vector? = null,
@@ -45,10 +45,15 @@ object StarshipCruising : IonServerComponent() {
 		fun accelerate(maxSpeed: Int, thrusterPower: Double) {
 			val dir = this.targetDir ?: Vector()
 			val speed = if (maxSpeed <= 0) targetSpeed else min(targetSpeed, maxSpeed)
-			val newVelocity = dir.clone().multiply(speed)
+			val postLimit = min(speed, maxSpeed * starship.disabledThrusterRatio)
+			val newVelocity = dir.clone().multiply(postLimit)
+
 			newVelocity.y = 0.0
 			moveTowards(velocity, newVelocity, getRealAccel(thrusterPower) * SECONDS_PER_CRUISE)
 			velocity.y = 0.0
+
+			if (starship.isInterdicting)
+
 			if (velocity.x.isNaN()) velocity.x = 0.0
 			if (velocity.z.isNaN()) velocity.z = 0.0
 		}
