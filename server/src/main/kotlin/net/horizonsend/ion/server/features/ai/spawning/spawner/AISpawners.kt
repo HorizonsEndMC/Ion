@@ -509,7 +509,7 @@ object AISpawners : IonServerComponent() {
 					spawnChance(AITemplateRegistry.RAIDER, 0.25),
 					spawnChance(AITemplateRegistry.SCYTHE, 0.25),
 					spawnChance(AITemplateRegistry.SWARMER, 0.25),
-					spawnChance(AITemplateRegistry.REAVER, 0.25),
+					spawnChance(AITemplateRegistry.REAVER, 0.25)
 				)
 			),
 			WorldSettings(
@@ -518,7 +518,10 @@ object AISpawners : IonServerComponent() {
 				maxDistanceFromPlayer = 4500.0,
 				probability = 0.3,
 				templates = listOf(
-
+					spawnChance(AITemplateRegistry.RAIDER, 0.25),
+					spawnChance(AITemplateRegistry.SCYTHE, 0.25),
+					spawnChance(AITemplateRegistry.SWARMER, 0.25),
+					spawnChance(AITemplateRegistry.REAVER, 0.25)
 				)
 			),
 			WorldSettings(
@@ -527,7 +530,10 @@ object AISpawners : IonServerComponent() {
 				maxDistanceFromPlayer = 4500.0,
 				probability = 0.3,
 				templates = listOf(
-
+					spawnChance(AITemplateRegistry.RAIDER, 0.25),
+					spawnChance(AITemplateRegistry.SCYTHE, 0.25),
+					spawnChance(AITemplateRegistry.SWARMER, 0.25),
+					spawnChance(AITemplateRegistry.REAVER, 0.25)
 				)
 			)
 		)
