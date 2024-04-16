@@ -98,11 +98,11 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign()*3) {
 				x(-3).anyStairs()
-				x(-2).terracottaOrDoubleslab()
+				x(-2).carbyne()
 				x(-1).terracottaOrDoubleslab()
 				x(+0).copperBlock()
 				x(+1).terracottaOrDoubleslab()
-				x(+2).terracottaOrDoubleslab()
+				x(+2).carbyne()
 				x(+3).anyStairs()
 			}
 			y(getSign()*4) {
