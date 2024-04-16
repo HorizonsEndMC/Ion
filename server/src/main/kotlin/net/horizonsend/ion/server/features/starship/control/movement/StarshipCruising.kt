@@ -52,8 +52,6 @@ object StarshipCruising : IonServerComponent() {
 			moveTowards(velocity, newVelocity, getRealAccel(thrusterPower) * SECONDS_PER_CRUISE)
 			velocity.y = 0.0
 
-			if (starship.isInterdicting)
-
 			if (velocity.x.isNaN()) velocity.x = 0.0
 			if (velocity.z.isNaN()) velocity.z = 0.0
 		}
