@@ -268,7 +268,6 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.magazines)
 		starship.subsystems.filterIsInstanceTo(starship.gravityWells)
 		starship.subsystems.filterIsInstanceTo(starship.drills)
-		starship.subsystems.filterIsInstanceTo(starship.supercapReactors)
 		starship.subsystems.filterIsInstanceTo(starship.fuelTanks)
 	}
 }

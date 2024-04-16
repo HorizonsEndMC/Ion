@@ -10,7 +10,6 @@ import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIStarshipTemplate
-import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.ai.spawning.alien.AlienSpawner
@@ -20,6 +19,7 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSpa
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import java.util.Optional

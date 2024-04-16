@@ -35,7 +35,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.SupercapReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
@@ -157,7 +156,6 @@ abstract class ActiveStarship (
 	val magazines = LinkedList<MagazineSubsystem>()
 	val gravityWells = LinkedList<GravityWellSubsystem>()
 	val drills = LinkedList<PlanetDrillSubsystem>()
-	val supercapReactors = LinkedList<SupercapReactorSubsystem>()
 	val fuelTanks = LinkedList<FuelTankSubsystem>()
 
 	val weaponSets: HashMultimap<String, WeaponSubsystem> = HashMultimap.create()
@@ -217,7 +215,7 @@ abstract class ActiveStarship (
 		}
 	}
 
-	val disabledThrusterRatio get() = thrusters.size / thrusters.count { it.lastIonTurretLimited >= (System.currentTimeMillis() - 5000L) }
+	val disabledThrusterRatio get() = thrusters.size / max(thrusters.count { it.lastIonTurretLimited >= (System.currentTimeMillis() - 5000L) }, 1)
 
 	fun generateThrusterMap() {
 		for (face in CARDINAL_BLOCK_FACES) {
