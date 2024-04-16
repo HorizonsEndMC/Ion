@@ -74,15 +74,15 @@ object AchievementsCommand : SLCommand() {
 		sender.openScreen(TextScreen(ofChildren(
 			customGuiBackground(0xF8FF.toChar()),
 			customGuiHeader(name),
-			Component.text("Weekend chores").color(NamedTextColor.RED).shiftToLine(1)
+			Component.text("Weekend chores", NamedTextColor.RED).withRightShift(21).shiftToLine(1)
 				.rightJustify(Component.text("bruh")).shiftToLeftOfComponent(),
-			Component.text("- Mop floors").color(NamedTextColor.GOLD).withRightShift(21).shiftToLine(2)
+			Component.text("- Mop floors", NamedTextColor.GOLD).withRightShift(21).shiftToLine(2)
 				.rightJustify(Component.text("DONE", NamedTextColor.GREEN)).shiftToLeftOfComponent(),
-			Component.text("- Do laundry").color(NamedTextColor.YELLOW).withRightShift(21).shiftToLine(3)
+			Component.text("- Do laundry", NamedTextColor.YELLOW).withRightShift(21).shiftToLine(3)
 				.rightJustify(Component.text("NOT DONE", NamedTextColor.RED)).shiftToLeftOfComponent(),
-			Component.text("- Be inconspicuous").color(NamedTextColor.GREEN).withRightShift(21).shiftToLine(4)
+			Component.text("- Be inconspicuous", NamedTextColor.GREEN).withRightShift(21).shiftToLine(4)
 				.rightJustify(Component.text("IN PROGRESS", NamedTextColor.GOLD)).shiftToLeftOfComponent(),
-			Component.text("- Sleep for 8 hrs").color(NamedTextColor.BLUE).withRightShift(21).shiftToLine(5)
+			Component.text("- Sleep for 8 hrs", NamedTextColor.BLUE).withRightShift(21).shiftToLine(5)
 				.rightJustify(Component.text("CANCELLED", NamedTextColor.DARK_RED)).shiftToLeftOfComponent(),
 		)))
 	}

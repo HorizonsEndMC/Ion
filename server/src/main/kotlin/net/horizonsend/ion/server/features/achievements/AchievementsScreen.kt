@@ -7,10 +7,10 @@ import net.horizonsend.ion.common.utils.text.customGuiBackground
 import net.horizonsend.ion.common.utils.text.customGuiHeader
 import net.horizonsend.ion.common.utils.text.minecraftLength
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.rightJustify
 import net.horizonsend.ion.common.utils.text.shiftDown
+import net.horizonsend.ion.common.utils.text.shiftRight
 import net.horizonsend.ion.common.utils.text.shiftToLeftOfComponent
-import net.horizonsend.ion.common.utils.text.shiftToRightGuiEdge
-import net.horizonsend.ion.common.utils.text.withLeftShift
 import net.horizonsend.ion.common.utils.text.withRightShift
 import net.horizonsend.ion.server.features.screens.TextScreen
 import net.kyori.adventure.text.Component
@@ -235,21 +235,20 @@ class AchievementsScreen private constructor(
 				//	REWARD_OFFSET_CHARACTER - achievement.description.minecraftLength - creditChetheriteStringLength
 
 				componentList.add(
-					text(achievement.title, colour).withRightShift(ACHIEVEMENT_TEXT_OFFSET).shiftDown(y).shiftToRightGuiEdge()
-					.append(text("${achievement.experienceReward}XP", BLUE).withLeftShift().shiftToLeftOfComponent())
-					.shiftToLeftOfComponent(ACHIEVEMENT_TEXT_OFFSET)
+					text(achievement.title, colour).withRightShift(ACHIEVEMENT_TEXT_OFFSET).shiftDown(y)
+						.rightJustify(text("${achievement.experienceReward}XP", BLUE))
+						.shiftToLeftOfComponent()
 				)
 
 				componentList.add(
-					text(achievement.description, DARK_GRAY).shiftDown(y + NEXT_LINE_OFFSET).shiftToRightGuiEdge()
-						.append(text("C${achievement.creditReward}", DARK_GREEN)
+					text(achievement.description, DARK_GRAY).withRightShift(ACHIEVEMENT_TEXT_OFFSET).shiftDown(y + NEXT_LINE_OFFSET)
+						.rightJustify(text("C${achievement.creditReward}", DARK_GREEN)
 							.append(if (achievement.chetheriteReward != 0) ofChildren(
 								text(" ${achievement.chetheriteReward}", DARK_PURPLE),
-								text(" $CHETHERITE_CHARACTER", WHITE).font(SPECIAL_FONT_KEY)
-						) else Component.empty()
-							)
+								text("$CHETHERITE_CHARACTER", WHITE).font(SPECIAL_FONT_KEY).shiftRight(5)
+							) else Component.empty())
 						)
-						.shiftToLeftOfComponent(ACHIEVEMENT_TEXT_OFFSET)
+						.shiftToLeftOfComponent()
 				)
 				/*
 				// The resource pack has many different "fonts" that are the regular font but shifted down by some
@@ -282,9 +281,10 @@ class AchievementsScreen private constructor(
 			}
 
 			val pageNumberString = "${pageNumber + 1} / ${ceil(Achievement.entries.size / ACHIEVEMENTS_PER_PAGE.toDouble()).toInt()}"
-			componentList.add(
-				text(pageNumberString).shiftDown(PAGE_NUMBER_VERTICAL_OFFSET).withRightShift(
-				PAGE_NUMBER_OFFSET - (pageNumberString.minecraftLength / 2)))
+			componentList.add(text(pageNumberString)
+				.withRightShift(ACHIEVEMENT_TEXT_OFFSET + PAGE_NUMBER_OFFSET - (pageNumberString.minecraftLength / 2))
+				.shiftDown(PAGE_NUMBER_VERTICAL_OFFSET)
+			)
 
 			// Shift the text right for the page number
 			/*
