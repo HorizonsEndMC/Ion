@@ -8,11 +8,11 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
