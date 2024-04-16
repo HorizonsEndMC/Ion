@@ -189,8 +189,6 @@ abstract class ActiveStarship (
 	var isInterdicting = false; private set
 	abstract val interdictionRange: Int
 
-	var hullIntegrity = 1.0
-
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
 		isInterdicting = value
@@ -218,6 +216,8 @@ abstract class ActiveStarship (
 			x(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
 		}
 	}
+
+	val disabledThrusterRatio get() = thrusters.size / thrusters.count { it.lastIonTurretLimited >= (System.currentTimeMillis() - 5000L) }
 
 	fun generateThrusterMap() {
 		for (face in CARDINAL_BLOCK_FACES) {
@@ -356,8 +356,6 @@ abstract class ActiveStarship (
 		}
 	}
 
-
-
 	fun updatePower(sender: String, shield: Int, weapon: Int, thruster: Int) {
 		reactor.powerDistributor.setDivision(shield / 100.0, weapon / 100.0, thruster / 100.0)
 
@@ -368,13 +366,14 @@ abstract class ActiveStarship (
 		}
 	}
 
+	var hullIntegrity = 1.0
+
 	fun updateHullIntegrity() {
 		currentBlockCount = blocks.count {
 			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
 		}
 		hullIntegrity = currentBlockCount.toDouble() / initialBlockCount.toDouble()
 	}
-
 
 	fun getEntryRange(planet: CachedPlanet): Int {
 		return planet.atmosphereRadius + max(max.x - min.x, max.z - min.z) / 2 + 10
