@@ -18,6 +18,9 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 /** Skip building the serializer */
 val miniMessage = MiniMessage.miniMessage()
 
+/** Serializes the component to minimessage format */
+fun miniMessage(component: Component): String = miniMessage.serialize(component)
+
 /** Converts the provided MiniMessage string to a component using the MiniMessage serializer. */
 fun String.miniMessage() = miniMessage.deserialize(this)
 

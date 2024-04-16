@@ -7,6 +7,8 @@ import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import java.util.EnumSet
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.reflect.KClass
+import kotlin.random.Random
+import kotlin.random.asKotlinRandom
 
 fun <T> List<T>.randomEntry(): T = when {
 	this.isEmpty() -> error("No entries in list to pick from!")
@@ -81,3 +83,20 @@ fun <T, R : Any> Iterable<T>.filterIsInstance(clazz: KClass<out R>, transform: (
 
 	return destination
 }
+
+fun <T> Iterable<T>.weightedRandomOrNull(random: Random = ThreadLocalRandom.current().asKotlinRandom(), selector: (T) -> Double): T? {
+	val sum = this.sumOf { selector(it).apply { check(this >= 0.0) } }
+	val selectionPoint = random.nextDouble(0.0, sum)
+
+	var running = 0.0
+
+	for (entry: T in this) {
+		running += selector(entry)
+
+		if (running >= selectionPoint) return entry
+	}
+
+	return null
+}
+
+fun <T> Iterable<T>.weightedRandom(random: Random = ThreadLocalRandom.current().asKotlinRandom(), selector: (T) -> Double): T = weightedRandomOrNull(random, selector) ?: throw NoSuchElementException()
