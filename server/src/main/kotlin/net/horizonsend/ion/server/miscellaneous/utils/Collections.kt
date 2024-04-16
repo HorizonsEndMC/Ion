@@ -76,7 +76,8 @@ fun <K, V, R, Z> Map<K, V>.mapNotNullTo(other: MutableMap<R, Z>, transform: (Map
 fun <T> MutableSet<T>.and(vararg others: T): MutableSet<T> = apply { others.forEach { add(it) } }
 
 fun <T> Iterable<T>.weightedRandomOrNull(random: Random = ThreadLocalRandom.current().asKotlinRandom(), selector: (T) -> Double): T? {
-	val sum = this.sumOf { selector(it).apply { check(this >= 0.0) } }
+	val sum = this.sumOf { selector(it) }
+	if (sum <= 0.0) return null
 	val selectionPoint = random.nextDouble(0.0, sum)
 
 	var running = 0.0
