@@ -7,10 +7,10 @@ import org.bukkit.Material
 object FuelTankMultiblock : Multiblock() {
 	override val name: String = "tank"
 	override val signText = createSignText(
-			"&cFuel",
-			"&4Tank",
-			null,
-			null
+			"&7-=[&c==&a==&b==&7]=-",
+			"&0Supercapital",
+			"&6Fuel Tank",
+			"&7-=[&c==&a==&b==&7]=-"
 	)
 
 	override fun MultiblockShape.buildStructure() {
