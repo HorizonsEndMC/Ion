@@ -1,15 +1,14 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai
 
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIStarshipTemplate.WeaponSet
+import net.horizonsend.ion.server.features.ai.AIControllerFactory
+import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
+import net.horizonsend.ion.server.features.ai.util.AITarget
+import net.horizonsend.ion.server.features.ai.util.PlayerTarget
+import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
-import net.horizonsend.ion.server.features.starship.ai.module.AIModule
-import net.horizonsend.ion.server.features.starship.ai.util.AITarget
-import net.horizonsend.ion.server.features.starship.ai.util.PlayerTarget
-import net.horizonsend.ion.server.features.starship.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -54,7 +53,7 @@ class AIController private constructor(
 	}
 
 	/** AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more. */
-	val modules: MutableMap<String, AIModule> = mutableMapOf()
+	val modules: MutableMap<String, net.horizonsend.ion.server.features.ai.module.AIModule> = mutableMapOf()
 
 	override var pitch: Float = 0f
 	override var yaw: Float = 0f
