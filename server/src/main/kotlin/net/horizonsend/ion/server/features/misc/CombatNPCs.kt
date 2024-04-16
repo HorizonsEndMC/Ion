@@ -5,6 +5,7 @@ import net.citizensnpcs.api.event.NPCDamageEvent
 import net.citizensnpcs.api.event.NPCDeathEvent
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
+import net.citizensnpcs.trait.Gravity
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.alert
@@ -91,7 +92,12 @@ object CombatNPCs : IonServerComponent(true) {
 
 			npc.entity.customName(text("${player.name} [NPC]"))
 			npc.isProtected = false
+
 			npc.spawn(player.location)
+
+			npc.getOrAddTrait(Gravity::class.java).apply {
+				setEnabled(false)
+			}
 
 			inventories[npc.id] = inventoryCopy
 			npcToPlayer[playerId] = npc to location
