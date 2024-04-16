@@ -85,7 +85,8 @@ fun <T, R : Any> Iterable<T>.filterIsInstance(clazz: KClass<out R>, transform: (
 }
 
 fun <T> Iterable<T>.weightedRandomOrNull(random: Random = ThreadLocalRandom.current().asKotlinRandom(), selector: (T) -> Double): T? {
-	val sum = this.sumOf { selector(it).apply { check(this >= 0.0) } }
+	val sum = this.sumOf { selector(it) }
+	if (sum <= 0.0) return null
 	val selectionPoint = random.nextDouble(0.0, sum)
 
 	var running = 0.0
