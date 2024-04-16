@@ -162,7 +162,17 @@ class AIFaction private constructor(
 		val MINING_GUILD = builder("MINING_GUILD", MINING_CORP_LIGHT_ORANGE.value())
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from $miningGuildMini <${HEColorScheme.HE_MEDIUM_GRAY}>vessel")
 			.addNames(
-				text("飞行员", WATCHER_ACCENT, TextDecoration.OBFUSCATED)
+				text("Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
+				text("Alpi Artion", MINING_CORP_LIGHT_ORANGE),
+				text("Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
+				text("Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
+				text("Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
+				text("Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
+				text("Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
+				text("Rik Rihre", MINING_CORP_LIGHT_ORANGE),
+				text("Alanury Addar", MINING_CORP_LIGHT_ORANGE),
+				text("Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
+				text("Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
 			)
 			.addRadiusMessages(
 				550.0 * 1.5 to "<#FFA500>You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.",
