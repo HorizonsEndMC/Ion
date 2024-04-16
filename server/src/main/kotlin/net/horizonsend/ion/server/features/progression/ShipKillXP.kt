@@ -56,12 +56,12 @@ object ShipKillXP : IonServerComponent() {
 				ship "${starship.getDisplayNamePlain()}" killed at ${starship.centerOfMass}.
 				Pilot: ${starship.controller}.
 				Damagers: ${starship.damagers.entries.joinToString { "(Damager: ${it.key}, Points: ${it.value.points})" }}
-				Rewards provider: ${starship.rewardsProvider}
+				Rewards provider: ${starship.rewardsProviders.joinToString { it.javaClass.simpleName }}
 				Sink message factory: ${starship.sinkMessageFactory}
 			""".trimIndent()
 		)
 
-		starship.rewardsProvider.triggerReward()
+		starship.rewardsProviders.forEach { it.triggerReward() }
 		starship.sinkMessageFactory.execute()
 	}
 }
