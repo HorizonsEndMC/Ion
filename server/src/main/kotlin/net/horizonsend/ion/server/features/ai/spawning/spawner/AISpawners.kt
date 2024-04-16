@@ -415,6 +415,7 @@ object AISpawners : IonServerComponent() {
 					spawnChance(AITemplateRegistry.INFLICT, 0.12),
 					spawnChance(AITemplateRegistry.VETERAN, 0.12),
 					spawnChance(AITemplateRegistry.PATROLLER, 0.12),
+					spawnChance(AITemplateRegistry.DAYBREAK, 0.12),
 					spawnChance(AITemplateRegistry.TENETA, 0.12),
 					spawnChance(AITemplateRegistry.CONTRACTOR, 0.05)
 				)
@@ -428,6 +429,7 @@ object AISpawners : IonServerComponent() {
 					spawnChance(AITemplateRegistry.INFLICT, 0.12),
 					spawnChance(AITemplateRegistry.VETERAN, 0.12),
 					spawnChance(AITemplateRegistry.PATROLLER, 0.12),
+					spawnChance(AITemplateRegistry.DAYBREAK, 0.12),
 					spawnChance(AITemplateRegistry.TENETA, 0.12),
 					spawnChance(AITemplateRegistry.BULWARK, 0.12),
 					spawnChance(AITemplateRegistry.CONTRACTOR, 0.12),
@@ -444,7 +446,8 @@ object AISpawners : IonServerComponent() {
 					spawnChance(AITemplateRegistry.VETERAN, 0.12),
 					spawnChance(AITemplateRegistry.PATROLLER, 0.12),
 					spawnChance(AITemplateRegistry.TENETA, 0.12),
-					spawnChance(AITemplateRegistry.CONTRACTOR, 0.12)
+					spawnChance(AITemplateRegistry.CONTRACTOR, 0.12),
+					spawnChance(AITemplateRegistry.DAYBREAK, 0.12)
 				)
 			),
 			WorldSettings(
@@ -458,7 +461,8 @@ object AISpawners : IonServerComponent() {
 					spawnChance(AITemplateRegistry.TENETA, 0.12),
 					spawnChance(AITemplateRegistry.BULWARK, 0.12),
 					spawnChance(AITemplateRegistry.CONTRACTOR, 0.12),
-					spawnChance(AITemplateRegistry.DAGGER, 0.12)
+					spawnChance(AITemplateRegistry.DAGGER, 0.12),
+					spawnChance(AITemplateRegistry.DAYBREAK, 0.12)
 				)
 			),
 			WorldSettings(worldName = "Trench",
@@ -471,7 +475,8 @@ object AISpawners : IonServerComponent() {
 					spawnChance(AITemplateRegistry.TENETA, 0.12),
 					spawnChance(AITemplateRegistry.BULWARK, 0.12),
 					spawnChance(AITemplateRegistry.CONTRACTOR, 0.12),
-					spawnChance(AITemplateRegistry.DAGGER, 0.12)
+					spawnChance(AITemplateRegistry.DAGGER, 0.12),
+					spawnChance(AITemplateRegistry.DAYBREAK, 0.12)
 				)
 			),
 			WorldSettings(
@@ -485,7 +490,8 @@ object AISpawners : IonServerComponent() {
 					spawnChance(AITemplateRegistry.TENETA, 0.10),
 					spawnChance(AITemplateRegistry.BULWARK, 0.12),
 					spawnChance(AITemplateRegistry.CONTRACTOR, 0.12),
-					spawnChance(AITemplateRegistry.DAGGER, 0.12)
+					spawnChance(AITemplateRegistry.DAGGER, 0.12),
+					spawnChance(AITemplateRegistry.DAYBREAK, 0.12)
 				)
 			)
 		)

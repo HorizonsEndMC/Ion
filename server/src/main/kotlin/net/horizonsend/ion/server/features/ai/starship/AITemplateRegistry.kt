@@ -369,6 +369,18 @@ object AITemplateRegistry {
 		.build()
 	)
 
+	val DAYBREAK = registerTemplate(builder(
+		identifier = "DAYBREAK",
+		template = StarshipTemplateRegistry.DAYBREAK,
+		controllerFactory = AIControllerFactories.corvette,
+		engagementRange = 1250.0,
+	)
+		.addFactionConfiguration(AIFaction.SYSTEM_DEFENSE_FORCES)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2650.0))
+		.build()
+	)
+
 	val PATROLLER = registerTemplate(builder(
 		identifier = "PATROLLER",
 		template = StarshipTemplateRegistry.PATROLLER,
