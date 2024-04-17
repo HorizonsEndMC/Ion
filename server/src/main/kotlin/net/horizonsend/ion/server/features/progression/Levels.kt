@@ -100,10 +100,10 @@ object Levels : IonServerComponent() {
 				Notify.chatAndGlobal(message)
 
 				when (newLevel) {
-					10 -> Achievement.LEVEL_10
-					20 -> Achievement.LEVEL_20
-					40 -> Achievement.LEVEL_40
-					80 -> Achievement.LEVEL_80
+					in 80..100 -> Achievement.LEVEL_80
+					in 40..100 -> Achievement.LEVEL_40
+					in 20..100 -> Achievement.LEVEL_20
+					in 10..100 -> Achievement.LEVEL_10
 					else -> null
 				}?.let {
 					player.rewardAchievement(it)
