@@ -9,7 +9,6 @@ import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
@@ -59,6 +58,10 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		val oldLocationSet: LongOpenHashSet = starship.blocks
 
 		check(newWorld != world1) { "New world can't be the same as the current world" }
+
+		if (starship.type == StarshipType.BATTLECRUISER && !SpaceWorlds.contains(world2)) {
+			throw StarshipMovementException("Battlecruisers cannot support their weight within strong gravity wells!")
+		}
 
 		if (!ActiveStarships.isActive(starship)) {
 			starship.serverError("Starship not active, movement cancelled.")
