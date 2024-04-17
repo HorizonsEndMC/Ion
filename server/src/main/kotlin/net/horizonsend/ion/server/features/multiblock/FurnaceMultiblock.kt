@@ -20,8 +20,6 @@ interface FurnaceMultiblock {
 			return
 		}
 
-		println("Multiblock $this used recipe $recipe")
-
 		if (recipe is FurnaceEventHandler) recipe.handleFurnaceEvent(event, furnace, sign)
 		recipe.execute(sign, furnace.inventory)
 
