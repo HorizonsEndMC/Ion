@@ -1,12 +1,17 @@
 package net.horizonsend.ion.server.features.multiblock.industry
 
+import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.inventory.InventoryHolder
 
 object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val maxPower: Int = 250_000
@@ -46,13 +51,25 @@ object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		}
 		z(+2) {
 			y(-1) {
-				x(-1).anyStairs()
+				x(-1).sponge()
 				x(+0).aluminumBlock()
-				x(+1).anyStairs()
+				x(+1).sponge()
 			}
 			y(+0) {
 				x(-1).anyStairs()
 				x(+0).aluminumBlock()
+				x(+1).anyStairs()
+			}
+		}
+		z(+3) {
+			y(-1) {
+				x(-1).anyStairs()
+				x(+0).craftingTable()
+				x(+1).anyStairs()
+			}
+			y(+0) {
+				x(-1).anyStairs()
+				x(+0).anyPipedInventory()
 				x(+1).anyStairs()
 			}
 		}
@@ -61,6 +78,14 @@ object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
 		handleRecipe(this, event, furnace, sign)
 
-		//TODO empty canister discarding
+		if (furnace.inventory.fuel?.customItem != CustomItems.GAS_CANISTER_EMPTY) return
+
+		val inventoryHolder = furnace.block.getRelative(sign.getFacing().oppositeFace, 3).state as InventoryHolder
+
+		val noFit = inventoryHolder.inventory.addItem(Gasses.EMPTY_CANISTER).values.isNotEmpty()
+
+		if (noFit) return
+
+		furnace.inventory.fuel = null
 	}
 }
