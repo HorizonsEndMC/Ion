@@ -13,7 +13,7 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.minecraft.world.level.block.state.BlockState
 
-abstract class StarshipMovementException(override val message: String) : ComponentMessageException(message)
+open class StarshipMovementException(override val message: String) : ComponentMessageException(message)
 
 class StarshipBlockedException(val location: Vec3i, val blockData: BlockState) : StarshipMovementException("Blocked at ${location.x}, ${location.y}, ${location.z} by `$blockData`!") {
 	override fun formatMessage(): Component {
