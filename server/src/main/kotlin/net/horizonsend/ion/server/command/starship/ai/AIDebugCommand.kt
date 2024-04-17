@@ -14,11 +14,12 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.configuration.AISpawningConfiguration
-import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
-import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisStandoffPositioningModule
-import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.ai.AIControllerFactories
+import net.horizonsend.ion.server.features.ai.AIControllerFactory
+import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
+import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.kyori.adventure.text.Component.text
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -36,10 +37,10 @@ object AIDebugCommand : SLCommand() {
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("controllerFactories") { _ ->
-			net.horizonsend.ion.server.features.starship.ai.AIControllerFactories.presetControllers.keys
+			AIControllerFactories.presetControllers.keys
 		}
 
-		manager.commandContexts.registerContext(AIControllerFactory::class.java) { net.horizonsend.ion.server.features.starship.ai.AIControllerFactories[it.popFirstArg()] }
+		manager.commandContexts.registerContext(AIControllerFactory::class.java) { AIControllerFactories[it.popFirstArg()] }
 	}
 
 	@Suppress("Unused")
@@ -47,7 +48,7 @@ object AIDebugCommand : SLCommand() {
 	@CommandCompletion("@aiSpawners")
 	fun triggerSpawn(sender: Player, spawner: AISpawner) {
 		sender.success("Triggered spawn for ${spawner.identifier}")
-		spawner.trigger(AISpawningManager.context)
+		spawner.trigger(log, AISpawningManager.context)
 	}
 
 	@Subcommand("ai")
@@ -87,8 +88,8 @@ object AIDebugCommand : SLCommand() {
 				paramColor = HEColorScheme.HE_LIGHT_GRAY,
 				useQuotesAroundObjects = false,
 				spawner.identifier,
-				spawner.getPoints(),
-				spawner.configuration.pointThreshold
+				spawner.points,
+				spawner.pointThreshold
 			)
 
 			sender.sendMessage(line)
@@ -100,17 +101,17 @@ object AIDebugCommand : SLCommand() {
 	@Subcommand("spawner points set")
 	@Suppress("unused")
 	fun setPoints(sender: Player, spawner: AISpawner, value: Int) {
-		spawner.setPoints(value)
-		sender.success("Set points of ${spawner.identifier} to ${spawner.getPoints()}")
+		spawner.points = value
+		sender.success("Set points of ${spawner.identifier} to ${spawner.points}")
 	}
 
 	@Subcommand("spawner points add")
 	@Suppress("unused")
 	fun addPoints(sender: Player, spawner: AISpawner, value: Int) {
-		spawner.setPoints(spawner.getPoints() + value)
-		sender.success("Set points of ${spawner.identifier} to ${spawner.getPoints()}")
+		spawner.points = (spawner.points + value)
+		sender.success("Set points of ${spawner.identifier} to ${spawner.points}")
 	}
 
 	@Serializable
-	data class WeaponSetsCollection(val sets: MutableSet<AISpawningConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf())
+	data class WeaponSetsCollection(val sets: MutableSet<AIStarshipTemplate.WeaponSet> = mutableSetOf())
 }

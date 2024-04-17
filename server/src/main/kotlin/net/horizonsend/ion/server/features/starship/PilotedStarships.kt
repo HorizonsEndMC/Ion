@@ -14,10 +14,10 @@ import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
@@ -189,6 +189,8 @@ object PilotedStarships : IonServerComponent() {
 		return true
 	}
 
+	fun isPiloting(player: Player): Boolean = map.any { (controller, _) -> (controller is ActivePlayerController) && controller.player == player }
+
 	fun canTakeControl(starship: ActiveControlledStarship, player: Player): Boolean {
 		return (starship.controller as? PlayerController)?.player?.uniqueId == player.uniqueId
 	}
@@ -243,7 +245,7 @@ object PilotedStarships : IonServerComponent() {
 	): Boolean {
 		val world: World = data.bukkitWorld()
 
-		val state: StarshipState = DeactivatedPlayerStarships.getSavedState(data) ?: throw AISpawner.SpawningException("Not detected.", world, Vec3i(data.blockKey))
+		val state: StarshipState = DeactivatedPlayerStarships.getSavedState(data) ?: throw SpawningException("Not detected.", world, Vec3i(data.blockKey))
 
 		for ((key: Long, blockData: BlockData) in state.blockMap) {
 			val x: Int = blockKeyX(key)
@@ -255,7 +257,7 @@ object PilotedStarships : IonServerComponent() {
 				val expected: String = blockData.material.name
 				val found: String = foundData.material.name
 
-				throw AISpawner.SpawningException(
+				throw SpawningException(
 					"Block at $x, $y, $z does not match! Expected $expected but found $found",
 					world,
 					Vec3i(data.blockKey)
@@ -264,7 +266,7 @@ object PilotedStarships : IonServerComponent() {
 
 			if (foundData.material == StarshipComputers.COMPUTER_TYPE) {
 				if (ActiveStarships.getByComputerLocation(world, x, y, z) != null) {
-					throw AISpawner.SpawningException(
+					throw SpawningException(
 						"Block at $x, $y, $z is the computer of a piloted ship!",
 						world,
 						Vec3i(data.blockKey)
