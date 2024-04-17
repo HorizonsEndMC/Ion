@@ -92,10 +92,10 @@ object Levels : IonServerComponent() {
 				player.sendMessage(template(text("Leveled up to level {0} for {1} SLXP", DARK_PURPLE), GOLD, newLevel, previousCost + cost))
 
 				val message = template(
-						text("{0} leveled up to {1}!", GREEN),
-						text(name, GOLD),
-						text("Level $newLevel", DARK_PURPLE)
-					)
+					text("{0} leveled up to {1}!", GREEN),
+					text(name, GOLD),
+					text("Level $newLevel", DARK_PURPLE)
+				)
 
 				Notify.chatAndGlobal(message)
 

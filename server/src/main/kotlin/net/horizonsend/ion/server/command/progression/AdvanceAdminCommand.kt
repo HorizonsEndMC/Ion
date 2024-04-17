@@ -17,6 +17,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.features.progression.Levels
+import net.horizonsend.ion.server.features.progression.Levels.getLevelUpCost
 import net.horizonsend.ion.server.features.progression.MAX_LEVEL
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -24,6 +25,7 @@ import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.min
 
 /**
  * Admin only commands for manipulating player Advance data
@@ -84,6 +86,44 @@ object AdvanceAdminCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val oldXP = PlayerXPLevelCache.fetchSLXP(playerId)
 		SLXP.setAsync(playerId, amount)
 		sender.success("Changed $player's XP from $oldXP to $amount.")
+	}
+
+	@Suppress("Unused")
+	@Subcommand("xp remove")
+	@CommandCompletion("@players @nothing")
+	@CommandPermission("advance.admin.xp")
+	fun onXPRemove(sender: CommandSender, player: String, amount: Int) = asyncCommand(sender) {
+		val playerId = resolveOfflinePlayer(player)
+
+		val oldLevel: Int = PlayerXPLevelCache.fetchLevel(playerId)
+		var newLevel: Int = oldLevel
+
+		val oldXP: Int = PlayerXPLevelCache.fetchSLXP(playerId)
+		var newXp: Int = oldXP
+
+		var remaining = amount
+
+		while (remaining > 0) {
+			val subtract = min(newXp, remaining)
+			remaining -= subtract
+			newXp -= subtract
+
+			if (newXp <= 0) {
+				// Set it to the max xp for that level
+				newXp = getLevelUpCost(newLevel)
+				// Decrease level by 1
+				newLevel--
+			}
+
+			if (newLevel <= 0) break;
+		}
+
+		SLXP.setAsync(playerId, newXp)
+		PlayerXPLevelCache.setLevel(playerId, newLevel)
+
+		sender.success("Changed $player's Level from $oldLevel to $newLevel.")
+		sender.success("Changed $player's SLXP from $oldXP to $newXp.")
+		sender.success("Subtracted $amount from ${sender.name}.")
 	}
 
 	@Suppress("Unused")
