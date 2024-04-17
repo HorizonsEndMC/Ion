@@ -796,7 +796,7 @@ class StarshipWeapons(
 				explosionPower = 2.0f,
 				volume = 0,
 				pitch = 2.0f,
-				soundName = "starship.weapon.turbolaser.freddyfazbear.shoot",
+				soundName = "starship.weapon.turbolaser.ion.shoot",
 				powerUsage = 3000,
 				length = 0,
 				angleRadiansHorizontal = 0.0,
