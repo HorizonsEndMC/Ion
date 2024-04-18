@@ -215,7 +215,8 @@ abstract class ActiveStarship (
 		}
 	}
 
-	val disabledThrusterRatio get() = thrusters.size / max(thrusters.count { it.lastIonTurretLimited >= (System.currentTimeMillis() - 5000L) }, 1)
+	val disabledThrusterRatio: Double get() =
+		thrusters.count { it.lastIonTurretLimited < (System.currentTimeMillis() - 5000L) } / thrusters.size.toDouble()
 
 	fun generateThrusterMap() {
 		for (face in CARDINAL_BLOCK_FACES) {
