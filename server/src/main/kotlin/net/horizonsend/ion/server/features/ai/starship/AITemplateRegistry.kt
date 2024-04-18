@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.ai.starship
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
@@ -11,6 +12,7 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATE
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHER_STANDARD
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人_STANDARD
+import net.horizonsend.ion.server.features.customitems.CustomItems
 
 /**
  * Fully realized, spawnable, AI templates
@@ -34,6 +36,11 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.WATCHERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
+			itemString = CustomItems.SUPERCONDUCTOR.identifier,
+			dropChance = 0.5f,
+			amount = 1,
+		))))
 		.build()
 	)
 
@@ -46,6 +53,11 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.WATCHERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
+			itemString = CustomItems.SUPERCONDUCTOR.identifier,
+			dropChance = 0.5f,
+			amount = 1,
+		))))
 		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -64,6 +76,11 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.WATCHERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(18000.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
+			itemString = CustomItems.SUPERCONDUCTOR.identifier,
+			dropChance = 0.5f,
+			amount = 2,
+		))))
 		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
@@ -89,6 +106,11 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.吃饭人)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
+			itemString = CustomItems.SUPERCONDUCTOR.identifier,
+			dropChance = 0.5f,
+			amount = 2,
+		))))
 		.build()
 	)
 
@@ -101,6 +123,11 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.吃饭人)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
+			itemString = CustomItems.SUPERCONDUCTOR.identifier,
+			dropChance = 0.5f,
+			amount = 2,
+		))))
 		.build()
 	)
 
