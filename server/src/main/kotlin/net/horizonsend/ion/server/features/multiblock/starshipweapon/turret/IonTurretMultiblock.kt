@@ -138,13 +138,12 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 	private fun getAdjustedFirePoints(pos: Vec3i, face: BlockFace) = getFirePoints(face)
 			.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
 	override fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, isAuto: Boolean) {
-		val speed = getProjectileSpeed(starship).toDouble()
+		val speed = getProjectileSpeed(starship)
 
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
 			if (starship.isInternallyObstructed(point, dir)) continue
 
 			val loc = point.toLocation(world).toCenterLocation()
-
 
 			IonTurretProjectile(
 				starship,
@@ -158,7 +157,7 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 				getStarshipShieldDamageMultiplier(starship),
 				getAreaShieldDamageMultiplier(starship),
 				getSound(starship),
-				starship.balancing.weapons.heavyTurret, // Not used by anything
+				starship.balancing.weapons.ionTurret, // Not used by anything
 				shooter
 			).fire()
 		}
