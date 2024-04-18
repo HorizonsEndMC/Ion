@@ -94,13 +94,13 @@ fun editRoleGUI(
 			// Name Button
 			addItem(
 				guiButton(Material.NAME_TAG) {
-					playerClicker.input("Name".toComponent()) { p, r ->
+					playerClicker.anvilInput("Name".toComponent()) { p, r ->
 						when {
 							!r.isAlphanumeric() -> "Must be alphanumeric"
 							r.length !in 3..20 -> "Must be from 3 to 20 characters"
 							else -> {
 								p.performCommand("$commandName edit name $roleName $r")
-								Tasks.sync { p.performCommand("$commandName edit $r") }; return@input null
+								Tasks.sync { p.performCommand("$commandName edit $r") }; return@anvilInput null
 							}
 						}
 					}
@@ -110,16 +110,16 @@ fun editRoleGUI(
 			// Color Button
 			addItem(
 				guiButton(Material.INK_SAC) {
-					playerClicker.input("<rainbow>Color".miniMessage()) { p, r ->
+					playerClicker.anvilInput("<rainbow>Color".miniMessage()) { p, r ->
 						try {
 							val color = ChatColor.valueOf(r)
 
 							p.performCommand("$commandName edit color $roleName ${color.name}")
 							Tasks.sync { p.performCommand("$commandName edit $roleName") }
 
-							return@input null
+							return@anvilInput null
 						} catch (e: Exception) {
-							return@input "Must be one of ${ChatColor.values().joinToString { it.name }}"
+							return@anvilInput "Must be one of ${ChatColor.values().joinToString { it.name }}"
 						}
 					}
 				}.name("Color: ${roleColor.name}")
@@ -128,15 +128,15 @@ fun editRoleGUI(
 			// Weight Button
 			addItem(
 				guiButton(Material.ANVIL) {
-					playerClicker.input("Weight".toComponent(TextDecoration.BOLD)) { p, r ->
-						if ((r.toIntOrNull() ?: return@input "Must be a number")
+					playerClicker.anvilInput("Weight".toComponent(TextDecoration.BOLD)) { p, r ->
+						if ((r.toIntOrNull() ?: return@anvilInput "Must be a number")
 							!in 0..1000
 						) {
-							return@input "Must be from 0 to 1000"
+							return@anvilInput "Must be from 0 to 1000"
 						} else {
 							p.performCommand("$commandName edit weight $roleName $r")
 
-							Tasks.sync { p.performCommand("$commandName edit $roleName") }; return@input null
+							Tasks.sync { p.performCommand("$commandName edit $roleName") }; return@anvilInput null
 						}
 					}
 				}.name("Weight: $roleWeight")

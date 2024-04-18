@@ -11,7 +11,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.concurrent.atomic.AtomicInteger
 
 class AIItemRewardProvider(
 	override val starship: ActiveControlledStarship,
@@ -22,10 +21,8 @@ class AIItemRewardProvider(
 		Bazaars.fromItemString(string).apply { amount = count } to percent
 	}
 
-	override fun processDamagerRewards(damager: PlayerDamager, points: AtomicInteger, pointsSum: Int) {
-		val percent = points.get().toDouble() / pointsSum.toDouble()
-
-		val items = items.filterValues { testRandom(it * percent) }
+	override fun processPrimaryDamagerRewards(damager: PlayerDamager) {
+		val items = items.filterValues { testRandom(it) }
 
 		Tasks.sync {
 			items.keys.forEach {

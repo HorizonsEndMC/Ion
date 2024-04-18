@@ -19,7 +19,7 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.features.nations.gui.input
+import net.horizonsend.ion.server.features.nations.gui.anvilInput
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -253,56 +253,57 @@ object StarshipComputers : IonServerComponent() {
 	private fun openPilotsMenu(player: Player, data: PlayerStarshipData) {
 		MenuHelper.apply {
 			val items = LinkedList<GuiItem>()
-			items.add(
-				guiButton(Material.BEACON) {
-					player.closeInventory()
-					player.input("Enter player name:".toComponent()) { p, input ->
-						Tasks.async {
-							val id = SLPlayer.findIdByName(input)
-							if (id == null) {
-								player.userError("Player not found")
-							} else {
-								DeactivatedPlayerStarships.addPilot(data, id)
-								data.pilots += id
-								PlayerStarshipData.updateById(
-									data._id,
-									addToSet(PlayerStarshipData::pilots, id)
-								)
-								player.success("Added $input as a pilot to starship.")
-								player.closeInventory()
-							}
-						}
 
-						null
+			items.add(guiButton(Material.BEACON) {
+				player.closeInventory()
+
+				player.anvilInput("Enter player name:".toComponent()) { player, input ->
+					Tasks.async {
+						val id = SLPlayer.findIdByName(input) ?: return@async player.userError("Player not found")
+
+						DeactivatedPlayerStarships.addPilot(data, id)
+						data.pilots += id
+
+						PlayerStarshipData.updateById(
+							data._id,
+							addToSet(PlayerStarshipData::pilots, id)
+						)
+
+						player.success("Added $input as a pilot to starship.")
+
+						Tasks.sync {
+							player.closeInventory()
+						}
 					}
-				}.setName("Add Pilot")
-			)
+
+					null
+				}
+			}.setName("Add Pilot"))
+
 			Tasks.async {
 				for (pilot in data.pilots) {
 					val name = SLPlayer.getName(pilot) ?: continue
-					items.add(
-						guiButton(skullItem(pilot.uuid, name)) {
-							if (pilot != data.captain) {
-								data.pilots -= pilot
-								Tasks.async {
-									PlayerStarshipData.updateById(data._id, pull(PlayerStarshipData::pilots, pilot))
-								}
-								player.closeInventory()
-								player.success("Removed $name")
-							}
+
+					items.add(guiButton(skullItem(pilot.uuid, name)) {
+						if (pilot != data.captain) {
+							data.pilots -= pilot
+
+							Tasks.async { PlayerStarshipData.updateById(data._id, pull(PlayerStarshipData::pilots, pilot)) }
+
+							player.closeInventory()
+							player.success("Removed $name")
 						}
-					)
+					})
 				}
-				Tasks.sync {
-					player.openPaginatedMenu("Edit Pilots", items)
-				}
+
+				Tasks.sync { player.openPaginatedMenu("Edit Pilots", items) }
 			}
 		}
 	}
 
 	private fun startRename(player: Player, data: StarshipData) {
 		player.closeInventory()
-		player.input("Enter new ship name:".toComponent()) { r, input ->
+		player.anvilInput("Enter new ship name:".toComponent()) { r, input ->
 			Tasks.async {
 				val serialized = MiniMessage.miniMessage().deserialize(input)
 
