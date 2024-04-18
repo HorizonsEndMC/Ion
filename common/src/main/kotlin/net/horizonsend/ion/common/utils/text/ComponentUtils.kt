@@ -105,6 +105,12 @@ val String.minecraftLength: Int
 		}
 	}
 
+fun Component.withShift(shift: Int): Component = when (shift) {
+	in 1..169 -> this.withRightShift(shift)
+	in -169..-1 -> this.withLeftShift(-shift)
+	else -> this
+}
+
 /**
  * Append a left shift to a Component
  * @param shift number of pixels to shift between 1 and 169
@@ -184,6 +190,13 @@ fun Component.shiftToRightGuiEdge(): Component = this.shiftRight(RIGHT_EDGE_SHIF
 fun Component.rightJustify(component: Component): Component = this.shiftToRightGuiEdge().append(component.withLeftShift())
 
 /**
+ *
+ */
+fun Component.centerJustify(component: Component): Component = this.shiftRight(
+	(DEFAULT_GUI_WIDTH / 2 - component.plainText().minecraftLength / 2) - this.plainText().minecraftLength
+).append(component)
+
+/**
  * Add a downward shift to the entire Component
  * @param shift number of pixels to shift between 1 and 110
  */
@@ -195,6 +208,11 @@ fun Component.shiftDown(shift: Int): Component = if (shift in 1..110) {
  * Add a downward shift to the entire Component equivalent to the next line
  */
 fun Component.shiftToLine(line: Int): Component = this.shiftDown(line * TEXT_HEIGHT)
+
+/**
+ * Add a downward shift to the entire Component equivalent to the next line, plus some offset
+ */
+fun Component.shiftToLine(line: Int, shift: Int): Component = this.shiftDown(line * TEXT_HEIGHT + shift)
 
 /**
  * Display a custom GUI background. Assumes that the background is the same width as the Minecraft GUI (176 pixels)
