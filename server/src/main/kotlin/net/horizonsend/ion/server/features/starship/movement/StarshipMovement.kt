@@ -134,7 +134,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	}
 
 	private fun findPassengers(world1: World): List<Entity> {
-		val passengerChunks = starship.blocks
+		val passengerChunks = starship.blocks.clone()
 			.map { world1.getChunkAt(blockKeyX(it) shr 4, blockKeyZ(it) shr 4) }
 			.toSet()
 

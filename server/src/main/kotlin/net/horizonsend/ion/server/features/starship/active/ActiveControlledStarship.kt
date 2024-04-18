@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -170,8 +171,13 @@ class ActiveControlledStarship(
 		} catch (e: Throwable) {
 			serverError("There was an unhandled exception during movement, releasing to prevent damage")
 
-			PilotedStarships.unpilot(this)
-			DeactivatedPlayerStarships.deactivateAsync(this)
+			IonServer.slF4JLogger.error(e.message)
+			e.printStackTrace()
+
+			Tasks.sync {
+				PilotedStarships.unpilot(this)
+				DeactivatedPlayerStarships.deactivateAsync(this)
+			}
 
 			return false
 		}

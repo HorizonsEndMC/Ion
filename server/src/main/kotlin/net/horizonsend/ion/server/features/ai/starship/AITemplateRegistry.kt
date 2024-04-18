@@ -38,7 +38,7 @@ object AITemplateRegistry {
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
 			itemString = CustomItems.SUPERCONDUCTOR.identifier,
-			dropChance = 0.5f,
+			dropChance = 1.0f,
 			amount = 1,
 		))))
 		.build()
@@ -55,7 +55,7 @@ object AITemplateRegistry {
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
 			itemString = CustomItems.SUPERCONDUCTOR.identifier,
-			dropChance = 0.5f,
+			dropChance = 1.0f,
 			amount = 1,
 		))))
 		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
@@ -78,8 +78,8 @@ object AITemplateRegistry {
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(18000.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
 			itemString = CustomItems.SUPERCONDUCTOR.identifier,
-			dropChance = 0.5f,
-			amount = 2,
+			dropChance = 1.0f,
+			amount = 1,
 		))))
 		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
 			activationThreshold = 0.75,
@@ -108,8 +108,8 @@ object AITemplateRegistry {
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
 			itemString = CustomItems.SUPERCONDUCTOR.identifier,
-			dropChance = 0.5f,
-			amount = 2,
+			dropChance = 1.0f,
+			amount = 1,
 		))))
 		.build()
 	)
@@ -125,8 +125,8 @@ object AITemplateRegistry {
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
 			itemString = CustomItems.SUPERCONDUCTOR.identifier,
-			dropChance = 0.5f,
-			amount = 2,
+			dropChance = 1.0f,
+			amount = 1,
 		))))
 		.build()
 	)
