@@ -35,12 +35,12 @@ class IonTurretProjectile(
 
 		helixAroundVector(oldLocation, vector, 0.3, 20, wavelength = 1.0) {
 			loc.world.spawnParticle(
-				Particle.SOUL_FIRE_FLAME,
+				Particle.WAX_OFF,
 				it,
 				0,
-				0.5,
-				0.5,
-				0.5,
+				0.0,
+				0.0,
+				0.0,
 				0.0,
 				null,
 				true
