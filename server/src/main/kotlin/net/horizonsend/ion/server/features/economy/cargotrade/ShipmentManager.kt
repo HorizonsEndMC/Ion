@@ -20,7 +20,7 @@ import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.features.nations.gui.input
+import net.horizonsend.ion.server.features.nations.gui.anvilInput
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -173,9 +173,9 @@ object ShipmentManager : IonServerComponent() {
 	}
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
-		player.input("Select amount of crates:".toComponent()) { _: Player, answer ->
+		player.anvilInput("Select amount of crates:".toComponent()) { _: Player, answer ->
 			val digit = answer.filter { it.isDigit() }
-			val amount = digit.toIntOrNull() ?: return@input "Amount must be an integer"
+			val amount = digit.toIntOrNull() ?: return@anvilInput "Amount must be an integer"
 
 			val playerMaxShipSize =
 				StarshipType.values().filter { !it.isWarship && it.canUse(player) && it != PLATFORM }
@@ -187,11 +187,11 @@ object ShipmentManager : IonServerComponent() {
 				(min(0.015 * playerMaxShipSize, sqrt(playerMaxShipSize.toDouble()))).toInt()
 			)
 			if (amount !in min..max) {
-				return@input "Amount must be between $min and $max"
+				return@anvilInput "Amount must be between $min and $max"
 			}
 
 			giveShipment(player, shipment, amount)
-			return@input null
+			return@anvilInput null
 		}
 	}
 

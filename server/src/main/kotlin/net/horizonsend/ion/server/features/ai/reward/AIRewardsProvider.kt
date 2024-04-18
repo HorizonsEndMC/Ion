@@ -52,6 +52,6 @@ interface AIRewardsProvider : RewardsProvider {
 		}
 	}
 
-	fun processDamagerRewards(damager: PlayerDamager, points: AtomicInteger, pointsSum: Int)
+	fun processDamagerRewards(damager: PlayerDamager, points: AtomicInteger, pointsSum: Int) {}
 	fun processPrimaryDamagerRewards(damager: PlayerDamager) {}
 }
