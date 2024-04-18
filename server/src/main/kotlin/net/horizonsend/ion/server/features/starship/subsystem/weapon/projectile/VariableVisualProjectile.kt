@@ -3,20 +3,15 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import net.horizonsend.ion.server.configuration.AntiAirCannonBalancing
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.damager.noOpDamager
-import net.horizonsend.ion.server.miscellaneous.utils.alongVector
-import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.Particle
 import org.bukkit.util.Vector
 
-class VisualProjectile(
+class VariableVisualProjectile(
 	var loc: Location,
 	var dir: Vector,
 	val range: Double,
 	val speed: Double,
-	val color: Color,
-	val particleThickness: Float,
-	val extraParticles: Int,
+	val drawParticle: (Location, Double) -> Unit
 ) : Projectile(null, noOpDamager) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = AntiAirCannonBalancing(
 		range = 0.0,
@@ -63,11 +58,6 @@ class VisualProjectile(
 	}
 
 	private fun moveVisually(travel: Double) {
-		val particle = Particle.REDSTONE
-		val dustOptions = Particle.DustOptions(color, particleThickness * 4f)
-
-		loc.alongVector(dir, 1 + extraParticles).forEach {
-			loc.world.spawnParticle(particle, it, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
-		}
+		drawParticle(loc, travel)
 	}
 }
