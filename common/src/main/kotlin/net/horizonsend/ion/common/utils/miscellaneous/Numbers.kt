@@ -75,5 +75,9 @@ fun getDurationBreakdown(input: Long): String {
 }
 
 fun testRandom(chance: Double, random: Random = ThreadLocalRandom.current().asKotlinRandom()): Boolean {
-	return random.nextDouble(0.0, 1.0) <= chance
+	return random.nextDouble() <= chance
+}
+
+fun testRandom(chance: Float, random: Random = ThreadLocalRandom.current().asKotlinRandom()): Boolean {
+	return random.nextFloat() <= chance
 }

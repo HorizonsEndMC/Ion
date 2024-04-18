@@ -124,7 +124,7 @@ class AnvilInput(val question: Component, action: AnvilInputAction) {
 	}
 }
 
-fun Player.input(question: Component, action: AnvilInputAction) = Tasks.sync {
+fun Player.anvilInput(question: Component, action: AnvilInputAction) = Tasks.sync {
 	AnvilGUI.Builder()
 		.plugin(IonServer)
 		.jsonTitle(gson().serialize(question))
@@ -134,7 +134,7 @@ fun Player.input(question: Component, action: AnvilInputAction) = Tasks.sync {
 			val stripped = field.substringAfter('.')
 
 			val response = AnvilGUI.ResponseAction { _, player ->
-				AnvilGUI.ResponseAction.replaceInputText(action(player, stripped))
+				AnvilGUI.ResponseAction.replaceInputText(action(player, stripped) ?: "")
 			}
 
 			mutableListOf(response)
@@ -149,7 +149,7 @@ fun Player.inputs(vararg inputs: AnvilInput) {
 private fun Array<out AnvilInput>.show(player: Player, i: Int) {
 	if (i >= size) return
 	val input = this[i]
-	player.input(input.question) { p, r ->
+	player.anvilInput(input.question) { p, r ->
 		input.action(p, r) ?: run {
 			this@show.show(p, i + 1); null
 		}
