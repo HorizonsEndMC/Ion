@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.listener.fixers
 
 import io.papermc.paper.event.player.PlayerOpenSignEvent
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
@@ -12,11 +14,13 @@ import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockDispenseEvent
+import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.block.BlockPistonRetractEvent
 import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.PotionSplashEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerFishEvent
@@ -176,5 +180,15 @@ class CancelListeners : SLEventListener() {
 		if (event.cause == PlayerOpenSignEvent.Cause.INTERACT) {
 			event.isCancelled = true
 		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	fun onExplode(event: EntityExplodeEvent) {
+		event.blockList().removeAll { it.customBlock == CustomBlocks.REACTOR_CORE }
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	fun onExplode(event: BlockExplodeEvent) {
+		event.blockList().removeAll { it.customBlock == CustomBlocks.REACTOR_CORE }
 	}
 }
