@@ -34,7 +34,7 @@ interface AIRewardsProvider : RewardsProvider {
 		val sum = dataMap.values.sumOf { it.points.get() }
 
 		dataMap.entries.maxByOrNull { it.value.points.get() }?.let {
-			processPrimaryDamagerRewards(it.key)
+			processPrimaryDamagerRewards(it.key, sum, it.value)
 		}
 
 		for ((damager, data) in dataMap.entries) {
@@ -53,5 +53,5 @@ interface AIRewardsProvider : RewardsProvider {
 	}
 
 	fun processDamagerRewards(damager: PlayerDamager, points: AtomicInteger, pointsSum: Int) {}
-	fun processPrimaryDamagerRewards(damager: PlayerDamager) {}
+	fun processPrimaryDamagerRewards(damager: PlayerDamager, sum: Int, dataMap: ShipKillXP.ShipDamageData) {}
 }

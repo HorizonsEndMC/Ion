@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -21,7 +22,7 @@ class AIItemRewardProvider(
 		Bazaars.fromItemString(string).apply { amount = count } to percent
 	}
 
-	override fun processPrimaryDamagerRewards(damager: PlayerDamager) {
+	override fun processPrimaryDamagerRewards(damager: PlayerDamager, sum: Int, dataMap: ShipKillXP.ShipDamageData) {
 		val items = items.filterValues { testRandom(it) }
 
 		Tasks.sync {
