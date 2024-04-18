@@ -6,7 +6,6 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.features.ai.module.misc.FactionManagerModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.allAIStarships
-import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.BehaviorConfiguration
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -44,8 +43,6 @@ class AIFaction private constructor(
 	}
 
 	class Builder(private val identifier: String, val color: Int) {
-		private val spawners: MutableList<AISpawner> = mutableListOf()
-		private val potentialSpawners: MutableList<AIFaction.() -> AISpawner> = mutableListOf()
 		private val names: MutableList<Component> = mutableListOf()
 
 		private val templateProcessing: MutableList<AITemplateRegistry.Builder.() -> Unit> = mutableListOf()
