@@ -6,9 +6,9 @@ import com.google.common.collect.Table
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import java.util.EnumSet
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.reflect.KClass
 import kotlin.random.Random
 import kotlin.random.asKotlinRandom
+import kotlin.reflect.KClass
 
 fun <T> List<T>.randomEntry(): T = when {
 	this.isEmpty() -> error("No entries in list to pick from!")
@@ -84,9 +84,11 @@ fun <T> Iterable<T>.weightedRandomOrNull(random: Random = ThreadLocalRandom.curr
 	var running = 0.0
 
 	for (entry: T in this) {
-		running += selector(entry)
+		val probability = selector(entry)
 
-		if (running >= selectionPoint) return entry
+		if (selectionPoint in running..(running + probability)) return entry
+
+		running += probability
 	}
 
 	return null
