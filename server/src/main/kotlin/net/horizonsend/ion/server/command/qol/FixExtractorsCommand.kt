@@ -24,10 +24,7 @@ object FixExtractorsCommand : SLCommand() {
 			return
 		}
 
-		if(sender.world.name != selection.world?.name) {
-			sender.userError("Selection in world ${selection.world?.name}, player is in world ${sender.world.name} - command canceled.")
-			return
-		}
+		if(sender.world.name != selection.world?.name) return
 
 		var count = 0
 
