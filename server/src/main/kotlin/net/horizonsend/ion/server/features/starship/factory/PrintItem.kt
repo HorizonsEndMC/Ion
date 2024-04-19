@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.features.starship.factory
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Slab
@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.Optional
 
 data class PrintItem(val itemString: String) {
-	constructor(itemStack: ItemStack) : this(Bazaars.toItemString(itemStack))
+	constructor(itemStack: ItemStack) : this(toItemString(itemStack))
 
 	constructor(customItem: CustomItem) : this(customItem.constructItemStack())
 

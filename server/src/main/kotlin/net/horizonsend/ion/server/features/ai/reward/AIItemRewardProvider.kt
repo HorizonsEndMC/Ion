@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.ai.reward
 
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.progression.ShipKillXP
@@ -19,7 +20,7 @@ class AIItemRewardProvider(
 ) : AIRewardsProvider {
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
 	val items = configuration.items.associate { (string, count, percent) ->
-		Bazaars.fromItemString(string).apply { amount = count } to percent
+		fromItemString(string).apply { amount = count } to percent
 	}
 
 	override fun processPrimaryDamagerRewards(damager: PlayerDamager, sum: Int, dataMap: ShipKillXP.ShipDamageData) {

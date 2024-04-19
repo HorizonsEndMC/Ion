@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.enviornment.mobs
 
+import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ENTITY
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -34,27 +34,27 @@ class CustomMobSpawner(val world: World, val mobs: WeightedRandomList<ServerConf
 
 			(entity as? LivingEntity)?.equipment?.apply {
 				mob.boots?.let {
-					this.boots = Bazaars.fromItemString(it.itemString)
+					this.boots = fromItemString(it.itemString)
 					this.bootsDropChance = it.dropChance
 				}
 				mob.leggings?.let {
-					this.leggings = Bazaars.fromItemString(it.itemString)
+					this.leggings = fromItemString(it.itemString)
 					this.leggingsDropChance = it.dropChance
 				}
 				mob.chestPlate?.let {
-					this.chestplate = Bazaars.fromItemString(it.itemString)
+					this.chestplate = fromItemString(it.itemString)
 					this.chestplateDropChance = it.dropChance
 				}
 				mob.helmet?.let {
-					this.helmet = Bazaars.fromItemString(it.itemString)
+					this.helmet = fromItemString(it.itemString)
 					this.helmetDropChance = it.dropChance
 				}
 				mob.onHand?.let {
-					this.setItemInMainHand(Bazaars.fromItemString(it.itemString))
+					this.setItemInMainHand(fromItemString(it.itemString))
 					this.itemInMainHandDropChance = it.dropChance
 				}
 				mob.boots?.let {
-					this.setItemInOffHand(Bazaars.fromItemString(it.itemString))
+					this.setItemInOffHand(fromItemString(it.itemString))
 					this.itemInOffHandDropChance = it.dropChance
 				}
 			}
