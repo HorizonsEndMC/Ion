@@ -3,11 +3,11 @@ package net.horizonsend.ion.server.command.qol
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
-import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -15,14 +15,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryHolder
-import org.bukkit.inventory.ItemStack
 
 @CommandAlias("container")
 @CommandPermission("ion.containercommand")
 object ContainerCommand : SLCommand() {
 	@Subcommand("empty")
 	@Suppress("unused")
-	fun onEmpty(sender: Player, @Optional material: Material?) {
+	@CommandCompletion("@anyItem")
+	fun onEmpty(sender: Player, @Optional itemString: String?) {
 		val maxSelectionVolume = 200000
 		val selection = sender.getSelection() ?: return
 		if(selection.volume > maxSelectionVolume) {
@@ -30,28 +30,34 @@ object ContainerCommand : SLCommand() {
 			return
 		}
 		if(sender.world.name != selection.world?.name) return
-
+		val containerList = mutableListOf<InventoryHolder>()
+		var count = 0
 		for (blockPosition in selection) {
 			val x = blockPosition.x
 			val y = blockPosition.y
 			val z = blockPosition.z
-
 			val block = sender.world.getBlockAt(x, y, z).state as? InventoryHolder ?: continue
-			if (material == null) block.inventory.clear()
-			else if (block.inventory.contains(material)) {
-				for (item in block.inventory.contents) {
-					if (item != null && item.type == material) block.inventory.remove(item)
+			containerList.add(block)
+		}
+		Tasks.async {
+			for(block in containerList) {
+				if (itemString == null) block.inventory.clear()
+				else if (block.inventory.contains(Material.valueOf(itemString))) {
+					count++
+					for (item in block.inventory.contents) {
+						if (item != null && item.type == Material.valueOf(itemString)) block.inventory.remove(item)
+					}
 				}
 			}
+			if (itemString == null) sender.success("Cleared $count containers")
+			else sender.success("Cleared $count containers storing $itemString.")
 		}
-		if (material == null) sender.success("Cleared containers")
-		else sender.success("Cleared containers storing $material.")
-
 	}
 
 	@Subcommand("fill")
 	@Suppress("unused")
-	fun onFill(sender: Player, material: Material) {
+	@CommandCompletion("@anyItem")
+	fun onFill(sender: Player, itemString: String) {
 		val maxSelectionVolume = 200000
 		val selection = sender.getSelection() ?: return
 		if(selection.volume > maxSelectionVolume) {
@@ -68,8 +74,9 @@ object ContainerCommand : SLCommand() {
 			val block = sender.world.getBlockAt(x, y, z).state as? InventoryHolder ?: continue
 			containerList.add(block)
 		}
+		val itemStack = GlobalCompletions.stringToItem(itemString) ?: return
 		Tasks.async {
-			val itemStack = ItemStack(material, material.maxStackSize)
+			itemStack.amount = itemStack.maxStackSize
 			for(block in containerList) {
 				if (LegacyItemUtils.canFit(block.inventory, itemStack)) {
 					count++
@@ -78,7 +85,7 @@ object ContainerCommand : SLCommand() {
 					}
 				}
 			}
-			sender.success("Filled $count containers with $material.")
+			sender.success("Filled $count containers with $itemString.")
 		}
 	}
 }
