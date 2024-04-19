@@ -46,6 +46,7 @@ import net.horizonsend.ion.server.command.progression.XPCommand
 import net.horizonsend.ion.server.command.qol.BlastResistanceCommand
 import net.horizonsend.ion.server.command.qol.CalcExpCommand
 import net.horizonsend.ion.server.command.qol.CheckProtectionCommand
+import net.horizonsend.ion.server.command.qol.ContainerCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
@@ -145,6 +146,7 @@ val commands: List<SLCommand> = listOf(
 	CheckProtectionCommand,
 	FixExtractorsCommand,
 	SetPowerCommand,
+	ContainerCommand,
 	RegenerateCommand,
 	RemoveGhostShipCommand,
 
