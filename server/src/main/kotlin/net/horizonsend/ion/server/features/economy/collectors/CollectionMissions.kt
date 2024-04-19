@@ -16,9 +16,9 @@ import net.horizonsend.ion.common.utils.miscellaneous.randomRange
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.command.GlobalCompletions.stringItemCache
+import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
-import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
-import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.stringItemCache
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
@@ -76,7 +76,7 @@ object CollectionMissions : IonServerComponent() {
 	}
 
 	fun getString(itemStack: ItemStack): String {
-		return Bazaars.toItemString(itemStack)
+		return toItemString(itemStack)
 	}
 
 	private val itemCache: LoadingCache<Oid<EcoStation>, List<CollectedItem>> = CacheBuilder.newBuilder()

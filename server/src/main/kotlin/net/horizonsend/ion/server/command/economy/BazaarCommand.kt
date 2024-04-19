@@ -24,6 +24,8 @@ import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
+import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
@@ -71,13 +73,11 @@ object BazaarCommand : SLCommand() {
 				BazaarItem::itemString
 			).toList()
 		}
-
-		registerAsyncCompletion(manager, "possibleBazaarItemStrings") { Bazaars.strings }
 	}
 
 	private fun validateItemString(itemString: String): ItemStack {
 		try {
-			val itemStack = Bazaars.fromItemString(itemString)
+			val itemStack = fromItemString(itemString)
 			failIf(!itemStack.type.isItem) { "$itemString is not an inventory item!" }
 			return itemStack
 		} catch (e: Exception) {
@@ -97,7 +97,7 @@ object BazaarCommand : SLCommand() {
 	fun onString(sender: Player) {
 		val item = requireItemInHand(sender)
 		sender.information(
-			"Item string of ${item.displayNameString}: ${Bazaars.toItemString(item)}"
+			"Item string of ${item.displayNameString}: ${toItemString(item)}"
 		)
 	}
 
@@ -106,7 +106,7 @@ object BazaarCommand : SLCommand() {
 
 	@Subcommand("create")
 	@Description("Create a new listing at this city")
-	@CommandCompletion("@possibleBazaarItemStrings")
+	@CommandCompletion("@anyItem")
 	fun onCreate(sender: Player, itemString: String, pricePerItem: Double) = asyncCommand(sender) {
 		val territory: RegionTerritory = requireTerritoryIn(sender)
 		failIf(!TradeCities.isCity(territory)) { "Territory is not a trade city" }
@@ -133,7 +133,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Create a new listing at this city")
 	fun onCreate(sender: Player, pricePerItem: Double) = asyncCommand(sender) {
 		val item = requireItemInHand(sender)
-		val itemString = Bazaars.toItemString(item)
+		val itemString = toItemString(item)
 
 		onCreate(sender, itemString, pricePerItem)
 	}
@@ -145,10 +145,9 @@ object BazaarCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("deposit")
 	@Description("Deposit all matching items in your inventory")
-	@CommandCompletion("@bazaarItemStrings")
 	fun onDeposit(sender: Player) = asyncCommand(sender) {
 		val item = requireItemInHand(sender)
-		val itemString = Bazaars.toItemString(item)
+		val itemString = toItemString(item)
 
 		onDeposit(sender, itemString)
 	}
@@ -274,7 +273,7 @@ object BazaarCommand : SLCommand() {
 			page ?: 1
 		) { index ->
 			val item = items[index]
-			val itemDisplayName = Bazaars.fromItemString(item.itemString).displayNameComponent
+			val itemDisplayName = fromItemString(item.itemString).displayNameComponent
 			val city = cityName(Regions[item.cityTerritory])
 			val stock = item.stock
 			val uncollected = item.balance.toCreditComponent()
@@ -310,7 +309,7 @@ object BazaarCommand : SLCommand() {
 				val uncollected = item.balance.toCreditsString()
 				val price = item.price.toCreditsString()
 
-				guiButton(Bazaars.fromItemString(item.itemString)).apply {
+				guiButton(fromItemString(item.itemString)).apply {
 					setLoreComponent(listOf(
 						text().append(text("City: ", DARK_PURPLE), text(city, LIGHT_PURPLE)).decoration(TextDecoration.ITALIC, false).build(),
 						text().append(text("Stock: ", GRAY), text(stock, GRAY)).decoration(TextDecoration.ITALIC, false).build(),
@@ -447,7 +446,7 @@ object BazaarCommand : SLCommand() {
 					return@sortedBy key
 				}
 				.map { (itemString, price) ->
-					val item = Bazaars.fromItemString(itemString)
+					val item = fromItemString(itemString)
 					return@map guiButton(item) { playerClicker.closeInventory() }
 						.setName(item.displayNameComponent)
 						.setLore("Price: ${price.toCreditsString()}")

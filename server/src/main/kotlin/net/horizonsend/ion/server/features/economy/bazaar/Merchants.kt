@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -106,7 +107,7 @@ object Merchants : IonServerComponent() {
 	fun onClickMerchantNPC(player: Player, city: TradeCityData) {
 		MenuHelper.run {
 			val items: List<GuiItem> = merchantMap.mapNotNull { (itemString, price) ->
-				val itemStack = Bazaars.fromItemString(itemString)
+				val itemStack = fromItemString(itemString)
 				val priceString = price.toCreditsString()
 				return@mapNotNull guiButton(itemStack)
 					.setName(itemStack.displayNameComponent)

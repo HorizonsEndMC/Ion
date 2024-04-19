@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.common.utils.getUpdateMessage
+import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.GassesConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
@@ -119,6 +120,7 @@ object IonServer : JavaPlugin() {
 			// enableUnstableAPI("brigadier") BROKEN DO NOT ENABLE
 		}
 
+		GlobalCompletions.onEnable(commandManager)
 		// First register all the completions, then register the actual commands
 		commands.forEach { it.onEnable(commandManager) }
 		commands.forEach {
