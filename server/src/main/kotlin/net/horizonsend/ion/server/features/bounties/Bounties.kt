@@ -125,7 +125,7 @@ object Bounties : IonServerComponent() {
 
 		val damagers = event.starship.damagers
 			.filterKeys { it is PlayerDamager }
-			.mapKeys { it as PlayerDamager }
+			.mapKeys { it.key as PlayerDamager }
 			.filterKeys { damager ->
 			// require they be online to get xp
 			// if they have this perm, e.g. someone in dutymode or on creative, they don't get xp
