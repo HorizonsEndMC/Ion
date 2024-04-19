@@ -81,7 +81,7 @@ object CollectedItemCommand : SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("add")
-	@CommandCompletion("@ecostations @possibleBazaarItemStrings 10|20|50|100|200|300 1|2|3|5 1|3|6|9|27")
+	@CommandCompletion("@ecostations @anyItem 10|20|50|100|200|300 1|2|3|5 1|3|6|9|27")
 	fun onAdd(
 		sender: CommandSender,
 		station: EcoStation,
