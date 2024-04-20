@@ -248,7 +248,7 @@ data class StarshipTypeBalancing(
 						ionTurret = StarshipWeapons.StarshipWeapon(
 								canFire = true,
 								range = 500.0,
-								speed = 105.0,
+								speed = 95.0,
 								areaShieldDamageMultiplier = 30.0,
 								starshipShieldDamageMultiplier = 2.8,
 								particleThickness = 0.6,
@@ -309,12 +309,12 @@ data class StarshipTypeBalancing(
 				interdictionRange = 4500,
 				hyperspaceRangeMultiplier = 2.5,
 				cruiseSpeedMultiplier = 0.88,
-				shieldPowerMultiplier = 1.35,
+				shieldPowerMultiplier = 1.40,
 				weapons = StarshipWeapons(
 						quadTurret = StarshipWeapons.StarshipWeapon(
 								canFire = true,
 								range = 500.0,
-								speed = 85.0,
+								speed = 80.0,
 								areaShieldDamageMultiplier = 6.0,
 								starshipShieldDamageMultiplier = 7.5,
 								particleThickness = 0.6,
@@ -334,7 +334,31 @@ data class StarshipTypeBalancing(
 								maxPerShot = 3,
 								applyCooldownToAll = true,
 								minBlockCount = 17500
+						),
+						triTurret = StarshipWeapons.StarshipWeapon(
+								range = 500.0,
+								speed = 110.0,
+								areaShieldDamageMultiplier = 3.0,
+								starshipShieldDamageMultiplier = 3.0,
+								particleThickness = 0.8,
+								explosionPower = 6f,
+								volume = 1,
+								pitch = 2.0f,
+								soundName = "starship.weapon.turbolaser.tri.shoot",
+								powerUsage = 45000,
+								length = 0,
+								angleRadiansHorizontal = 0.0,
+								angleRadiansVertical = 0.0,
+								convergeDistance = 0.0,
+								extraDistance = 0,
+								fireCooldownMillis = 10,
+								boostChargeSeconds = 7,
+								aimDistance = 0,
+								inaccuracyRadians = 3.0,
+								applyCooldownToAll = false,
+								minBlockCount = 3400
 						)
+
 				),
 				requiredMultiblocks = listOf(
 						RequiredSubsystemInfo(
