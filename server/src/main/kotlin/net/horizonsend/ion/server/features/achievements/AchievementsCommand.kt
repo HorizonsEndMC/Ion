@@ -10,16 +10,11 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.utils.text.customGuiBackground
-import net.horizonsend.ion.common.utils.text.customGuiHeader
-import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.rightJustify
-import net.horizonsend.ion.common.utils.text.shiftToLeftOfComponent
-import net.horizonsend.ion.common.utils.text.shiftToLine
-import net.horizonsend.ion.common.utils.text.withRightShift
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.screens.GuiText
 import net.horizonsend.ion.server.features.screens.TextScreen
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -71,19 +66,30 @@ object AchievementsCommand : SLCommand() {
 
 	@Subcommand("test")
 	fun onMenuTest(sender: Player, name: String) {
-		sender.openScreen(TextScreen(ofChildren(
-			customGuiBackground(0xF8FF.toChar()),
-			customGuiHeader(name),
-			Component.text("Weekend chores", NamedTextColor.RED).withRightShift(21).shiftToLine(1)
-				.rightJustify(Component.text("bruh")).shiftToLeftOfComponent(),
-			Component.text("- Mop floors", NamedTextColor.GOLD).withRightShift(21).shiftToLine(2)
-				.rightJustify(Component.text("DONE", NamedTextColor.GREEN)).shiftToLeftOfComponent(),
-			Component.text("- Do laundry", NamedTextColor.YELLOW).withRightShift(21).shiftToLine(3)
-				.rightJustify(Component.text("NOT DONE", NamedTextColor.RED)).shiftToLeftOfComponent(),
-			Component.text("- Be inconspicuous", NamedTextColor.GREEN).withRightShift(21).shiftToLine(4)
-				.rightJustify(Component.text("IN PROGRESS", NamedTextColor.GOLD)).shiftToLeftOfComponent(),
-			Component.text("- Sleep for 8 hrs", NamedTextColor.BLUE).withRightShift(21).shiftToLine(5)
-				.rightJustify(Component.text("CANCELLED", NamedTextColor.DARK_RED)).shiftToLeftOfComponent(),
-		)))
+		val guiText = GuiText(name)
+		guiText.add(0, GuiText.TextAlignment.LEFT, 0, Component.text("Weekend chores", NamedTextColor.RED))
+		guiText.add(0, GuiText.TextAlignment.RIGHT, 0, Component.text("Bruh", NamedTextColor.RED))
+		guiText.add(1, GuiText.TextAlignment.LEFT, 21, Component.text("- Mop floors", NamedTextColor.GOLD))
+		guiText.add(1, GuiText.TextAlignment.RIGHT, 0, Component.text("DONE", NamedTextColor.GREEN))
+		guiText.add(2, GuiText.TextAlignment.LEFT, 21, Component.text("- Do laundry", NamedTextColor.YELLOW))
+		guiText.add(2, GuiText.TextAlignment.RIGHT, 0, Component.text("NOT DONE", NamedTextColor.RED))
+		guiText.add(3, GuiText.TextAlignment.LEFT, 21, Component.text("- Be inconspicuous", NamedTextColor.GREEN))
+		guiText.add(4, GuiText.TextAlignment.LEFT, 21, Component.text("- Sleep for 8 hrs", NamedTextColor.BLUE))
+		guiText.add(3, GuiText.TextAlignment.RIGHT, 0, Component.text("IN PROGRESS", NamedTextColor.GOLD))
+		guiText.add(4, GuiText.TextAlignment.RIGHT, 0, Component.text("CANCELLED", NamedTextColor.DARK_RED))
+		guiText.add(5, GuiText.TextAlignment.RIGHT, -26, Component.text("TEST RIGHT", NamedTextColor.DARK_PURPLE))
+		guiText.add(6, GuiText.TextAlignment.CENTER, 0, Component.text("CANCELLED", NamedTextColor.DARK_RED))
+		guiText.add(8, GuiText.TextAlignment.RIGHT, -8, Component.text("RIGHT", NamedTextColor.BLACK))
+		guiText.add(8, GuiText.TextAlignment.CENTER, 8, Component.text("CENTER", NamedTextColor.BLACK))
+		guiText.add(9, GuiText.TextAlignment.LEFT, 0, Component.text("LEFT", NamedTextColor.DARK_GRAY))
+		guiText.add(9, GuiText.TextAlignment.CENTER, -21, Component.text("CTR", NamedTextColor.DARK_GRAY))
+		guiText.add(10, GuiText.TextAlignment.RIGHT, 0, Component.text("R", NamedTextColor.DARK_GRAY))
+		guiText.add(10, GuiText.TextAlignment.LEFT, 0, Component.text("L", NamedTextColor.DARK_GRAY))
+		guiText.add(10, GuiText.TextAlignment.CENTER, 0, Component.text("CTR", NamedTextColor.DARK_GRAY))
+		guiText.add(9, GuiText.TextAlignment.CENTER, 0, Component.text("CTR", NamedTextColor.DARK_GRAY))
+		guiText.add(10, GuiText.TextAlignment.CENTER, 11, Component.text("CTR", NamedTextColor.DARK_GRAY))
+		guiText.removeColumn(GuiText.TextAlignment.CENTER)
+
+		sender.openScreen(TextScreen(guiText.build() as TextComponent))
 	}
 }
