@@ -1,18 +1,18 @@
 package net.horizonsend.ion.server.features.screens
 
-import net.horizonsend.ion.common.utils.text.centerJustify
 import net.horizonsend.ion.common.utils.text.customGuiBackground
 import net.horizonsend.ion.common.utils.text.customGuiHeader
-import net.horizonsend.ion.common.utils.text.rightJustify
+import net.horizonsend.ion.common.utils.text.minecraftLength
+import net.horizonsend.ion.common.utils.text.newShift
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.shiftToLeftOfComponent
 import net.horizonsend.ion.common.utils.text.shiftToLine
-import net.horizonsend.ion.common.utils.text.withShift
 import net.kyori.adventure.text.Component
 
 class GuiText(
     private val name: String,
     private val backgroundChar: Char = '\uF8FF',
-    private val width: Int = DEFAULT_GUI_WIDTH,
+    private val guiWidth: Int = DEFAULT_GUI_WIDTH,
     private val initialShiftDown: Int = INITIAL_SHIFT_DOWN
 ) {
 
@@ -21,6 +21,8 @@ class GuiText(
         private const val DEFAULT_GUI_WIDTH = 169
         // The amount of pixels to shift down from the title to the first inventory slot
         private const val INITIAL_SHIFT_DOWN = 3
+        // The amount of pixels from the edge of the GUI to the start of text
+        private const val MARGIN = 8
     }
 
     /**
@@ -81,52 +83,57 @@ class GuiText(
      * @return an Adventure Component for use in an Inventory
      */
     fun build(): Component {
-        val sortedGuiComponents = guiComponents.sortedWith(compareBy(GuiComponent::line, GuiComponent::alignment))
         val renderedComponents = mutableListOf<Component>()
 
         renderedComponents.add(customGuiBackground(backgroundChar))
         renderedComponents.add(customGuiHeader(name))
 
-        var currentLine = -1
-        var currentComponent: Component? = null
+        // get sorted list of all lines in the builder
+        for (line in guiComponents.map { it.line }.toSet().sorted()) {
+            // get the maximum of three GuiComponents on this line
+            val leftGuiComponent = guiComponents.find { it.line == line && it.alignment == TextAlignment.LEFT }
+            val centerGuiComponent = guiComponents.find { it.line == line && it.alignment == TextAlignment.CENTER }
+            val rightGuiComponent = guiComponents.find { it.line == line && it.alignment == TextAlignment.RIGHT }
 
-        for (guiComponent in sortedGuiComponents) {
-            if (currentLine != guiComponent.line) {
-                if (currentComponent != null) renderedComponents.add(currentComponent.shiftToLeftOfComponent())
-                currentLine = guiComponent.line
+            // get the TextComponents of the GuiComponents with the proper shift, or an empty component if not present
+            val leftTextComponent = ofChildren(
+                newShift(leftGuiComponent?.shift ?: 0),
+                leftGuiComponent?.component ?: Component.empty())
+            val centerTextComponent = ofChildren(
+                newShift(centerGuiComponent?.shift ?: 0),
+                centerGuiComponent?.component ?: Component.empty())
+            val rightTextComponent = ofChildren(
+                newShift(rightGuiComponent?.shift ?: 0),
+                rightGuiComponent?.component ?: Component.empty())
 
-                when (guiComponent.alignment) {
-                    TextAlignment.LEFT -> {
-                        currentComponent = guiComponent.component
-                            .withShift(guiComponent.shift)
-                            .shiftToLine(currentLine, initialShiftDown)
-                    }
-                    TextAlignment.CENTER -> {
-                        currentComponent = (Component.text() as Component)
-                            .centerJustify(guiComponent.component
-                                .withShift(guiComponent.shift)
-                            ).shiftToLine(currentLine, initialShiftDown)
-                    }
-                    TextAlignment.RIGHT -> {
-                        currentComponent = (Component.text() as Component)
-                            .rightJustify(guiComponent.component
-                                .withShift(guiComponent.shift)
-                            ).shiftToLine(currentLine, initialShiftDown)
-                    }
-                }
-            } else {
-                when (guiComponent.alignment) {
-                    // left case will always be created first
-                    TextAlignment.LEFT -> continue
-                    // currentComponent will never be null as it is created on the previous step
-                    TextAlignment.CENTER -> currentComponent!!
-                        .centerJustify(guiComponent.component)
-                        .withShift(guiComponent.shift)
-                    TextAlignment.RIGHT -> currentComponent!!
-                        .rightJustify(guiComponent.component)
-                        .withShift(guiComponent.shift)
-                }
-            }
+            // calculate the shift needed to move the text cursor from the end of the left component (or the left edge)
+            // to the beginning of the center component
+            val centerTextShiftComponent = if (centerTextComponent != Component.empty()) {
+                // use the original component's length and not include the offset
+                newShift(((guiWidth - MARGIN) / 2) -
+                        (centerGuiComponent!!.component.minecraftLength / 2) - leftTextComponent.minecraftLength)
+            } else Component.empty()
+
+            // calculate the shift needed to move the text cursor from the end of the center component, the left
+            // component, or the left edge, to the beginning of the right component
+            val rightTextShiftComponent = if (rightTextComponent != Component.empty())
+            {
+                newShift(guiWidth - MARGIN -
+                        rightGuiComponent!!.component.minecraftLength - centerTextComponent.minecraftLength -
+                        centerTextShiftComponent.minecraftLength - leftTextComponent.minecraftLength
+                )
+            } else Component.empty()
+
+            // assemble the components into one TextComponent
+            val currentComponent = ofChildren(
+                leftTextComponent,
+                centerTextShiftComponent,
+                centerTextComponent,
+                rightTextShiftComponent,
+                rightTextComponent
+            ).shiftToLine(line, initialShiftDown).shiftToLeftOfComponent()
+
+            renderedComponents.add(currentComponent)
         }
 
         return Component.textOfChildren(*renderedComponents.toTypedArray())

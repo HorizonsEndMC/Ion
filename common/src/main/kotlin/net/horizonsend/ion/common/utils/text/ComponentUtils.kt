@@ -85,6 +85,9 @@ const val TEXT_HEIGHT = 9
 const val DEFAULT_GUI_WIDTH = 169
 const val RIGHT_EDGE_SHIFT = 161
 
+val Component.minecraftLength: Int
+	get() = this.plainText().minecraftLength
+
 /**
  * Gets the width (in pixels) of a string rendered in the default Minecraft font.
  */
@@ -104,6 +107,12 @@ val String.minecraftLength: Int
 			} as Int
 		}
 	}
+
+fun newShift(shift: Int): Component = when (shift) {
+	in 1..169 -> newRightShift(shift)
+	in -169..-1 -> newLeftShift(-shift)
+	else -> empty()
+}
 
 fun Component.withShift(shift: Int): Component = when (shift) {
 	in 1..169 -> this.withRightShift(shift)
@@ -168,7 +177,6 @@ fun Component.withRightShift(shift: Int): Component = if (shift in 1..169) {
  * Add a left shift that returns the text to the left (beginning) of the Component
  */
 fun Component.shiftToLeftOfComponent(): Component {
-	println("${this.plainText()}: ${this.plainText().minecraftLength}")
 	return this.shiftLeft(this.plainText().minecraftLength)
 }
 
@@ -189,6 +197,14 @@ fun Component.shiftToRightGuiEdge(): Component = this.shiftRight(RIGHT_EDGE_SHIF
  */
 fun Component.rightJustify(component: Component): Component = this.shiftToRightGuiEdge().append(component.withLeftShift())
 
+fun Component.rightJustify(component: Component, shift: Int): Component {
+	return this.append(
+		component.withShift(
+			RIGHT_EDGE_SHIFT - component.plainText().minecraftLength - this.plainText().minecraftLength + shift
+		)
+	)
+}
+
 /**
  *
  */
@@ -201,7 +217,7 @@ fun Component.centerJustify(component: Component): Component = this.shiftRight(
  * @param shift number of pixels to shift between 1 and 110
  */
 fun Component.shiftDown(shift: Int): Component = if (shift in 1..110) {
-	this.font(yFontKey(shift))
+	this.font(yFontKey(shift.coerceIn(1..110)))
 } else this
 
 /**
@@ -212,7 +228,7 @@ fun Component.shiftToLine(line: Int): Component = this.shiftDown(line * TEXT_HEI
 /**
  * Add a downward shift to the entire Component equivalent to the next line, plus some offset
  */
-fun Component.shiftToLine(line: Int, shift: Int): Component = this.shiftDown(line * TEXT_HEIGHT + shift)
+fun Component.shiftToLine(line: Int, shift: Int): Component = this.shiftDown((line + 1) * TEXT_HEIGHT + shift)
 
 /**
  * Display a custom GUI background. Assumes that the background is the same width as the Minecraft GUI (176 pixels)
