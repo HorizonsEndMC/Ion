@@ -250,7 +250,7 @@ data class StarshipTypeBalancing(
 								range = 500.0,
 								speed = 95.0,
 								areaShieldDamageMultiplier = 30.0,
-								starshipShieldDamageMultiplier = 2.8,
+								starshipShieldDamageMultiplier = 2.5,
 								particleThickness = 0.6,
 								explosionPower = 3.0f,
 								volume = 0,
