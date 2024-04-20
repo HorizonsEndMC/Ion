@@ -247,12 +247,12 @@ data class StarshipTypeBalancing(
 				weapons = StarshipWeapons(
 						ionTurret = StarshipWeapons.StarshipWeapon(
 								canFire = true,
-								range = 250.0,
-								speed = 200.0,
+								range = 500.0,
+								speed = 105.0,
 								areaShieldDamageMultiplier = 30.0,
-								starshipShieldDamageMultiplier = 11.5,
+								starshipShieldDamageMultiplier = 2.8,
 								particleThickness = 0.6,
-								explosionPower = 2.0f,
+								explosionPower = 3.0f,
 								volume = 0,
 								pitch = 2.0f,
 								soundName = "starship.weapon.turbolaser.ion.shoot",
@@ -262,7 +262,7 @@ data class StarshipTypeBalancing(
 								angleRadiansVertical = 0.0,
 								convergeDistance = 0.0,
 								extraDistance = 1,
-								fireCooldownMillis = 1500,
+								fireCooldownMillis = 2000,
 								aimDistance = 0,
 								inaccuracyRadians = 2.0,
 								maxPerShot = 4,
@@ -271,6 +271,7 @@ data class StarshipTypeBalancing(
 								maxBlockCount = 16000
 						),
 						heavyTurret = StarshipWeapons.StarshipWeapon(
+								canFire = false,
 								range = 500.0,
 								speed = 200.0,
 								areaShieldDamageMultiplier = 1.0,
@@ -290,7 +291,7 @@ data class StarshipTypeBalancing(
 								boostChargeSeconds = 0,
 								applyCooldownToAll = true,
 								aimDistance = 0,
-								maxBlockCount = 16000,
+								maxBlockCount = 12000,
 								minBlockCount = 6500
 						),
 				),
@@ -308,16 +309,16 @@ data class StarshipTypeBalancing(
 				interdictionRange = 4500,
 				hyperspaceRangeMultiplier = 2.5,
 				cruiseSpeedMultiplier = 0.88,
-				shieldPowerMultiplier = 1.21,
+				shieldPowerMultiplier = 1.35,
 				weapons = StarshipWeapons(
 						quadTurret = StarshipWeapons.StarshipWeapon(
 								canFire = true,
 								range = 500.0,
 								speed = 85.0,
 								areaShieldDamageMultiplier = 6.0,
-								starshipShieldDamageMultiplier = 6.6,
+								starshipShieldDamageMultiplier = 7.5,
 								particleThickness = 0.6,
-								explosionPower = 5f,
+								explosionPower = 5.5f,
 								volume = 0,
 								pitch = 2.0f,
 								soundName = "starship.weapon.turbolaser.quad.shoot",
@@ -759,7 +760,7 @@ class StarshipWeapons(
 				boostChargeSeconds = 0,
 				applyCooldownToAll = true,
 				aimDistance = 0,
-				maxBlockCount = 16000,
+				maxBlockCount = 12000,
 				minBlockCount = 6500
 		),
 
