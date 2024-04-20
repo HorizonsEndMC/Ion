@@ -3,12 +3,16 @@ package net.horizonsend.ion.server.features.multiblock.starshipweapon.turret
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.QuadTurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.QuadTurretProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Material.GRINDSTONE
 import org.bukkit.Material.IRON_TRAPDOOR
+import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.util.Vector
 
 sealed class QuadTurretMultiblock : TurretMultiblock() {
 	override val requiredPermission = "ion.multiblock.quadturret"
@@ -179,6 +183,33 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 				x(0).terracottaOrDoubleslab()
 				x(+1).anyStairs()
 			}
+		}
+	}
+	private fun getAdjustedFirePoints(pos: Vec3i, face: BlockFace) = getFirePoints(face)
+			.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
+	override fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, isAuto: Boolean) {
+		val speed = getProjectileSpeed(starship)
+
+		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
+			if (starship.isInternallyObstructed(point, dir)) continue
+
+			val loc = point.toLocation(world).toCenterLocation()
+
+			QuadTurretProjectile(
+					starship,
+					loc,
+					dir,
+					speed,
+					shooter.color,
+					getRange(starship),
+					getParticleThickness(starship),
+					getExplosionPower(starship),
+					getStarshipShieldDamageMultiplier(starship),
+					getAreaShieldDamageMultiplier(starship),
+					getSound(starship),
+					starship.balancing.weapons.quadTurret, // Not used by anything
+					shooter
+			).fire()
 		}
 	}
 }
