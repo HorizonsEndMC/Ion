@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.nations.gui.input
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -233,6 +234,11 @@ object Bazaars : IonServerComponent() {
 				val lore = mutableListOf<String>()
 
 				lore += "&fBuy $currentAmount of $name for ${item.price * currentAmount * priceMult}"
+
+				if (!LegacyItemUtils.canFit(player.inventory, fromItemString(item.itemString), currentAmount)) {
+					lore += "&cWARNING: Amount is larger than may fit in your inventory."
+					lore += "&cAdding additional items may result in their stacks getting deleted."
+				}
 
 				if (priceMult > 1) {
 					lore += "(Price multiplied x $priceMult due to browsing remotely)"
