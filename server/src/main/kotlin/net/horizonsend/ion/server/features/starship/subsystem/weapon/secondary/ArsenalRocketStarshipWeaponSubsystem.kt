@@ -5,16 +5,14 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.Arsen
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArsenalRocketProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
@@ -22,7 +20,7 @@ class ArsenalRocketStarshipWeaponSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	val face: BlockFace,
-	private val multiblock: ArsenalRocketStarshipWeaponMultiblock
+	private val multiblock: ArsenalRocketStarshipWeaponMultiblock,
 	) :
 	WeaponSubsystem(starship, pos), HeavyWeaponSubsystem, ManualWeaponSubsystem {
 	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.arsenalMissile
@@ -34,7 +32,12 @@ class ArsenalRocketStarshipWeaponSubsystem(
 	}
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
-		return !starship.isInternallyObstructed(pos.plus(Vec3i(0, 10, 0)), dir)
+		val yFactor = when(face){
+			BlockFace.UP -> 1
+			BlockFace.DOWN -> -1
+			else -> 1
+		}
+		return !starship.isInternallyObstructed(pos.plus(Vec3i(0, 10*yFactor, 0)), dir)
 	}
 
 	private fun getSurroundingFaces(): Array<BlockFace> {
@@ -52,11 +55,16 @@ class ArsenalRocketStarshipWeaponSubsystem(
 	}
 
 	private fun getFirePos(): Vector {
-		return pos.toVector().add(Vector(0.0, 10.0, 0.0))
+		val yFactor = when(face){
+			BlockFace.UP -> 1
+			BlockFace.DOWN -> -1
+			else -> 1
+		}
+		return pos.toVector().add(Vector(0.0, 10.0*yFactor, 0.0))
 	}
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.world)
-		val projectile = ArsenalRocketProjectile(starship, origin, dir, shooter)
+		val projectile = ArsenalRocketProjectile(starship, origin, dir, shooter, face)
 		projectile.fire()
 	}
 }

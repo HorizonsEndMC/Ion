@@ -181,6 +181,8 @@ abstract class ActiveStarship (
 	/** Ignore weapon color, use rainbows for pride month **/
 	var rainbowToggle = false
 
+	var targetedPosition: Location? = null
+
 	var forward: BlockFace = BlockFace.NORTH
 	var isExploding = false
 
