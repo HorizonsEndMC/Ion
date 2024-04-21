@@ -97,14 +97,13 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.Horiz
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.AIHeavyLaserStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.ArsenalRocketStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.DownwardArsenalStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.BottomArsenalStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.DownwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.HeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.HorizontalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.PhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.TorpedoStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.UpwardArsenalStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.TopArsenalStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.UpwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockSide
@@ -256,8 +255,8 @@ object Multiblocks : IonServerComponent() {
 			MiningLaserMultiblockTier2Bottom,
 			MiningLaserMultiblockTier3Top,
 			MiningLaserMultiblockTier3Bottom,
-			UpwardArsenalStarshipWeaponMultiblock,
-			DownwardArsenalStarshipWeaponMultiblock,
+			TopArsenalStarshipWeaponMultiblock,
+			BottomArsenalStarshipWeaponMultiblock,
 
 			ItemSplitterMultiblock,
 			GasCollectorMultiblock,
