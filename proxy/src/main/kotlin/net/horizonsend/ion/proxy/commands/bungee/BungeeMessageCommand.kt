@@ -3,6 +3,7 @@ package net.horizonsend.ion.proxy.commands.bungee
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
+import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.uuid
@@ -17,6 +18,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 private val conversation = mutableMapOf<SLPlayerId, SLPlayerId>()
 
 @CommandAlias("msg|message|tell")
+@CommandPermission("ion.message")
 class MessageCommand : BaseCommand() {
 	private val format = { sender: String, receiver: String, msg: String ->
 		"<#7f7fff>[<#b8e0d4>$sender <#7f7fff>-> <#b8e0d4>$receiver<#7f7fff>] <white>$msg"
@@ -46,6 +48,7 @@ class MessageCommand : BaseCommand() {
 }
 
 @CommandAlias("r|reply")
+@CommandPermission("ion.message.reply")
 class ReplyCommand : BaseCommand() {
 	@Default
 	@Suppress("unused")
