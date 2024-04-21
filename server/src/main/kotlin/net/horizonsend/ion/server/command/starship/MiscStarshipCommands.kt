@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.informationTitle
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
@@ -57,6 +58,7 @@ import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.Component
@@ -713,5 +715,15 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				))
 			}
 		}
+	}
+	@Suppress("unused")
+	@CommandAlias("targetposition")
+	@Description("Targets a currentPosition")
+	fun onTargetPosition(sender: Player, x: Double, y: Double, z: Double){
+		val starship = getStarshipPiloting(sender)
+		if (!starship.weapons.any {it is ArsenalRocketStarshipWeaponSubsystem}) sender.userError("Error: No Arsenal Missiles found, position not targeted")
+
+		starship.targetedPosition = Location(starship.world, x, y, z)
+		sender.information("Targeted: $x, $y, $z with the ships Arsenal Missiles")
 	}
 }

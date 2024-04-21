@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.features.customitems.minerals.Smeltable
 import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralItem
-import net.horizonsend.ion.server.features.customitems.shipammo.objects.ShellItem
 import net.horizonsend.ion.server.features.customitems.misc.ProgressHolder
 import net.horizonsend.ion.server.features.customitems.misc.ShellItem
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
@@ -739,11 +738,17 @@ object CustomItems {
 //	)
 
 	// Throwables end
+
 	// Ammunition start
-	val NUCLEAR_ROCKET = register(
-		identifier = "NUCLEAR_MISSILE",
-		customModelData = 1101,
-		displayName = text("Nuclear Missile ", RED).decoration(BOLD, false),
+	val ARSENAL_MISSILE_ON = register(
+		identifier = "ARSENAL_MISSILE_ON",
+		customModelData = 700,
+		displayName = text("Arsenal Missile ", RED).decoration(BOLD, false),
+	)
+	val ARSENAL_MISSILE = register(
+		identifier = "ARSENAL_MISSILE",
+		customModelData = 701,
+		displayName = text("Arsenal Missile ", RED).decoration(BOLD, false),
 	)
 	// Ammunition end
 
