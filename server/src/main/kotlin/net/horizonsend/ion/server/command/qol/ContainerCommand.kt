@@ -7,11 +7,11 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.AnyItem
+import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryHolder
@@ -47,7 +47,7 @@ object ContainerCommand : SLCommand() {
 					}
 				}
 			}
-			sender.success("Cleared $count containers storing ${anyItem}.")
+			sender.success("Cleared $count containers storing ${toItemString(anyItem)}.")
 		}
 	}
 	@Suppress("unused")
@@ -107,10 +107,7 @@ object ContainerCommand : SLCommand() {
 					}
 				}
 			}
-			sender.success("Filled $count containers with ${anyItem.displayNameString
-				.replace("[", "")
-				.replace("]","")}." // we stay silly
-			)
+			sender.success("Filled $count containers with ${toItemString(anyItem)}.")
 		}
 	}
 }
