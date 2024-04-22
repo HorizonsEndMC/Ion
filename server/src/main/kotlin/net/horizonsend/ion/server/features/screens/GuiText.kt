@@ -1,9 +1,13 @@
 package net.horizonsend.ion.server.features.screens
 
+import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHAR
+import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
+import net.horizonsend.ion.common.utils.text.GUI_HEADER_MARGIN
+import net.horizonsend.ion.common.utils.text.GUI_MARGIN
 import net.horizonsend.ion.common.utils.text.customGuiBackground
 import net.horizonsend.ion.common.utils.text.customGuiHeader
 import net.horizonsend.ion.common.utils.text.minecraftLength
-import net.horizonsend.ion.common.utils.text.newShift
+import net.horizonsend.ion.common.utils.text.shift
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.shiftToLeftOfComponent
 import net.horizonsend.ion.common.utils.text.shiftToLine
@@ -11,19 +15,10 @@ import net.kyori.adventure.text.Component
 
 class GuiText(
     private val name: String,
-    private val backgroundChar: Char = '\uF8FF',
+    private val backgroundChar: Char = DEFAULT_BACKGROUND_CHAR,
     private val guiWidth: Int = DEFAULT_GUI_WIDTH,
-    private val initialShiftDown: Int = INITIAL_SHIFT_DOWN
+    private val initialShiftDown: Int = GUI_HEADER_MARGIN
 ) {
-
-    companion object {
-        // The default width of the Minecraft GUI/Inventory screen
-        private const val DEFAULT_GUI_WIDTH = 169
-        // The amount of pixels to shift down from the title to the first inventory slot
-        private const val INITIAL_SHIFT_DOWN = 3
-        // The amount of pixels from the edge of the GUI to the start of text
-        private const val MARGIN = 8
-    }
 
     /**
      * The list of GuiComponents added to this GuiText
@@ -48,12 +43,20 @@ class GuiText(
 
     /**
      * Adds a GuiComponent to the GuiText
-     * @param line the line that the new GuiComponent should be set at
      * @param component the text representation of the GuiComponent
+     * @param line the line that the new GuiComponent should be set at
      * @param alignment the alignment that the new GuiComponent should be set at
+     * @param horizontalShift the amount of horizontal shift to be applied
+     * @param verticalShift the amount of vertical shift to be applied
      */
-    fun add(line: Int, alignment: TextAlignment, shift: Int = 0, component: Component) {
-        add(GuiComponent(line, alignment, shift, component))
+    fun add(
+        component: Component,
+        line: Int = 0,
+        alignment: TextAlignment = TextAlignment.LEFT,
+        horizontalShift: Int = 0,
+        verticalShift: Int = 0
+    ) {
+        add(GuiComponent(component, line, alignment, horizontalShift, verticalShift))
     }
 
     /**
@@ -85,53 +88,64 @@ class GuiText(
     fun build(): Component {
         val renderedComponents = mutableListOf<Component>()
 
+        // add GUI background and header
         renderedComponents.add(customGuiBackground(backgroundChar))
         renderedComponents.add(customGuiHeader(name))
 
         // get sorted list of all lines in the builder
         for (line in guiComponents.map { it.line }.toSet().sorted()) {
+
+
             // get the maximum of three GuiComponents on this line
             val leftGuiComponent = guiComponents.find { it.line == line && it.alignment == TextAlignment.LEFT }
             val centerGuiComponent = guiComponents.find { it.line == line && it.alignment == TextAlignment.CENTER }
             val rightGuiComponent = guiComponents.find { it.line == line && it.alignment == TextAlignment.RIGHT }
 
+            val verticalShift = listOf(
+                leftGuiComponent?.verticalShift ?: 0,
+                centerGuiComponent?.verticalShift ?: 0,
+                rightGuiComponent?.verticalShift ?: 0
+            ).max()
+
             // get the TextComponents of the GuiComponents with the proper shift, or an empty component if not present
-            val leftTextComponent = ofChildren(
-                newShift(leftGuiComponent?.shift ?: 0),
-                leftGuiComponent?.component ?: Component.empty())
-            val centerTextComponent = ofChildren(
-                newShift(centerGuiComponent?.shift ?: 0),
-                centerGuiComponent?.component ?: Component.empty())
-            val rightTextComponent = ofChildren(
-                newShift(rightGuiComponent?.shift ?: 0),
-                rightGuiComponent?.component ?: Component.empty())
+            val leftTextComponent = leftGuiComponent?.component ?: Component.empty()
+            val centerTextComponent = centerGuiComponent?.component ?: Component.empty()
+            val rightTextComponent = rightGuiComponent?.component ?: Component.empty()
+
+            // calculate the shift needed to move the text cursor from the left edge of the GUI to the beginning of
+            // the left component
+            val leftTextShiftComponent = if (leftTextComponent != Component.empty()) {
+                shift(leftGuiComponent!!.horizontalShift)
+            } else Component.empty()
 
             // calculate the shift needed to move the text cursor from the end of the left component (or the left edge)
             // to the beginning of the center component
             val centerTextShiftComponent = if (centerTextComponent != Component.empty()) {
                 // use the original component's length and not include the offset
-                newShift(((guiWidth - MARGIN) / 2) -
-                        (centerGuiComponent!!.component.minecraftLength / 2) - leftTextComponent.minecraftLength)
+                shift(centerGuiComponent!!.horizontalShift +
+                        ((guiWidth - GUI_MARGIN) / 2) - (centerGuiComponent.component.minecraftLength / 2) -
+                        leftTextComponent.minecraftLength - leftTextShiftComponent.minecraftLength)
             } else Component.empty()
 
             // calculate the shift needed to move the text cursor from the end of the center component, the left
             // component, or the left edge, to the beginning of the right component
             val rightTextShiftComponent = if (rightTextComponent != Component.empty())
             {
-                newShift(guiWidth - MARGIN -
-                        rightGuiComponent!!.component.minecraftLength - centerTextComponent.minecraftLength -
-                        centerTextShiftComponent.minecraftLength - leftTextComponent.minecraftLength
-                )
+                shift(rightGuiComponent!!.horizontalShift +
+                        guiWidth - GUI_MARGIN - rightGuiComponent.component.minecraftLength -
+                        centerTextComponent.minecraftLength - centerTextShiftComponent.minecraftLength -
+                        leftTextComponent.minecraftLength - leftTextShiftComponent.minecraftLength)
             } else Component.empty()
 
             // assemble the components into one TextComponent
             val currentComponent = ofChildren(
+                leftTextShiftComponent,
                 leftTextComponent,
                 centerTextShiftComponent,
                 centerTextComponent,
                 rightTextShiftComponent,
                 rightTextComponent
-            ).shiftToLine(line, initialShiftDown).shiftToLeftOfComponent()
+            ).shiftToLine(line, initialShiftDown + verticalShift).shiftToLeftOfComponent()
 
             renderedComponents.add(currentComponent)
         }
@@ -141,17 +155,20 @@ class GuiText(
 
     /**
      * Stores line, Component, and alignment information for use in a GuiText
+     * @param component the Component to be displayed
      * @param line the line that the Component should appear on
      * @param alignment the text justification of the Component
-     * @param shift the amount to shift the Component by. Negative values shift the Component left while positive
-     * values shift the Component right
-     * @param component the Component to be displayed
+     * @param horizontalShift the amount to horizontally shift the Component by. Negative values shift the Component
+     * left while positive values shift the Component right
+     * @param verticalShift the amount to vertically shift the Component by. Added to the line modifier. This will shift
+     * the entire line down; use sparingly
      */
     data class GuiComponent(
-        val line: Int,
-        val alignment: TextAlignment,
-        val shift: Int = 0,
-        val component: Component
+        val component: Component,
+        val line: Int = 0,
+        val alignment: TextAlignment = TextAlignment.LEFT,
+        val horizontalShift: Int = 0,
+        val verticalShift: Int = 0
     )
 
     /**
