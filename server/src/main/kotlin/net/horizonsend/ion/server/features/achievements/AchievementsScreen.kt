@@ -2,16 +2,10 @@ package net.horizonsend.ion.server.features.achievements
 
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.utils.text.CHETHERITE_CHARACTER
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
-import net.horizonsend.ion.common.utils.text.customGuiBackground
-import net.horizonsend.ion.common.utils.text.customGuiHeader
-import net.horizonsend.ion.common.utils.text.minecraftLength
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.rightJustify
-import net.horizonsend.ion.common.utils.text.shiftDown
-import net.horizonsend.ion.common.utils.text.shiftRight
-import net.horizonsend.ion.common.utils.text.shiftToLeftOfComponent
-import net.horizonsend.ion.common.utils.text.withRightShift
+import net.horizonsend.ion.server.features.screens.GuiText
 import net.horizonsend.ion.server.features.screens.TextScreen
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -143,158 +137,64 @@ class AchievementsScreen private constructor(
 		private const val BOTTOM_RIGHT_CORNER_INVENTORY_INDEX = 53
 		private const val UI_LEFT = 105
 		private const val UI_RIGHT = 103
-		private const val INVENTORY_SLOT_HEIGHT = 18
-		private const val INITIAL_ACHIEVEMENT_TEXT_HEIGHT = 12
-		private const val ACHIEVEMENT_TEXT_OFFSET = 21
-		private const val NEXT_LINE_OFFSET = 9
-		private const val PAGE_NUMBER_OFFSET = 59
-
-		// Shift by -1 pixel (left)
-		private const val SHIFT_CHARACTERS_START = '\uE000'
-		// Shift by 139 pixels (right)
-		private const val REWARD_OFFSET_CHARACTER = '\uE18A'
-		// Shift by 139 pixels (left)
-		private const val ACHIEVEMENT_RETURN_CHARACTER = '\uE08A'
-		// Shift by 59 pixels (right)
-		private const val PAGE_NUMBER_OFFSET_CHARACTER = '\uE13A'
-		// Shift by 108 pixels down
-		private const val PAGE_NUMBER_VERTICAL_OFFSET = 108
-		// Chetherite character
-		private const val CHETHERITE_CHARACTER = '\uF8FE'
-
-
-		/**
-		 * Gets the width (in pixels) of a string rendered in the default Minecraft font.
-		 */
-		/*
-		private val String.minecraftLength: Int
-			get() =
-				this.sumOf {
-					@Suppress("Useless_Cast")
-					when (it) {
-						'i', '!', ',', '.', '\'', ':' -> 2
-						'l' -> 3
-						'I', 't', ' ' -> 4
-						'k', 'f' -> 5
-						else -> 6
-					} as Int
-				}
-		 */
-
-		/**
-		 * Gets the character that will shift the given length back to the beginning index
-		 * \uE000 is the start of the Unicode Private Use Block; the beginning of the codes after applying the font
-		 * <font:horizonsend:special> will shift the text cursor back by some amount. Adding more chars to this
-		 * function will increase the number of pixels to shift left.
-		 * Start at \uDFFF to account for one pixel shift.
-		 */
-		private val Int.resetCode: Char get() = (SHIFT_CHARACTERS_START - 1 + this)
+		private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
 
 		private fun buildPageText(
 			target: String,
 			pageNumber: Int,
 			targetAchievements: List<Achievement>
 		): TextComponent {
-			val componentList = mutableListOf<Component>()
+
+			// create a new GuiText builder
 			val header = "$target's Achievements"
+			val guiText = GuiText(header)
 
-			/* Character explanation:
-			\uE007 = shift text cursor left by 8 pixels (to left edge of GUI)
-			\uF8FF = displays "text_screen_back.png" in the resource pack
-			\uE0A8 = shift text cursor left by 169 pixels (to initial start position)
-			(text_screen_back.png is 176 pixels wide; additional pixel for spacing)
-
-			(header.minecraftLength - 21).resetCode = shift text cursor left by the length of the header, plus 21 pixels
-			This places the text cursor within the second column of inventory slots with some offset
-			 */
-			//var string =
-				//"<white><font:horizonsend:special>\uE007\uF8FF\uE0A8<reset>$header<font:horizonsend:special>${(header.minecraftLength - ACHIEVEMENT_TEXT_OFFSET).resetCode}"
-			componentList.add(customGuiBackground(0xF8FF.toChar()))
-			componentList.add(customGuiHeader(header))
-
+			// get the index of the first achievement to display for this page
 			val startIndex = pageNumber * ACHIEVEMENTS_PER_PAGE
 
 			for (achievementIndex in startIndex until min(startIndex + ACHIEVEMENTS_PER_PAGE, Achievement.entries.size)) {
+
 				val achievement = Achievement.entries[achievementIndex]
 				val hasAchievement = targetAchievements.contains(achievement)
 
-				// Calculate amount of pixels to vertically offset
-				val y = (achievementIndex - startIndex) * INVENTORY_SLOT_HEIGHT + INITIAL_ACHIEVEMENT_TEXT_HEIGHT
+				// each inventory slot occupies two lines; reserve two lines per achievement
+				val line = (achievementIndex - startIndex) * 2
 				val colour = if (hasAchievement) GREEN else RED
 
-				// Calculate the offset for the XP and credit reward texts. Find the length in pixels, then subtract
-				// the length from the offset character to find the correct start position for the text
-				//val experienceStringLength = "${achievement.experienceReward}XP".minecraftLength
-				//val experienceOffsetCode = REWARD_OFFSET_CHARACTER - achievement.title.minecraftLength - experienceStringLength
+				// achievement title and XP
+				guiText.add(text(achievement.title, colour), line, GuiText.TextAlignment.LEFT, horizontalShift = 21)
+				guiText.add(text("${achievement.experienceReward}XP", BLUE), line, GuiText.TextAlignment.RIGHT)
 
-				//val creditChetheriteStringLength = "C${achievement.creditReward}${
-				// The kk is a hacky fix, it adds up to 10 meaning it matches the length of the icon
-				// The chetherite "character" is 10 pixels wide, meaning "kk" will visually match the length	
-				//if (achievement.chetheriteReward != 0) " ${achievement.chetheriteReward}kk" else ""}".minecraftLength
-				//val creditChetheriteOffsetCode =
-				//	REWARD_OFFSET_CHARACTER - achievement.description.minecraftLength - creditChetheriteStringLength
-
-				componentList.add(
-					text(achievement.title, colour).withRightShift(ACHIEVEMENT_TEXT_OFFSET).shiftDown(y)
-						.rightJustify(text("${achievement.experienceReward}XP", BLUE))
-						.shiftToLeftOfComponent()
+				// achievement description and credit/chetherite reward
+				guiText.add(
+					text(achievement.description, DARK_GRAY),
+					line = line + 1,
+					GuiText.TextAlignment.LEFT,
+					horizontalShift = 21
 				)
 
-				componentList.add(
-					text(achievement.description, DARK_GRAY).withRightShift(ACHIEVEMENT_TEXT_OFFSET).shiftDown(y + NEXT_LINE_OFFSET)
-						.rightJustify(text("C${achievement.creditReward}", DARK_GREEN)
-							.append(if (achievement.chetheriteReward != 0) ofChildren(
-								text(" ${achievement.chetheriteReward}", DARK_PURPLE),
-								text("$CHETHERITE_CHARACTER", WHITE).font(SPECIAL_FONT_KEY).shiftRight(5)
-							) else Component.empty())
-						)
-						.shiftToLeftOfComponent()
+				guiText.add(
+					text("C${achievement.creditReward}", DARK_GREEN)
+						// if this achievement rewards chetherite
+						.append(if (achievement.chetheriteReward != 0) ofChildren(
+							text(" ${achievement.chetheriteReward}", DARK_PURPLE),
+							text("$CHETHERITE_CHARACTER", WHITE).font(SPECIAL_FONT_KEY)
+						) else Component.empty()),
+					line = line + 1,
+					GuiText.TextAlignment.RIGHT
 				)
-				/*
-				// The resource pack has many different "fonts" that are the regular font but shifted down by some
-				// pixels. Switch to the font that offsets the text down to the desired height
-				string += "<font:horizonsend:y$y>"
-				// Achievement title
-				string += "<$colour>${achievement.title}</$colour>"
-				// Get the correct character code to shift the text right, making the reward text appear right justified
-				string += "<font:horizonsend:special>$experienceOffsetCode</font>"
-				// Experience reward text
-				string += "<blue>${achievement.experienceReward}XP</blue>"
-				// All lines end at the same right offset, so return back to the original achievement offset
-				string += "<font:horizonsend:special>$ACHIEVEMENT_RETURN_CHARACTER" // Reset to start
-				// Shift down one line
-				string += "<font:horizonsend:y${y + NEXT_LINE_OFFSET}>"
-				// Achievement description
-				string += achievement.description
-				// Add spacing for chetherite/credit reward text
-				string += "<font:horizonsend:special>$creditChetheriteOffsetCode</font>"
-				// Chetherite/credit reward
-				string += "<dark_green>C${achievement.creditReward}</dark_green>${
-					if (achievement.chetheriteReward != 0) { 
-						" <dark_purple>${achievement.chetheriteReward}</dark_purple>" +
-						"<white><font:horizonsend:special>$CHETHERITE_CHARACTER</font></white>" 
-					} else ""
-				}"
-				// Return to achievement start offset
-				string += "<font:horizonsend:special>$ACHIEVEMENT_RETURN_CHARACTER" // Reset to start
-				 */
 			}
 
+			// page number
 			val pageNumberString = "${pageNumber + 1} / ${ceil(Achievement.entries.size / ACHIEVEMENTS_PER_PAGE.toDouble()).toInt()}"
-			componentList.add(text(pageNumberString)
-				.withRightShift(ACHIEVEMENT_TEXT_OFFSET + PAGE_NUMBER_OFFSET - (pageNumberString.minecraftLength / 2))
-				.shiftDown(PAGE_NUMBER_VERTICAL_OFFSET)
+			guiText.add(
+				text(pageNumberString),
+				line = 10,
+				GuiText.TextAlignment.CENTER,
+				verticalShift = PAGE_NUMBER_VERTICAL_SHIFT
 			)
 
-			// Shift the text right for the page number
-			/*
-			string += "<font:horizonsend:special>${(PAGE_NUMBER_OFFSET_CHARACTER - (pageNumberString.minecraftLength / 2))}"
-			// Page number
-			string += "<font:horizonsend:y$PAGE_NUMBER_VERTICAL_OFFSET>$pageNumberString"
-
-			return MiniMessage.miniMessage().deserialize(string) as TextComponent
-			 */
-			return Component.textOfChildren(*componentList.toTypedArray())
+			return guiText.build() as TextComponent
 		}
 	}
 }

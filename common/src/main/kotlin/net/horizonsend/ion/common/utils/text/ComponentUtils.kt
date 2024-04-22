@@ -81,9 +81,33 @@ val STRIKETHROUGH = TextDecoration.STRIKETHROUGH
 
 val SPECIAL_FONT_KEY = Key.key("horizonsend:special")
 private fun yFontKey(y: Int) = Key.key("horizonsend:y$y")
+
 const val TEXT_HEIGHT = 9
 const val DEFAULT_GUI_WIDTH = 169
-const val RIGHT_EDGE_SHIFT = 161
+const val GUI_MARGIN = 8
+const val GUI_HEADER_MARGIN = 3
+
+const val SHIFT_LEFT_MIN = 1
+const val SHIFT_LEFT_MAX = 169
+const val SHIFT_RIGHT_MIN = 1
+const val SHIFT_RIGHT_MAX = 169
+const val SHIFT_DOWN_MIN = 1
+const val SHIFT_DOWN_MAX = 110
+
+// Custom characters begin
+
+const val SHIFT_LEFT_BEGIN = 0xE000
+const val SHIFT_LEFT_END = 0xE0A8
+const val SHIFT_RIGHT_BEGIN = 0xE100
+const val SHIFT_RIGHT_END = 0xE1A8
+
+const val SHIFT_LEFT_BEGIN_MIN_1 = 0xDFFF
+const val SHIFT_RIGHT_BEGIN_MIN_1 = 0xE0FF
+
+const val DEFAULT_BACKGROUND_CHAR = '\uF8FF'
+const val CHETHERITE_CHARACTER = '\uF8FE'
+
+// Custom characters end
 
 val Component.minecraftLength: Int
 	get() = this.plainText().minecraftLength
@@ -95,152 +119,83 @@ val String.minecraftLength: Int
 	get() = this.sumOf {
 		@Suppress("Useless_Cast")
 		when (it.code) {
-			in 0xE000..0xE0A8 -> 0xDFFF - it.code
-			in 0xE100..0xE1A8 -> -0xE0FF + it.code
+			// for some reason, SHIFT_LEFT_BEGIN and the MIN_1 value does not work here
+			in SHIFT_LEFT_BEGIN..SHIFT_LEFT_END -> 0xDFFF - it.code
+			in SHIFT_RIGHT_BEGIN..SHIFT_RIGHT_END -> -0xE0FF + it.code
 			else -> when (it) {
 				'i', '!', ',', '.', '\'', ':', ';', '|' -> 2
 				'l', '`' -> 3
 				'I', 't', ' ', '\"', '(', ')', '*', '[', ']', '{', '}' -> 4
 				'k', 'f', '<', '>' -> 5
 				'@', '~', '«', '»' -> 7
+				CHETHERITE_CHARACTER -> 10
 				else -> 6
 			} as Int
 		}
 	}
 
-fun newShift(shift: Int): Component = when (shift) {
-	in 1..169 -> newRightShift(shift)
-	in -169..-1 -> newLeftShift(-shift)
-	else -> empty()
-}
-
-fun Component.withShift(shift: Int): Component = when (shift) {
-	in 1..169 -> this.withRightShift(shift)
-	in -169..-1 -> this.withLeftShift(-shift)
-	else -> this
-}
-
 /**
- * Append a left shift to a Component
- * @param shift number of pixels to shift between 1 and 169
+ * Create a new Component, shifting text left or right
+ * @param shift number of pixels to shift left between -169 and -1, or number of pixels to shift right between 1 and 169
  */
-fun Component.shiftLeft(shift: Int) = if (shift in 1..169) {
-	this.append(text((0xDFFF + shift).toChar()).font(SPECIAL_FONT_KEY))
-} else this
+fun shift(shift: Int): Component {
+	return when (shift) {
+		in SHIFT_RIGHT_MIN..SHIFT_RIGHT_MAX -> rightShift(shift)
+		in -SHIFT_LEFT_MAX..-SHIFT_LEFT_MIN -> leftShift(-shift)
+		else -> empty()
+	}
+}
 
 /**
  * Create a new Component starting with a left shift
  * @param shift number of pixels to shift between 1 and 169
  */
-fun newLeftShift(shift: Int): Component = if (shift in 1..169) {
-	text((0xDFFF + shift).toChar()).font(SPECIAL_FONT_KEY)
+fun leftShift(shift: Int): Component = if (shift in SHIFT_LEFT_MIN..SHIFT_LEFT_MAX) {
+	text((SHIFT_LEFT_BEGIN_MIN_1 + shift).toChar()).font(SPECIAL_FONT_KEY)
 } else empty()
-
-/**
- * Add a left shift to the beginning of a Component equal to the Component's length
- */
-fun Component.withLeftShift(): Component = this.withLeftShift(this.plainText().minecraftLength)
-
-/**
- * Add a left shift to the beginning of a Component
- * @param shift number of pixels to shift between 1 and 169
- */
-fun Component.withLeftShift(shift: Int): Component = if (shift in 1..169) {
-	ofChildren(newLeftShift(shift), this)
-} else this
-
-/**
- * Append a right shift to a Component
- * @param shift number of pixels to shift between 1 and 169
- */
-fun Component.shiftRight(shift: Int) = if (shift in 1..169) {
-	this.append(text((0xE0FF + shift).toChar()).font(SPECIAL_FONT_KEY))
-} else this
 
 /**
  * Create a new Component starting with a right shift
  * @param shift number of pixels to shift between 1 and 169
  */
-fun newRightShift(shift: Int): Component = if (shift in 1..169) {
-	text((0xE0FF + shift).toChar()).font(SPECIAL_FONT_KEY)
+fun rightShift(shift: Int): Component = if (shift in SHIFT_RIGHT_MIN..SHIFT_RIGHT_MAX) {
+	text((SHIFT_RIGHT_BEGIN_MIN_1 + shift).toChar()).font(SPECIAL_FONT_KEY)
 } else empty()
-
-/**
- * Add a right shift to the beginning of a Component
- * @param shift number of pixels to shift between 1 and 169
- */
-fun Component.withRightShift(shift: Int): Component = if (shift in 1..169) {
-	ofChildren(newRightShift(shift), this)
-} else this
 
 /**
  * Add a left shift that returns the text to the left (beginning) of the Component
  */
 fun Component.shiftToLeftOfComponent(): Component {
-	return this.shiftLeft(this.plainText().minecraftLength)
+	return this.append(leftShift(this.minecraftLength))
 }
-
-/**
- * Add a left shift that returns the text to the left (beginning) of the Component, with a right shift offset
- * @param offset the amount of pixels to the right of the left edge to offset by
- */
-fun Component.shiftToLeftOfComponent(offset: Int): Component = this.shiftLeft(this.plainText().minecraftLength - offset)
-
-/**
- * Add a right shift that sets the text to the right edge of the GUI
- */
-fun Component.shiftToRightGuiEdge(): Component = this.shiftRight(RIGHT_EDGE_SHIFT - this.plainText().minecraftLength)
-
-/**
- * Appends a component with right justification
- * @param component the component to append
- */
-fun Component.rightJustify(component: Component): Component = this.shiftToRightGuiEdge().append(component.withLeftShift())
-
-fun Component.rightJustify(component: Component, shift: Int): Component {
-	return this.append(
-		component.withShift(
-			RIGHT_EDGE_SHIFT - component.plainText().minecraftLength - this.plainText().minecraftLength + shift
-		)
-	)
-}
-
-/**
- *
- */
-fun Component.centerJustify(component: Component): Component = this.shiftRight(
-	(DEFAULT_GUI_WIDTH / 2 - component.plainText().minecraftLength / 2) - this.plainText().minecraftLength
-).append(component)
 
 /**
  * Add a downward shift to the entire Component
  * @param shift number of pixels to shift between 1 and 110
  */
-fun Component.shiftDown(shift: Int): Component = if (shift in 1..110) {
-	this.font(yFontKey(shift.coerceIn(1..110)))
+fun Component.shiftDown(shift: Int): Component = if (shift in SHIFT_DOWN_MIN..SHIFT_DOWN_MAX) {
+	this.font(yFontKey(shift))
 } else this
 
 /**
- * Add a downward shift to the entire Component equivalent to the next line
- */
-fun Component.shiftToLine(line: Int): Component = this.shiftDown(line * TEXT_HEIGHT)
-
-/**
  * Add a downward shift to the entire Component equivalent to the next line, plus some offset
+ * @param line number of lines to shift down
+ * @param shift number of additional pixels to shift down
  */
-fun Component.shiftToLine(line: Int, shift: Int): Component = this.shiftDown((line + 1) * TEXT_HEIGHT + shift)
+fun Component.shiftToLine(line: Int, shift: Int = 0): Component = this.shiftDown((line + 1) * TEXT_HEIGHT + shift)
 
 /**
  * Display a custom GUI background. Assumes that the background is the same width as the Minecraft GUI (176 pixels)
  * @param backgroundChar the character representing the background to display
  */
 fun customGuiBackground(backgroundChar: Char) =
-	newLeftShift(8).append(text(backgroundChar).color(WHITE).font(SPECIAL_FONT_KEY)).shiftLeft(DEFAULT_GUI_WIDTH)
+	leftShift(GUI_MARGIN).append(text(backgroundChar).color(WHITE).font(SPECIAL_FONT_KEY))
+		.append(leftShift(DEFAULT_GUI_WIDTH))
 
 /**
  * Set the custom GUI header
  * @param header the title of the GUI to be displayed
  */
-fun customGuiHeader(header: String) = ofChildren(text(header), newLeftShift(header.minecraftLength))
+fun customGuiHeader(header: String) = ofChildren(text(header), leftShift(header.minecraftLength))
 
 //</editor-fold>
