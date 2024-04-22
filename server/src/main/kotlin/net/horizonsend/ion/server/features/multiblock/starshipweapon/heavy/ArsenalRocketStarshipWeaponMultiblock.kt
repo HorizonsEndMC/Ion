@@ -26,83 +26,89 @@ sealed class VerticalArsenalStarshipWeaponMultiblock : ArsenalRocketStarshipWeap
 	override fun MultiblockShape.buildStructure() {
 		val yFactor = getYFactor()
 
-		z(-1) {
-			y(+0 * yFactor) {
-				x(+1).anyStairs()
-				x(0).noteBlock()
+		y(0*yFactor){
+			z(+0){
 				x(-1).anyStairs()
+				x(0).noteBlock()
+				x(+1).anyStairs()
 			}
-			y(1 * yFactor) {
+			z(1){
+				x(-1).ironBlock()
 				x(0).sponge()
+				x(+1).ironBlock()
 			}
-			y(2 * yFactor) {
-				x(0).titaniumBlock()
-			}
-			y(3 * yFactor) {
-				x(0).titaniumBlock()
-			}
-			y(4 * yFactor) {
-				x(0).titaniumBlock()
-			}
-			y(5 * yFactor) {
+			z(2){
 				x(-1).anyStairs()
 				x(0).ironBlock()
 				x(1).anyStairs()
 			}
 		}
-		z(0) {
-			y(0 * yFactor) {
-				x(1).ironBlock()
+		y(1*yFactor){
+			z(0){
 				x(0).sponge()
-				x(-1).ironBlock()
 			}
-			y(1 * yFactor) {
+			z(1){
+				x(-1).sponge()
 				x(0).sponge()
 				x(1).sponge()
-				x(-1).sponge()
 			}
-			y(2 * yFactor) {
+			z(2){
 				x(0).sponge()
+			}
+		}
+		y(2*yFactor){
+			z(0){
+				x(0).titaniumBlock()
+			}
+			z(1){
 				x(-1).titaniumBlock()
+				x(0).sponge()
 				x(1).titaniumBlock()
 			}
-			y(3 * yFactor) {
-				x(0).sponge()
+			z(2){
+				x(0).titaniumBlock()
+			}
+		}
+		y(3*yFactor){
+			z(0){
+				x(0).titaniumBlock()
+			}
+			z(1){
 				x(-1).titaniumBlock()
+				x(0).sponge()
 				x(1).titaniumBlock()
 			}
-			y(4 * yFactor) {
+			z(2){
+				x(0).titaniumBlock()
+			}
+		}
+		y(4*yFactor){
+			z(0){
+				x(0).titaniumBlock()
+			}
+			z(1){
+				x(-1).titaniumBlock()
 				x(0).dispenser()
-				x(-1).titaniumBlock()
 				x(1).titaniumBlock()
 			}
-			y(5 * yFactor) {
+			z(2){
+				x(0).titaniumBlock()
+			}
+		}
+		y(5*yFactor){
+			z(0){
+				x(-1).anyStairs()
+				x(0).ironBlock()
+				x(1).anyStairs()
+			}
+			z(1){
 				x(-1).ironBlock()
 				x(1).ironBlock()
 			}
-		}
-		z(1) {
-			y(0 * yFactor) {
-				x(1).anyStairs()
-				x(0).ironBlock()
+			z(2){
 				x(-1).anyStairs()
-			}
-			y(1 * yFactor) {
-				x(0).sponge()
-			}
-			y(2 * yFactor) {
-				x(0).titaniumBlock()
-			}
-			y(3 * yFactor) {
-				x(0).titaniumBlock()
-			}
-			y(4 * yFactor) {
-				x(0).titaniumBlock()
-			}
-			y(5 * yFactor) {
-				x(1).anyStairs()
 				x(0).ironBlock()
-				x(-1).anyStairs()
+				x(1).anyStairs()
 			}
 		}
 	}
