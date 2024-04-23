@@ -1,6 +1,6 @@
-package net.horizonsend.ion.server.features.screens.listeners
+package net.horizonsend.ion.server.features.gui.listeners
 
-import net.horizonsend.ion.server.features.screens.ScreenManager.isInScreen
+import net.horizonsend.ion.server.features.gui.ScreenManager.isInScreen
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
