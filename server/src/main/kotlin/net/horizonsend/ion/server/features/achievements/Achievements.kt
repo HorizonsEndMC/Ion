@@ -76,7 +76,7 @@ object Achievements {
 		return gui.build()
 	}
 
-	fun createAchievementText(player: Player, gui: PagedGui<Item>): Component {
+	fun createAchievementText(player: Player, gui: PagedGui<*>): Component {
 
 		val obtainedAchievements = SLPlayer[player.name]?.achievements?.map { Achievement.valueOf(it) }?.toList() ?: listOf()
 		val currentPage = gui.currentPage
