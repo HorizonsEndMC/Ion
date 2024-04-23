@@ -10,7 +10,9 @@ import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.Resour
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.FurnaceMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.ProcessingMultiblockRecipe
+import net.horizonsend.ion.server.features.multiblock.crafting.result.ActionResult
 import net.horizonsend.ion.server.features.multiblock.crafting.result.ItemResult
+import net.horizonsend.ion.server.features.multiblock.crafting.result.MultiRecipeResult
 import net.horizonsend.ion.server.features.multiblock.crafting.result.ProgressItemResult
 import net.horizonsend.ion.server.features.multiblock.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.CircuitfabMultiblock
@@ -20,6 +22,7 @@ import net.horizonsend.ion.server.features.multiblock.industry.GasFurnaceMultibl
 import net.horizonsend.ion.server.features.multiblock.industry.PlatePressMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -33,7 +36,17 @@ object MultiblockRecipes : IonServerComponent() {
 	val URANIUM_ENRICHMENT = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = CentrifugeMultiblock,
 		smelting = ConsumedItemIngredient(CustomItems.URANIUM, 1),
-		result = ItemResult(CustomItems.ENRICHED_URANIUM),
+		result = MultiRecipeResult(
+			ItemResult(CustomItems.ENRICHED_URANIUM),
+			ActionResult { _: MultiblockRecipe<*>, _: Inventory, sign: Sign ->
+				sign.world.playSound(
+					sign.location,
+					Sound.ENTITY_ENDER_DRAGON_DEATH,
+					1.0f,
+					1.0f
+				)
+			}
+		),
 		resources = listOf(power(100)),
 	))
 
