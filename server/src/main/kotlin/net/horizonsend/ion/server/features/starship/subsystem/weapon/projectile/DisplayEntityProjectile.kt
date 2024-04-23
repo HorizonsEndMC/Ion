@@ -1,9 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import com.mojang.math.Transformation
-import io.netty.buffer.Unpooled
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
-import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
@@ -22,24 +20,23 @@ interface DisplayEntityProjectile {
 
 	val originLocation: Location //The position where the displayEntity was spawned, this is used in the translation maths
 
-	var oldLocation: Location
-
 	var scale: Vector3f
 
 	fun updateDisplayEntity(newLocation: Location, velocity: Vector) {
 		for (player in Bukkit.getServer().onlinePlayers.filter { it.world == newLocation.world }) {
-			val displayEntity = displayEntities[player as CraftPlayer] ?: continue
-			//if (player.location.distance(Location(newLocation.world ,displayEntity.x, displayEntity.y, displayEntity.y)) > 100.0){
-			//	val buf = FriendlyByteBuf(Unpooled.buffer())
-			//	buf.writeVarInt(displayEntity.id)
-			//	buf.writeDouble(newLocation.x)
-			//	buf.writeDouble(newLocation.y)
-			//	buf.writeDouble(newLocation.z)
-			//	buf.writeBoolean(false)
-			//	val teleportEntityPacket = ClientboundTeleportEntityPacket(buf)
-			//	player.handle.connection.send(teleportEntityPacket)
-			//	displayEntity.entityData.refresh(player.handle)
-			//}
+			//if the location of the projectile to the player exceeds 160, we remove it
+			if (newLocation.distance(player.location) > Bukkit.getServer().viewDistance*16) {
+				destroyDisplayEntity(player)
+				continue
+			}
+
+			val displayEntity = displayEntities[player as CraftPlayer] ?: makeDisplayEntity(player) ?: continue
+
+			if (player.location.distance(Vector(displayEntity.x, displayEntity.y, displayEntity.z).toLocation(player.world)) > 100.0){
+				displayEntity.setPos(player.x,player.y,player.z)
+				val teleportEntityPacket = ClientboundTeleportEntityPacket(displayEntity)
+				player.handle.connection.send(teleportEntityPacket)
+			}
 
 			//We multiply the velocity to pretend we're interpolating for 3 ticks, to make it smooth
 			velocity.multiply(3)
@@ -67,12 +64,22 @@ interface DisplayEntityProjectile {
 		}
 	}
 
-	fun destroyDisplayEntity() {
+	fun destroyAllDisplayEntities() {
 		for ((player, displayEntity) in displayEntities) {
 			val packet = ClientboundRemoveEntitiesPacket(displayEntity?.id ?: return)
 			(player as CraftPlayer).handle.connection.send(packet)
 		}
 	}
 
+	fun destroyDisplayEntity(player: Player){
+		val displayEntity = displayEntities[player]
+		val packet = ClientboundRemoveEntitiesPacket(displayEntity?.id ?: return)
+		displayEntities.remove(player)
+		(player as CraftPlayer).handle.connection.send(packet)
+	}
+
 	fun makeDisplayEntities() {}
+
+	fun makeDisplayEntity(player: Player): Display.ItemDisplay? { return null}
+
 }
