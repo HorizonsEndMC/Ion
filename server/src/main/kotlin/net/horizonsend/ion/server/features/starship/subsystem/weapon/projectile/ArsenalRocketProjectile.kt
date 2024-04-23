@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
@@ -48,11 +47,9 @@ class ArsenalRocketProjectile(
 	override val soundName: String = balancing.soundName
 	override var displayEntities: MutableMap<Player, ItemDisplay?> = mutableMapOf()
 	override val originLocation: Location = loc
-	override var oldLocation: Location = originLocation
 	private var age: Int = 0 //Ticks
 	private var initialVelocity = this.dir
 	private var hasSwitchedToNormalDirection = false
-	private var targetedPosition: Location? = null
 	override var scale: Vector3f = Vector3f(3f,3f,3f)
 	override fun tick() {
 		delta = (System.nanoTime() - lastTick) / 1_000_000_000.0 // Convert to seconds
@@ -71,7 +68,7 @@ class ArsenalRocketProjectile(
 			}
 			val predictedNewLoc = loc.clone().add(0.0, delta * speed/2*yFactor, 0.0)
 			if (!predictedNewLoc.isChunkLoaded) {
-				destroyDisplayEntity()
+				destroyAllDisplayEntities()
 				return
 			}
 			//We're not doing any impact stuff as we dont want the projectile to be able to hit stuff at this stage
@@ -84,7 +81,7 @@ class ArsenalRocketProjectile(
 			distance += travel
 
 			if (distance >= range) {
-				destroyDisplayEntity()
+				destroyAllDisplayEntities()
 				return
 			}
 
@@ -132,7 +129,7 @@ class ArsenalRocketProjectile(
 		}
 		//lerp-to code
 		//Desired vector is the vector straight to the target
-		val desiredVector = targetedPosition?.clone()?.subtract(loc.clone())?.toVector() ?: return
+		val desiredVector = starship?.targetedPosition?.clone()?.subtract(loc.clone())?.toVector() ?: return
 		desiredVector.normalize()
 		//this is the current direction of the projectile, written as a Vector3f
 		val dirAsVec3f = dir.clone().toVector3f().normalize()
@@ -145,8 +142,8 @@ class ArsenalRocketProjectile(
 	}
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		newLocation.world.spawnParticle(Particle.REDSTONE, oldLocation, 2, DustOptions(Color.BLACK, 3f))
-		newLocation.world.spawnParticle(Particle.SOUL_FIRE_FLAME, oldLocation, 3)
+		newLocation.world.spawnParticle(Particle.REDSTONE, newLocation, 2, DustOptions(Color.BLACK, 3f))
+		newLocation.world.spawnParticle(Particle.SOUL_FIRE_FLAME, newLocation, 3)
 		updateDisplayEntity(newLocation, dir.clone().normalize().multiply(speed))
 	}
 
@@ -155,14 +152,14 @@ class ArsenalRocketProjectile(
 		if (starship.targetedPosition == null){
 			starship.audiences().forEach { it.userError("Error: Arsenal Missiles need a targeted position to fire, do /targetposition x y z to target a Position!") }
 			return
-		} else this.targetedPosition = starship.targetedPosition
-		initialVelocity = this.targetedPosition?.clone()?.subtract(loc.clone())?.toVector()?.normalize() ?: return
+		}
+		initialVelocity = starship.targetedPosition?.clone()?.subtract(loc.clone())?.toVector()?.normalize() ?: return
 		makeDisplayEntities()
 		super.fire()
 	}
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
-		destroyDisplayEntity()
+		destroyAllDisplayEntities()
 		newLoc.world.spawnParticle(Particle.EXPLOSION_HUGE, newLoc, 4)
 		newLoc.world.spawnParticle(Particle.FLAME, newLoc, 10)
 		newLoc.world.spawnParticle(Particle.FLASH, newLoc, 3)
@@ -194,6 +191,32 @@ class ArsenalRocketProjectile(
 			connection.send(ClientboundAddEntityPacket(itemDisplay))
 			itemDisplay.entityData.refresh(player.handle)
 		}
+	}
+
+	override fun makeDisplayEntity(player: Player): ItemDisplay? {
+		val nmsPlayer = (player as CraftPlayer)
+		val connection = nmsPlayer.handle.connection
+		val itemDisplay = ItemDisplay(EntityType.ITEM_DISPLAY, nmsPlayer.minecraft.level()).apply {
+			this.itemStack = CraftItemStack.asNMSCopy(CustomItems.ARSENAL_MISSILE_ON.constructItemStack())
+			setPos(nmsPlayer.location.toBlockPos().center)
+			val translation = originLocation.toVector().subtract(Vector(this.x, this.y, this.z)).toVector3f()
+			val transformation = Transformation(
+				translation,
+				Quaternionf(),
+				Vector3f(3.0f, 3.0f, 3.0f),
+				Quaternionf()
+			) //Set the new transformation
+			this.setTransformation(
+				transformation
+			)
+			this.transformationInterpolationDuration = 0
+			this.viewRange = 1000f
+		}
+		displayEntities[player] = itemDisplay
+
+		connection.send(ClientboundAddEntityPacket(itemDisplay))
+		itemDisplay.entityData.refresh(player.handle)
+		return itemDisplay
 	}
 }
 
