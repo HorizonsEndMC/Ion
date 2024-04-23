@@ -117,10 +117,12 @@ class ArsenalRocketProjectile(
 			distance += travel
 
 			if (impacted) {
+				destroyAllDisplayEntities()
 				return
 			}
 
 			if (distance >= range) {
+				destroyAllDisplayEntities()
 				return
 			}
 
@@ -159,7 +161,6 @@ class ArsenalRocketProjectile(
 	}
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
-		destroyAllDisplayEntities()
 		newLoc.world.spawnParticle(Particle.EXPLOSION_HUGE, newLoc, 4)
 		newLoc.world.spawnParticle(Particle.FLAME, newLoc, 10)
 		newLoc.world.spawnParticle(Particle.FLASH, newLoc, 3)
