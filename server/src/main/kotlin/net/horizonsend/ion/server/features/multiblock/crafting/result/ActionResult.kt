@@ -4,8 +4,7 @@ import net.horizonsend.ion.server.features.multiblock.crafting.recipe.Multiblock
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 
-@FunctionalInterface
-interface ActionResult : MultiblockRecipeResult {
+fun interface ActionResult : MultiblockRecipeResult {
 	override fun canFit(recipe: MultiblockRecipe<*>, craftingInventory: Inventory, sign: Sign): Boolean {
 		return true
 	}
