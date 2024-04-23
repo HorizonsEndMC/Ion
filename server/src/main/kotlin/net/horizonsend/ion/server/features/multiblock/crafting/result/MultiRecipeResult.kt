@@ -8,13 +8,17 @@ import org.bukkit.inventory.Inventory
  * Wrap multiple result actions
  **/
 class MultiRecipeResult(
-	vararg val recipes: MultiblockRecipeResult
+	val main: MultiblockRecipeResult,
+	vararg others: ActionResult
 ) : MultiblockRecipeResult {
+	val actions = others.toList()
+
 	override fun canFit(recipe: MultiblockRecipe<*>, craftingInventory: Inventory, sign: Sign): Boolean {
-		return recipes.all { it.canFit(recipe, craftingInventory, sign) }
+		return main.canFit(recipe, craftingInventory, sign)
 	}
 
 	override fun execute(recipe: MultiblockRecipe<*>, craftingInventory: Inventory, sign: Sign) {
-		recipes.forEach { it.execute(recipe, craftingInventory, sign) }
+		main.execute(recipe, craftingInventory, sign)
+		actions.forEach { it.execute(recipe, craftingInventory, sign) }
 	}
 }
