@@ -5,8 +5,8 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.CHETHERITE_CHARACTER
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.screens.GuiText
-import net.horizonsend.ion.server.features.screens.TextScreen
+import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.TextScreen
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
@@ -41,7 +41,7 @@ class AchievementsScreen private constructor(
 	override fun handleInventoryClick(event: InventoryClickEvent) {
 		when (event.slot) {
 			BOTTOM_LEFT_CORNER_INVENTORY_INDEX -> if (pageNumber > 0) pageNumber-- else return
-			BOTTOM_RIGHT_CORNER_INVENTORY_INDEX -> if (pageNumber < MAX_PAGES) pageNumber++ else return
+			BOTTOM_RIGHT_CORNER_INVENTORY_INDEX -> if (pageNumber < MAX_PAGES - 1) pageNumber++ else return
 			else -> return
 		}
 
@@ -114,7 +114,7 @@ class AchievementsScreen private constructor(
 			inventory.setItem(BOTTOM_LEFT_CORNER_INVENTORY_INDEX, null)
 		}
 
-		if (pageNumber < MAX_PAGES) {
+		if (pageNumber < MAX_PAGES - 1) {
 			if (inventory.getItem(BOTTOM_RIGHT_CORNER_INVENTORY_INDEX) == null) {
 				val leftArrow = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK)
 				leftArrow.editMeta {
@@ -130,7 +130,7 @@ class AchievementsScreen private constructor(
 	}
 
 	companion object {
-		private const val MAX_PAGES = 8
+		private const val MAX_PAGES = 9
 		private const val INVENTORY_SLOTS_PER_ROW = 9
 		private const val ACHIEVEMENTS_PER_PAGE = 5
 		private const val BOTTOM_LEFT_CORNER_INVENTORY_INDEX = 45

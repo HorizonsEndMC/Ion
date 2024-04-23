@@ -8,13 +8,15 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
+import net.horizonsend.ion.server.features.gui.ScreenManager.openScreen
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.pull
+import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
+import xyz.xenondevs.invui.window.Window
 
 @CommandAlias("achievements")
 @Suppress("Unused")
@@ -57,5 +59,17 @@ object AchievementsCommand : SLCommand() {
 		SLPlayer.updateById(playerData._id, pull(SLPlayer::achievements, achievement.name))
 
 		sender.success("Took achievement ${achievement.name} from $target.")
+	}
+
+	@Subcommand("test")
+	private fun createAchievementGui(player: Player) {
+		val gui = Achievements.createAchievementGui()
+		val window = Window.single()
+			.setViewer(player)
+			.setTitle(AdventureComponentWrapper(Achievements.createAchievementText(player, gui)))
+			.setGui(gui)
+			.build()
+
+		window.open()
 	}
 }

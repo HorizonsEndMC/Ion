@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.screens
+package net.horizonsend.ion.server.features.gui
 
 import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHAR
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH

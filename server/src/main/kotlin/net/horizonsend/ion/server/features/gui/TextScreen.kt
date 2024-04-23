@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.screens
+package net.horizonsend.ion.server.features.gui
 
 import net.kyori.adventure.text.TextComponent
 import org.bukkit.Bukkit
