@@ -19,8 +19,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.isWater
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.optional
@@ -240,6 +238,7 @@ object Space : IonServerComponent() {
 			val star = CachedStar(
 				databaseId = starId,
 				name = starName,
+				spaceWorldName = spaceWorldName,
 				spaceWorldName = spaceWorldName,
 				location = Vec3i(starX, starY, starZ),
 				size = starSize,
