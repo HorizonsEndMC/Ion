@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.debugHighlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded

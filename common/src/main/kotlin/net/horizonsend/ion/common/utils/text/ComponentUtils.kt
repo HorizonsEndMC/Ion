@@ -73,8 +73,6 @@ fun Iterable<ComponentLike>.join(separator: Component? = text(", ")): Component 
 	return builder.build()
 }
 
-fun text(string: String, decoration: TextDecoration): Component = text(string, style(decoration))
-
 /** Analogue of Any#toString */
 fun Any.toComponent(color: TextColor = WHITE, vararg decorations: TextDecoration): Component = text(toString(), color, *decorations)
 
