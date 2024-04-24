@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
@@ -56,7 +57,7 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		val world = starship.world
 		val blocks = starship.blocks
 
-		if (SpaceWorlds.contains(world)) {
+		if (world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			val random = Random(blocks.hashCode())
 
 			velocity.setX(random.nextDouble(-1.0, 1.0))

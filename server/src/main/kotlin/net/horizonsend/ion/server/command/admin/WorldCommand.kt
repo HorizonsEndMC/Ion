@@ -2,8 +2,10 @@ package net.horizonsend.ion.server.command.admin
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.bracketed
@@ -13,7 +15,6 @@ import net.horizonsend.ion.common.utils.text.formatSpacePrefix
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.environments
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -23,6 +24,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 
@@ -38,7 +40,6 @@ object WorldCommand : SLCommand() {
 		else return sender.userError("World ${world.name} already had the flag $flag")
 
 		ionWorld.saveConfiguration()
-		SpaceWorlds.cache.invalidate(world)
 	}
 
 	@Subcommand("flag remove")
@@ -50,7 +51,6 @@ object WorldCommand : SLCommand() {
 		else return sender.userError("World ${world.name} did not have flag $flag")
 
 		ionWorld.saveConfiguration()
-		SpaceWorlds.cache.invalidate(world)
 	}
 
 	@Subcommand("flag list")
@@ -92,7 +92,6 @@ object WorldCommand : SLCommand() {
 		else return sender.userError("World ${world.name} already had the flag $environment")
 
 		ionWorld.saveConfiguration()
-		SpaceWorlds.cache.invalidate(world)
 	}
 
 	@Subcommand("environment remove")
@@ -104,7 +103,6 @@ object WorldCommand : SLCommand() {
 		else return sender.userError("World ${world.name} did not have flag $environment")
 
 		ionWorld.saveConfiguration()
-		SpaceWorlds.cache.invalidate(world)
 	}
 
 	@Subcommand("environment list")
@@ -160,7 +158,6 @@ object WorldCommand : SLCommand() {
 				ionWorld.configuration.environments.add(Environment.VACUUM)
 
 				ionWorld.saveConfiguration()
-				SpaceWorlds.cache.invalidate(world)
 			}
 		},
 		HYPERSPACE {
@@ -179,5 +176,17 @@ object WorldCommand : SLCommand() {
 		;
 
 		abstract fun setup(world: World)
+	}
+
+	@Subcommand("list")
+	@Description("List worlds with the specified flag")
+	fun onList(sender: CommandSender, flag: WorldFlag) {
+		sender.information("$flag Worlds: " + (
+			Bukkit.getWorlds()
+				.filter { it.ion.hasFlag(flag) }
+				.takeIf { it.isNotEmpty() }
+				?.joinToString { it.name }
+				?: "None"
+			))
 	}
 }
