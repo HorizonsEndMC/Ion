@@ -4,12 +4,11 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongIterator
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.d
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
-import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -56,7 +55,7 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		val world = starship.world
 		val blocks = starship.blocks
 
-		if (SpaceWorlds.contains(world)) {
+		if (world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			val random = Random(blocks.hashCode())
 
 			velocity.setX(random.nextDouble(-1.0, 1.0))

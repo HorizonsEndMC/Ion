@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.misc
+package net.horizonsend.ion.server.features.multiblock.type.misc
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape

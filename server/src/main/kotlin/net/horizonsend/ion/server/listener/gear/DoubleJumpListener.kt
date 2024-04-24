@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.listener.gear
 
-import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.FluidCollisionMode
 import org.bukkit.GameMode
@@ -32,7 +33,7 @@ object DoubleJumpListener : SLEventListener() {
 
 		val player = event.player
 
-		if (player.gameMode != GameMode.SURVIVAL || SpaceWorlds.contains(player.world)) {
+		if (player.gameMode != GameMode.SURVIVAL || player.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			return
 		}
 

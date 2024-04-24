@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -25,6 +24,8 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipTrans
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -79,7 +80,7 @@ object Hyperspace : IonServerComponent() {
 		check(hyperdrive.isIntact()) { "Hyperdrive @ ${hyperdrive.pos} damaged" }
 
 		val spaceWorld = starship.world
-		check(SpaceWorlds.contains(spaceWorld)) { "${spaceWorld.name} is not a space world" }
+		check(spaceWorld.ion.hasFlag(WorldFlag.SPACE_WORLD)) { "${spaceWorld.name} is not a space world" }
 
 		val hyperspaceWorld = getHyperspaceWorld(spaceWorld)
 		checkNotNull(hyperspaceWorld) { "${spaceWorld.name} does not have a hyperspace world" }

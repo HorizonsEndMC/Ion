@@ -7,9 +7,9 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.ProjectileBalancing
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.alongVector
@@ -192,7 +192,7 @@ class RayTracedParticleProjectile(
 		location.world.players.forEach {
 			if ((it !in nearMissPlayers) && (location.distance(it.location) < whizzDistance)) {
 				var pitchFactor = 1.0f
-				if (SpaceWorlds.contains(it.world)) pitchFactor = 0.5f
+				if (it.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) pitchFactor = 0.5f
 				it.playSound(sound(key(soundWhizz), Source.PLAYER, 1.0f, pitchFactor))
 				nearMissPlayers.add(it)
 			}

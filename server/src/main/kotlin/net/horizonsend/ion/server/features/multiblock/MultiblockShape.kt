@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BATTLECRUI
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_CASING
-import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10.buildStructure
+import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield10.buildStructure
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.Wires
 import net.horizonsend.ion.server.features.transport.pipe.Pipes

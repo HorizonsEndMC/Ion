@@ -33,13 +33,10 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
-import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
-import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Interdiction
@@ -63,6 +60,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsys
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
@@ -303,11 +302,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		val currentWorld = starship.world
-		failIf(!SpaceWorlds.contains(currentWorld)) {
+		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			"Not a space world!"
 		}
 
-		failIf(!SpaceWorlds.contains(destinationWorld)) {
+		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			"Not a space world!"
 		}
 

@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.drills
 
 import net.horizonsend.ion.common.extensions.alertSubtitle
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
@@ -11,7 +10,8 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.DRILL_USER
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -251,7 +251,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			return
 		}
 
-		val inSpace = SpaceWorlds.contains(furnace.world) && !furnace.world.name.contains("plots", ignoreCase = true)
+		val inSpace = furnace.world.ion.hasFlag(WorldFlag.SPACE_WORLD)
 
 		event.isBurning = false
 		event.burnTime = if (!inSpace) 5 else 20

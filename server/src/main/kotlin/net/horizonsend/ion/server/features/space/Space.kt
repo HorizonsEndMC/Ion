@@ -8,6 +8,8 @@ import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.isWater
@@ -63,7 +65,7 @@ object Space : IonServerComponent() {
 		listen<BlockBreakEvent> { event ->
 			val world = event.block.world
 
-			if (!SpaceWorlds.contains(world)) return@listen
+			if (!world.ion.hasFlag(WorldFlag.SPACE_WORLD)) return@listen
 
 			val x = event.block.x.toDouble()
 			val y = event.block.y.toDouble()
@@ -96,7 +98,7 @@ object Space : IonServerComponent() {
 		}
 
 		listen<BlockFadeEvent> { event ->
-			if (!SpaceWorlds.contains(event.block.world)) return@listen
+			if (!event.block.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) return@listen
 
 			if (event.newState.type.isWater) event.isCancelled = true
 		}

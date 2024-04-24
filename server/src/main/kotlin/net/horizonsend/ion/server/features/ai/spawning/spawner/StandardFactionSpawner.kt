@@ -10,12 +10,13 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction
 import net.horizonsend.ion.server.features.ai.module.misc.FactionManagerModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestTargetingModule
 import net.horizonsend.ion.server.features.ai.spawning.isSystemOccupied
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandom
@@ -89,7 +90,7 @@ class StandardFactionSpawner(
 	}
 
 	private fun findSpawnLocationNearPlayer(
-		playerFilter: (Player) -> Boolean = { !it.hasProtection() && SpaceWorlds.contains(it.world) }
+		playerFilter: (Player) -> Boolean = { !it.hasProtection() && it.world.ion.hasFlag(WorldFlag.SPACE_WORLD) }
 	): Pair<WorldSettings, Location>?  {
 		// Get a random world based on the weight in the config
 		val occupiedWorlds = worlds.filter { isSystemOccupied(it.getWorld()) }

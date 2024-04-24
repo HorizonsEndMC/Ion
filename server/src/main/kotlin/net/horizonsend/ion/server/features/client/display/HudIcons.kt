@@ -11,9 +11,10 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -515,7 +516,7 @@ object HudIcons : IonServerComponent() {
      */
     private fun renderEntities(player: Player) {
         // Only render planets if the player is in a space world
-        if (!SpaceWorlds.contains(player.world)) return
+        if (!player.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) return
 
         val planetList = Space.getPlanets().filter { it.spaceWorld == player.world }
         val playerDisplayEntities = ClientDisplayEntities[player.uniqueId] ?: return

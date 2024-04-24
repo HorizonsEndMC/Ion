@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.crafting.result
 
-import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.MultiblockRecipe
 import org.bukkit.Sound
 import org.bukkit.SoundCategory

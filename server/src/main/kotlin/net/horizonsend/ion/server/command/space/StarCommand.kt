@@ -14,7 +14,8 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import org.bukkit.Material
@@ -43,7 +44,7 @@ object StarCommand : net.horizonsend.ion.server.command.SLCommand() {
 		z: Int,
 		size: Double
 	) {
-		if (!SpaceWorlds.contains(spaceWorld)) {
+		if (!spaceWorld.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			throw InvalidCommandArgument("Not a space world!")
 		}
 

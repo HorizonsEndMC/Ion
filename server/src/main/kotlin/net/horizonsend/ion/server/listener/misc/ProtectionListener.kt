@@ -3,11 +3,12 @@ package net.horizonsend.ion.server.listener.misc
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.utils.lpHasPermission
-import net.horizonsend.ion.server.command.nations.SpaceStationCommand
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -163,7 +164,7 @@ object ProtectionListener : SLEventListener() {
 	}
 
 	private fun isLockedShipDenied(player: Player, location: Location): Boolean {
-		if (SpaceStationCommand.disallowedWorlds.contains(location.world.name.lowercase())) return false
+		if (location.world.ion.hasFlag(WorldFlag.NO_SHIP_LOCKS)) return false
 		if (player.uniqueId.lpHasPermission("ion.bypass-locks")) return false
 
 		val world = location.world

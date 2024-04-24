@@ -9,8 +9,8 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Energy
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.objects.AmmunitionHoldingItem
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -220,7 +220,7 @@ abstract class Blaster<T : Balancing>(
 			var pitchFactor = 1.0
 
 			// No sounds in space (somewhat)
-			if (SpaceWorlds.contains(livingEntity.world)) {
+			if (livingEntity.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 				distanceFactor *= 0.5
 				volumeFactor *= 0.25
 				pitchFactor *= 0.5
