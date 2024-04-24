@@ -4,6 +4,7 @@ import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.binary
 import net.horizonsend.ion.common.database.boolean
+import net.horizonsend.ion.common.database.cache.nations.AbstractPlayerCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
@@ -21,7 +22,6 @@ import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.unpackTerritoryPolygon
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
 import java.awt.Polygon
 import java.util.concurrent.ConcurrentHashMap
@@ -92,93 +92,108 @@ class RegionTerritory(territory: Territory) :
 		val settlement = settlement
 		val npcOwner = npcOwner
 
-		when {
+		return when {
 			// if it's a nation outpost
-			nation != null -> {
-				val playerNation: Oid<Nation>? = playerData.nationOid
-
-				/*                // if they're at least an ally they can build
-												if (playerNation != null && RelationCache[playerNation, nation] >= NationRelation.Level.ALLY) {
-														return null
-												}*/
-
-				// allow nation members
-				if (playerNation == nation) {
-					return null
-				}
-
-				return "$name is claimed by ${ NationCache[nation].name }".intern()
-			}
+			nation != null -> handleNationClaim(playerData, nation)
 
 			// if it's a settlement
-			settlement != null -> {
-				val playerSettlement: Oid<Settlement>? = playerData.settlementOid
-
-				val cachedSettlement = SettlementCache[settlement]
-
-				val minBuildAccess = cachedSettlement.minBuildAccess ?: Settlement.ForeignRelation.SETTLEMENT_MEMBER
-
-				// anyone can build o_o
-				if (minBuildAccess == Settlement.ForeignRelation.NONE) {
-					return null
-				}
-
-				if (cachedSettlement.trustedPlayers.contains(player.slPlayerId)) return null
-
-				// other than that ^, building in a settlement requires being in a settlement
-				if (playerSettlement != null) {
-					// if they're a member of the settlement...
-					if (playerSettlement == settlement) {
-						// if it's set to settlement members+, they can build
-						if (minBuildAccess <= Settlement.ForeignRelation.SETTLEMENT_MEMBER) {
-							return null
-						}
-
-						if (SettlementCache[settlement].leader == player.slPlayerId) {
-							return null
-						}
-
-						if (SettlementRole.hasPermission(player.slPlayerId, SettlementRole.Permission.BUILD)) {
-							return null
-						}
-
-						return "You don't have the BUILD permission and minbuildaccess is STRICT!"
-					}
-
-					if (cachedSettlement.trustedSettlements.contains(playerSettlement)) return null
-
-					val playerNation: Oid<Nation>? = playerData.nationOid
-
-					// if they're in a nation, and min build access is nation member or ally there's a chance they can build
-					if (playerNation != null && minBuildAccess <= Settlement.ForeignRelation.NATION_MEMBER) {
-						val settlementNation = SettlementCache[settlement].nation
-
-						if (cachedSettlement.trustedNations.contains(playerNation)) return null
-
-						// if it's nation access, they can build if they're the same nation
-						if (minBuildAccess == Settlement.ForeignRelation.NATION_MEMBER && settlementNation == playerNation) {
-							return null
-						}
-
-						// if the min build access is ally and they're at least an ally, they can build
-						if (settlementNation?.let {
-							RelationCache[it, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal
-						} == true) return null
-
-					}
-				}
-
-				return "$name is claimed by the settlement ${SettlementCache[settlement].name}"
-			}
+			settlement != null -> handleSettlement(playerData, settlement)
 
 			// nobody can build in npc outposts without dutymode bypass
-			npcOwner != null -> {
-				return "$name is claimed as the NPC outpost ${NPCTerritoryOwner.getName(npcOwner)}".intern()
-			}
+			npcOwner != null -> handleNPCOwner(npcOwner)
 
 			// if it's unclaimed, allow them to build
-			else -> return null
+			else -> null
 		}
+	}
+
+	private fun handleNationClaim(playerData: AbstractPlayerCache.PlayerData, nation: Oid<Nation>): String? {
+		val playerNation: Oid<Nation>? = playerData.nationOid
+
+		/*                // if they're at least an ally they can build
+										if (playerNation != null && RelationCache[playerNation, nation] >= NationRelation.Level.ALLY) {
+												return null
+										}*/
+
+		// allow nation members
+		if (playerNation == nation) {
+			return null
+		}
+
+		return "$name is claimed by ${ NationCache[nation].name }".intern()
+	}
+
+	private fun handleSettlement(playerData: AbstractPlayerCache.PlayerData, settlement: Oid<Settlement>): String? {
+		val territorySettlement = SettlementCache[settlement]
+
+		// Default is settlement member
+		val settlementBuildAccess = territorySettlement.minBuildAccess ?: Settlement.ForeignRelation.SETTLEMENT_MEMBER
+
+		// anyone can build o_o
+		if (settlementBuildAccess == Settlement.ForeignRelation.NONE) {
+			return null
+		}
+
+		// If specifically trusted
+		if (territorySettlement.trustedPlayers.contains(playerData.id)) {
+			return null
+		}
+		if (territorySettlement.trustedSettlements.contains(playerData.settlementOid)) {
+			return null
+		}
+		if (territorySettlement.trustedNations.contains(playerData.nationOid)) {
+			return null
+		}
+
+		// other than that ^, building in a settlement requires being in a settlement
+		val interactingPlayerSettlement: Oid<Settlement> = playerData.settlementOid ?: return "$name is claimed by the settlement ${SettlementCache[settlement].name}"
+
+		// if they're a member of the settlement...
+		if (interactingPlayerSettlement == settlement) {
+			// if it's set to settlement members+, they can build
+			if (settlementBuildAccess <= Settlement.ForeignRelation.SETTLEMENT_MEMBER) {
+				return null
+			}
+
+			if (SettlementCache[settlement].leader == playerData.id) {
+				return null
+			}
+
+			if (SettlementRole.hasPermission(playerData.id, SettlementRole.Permission.BUILD)) {
+				return null
+			}
+
+			return "You don't have the BUILD permission and minbuildaccess is STRICT!"
+		}
+
+		val playerNation: Oid<Nation>? = playerData.nationOid
+
+		// if they're in a nation, and min build access is nation member or ally there's a chance they can build
+		if (playerNation != null && settlementBuildAccess >= Settlement.ForeignRelation.ALLY) {
+			val settlementNation = SettlementCache[settlement].nation
+
+			if (territorySettlement.trustedNations.contains(playerNation)) {
+				return null
+			}
+
+			// if it's nation access, they can build if they're the same nation
+			if (settlementBuildAccess == Settlement.ForeignRelation.NATION_MEMBER && settlementNation == playerNation) {
+				return null
+			}
+
+			// if the min build access is ally, and they're at least an ally, they can build
+			if (settlementNation != null) {
+				if (RelationCache[settlementNation, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal) {
+					return null
+				}
+			}
+		}
+
+		return "$name is claimed by the settlement ${SettlementCache[settlement].name}"
+	}
+
+	private fun handleNPCOwner(npcTerritoryOwner: Oid<NPCTerritoryOwner>): String {
+		return "$name is claimed as the NPC outpost ${NPCTerritoryOwner.getName(npcTerritoryOwner)}".intern()
 	}
 
 	override fun toString(): String = "$name ($world@[$centerX,$centerZ])"
