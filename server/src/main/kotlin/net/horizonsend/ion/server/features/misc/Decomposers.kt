@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
@@ -13,6 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.add
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isAir
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import org.bukkit.Location
@@ -59,7 +59,7 @@ object Decomposers : IonServerComponent() {
 
 			if (length == 0 || width == 0 || height == 0) return event.player.userError("Decomposer has zero volume! Make sure the chiseled blocks extend to the right of the multiblock.")
 
-			if (offset > width) return event.player.userError("Decomposer empty!")
+//			if (offset > width) return event.player.userError("Decomposer empty!")
 
 			val task = DecomposeTask(
 				signLoc,
