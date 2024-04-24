@@ -58,6 +58,12 @@ abstract class SinkProvider(
 			}
 		},
 
+		CRUISER {
+			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
+				return CruiserSink(starship)
+			}
+		},
+
 		BATTLECRUISER {
 			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
 				return BattlecruiserSink(starship)

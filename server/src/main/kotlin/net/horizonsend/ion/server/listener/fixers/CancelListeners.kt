@@ -31,22 +31,22 @@ import org.bukkit.inventory.ItemStack
 
 class CancelListeners : SLEventListener() {
 	private val preventFormBlocks = enumSetOf(
-		Material.WHITE_CONCRETE_POWDER,
-		Material.ORANGE_CONCRETE_POWDER,
-		Material.MAGENTA_CONCRETE_POWDER,
-		Material.LIGHT_BLUE_CONCRETE_POWDER,
-		Material.YELLOW_CONCRETE_POWDER,
-		Material.LIME_CONCRETE_POWDER,
-		Material.PINK_CONCRETE_POWDER,
-		Material.GRAY_CONCRETE_POWDER,
-		Material.LIGHT_GRAY_CONCRETE_POWDER,
-		Material.CYAN_CONCRETE_POWDER,
-		Material.PURPLE_CONCRETE_POWDER,
-		Material.BLUE_CONCRETE_POWDER,
-		Material.BROWN_CONCRETE_POWDER,
-		Material.GREEN_CONCRETE_POWDER,
-		Material.RED_CONCRETE_POWDER,
-		Material.BLACK_CONCRETE_POWDER
+			Material.WHITE_CONCRETE_POWDER,
+			Material.ORANGE_CONCRETE_POWDER,
+			Material.MAGENTA_CONCRETE_POWDER,
+			Material.LIGHT_BLUE_CONCRETE_POWDER,
+			Material.YELLOW_CONCRETE_POWDER,
+			Material.LIME_CONCRETE_POWDER,
+			Material.PINK_CONCRETE_POWDER,
+			Material.GRAY_CONCRETE_POWDER,
+			Material.LIGHT_GRAY_CONCRETE_POWDER,
+			Material.CYAN_CONCRETE_POWDER,
+			Material.PURPLE_CONCRETE_POWDER,
+			Material.BLUE_CONCRETE_POWDER,
+			Material.BROWN_CONCRETE_POWDER,
+			Material.GREEN_CONCRETE_POWDER,
+			Material.RED_CONCRETE_POWDER,
+			Material.BLACK_CONCRETE_POWDER
 	)
 
 	@EventHandler
@@ -129,14 +129,14 @@ class CancelListeners : SLEventListener() {
 
 		// disable crafting if any item is a new CustomItem and the result is not a new or legacy CustomItem
 		if (event.inventory.matrix.any {
-			// any item is in the matrix and not a new custom item
-			it != null &&
-					it.customItem != null &&
-					// the result exists and is neither a new nor legacy CustomItem
-					event.inventory.result != null &&
-					event.inventory.result!!.customItem == null &&
-					CustomItems[event.inventory.result] == null
-			}) {
+					// any item is in the matrix and not a new custom item
+					it != null &&
+							it.customItem != null &&
+							// the result exists and is neither a new nor legacy CustomItem
+							event.inventory.result != null &&
+							event.inventory.result!!.customItem == null &&
+							CustomItems[event.inventory.result] == null
+				}) {
 			event.inventory.result = ItemStack(Material.AIR)
 		}
 	}
@@ -147,7 +147,7 @@ class CancelListeners : SLEventListener() {
 		// Really dumb solution for players being kicked due to "out of order chat messages"
 		if (event.reason.lowercase().contains("out-of-order")) {
 			event.player.userError(
-				"The server attempted to kick you for out-of-order chat messages. You may need to retry any recent commands."
+					"The server attempted to kick you for out-of-order chat messages. You may need to retry any recent commands."
 			)
 
 			event.isCancelled = true
@@ -164,14 +164,14 @@ class CancelListeners : SLEventListener() {
 	@EventHandler
 	fun onBlockPistonExtendEvent(event: BlockPistonExtendEvent) {
 		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK }) {
-            event.isCancelled = true
+			event.isCancelled = true
 		}
 	}
 
 	@EventHandler
 	fun onBlockPistonRetractEvent(event: BlockPistonRetractEvent) {
 		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK }) {
-            event.isCancelled = true
+			event.isCancelled = true
 		}
 	}
 
@@ -184,11 +184,11 @@ class CancelListeners : SLEventListener() {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: EntityExplodeEvent) {
-		event.blockList().removeAll { it.customBlock == CustomBlocks.REACTOR_CORE }
+		event.blockList().removeAll { it.customBlock == CustomBlocks.BC_REACTOR_CORE || it.customBlock == CustomBlocks.CRUISER_REACTOR_CORE }
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: BlockExplodeEvent) {
-		event.blockList().removeAll { it.customBlock == CustomBlocks.REACTOR_CORE }
+		event.blockList().removeAll { it.customBlock == CustomBlocks.BC_REACTOR_CORE || it.customBlock == CustomBlocks.CRUISER_REACTOR_CORE}
 	}
 }
