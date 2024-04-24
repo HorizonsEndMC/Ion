@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
 import net.horizonsend.ion.server.features.starship.subsystem.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.SupercapReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.BCReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.CruiserReactorSubsystem
 import java.util.LinkedList
 import kotlin.math.PI
 
@@ -247,10 +248,10 @@ data class StarshipTypeBalancing(
 				weapons = StarshipWeapons(
 						ionTurret = StarshipWeapons.StarshipWeapon(
 								canFire = true,
-								range = 500.0,
+								range = 400.0,
 								speed = 95.0,
 								areaShieldDamageMultiplier = 30.0,
-								starshipShieldDamageMultiplier = 2.5,
+								starshipShieldDamageMultiplier = 3.4,
 								particleThickness = 0.6,
 								explosionPower = 3.0f,
 								volume = 0,
@@ -300,6 +301,11 @@ data class StarshipTypeBalancing(
 								FuelTankSubsystem::class.java,
 								1,
 								"Cruisers require a fuel tank to pilot!"
+						),
+						RequiredSubsystemInfo(
+								CruiserReactorSubsystem::class.java,
+								1,
+								"Cruisers require a reactor to pilot!"
 						)
 				)
 		),
@@ -309,14 +315,14 @@ data class StarshipTypeBalancing(
 				interdictionRange = 4500,
 				hyperspaceRangeMultiplier = 2.5,
 				cruiseSpeedMultiplier = 0.88,
-				shieldPowerMultiplier = 1.50,
+				shieldPowerMultiplier = 1.60,
 				weapons = StarshipWeapons(
 						quadTurret = StarshipWeapons.StarshipWeapon(
 								canFire = true,
 								range = 500.0,
-								speed = 85.0,
+								speed = 90.0,
 								areaShieldDamageMultiplier = 6.0,
-								starshipShieldDamageMultiplier = 8.0,
+								starshipShieldDamageMultiplier = 7.8,
 								particleThickness = 0.6,
 								explosionPower = 5.5f,
 								volume = 0,
@@ -328,7 +334,7 @@ data class StarshipTypeBalancing(
 								angleRadiansVertical = 0.0,
 								convergeDistance = 0.0,
 								extraDistance = 1,
-								fireCooldownMillis = 3000,
+								fireCooldownMillis = 2500,
 								aimDistance = 0,
 								inaccuracyRadians = 2.0,
 								maxPerShot = 3,
@@ -362,7 +368,7 @@ data class StarshipTypeBalancing(
 				),
 				requiredMultiblocks = listOf(
 						RequiredSubsystemInfo(
-								SupercapReactorSubsystem::class.java,
+								BCReactorSubsystem::class.java,
 								1,
 								"Battlecruisers require a reactor to pilot!"
 						),

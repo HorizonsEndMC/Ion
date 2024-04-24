@@ -4,11 +4,11 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import org.bukkit.Material
 
-object SupercapReactorMultiblock : Multiblock() {
-	override val name: String = "reactor"
+object CruiserReactorMultiblock : Multiblock() {
+	override val name: String = "cruiserreactor"
 	override val signText = createSignText(
 			"&7-=[&c==&a==&b==&7]=-",
-			"&0Supercapital",
+			"&0Cruiser",
 			"&7&cFusion Reactor&7",
 			"&7-=[&c==&a==&b==&7]=-"
 	)
@@ -102,7 +102,7 @@ object SupercapReactorMultiblock : Multiblock() {
 			y(+1) {
 				x(-2).anyGlass()
 				x(-1).endRod()
-				x(+0).reactorCore()
+				x(+0).cruiserReactorCore()
 				x(+1).endRod()
 				x(+2).anyGlass()
 			}

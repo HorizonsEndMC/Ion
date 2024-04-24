@@ -255,6 +255,7 @@ enum class StarshipType(
 			dynmapIcon = "cruiser",
 			maxMiningLasers = 1,
 			miningLaserTier = 1,
+			sinkProvider = SinkProvider.SinkProviders.CRUISER,
 			balancingSupplier = IonServer.starshipBalancing::cruiser
 	),
 	AI_CRUISER(
@@ -273,6 +274,7 @@ enum class StarshipType(
 			miningLaserTier = 1,
 			concretePercent = 0.0,
 			overridePermission = "ion.ships.ai.cruiser",
+			sinkProvider = SinkProvider.SinkProviders.CRUISER,
 			balancingSupplier = IonServer.starshipBalancing::aiCruiser
 	),
 	BATTLECRUISER(
