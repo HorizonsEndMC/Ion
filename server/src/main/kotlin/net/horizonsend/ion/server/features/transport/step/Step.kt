@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.transport.step
 
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.container.ResourceContainer
 import net.horizonsend.ion.server.features.transport.grid.Grid
 import net.horizonsend.ion.server.features.transport.node.GridNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import org.bukkit.block.BlockFace
 
 abstract class Step(
