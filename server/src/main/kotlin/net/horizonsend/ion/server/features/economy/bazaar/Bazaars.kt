@@ -14,6 +14,7 @@ import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.common.utils.text.toCreditComponent
@@ -233,7 +234,7 @@ object Bazaars : IonServerComponent() {
 			} else {
 				val lore = mutableListOf<String>()
 
-				lore += "&fBuy $currentAmount of $name for ${item.price * currentAmount * priceMult}"
+				lore += "&fBuy $currentAmount of $name for ${(item.price * currentAmount * priceMult).roundToHundredth()}"
 
 				if (!LegacyItemUtils.canFit(player.inventory, fromItemString(item.itemString), currentAmount)) {
 					lore += "&cWARNING: Amount is larger than may fit in your inventory."
