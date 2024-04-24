@@ -10,7 +10,7 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
@@ -297,7 +297,7 @@ object StationSieges : IonServerComponent() {
 				count++
 			}
 			if (count > 0) {
-				player.alert(
+				player.alertAction(
 					"$count members of the defending station's nation " +
 						"or its allied nations are piloting ships in the region! " +
 						"Remove them to complete the siege."
