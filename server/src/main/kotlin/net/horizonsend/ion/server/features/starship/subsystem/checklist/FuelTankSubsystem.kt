@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.checklist
 
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.multiblock.misc.FuelTankMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
 import org.bukkit.block.Sign

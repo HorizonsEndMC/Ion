@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:server/src/main/kotlin/net/horizonsend/ion/server/features/multiblock/ammo/AmmoPressMultiblock.kt
-package net.horizonsend.ion.server.features.multiblock.ammo
-========
-package net.horizonsend.ion.server.features.multiblock.type.ammopress
->>>>>>>> 75b2aa61c (some async multiblock frameworks, start of multiblock entities, refactors):server/src/main/kotlin/net/horizonsend/ion/server/features/multiblock/type/ammopress/AmmoPressMultiblock.kt
+package net.horizonsend.ion.server.features.multiblock.type.ammo
 
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.objects.AmmunitionHoldingItem

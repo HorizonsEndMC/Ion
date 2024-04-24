@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.misc.GlowModule
 import net.horizonsend.ion.server.features.ai.starship.StarshipTemplate
-import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.npcs.StarshipDealers
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.space.Space

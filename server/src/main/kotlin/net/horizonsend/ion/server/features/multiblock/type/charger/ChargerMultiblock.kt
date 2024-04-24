@@ -2,12 +2,11 @@ package net.horizonsend.ion.server.features.multiblock.type.charger
 
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.powered.PoweredItem
+import net.horizonsend.ion.server.features.gear.addPower
+import net.horizonsend.ion.server.features.gear.getMaxPower
+import net.horizonsend.ion.server.features.gear.getPower
+import net.horizonsend.ion.server.features.gear.isPowerable
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.misc.addPower
-import net.horizonsend.ion.server.features.misc.getMaxPower
-import net.horizonsend.ion.server.features.misc.getPower
-import net.horizonsend.ion.server.features.misc.isPowerable
-import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock

@@ -12,7 +12,6 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -20,6 +19,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
@@ -60,11 +61,11 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		check(newWorld != world1) { "New world can't be the same as the current world" }
 
-		if (starship.type == StarshipType.BATTLECRUISER && !SpaceWorlds.contains(world2)) {
+		if (starship.type == StarshipType.BATTLECRUISER && !world2.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			throw StarshipMovementException("Battlecruisers cannot support their weight within strong gravity wells!")
 		}
 
-		if (starship.type == StarshipType.BARGE && !SpaceWorlds.contains(world2)) {
+		if (starship.type == StarshipType.BARGE && !world2.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			throw StarshipMovementException("Barges cannot support their weight within strong gravity wells!")
 		}
 

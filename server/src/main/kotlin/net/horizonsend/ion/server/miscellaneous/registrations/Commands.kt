@@ -60,7 +60,6 @@ import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
 import net.horizonsend.ion.server.command.space.SpaceGenCommand
-import net.horizonsend.ion.server.command.space.SpaceWorldCommand
 import net.horizonsend.ion.server.command.space.StarCommand
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
@@ -72,9 +71,6 @@ import net.horizonsend.ion.server.command.starship.ai.AIDebugCommand
 import net.horizonsend.ion.server.configuration.ConfigurationCommands
 import net.horizonsend.ion.server.features.client.commands.HudCommand
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SettingsCommand
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection
-import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
-import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.player.NewPlayerProtection
 import net.horizonsend.ion.server.features.progression.achievements.AchievementsCommand
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
@@ -83,7 +79,6 @@ import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsComman
 import net.horizonsend.ion.server.features.sidebar.command.SidebarStarshipsCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarWaypointsCommand
 import net.horizonsend.ion.server.features.starship.fleet.FleetCommand
-import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 
 val commands: List<SLCommand> = listOf(
 	GToggleCommand,
@@ -122,7 +117,6 @@ val commands: List<SLCommand> = listOf(
 	XPCommand,
 
 	PlanetCommand,
-	SpaceWorldCommand,
 	StarCommand,
 
 	BazaarCommand,
@@ -165,7 +159,6 @@ val commands: List<SLCommand> = listOf(
 	SidebarContactsCommand,
 	SidebarWaypointsCommand,
 	SidebarStarshipsCommand,
-    WaypointCommand,
 	BookmarkCommand,
 	HudCommand,
     BountyCommand,

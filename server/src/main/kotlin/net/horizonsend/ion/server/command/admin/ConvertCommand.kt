@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.misc.getPower
+import net.horizonsend.ion.server.features.gear.getPower
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack

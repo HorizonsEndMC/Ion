@@ -7,12 +7,13 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -95,7 +96,7 @@ object Interdiction : IonServerComponent() {
 	private fun pulseGravityWell(player: Player, starship: ActiveStarship, sign: Sign) {
 		val world = sign.world
 
-		if (!SpaceWorlds.contains(world)) {
+		if (!world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			player.userError("You cannot use gravity wells within other gravity wells.")
 			return
 		}

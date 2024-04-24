@@ -3,19 +3,6 @@ package net.horizonsend.ion.server.features.starship
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import java.util.LinkedList
-import java.util.UUID
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
-import kotlin.collections.set
-import kotlin.math.cbrt
-import kotlin.math.ln
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.hint
@@ -33,7 +20,7 @@ import net.horizonsend.ion.common.utils.text.randomString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
@@ -82,7 +69,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
@@ -104,6 +90,19 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
+import java.util.LinkedList
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
+import kotlin.collections.set
+import kotlin.math.cbrt
+import kotlin.math.ln
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 class Starship (
 	val data: StarshipData,

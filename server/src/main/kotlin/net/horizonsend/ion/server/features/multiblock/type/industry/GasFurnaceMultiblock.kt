@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing

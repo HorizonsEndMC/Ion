@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.ArsenalRocketStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.ArsenalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -20,11 +20,11 @@ import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class ArsenalRocketStarshipWeaponSubsystem(
-	starship: ActiveStarship,
-	pos: Vec3i,
-	override var face: BlockFace,
-	private val multiblock: ArsenalRocketStarshipWeaponMultiblock,
-	private val upOrDown: BlockFace
+    starship: ActiveStarship,
+    pos: Vec3i,
+    override var face: BlockFace,
+    private val multiblock: ArsenalRocketStarshipWeaponMultiblock,
+    private val upOrDown: BlockFace
 	) :
 	WeaponSubsystem(starship, pos), HeavyWeaponSubsystem, ManualWeaponSubsystem, DirectionalSubsystem, AmmoConsumingWeaponSubsystem {
 	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.arsenalMissile
