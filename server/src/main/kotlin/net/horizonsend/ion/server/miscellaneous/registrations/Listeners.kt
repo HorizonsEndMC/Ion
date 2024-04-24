@@ -8,10 +8,6 @@ import net.horizonsend.ion.server.features.custom.items.blasters.BlasterListener
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
-import net.horizonsend.ion.server.features.gui.listeners.InventoryClickListener
-import net.horizonsend.ion.server.features.gui.listeners.InventoryCloseListener
-import net.horizonsend.ion.server.features.gui.listeners.InventoryDragListener
-import net.horizonsend.ion.server.features.gui.listeners.InventoryMoveItemListener
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
@@ -72,10 +68,6 @@ val listeners: List<Listener> = listOf(
 	GameplayTweaksListeners(),
 	HeadListener(),
 	HyperspaceBeaconManager,
-	InventoryClickListener(),
-	InventoryCloseListener(),
-	InventoryDragListener(),
-	InventoryMoveItemListener(),
 	IonWorld,
 	MiscListeners(),
 	SpaceGenerationManager,

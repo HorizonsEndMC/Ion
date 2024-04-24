@@ -8,7 +8,6 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.gui.ScreenManager.openScreen
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.Bukkit
@@ -31,12 +30,17 @@ object AchievementsCommand : SLCommand() {
 
 	@Default
 	fun onAchievementsList(sender: Player) {
-		sender.openScreen(AchievementsScreen(sender.name))
+		openAchievementWindow(sender)
 	}
 
 	@Default
 	fun onAchievementsList(sender: Player, target: String) {
-		sender.openScreen(AchievementsScreen(target))
+		val targetPlayer = Bukkit.getPlayer(target)
+		if (targetPlayer == null) {
+			sender.userError("Player not found or not online")
+			return
+		}
+		openAchievementWindow(sender, targetPlayer)
 	}
 
 	@Subcommand("grant")
@@ -61,14 +65,22 @@ object AchievementsCommand : SLCommand() {
 		sender.success("Took achievement ${achievement.name} from $target.")
 	}
 
-	@Subcommand("test")
-	private fun createAchievementGui(player: Player) {
+	private fun openAchievementWindow(viewer: Player, player: Player = viewer) {
 		val gui = Achievements.createAchievementGui()
+
 		val window = Window.single()
-			.setViewer(player)
-			.setTitle(AdventureComponentWrapper(Achievements.createAchievementText(player, gui)))
+			.setViewer(viewer)
+			.setTitle(AdventureComponentWrapper(Achievements.createAchievementText(player, 0)))
 			.setGui(gui)
 			.build()
+
+		fun updateTitle(): (Int, Int) -> Unit {
+			return { _, currentPage ->
+				window.changeTitle(AdventureComponentWrapper(Achievements.createAchievementText(player, currentPage)))
+			}
+		}
+
+		gui.addPageChangeHandler(updateTitle())
 
 		window.open()
 	}
