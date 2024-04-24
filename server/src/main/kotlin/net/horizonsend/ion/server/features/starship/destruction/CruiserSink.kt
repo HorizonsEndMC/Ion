@@ -3,19 +3,19 @@ package net.horizonsend.ion.server.features.starship.destruction
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.subsystem.BCReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.CruiserReactorSubsystem
 import org.bukkit.Material
 import org.bukkit.Particle
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class BattlecruiserSink(starship: ActiveStarship) : StandardSinkProvider(starship) {
+class CruiserSink(starship: ActiveStarship) : StandardSinkProvider(starship) {
 	val standard = StandardSinkProvider(starship)
 
 	override fun setup() {
 		starship.iterateBlocks { x, y, z ->
-			if (starship.world.getBlockAt(x, y, z).customBlock == CustomBlocks.BC_REACTOR_CORE) {
+			if (starship.world.getBlockAt(x, y, z).customBlock == CustomBlocks.CRUISER_REACTOR_CORE) {
 				starship.world.setType(x, y, z, Material.AIR)
 			}
 		}
@@ -25,7 +25,7 @@ class BattlecruiserSink(starship: ActiveStarship) : StandardSinkProvider(starshi
 
 	private var particleRadius = 0.0
 
-	private val reactor = starship.subsystems.filterIsInstance<BCReactorSubsystem>().firstOrNull()
+	private val reactor = starship.subsystems.filterIsInstance<CruiserReactorSubsystem>().firstOrNull()
 	private val center = (reactor?.pos ?: starship.centerOfMass) .toLocation(starship.world)
 	private val world = starship.world
 
