@@ -59,7 +59,6 @@ import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
-import net.horizonsend.ion.server.command.space.SpaceWorldCommand
 import net.horizonsend.ion.server.command.space.StarCommand
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
@@ -122,7 +121,6 @@ val commands: List<SLCommand> = listOf(
 	XPCommand,
 
 	PlanetCommand,
-	SpaceWorldCommand,
 	StarCommand,
 
 	BazaarCommand,

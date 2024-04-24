@@ -11,7 +11,8 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DRILL_USER
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -223,7 +224,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			return
 		}
 
-		if (SpaceWorlds.contains(furnace.world) && !furnace.world.name.contains("plots", ignoreCase = true)) {
+		if (furnace.world.ion.hasFlag(WorldFlag.SPACE_WORLD) && !furnace.world.name.contains("plots", ignoreCase = true)) {
 			player.userError("Starship drills are not optimized for use in outer space! The starship drill was not enabled.")
 			setUser(sign, null)
 			return

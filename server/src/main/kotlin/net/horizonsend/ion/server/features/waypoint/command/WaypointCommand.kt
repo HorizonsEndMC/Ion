@@ -11,8 +11,9 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -79,7 +80,7 @@ object WaypointCommand : SLCommand() {
             sender.userError("Entered world does not exist")
             return
         }
-        if (!SpaceWorlds.contains(getWorld)) {
+        if (!getWorld.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
             sender.userError("World is not a space world")
             return
         }

@@ -2,7 +2,8 @@ package net.horizonsend.ion.server.features.client.networking.packets
 
 import net.horizonsend.ion.server.features.client.networking.IonPacketHandler
 import net.horizonsend.ion.server.features.client.networking.Packets
-import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.minecraft.network.FriendlyByteBuf
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -13,7 +14,7 @@ object WorldPacket : Listener, IonPacketHandler() {
 
 	@EventHandler
 	fun onChangeWorld(event: PlayerChangedWorldEvent) {
-		if (SpaceWorlds.contains(event.player.world)) {
+		if (event.player.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			Packets.WORLD_PACKET.send(event.player)
 		}
 	}
