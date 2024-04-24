@@ -118,7 +118,8 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopI
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopQuadTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopTriTurretMultiblock
-import net.horizonsend.ion.server.features.multiblock.supercapreactor.SupercapReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.supercapreactor.BCReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.supercapreactor.CruiserReactorMultiblock
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamStarshipWeaponMultiblockTop
@@ -286,7 +287,8 @@ object Multiblocks : IonServerComponent() {
 			AntiAirCannonBaseMultiblock,
 //			AntiAirCannonTurretMultiblock,
 
-			SupercapReactorMultiblock
+			BCReactorMultiblock,
+			CruiserReactorMultiblock
 		)
 	}
 

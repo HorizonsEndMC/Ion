@@ -35,7 +35,8 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_HOUS
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_MEMBRANE
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_PLATING
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTOR_CONTROL
-import net.horizonsend.ion.server.features.customitems.CustomItems.REACTOR_CORE
+import net.horizonsend.ion.server.features.customitems.CustomItems.BC_REACTOR_CORE
+import net.horizonsend.ion.server.features.customitems.CustomItems.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTOR_FRAME
 import net.horizonsend.ion.server.features.customitems.CustomItems.REINFORCED_FRAME
 import net.horizonsend.ion.server.features.customitems.CustomItems.RIFLE
@@ -253,9 +254,12 @@ object Crafting : IonServerComponent() {
 		shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
 
 		//Unloaded Turret Shell Crafting
-		itemStackShapelessRecipe("Unloaded_Turret_Shell", UNLOADED_TURRET_SHELL.constructItemStack()) {
-			addIngredient(ItemStack(IRON_INGOT, 1))
-			addIngredient(ItemStack(LAPIS_LAZULI, 1))
+		itemStackShapeRecipe("Unloaded_Turret_Shell", UNLOADED_TURRET_SHELL.constructItemStack()) {
+			shape("xyx", "xzx", "xzx")
+
+			setIngredient('x', AIR)
+			setIngredient('y', LAPIS_LAZULI)
+			setIngredient('z', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 		}
 
 		// Blaster Barrel Crafting
@@ -642,7 +646,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		//Reactor Core Crafting
-		itemStackShapeRecipe("reactorCore", REACTOR_CORE.constructItemStack()) {
+		itemStackShapeRecipe("bcreactorCore", BC_REACTOR_CORE.constructItemStack()) {
 			shape("wxw", "yzy", "wxw")
 
 			setIngredient('w', REACTOR_FRAME.constructItemStack())
@@ -650,7 +654,15 @@ object Crafting : IonServerComponent() {
 			setIngredient('y', FUEL_CONTROL.constructItemStack())
 			setIngredient('z', SUPERCONDUCTOR_CORE.constructItemStack())
 		}
+	itemStackShapeRecipe("cruiserreactorCore", CRUISER_REACTOR_CORE.constructItemStack()) {
+		shape("wxw", "wyw", "wzw")
+
+		setIngredient('w', REACTOR_FRAME.constructItemStack())
+		setIngredient('x', REACTOR_CONTROL.constructItemStack())
+		setIngredient('y', SUPERCONDUCTOR_CORE.constructItemStack())
+		setIngredient('z', FUEL_CONTROL.constructItemStack())
 	}
+}
 
 	private fun shapedRecipe(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {
 		val recipe = ShapedRecipe(NamespacedKey(IonServer, name), ItemStack(result))
