@@ -76,10 +76,9 @@ object Achievements {
 		return gui.build()
 	}
 
-	fun createAchievementText(player: Player, gui: PagedGui<*>): Component {
+	fun createAchievementText(player: Player, currentPage: Int): Component {
 
-		val obtainedAchievements = SLPlayer[player.name]?.achievements?.map { Achievement.valueOf(it) }?.toList() ?: listOf()
-		val currentPage = gui.currentPage
+		val obtainedAchievements = SLPlayer[player].achievements.map { Achievement.valueOf(it) }.toList()
 
 		// create a new GuiText builder
 		val header = "${player.name}'s Achievements"
@@ -152,8 +151,8 @@ fun Player.rewardAchievement(achievement: Achievement, callback: () -> Unit = {}
 
 	showTitle(
 		Title.title(
-			Component.text(achievement.title).color(NamedTextColor.GOLD),
-			Component.text("Achievement Granted: ${achievement.description}").color(NamedTextColor.GRAY)
+			text(achievement.title).color(NamedTextColor.GOLD),
+			text("Achievement Granted: ${achievement.description}").color(NamedTextColor.GRAY)
 		)
 	)
 
