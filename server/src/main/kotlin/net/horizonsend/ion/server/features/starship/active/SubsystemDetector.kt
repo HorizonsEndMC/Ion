@@ -39,6 +39,7 @@ import net.kyori.adventure.audience.Audience
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.HangingSign
 import org.bukkit.block.Sign
 import java.util.LinkedList
 import java.util.Locale
@@ -211,7 +212,7 @@ object SubsystemDetector {
 
 	private fun getWeaponMultiblock(block: Block, face: BlockFace): SubsystemMultiblock<*>? {
 		return when {
-			block.state is Sign -> getSignWeaponMultiblock(block, face)
+			block.state is Sign && block.state !is HangingSign -> getSignWeaponMultiblock(block, face)
 			else -> getSignlessStarshipWeaponMultiblock(block, face)
 		}
 	}
