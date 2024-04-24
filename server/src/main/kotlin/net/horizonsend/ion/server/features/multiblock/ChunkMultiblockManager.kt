@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import org.bukkit.block.Sign
 import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.persistence.PersistentDataType.LIST
+import org.bukkit.persistence.PersistentDataType
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentHashMap
 
@@ -107,9 +107,9 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	private fun saveMultiblocks() = Multiblocks.multiblockCoroutineScope.launch {
 		val array = multiblockEntities.map { (_, entity) ->
 			PersistentMultiblockData.toPrimitive(entity.store(), chunk.inner.persistentDataContainer.adapterContext)
-		}
+		}.toTypedArray()
 
-		chunk.inner.persistentDataContainer.set(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES, LIST.dataContainers(), array)
+		chunk.inner.persistentDataContainer.set(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY, array)
 		chunk.inner.minecraft.isUnsaved = true
 	}
 
@@ -118,7 +118,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	 **/
 	private fun loadMultiblocks() {
 		val serialized = try {
-			chunk.inner.persistentDataContainer.get(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES, LIST.dataContainers()) ?: return
+			chunk.inner.persistentDataContainer.get(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY) ?: return
 		} catch (e: IllegalArgumentException) {
 			log.warn("Could not load chunks multiblocks for $chunk")
 			if (e.message == "The found tag instance (NBTTagList) cannot store List") {
@@ -127,7 +127,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 				chunk.inner.persistentDataContainer.remove(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES)
 			}
 
-			listOf<PersistentDataContainer>()
+			arrayOf<PersistentDataContainer>()
 		}
 
 		for (serializedMultiblockData in serialized) {
