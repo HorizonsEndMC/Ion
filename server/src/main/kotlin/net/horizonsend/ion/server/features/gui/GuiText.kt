@@ -4,14 +4,16 @@ import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHAR
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.GUI_HEADER_MARGIN
 import net.horizonsend.ion.common.utils.text.GUI_MARGIN
-import net.horizonsend.ion.common.utils.text.customGuiBackground
-import net.horizonsend.ion.common.utils.text.customGuiHeader
+import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
+import net.horizonsend.ion.common.utils.text.leftShift
 import net.horizonsend.ion.common.utils.text.minecraftLength
 import net.horizonsend.ion.common.utils.text.shift
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.shiftToLeftOfComponent
 import net.horizonsend.ion.common.utils.text.shiftToLine
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 
 class GuiText(
     private val name: String,
@@ -170,6 +172,22 @@ class GuiText(
         val horizontalShift: Int = 0,
         val verticalShift: Int = 0
     )
+
+    /**
+     * Display a custom GUI background. Assumes that the background is the same width as the Minecraft GUI (176 pixels)
+     * @param backgroundChar the character representing the background to display
+     */
+    private fun customGuiBackground(
+        backgroundChar: Char = DEFAULT_BACKGROUND_CHAR,
+        backgroundWidth: Int = DEFAULT_GUI_WIDTH
+    ) = leftShift(GUI_MARGIN).append(text(backgroundChar).color(WHITE).font(SPECIAL_FONT_KEY))
+            .append(leftShift(backgroundWidth))
+
+    /**
+     * Set the custom GUI header
+     * @param header the title of the GUI to be displayed
+     */
+    private fun customGuiHeader(header: String) = ofChildren(text(header), leftShift(header.minecraftLength))
 
     /**
      * Checks if a GuiComponent occupies the line and alignment of another GuiComponent
