@@ -37,6 +37,8 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_PLAT
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTOR_CONTROL
 import net.horizonsend.ion.server.features.customitems.CustomItems.BC_REACTOR_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.CRUISER_REACTOR_CORE
+import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_HYDROGEN
+import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTOR_FRAME
 import net.horizonsend.ion.server.features.customitems.CustomItems.REINFORCED_FRAME
 import net.horizonsend.ion.server.features.customitems.CustomItems.RIFLE
@@ -58,6 +60,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTO
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTOR_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
+import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_MISSILE
 import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
@@ -260,6 +263,18 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', AIR)
 			setIngredient('y', LAPIS_LAZULI)
 			setIngredient('z', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+		}
+
+		itemStackShapeRecipe("Unloaded_Missile", UNLOADED_MISSILE.constructItemStack()) {
+			shape("aba", "mum", "hlo")
+
+			setIngredient('a', ExactChoice(REACTIVE_HOUSING.constructItemStack()))
+			setIngredient('b', ExactChoice(STEEL_PLATE.constructItemStack()))
+			setIngredient('m', ExactChoice(ENHANCED_CIRCUITRY.constructItemStack()))
+			setIngredient('u', ExactChoice(URANIUM_ROD.constructItemStack()))
+			setIngredient('h', ExactChoice(GAS_CANISTER_HYDROGEN.constructItemStack()))
+			setIngredient('l', LAPIS_BLOCK)
+			setIngredient('o', ExactChoice(GAS_CANISTER_OXYGEN.constructItemStack()))
 		}
 
 		// Blaster Barrel Crafting
