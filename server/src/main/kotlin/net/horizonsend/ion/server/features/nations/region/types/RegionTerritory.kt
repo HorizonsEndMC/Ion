@@ -172,10 +172,6 @@ class RegionTerritory(territory: Territory) :
 		if (playerNation != null && settlementBuildAccess >= Settlement.ForeignRelation.ALLY) {
 			val settlementNation = SettlementCache[settlement].nation
 
-			if (territorySettlement.trustedNations.contains(playerNation)) {
-				return null
-			}
-
 			// if it's nation access, they can build if they're the same nation
 			if (settlementBuildAccess == Settlement.ForeignRelation.NATION_MEMBER && settlementNation == playerNation) {
 				return null
@@ -183,7 +179,9 @@ class RegionTerritory(territory: Territory) :
 
 			// if the min build access is ally, and they're at least an ally, they can build
 			if (settlementNation != null) {
-				if (RelationCache[settlementNation, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal) {
+				val minBuildAccess = SettlementCache[settlement].minBuildAccess
+
+				if (minBuildAccess == Settlement.ForeignRelation.ALLY && RelationCache[settlementNation, playerNation] >= NationRelation.Level.ALLY) {
 					return null
 				}
 			}

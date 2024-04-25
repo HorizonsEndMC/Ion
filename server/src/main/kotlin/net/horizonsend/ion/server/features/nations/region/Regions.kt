@@ -5,11 +5,14 @@ import com.google.common.collect.Multimap
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.containsUpdated
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
@@ -72,7 +75,7 @@ object Regions : IonServerComponent() {
 
 			Tasks.async {
 				if (player.isOnline) {
-					cache.forEach(player.world.name) { it.cacheAccess(player) }
+					cache.forEach(player.world.name) { it.cacheAccessMessage(player) }
 				}
 			}
 		}
@@ -84,7 +87,7 @@ object Regions : IonServerComponent() {
 
 			Tasks.async {
 				if (player.isOnline) {
-					cache.forEach(player.world.name) { it.cacheAccess(player) }
+					cache.forEach(player.world.name) { it.cacheAccessMessage(player) }
 				}
 			}
 		}
@@ -145,6 +148,14 @@ object Regions : IonServerComponent() {
 				updateRegionsAsync(change.oid)
 			}
 		}
+
+		NationRelation.watchUpdates { change ->
+			if (change.containsUpdated(NationRelation::wish)) {
+				val relation = RelationCache[change.oid]
+
+				for (settlement in Nation.getSettlements(relation.nation)) refreshSettlementTerritoryLocally(settlement)
+			}
+		}
 	}
 
 	private fun updateRegionsAsync(id: Oid<Settlement>) {
@@ -172,7 +183,7 @@ object Regions : IonServerComponent() {
 			for (player in IonServer.server.onlinePlayers) {
 				if (PlayerCache[player].settlementOid == settlementId) {
 					cache.forEach(player.world.name) { region ->
-						region.cacheAccess(player)
+						region.cacheAccessMessage(player)
 					}
 				}
 			}
@@ -184,7 +195,7 @@ object Regions : IonServerComponent() {
 			val player = Bukkit.getPlayer(uuid) ?: return@locked
 
 			cache.forEach(player.world.name) { region ->
-				region.cacheAccess(player)
+				region.cacheAccessMessage(player)
 			}
 		}
 	}

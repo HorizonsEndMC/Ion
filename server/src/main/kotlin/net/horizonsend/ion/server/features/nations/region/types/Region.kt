@@ -17,18 +17,18 @@ abstract class Region<T : DbObject>(dbObject: DbObject) {
 
 	fun isCached(player: Player): Boolean {
 		synchronized(accessCache) {
-			return accessCache.contains(player.uniqueId)
+			return accessCache.containsKey(player.uniqueId)
 		}
 	}
 
-	fun getInaccessMessage(player: Player): String? {
+	fun getCachedAccessMessage(player: Player): String? {
 		synchronized(accessCache) {
 			check(isCached(player))
 			return accessCache[player.uniqueId]
 		}
 	}
 
-	fun cacheAccess(player: Player) {
+	fun cacheAccessMessage(player: Player) {
 		synchronized(accessCache) {
 			accessCache[player.uniqueId] = calculateInaccessMessage(player)
 		}
@@ -43,7 +43,7 @@ abstract class Region<T : DbObject>(dbObject: DbObject) {
 	fun refreshAccessCache() {
 		synchronized(accessCache) {
 			accessCache.clear()
-			bukkitWorld?.players?.forEach(::cacheAccess)
+			bukkitWorld?.players?.forEach(::cacheAccessMessage)
 		}
 	}
 
