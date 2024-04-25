@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
+import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
@@ -123,6 +124,7 @@ val String.minecraftLength: Int
 			in SHIFT_LEFT_BEGIN..SHIFT_LEFT_END -> 0xDFFF - it.code
 			in SHIFT_RIGHT_BEGIN..SHIFT_RIGHT_END -> -0xE0FF + it.code
 			else -> when (it) {
+				'\n' -> 0
 				'i', '!', ',', '.', '\'', ':', ';', '|' -> 2
 				'l', '`' -> 3
 				'I', 't', ' ', '\"', '(', ')', '*', '[', ']', '{', '}' -> 4
@@ -185,17 +187,50 @@ fun Component.shiftDown(shift: Int): Component = if (shift in SHIFT_DOWN_MIN..SH
 fun Component.shiftToLine(line: Int, shift: Int = 0): Component = this.shiftDown((line + 1) * TEXT_HEIGHT + shift)
 
 /**
- * Display a custom GUI background. Assumes that the background is the same width as the Minecraft GUI (176 pixels)
- * @param backgroundChar the character representing the background to display
+ * Splits the text of the current component so that the text fits within a certain width
+ * Implementation based on https://stackoverflow.com/questions/17586/best-word-wrap-algorithm
+ * @param width the width in pixels to limit the text to
  */
-fun customGuiBackground(backgroundChar: Char) =
-	leftShift(GUI_MARGIN).append(text(backgroundChar).color(WHITE).font(SPECIAL_FONT_KEY))
-		.append(leftShift(DEFAULT_GUI_WIDTH))
+fun Component.wrap(width: Int) {
+	// regex: positive lookbehind, matching any character that is newline, tab, space, or hyphen
+	val regex = Regex("(?<=[\n\t -])")
+	// when combined with String.split(), it includes the delimiter with the last word instead of removing it
+	val words = this.plainText().split(regex)
 
-/**
- * Set the custom GUI header
- * @param header the title of the GUI to be displayed
- */
-fun customGuiHeader(header: String) = ofChildren(text(header), leftShift(header.minecraftLength))
+	var currentLength = 0
+	val stringBuilder = StringBuilder()
+
+	for (word in words) {
+		val length = word.minecraftLength
+		val exceedsWidth = length > width
+
+		// add new line
+		if (currentLength + length > width) {
+			// check if there is only whitespace
+			if (currentLength > 0) {
+				stringBuilder.append('\n')
+				currentLength = 0
+			}
+
+			// split word up if its own length exceeds width
+			if (exceedsWidth) {
+				var longWord = word
+				while (longWord.minecraftLength > width) {
+					stringBuilder.append(word.substring(0, width - 1))
+					longWord = word.substring(width - 1)
+
+					stringBuilder.append('\n')
+				}
+				stringBuilder.append(longWord.trimStart())
+			}
+		}
+		if (!exceedsWidth) stringBuilder.append(word.trimStart())
+		currentLength += length
+	}
+
+	// regex: match everything
+	val replacer = TextReplacementConfig.builder().match("[\\s\\S]+").replacement(stringBuilder.toString()).build()
+	this.replaceText(replacer)
+}
 
 //</editor-fold>
