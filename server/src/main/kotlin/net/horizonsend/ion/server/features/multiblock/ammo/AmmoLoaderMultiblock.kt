@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.ammopress
+package net.horizonsend.ion.server.features.multiblock.ammo
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.LOADED_TURRET_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL

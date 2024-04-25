@@ -69,7 +69,23 @@ object CustomItems {
 		customModelData = 512,
 		displayName = text("Loaded Shell").decoration(ITALIC, false)
 	) {})
-
+	val ARSENAL_MISSILE_ON = register(
+		identifier = "ARSENAL_MISSILE_ON",
+		customModelData = 700,
+		displayName = text("Arsenal Missile", RED).decoration(BOLD, false),
+	)
+	val ARSENAL_MISSILE = register(object : ShellItem(
+		identifier = "ARSENAL_MISSILE",
+		material = IRON_INGOT,
+		customModelData = 701,
+		displayName = text("Arsenal Missile").decoration(ITALIC, false),
+	) {})
+	val UNLOADED_MISSILE = register(object : ShellItem(
+		identifier = "UNLOADED_MISSILE",
+		material = IRON_INGOT,
+		customModelData = 702,
+		displayName = text("Unloaded Missile").decoration(ITALIC, false),
+	) {})
 	// Ship Ammunition End
 	// Magazines Start
 
@@ -747,16 +763,7 @@ object CustomItems {
 	// Throwables end
 
 	// Ammunition start
-	val ARSENAL_MISSILE_ON = register(
-		identifier = "ARSENAL_MISSILE_ON",
-		customModelData = 700,
-		displayName = text("Arsenal Missile ", RED).decoration(BOLD, false),
-	)
-	val ARSENAL_MISSILE = register(
-		identifier = "ARSENAL_MISSILE",
-		customModelData = 701,
-		displayName = text("Arsenal Missile ", RED).decoration(BOLD, false),
-	)
+
 	// Ammunition end
 
 	val PROGRESS_HOLDER = register(ProgressHolder)

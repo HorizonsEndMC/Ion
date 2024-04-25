@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.multiblock.crafting
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.ammo.AmmoLoaderMultiblock
+import net.horizonsend.ion.server.features.multiblock.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ConsumedItemIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.GasCanisterIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ProgressHolderItemIngredient
@@ -105,6 +107,20 @@ object MultiblockRecipes : IonServerComponent() {
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.CIRCUITRY, 1), progressHolderResult = CustomItems.ENHANCED_CIRCUITRY),
 		resources = listOf(power(150)),
 		result = ProgressItemResult(CustomItems.ENHANCED_CIRCUITRY, 60L * 60L * 20L)
+	))
+
+	val LOADED_SHELL_LOADING = registerRecipe(ProcessingMultiblockRecipe(
+		multiblock = AmmoLoaderMultiblock,
+		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNLOADED_TURRET_SHELL, 1), progressHolderResult = CustomItems.LOADED_TURRET_SHELL),
+		resources = listOf(power(150)),
+		result = ProgressItemResult(CustomItems.LOADED_TURRET_SHELL, 90L * 20L)
+	))
+
+	val ARSENAL_MISSILE_LOADING = registerRecipe(ProcessingMultiblockRecipe(
+		multiblock = MissileLoaderMultiblock,
+		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNLOADED_MISSILE, 1), progressHolderResult = CustomItems.ARSENAL_MISSILE),
+		resources = listOf(power(150)),
+		result = ProgressItemResult(CustomItems.ARSENAL_MISSILE, 60L * 60L * 20L)
 	))
 
 	/**
