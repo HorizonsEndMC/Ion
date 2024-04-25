@@ -14,10 +14,10 @@ sealed class ArsenalRocketStarshipWeaponMultiblock :
 		pos: Vec3i,
 		face: BlockFace
 	): ArsenalRocketStarshipWeaponSubsystem {
-		return ArsenalRocketStarshipWeaponSubsystem(starship, pos, getAdjustedDirection(), this)
+		return ArsenalRocketStarshipWeaponSubsystem(starship, pos, face, this, upOrDown())
 	}
 
-	protected abstract fun getAdjustedDirection(): BlockFace
+	protected abstract fun upOrDown(): BlockFace
 }
 
 sealed class VerticalArsenalStarshipWeaponMultiblock : ArsenalRocketStarshipWeaponMultiblock() {
@@ -117,11 +117,11 @@ sealed class VerticalArsenalStarshipWeaponMultiblock : ArsenalRocketStarshipWeap
 object TopArsenalStarshipWeaponMultiblock : VerticalArsenalStarshipWeaponMultiblock() {
 	override fun getYFactor() = 1
 
-	override fun getAdjustedDirection(): BlockFace = BlockFace.UP
+	override fun upOrDown(): BlockFace = BlockFace.UP
 }
 
 object BottomArsenalStarshipWeaponMultiblock : VerticalArsenalStarshipWeaponMultiblock() {
 	override fun getYFactor() = -1
 
-	override fun getAdjustedDirection(): BlockFace = BlockFace.DOWN
+	override fun upOrDown(): BlockFace = BlockFace.DOWN
 }
