@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.ammopress
+package net.horizonsend.ion.server.features.multiblock.ammo
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.blasters.objects.AmmunitionHoldingItem
