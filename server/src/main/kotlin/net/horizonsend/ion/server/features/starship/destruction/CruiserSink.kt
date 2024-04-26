@@ -4,6 +4,8 @@ import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.CruiserReactorSubsystem
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.Particle
 import kotlin.math.PI
@@ -18,6 +20,9 @@ class CruiserSink(starship: ActiveStarship) : StandardSinkProvider(starship) {
 			if (starship.world.getBlockAt(x, y, z).customBlock == CustomBlocks.CRUISER_REACTOR_CORE) {
 				starship.world.setType(x, y, z, Material.AIR)
 			}
+		}
+		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 5000.0)) {
+			nearbyPlayer.playSound(Sound.sound(Key.key("starship.explosion.cruiser"), Sound.Source.AMBIENT, 5f, 0.05f))
 		}
 
 		super.setup()
