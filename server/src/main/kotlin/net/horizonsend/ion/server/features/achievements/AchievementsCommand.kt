@@ -9,12 +9,20 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
+import net.horizonsend.ion.common.utils.text.GUI_MARGIN
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.gui.GuiText
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.pull
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
+import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
 @CommandAlias("achievements")
@@ -52,6 +60,39 @@ object AchievementsCommand : SLCommand() {
 		player.rewardAchievement(achievement)
 
 		sender.success("Gave achievement ${achievement.name} to $target.")
+	}
+
+	@Subcommand("test")
+	fun test(sender: Player) {
+		val gui = Gui.normal()
+			.setStructure(
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .")
+			.build()
+
+		//val originalText = Component.text("Welcome to space. What were you expecting? It's a dangerous place. Thank you for investing - Go there for your rota, there for your orders, fill up these quotas, we'll bill for your quarters.")
+		val originalText = ofChildren(
+			Component.text("Welcome to space. ", NamedTextColor.RED),
+			Component.text("What were you expecting? ", NamedTextColor.GOLD),
+			Component.text("It's a dangerous place. ", NamedTextColor.YELLOW),
+			Component.text("Thank you for investing - Go there for your rota, there for your orders, ", NamedTextColor.GREEN),
+			Component.text("fill up these quotas, we'll bill for your quarters.", NamedTextColor.DARK_AQUA)
+		)
+		println("ORIGINAL TEXT: $originalText")
+		val text = GuiText("WE WORK TO EARN THE RIGHT")
+		text.add(originalText.wrap(DEFAULT_GUI_WIDTH - GUI_MARGIN))
+
+		val window = Window.single()
+			.setViewer(sender)
+			.setTitle(AdventureComponentWrapper(text.build()))
+			.setGui(gui)
+			.build()
+
+		window.open()
 	}
 
 	@Subcommand("revoke")
