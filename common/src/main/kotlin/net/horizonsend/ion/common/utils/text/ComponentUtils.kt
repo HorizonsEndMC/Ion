@@ -7,8 +7,11 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.flattener.ComponentFlattener
+import net.kyori.adventure.text.flattener.FlattenerListener
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
@@ -194,7 +197,18 @@ fun Component.shiftToLine(line: Int, shift: Int = 0): Component = this.shiftDown
 fun Component.wrap(width: Int): Component {
 	// regex: positive lookbehind, matching any character that is newline, tab, space, or hyphen
 	val regex = Regex("(?<=[\n\t -])")
-	val children = this.children()
+	val flattener = ComponentFlattener.basic()
+	val listener = object : FlattenerListener {
+		var length: Int = 0
+
+		override fun component(text: String) {
+			length += text.minecraftLength
+		}
+	}
+	flattener.flatten(this, listener)
+	return this
+
+	/*
 	// when combined with String.split(), it includes the delimiter with the last word instead of removing it
 	val words = this.plainText().split(regex)
 
@@ -240,6 +254,7 @@ fun Component.wrap(width: Int): Component {
 	val newComponent = text(stringBuilder.toString(), this.style())
 	println("NEW COMPONENT: $newComponent")
 	return newComponent
+	 */
 }
 
 //</editor-fold>
