@@ -191,9 +191,10 @@ fun Component.shiftToLine(line: Int, shift: Int = 0): Component = this.shiftDown
  * Implementation based on https://stackoverflow.com/questions/17586/best-word-wrap-algorithm
  * @param width the width in pixels to limit the text to
  */
-fun Component.wrap(width: Int) {
+fun Component.wrap(width: Int): Component {
 	// regex: positive lookbehind, matching any character that is newline, tab, space, or hyphen
 	val regex = Regex("(?<=[\n\t -])")
+	val children = this.children()
 	// when combined with String.split(), it includes the delimiter with the last word instead of removing it
 	val words = this.plainText().split(regex)
 
@@ -203,9 +204,11 @@ fun Component.wrap(width: Int) {
 	for (word in words) {
 		val length = word.minecraftLength
 		val exceedsWidth = length > width
+		println("WORD: $word, $length")
 
 		// add new line
 		if (currentLength + length > width) {
+			println("EXCEEDS LENGTH")
 			// check if there is only whitespace
 			if (currentLength > 0) {
 				stringBuilder.append('\n')
@@ -226,11 +229,17 @@ fun Component.wrap(width: Int) {
 		}
 		if (!exceedsWidth) stringBuilder.append(word.trimStart())
 		currentLength += length
+		println("stringBuilder: $stringBuilder")
 	}
 
+	println("final stringBuilder: $stringBuilder")
 	// regex: match everything
 	val replacer = TextReplacementConfig.builder().match("[\\s\\S]+").replacement(stringBuilder.toString()).build()
 	this.replaceText(replacer)
+	println("COMPONENT: $this")
+	val newComponent = text(stringBuilder.toString(), this.style())
+	println("NEW COMPONENT: $newComponent")
+	return newComponent
 }
 
 //</editor-fold>
