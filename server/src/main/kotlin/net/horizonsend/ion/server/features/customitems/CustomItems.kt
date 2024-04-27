@@ -58,7 +58,7 @@ object CustomItems {
 
 	val UNLOADED_TURRET_SHELL = register(object : ShellItem(
 		identifier = "UNLOADED_SHELL",
-		material = IRON_INGOT,
+		material = WARPED_FUNGUS_ON_A_STICK,
 		customModelData = 511,
 		displayName = text("Unloaded Shell").decoration(ITALIC, false)
 	) {})
@@ -82,7 +82,7 @@ object CustomItems {
 	) {})
 	val UNLOADED_MISSILE = register(object : ShellItem(
 		identifier = "UNLOADED_MISSILE",
-		material = IRON_INGOT,
+		material = WARPED_FUNGUS_ON_A_STICK,
 		customModelData = 702,
 		displayName = text("Unloaded Missile").decoration(ITALIC, false),
 	) {})
