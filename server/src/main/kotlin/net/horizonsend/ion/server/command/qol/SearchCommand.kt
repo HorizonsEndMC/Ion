@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.client.whereisit
+package net.horizonsend.ion.server.command.qol
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
