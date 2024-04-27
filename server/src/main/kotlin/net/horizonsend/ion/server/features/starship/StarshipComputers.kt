@@ -100,7 +100,7 @@ object StarshipComputers : IonServerComponent() {
 		tryOpenMenu(player, data)
 	}
 
-	private val pilotCooldown = PerPlayerCooldown.messagedCooldown(1, TimeUnit.SECONDS) { Bukkit.getPlayer(it)?.userError("You're doing that too often!") }
+	private val pilotCooldown = PerPlayerCooldown.messagedCooldown(250, TimeUnit.MILLISECONDS) { Bukkit.getPlayer(it)?.userError("You're doing that too often!") }
 
 	private fun handleRightClick(data: StarshipData?, player: Player) {
 		if (data == null) {
