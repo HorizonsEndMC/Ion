@@ -34,6 +34,6 @@ class IonTurretWeaponSubsystem(
 		multiblock.shoot(starship.world, pos, face, dir, starship, shooter, false)
 	}
 	override fun getRequiredAmmo(): ItemStack {
-		return CustomItems.LOADED_TURRET_SHELL.constructItemStack()
+		return CustomItems.CHARGED_SHELL.constructItemStack()
 	}
 }

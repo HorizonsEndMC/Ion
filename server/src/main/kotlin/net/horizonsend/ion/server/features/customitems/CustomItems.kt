@@ -63,6 +63,20 @@ object CustomItems {
 		displayName = text("Unloaded Shell").decoration(ITALIC, false)
 	) {})
 
+	val UNCHARGED_SHELL = register(object : ShellItem(
+		identifier = "UNCHARGED_SHELL",
+		material = WARPED_FUNGUS_ON_A_STICK,
+		customModelData = 513,
+		displayName = text("Uncharged Shell").decoration(ITALIC, false)
+	) {})
+
+	val CHARGED_SHELL = register(object : ShellItem(
+		identifier = "CHARGED_SHELL",
+		material = IRON_INGOT,
+		customModelData = 514,
+		displayName = text("Charged Shell").decoration(ITALIC, false)
+	) {})
+
 	val LOADED_TURRET_SHELL = register(object : ShellItem(
 		identifier = "LOADED_SHELL",
 		material = IRON_INGOT,

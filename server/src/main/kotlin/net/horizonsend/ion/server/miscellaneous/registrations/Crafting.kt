@@ -60,6 +60,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTO
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTOR_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
+import net.horizonsend.ion.server.features.customitems.CustomItems.UNCHARGED_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_MISSILE
 import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
@@ -257,12 +258,20 @@ object Crafting : IonServerComponent() {
 		shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
 
 		//Unloaded Turret Shell Crafting
-		itemStackShapeRecipe("Unloaded_Turret_Shell", UNLOADED_TURRET_SHELL.constructItemStack()) {
+		itemStackShapeRecipe("Unloaded_Turret_Shell", UNLOADED_TURRET_SHELL.constructItemStack().asQuantity(4)) {
 			shape("xyx", "xzx", "xzx")
 
 			setIngredient('x', AIR)
 			setIngredient('y', LAPIS_LAZULI)
 			setIngredient('z', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+		}
+
+		itemStackShapeRecipe("Uncharged_Shell", UNCHARGED_SHELL.constructItemStack().asQuantity(4)) {
+			shape("xyx", "xzx", "xzx")
+
+			setIngredient('x', AIR)
+			setIngredient('y', PRISMARINE_CRYSTALS)
+			setIngredient('z', COPPER_INGOT)
 		}
 
 		itemStackShapeRecipe("Unloaded_Missile", UNLOADED_MISSILE.constructItemStack()) {
