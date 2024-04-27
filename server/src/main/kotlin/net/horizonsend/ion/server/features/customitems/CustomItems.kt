@@ -714,11 +714,11 @@ object CustomItems {
 		customBlockIdentifier = "BC_REACTOR_CORE"
 	) {})
 	val CRUISER_REACTOR_CORE = register(object : CustomBlockItem(
-			identifier = "CRUISER_REACTOR_CORE",
-			material = IRON_BLOCK,
-			customModelData = 36,
-			displayName = text("Cruiser Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
-			customBlockIdentifier = "CRUISER_REACTOR_CORE"
+		identifier = "CRUISER_REACTOR_CORE",
+		material = IRON_BLOCK,
+		customModelData = 37,
+		displayName = text("Cruiser Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
+		customBlockIdentifier = "CRUISER_REACTOR_CORE"
 	) {})
 
 	fun canisterName(gasName: Component): Component = text()
