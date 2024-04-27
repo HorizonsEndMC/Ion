@@ -248,7 +248,7 @@ data class StarshipTypeBalancing(
 				weapons = StarshipWeapons(
 						ionTurret = StarshipWeapons.StarshipWeapon(
 								canFire = true,
-								range = 400.0,
+								range = 380.0,
 								speed = 95.0,
 								areaShieldDamageMultiplier = 30.0,
 								starshipShieldDamageMultiplier = 3.4,
@@ -320,9 +320,9 @@ data class StarshipTypeBalancing(
 						quadTurret = StarshipWeapons.StarshipWeapon(
 								canFire = true,
 								range = 500.0,
-								speed = 90.0,
+								speed = 87.5,
 								areaShieldDamageMultiplier = 6.0,
-								starshipShieldDamageMultiplier = 7.8,
+								starshipShieldDamageMultiplier = 7.6,
 								particleThickness = 0.6,
 								explosionPower = 5.5f,
 								volume = 0,
