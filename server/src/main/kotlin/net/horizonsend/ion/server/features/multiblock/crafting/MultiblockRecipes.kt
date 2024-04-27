@@ -116,6 +116,13 @@ object MultiblockRecipes : IonServerComponent() {
 		result = ProgressItemResult(CustomItems.LOADED_TURRET_SHELL, 90L * 20L)
 	))
 
+	val UNCHARGED_SHELL_CHARGING = registerRecipe(ProcessingMultiblockRecipe(
+		multiblock = AmmoLoaderMultiblock,
+		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNCHARGED_SHELL, 1), progressHolderResult = CustomItems.CHARGED_SHELL),
+		resources = listOf(power(150)),
+		result = ProgressItemResult(CustomItems.CHARGED_SHELL, 90L * 20L)
+	))
+
 	val ARSENAL_MISSILE_LOADING = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = MissileLoaderMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNLOADED_MISSILE, 1), progressHolderResult = CustomItems.ARSENAL_MISSILE),
