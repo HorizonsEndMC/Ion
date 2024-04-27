@@ -8,10 +8,13 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Vibration
@@ -81,6 +84,12 @@ class HyperspaceWarmup(
 		}
 
 		displayParticles()
+
+		if (seconds == (warmup-4) && (ship.type == StarshipType.BATTLECRUISER || ship.type == StarshipType.CRUISER)) {
+			for (nearbyPlayer in ship.world.getNearbyPlayers(ship.centerOfMass.toLocation(ship.world), 5000.0)) {
+				nearbyPlayer.playSound(Sound.sound(Key.key("starship.supercapital.hyperspace_enter"), Sound.Source.AMBIENT, 5f, 0.05f))
+			}
+		}
 
 		if (seconds < warmup) {
 			return

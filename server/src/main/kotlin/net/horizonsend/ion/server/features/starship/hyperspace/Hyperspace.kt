@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.starship.StarshipType.BATTLECRUISER
+import net.horizonsend.ion.server.features.starship.StarshipType.CRUISER
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -272,6 +274,7 @@ object Hyperspace : IonServerComponent() {
 		val starship = event.starship
 		val players = starship.world
 			.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 2500.0)
+		if (starship.type == BATTLECRUISER || starship.type == CRUISER) return
 
 		for (player in players) {
 			player.playSound(starshipEnterHyperspaceSound())
@@ -289,13 +292,15 @@ object Hyperspace : IonServerComponent() {
 	fun onStarshipExitHyperspace(event: StarshipExitHyperspaceEvent) {
 		val movement = event.movement
 		for (player in movement.dest.world.getNearbyPlayers(movement.dest, 2500.0)) {
-			player.playSound(starshipExitHyperspaceSound())
+			if (movement.ship.type == BATTLECRUISER || movement.ship.type == CRUISER) player.playSound(Sound.sound(Key.key("starship.supercapital.hyperspace_exit"), Sound.Source.AMBIENT, 5f, 0.05f))
+			else player.playSound(starshipExitHyperspaceSound())
 		}
 		Space.getPlanets().filter {
 			it.location.toLocation(movement.dest.world).distance(movement.dest) < 2500
 		}
 			.forEach {
-				it.planetWorld?.playSound(starshipExitHyperspaceSound())
+				if (movement.ship.type == BATTLECRUISER || movement.ship.type == CRUISER) it.planetWorld?.playSound(Sound.sound(Key.key("starship.supercapital.hyperspace_exit"), Sound.Source.AMBIENT, 5f, 0.05f))
+				else it.planetWorld?.playSound(starshipExitHyperspaceSound())
 			}
 	}
 
