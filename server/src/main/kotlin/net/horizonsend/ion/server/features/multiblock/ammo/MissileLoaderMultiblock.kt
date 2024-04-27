@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
-import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
@@ -112,24 +111,21 @@ object MissileLoaderMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
             y(-1) {
                 x(-2).anyStairs()
                 x(-1).ironBlock()
-                x(+0).craftingTable()
+                x(+0).ironBlock()
                 x(+1).ironBlock()
                 x(+2).anyStairs()
             }
 
             y(0) {
                 x(-1).anyStairs()
-                x(+0).anyPipedInventory()
+                x(+0).anyGlass()
                 x(+1).anyStairs()
             }
         }
     }
 
-    override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-    }
-
     override val name: String
-        get() = TODO("Not yet implemented")
+        = "missileloader"
     override val signText = createSignText(
         line1 = "&6Missile",
         line2 = "&8Loader",
@@ -139,5 +135,7 @@ object MissileLoaderMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 
     override val maxPower = 250_000
 
-
+    override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
+        handleRecipe(this, event, furnace, sign)
+    }
 }
