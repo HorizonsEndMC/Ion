@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
+import net.horizonsend.ion.server.features.customitems.blasters.objects.CratePlacer
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.features.customitems.minerals.Smeltable
 import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralItem
@@ -36,12 +37,15 @@ import org.bukkit.Material.IRON_ORE
 import org.bukkit.Material.RAW_IRON
 import org.bukkit.Material.RAW_IRON_BLOCK
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
+import org.bukkit.Material.matchMaterial
 import org.bukkit.block.Dispenser
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
+import java.lang.Integer.min
 import kotlin.math.roundToInt
 
 // budget minecraft registry lmao
@@ -72,6 +76,35 @@ object CustomItems {
 				displayName = text("Special Magazine").decoration(ITALIC, false),
 				balancingSupplier = IonServer.pvpBalancing.energyWeapons::specialMagazine
 			) {}
+		)
+
+	val ADHESIVE_TANK = //TODO FIX
+		register(
+			object : Magazine<PVPBalancingConfiguration.EnergyWeapons.AmmoStorage>(
+				identifier = "ADHESIVE_TANK",
+				material = WARPED_FUNGUS_ON_A_STICK,
+				customModelData = 3,
+				displayName = text("Adhesive Tank").decoration(ITALIC, false),
+				balancingSupplier = IonServer.pvpBalancing.energyWeapons::specialMagazine
+			) {
+				override fun getMaximumAmmunition(): Int = 500
+				override fun getTypeRefill(): String = "minecraft:honeycomb"
+				override fun getAmmoPerRefill(): Int = 1
+
+				override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
+					if (livingEntity !is Player) return // Player Only
+					val inventory = livingEntity.inventory
+					val typeRefill = matchMaterial(getTypeRefill()) ?: return
+					if (!inventory.containsAtLeast(ItemStack(typeRefill), 1)) return
+
+					val ammoToSet = min(
+						getMaximumAmmunition() - getAmmunition(itemStack),
+						getAmmoPerRefill()
+					)
+					setAmmunition(itemStack, inventory, getAmmunition(itemStack) + ammoToSet)
+					inventory.removeItemAnySlot(ItemStack(typeRefill))
+				}
+			}
 		)
 
 	// Magazines End
@@ -236,6 +269,19 @@ object CustomItems {
 	val CANNON_RECEIVER = register("CANNON_RECEIVER", 507, text("Cannon Receiver"))
 
 	// Gun Parts End
+	// Tools Start
+
+	val CRATE_PLACER = register(object : CratePlacer( //TODO fix
+		identifier = "CRATE_PLACER",
+		material = IRON_HOE,
+		customModelData = 4,
+		displayName = text("Crate Placer", GOLD, BOLD).decoration(ITALIC, false),
+		magazineType = ADHESIVE_TANK,
+		soundReloadStart = "blaster.cannon.reload.start",
+		soundReloadFinish = "blaster.cannon.reload.finish",
+	) {})
+
+	// Tools End
 	// Gas Canisters Start
 
 	val GAS_CANISTER_EMPTY = register("GAS_CANISTER_EMPTY", 1000, text("Empty Gas Canister"))
