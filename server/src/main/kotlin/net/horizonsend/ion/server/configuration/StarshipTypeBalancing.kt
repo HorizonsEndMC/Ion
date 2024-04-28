@@ -757,7 +757,7 @@ class StarshipWeapons(
 			explosionPower = 3.0f,
 			volume = 10,
 			pitch = 1.0f,
-			soundName = "starship.weapon.rocket.shoot",
+			soundName = "starship.weapon.arsenal_rocket.shoot",
 			powerUsage = 8000,
 			length = 3,
 			angleRadiansVertical = 100.0,

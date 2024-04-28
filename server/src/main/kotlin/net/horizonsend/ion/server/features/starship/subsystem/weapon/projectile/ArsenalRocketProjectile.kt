@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.world.entity.Display.ItemDisplay
 import net.minecraft.world.entity.EntityType
@@ -133,6 +135,9 @@ class ArsenalRocketProjectile(
 		//Desired vector is the vector straight to the target
 		val desiredVector = starship?.targetedPosition?.clone()?.subtract(loc.clone())?.toVector() ?: return
 		desiredVector.normalize()
+		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 250.0)) {
+			nearbyPlayer.playSound(Sound.sound(Key.key("starship.weapon.arsenal_rocket.ignite"), Sound.Source.AMBIENT, 5f, 0.05f))
+		}
 		//this is the current direction of the projectile, written as a Vector3f
 		val dirAsVec3f = dir.clone().toVector3f().normalize()
 		//0.05f is a tolerance of 5 for each lerp, so the dir will lerp only 5% every tick towards the desiredVector
@@ -164,6 +169,9 @@ class ArsenalRocketProjectile(
 		newLoc.world.spawnParticle(Particle.EXPLOSION_HUGE, newLoc, 4)
 		newLoc.world.spawnParticle(Particle.FLAME, newLoc, 10)
 		newLoc.world.spawnParticle(Particle.FLASH, newLoc, 3)
+		for (nearbyPlayer in newLoc.world.getNearbyPlayers(newLoc, 200.0)) {
+			nearbyPlayer.playSound(Sound.sound(Key.key("starship.weapon.arsenal_rocket.impact"), Sound.Source.AMBIENT, 5f, 0.05f))
+		}
 		super.impact(newLoc, block, entity)
 	}
 
