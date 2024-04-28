@@ -292,15 +292,13 @@ object Hyperspace : IonServerComponent() {
 	fun onStarshipExitHyperspace(event: StarshipExitHyperspaceEvent) {
 		val movement = event.movement
 		for (player in movement.dest.world.getNearbyPlayers(movement.dest, 2500.0)) {
-			if (movement.ship.type == BATTLECRUISER || movement.ship.type == CRUISER) player.playSound(Sound.sound(Key.key("starship.supercapital.hyperspace_exit"), Sound.Source.AMBIENT, 5f, 0.05f))
-			else player.playSound(starshipExitHyperspaceSound())
+			player.playSound(starshipExitHyperspaceSound())
 		}
 		Space.getPlanets().filter {
 			it.location.toLocation(movement.dest.world).distance(movement.dest) < 2500
 		}
 			.forEach {
-				if (movement.ship.type == BATTLECRUISER || movement.ship.type == CRUISER) it.planetWorld?.playSound(Sound.sound(Key.key("starship.supercapital.hyperspace_exit"), Sound.Source.AMBIENT, 5f, 0.05f))
-				else it.planetWorld?.playSound(starshipExitHyperspaceSound())
+				it.planetWorld?.playSound(starshipExitHyperspaceSound())
 			}
 	}
 
