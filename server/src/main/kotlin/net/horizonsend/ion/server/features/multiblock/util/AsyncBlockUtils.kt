@@ -6,6 +6,9 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.future.asDeferred
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot.Companion.getBlockSnapshot
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.loadChunkAsync
 import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -39,6 +42,14 @@ suspend fun getChunkSnapshotAsync(world: World, x: Int, z: Int, loadChunks: Bool
 
 /** Retrieves a snapshot of an async block */
 suspend fun getBlockSnapshotAsync(world: World, x: Int, y: Int, z: Int, loadChunks: Boolean = false): BlockSnapshot? {
+	return getChunkSnapshotAsync(world, x, z, loadChunks)?.getBlockSnapshot(x, y, z)
+}
+
+/** Retrieves a snapshot of an async block */
+suspend fun getBlockSnapshotAsync(world: World, key: Long, loadChunks: Boolean = false): BlockSnapshot? {
+	val x = getX(key)
+	val y = getY(key)
+	val z = getZ(key)
 	return getChunkSnapshotAsync(world, x, z, loadChunks)?.getBlockSnapshot(x, y, z)
 }
 
