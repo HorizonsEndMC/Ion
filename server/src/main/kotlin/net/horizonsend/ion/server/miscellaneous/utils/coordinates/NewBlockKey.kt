@@ -7,4 +7,8 @@ import net.minecraft.core.BlockPos
  **/
 fun toBlockKey(x: Int, y: Int, z: Int): Long = BlockPos.asLong(x, y, z)
 fun toBlockKey(vec3i: Vec3i): Long = BlockPos.asLong(vec3i.x, vec3i.y, vec3i.z)
-fun toVec3i(key: Long): Vec3i = Vec3i(BlockPos.getX(key), BlockPos.getY(key), BlockPos.getZ(key))
+fun toVec3i(key: Long): Vec3i = Vec3i(getX(key), getY(key), getZ(key))
+
+fun getX(key: Long) : Int = BlockPos.getX(key)
+fun getY(key: Long) : Int = BlockPos.getY(key)
+fun getZ(key: Long) : Int = BlockPos.getZ(key)
