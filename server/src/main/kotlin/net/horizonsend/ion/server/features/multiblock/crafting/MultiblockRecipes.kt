@@ -12,10 +12,10 @@ import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.Resour
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.FurnaceMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.ProcessingMultiblockRecipe
-import net.horizonsend.ion.server.features.multiblock.crafting.result.ActionResult
 import net.horizonsend.ion.server.features.multiblock.crafting.result.ItemResult
 import net.horizonsend.ion.server.features.multiblock.crafting.result.MultiRecipeResult
 import net.horizonsend.ion.server.features.multiblock.crafting.result.ProgressItemResult
+import net.horizonsend.ion.server.features.multiblock.crafting.result.SoundResult
 import net.horizonsend.ion.server.features.multiblock.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.CompressorMultiblock
@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.multiblock.industry.PlatePressMultibl
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.SoundCategory
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -40,14 +41,7 @@ object MultiblockRecipes : IonServerComponent() {
 		smelting = ConsumedItemIngredient(CustomItems.URANIUM, 1),
 		result = MultiRecipeResult(
 			ItemResult(CustomItems.ENRICHED_URANIUM),
-			ActionResult { _: MultiblockRecipe<*>, _: Inventory, sign: Sign ->
-				sign.world.playSound(
-					sign.location,
-					Sound.ENTITY_ENDER_DRAGON_DEATH,
-					1.0f,
-					1.0f
-				)
-			}
+			SoundResult(Sound.ENTITY_ENDER_DRAGON_DEATH, SoundCategory.BLOCKS, 1.0f, 1.0f)
 		),
 		resources = listOf(power(100)),
 	))
@@ -56,7 +50,9 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = CompressorMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.URANIUM_CORE, 1), progressHolderResult = CustomItems.URANIUM_ROD),
 		resources = listOf(power(150)),
-		result = ProgressItemResult(CustomItems.URANIUM_ROD, 60L * 60L * 20L)
+		result = MultiRecipeResult(
+			ProgressItemResult(CustomItems.URANIUM_ROD, 60L * 60L * 20L, SoundResult(Sound.ENTITY_ENDER_DRAGON_DEATH, SoundCategory.BLOCKS, 1.0f, 1.0f))
+		)
 	))
 
 	val STEEL_PRODUCTION = registerRecipe(FurnaceMultiblockRecipe(
@@ -113,7 +109,7 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = AmmoLoaderMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNLOADED_TURRET_SHELL, 1), progressHolderResult = CustomItems.LOADED_TURRET_SHELL),
 		resources = listOf(power(150)),
-		result = ProgressItemResult(CustomItems.LOADED_TURRET_SHELL, 90L * 20L)
+		result = MultiRecipeResult(ProgressItemResult(CustomItems.LOADED_TURRET_SHELL, 90L * 20L, SoundResult(Sound.ENTITY_ENDER_DRAGON_DEATH, SoundCategory.BLOCKS, 1.0f, 1.0f)))
 	))
 
 	val UNCHARGED_SHELL_CHARGING = registerRecipe(ProcessingMultiblockRecipe(
