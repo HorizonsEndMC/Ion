@@ -38,17 +38,21 @@ import org.bukkit.Material.AIR
 import org.bukkit.Material.AMETHYST_SHARD
 import org.bukkit.Material.BELL
 import org.bukkit.Material.BLACK_WOOL
+import org.bukkit.Material.BLACKSTONE
 import org.bukkit.Material.BLUE_WOOL
 import org.bukkit.Material.BROWN_WOOL
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.CYAN_WOOL
+import org.bukkit.Material.DARK_PRISMARINE
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.EMERALD_BLOCK
+import org.bukkit.Material.GILDED_BLACKSTONE
 import org.bukkit.Material.GLASS
 import org.bukkit.Material.GLASS_PANE
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GOLD_INGOT
+import org.bukkit.Material.GOLD_NUGGET
 import org.bukkit.Material.GRAY_WOOL
 import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.GREEN_WOOL
@@ -76,6 +80,7 @@ import org.bukkit.Material.PRISMARINE_BRICKS
 import org.bukkit.Material.PRISMARINE_CRYSTALS
 import org.bukkit.Material.PURPLE_WOOL
 import org.bukkit.Material.QUARTZ
+import org.bukkit.Material.RED_TERRACOTTA
 import org.bukkit.Material.REDSTONE
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.RED_WOOL
@@ -83,9 +88,11 @@ import org.bukkit.Material.SADDLE
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SHROOMLIGHT
 import org.bukkit.Material.SLIME_BALL
+import org.bukkit.Material.SNIFFER_EGG
 import org.bukkit.Material.STICK
 import org.bukkit.Material.STRING
 import org.bukkit.Material.TRIPWIRE
+import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WHITE_WOOL
 import org.bukkit.Material.YELLOW_WOOL
@@ -164,6 +171,23 @@ object Crafting : IonServerComponent() {
 			setIngredient('s', STRING)
 			setIngredient('t', TRIPWIRE_HOOK)
 			setIngredient('p', PAPER)
+		}
+
+		// Gilded Blackstone
+		shapedRecipe("gilded_blackstone", GILDED_BLACKSTONE) {
+			shape("gbg", "bgb", "gbg")
+
+			setIngredient('g', GOLD_NUGGET)
+			setIngredient('b', BLACKSTONE)
+		}
+
+		// Sniffer Egg
+		shapedRecipe("sniffer_egg", SNIFFER_EGG) {
+			shape("rdr", "ded", "rdr")
+
+			setIngredient('r', RED_TERRACOTTA)
+			setIngredient('d', DARK_PRISMARINE)
+			setIngredient('e', TURTLE_EGG)
 		}
 
 		// Ochre Froglight

@@ -288,16 +288,4 @@ object CustomRecipes : IonServerComponent() {
 			)
 		)
 	}
-	private fun registerSnifferEggRecipe() {
-		registerShapedRecipe(
-			"sniffer_egg",
-			ItemStack(SNIFFER_EGG, 1),
-			"rdr", "ded", "rdr",
-			ingredients = mapOf(
-				'r' to materialChoice(RED_TERRACOTTA),
-				'd' to materialChoice(DARK_PRISMARINE),
-				'e' to materialChoice(TURTLE_EGG)
-			)
-		)
-	}
 }
