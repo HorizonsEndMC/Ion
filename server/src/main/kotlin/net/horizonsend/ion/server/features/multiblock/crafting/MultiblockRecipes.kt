@@ -126,7 +126,6 @@ object MultiblockRecipes : IonServerComponent() {
 		result = ProgressItemResult(CustomItems.ARSENAL_MISSILE, 60L * 60L * 20L, SoundResult("industry.mload", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	))
 
-
 	/**
 	 * Add a power ingredient
 	 **/
