@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.transport.grid.Grid
 import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.setOrRemove
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
@@ -22,20 +21,7 @@ interface GridNode {
 	 * Collects the neighbors of this node
 	 **/
 	fun collectNeighbors() {
-		// In every adjacent direction
-		for (direction in ADJACENT_BLOCK_FACES) {
-			val newX = x + direction.modX
-			val newY = y + direction.modY
-			val newZ = z + direction.modZ
 
-			// All nodes should already be collected
-			val possibleNode = parentGrid.getNode(newX, newY, newZ) ?: continue
-
-			// Only add transferable nodes
-			if (!isTransferableTo(direction, possibleNode)) continue
-
-			transferableNeighbors[direction] = possibleNode
-		}
 	}
 
 	/**
@@ -52,7 +38,6 @@ interface GridNode {
 			val possibleNode = parentGrid.getNode(newX, newY, newZ) ?: continue
 
 			possibleNode.transferableNeighbors.clear()
-			possibleNode.collectNeighbors()
 		}
 	}
 
@@ -89,11 +74,11 @@ interface GridNode {
 	 * Replace this node with another and update its neighbors
 	 **/
 	fun replace(new: GridNode?) {
-		for ((offset, neighbor) in transferableNeighbors) {
-			neighbor.neighborChanged(offset.oppositeFace, new)
-
-			parentGrid.nodes.setOrRemove(key, new)
-		}
+//		for ((offset, neighbor) in transferableNeighbors) {
+//			neighbor.neighborChanged(offset.oppositeFace, new)
+//
+//			parentGrid.nodes.setOrRemove(key, new)
+//		}
 	}
 
 	fun processStep(step: Step)
