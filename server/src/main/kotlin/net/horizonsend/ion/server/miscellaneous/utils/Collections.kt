@@ -128,3 +128,15 @@ fun <K, V> MutableMap<K, V>.setOrRemove(key: K, value: V?) {
 		set(key, value)
 	}
 }
+
+fun <K, V, R : Comparable<R>> MutableMap<K, V>.popMaxByOrNull(selector: (Map.Entry<K, V>) -> R): Map.Entry<K, V>? {
+	val max = maxByOrNull(selector) ?: return null
+	remove(max.key)
+
+	return max
+}
+
+inline fun <K, V> Iterable<K>.associateWithNotNull(valueSelector: (K) -> V?): Map<K, V> {
+	@Suppress("UNCHECKED_CAST")
+	return associateWith(valueSelector).filterValues { it != null } as Map<K, V>
+}
