@@ -295,6 +295,30 @@ data class StarshipTypeBalancing(
 								maxBlockCount = 12000,
 								minBlockCount = 6500
 						),
+						arsenalMissile = StarshipWeapons.StarshipWeapon(
+								canFire = true,
+								range = 700.0,
+								speed = 50.0,
+								areaShieldDamageMultiplier = 5.0,
+								starshipShieldDamageMultiplier = 1.0,
+								particleThickness = 0.5,
+								explosionPower = 3.0f,
+								volume = 10,
+								pitch = 1.0f,
+								soundName = "starship.weapon.arsenal_rocket.shoot",
+								powerUsage = 8000,
+								length = 3,
+								angleRadiansVertical = 100.0,
+								angleRadiansHorizontal = 100.0,
+								convergeDistance = 0.0,
+								extraDistance = 0,
+								fireCooldownMillis = 250,
+								boostChargeSeconds = 22,
+								aimDistance = 0,
+								applyCooldownToAll = false,
+								displayEntityCustomModelData = 1101,
+								displayEntitySize = 1.0
+						)
 				),
 				requiredMultiblocks = listOf(
 						RequiredSubsystemInfo(
@@ -363,6 +387,30 @@ data class StarshipTypeBalancing(
 								inaccuracyRadians = 3.0,
 								applyCooldownToAll = false,
 								minBlockCount = 3400
+						),
+						arsenalMissile = StarshipWeapons.StarshipWeapon(
+							canFire = true,
+							range = 700.0,
+							speed = 50.0,
+							areaShieldDamageMultiplier = 5.0,
+							starshipShieldDamageMultiplier = 1.0,
+							particleThickness = 0.5,
+							explosionPower = 3.0f,
+							volume = 10,
+							pitch = 1.0f,
+							soundName = "starship.weapon.arsenal_rocket.shoot",
+							powerUsage = 8000,
+							length = 3,
+							angleRadiansVertical = 100.0,
+							angleRadiansHorizontal = 100.0,
+							convergeDistance = 0.0,
+							extraDistance = 0,
+							fireCooldownMillis = 250,
+							boostChargeSeconds = 22,
+							aimDistance = 0,
+							applyCooldownToAll = false,
+							displayEntityCustomModelData = 1101,
+							displayEntitySize = 1.0
 						)
 
 				),
@@ -749,6 +797,7 @@ class StarshipWeapons(
 		),
 
 		val arsenalMissile: StarshipWeapon = StarshipWeapon(
+			canFire = false,
 			range = 700.0,
 			speed = 50.0,
 			areaShieldDamageMultiplier = 5.0,
