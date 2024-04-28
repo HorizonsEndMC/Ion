@@ -4,6 +4,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
@@ -63,8 +64,10 @@ object IonChunkCommand : SLCommand() {
 			 else -> fail { "invalid network" }
 		}
 
+		sender.information("${grid.nodes.size} total nodes.")
+
 		grid.nodes.forEach { (t, u) ->
-			val vec = toVec3i(u.key)
+			val vec = toVec3i(t)
 
 			sender.highlightBlock(vec, 50L)
 		}

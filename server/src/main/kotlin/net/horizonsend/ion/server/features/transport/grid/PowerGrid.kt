@@ -1,22 +1,30 @@
 package net.horizonsend.ion.server.features.transport.grid
 
+import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.transport.ChunkTransportNetwork
-import net.horizonsend.ion.server.features.transport.node.GridNode
 import net.horizonsend.ion.server.features.transport.node.general.GateNode
-import net.horizonsend.ion.server.features.transport.node.general.JunctionNode
 import net.horizonsend.ion.server.features.transport.node.general.LinearNode
 import net.horizonsend.ion.server.features.transport.node.power.MergeNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.SplitterNode
+import net.horizonsend.ion.server.features.transport.node.power.SpongeNode
+import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.IntervalExecutor
+import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.isRedstoneLamp
+import net.horizonsend.ion.server.miscellaneous.utils.mapNotNullTo
+import net.horizonsend.ion.server.miscellaneous.utils.popMaxByOrNull
 import org.bukkit.Material
+import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
 import java.util.concurrent.ConcurrentHashMap
 
@@ -28,12 +36,14 @@ class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
 		collectPowerMultiblockEntities()
 	}
 
-	override fun loadNode(block: BlockSnapshot): GridNode? {
+	override fun loadNode(block: BlockSnapshot) {
 		val x = block.x
 		val y = block.y
 		val z = block.z
 
-		return when {
+		val key = toBlockKey(x, y, z)
+
+		when {
 			// Extract power from storage
 			block.type == Material.CRAFTING_TABLE -> PowerExtractorNode(this, x, y, z).apply { extractors[toBlockKey(x, y, z)] = this }
 
@@ -44,7 +54,7 @@ class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
 			block.type == Material.END_ROD -> LinearNode(this, x, y, z, block.data as Directional)
 
 			// Omnidirectional wires
-			block.type == Material.SPONGE -> JunctionNode(this, x, y, z)
+			block.type == Material.SPONGE -> handleSpongeNode(key)
 
 			// Merge node behavior
 			block.type == Material.IRON_BLOCK -> MergeNode(this, x, y, z)
@@ -58,29 +68,20 @@ class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
 
 			// Power flow meter
 			block.type == Material.OBSERVER -> PowerFlowMeter(this, x, y, z)
-			else -> null
 		}
 	}
 
-	override fun processBlockChange(key: Long, new: BlockSnapshot) {
-		val newNode = loadNode(new)
+	override fun processBlockRemoval(key: Long) {
+		network.scope.launch {
+			val previousNode = nodes[key]
 
-		val previousNode = nodes[key]
-
-		if (previousNode == null) {
-			nodes[key] = newNode ?: return
-			newNode.collectNeighbors()
-			newNode.notifyNeighbors()
-
-			return
+			nodes.remove(key)
 		}
+	}
 
-		if (newNode == null) {
-			removeNode(key)
-			return
-		}
-
-		previousNode.replace(newNode)
+	override fun processBlockAddition(key: Long, new: BlockSnapshot) {
+		loadNode(new)
+		//TODO
 	}
 
 	fun removeNode(key: Long) {
@@ -103,5 +104,47 @@ class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
 
 			poweredMultiblockEntities[key] = entity
 		}
+	}
+
+	private fun handleSpongeNode(position: Long) {
+		val neighbors = getNeighborNodes(position)
+
+		when (neighbors.size) {
+			// New sponge node
+			0 -> nodes[position] = SpongeNode(position)
+			// Consolidate into neighbor
+			1 -> {
+				val neighbor = neighbors.values.firstOrNull() ?: throw ConcurrentModificationException("Node removed during processing")
+				if (neighbor !is SpongeNode) return
+
+				neighbor.positions += position
+				nodes[position] = neighbor
+			}
+
+			// Join multiple neighbors together
+			in 2..6 -> {
+				// Get the larger
+				val spongeNeighbors: MutableMap<BlockFace, SpongeNode> = mutableMapOf()
+				neighbors.mapNotNullTo(spongeNeighbors) { (key, value) -> (value as? SpongeNode)?.let { key to value }  }
+
+				val largestNeighbor = spongeNeighbors.popMaxByOrNull { it.value.positions.size }?.value ?: return
+
+				spongeNeighbors.forEach {
+					it.value.drainTo(largestNeighbor, this.nodes)
+				}
+
+				largestNeighbor.positions.add(position)
+
+				nodes[position] = largestNeighbor
+			}
+		}
+	}
+
+	private fun getNeighborNodes(position: Long) = ADJACENT_BLOCK_FACES.associateWithNotNull {
+		val x = getX(position)
+		val y = getY(position)
+		val z = getZ(position)
+
+		nodes[toBlockKey(x + it.modX, y + it.modY, z + it.modZ)]
 	}
 }
