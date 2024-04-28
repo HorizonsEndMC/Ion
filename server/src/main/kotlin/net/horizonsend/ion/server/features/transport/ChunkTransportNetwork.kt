@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.Chunk
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockPlaceEvent
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class ChunkTransportNetwork(
@@ -46,19 +47,32 @@ class ChunkTransportNetwork(
 
 	}
 
-	fun processBlockChange(event: BlockBreakEvent) {
+	fun processBlockRemoval(event: BlockBreakEvent) {
+		val block = event.block
+		val key = toBlockKey(block.x, block.y, block.z)
+
+		processBlockRemoval(key)
+	}
+
+	fun processBlockAdditon(event: BlockPlaceEvent) {
 		val block = event.block
 
 		val key = toBlockKey(block.x, block.y, block.z)
 		val snapshot = block.snapshot()
 
-		processBlockChange(key, snapshot)
+		processBlockAddition(key, snapshot)
 	}
 
-	fun processBlockChange(key: Long, new: BlockSnapshot) {
-		powerGrid.processBlockChange(key, new)
-		pipeGrid.processBlockChange(key, new)
-		gasGrid.processBlockChange(key, new)
+	fun processBlockRemoval(key: Long) {
+		powerGrid.processBlockRemoval(key)
+		pipeGrid.processBlockRemoval(key)
+		gasGrid.processBlockRemoval(key)
+	}
+
+	fun processBlockAddition(key: Long, new: BlockSnapshot) {
+		powerGrid.processBlockAddition(key, new)
+		pipeGrid.processBlockAddition(key, new)
+		gasGrid.processBlockAddition(key, new)
 	}
 
 	private fun getExtractorData(chunk: Chunk): ExtractorData {

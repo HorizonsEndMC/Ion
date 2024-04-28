@@ -7,12 +7,12 @@ import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.Consolidatable
-import net.horizonsend.ion.server.features.transport.node.GridNode
+import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class Grid(val network: ChunkTransportNetwork) {
-	val nodes: ConcurrentHashMap<Long, GridNode> = ConcurrentHashMap()
+	val nodes: ConcurrentHashMap<Long, TransportNode> = ConcurrentHashMap()
 	val world get() = network.chunk.world
 
 //	val grids: Nothing = TODO("Grid system")
@@ -27,9 +27,10 @@ abstract class Grid(val network: ChunkTransportNetwork) {
 	 *
 	 * Inheritors may choose to save persistent data, or not
 	 **/
-	abstract fun loadNode(block: BlockSnapshot): GridNode?
+	abstract fun loadNode(block: BlockSnapshot)
 
-	abstract fun processBlockChange(key: Long, new: BlockSnapshot)
+	abstract fun processBlockRemoval(key: Long)
+	abstract fun processBlockAddition(key: Long, new: BlockSnapshot)
 
 	/**
 	 *
@@ -42,7 +43,7 @@ abstract class Grid(val network: ChunkTransportNetwork) {
 	fun build() = network.scope.launch {
 		collectAllNodes().join()
 		collectNeighbors()
-		consolidateNodes()
+		finalizeNodes()
 		buildGraph()
 	}
 
@@ -77,9 +78,7 @@ abstract class Grid(val network: ChunkTransportNetwork) {
 
 					val snapshot = getBlockSnapshotAsync(network.chunk.world, realX, realY, realZ) ?: continue
 
-					val node = loadNode(snapshot) ?: continue
-
-					nodes[toBlockKey(realX, realY, realZ)] = node
+					loadNode(snapshot)
 				}
 			}
 		}
@@ -89,7 +88,7 @@ abstract class Grid(val network: ChunkTransportNetwork) {
 	 * Get the neighbors of a node
 	 **/
 	private fun collectNeighbors() {
-		nodes.values.forEach { node -> node.collectNeighbors() }
+//		nodes.values.forEach { node -> node.collectNeighbors() }
 	}
 
 	/**
@@ -97,7 +96,7 @@ abstract class Grid(val network: ChunkTransportNetwork) {
 	 *
 	 * e.g. a straight section may be represented as a single node
 	 **/
-	private fun consolidateNodes() {
+	private fun finalizeNodes() {
 		nodes.forEach { (_, node) ->
 			if (node is Consolidatable) node.consolidate()
 		}
@@ -110,7 +109,7 @@ abstract class Grid(val network: ChunkTransportNetwork) {
 		//TODO
 	}
 
-	fun getNode(x: Int, y: Int, z: Int): GridNode? {
+	fun getNode(x: Int, y: Int, z: Int): TransportNode? {
 		val key = toBlockKey(x, y, z)
 		return nodes[key]
 	}
