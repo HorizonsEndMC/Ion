@@ -6,7 +6,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot.Companion.snapshot
-import net.horizonsend.ion.server.features.transport.grid.PowerGrid
+import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.world.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -15,7 +15,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class ChunkTransportNetwork(
+class ChunkTransportManager(
 	val chunk: IonChunk,
 ) {
 	// Each chunk gets a scope for parallelism
@@ -23,28 +23,24 @@ class ChunkTransportNetwork(
 
 	val extractorData = getExtractorData(chunk.inner)
 
-	val powerGrid = PowerGrid(this)
-	val pipeGrid = PowerGrid(this) // TODO
-	val gasGrid = PowerGrid(this) // TODO
+	val powerNetwork = ChunkPowerNetwork(this)
+//	val pipeGrid = ChunkPowerNetwork(this) // TODO
+//	val gasGrid = ChunkPowerNetwork(this) // TODO
 
-	init {
-	    setup()
-	}
-
-	private fun setup() {
-		powerGrid.setup()
-		pipeGrid.setup()
-		gasGrid.setup()
+	fun setup() {
+		powerNetwork.setup()
+//		pipeGrid.setup()
+//		gasGrid.setup()
 	}
 
 	fun tick() {
-		scope.launch { powerGrid.tick() }
-		scope.launch { pipeGrid.tick() }
-		scope.launch { gasGrid.tick() }
+		scope.launch { powerNetwork.tick() }
+//		scope.launch { pipeGrid.tick() }
+//		scope.launch { gasGrid.tick() }
 	}
 
 	fun save() {
-
+		powerNetwork.save(chunk.inner.persistentDataContainer.adapterContext)
 	}
 
 	fun processBlockRemoval(event: BlockBreakEvent) {
@@ -64,15 +60,15 @@ class ChunkTransportNetwork(
 	}
 
 	fun processBlockRemoval(key: Long) {
-		powerGrid.processBlockRemoval(key)
-		pipeGrid.processBlockRemoval(key)
-		gasGrid.processBlockRemoval(key)
+		powerNetwork.processBlockRemoval(key)
+//		pipeGrid.processBlockRemoval(key)
+//		gasGrid.processBlockRemoval(key)
 	}
 
 	fun processBlockAddition(key: Long, new: BlockSnapshot) {
-		powerGrid.processBlockAddition(key, new)
-		pipeGrid.processBlockAddition(key, new)
-		gasGrid.processBlockAddition(key, new)
+		powerNetwork.processBlockAddition(key, new)
+//		pipeGrid.processBlockAddition(key, new)
+//		gasGrid.processBlockAddition(key, new)
 	}
 
 	private fun getExtractorData(chunk: Chunk): ExtractorData {

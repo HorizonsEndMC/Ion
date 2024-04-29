@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node
 
-import net.horizonsend.ion.server.features.transport.grid.Grid
+import net.horizonsend.ion.server.features.transport.grid.TransportNetwork
 import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -8,7 +8,7 @@ import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
 interface GridNode {
-	val parentGrid: Grid
+	val parentTransportNetwork: TransportNetwork
 	val x: Int
 	val y: Int
 	val z: Int
@@ -35,7 +35,7 @@ interface GridNode {
 			val newZ = z + direction.modZ
 
 			// All nodes should already be collected
-			val possibleNode = parentGrid.getNode(newX, newY, newZ) ?: continue
+			val possibleNode = parentTransportNetwork.getNode(newX, newY, newZ) ?: continue
 
 			possibleNode.transferableNeighbors.clear()
 		}
@@ -77,7 +77,7 @@ interface GridNode {
 //		for ((offset, neighbor) in transferableNeighbors) {
 //			neighbor.neighborChanged(offset.oppositeFace, new)
 //
-//			parentGrid.nodes.setOrRemove(key, new)
+//			parentTransportNetwork.nodes.setOrRemove(key, new)
 //		}
 	}
 
