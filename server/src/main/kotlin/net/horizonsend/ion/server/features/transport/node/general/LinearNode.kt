@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.general
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.features.transport.grid.Grid
+import net.horizonsend.ion.server.features.transport.grid.TransportNetwork
 import net.horizonsend.ion.server.features.transport.node.Consolidatable
 import net.horizonsend.ion.server.features.transport.node.GridNode
 import net.horizonsend.ion.server.features.transport.step.Step
@@ -15,7 +15,7 @@ import org.bukkit.block.data.Directional
 import java.util.concurrent.ConcurrentHashMap
 
 class LinearNode(
-	override val parentGrid: Grid,
+	override val parentTransportNetwork: TransportNetwork,
 	override val x: Int,
 	override val y: Int,
 	override val z: Int,
@@ -23,13 +23,13 @@ class LinearNode(
 	val occupiedPositions: LongOpenHashSet = LongOpenHashSet.of(toBlockKey(x, y, z))
 ) : GridNode, Consolidatable {
 	constructor(
-		grid: Grid,
+		transportNetwork: TransportNetwork,
 		x: Int,
 		y: Int,
 		z: Int,
 		data: Directional,
 		occupiedPositions: LongOpenHashSet = LongOpenHashSet.of(toBlockKey(x, y, z))
-	) : this(grid, x, y, z, data.facing.axis, occupiedPositions)
+	) : this(transportNetwork, x, y, z, data.facing.axis, occupiedPositions)
 
 	override val transferableNeighbors: ConcurrentHashMap<BlockFace, GridNode> = ConcurrentHashMap()
 
