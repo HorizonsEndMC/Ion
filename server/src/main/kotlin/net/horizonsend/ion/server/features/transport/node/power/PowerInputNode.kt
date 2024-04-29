@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.transport.grid.PowerGrid
+import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.GridNode
 import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.features.transport.step.TransferStatus
@@ -11,7 +11,7 @@ import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
 class PowerInputNode(
-	override val parentGrid: PowerGrid,
+	override val parentTransportNetwork: ChunkPowerNetwork,
 	override val x: Int,
 	override val y: Int,
 	override val z: Int,
@@ -32,7 +32,7 @@ class PowerInputNode(
 
 			val key = toBlockKey(x, y, z)
 
-			val multi = parentGrid.poweredMultiblockEntities[key] ?: continue
+			val multi = parentTransportNetwork.poweredMultiblockEntities[key] ?: continue
 
 			multiblocks.add(multi)
 		}
