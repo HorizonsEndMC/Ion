@@ -39,7 +39,9 @@ class ArsenalRocketStarshipWeaponSubsystem(
 			BlockFace.DOWN -> -1
 			else -> 1
 		}
-		return !starship.isInternallyObstructed(pos.plus(Vec3i(0, 10*yFactor, 0)), dir)
+		val block = pos.toLocation(starship.world).block
+		val inward = block.getRelative(this.face)
+		return !starship.isInternallyObstructed(Vec3i(inward.x, inward.y.plus(5*yFactor), inward.z), dir)
 	}
 
 	private fun getSurroundingFaces(): Array<BlockFace> {
@@ -62,7 +64,9 @@ class ArsenalRocketStarshipWeaponSubsystem(
 			BlockFace.DOWN -> -1
 			else -> 1
 		}
-		return pos.toVector().add(Vector(0.0, 10.0*yFactor, 0.0))
+		val block = pos.toLocation(starship.world).block
+		val inward = block.getRelative(this.face)
+		return inward.location.toVector().add(Vector(0.0, 10.0*yFactor, 0.0))
 	}
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.world)
