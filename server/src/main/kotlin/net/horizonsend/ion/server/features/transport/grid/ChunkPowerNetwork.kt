@@ -4,7 +4,7 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
-import net.horizonsend.ion.server.features.transport.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.node.general.GateNode
 import net.horizonsend.ion.server.features.transport.node.general.LinearNode
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
@@ -14,19 +14,23 @@ import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNo
 import net.horizonsend.ion.server.features.transport.node.power.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.SplitterNode
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.IntervalExecutor
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.isRedstoneLamp
 import net.horizonsend.ion.server.miscellaneous.utils.mapNotNullTo
 import net.horizonsend.ion.server.miscellaneous.utils.popMaxByOrNull
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
 import java.util.concurrent.ConcurrentHashMap
 
-class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
+class ChunkPowerNetwork(manager: ChunkTransportManager) : TransportNetwork(manager) {
 	val poweredMultiblockEntities = ConcurrentHashMap<Long, PoweredMultiblockEntity>()
 	val extractors = ConcurrentHashMap<Long, PowerExtractorNode>()
+
+	override val namespacedKey: NamespacedKey = NamespacedKeys.POWER_TRANSPORT
 
 	override fun setup() {
 		collectPowerMultiblockEntities()
@@ -68,10 +72,11 @@ class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
 	}
 
 	override fun processBlockRemoval(key: Long) {
-		network.scope.launch {
+		manager.scope.launch {
 			val previousNode = nodes[key]
 
 			nodes.remove(key)
+			//TODO check for splits
 		}
 	}
 
@@ -95,7 +100,7 @@ class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
 	}
 
 	private fun collectPowerMultiblockEntities() {
-		network.chunk.multiblockManager.getAllMultiblockEntities().forEach { (key, entity) ->
+		manager.chunk.multiblockManager.getAllMultiblockEntities().forEach { (key, entity) ->
 			if (entity !is PoweredMultiblockEntity) return@forEach
 
 			poweredMultiblockEntities[key] = entity
