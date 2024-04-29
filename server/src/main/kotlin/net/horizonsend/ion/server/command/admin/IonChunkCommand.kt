@@ -53,14 +53,14 @@ object IonChunkCommand : SLCommand() {
 	}
 
 	@Subcommand("dump nodes")
-	@CommandCompletion("power|item|gas")
+	@CommandCompletion("power") /* |item|gas") */
 	fun dumpNodes(sender: Player, network: String) {
 		val ionChunk = sender.chunk.ion()
 
 		val grid = when (network) {
-			"power" -> ionChunk.transportNetwork.powerGrid
-			"item" -> ionChunk.transportNetwork.pipeGrid
-			"gas" -> ionChunk.transportNetwork.gasGrid
+			"power" -> ionChunk.transportNetwork.powerNetwork
+//			"item" -> ionChunk.transportNetwork.pipeGrid
+//			"gas" -> ionChunk.transportNetwork.gasGrid
 			 else -> fail { "invalid network" }
 		}
 
