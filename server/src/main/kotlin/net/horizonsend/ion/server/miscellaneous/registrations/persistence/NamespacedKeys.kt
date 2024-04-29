@@ -87,6 +87,10 @@ object NamespacedKeys {
 
 	val PROCESSING_PROGRESS = key("processing_progress")
 
+	val TRANSFERABLE_NEIGHBORS = key("transferable_neighbors")
+	val NODE_COVERED_POSITIONS = key("node_covered_positions")
+	val NODE_TYPE = key("node_type")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
 	// Used for datapacks and resource packs
