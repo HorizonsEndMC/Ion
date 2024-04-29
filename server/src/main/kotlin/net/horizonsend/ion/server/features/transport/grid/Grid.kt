@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.Consolidatable
-import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.nodes.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import java.util.concurrent.ConcurrentHashMap
 
