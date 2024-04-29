@@ -39,7 +39,7 @@ import kotlin.system.measureNanoTime
 object Wires : IonServerComponent() {
 	val INPUT_COMPUTER_BLOCK = Material.NOTE_BLOCK
 
-	private lateinit var thread: ExecutorService
+	lateinit var thread: ExecutorService
 
 	// region cache stuff for sync code
 	// should only be updated from the checkComputers
@@ -85,9 +85,11 @@ object Wires : IonServerComponent() {
 		Vec3i(1, -1, 0), Vec3i(-1, -1, 0), Vec3i(0, -1, -1), Vec3i(0, -1, 1),
 	)
 
+	val threadFactory = Tasks.namedThreadFactory("sl-transport-wires")
+
 	override fun onEnable() {
 		metrics?.metricsManager?.registerCollection(IonMetricsCollection)
-		thread = Executors.newSingleThreadExecutor(Tasks.namedThreadFactory("sl-transport-wires"))
+		thread = Executors.newSingleThreadExecutor(threadFactory)
 
 		scheduleUpdates()
 	}
