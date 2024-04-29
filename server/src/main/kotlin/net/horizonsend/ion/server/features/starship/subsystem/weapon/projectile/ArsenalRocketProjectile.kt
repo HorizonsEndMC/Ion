@@ -93,6 +93,21 @@ class ArsenalRocketProjectile(
 		}
 		else {
 			if (!hasSwitchedToNormalDirection){
+				if (starship != null) {
+					for (nearbyPlayer in starship.world.getNearbyPlayers(
+						starship.centerOfMass.toLocation(starship.world),
+						250.0
+					)) {
+						nearbyPlayer.playSound(
+							Sound.sound(
+								Key.key("minecraft:starship.weapon.arsenal_rocket.ignite"),
+								Sound.Source.AMBIENT,
+								5f,
+								1.0f
+							)
+						)
+					}
+				}
 				//1 is for up, -1 is for down
 				if (face == BlockFace.UP) this.dir = initialVelocity.clone().setY(1).normalize()
 				else this.dir = initialVelocity.clone().setY(-1).normalize()
@@ -135,9 +150,6 @@ class ArsenalRocketProjectile(
 		//Desired vector is the vector straight to the target
 		val desiredVector = starship?.targetedPosition?.clone()?.subtract(loc.clone())?.toVector() ?: return
 		desiredVector.normalize()
-		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 250.0)) {
-			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.weapon.arsenal_rocket.ignite"), Sound.Source.AMBIENT, 5f, 1.0f))
-		}
 		//this is the current direction of the projectile, written as a Vector3f
 		val dirAsVec3f = dir.clone().toVector3f().normalize()
 		//0.05f is a tolerance of 5 for each lerp, so the dir will lerp only 5% every tick towards the desiredVector
