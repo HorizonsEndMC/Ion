@@ -8,12 +8,12 @@ import net.horizonsend.ion.server.features.transport.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.general.GateNode
 import net.horizonsend.ion.server.features.transport.node.general.LinearNode
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
+import net.horizonsend.ion.server.features.transport.node.nodes.SpongeNode
 import net.horizonsend.ion.server.features.transport.node.power.MergeNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.SplitterNode
-import net.horizonsend.ion.server.features.transport.node.power.SpongeNode
 import net.horizonsend.ion.server.miscellaneous.utils.IntervalExecutor
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.isRedstoneLamp
