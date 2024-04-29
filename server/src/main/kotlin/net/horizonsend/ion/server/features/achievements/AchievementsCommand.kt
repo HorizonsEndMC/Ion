@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
+import net.horizonsend.ion.common.utils.text.GUI_HEADER_MARGIN
 import net.horizonsend.ion.common.utils.text.GUI_MARGIN
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.wrap
@@ -62,6 +63,17 @@ object AchievementsCommand : SLCommand() {
 		sender.success("Gave achievement ${achievement.name} to $target.")
 	}
 
+	@Subcommand("revoke")
+	@CommandCompletion("@achievements @players")
+	@CommandPermission("ion.achievements.revoke")
+	fun onAchievementRevoke(sender: CommandSender, achievement: Achievement, target: String) {
+		val playerData = SLPlayer[target] ?: return sender.userError("Player $target does not exist.")
+
+		SLPlayer.updateById(playerData._id, pull(SLPlayer::achievements, achievement.name))
+
+		sender.success("Took achievement ${achievement.name} from $target.")
+	}
+
 	@Subcommand("test")
 	fun test(sender: Player) {
 		val gui = Gui.normal()
@@ -84,7 +96,10 @@ object AchievementsCommand : SLCommand() {
 		)
 		println("ORIGINAL TEXT: $originalText")
 		val text = GuiText("WE WORK TO EARN THE RIGHT")
-		text.add(originalText.wrap(DEFAULT_GUI_WIDTH - GUI_MARGIN))
+		val componentList = originalText.wrap(DEFAULT_GUI_WIDTH - GUI_MARGIN)
+		for ((index, component) in componentList.withIndex()) {
+			text.add(component, line = index, verticalShift = GUI_HEADER_MARGIN)
+		}
 
 		val window = Window.single()
 			.setViewer(sender)
@@ -93,17 +108,6 @@ object AchievementsCommand : SLCommand() {
 			.build()
 
 		window.open()
-	}
-
-	@Subcommand("revoke")
-	@CommandCompletion("@achievements @players")
-	@CommandPermission("ion.achievements.revoke")
-	fun onAchievementRevoke(sender: CommandSender, achievement: Achievement, target: String) {
-		val playerData = SLPlayer[target] ?: return sender.userError("Player $target does not exist.")
-
-		SLPlayer.updateById(playerData._id, pull(SLPlayer::achievements, achievement.name))
-
-		sender.success("Took achievement ${achievement.name} from $target.")
 	}
 
 	private fun openAchievementWindow(viewer: Player, player: Player = viewer) {
