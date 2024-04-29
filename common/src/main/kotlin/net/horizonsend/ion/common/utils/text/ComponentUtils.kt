@@ -195,40 +195,56 @@ fun Component.shiftToLine(line: Int, shift: Int = 0): Component = this.shiftDown
  * @param width the width in pixels to limit the text to
  */
 fun Component.wrap(width: Int): List<Component> {
-	// regex: positive lookbehind, matching any character that is newline, tab, space, or hyphen
 
+	// regex: positive lookbehind, matching any character that is newline, tab, space, or hyphen
 	val regex = Regex("(?<=[\n\t -])")
-	val componentList = mutableListOf<Component>()
+	// list of components acting as lines on a GUI
+	val lines = mutableListOf<Component>()
+	// component for constructing portions of a line
 	var currentComponent: TextComponent
+	// list for storing components in each line
+	val componentsInLine = mutableListOf<Component>()
+	// for parsing component plaintext and adding to new components
 	val stringBuilder = StringBuilder()
 
 	val flattener = ComponentFlattener.basic()
-	val listener = object : FlattenerListener {
-		var lineWidth: Int = 0
 
+	// The FlattenerListener iterates over a Component and processes over its children. When the listener encounters
+	// a new component or style, its functions can be overridden to process the incoming data.
+	val listener = object : FlattenerListener {
+		var lineLength: Int = 0
+
+		// processes the plaintext of a component
 		override fun component(text: String) {
 			val words = text.split(regex)
 
+			// always reset currentComponent when encountering a new component (there may be a different Style)
 			currentComponent = text("")
 
 			for (word in words) {
 				val wordLength = word.minecraftLength
 				//val exceedsWidth = length > width
 				println("current word: $word, $wordLength")
-				println("current line length: $lineWidth")
+				println("current line length: $lineLength")
 
 				// add new line
-				if (lineWidth + wordLength > width) {
+				if (lineLength + wordLength > width) {
 					//println("EXCEEDS LENGTH")
 					// check if there is only whitespace
-					if (lineWidth > 0) {
-						println("exceeds width: would be ${lineWidth + wordLength} > $width")
+					if (lineLength > 0) {
+						println("exceeds width: would be ${lineLength + wordLength} > $width")
+
+						// current component complete; render current text to a new component and append it to the line component
 						currentComponent = text(stringBuilder.toString())
 						println("currentComponent text: ${currentComponent.plainText()}")
-						componentList.add(currentComponent)
+						componentsInLine.add(currentComponent)
+						lines.add(ofChildren(*componentsInLine.toTypedArray()))
+
+						// reset current component, component line list, plaintext, and current line width
 						currentComponent = text("")
+						componentsInLine.clear()
 						stringBuilder.clear()
-						lineWidth = 0
+						lineLength = 0
 					}
 
 					// split word up if its own length exceeds width
@@ -254,12 +270,21 @@ fun Component.wrap(width: Int): List<Component> {
 					}
 					 */
 				}
+				// add plaintext to the current plaintext of this line
 				stringBuilder.append(word)
 				//println("APPENDING WORD ${word.trimStart()}")
 				//currentComponent = currentComponent.append(text(word.trimStart()))
 				//println("After appending: $currentComponent")
-				lineWidth += wordLength
+				// record line length
+				lineLength += wordLength
 			}
+
+			// end of this component's processing; render current text to a new component and add it to the line
+			currentComponent = text(stringBuilder.toString())
+			componentsInLine.add(currentComponent)
+			// reset stringBuilder to make way for the next component
+			// do not reset line width as it still keeps track of the total line width
+			stringBuilder.clear()
 		}
 
 		override fun pushStyle(style: Style) {
@@ -270,13 +295,13 @@ fun Component.wrap(width: Int): List<Component> {
 	flattener.flatten(this, listener)
 	if (stringBuilder.isNotBlank()) {
 		currentComponent = text(stringBuilder.toString())
-		componentList.add(currentComponent)
+		lines.add(currentComponent)
 	}
 
-	for (component in componentList) {
+	for (component in lines) {
 		println("FINAL COMPONENT: $component \n")
 	}
-	return componentList
+	return lines
 
 	/*
 	// when combined with String.split(), it includes the delimiter with the last word instead of removing it
