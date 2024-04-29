@@ -353,20 +353,19 @@ object PilotedStarships : IonServerComponent() {
 			return false
 		}
 
-			when {
-				data.starshipType == "BATTLECRUISER" ->
-					for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 69420.0)) {
-						nearbyPlayer.playSound(Sound.sound(Key.key("starship.pilot.battlecruiser"), Sound.Source.AMBIENT, 5f, 0.05f))
-					}
-				data.starshipType == "CRUISER" ->
-					for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 5000.0)) {
-						nearbyPlayer.playSound(Sound.sound(Key.key("starship.pilot.cruiser"), Sound.Source.AMBIENT, 5f, 0.05f))
-					}
-				else ->
-					for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 500.0)) {
-						nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.activate"), Sound.Source.AMBIENT, 5f, 0.05f))
-					}
+		when (data.starshipType) {
+			"BATTLECRUISER" ->
+				for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 69420.0)) {
+					nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.pilot.battlecruiser"), Sound.Source.AMBIENT, 5f, 0.05f))
+				}
+			"CRUISER" ->
+				for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 5000.0)) {
+					nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.pilot.cruiser"), Sound.Source.AMBIENT, 5f, 0.05f))
+				}
+			else -> for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 500.0)) {
+				nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.activate"), Sound.Source.AMBIENT, 5f, 0.05f))
 			}
+		}
 
 
 		val carriedShips = mutableListOf<StarshipData>()
@@ -495,11 +494,11 @@ object PilotedStarships : IonServerComponent() {
 		when {
 			starship.type == StarshipType.BATTLECRUISER ->
 				for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 69420.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("starship.release.battlecruiser"), Sound.Source.AMBIENT, 5f, 0.05f))
+					nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.release.battlecruiser"), Sound.Source.AMBIENT, 5f, 0.05f))
 				}
 			starship.type == StarshipType.CRUISER ->
 				for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 5000.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("starship.release.cruiser"), Sound.Source.AMBIENT, 5f, 0.05f))
+					nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.release.cruiser"), Sound.Source.AMBIENT, 5f, 0.05f))
 				}
 			else ->
 				for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 500.0)) {
