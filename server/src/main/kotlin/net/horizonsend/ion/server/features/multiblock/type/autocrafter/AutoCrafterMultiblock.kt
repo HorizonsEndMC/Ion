@@ -139,7 +139,7 @@ abstract class AutoCrafterMultiblock(
 		val recipeHolder: InventoryHolder = getRecipeHolder(sign) ?: return
 		val output: InventoryHolder = getOutput(sign) ?: return
 
-		// material data of each item in the recipe holder, used as the crafting grid
+		// material data of each item in the recipe holder, used as the crafting transportNetwork
 		val grid: List<ItemStack?> = recipeHolder.inventory.map { it }
 
 		val basePower = PowerMachines.getPower(sign, fast = true)
@@ -168,7 +168,7 @@ abstract class AutoCrafterMultiblock(
 				var requiredIngredients = 0
 				var matchedIngredients = 0
 
-				// for each slot in the crafting grid,
+				// for each slot in the crafting transportNetwork,
 				// if it's not null,
 				// increment required ingredients to keep track of how many are needed,
 				// and loop through the input inventory,

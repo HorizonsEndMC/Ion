@@ -9,7 +9,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
 /**
- * Represents a single node, or step, in a transport grid
+ * Represents a single node, or step, in a transport transportNetwork
  **/
 interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion> {
 	override val type: Companion get() = Companion

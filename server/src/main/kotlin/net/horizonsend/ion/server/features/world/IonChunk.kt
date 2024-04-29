@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.world
 
 import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
-import net.horizonsend.ion.server.features.transport.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -37,13 +37,13 @@ class IonChunk(val inner: Chunk) {
 	//  - Explosion Reversal
 
 	val multiblockManager = ChunkMultiblockManager(this)
-	val transportNetwork: ChunkTransportNetwork = ChunkTransportNetwork(this)
+	val transportNetwork: ChunkTransportManager = ChunkTransportManager(this)
 
 	/**
 	 * Logic upon loading the chunk
 	 **/
 	fun onLoad() {
-
+		transportNetwork.setup()
 	}
 
 	/**
