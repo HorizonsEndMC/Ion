@@ -10,6 +10,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.WallSign
+import java.util.EnumSet
 
 /**
  * @see getNMSBlockSateSafe
@@ -92,6 +93,8 @@ val CARDINAL_BLOCK_FACES: Set<BlockFace> = ImmutableSet.of(
 	BlockFace.EAST,
 	BlockFace.WEST
 )
+
+val ALL_DIRECTIONS: Set<BlockFace> = EnumSet.complementOf(EnumSet.of(BlockFace.SELF))
 
 val BlockFace.rightFace: BlockFace
 	get() = when (this) {
