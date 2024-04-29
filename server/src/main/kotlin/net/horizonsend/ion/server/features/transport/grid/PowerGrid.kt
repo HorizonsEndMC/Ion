@@ -7,18 +7,14 @@ import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.transport.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.general.GateNode
 import net.horizonsend.ion.server.features.transport.node.general.LinearNode
+import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
 import net.horizonsend.ion.server.features.transport.node.power.MergeNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.SplitterNode
 import net.horizonsend.ion.server.features.transport.node.power.SpongeNode
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.IntervalExecutor
-import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.isRedstoneLamp
 import net.horizonsend.ion.server.miscellaneous.utils.mapNotNullTo
@@ -54,7 +50,7 @@ class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
 			block.type == Material.END_ROD -> LinearNode(this, x, y, z, block.data as Directional)
 
 			// Omnidirectional wires
-			block.type == Material.SPONGE -> handleSpongeNode(key)
+			block.type == Material.SPONGE -> addSpongeNode(key)
 
 			// Merge node behavior
 			block.type == Material.IRON_BLOCK -> MergeNode(this, x, y, z)
@@ -106,8 +102,8 @@ class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
 		}
 	}
 
-	private fun handleSpongeNode(position: Long) {
-		val neighbors = getNeighborNodes(position)
+	private fun addSpongeNode(position: Long) {
+		val neighbors = getNeighborNodes(position, nodes)
 
 		when (neighbors.size) {
 			// New sponge node
@@ -138,13 +134,5 @@ class PowerGrid(network: ChunkTransportNetwork) : Grid(network) {
 				nodes[position] = largestNeighbor
 			}
 		}
-	}
-
-	private fun getNeighborNodes(position: Long) = ADJACENT_BLOCK_FACES.associateWithNotNull {
-		val x = getX(position)
-		val y = getY(position)
-		val z = getZ(position)
-
-		nodes[toBlockKey(x + it.modX, y + it.modY, z + it.modZ)]
 	}
 }
