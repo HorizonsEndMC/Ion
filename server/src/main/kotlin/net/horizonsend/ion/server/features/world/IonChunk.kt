@@ -57,6 +57,7 @@ class IonChunk(val inner: Chunk) {
 	 * Logic upon world save
 	 **/
 	fun save() {
+		transportNetwork.save()
 		multiblockManager.save()
 	}
 

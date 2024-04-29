@@ -64,11 +64,12 @@ object IonChunkCommand : SLCommand() {
 			 else -> fail { "invalid network" }
 		}
 
-		sender.information("${grid.nodes.size} total nodes.")
+		sender.information("${grid.nodes.size} covered position(s).")
+		sender.information("${grid.nodes.values.distinct().size} unique node(s).")
 
 		grid.nodes.forEach { (t, u) ->
 			val vec = toVec3i(t)
-
+			println(u)
 			sender.highlightBlock(vec, 50L)
 		}
 	}
