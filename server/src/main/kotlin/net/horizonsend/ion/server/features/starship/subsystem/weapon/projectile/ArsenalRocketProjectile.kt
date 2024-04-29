@@ -136,7 +136,7 @@ class ArsenalRocketProjectile(
 		val desiredVector = starship?.targetedPosition?.clone()?.subtract(loc.clone())?.toVector() ?: return
 		desiredVector.normalize()
 		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 250.0)) {
-			nearbyPlayer.playSound(Sound.sound(Key.key("starship.weapon.arsenal_rocket.ignite"), Sound.Source.AMBIENT, 5f, 0.05f))
+			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.weapon.arsenal_rocket.ignite"), Sound.Source.AMBIENT, 5f, 0.05f))
 		}
 		//this is the current direction of the projectile, written as a Vector3f
 		val dirAsVec3f = dir.clone().toVector3f().normalize()
@@ -170,7 +170,7 @@ class ArsenalRocketProjectile(
 		newLoc.world.spawnParticle(Particle.FLAME, newLoc, 10)
 		newLoc.world.spawnParticle(Particle.FLASH, newLoc, 3)
 		for (nearbyPlayer in newLoc.world.getNearbyPlayers(newLoc, 200.0)) {
-			nearbyPlayer.playSound(Sound.sound(Key.key("starship.weapon.arsenal_rocket.impact"), Sound.Source.AMBIENT, 5f, 0.05f))
+			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.weapon.arsenal_rocket.impact"), Sound.Source.AMBIENT, 5f, 0.05f))
 		}
 		super.impact(newLoc, block, entity)
 	}
