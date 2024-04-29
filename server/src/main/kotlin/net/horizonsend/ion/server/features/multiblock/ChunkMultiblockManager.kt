@@ -10,8 +10,8 @@ import net.horizonsend.ion.server.features.world.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import org.bukkit.block.Sign
+import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import org.slf4j.LoggerFactory
@@ -37,7 +37,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	 * Logic upon the chunk being saved
 	 **/
 	fun save() {
-		saveMultiblocks()
+		saveMultiblocks(chunk.inner.persistentDataContainer.adapterContext)
 	}
 
 	init {
@@ -98,19 +98,18 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 			tickingMultiblockEntities[entity.locationKey] = entity
 		}
 
-		if (save) saveMultiblocks()
+		if (save) saveMultiblocks(chunk.inner.persistentDataContainer.adapterContext)
 	}
 
 	/**
 	 * Save the multiblock data back into the chunk
 	 **/
-	private fun saveMultiblocks() = Multiblocks.multiblockCoroutineScope.launch {
+	private fun saveMultiblocks(adapterContext: PersistentDataAdapterContext) = Multiblocks.multiblockCoroutineScope.launch {
 		val array = multiblockEntities.map { (_, entity) ->
-			PersistentMultiblockData.toPrimitive(entity.store(), chunk.inner.persistentDataContainer.adapterContext)
+			entity.serialize(adapterContext, entity.store())
 		}.toTypedArray()
 
 		chunk.inner.persistentDataContainer.set(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY, array)
-		chunk.inner.minecraft.isUnsaved = true
 	}
 
 	/**

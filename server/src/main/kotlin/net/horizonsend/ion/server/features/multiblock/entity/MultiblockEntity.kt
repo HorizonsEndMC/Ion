@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.entity
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -18,19 +19,19 @@ import org.bukkit.block.Sign
  *
  * @param world The world this multiblock is in
  *
- * @param type The type of multiblock this entity represents
+ * @param multiblock The type of multiblock this entity represents
  *
  * @param signDirection The direction to find the sign from the origin block (the block the sign is placed on)
  **/
 abstract class MultiblockEntity(
-	val type: Multiblock,
+	val multiblock: Multiblock,
 
 	var x: Int,
 	var y: Int,
 	var z: Int,
 	var world: World,
 	var signDirection: BlockFace
-) {
+): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion> {
 	/**
 	 * Returns the origin of this multiblock as a Location
 	 **/
@@ -56,7 +57,7 @@ abstract class MultiblockEntity(
 	 * This data is serialized and stored on the chunk when not loaded.
 	 **/
 	fun store(): PersistentMultiblockData {
-		val store = PersistentMultiblockData(x, y, z, type, signDirection)
+		val store = PersistentMultiblockData(x, y, z, multiblock, signDirection)
 		storeAdditionalData(store)
 
 		return store
@@ -74,7 +75,7 @@ abstract class MultiblockEntity(
 	suspend fun isIntact(): Boolean {
 		val sign = getSign() ?: return false
 
-		return type.signMatchesStructureAsync(sign)
+		return multiblock.signMatchesStructureAsync(sign)
 	}
 
 	/**
