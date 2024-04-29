@@ -8,13 +8,13 @@ import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.flattener.ComponentFlattener
 import net.kyori.adventure.text.flattener.FlattenerListener
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -194,19 +194,89 @@ fun Component.shiftToLine(line: Int, shift: Int = 0): Component = this.shiftDown
  * Implementation based on https://stackoverflow.com/questions/17586/best-word-wrap-algorithm
  * @param width the width in pixels to limit the text to
  */
-fun Component.wrap(width: Int): Component {
+fun Component.wrap(width: Int): List<Component> {
 	// regex: positive lookbehind, matching any character that is newline, tab, space, or hyphen
+
 	val regex = Regex("(?<=[\n\t -])")
+	val componentList = mutableListOf<Component>()
+	var currentComponent: TextComponent
+	val stringBuilder = StringBuilder()
+
 	val flattener = ComponentFlattener.basic()
 	val listener = object : FlattenerListener {
-		var length: Int = 0
+		var lineWidth: Int = 0
 
 		override fun component(text: String) {
-			length += text.minecraftLength
+			val words = text.split(regex)
+
+			currentComponent = text("")
+
+			for (word in words) {
+				val wordLength = word.minecraftLength
+				//val exceedsWidth = length > width
+				println("current word: $word, $wordLength")
+				println("current line length: $lineWidth")
+
+				// add new line
+				if (lineWidth + wordLength > width) {
+					//println("EXCEEDS LENGTH")
+					// check if there is only whitespace
+					if (lineWidth > 0) {
+						println("exceeds width: would be ${lineWidth + wordLength} > $width")
+						currentComponent = text(stringBuilder.toString())
+						println("currentComponent text: ${currentComponent.plainText()}")
+						componentList.add(currentComponent)
+						currentComponent = text("")
+						stringBuilder.clear()
+						lineWidth = 0
+					}
+
+					// split word up if its own length exceeds width
+					// unlikely that a word will be longer than the GUI
+					/*
+					if (exceedsWidth) {
+						var longWord = word
+						while (longWord.minecraftLength > width) {
+							componentList.add(text(word.substring(0, width - 1)))
+							//stringBuilder.append(word.substring(0, width - 1))
+							longWord = word.substring(width - 1)
+
+							//stringBuilder.append('\n')
+							currentComponent = text(word.substring(0, width - 1))
+							currentComponent = currentComponent.appendNewline() as TextComponent
+							componentList.add(currentComponent)
+							println("currentComponent: $currentComponent")
+							currentComponent = text("")
+						}
+
+						currentComponent = currentComponent.append(text(longWord.trimStart()))
+						stringBuilder.append(longWord.trimStart())
+					}
+					 */
+				}
+				stringBuilder.append(word)
+				//println("APPENDING WORD ${word.trimStart()}")
+				//currentComponent = currentComponent.append(text(word.trimStart()))
+				//println("After appending: $currentComponent")
+				lineWidth += wordLength
+			}
 		}
+
+		override fun pushStyle(style: Style) {
+			//println("current style: $style")
+		}
+
 	}
 	flattener.flatten(this, listener)
-	return this
+	if (stringBuilder.isNotBlank()) {
+		currentComponent = text(stringBuilder.toString())
+		componentList.add(currentComponent)
+	}
+
+	for (component in componentList) {
+		println("FINAL COMPONENT: $component \n")
+	}
+	return componentList
 
 	/*
 	// when combined with String.split(), it includes the delimiter with the last word instead of removing it
