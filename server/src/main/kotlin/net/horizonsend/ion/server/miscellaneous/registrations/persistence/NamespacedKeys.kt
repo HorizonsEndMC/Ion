@@ -36,7 +36,6 @@ object NamespacedKeys {
 	val LOCKED = key("locked")
 
 	val AMMO = key("Ammo")
-	val GAS = key("Gas")
 	val CUSTOM_ITEM = key("CustomItem")
 	val EDEN_FIX = key("EdenFix")
 	val BIOME_FIX = key("BiomeFix")
@@ -56,6 +55,11 @@ object NamespacedKeys {
 	@Deprecated("") val ORE_CHECK = key("oreCheck")
 
 	val POWER = key("power")
+	val GAS = key("Gas")
+
+	val POWER_TRANSPORT = key("power_transport")
+	val GAS_TRANSPORT = key("gas_transport")
+	val ITEM_TRANSPORT = key("item_transport")
 
 	val TUBE_BUTTONS = key("tube_buttons")
 	val MATERIAL = key("material")
@@ -87,6 +91,9 @@ object NamespacedKeys {
 	val TRANSFERABLE_NEIGHBORS = key("transferable_neighbors")
 	val NODE_COVERED_POSITIONS = key("node_covered_positions")
 	val NODE_TYPE = key("node_type")
+
+	val NODES = key("chunk_power_nodes")
+	val NODE_LOCATIONS = key("chunk_power_node_locations")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 }
