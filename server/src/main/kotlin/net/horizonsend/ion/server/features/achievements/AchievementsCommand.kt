@@ -88,7 +88,6 @@ object AchievementsCommand : SLCommand() {
 				". . . . . . . . .")
 			.build()
 
-		/*
 		val originalText = ofChildren(
 			Component.text("Welcome to space. ", NamedTextColor.RED),
 			Component.text("What were you expecting? ", NamedTextColor.GOLD),
@@ -98,8 +97,8 @@ object AchievementsCommand : SLCommand() {
 			Component.text("Report to your foreman, but watch for marauders, ", NamedTextColor.BLUE),
 			Component.text("'cause if you get eaten, there's fees for your mourners!", NamedTextColor.LIGHT_PURPLE),
 		)
-		 */
 
+		/*
 		val originalText = ofChildren(
 			Component.text("Prosperity's ", NamedTextColor.RED),
 			Component.text("there ", NamedTextColor.GOLD),
@@ -111,6 +110,7 @@ object AchievementsCommand : SLCommand() {
 
 			Component.translatable(matchMaterial("minecraft:lapis_lazuli")!!.translationKey(), AQUA)
 		)
+		 */
 
 		val text = GuiText("WE WORK TO EARN THE RIGHT")
 		val componentList = originalText.wrap(DEFAULT_GUI_WIDTH - GUI_MARGIN)
