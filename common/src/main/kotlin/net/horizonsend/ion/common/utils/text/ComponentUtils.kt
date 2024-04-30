@@ -202,6 +202,8 @@ fun Component.wrap(width: Int): List<Component> {
 	val lines = mutableListOf<Component>()
 	// component for constructing portions of a line
 	var currentComponent: TextComponent
+	// stores the current style
+	var currentStyle: Style = style()
 	// list for storing components in each line
 	val componentsInLine = mutableListOf<Component>()
 	// for parsing component plaintext and adding to new components
@@ -223,20 +225,14 @@ fun Component.wrap(width: Int): List<Component> {
 
 			for (word in words) {
 				val wordLength = word.minecraftLength
-				//val exceedsWidth = length > width
-				println("current word: $word, $wordLength")
-				println("current line length: $lineLength")
 
 				// add new line
 				if (lineLength + wordLength > width) {
-					//println("EXCEEDS LENGTH")
 					// check if there is only whitespace
 					if (lineLength > 0) {
-						println("exceeds width: would be ${lineLength + wordLength} > $width")
 
 						// current component complete; render current text to a new component and append it to the line component
-						currentComponent = text(stringBuilder.toString())
-						println("currentComponent text: ${currentComponent.plainText()}")
+						currentComponent = text(stringBuilder.toString(), currentStyle)
 						componentsInLine.add(currentComponent)
 						lines.add(ofChildren(*componentsInLine.toTypedArray()))
 
@@ -246,110 +242,37 @@ fun Component.wrap(width: Int): List<Component> {
 						stringBuilder.clear()
 						lineLength = 0
 					}
-
-					// split word up if its own length exceeds width
-					// unlikely that a word will be longer than the GUI
-					/*
-					if (exceedsWidth) {
-						var longWord = word
-						while (longWord.minecraftLength > width) {
-							componentList.add(text(word.substring(0, width - 1)))
-							//stringBuilder.append(word.substring(0, width - 1))
-							longWord = word.substring(width - 1)
-
-							//stringBuilder.append('\n')
-							currentComponent = text(word.substring(0, width - 1))
-							currentComponent = currentComponent.appendNewline() as TextComponent
-							componentList.add(currentComponent)
-							println("currentComponent: $currentComponent")
-							currentComponent = text("")
-						}
-
-						currentComponent = currentComponent.append(text(longWord.trimStart()))
-						stringBuilder.append(longWord.trimStart())
-					}
-					 */
 				}
 				// add plaintext to the current plaintext of this line
 				stringBuilder.append(word)
-				//println("APPENDING WORD ${word.trimStart()}")
-				//currentComponent = currentComponent.append(text(word.trimStart()))
-				//println("After appending: $currentComponent")
+
 				// record line length
 				lineLength += wordLength
 			}
 
 			// end of this component's processing; render current text to a new component and add it to the line
-			currentComponent = text(stringBuilder.toString())
+			currentComponent = text(stringBuilder.toString(), currentStyle)
 			componentsInLine.add(currentComponent)
 			// reset stringBuilder to make way for the next component
 			// do not reset line width as it still keeps track of the total line width
 			stringBuilder.clear()
 		}
 
+		// get the current component's style
 		override fun pushStyle(style: Style) {
-			//println("current style: $style")
+			currentStyle = style
 		}
-
 	}
+
+	// process component
 	flattener.flatten(this, listener)
-	if (stringBuilder.isNotBlank()) {
-		currentComponent = text(stringBuilder.toString())
-		lines.add(currentComponent)
-	}
 
-	for (component in lines) {
-		println("FINAL COMPONENT: $component \n")
-	}
+	// process leftover components that did not fill up the current line
+	currentComponent = text(stringBuilder.toString(), currentStyle)
+	componentsInLine.add(currentComponent)
+	lines.add(ofChildren(*componentsInLine.toTypedArray()))
+
 	return lines
-
-	/*
-	// when combined with String.split(), it includes the delimiter with the last word instead of removing it
-	val words = this.plainText().split(regex)
-
-	var currentLength = 0
-	val stringBuilder = StringBuilder()
-
-	for (word in words) {
-		val length = word.minecraftLength
-		val exceedsWidth = length > width
-		println("WORD: $word, $length")
-
-		// add new line
-		if (currentLength + length > width) {
-			println("EXCEEDS LENGTH")
-			// check if there is only whitespace
-			if (currentLength > 0) {
-				stringBuilder.append('\n')
-				currentLength = 0
-			}
-
-			// split word up if its own length exceeds width
-			if (exceedsWidth) {
-				var longWord = word
-				while (longWord.minecraftLength > width) {
-					stringBuilder.append(word.substring(0, width - 1))
-					longWord = word.substring(width - 1)
-
-					stringBuilder.append('\n')
-				}
-				stringBuilder.append(longWord.trimStart())
-			}
-		}
-		if (!exceedsWidth) stringBuilder.append(word.trimStart())
-		currentLength += length
-		println("stringBuilder: $stringBuilder")
-	}
-
-	println("final stringBuilder: $stringBuilder")
-	// regex: match everything
-	val replacer = TextReplacementConfig.builder().match("[\\s\\S]+").replacement(stringBuilder.toString()).build()
-	this.replaceText(replacer)
-	println("COMPONENT: $this")
-	val newComponent = text(stringBuilder.toString(), this.style())
-	println("NEW COMPONENT: $newComponent")
-	return newComponent
-	 */
 }
 
 //</editor-fold>

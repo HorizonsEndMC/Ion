@@ -18,7 +18,9 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import org.bukkit.Bukkit
+import org.bukkit.Material.matchMaterial
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.pull
@@ -86,15 +88,30 @@ object AchievementsCommand : SLCommand() {
 				". . . . . . . . .")
 			.build()
 
-		//val originalText = Component.text("Welcome to space. What were you expecting? It's a dangerous place. Thank you for investing - Go there for your rota, there for your orders, fill up these quotas, we'll bill for your quarters.")
+		/*
 		val originalText = ofChildren(
 			Component.text("Welcome to space. ", NamedTextColor.RED),
 			Component.text("What were you expecting? ", NamedTextColor.GOLD),
 			Component.text("It's a dangerous place. ", NamedTextColor.YELLOW),
 			Component.text("Thank you for investing - Go there for your rota, there for your orders, ", NamedTextColor.GREEN),
-			Component.text("fill up these quotas, we'll bill for your quarters.", NamedTextColor.DARK_AQUA)
+			Component.text("fill up these quotas, we'll bill for your quarters.", NamedTextColor.DARK_AQUA),
+			Component.text("Report to your foreman, but watch for marauders, ", NamedTextColor.BLUE),
+			Component.text("'cause if you get eaten, there's fees for your mourners!", NamedTextColor.LIGHT_PURPLE),
 		)
-		println("ORIGINAL TEXT: $originalText")
+		 */
+
+		val originalText = ofChildren(
+			Component.text("Prosperity's ", NamedTextColor.RED),
+			Component.text("there ", NamedTextColor.GOLD),
+			Component.text("in ", NamedTextColor.YELLOW),
+			Component.text("the care of magnates, ", NamedTextColor.GREEN),
+			Component.text("in Halcyon, ", NamedTextColor.DARK_AQUA),
+			Component.text("heaven ", NamedTextColor.BLUE),
+			Component.text("awaits!", NamedTextColor.LIGHT_PURPLE),
+
+			Component.translatable(matchMaterial("minecraft:lapis_lazuli")!!.translationKey(), AQUA)
+		)
+
 		val text = GuiText("WE WORK TO EARN THE RIGHT")
 		val componentList = originalText.wrap(DEFAULT_GUI_WIDTH - GUI_MARGIN)
 		for ((index, component) in componentList.withIndex()) {
