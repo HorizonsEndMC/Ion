@@ -2,14 +2,14 @@ package net.horizonsend.ion.server.features.transport.step
 
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.container.ResourceContainer
-import net.horizonsend.ion.server.features.transport.grid.TransportNetwork
+import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.GridNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.block.BlockFace
 
 abstract class Step(
-	open val transportNetwork: TransportNetwork,
+	open val transportNetwork: ChunkTransportNetwork,
 	open val origin: ResourceContainer<*>?,
 	var direction: BlockFace,
 	var currentNode: GridNode
