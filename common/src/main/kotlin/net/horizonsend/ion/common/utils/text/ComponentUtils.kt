@@ -226,9 +226,17 @@ fun Component.wrap(width: Int): List<Component> {
 			for (word in words) {
 				val wordLength = word.minecraftLength
 
-				// add new line
-				if (lineLength + wordLength > width) {
-					// check if there is only whitespace
+				if (lineLength + wordLength <= width) {
+					// add plaintext to the current plaintext of this line
+					stringBuilder.append(word)
+
+					// record line length
+					lineLength += wordLength
+
+					continue
+
+				} else {
+					// line is too long, check if there is only whitespace
 					if (lineLength > 0) {
 
 						// current component complete; render current text to a new component and append it to the line component
@@ -242,12 +250,12 @@ fun Component.wrap(width: Int): List<Component> {
 						stringBuilder.clear()
 						lineLength = 0
 					}
-				}
-				// add plaintext to the current plaintext of this line
-				stringBuilder.append(word)
 
-				// record line length
-				lineLength += wordLength
+					// add plaintext to the new line
+					stringBuilder.append(word)
+					// record line length
+					lineLength += wordLength
+				}
 			}
 
 			// end of this component's processing; render current text to a new component and add it to the line
