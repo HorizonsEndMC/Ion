@@ -27,6 +27,11 @@ class SpongeNode() : MultiNode {
 		return true
 	}
 
+	override fun loadData(persistentDataContainer: PersistentDataContainer) {
+		val coveredPositions = persistentDataContainer.get(NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY)
+		coveredPositions?.let { positions.addAll(it.asIterable()) }
+	}
+
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
 		persistentDataContainer.set(NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY, positions.toLongArray())
 	}
