@@ -41,7 +41,7 @@ abstract class TransportNetwork(val manager: ChunkTransportManager) {
 	 *
 	 * Inheritors may choose to save persistent data, or not
 	 **/
-	abstract fun loadNode(block: BlockSnapshot)
+	abstract fun createNodeFromBlock(block: BlockSnapshot)
 
 	abstract fun processBlockRemoval(key: Long)
 	abstract fun processBlockAddition(key: Long, new: BlockSnapshot)
@@ -134,7 +134,7 @@ abstract class TransportNetwork(val manager: ChunkTransportManager) {
 
 					val snapshot = getBlockSnapshotAsync(manager.chunk.world, realX, realY, realZ) ?: continue
 
-					loadNode(snapshot)
+					createNodeFromBlock(snapshot)
 				}
 			}
 		}
