@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.nodes
 
 import kotlinx.serialization.SerializationException
+import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
@@ -9,7 +10,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
 /**
- * Represents a single node, or step, in a transport transportNetwork
+ * Represents a single node, or step, in transport transportNetwork
  **/
 interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion> {
 	override val type: Companion get() = Companion
@@ -33,6 +34,11 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 * Load required data from the serialized container
 	 **/
 	fun loadData(persistentDataContainer: PersistentDataContainer)
+
+	/**
+	 * Handle placement into the network upon loading, after data has been loaded
+	 **/
+	fun handlePlacement(network: ChunkTransportNetwork)
 
 	companion object : PersistentDataType<PersistentDataContainer, TransportNode> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
