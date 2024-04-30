@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.node.nodes
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
+import net.horizonsend.ion.server.features.transport.node.nodes.type.MultiNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_DIRECTIONS
 import org.bukkit.block.BlockFace
