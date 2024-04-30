@@ -1,7 +1,7 @@
 import java.io.ByteArrayOutputStream
 
 plugins {
-	id("io.papermc.paperweight.userdev") version "1.5.15"
+	id("io.papermc.paperweight.userdev") version "1.6.3"
 	id("com.github.johnrengelman.shadow")
 
 	kotlin("plugin.serialization")
