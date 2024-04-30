@@ -4,10 +4,15 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.world.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component.text
@@ -71,6 +76,26 @@ object IonChunkCommand : SLCommand() {
 			val vec = toVec3i(t)
 			println(u)
 			sender.highlightBlock(vec, 50L)
+		}
+	}
+
+	@Subcommand("rebuild nodes")
+	@CommandCompletion("power") /* |item|gas") */
+	fun rebuildNodes(sender: Player, network: String) = CoroutineScope(Dispatchers.Default + Job()).launch {
+		val ionChunk = sender.chunk.ion()
+
+		val grid = when (network) {
+			"power" -> ionChunk.transportNetwork.powerNetwork
+//			"item" -> ionChunk.transportNetwork.pipeGrid
+//			"gas" -> ionChunk.transportNetwork.gasGrid
+			 else -> return@launch fail { "invalid network" }
+		}
+
+		for (x in 0..15) for (y in ionChunk.world.minHeight..ionChunk.world.maxHeight) for (z in 0..15) {
+			val realX = x + ionChunk.originX
+			val realZ = z + ionChunk.originZ
+
+			grid.createNodeFromBlock(getBlockSnapshotAsync(sender.world, realX, y, realZ)!!)
 		}
 	}
 }
