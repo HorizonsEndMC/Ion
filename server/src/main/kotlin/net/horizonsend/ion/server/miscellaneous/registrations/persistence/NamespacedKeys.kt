@@ -98,7 +98,6 @@ object NamespacedKeys {
 	val NODE_TYPE = key("node_type")
 
 	val NODES = key("chunk_power_nodes")
-	val NODE_LOCATIONS = key("chunk_power_node_locations")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 

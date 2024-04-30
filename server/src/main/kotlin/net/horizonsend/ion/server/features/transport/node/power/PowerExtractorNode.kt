@@ -4,7 +4,7 @@ import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.container.ResourceContainer
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
-import net.horizonsend.ion.server.features.transport.grid.TransportNetwork
+import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.ExtractorNode
 import net.horizonsend.ion.server.features.transport.node.GridNode
 import net.horizonsend.ion.server.features.transport.step.PowerStep
@@ -70,7 +70,7 @@ class PowerExtractorNode(
 	}
 
 	companion object {
-		fun isSolarPanel(parentTransportNetwork: TransportNetwork, x: Int, y: Int, z: Int): Boolean = runBlocking {
+		fun isSolarPanel(parentTransportNetwork: ChunkTransportNetwork, x: Int, y: Int, z: Int): Boolean = runBlocking {
 			val aboveOne = getBlockSnapshotAsync(parentTransportNetwork.world, x, y + 1, z, false)
 			val aboveTwo = getBlockSnapshotAsync(parentTransportNetwork.world, x, y + 2, z, false)
 

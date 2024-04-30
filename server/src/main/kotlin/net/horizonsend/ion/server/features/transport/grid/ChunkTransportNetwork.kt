@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.grid
 
-import com.manya.pdc.base.MapDataType
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -10,17 +9,16 @@ import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.node.Consolidatable
 import net.horizonsend.ion.server.features.transport.node.nodes.TransportNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODES
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_LOCATIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER_TRANSPORT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.seconds
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataAdapterContext
+import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import java.util.concurrent.ConcurrentHashMap
-import java.util.stream.Collectors
 
-abstract class TransportNetwork(val manager: ChunkTransportManager) {
+abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	val nodes: ConcurrentHashMap<Long, TransportNode> = ConcurrentHashMap()
 	val world get() = manager.chunk.world
 
@@ -28,7 +26,7 @@ abstract class TransportNetwork(val manager: ChunkTransportManager) {
 
 	protected abstract val namespacedKey: NamespacedKey
 
-// val grids: Nothing = TODO("TransportNetwork system")
+// val grids: Nothing = TODO("ChunkTransportNetwork system")
 
 	init {
 	    loadData()
@@ -46,39 +44,26 @@ abstract class TransportNetwork(val manager: ChunkTransportManager) {
 	abstract fun processBlockRemoval(key: Long)
 	abstract fun processBlockAddition(key: Long, new: BlockSnapshot)
 
-	companion object {
-		private val locationDataType = MapDataType(
-			Collectors.toMap({ it.key }, { it.value }),
-			PersistentDataType.LONG,
-			PersistentDataType.INTEGER
-		)
-	}
-
 	/**
 	 * Load stored node data from the chunk
 	 **/
 	private fun loadData() {
 		val existing = pdc.get(POWER_TRANSPORT, PersistentDataType.TAG_CONTAINER) ?: return
 
-		val nodeLocations = existing.get(NODE_LOCATIONS, locationDataType)!!
+		// Deserialize once
 		val nodeData = existing.get(NODES, PersistentDataType.TAG_CONTAINER_ARRAY)!!.map { TransportNode.fromPrimitive(it, pdc.adapterContext) }
-
-		for ((locationKey, nodeIndex) in nodeLocations) {
-			nodes[locationKey] = nodeData[nodeIndex]
-		}
+		nodeData.forEach { it.handlePlacement(this) }
 	}
 
 	fun save(adapterContext: PersistentDataAdapterContext) {
 		val container = adapterContext.newPersistentDataContainer()
 
-		val serializedNodes = nodes.values.associateWith { nodes.values.indexOf(it) to it.serialize(adapterContext, it) }
-		//TODO find better implementation of storage
+		val serializedNodes: MutableMap<TransportNode, Pair<Int, PersistentDataContainer>> = mutableMapOf()
 
-		val dataMap = nodes.map { (key, node) ->
-			key to serializedNodes[node]!!.first
-		}.toMap()
+		nodes.forEach { (_, node) ->
+			serializedNodes[node] = nodes.values.indexOf(node) to node.serialize(adapterContext, node)
+		}
 
-		container.set(NODE_LOCATIONS, locationDataType, dataMap)
 		container.set(NODES, PersistentDataType.TAG_CONTAINER_ARRAY, serializedNodes.values.seconds().toTypedArray())
 
 		pdc.set(namespacedKey, PersistentDataType.TAG_CONTAINER, container)

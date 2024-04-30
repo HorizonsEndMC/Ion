@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.general
 
-import net.horizonsend.ion.server.features.transport.grid.TransportNetwork
+import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.ExtractorNode
 import net.horizonsend.ion.server.features.transport.node.GridNode
 import net.horizonsend.ion.server.features.transport.step.Step
@@ -14,7 +14,7 @@ import kotlin.random.asKotlinRandom
  * An omnidirectional node
  **/
 class JunctionNode(
-	override val parentTransportNetwork: TransportNetwork,
+	override val parentTransportNetwork: ChunkTransportNetwork,
 	override val x: Int,
 	override val y: Int,
 	override val z: Int,
