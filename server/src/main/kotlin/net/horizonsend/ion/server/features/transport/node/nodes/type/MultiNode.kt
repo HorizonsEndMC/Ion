@@ -1,4 +1,7 @@
-package net.horizonsend.ion.server.features.transport.node.nodes
+package net.horizonsend.ion.server.features.transport.node.nodes.type
+
+import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.node.nodes.TransportNode
 
 /**
  * A transport node that may cover many blocks to avoid making unnecessary steps
@@ -23,6 +26,12 @@ interface MultiNode : TransportNode {
 
 		for (position in positions) {
 			nodes[position] = new
+		}
+	}
+
+	override fun handlePlacement(network: ChunkTransportNetwork) {
+		for (key in positions) {
+			network.nodes[key] = this
 		}
 	}
 }
