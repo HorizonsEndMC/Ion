@@ -32,7 +32,7 @@ abstract class MultiblockEntity(
 	var world: World,
 	var signDirection: BlockFace
 ): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion> {
-	override val serializationType: PersistentMultiblockData.Companion = PersistentMultiblockData.Companion
+	override val type: PersistentMultiblockData.Companion = PersistentMultiblockData.Companion
 
 	/**
 	 * Returns the origin of this multiblock as a Location
