@@ -26,7 +26,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
 import java.util.concurrent.ConcurrentHashMap
 
-class ChunkPowerNetwork(manager: ChunkTransportManager) : TransportNetwork(manager) {
+class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(manager) {
 	val poweredMultiblockEntities = ConcurrentHashMap<Long, PoweredMultiblockEntity>()
 	val extractors = ConcurrentHashMap<Long, PowerExtractorNode>()
 

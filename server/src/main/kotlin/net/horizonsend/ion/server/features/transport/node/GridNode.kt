@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node
 
-import net.horizonsend.ion.server.features.transport.grid.TransportNetwork
+import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -8,7 +8,7 @@ import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
 interface GridNode {
-	val parentTransportNetwork: TransportNetwork
+	val parentTransportNetwork: ChunkTransportNetwork
 	val x: Int
 	val y: Int
 	val z: Int
