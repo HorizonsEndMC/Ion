@@ -36,7 +36,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : TransportNetwork(manag
 		collectPowerMultiblockEntities()
 	}
 
-	override fun loadNode(block: BlockSnapshot) {
+	override fun createNodeFromBlock(block: BlockSnapshot) {
 		val x = block.x
 		val y = block.y
 		val z = block.z
@@ -81,7 +81,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : TransportNetwork(manag
 	}
 
 	override fun processBlockAddition(key: Long, new: BlockSnapshot) {
-		loadNode(new)
+		createNodeFromBlock(new)
 		//TODO
 	}
 
@@ -128,14 +128,16 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : TransportNetwork(manag
 				val spongeNeighbors: MutableMap<BlockFace, SpongeNode> = mutableMapOf()
 				neighbors.mapNotNullTo(spongeNeighbors) { (key, value) -> (value as? SpongeNode)?.let { key to value }  }
 
+				// Get the largest neighbor
 				val largestNeighbor = spongeNeighbors.popMaxByOrNull { it.value.positions.size }?.value ?: return
 
+				// Merge all other connected nodes into the largest
 				spongeNeighbors.forEach {
 					it.value.drainTo(largestNeighbor, this.nodes)
 				}
 
+				// Add this node
 				largestNeighbor.positions.add(position)
-
 				nodes[position] = largestNeighbor
 			}
 		}
