@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.nodes.type
 
+import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.nodes.TransportNode
 
@@ -12,10 +13,22 @@ interface MultiNode : TransportNode {
 	 **/
 	val positions: MutableSet<Long>
 
-	/**
-	 * Returns whether the removal of the provided position should result in the splitting of a combined node
-	 **/
-	fun shouldSplit(position: Long, nodes: MutableMap<Long, TransportNode>): Boolean
+	override fun handleRemoval(network: ChunkTransportNetwork, position: Long) {
+		network as ChunkPowerNetwork
+
+		network.nodes.remove(position)
+		positions.remove(position)
+
+		// Remove all
+		positions.forEach {
+			network.nodes.remove(it)
+		}
+
+		// Create new nodes, automatically merging together
+		positions.forEach {
+			network.addSpongeNode(it)
+		}
+	}
 
 	/**
 	 * Drain all the positions and connections to the provided node
