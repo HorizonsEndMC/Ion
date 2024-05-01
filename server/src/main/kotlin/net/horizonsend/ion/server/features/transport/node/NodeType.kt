@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.transport.node
 
 import com.manya.pdc.base.EnumDataType
-import net.horizonsend.ion.server.features.transport.node.nodes.SpongeNode
-import net.horizonsend.ion.server.features.transport.node.nodes.TransportNode
+import net.horizonsend.ion.server.features.transport.node.power.SpongeNode
+import net.horizonsend.ion.server.features.transport.node.power.TransportNode
 
 enum class NodeType(val clazz: Class<out TransportNode>) {
 	//POWER
