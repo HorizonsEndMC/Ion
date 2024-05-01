@@ -63,7 +63,9 @@ import net.horizonsend.ion.server.command.starship.ai.AIDebugCommand
 import net.horizonsend.ion.server.configuration.ConfigurationCommands
 import net.horizonsend.ion.server.features.achievements.AchievementsCommand
 import net.horizonsend.ion.server.features.client.commands.HudCommand
+import net.horizonsend.ion.server.features.client.commands.ItemSearchToggleCommand
 import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
+import net.horizonsend.ion.server.features.customitems.commands.CustomItemCommand
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarCommand
@@ -136,9 +138,10 @@ val commands: List<SLCommand> = listOf(
 	SpaceGenCommand,
 	ConfigurationCommands,
 	ConvertCommand,
-	net.horizonsend.ion.server.features.customitems.commands.CustomItemCommand,
+	CustomItemCommand,
 	IonCommand,
 	SearchCommand,
+	ItemSearchToggleCommand,
 	CalcExpCommand,
 	CheckProtectionCommand,
 	FixExtractorsCommand,

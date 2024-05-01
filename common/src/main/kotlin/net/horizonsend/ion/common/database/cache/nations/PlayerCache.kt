@@ -58,6 +58,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var hudPlanetsImage: Boolean = true,
 		var hudPlanetsSelector: Boolean = true,
 
+		var showItemSearchItem: Boolean = true,
+
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
 
@@ -280,6 +282,14 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::showItemSearchItem]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					data.showItemSearchItem = it.boolean()
+				}
+			}
+
 			change[SLPlayer::bounty]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -365,7 +375,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 			advancedStarshipInfo = data.advancedStarshipInfo,
 			rotateCompass = data.rotateCompass,
 			hudPlanetsImage = data.hudPlanetsImage,
-			hudPlanetsSelector = data.hudPlanetsSelector
+			hudPlanetsSelector = data.hudPlanetsSelector,
+			showItemSearchItem = data.showItemSearchItem
 		)
 	}
 

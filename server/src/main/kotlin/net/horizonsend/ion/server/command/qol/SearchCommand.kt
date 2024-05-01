@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayCurrentBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
@@ -42,14 +43,15 @@ object SearchCommand : SLCommand() {
 				val item = GlobalCompletions.stringToItem(str) ?: player.inventory.itemInMainHand
 				for (block in containerBlocks.withIndex()) {
 					val loc = Location( player.world, block.value.x.toDouble(), block.value.y.toDouble(), block.value.z.toDouble() )
+					if(!containers.elementAt(block.index).inventory.contains(item)) continue //necessary check for multi-item searches to prevent multiples
 					if (twoOrMoreMatches(containers.elementAt(block.index), strList) || // if container has 2+ of the searched items
-						(item.type.isBlock && item.type.isSolid) || // Billboarding blocks looks so messed up
-						str == "AIR") // People want to see empty slots, so I added it
+						(item.type.isBlock && item.type.isSolid) || // Billboarding blocks looks so messed up, this is a probably mostly complete fix
+						str == "AIR" || // People want to see if there's air anywhere
+						!PlayerCache[player].showItemSearchItem)
 					{
 						sendEntityPacket(player, displayCurrentBlock(player.world.minecraft, loc.toVector()), 10 * 20)
 					} else {
-						if(containers.elementAt(block.index).inventory.contains(item)) //necessary check for multi-item searches to prevent multiples
-							sendEntityPacket(player, displayItem(player, item, loc.toVector()), 10 * 20)
+						sendEntityPacket(player, displayItem(player, item, loc.toVector()), 10 * 20)
 					}
 				}
 			}
@@ -118,7 +120,7 @@ object SearchCommand : SLCommand() {
 					val block = world.getBlockAt(x, y, z)
 					val inv = block.state as? InventoryHolder ?: continue
 					//added second conditional cause there are no "AIR" item stacks
-					if(inv.inventory.contains(item) || (itemStr == "AIR" && containsAir(inv.inventory))) {
+					if(containsItem(inv.inventory, item) || (itemStr == "AIR" && containsAir(inv.inventory))) {
 						blockSet.add(block)
 					}
 				}
@@ -127,6 +129,10 @@ object SearchCommand : SLCommand() {
 		return blockSet
 	}
 
+	/**
+	 * Function that searches an Inventory and returns true if it contains any empty slots
+	 * basically just !isFull(inventory) if an isFull() function existed
+	 */
 	private fun containsAir(inventory: Inventory): Boolean {
 		for (item in inventory) {
 			if (item == null) return true
@@ -134,15 +140,34 @@ object SearchCommand : SLCommand() {
 		return false
 	}
 
+	/**
+	 * Function that compares the specified item's Material and Custom Model Data with every item in a searched inventory
+	 * (because comparing custom item stacks to modified custom items [like PA vs. PA with modules] will not work)
+	 * @param inventory the inventory being searched
+	 * @param itemStack the item that's being searched
+	 */
+	private fun containsItem(inventory: Inventory, itemStack: ItemStack): Boolean {
+		for(item in inventory){
+			if(item == null) continue
+			if(item.type == itemStack.type) {
+				if ( !(item.itemMeta.hasCustomModelData() && itemStack.itemMeta.hasCustomModelData()) ) return true //if both don't have custom item data, return true
+				else if (item.itemMeta.customModelData == itemStack.itemMeta.customModelData) return true //if both do, and they both match, return true
+			}
+		}
+		return false
+	}
+
+	/**
+	 * Returns true if two or more items in the list of strings exist within the inventory
+	 * @param inventoryHolder the inventory being searched
+	 * @param strList the list of strings that are being compared
+	 */
 	private fun twoOrMoreMatches(inventoryHolder: InventoryHolder, strList: List<String>): Boolean {
 		var counter = 0
 		for(str in strList){
-			val itemStack = GlobalCompletions.stringToItem(str)
-			for(item in inventoryHolder.inventory){
-				if(inventoryHolder.inventory.contains(itemStack)){
-					counter++
-					break
-				}
+			val itemStack = GlobalCompletions.stringToItem(str) ?: continue
+			if(containsItem(inventoryHolder.inventory, itemStack)){
+				counter++
 			}
 		}
 		return counter > 1
