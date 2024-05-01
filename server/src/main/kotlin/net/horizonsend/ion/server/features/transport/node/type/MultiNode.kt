@@ -1,8 +1,8 @@
-package net.horizonsend.ion.server.features.transport.node.nodes.type
+package net.horizonsend.ion.server.features.transport.node.type
 
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
-import net.horizonsend.ion.server.features.transport.node.nodes.TransportNode
+import net.horizonsend.ion.server.features.transport.node.power.TransportNode
 
 /**
  * A transport node that may cover many blocks to avoid making unnecessary steps
