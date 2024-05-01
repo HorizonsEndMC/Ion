@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.node.Consolidatable
-import net.horizonsend.ion.server.features.transport.node.nodes.TransportNode
+import net.horizonsend.ion.server.features.transport.node.power.TransportNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODES
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER_TRANSPORT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -39,7 +39,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	 *
 	 * Inheritors may choose to save persistent data, or not
 	 **/
-	abstract fun createNodeFromBlock(block: BlockSnapshot)
+	abstract suspend fun createNodeFromBlock(block: BlockSnapshot)
 
 	abstract fun processBlockRemoval(key: Long)
 	abstract fun processBlockAddition(key: Long, new: BlockSnapshot)
