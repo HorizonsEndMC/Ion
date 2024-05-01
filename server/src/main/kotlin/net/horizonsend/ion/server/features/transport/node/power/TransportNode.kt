@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.node.nodes
+package net.horizonsend.ion.server.features.transport.node.power
 
 import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
