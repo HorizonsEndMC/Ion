@@ -1,18 +1,13 @@
-package net.horizonsend.ion.server.features.transport.node.nodes
+package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.features.transport.node.nodes.type.MultiNode
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
+import net.horizonsend.ion.server.features.transport.node.type.MultiNode
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-/**
- * Represents a sponge [omnidirectional pipe]
- *
- * Since there is no use in keeping the individual steps, all touching sponges are consolidated into a single node with multiple inputs / outputs, weighted evenly
- **/
-class SpongeNode() : MultiNode {
+class EndRodNode() : MultiNode {
 	constructor(origin: Long) : this() {
 		positions.add(origin)
 	}
@@ -26,11 +21,11 @@ class SpongeNode() : MultiNode {
 	}
 
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
-		val coveredPositions = persistentDataContainer.get(NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY)
+		val coveredPositions = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY)
 		coveredPositions?.let { positions.addAll(it.asIterable()) }
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
-		persistentDataContainer.set(NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY, positions.toLongArray())
+		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY, positions.toLongArray())
 	}
 }
