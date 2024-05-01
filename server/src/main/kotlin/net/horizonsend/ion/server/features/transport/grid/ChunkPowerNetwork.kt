@@ -71,14 +71,11 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		}
 	}
 
-	override fun processBlockRemoval(key: Long) {
-		manager.scope.launch {
-			val previousNode = nodes[key]
+	override fun processBlockRemoval(key: Long) { manager.scope.launch {
+		val previousNode = nodes[key] ?: return@launch
 
-			nodes.remove(key)
-			//TODO check for splits
-		}
-	}
+		previousNode.handleRemoval(this@ChunkPowerNetwork, key)
+	}}
 
 	override fun processBlockAddition(key: Long, new: BlockSnapshot) {
 		createNodeFromBlock(new)
@@ -90,13 +87,11 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 	}
 
 	val tickExecutor = IntervalExecutor(20) {
-		for ((key, extractor) in extractors.filterValues { it.transferableNeighbors.isNotEmpty() }) {
-			extractor.startStep().step()
-		}
+
 	}
 
 	override fun tick() {
-		tickExecutor()
+//		tickExecutor()
 	}
 
 	private fun collectPowerMultiblockEntities() {
@@ -107,7 +102,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		}
 	}
 
-	private fun addSpongeNode(position: Long) {
+	fun addSpongeNode(position: Long) {
 		val neighbors = getNeighborNodes(position, nodes)
 
 		when (neighbors.size) {
