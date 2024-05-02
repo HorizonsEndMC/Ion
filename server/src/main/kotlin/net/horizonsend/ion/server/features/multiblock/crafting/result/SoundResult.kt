@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.result
 
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Sound
 import org.bukkit.SoundCategory
 import org.bukkit.block.Sign
