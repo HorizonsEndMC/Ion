@@ -146,9 +146,8 @@ abstract class SimpleProjectile(
 			"shieldDamageMultiplier = $starshipShieldDamageMultiplier, \n" +
 			"result = ${fraction * explosionPower * starshipShieldDamageMultiplier}"
 		)
-
 		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * starshipShieldDamageMultiplier) {
-			AreaShields.withExplosionPowerOverride(fraction * explosionPower * starshipShieldDamageMultiplier) {
+			AreaShields.withExplosionPowerOverride(fraction * explosionPower * areaShieldDamageMultiplier) {
 				if (!hasHit) {
 					world.createExplosion(newLoc, explosionPower)
 
