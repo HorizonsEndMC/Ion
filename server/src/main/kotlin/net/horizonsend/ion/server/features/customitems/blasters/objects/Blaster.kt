@@ -251,7 +251,7 @@ abstract class Blaster<T : Balancing>(
 		if (ammo == 0) {
 			(livingEntity as? Player)?.playSound(
 				sound(
-					key("minecraft:blaster.dry_shoot"),
+					key("horizonsend:blaster.dry_shoot"),
 					PLAYER,
 					1.0f,
 					1.0f

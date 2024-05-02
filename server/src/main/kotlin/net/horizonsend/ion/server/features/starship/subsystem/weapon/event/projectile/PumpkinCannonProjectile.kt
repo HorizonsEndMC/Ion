@@ -45,7 +45,7 @@ class PumpkinCannonProjectile(
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)
-		playCustomSound(newLoc, "starship.weapon.rocket.impact", 30)
+		playCustomSound(newLoc, "horizonsend:starship.weapon.rocket.impact", 30)
 	}
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
