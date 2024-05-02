@@ -87,7 +87,7 @@ class HyperspaceWarmup(
 
 		if (seconds == (warmup-4) && (ship.type == StarshipType.BATTLECRUISER || ship.type == StarshipType.CRUISER)) {
 			for (nearbyPlayer in ship.world.getNearbyPlayers(ship.centerOfMass.toLocation(ship.world), 5000.0)) {
-				nearbyPlayer.playSound(Sound.sound(Key.key("starship.supercapital.hyperspace_enter"), Sound.Source.AMBIENT, 5f, 0.05f))
+				nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.supercapital.hyperspace_enter"), Sound.Source.AMBIENT, 5f, 0.05f))
 			}
 		}
 

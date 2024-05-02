@@ -27,7 +27,7 @@ object Gear : IonServerComponent() {
 						if (mainCustomItem != null && mainCustomItem.id.contains("sword") ||
 							offhandCustomItem != null && offhandCustomItem.id.contains("sword")
 						) {
-							player.world.playSound(player.location, "energy_sword.idle", 5.0f, 1.0f)
+							player.world.playSound(player.location, "horizonsend:energy_sword.idle", 5.0f, 1.0f)
 						}
 					}
 				}
