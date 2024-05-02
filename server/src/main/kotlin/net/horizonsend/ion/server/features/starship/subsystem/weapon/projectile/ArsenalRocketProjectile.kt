@@ -96,7 +96,7 @@ class ArsenalRocketProjectile(
 					)) {
 						nearbyPlayer.playSound(
 							Sound.sound(
-								Key.key("minecraft:starship.weapon.arsenal_rocket.ignite"),
+								Key.key("horizonsend:starship.weapon.arsenal_rocket.ignite"),
 								Sound.Source.AMBIENT,
 								5f,
 								1.0f
@@ -175,7 +175,7 @@ class ArsenalRocketProjectile(
 		newLoc.world.spawnParticle(Particle.FLAME, newLoc, 10)
 		newLoc.world.spawnParticle(Particle.FLASH, newLoc, 3)
 		for (nearbyPlayer in newLoc.world.getNearbyPlayers(newLoc, 200.0)) {
-			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.weapon.arsenal_rocket.impact"), Sound.Source.AMBIENT, 5f, 1.0f))
+			nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.weapon.arsenal_rocket.impact"), Sound.Source.AMBIENT, 5f, 1.0f))
 		}
 		super.impact(newLoc, block, entity)
 	}

@@ -22,7 +22,7 @@ class CruiserSink(starship: ActiveStarship) : StandardSinkProvider(starship) {
 			}
 		}
 		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 5000.0)) {
-			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.explosion.cruiser"), Sound.Source.AMBIENT, 5f, 1.0f))
+			nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.explosion.cruiser"), Sound.Source.AMBIENT, 5f, 1.0f))
 		}
 
 		super.setup()
