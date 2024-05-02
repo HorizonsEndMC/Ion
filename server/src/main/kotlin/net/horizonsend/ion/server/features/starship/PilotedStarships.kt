@@ -349,14 +349,14 @@ object PilotedStarships : IonServerComponent() {
 		when (data.starshipType) {
 			"BATTLECRUISER" ->
 				for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 69420.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.pilot.battlecruiser"), Sound.Source.AMBIENT, 7f, 1.0f))
+					nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.pilot.battlecruiser"), Sound.Source.AMBIENT, 7f, 1.0f))
 				}
 			"CRUISER" ->
 				for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 5000.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.pilot.cruiser"), Sound.Source.AMBIENT, 5f, 1.0f))
+					nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.pilot.cruiser"), Sound.Source.AMBIENT, 5f, 1.0f))
 				}
 			else -> for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 500.0)) {
-				nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.activate"), Sound.Source.AMBIENT, 5f, 0.05f))
+				nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:block.beacon.activate"), Sound.Source.AMBIENT, 5f, 0.05f))
 			}
 		}
 
@@ -487,15 +487,15 @@ object PilotedStarships : IonServerComponent() {
 		when {
 			starship.type == StarshipType.BATTLECRUISER ->
 				for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 69420.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.release.battlecruiser"), Sound.Source.AMBIENT, 7f, 1.0f))
+					nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.release.battlecruiser"), Sound.Source.AMBIENT, 7f, 1.0f))
 				}
 			starship.type == StarshipType.CRUISER ->
 				for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 5000.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:starship.release.cruiser"), Sound.Source.AMBIENT, 5f, 1.0f))
+					nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.release.cruiser"), Sound.Source.AMBIENT, 5f, 1.0f))
 				}
 			else ->
 				for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 500.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
+					nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
 				}
 		}
 

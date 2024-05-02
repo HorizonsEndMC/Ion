@@ -162,7 +162,7 @@ class MiningLaserSubsystem(
 
 				starship.world.playSound(
 					it.location,
-					"starship.weapon.mining_laser.start",
+					"horizonsend:starship.weapon.mining_laser.start",
 					SoundCategory.PLAYERS,
 					1.0f,
 					1.0f
@@ -190,7 +190,7 @@ class MiningLaserSubsystem(
 
 			starship.world.playSound(
 				player.location,
-				"starship.weapon.mining_laser.stop",
+				"horizonsend:starship.weapon.mining_laser.stop",
 				SoundCategory.PLAYERS,
 				1.0f,
 				1f

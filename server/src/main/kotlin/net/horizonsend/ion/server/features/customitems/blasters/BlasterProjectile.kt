@@ -86,7 +86,7 @@ class RayTracedParticleProjectile(
 		// Block Check
 		val hitBlock = rayTraceResult?.hitBlock
 		if (hitBlock != null) {
-			location.world.playSound(location, "blaster.impact.standard", 1f, 1f)
+			location.world.playSound(location, "horizonsend:blaster.impact.standard", 1f, 1f)
 			location.world.playSound(location, hitBlock.blockSoundGroup.breakSound, SoundCategory.BLOCKS, .5f, 1f)
 
 			if (explosiveShot)	{
@@ -126,7 +126,7 @@ class RayTracedParticleProjectile(
 					hitEntity.damage(damage * 1.5, shooter)
 
 					hitLocation.world.spawnParticle(Particle.CRIT, hitLocation, 10)
-					shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
+					shooter?.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
 					shooter?.sendActionBar(text("Headshot!", NamedTextColor.RED))
 					if (!balancing.shouldPassThroughEntities) return true
 				}
@@ -134,7 +134,7 @@ class RayTracedParticleProjectile(
 
 			if (!hasHeadshot) {
 				hitEntity.damage(damage, shooter)
-				shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
+				shooter?.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
 				if (!balancing.shouldPassThroughEntities) return true
 			}
 
@@ -170,7 +170,7 @@ class RayTracedParticleProjectile(
 				}
 			}
 
-			shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
+			shooter?.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
 			if (!balancing.shouldPassThroughEntities) return true
 		}
 
@@ -191,7 +191,7 @@ class RayTracedParticleProjectile(
 			if ((it !in nearMissPlayers) && (location.distance(it.location) < whizzDistance)) {
 				var pitchFactor = 1.0f
 				if (SpaceWorlds.contains(it.world)) pitchFactor = 0.5f
-				it.playSound(sound(key("minecraft:$soundWhizz"), Source.PLAYER, 1.0f, pitchFactor))
+				it.playSound(sound(key("horizonsend:$soundWhizz"), Source.PLAYER, 1.0f, pitchFactor))
 				nearMissPlayers.add(it)
 			}
 		}
