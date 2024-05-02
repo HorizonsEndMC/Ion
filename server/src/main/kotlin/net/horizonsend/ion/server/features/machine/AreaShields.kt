@@ -157,6 +157,10 @@ object AreaShields : IonServerComponent() {
 	) {
 		val areaShields = getNearbyAreaShields(location, explosionSize)
 		var shielded = false
+
+		var explosionResistanceTotal = 0.0
+		blockList.forEach { explosionResistanceTotal += it.type.blastResistance }
+
 		for (shieldLocation in areaShields.keys) {
 			val block = shieldLocation.block
 			if (!block.type.isWallSign) {
@@ -164,10 +168,12 @@ object AreaShields : IonServerComponent() {
 			}
 			val sign = block.getState(false) as Sign
 			val multiblock = Multiblocks[sign] as? AreaShield ?: continue
+
 			if (multiblock.radius != areaShields.get(shieldLocation)) continue
 			var power = PowerMachines.getPower(sign)
 			if (power <= 0) continue
-			power -= blockList.size * 2
+
+			power -= ((blockList.size.toDouble()/explosionResistanceTotal) * 10 * (this.explosionPowerOverride ?: 1.0)).toInt()
 			val percent = power.toFloat() / multiblock.maxPower.toFloat()
 			if (usePower) PowerMachines.setPower(sign, power)
 			val color = Color.fromRGB(

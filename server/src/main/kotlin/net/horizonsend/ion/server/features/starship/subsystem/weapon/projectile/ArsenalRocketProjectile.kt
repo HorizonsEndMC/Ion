@@ -69,10 +69,6 @@ class ArsenalRocketProjectile(
 				else -> 1
 			}
 			val predictedNewLoc = loc.clone().add(0.0, delta * speed/2*yFactor, 0.0)
-			if (!predictedNewLoc.isChunkLoaded) {
-				destroyAllDisplayEntities()
-				return
-			}
 			//We're not doing any impact stuff as we dont want the projectile to be able to hit stuff at this stage
 			val travel = loc.distance(predictedNewLoc)
 
@@ -114,9 +110,6 @@ class ArsenalRocketProjectile(
 			}
 			hasSwitchedToNormalDirection = true
 			val predictedNewLoc = loc.clone().add(dir.clone().multiply(delta * speed))
-			if (!predictedNewLoc.isChunkLoaded) {
-				return
-			}
 			val result: RayTraceResult? = loc.world.rayTrace(loc, dir, delta * speed, FluidCollisionMode.NEVER, true, 0.1) { it.type != org.bukkit.entity.EntityType.ITEM_DISPLAY }
 			val newLoc = result?.hitPosition?.toLocation(loc.world) ?: predictedNewLoc
 			val travel = loc.distance(newLoc)
