@@ -53,54 +53,6 @@ object CustomItems {
 	val ALL get() = customItems.values
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
-
-	// Ship Ammunition Start
-
-	val UNLOADED_TURRET_SHELL = register(object : ShellItem(
-		identifier = "UNLOADED_SHELL",
-		material = WARPED_FUNGUS_ON_A_STICK,
-		customModelData = 511,
-		displayName = text("Unloaded Shell").decoration(ITALIC, false)
-	) {})
-
-	val UNCHARGED_SHELL = register(object : ShellItem(
-		identifier = "UNCHARGED_SHELL",
-		material = WARPED_FUNGUS_ON_A_STICK,
-		customModelData = 513,
-		displayName = text("Uncharged Shell").decoration(ITALIC, false)
-	) {})
-
-	val CHARGED_SHELL = register(object : ShellItem(
-		identifier = "CHARGED_SHELL",
-		material = IRON_INGOT,
-		customModelData = 514,
-		displayName = text("Charged Shell").decoration(ITALIC, false)
-	) {})
-
-	val LOADED_TURRET_SHELL = register(object : ShellItem(
-		identifier = "LOADED_SHELL",
-		material = IRON_INGOT,
-		customModelData = 512,
-		displayName = text("Loaded Shell").decoration(ITALIC, false)
-	) {})
-	val ARSENAL_MISSILE_ON = register(
-		identifier = "ARSENAL_MISSILE_ON",
-		customModelData = 700,
-		displayName = text("Arsenal Missile", RED).decoration(BOLD, false),
-	)
-	val ARSENAL_MISSILE = register(object : ShellItem(
-		identifier = "ARSENAL_MISSILE",
-		material = IRON_INGOT,
-		customModelData = 701,
-		displayName = text("Arsenal Missile").decoration(ITALIC, false),
-	) {})
-	val UNLOADED_MISSILE = register(object : ShellItem(
-		identifier = "UNLOADED_MISSILE",
-		material = WARPED_FUNGUS_ON_A_STICK,
-		customModelData = 702,
-		displayName = text("Unloaded Missile").decoration(ITALIC, false),
-	) {})
-	// Ship Ammunition End
 	// Magazines Start
 
 	val STANDARD_MAGAZINE = register(object : Magazine<PVPBalancingConfiguration.EnergyWeapons.AmmoStorage>(
@@ -281,133 +233,8 @@ object CustomItems {
 	val CANNON_RECEIVER = register("CANNON_RECEIVER", 507, text("Cannon Receiver"))
 
 	// Gun Parts End
-	// Gas Canisters Start
 
-	val GAS_CANISTER_EMPTY = register("GAS_CANISTER_EMPTY", 1000, text("Empty Gas Canister"))
-	// Fuels
-	val GAS_CANISTER_HYDROGEN = register(
-		object : GasCanister(
-			identifier = "GAS_CANISTER_HYDROGEN",
-			customModelData = 1001,
-			gasIdentifier = "HYDROGEN",
-			displayName = canisterName(text("Hydrogen", RED))
-		) {}
-	)
-	val GAS_CANISTER_NITROGEN = register(
-		object : GasCanister(
-			identifier = "GAS_CANISTER_NITROGEN",
-			customModelData = 1002,
-			gasIdentifier = "NITROGEN",
-			displayName = canisterName(text("Nitrogen", RED))
-		) {}
-	)
-	val GAS_CANISTER_METHANE = register(
-		object : GasCanister(
-			identifier = "GAS_CANISTER_METHANE",
-			customModelData = 1003,
-			gasIdentifier = "METHANE",
-			displayName = canisterName(text("Methane", RED))
-		) {}
-	)
-
-	// Oxidizers
-	val GAS_CANISTER_OXYGEN = register(
-		object : GasCanister(
-			identifier = "GAS_CANISTER_OXYGEN",
-			customModelData = 1010,
-			gasIdentifier = "OXYGEN",
-			displayName = canisterName(text("Oxygen", YELLOW))
-		) {}
-	)
-	val GAS_CANISTER_CHLORINE = register(
-		object : GasCanister(
-			identifier = "GAS_CANISTER_CHLORINE",
-			customModelData = 1011,
-			gasIdentifier = "CHLORINE",
-			displayName = canisterName(text("Chlorine", YELLOW))
-		) {}
-	)
-	val GAS_CANISTER_FLUORINE = register(
-		object : GasCanister(
-			identifier = "GAS_CANISTER_FLUORINE",
-			customModelData = 1012,
-			gasIdentifier = "FLUORINE",
-			displayName = canisterName(text("Fluorine", YELLOW))
-		) {}
-	)
-
-	// Other
-	val GAS_CANISTER_HELIUM = register(
-		object : GasCanister(
-			identifier = "GAS_CANISTER_HELIUM",
-			customModelData = 1020,
-			gasIdentifier = "HELIUM",
-			displayName = canisterName(text("Helium", BLUE))
-		) {}
-	)
-	val GAS_CANISTER_CARBON_DIOXIDE = register(
-		object : GasCanister(
-			identifier = "GAS_CANISTER_CARBON_DIOXIDE",
-			customModelData = 1021,
-			gasIdentifier = "CARBON_DIOXIDE",
-			displayName = canisterName(text("Carbon Dioxide", BLUE))
-		) {}
-	)
-
-	val STEEL_INGOT = register(
-		object : MineralItem(
-			identifier = "STEEL_INGOT",
-			material = IRON_INGOT,
-			customModelData = 600,
-			displayName = text("Steel Ingot").decoration(ITALIC, false)
-		) {}
-	)
-
-	val STEEL_BLOCK = register(
-			object : CustomBlockItem(
-					identifier = "STEEL_BLOCK",
-					material = IRON_BLOCK,
-					customModelData = 600,
-					displayName = text("Steel Block").decoration(ITALIC, false),
-					customBlockIdentifier = "STEEL_BLOCK"
-			) {}
-	)
-
-	val STEEL_PLATE = register(
-		identifier = "STEEL_PLATE",
-		customModelData = 40,
-		displayName = text("Steel Plate").decoration(ITALIC, false)
-	)
-
-	val STEEL_CHASSIS = register(
-		identifier = "STEEL_CHASSIS",
-		customModelData = 41,
-		displayName = text("Steel Chassis").decoration(ITALIC, false)
-	)
-
-	val STEEL_MODULE = register(
-		identifier = "STEEL_MODULE",
-		customModelData = 42,
-		displayName = text("Steel Module").decoration(ITALIC, false)
-	)
-
-	val STEEL_ASSEMBLY = register(
-		identifier = "STEEL_ASSEMBLY",
-		customModelData = 43,
-		displayName = text("Steel Assembly").decoration(ITALIC, false)
-	)
-
-	val REINFORCED_FRAME = register(
-		identifier = "REINFORCED_FRAME",
-		customModelData = 44,
-		displayName = text("Reinforced Frame").decoration(ITALIC, false)
-	)
-
-	val REACTOR_FRAME = register(
-		identifier = "REACTOR_FRAME",
-		customModelData = 45,
-		displayName = text("Reactor Frame").decoration(ITALIC, false).decoration(BOLD, true)
-	)
+	// Minerals start
 
 	val ALUMINUM_INGOT = register(
 		object : MineralItem(
@@ -581,145 +408,341 @@ object CustomItems {
 		) {}
 	)
 
+	// Minerals end
+
+	// Industry start
+
+	// Uranium line
 	val ENRICHED_URANIUM = register(object: MineralItem(
 		identifier = "ENRICHED_URANIUM",
 		material = IRON_INGOT,
-		customModelData = 17,
+		customModelData = 1000,
 		displayName = text("Enriched Uranium").decoration(ITALIC, false)
 	) {})
 
 	val ENRICHED_URANIUM_BLOCK = register(object: CustomBlockItem(
 		identifier = "ENRICHED_URANIUM_BLOCK",
 		material = IRON_BLOCK,
-		customModelData = 17,
+		customModelData = 1000,
 		displayName = text("Enriched Uranium Block").decoration(ITALIC, false),
 		customBlockIdentifier = "ENRICHED_URANIUM_BLOCK"
 	) {})
 
 	val URANIUM_CORE = register(
 		identifier = "URANIUM_CORE",
-		customModelData = 18,
+		customModelData = 2000,
 		displayName = text("Uranium Core").decoration(ITALIC, false)
 	)
 
 	val URANIUM_ROD = register(
 		identifier = "URANIUM_ROD",
-		customModelData = 19,
+		customModelData = 2001,
 		displayName = text("Uranium Rod").decoration(ITALIC, false)
 	)
 
 	val FUEL_ROD_CORE = register(
 		identifier = "FUEL_ROD_CORE",
-		customModelData = 20,
+		customModelData = 2002,
 		displayName = text("Fuel Rod Core").decoration(ITALIC, false)
 	)
 
 	val FUEL_CELL = register(
 		identifier = "FUEL_CELL",
-		customModelData = 21,
+		customModelData = 2003,
 		displayName = text("Fuel Cell").decoration(ITALIC, false)
 	)
 
 	val FUEL_CONTROL = register(
 		identifier = "FUEL_CONTROL",
-		customModelData = 22,
+		customModelData = 2004,
 		displayName = text("Fuel Control").decoration(ITALIC, false).decoration(BOLD, true)
 	)
 
+	// Reactive line
 	val REACTIVE_COMPONENT = register(
 		identifier = "REACTIVE_COMPONENT",
-		customModelData = 23,
+		customModelData = 2005,
 		displayName = text("Reactive Component").decoration(ITALIC, false)
 	)
 
 	val REACTIVE_HOUSING = register(
 		identifier = "REACTIVE_HOUSING",
-		customModelData = 24,
+		customModelData = 2006,
 		displayName = text("Reactive Housing").decoration(ITALIC, false)
 	)
 
 	val REACTIVE_PLATING = register(
 		identifier = "REACTIVE_PLATING",
-		customModelData = 25,
+		customModelData = 2007,
 		displayName = text("Reactive Plating").decoration(ITALIC, false)
 	)
 
 	val REACTIVE_CHASSIS = register(
 		identifier = "REACTIVE_CHASSIS",
-		customModelData = 26,
+		customModelData = 2008,
 		displayName = text("Reactive Chassis").decoration(ITALIC, false)
 	)
 
 	val REACTIVE_MEMBRANE = register(
 		identifier = "REACTIVE_MEMBRANE",
-		customModelData = 27,
+		customModelData = 2009,
 		displayName = text("Reactive Membrane").decoration(ITALIC, false)
 	)
 
 	val REACTIVE_ASSEMBLY = register(
 		identifier = "REACTIVE_ASSEMBLY",
-		customModelData = 28,
+		customModelData = 2010,
 		displayName = text("Reactive assembly").decoration(ITALIC, false)
 	)
 
 	val FABRICATED_ASSEMBLY = register(
 		identifier = "FABRICATED_ASSEMBLY",
-		customModelData = 29,
+		customModelData = 2011,
 		displayName = text("Fabricated Assembly").decoration(ITALIC, false)
 	)
 
+	// Circuitry line
 	val ENHANCED_CIRCUITRY = register(
 		identifier = "ENHANCED_CIRCUITRY",
-		customModelData = 30,
+		customModelData = 2012,
 		displayName = text("Enhanced Circuitry").decoration(ITALIC, false)
 	)
 
 	val ADVANCED_CIRCUITY = register(
 		identifier = "ADVANCED_CIRCUITRY",
-		customModelData = 31,
+		customModelData = 2013,
 		displayName = text("Advanced Circuitry").decoration(ITALIC, false)
 	)
 
 	val REACTOR_CONTROL = register(
 		identifier = "REACTOR_CONTROL",
-		customModelData = 32,
+		customModelData = 2014,
 		displayName = text("Reactor Control").decoration(ITALIC, false).decoration(BOLD, true)
 	)
 
+	// Superconductor line
 	val SUPERCONDUCTOR = register(
 		identifier = "SUPERCONDUCTOR",
-		customModelData = 33,
+		customModelData = 2015,
 		displayName = text("Superconductor").decoration(ITALIC, false)
 	)
 
 	val SUPERCONDUCTOR_BLOCK = register(object : CustomBlockItem(
 		identifier = "SUPERCONDUCTOR_BLOCK",
 		material = IRON_BLOCK,
-		customModelData = 34,
+		customModelData = 1002,
 		displayName = text("Superconductor Block").decoration(ITALIC, false),
 		customBlockIdentifier = "SUPERCONDUCTOR_BLOCK"
 	) {})
 
 	val SUPERCONDUCTOR_CORE = register(
 		identifier = "SUPERCONDUCTOR_CORE",
-		customModelData = 35,
+		customModelData = 2016,
 		displayName = text("Superconductor Core").decoration(ITALIC, false).decoration(BOLD, true)
 	)
+
+	// Steel line
+	val STEEL_INGOT = register(
+		object : MineralItem(
+			identifier = "STEEL_INGOT",
+			material = IRON_INGOT,
+			customModelData = 1001,
+			displayName = text("Steel Ingot").decoration(ITALIC, false)
+		) {}
+	)
+
+	val STEEL_BLOCK = register(
+		object : CustomBlockItem(
+			identifier = "STEEL_BLOCK",
+			material = IRON_BLOCK,
+			customModelData = 1001,
+			displayName = text("Steel Block").decoration(ITALIC, false),
+			customBlockIdentifier = "STEEL_BLOCK"
+		) {}
+	)
+
+	val STEEL_PLATE = register(
+		identifier = "STEEL_PLATE",
+		customModelData = 2017,
+		displayName = text("Steel Plate").decoration(ITALIC, false)
+	)
+
+	val STEEL_CHASSIS = register(
+		identifier = "STEEL_CHASSIS",
+		customModelData = 2018,
+		displayName = text("Steel Chassis").decoration(ITALIC, false)
+	)
+
+	val STEEL_MODULE = register(
+		identifier = "STEEL_MODULE",
+		customModelData = 2019,
+		displayName = text("Steel Module").decoration(ITALIC, false)
+	)
+
+	val STEEL_ASSEMBLY = register(
+		identifier = "STEEL_ASSEMBLY",
+		customModelData = 2020,
+		displayName = text("Steel Assembly").decoration(ITALIC, false)
+	)
+
+	val REINFORCED_FRAME = register(
+		identifier = "REINFORCED_FRAME",
+		customModelData = 2021,
+		displayName = text("Reinforced Frame").decoration(ITALIC, false)
+	)
+
+	val REACTOR_FRAME = register(
+		identifier = "REACTOR_FRAME",
+		customModelData = 2022,
+		displayName = text("Reactor Frame").decoration(ITALIC, false).decoration(BOLD, true)
+	)
+
+	// Industry End
+
+	// Starship Components Start
 
 	val BC_REACTOR_CORE = register(object : CustomBlockItem(
 		identifier = "BC_REACTOR_CORE",
 		material = IRON_BLOCK,
-		customModelData = 36,
+		customModelData = 2000,
 		displayName = text("Battlecruiser Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
 		customBlockIdentifier = "BC_REACTOR_CORE"
 	) {})
+
 	val CRUISER_REACTOR_CORE = register(object : CustomBlockItem(
 		identifier = "CRUISER_REACTOR_CORE",
 		material = IRON_BLOCK,
-		customModelData = 37,
+		customModelData = 2001,
 		displayName = text("Cruiser Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
 		customBlockIdentifier = "CRUISER_REACTOR_CORE"
 	) {})
+
+	// Starship Components End
+
+	// Ship Ammunition Start
+
+	val UNLOADED_TURRET_SHELL = register(object : ShellItem(
+		identifier = "UNLOADED_SHELL",
+		material = WARPED_FUNGUS_ON_A_STICK,
+		customModelData = 702,
+		displayName = text("Unloaded Shell").decoration(ITALIC, false)
+	) {})
+
+	val UNCHARGED_SHELL = register(object : ShellItem(
+		identifier = "UNCHARGED_SHELL",
+		material = WARPED_FUNGUS_ON_A_STICK,
+		customModelData = 703,
+		displayName = text("Uncharged Shell").decoration(ITALIC, false)
+	) {})
+
+	val CHARGED_SHELL = register(object : ShellItem(
+		identifier = "CHARGED_SHELL",
+		material = IRON_INGOT,
+		customModelData = 514,
+		displayName = text("Charged Shell").decoration(ITALIC, false)
+	) {})
+
+	val LOADED_TURRET_SHELL = register(object : ShellItem(
+		identifier = "LOADED_SHELL",
+		material = IRON_INGOT,
+		customModelData = 512,
+		displayName = text("Loaded Shell").decoration(ITALIC, false)
+	) {})
+
+	val ARSENAL_MISSILE_ON = register(
+		identifier = "ARSENAL_MISSILE_ON",
+		customModelData = 700,
+		displayName = text("Arsenal Missile", RED).decoration(BOLD, false),
+	)
+
+	val ARSENAL_MISSILE = register(object : ShellItem(
+		identifier = "ARSENAL_MISSILE",
+		material = IRON_INGOT,
+		customModelData = 2000,
+		displayName = text("Arsenal Missile").decoration(ITALIC, false),
+	) {})
+
+	val UNLOADED_MISSILE = register(object : ShellItem(
+		identifier = "UNLOADED_MISSILE",
+		material = WARPED_FUNGUS_ON_A_STICK,
+		customModelData = 701,
+		displayName = text("Unloaded Missile").decoration(ITALIC, false),
+	) {})
+	// Ship Ammunition End
+
+	// Gas Canisters Start
+
+	val GAS_CANISTER_EMPTY = register("GAS_CANISTER_EMPTY", 1000, text("Empty Gas Canister"))
+
+	// Fuels
+	val GAS_CANISTER_HYDROGEN = register(
+		object : GasCanister(
+			identifier = "GAS_CANISTER_HYDROGEN",
+			customModelData = 1001,
+			gasIdentifier = "HYDROGEN",
+			displayName = canisterName(text("Hydrogen", RED))
+		) {}
+	)
+	val GAS_CANISTER_NITROGEN = register(
+		object : GasCanister(
+			identifier = "GAS_CANISTER_NITROGEN",
+			customModelData = 1002,
+			gasIdentifier = "NITROGEN",
+			displayName = canisterName(text("Nitrogen", RED))
+		) {}
+	)
+	val GAS_CANISTER_METHANE = register(
+		object : GasCanister(
+			identifier = "GAS_CANISTER_METHANE",
+			customModelData = 1003,
+			gasIdentifier = "METHANE",
+			displayName = canisterName(text("Methane", RED))
+		) {}
+	)
+
+	// Oxidizers
+	val GAS_CANISTER_OXYGEN = register(
+		object : GasCanister(
+			identifier = "GAS_CANISTER_OXYGEN",
+			customModelData = 1010,
+			gasIdentifier = "OXYGEN",
+			displayName = canisterName(text("Oxygen", YELLOW))
+		) {}
+	)
+	val GAS_CANISTER_CHLORINE = register(
+		object : GasCanister(
+			identifier = "GAS_CANISTER_CHLORINE",
+			customModelData = 1011,
+			gasIdentifier = "CHLORINE",
+			displayName = canisterName(text("Chlorine", YELLOW))
+		) {}
+	)
+	val GAS_CANISTER_FLUORINE = register(
+		object : GasCanister(
+			identifier = "GAS_CANISTER_FLUORINE",
+			customModelData = 1012,
+			gasIdentifier = "FLUORINE",
+			displayName = canisterName(text("Fluorine", YELLOW))
+		) {}
+	)
+
+	// Other
+	val GAS_CANISTER_HELIUM = register(
+		object : GasCanister(
+			identifier = "GAS_CANISTER_HELIUM",
+			customModelData = 1020,
+			gasIdentifier = "HELIUM",
+			displayName = canisterName(text("Helium", BLUE))
+		) {}
+	)
+	val GAS_CANISTER_CARBON_DIOXIDE = register(
+		object : GasCanister(
+			identifier = "GAS_CANISTER_CARBON_DIOXIDE",
+			customModelData = 1021,
+			gasIdentifier = "CARBON_DIOXIDE",
+			displayName = canisterName(text("Carbon Dioxide", BLUE))
+		) {}
+	)
 
 	fun canisterName(gasName: Component): Component = text()
 		.append(gasName)
@@ -728,6 +751,7 @@ object CustomItems {
 		.decoration(ITALIC, false)
 
 	// Gas Canisters End
+
 	// Throwables start
 
 	val DETONATOR = register(
@@ -812,7 +836,6 @@ object CustomItems {
 	val PLANET_SELECTOR = register("PLANET_SELECTOR", 5900, text("PLANET_SELECTOR"))
 	// Planets end
 
-	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun registerStackable(identifier: String, customModelData: Int, displayName: Component): CustomItem {
 		return register(object : CustomItem(identifier) {
 			override fun constructItemStack(): ItemStack {
@@ -825,6 +848,7 @@ object CustomItems {
 		})
 	}
 
+	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun register(identifier: String, customModelData: Int, displayName: Component): CustomItem {
 		return register(object : CustomItem(identifier) {
 			override fun constructItemStack(): ItemStack {
