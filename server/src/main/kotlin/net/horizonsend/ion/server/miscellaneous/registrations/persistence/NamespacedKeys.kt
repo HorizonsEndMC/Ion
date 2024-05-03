@@ -77,6 +77,8 @@ object NamespacedKeys {
 	val BLOCKS_TRAVELED = key("blocks_traveled")
 	val HYPERSPACE_BLOCKS_TRAVELED = key("hyperspace_blocks_traveled")
 
+	val DATA_VERSION = key("data_version")
+
 	val STORED_MULTIBLOCK_ENTITIES = key("stored_multiblock_entities")
 	val EXTRACTOR_DATA = key("extractor_data")
 
