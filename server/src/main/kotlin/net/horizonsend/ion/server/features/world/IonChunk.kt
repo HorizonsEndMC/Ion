@@ -89,7 +89,7 @@ class IonChunk(val inner: Chunk) {
 		@EventHandler
 		fun onBlockBreak(event: BlockPlaceEvent) {
 			val ionChunk = event.block.chunk.ion()
-			ionChunk.transportNetwork.processBlockAdditon(event)
+			ionChunk.transportNetwork.processBlockAddition(event)
 		}
 
 		/**
