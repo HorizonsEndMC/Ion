@@ -53,7 +53,7 @@ class ChunkTransportManager(
 		processBlockRemoval(key)
 	}
 
-	fun processBlockAdditon(event: BlockPlaceEvent) {
+	fun processBlockAddition(event: BlockPlaceEvent) {
 		val block = event.block
 
 		val key = toBlockKey(block.x, block.y, block.z)
