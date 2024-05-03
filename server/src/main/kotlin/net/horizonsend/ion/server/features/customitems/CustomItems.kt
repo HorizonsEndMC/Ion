@@ -601,12 +601,12 @@ object CustomItems {
 
 	// Starship Components Start
 
-	val BC_REACTOR_CORE = register(object : CustomBlockItem(
-		identifier = "BC_REACTOR_CORE",
+	val BATTLECRUISER_REACTOR_CORE = register(object : CustomBlockItem(
+		identifier = "BATTLECRUISER_REACTOR_CORE",
 		material = IRON_BLOCK,
 		customModelData = 2000,
 		displayName = text("Battlecruiser Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
-		customBlockIdentifier = "BC_REACTOR_CORE"
+		customBlockIdentifier = "BATTLECRUISER_REACTOR_CORE"
 	) {})
 
 	val CRUISER_REACTOR_CORE = register(object : CustomBlockItem(
@@ -621,14 +621,14 @@ object CustomItems {
 
 	// Ship Ammunition Start
 
-	val UNLOADED_TURRET_SHELL = register(object : ShellItem(
+	val UNLOADED_SHELL = register(object : ShellItem(
 		identifier = "UNLOADED_SHELL",
 		material = WARPED_FUNGUS_ON_A_STICK,
 		customModelData = 702,
 		displayName = text("Unloaded Shell").decoration(ITALIC, false)
 	) {})
 
-	val LOADED_TURRET_SHELL = register(object : ShellItem(
+	val LOADED_SHELL = register(object : ShellItem(
 		identifier = "LOADED_SHELL",
 		material = IRON_INGOT,
 		customModelData = 2001,
@@ -649,10 +649,10 @@ object CustomItems {
 		displayName = text("Charged Shell").decoration(ITALIC, false)
 	) {})
 
-	val ARSENAL_MISSILE_ON = register(
-		identifier = "ARSENAL_MISSILE_ON",
+	val ACTIVATED_ARSENAL_MISSILE = register(
+		identifier = "ACTIVATED_ARSENAL_MISSILE",
 		customModelData = 700,
-		displayName = text("Arsenal Missile", RED).decoration(BOLD, false),
+		displayName = text("Activated Arsenal Missile", RED).decoration(BOLD, false),
 	)
 
 	val ARSENAL_MISSILE = register(object : ShellItem(
@@ -662,11 +662,11 @@ object CustomItems {
 		displayName = text("Arsenal Missile").decoration(ITALIC, false),
 	) {})
 
-	val UNLOADED_MISSILE = register(object : ShellItem(
-		identifier = "UNLOADED_MISSILE",
+	val UNLOADED_ARSENAL_MISSILE = register(object : ShellItem(
+		identifier = "UNLOADED_ARSENAL_MISSILE",
 		material = WARPED_FUNGUS_ON_A_STICK,
 		customModelData = 701,
-		displayName = text("Unloaded Missile").decoration(ITALIC, false),
+		displayName = text("Unloaded Arsenal Missile").decoration(ITALIC, false),
 	) {})
 	// Ship Ammunition End
 

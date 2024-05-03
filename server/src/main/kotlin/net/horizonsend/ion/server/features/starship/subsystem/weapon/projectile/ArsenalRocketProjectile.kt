@@ -96,7 +96,7 @@ class ArsenalRocketProjectile(
 					)) {
 						nearbyPlayer.playSound(
 							Sound.sound(
-								Key.key("horizonsend:starship.weapon.arsenal_rocket.ignite"),
+								Key.key("horizonsend:starship.weapon.arsenal_missile.ignite"),
 								Sound.Source.AMBIENT,
 								5f,
 								1.0f
@@ -175,7 +175,7 @@ class ArsenalRocketProjectile(
 		newLoc.world.spawnParticle(Particle.FLAME, newLoc, 10)
 		newLoc.world.spawnParticle(Particle.FLASH, newLoc, 3)
 		for (nearbyPlayer in newLoc.world.getNearbyPlayers(newLoc, 200.0)) {
-			nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.weapon.arsenal_rocket.impact"), Sound.Source.AMBIENT, 5f, 1.0f))
+			nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.weapon.arsenal_missile.impact"), Sound.Source.AMBIENT, 5f, 1.0f))
 		}
 		super.impact(newLoc, block, entity)
 	}
@@ -185,7 +185,7 @@ class ArsenalRocketProjectile(
 			val player = (playerBukkit as CraftPlayer)
 			val connection = player.handle.connection
 			val itemDisplay = ItemDisplay(EntityType.ITEM_DISPLAY, player.minecraft.level()).apply {
-				this.itemStack = CraftItemStack.asNMSCopy(CustomItems.ARSENAL_MISSILE_ON.constructItemStack())
+				this.itemStack = CraftItemStack.asNMSCopy(CustomItems.ACTIVATED_ARSENAL_MISSILE.constructItemStack())
 				setPos(player.location.toBlockPos().center)
 				val translation = originLocation.toVector().subtract(Vector(this.x, this.y, this.z)).toVector3f()
 				val transformation = Transformation(
@@ -211,7 +211,7 @@ class ArsenalRocketProjectile(
 		val nmsPlayer = (player as CraftPlayer)
 		val connection = nmsPlayer.handle.connection
 		val itemDisplay = ItemDisplay(EntityType.ITEM_DISPLAY, nmsPlayer.minecraft.level()).apply {
-			this.itemStack = CraftItemStack.asNMSCopy(CustomItems.ARSENAL_MISSILE_ON.constructItemStack())
+			this.itemStack = CraftItemStack.asNMSCopy(CustomItems.ACTIVATED_ARSENAL_MISSILE.constructItemStack())
 			setPos(nmsPlayer.location.toBlockPos().center)
 			val translation = originLocation.toVector().subtract(Vector(this.x, this.y, this.z)).toVector3f()
 			val transformation = Transformation(

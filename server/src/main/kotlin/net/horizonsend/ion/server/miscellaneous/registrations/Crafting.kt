@@ -35,7 +35,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_HOUS
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_MEMBRANE
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTIVE_PLATING
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTOR_CONTROL
-import net.horizonsend.ion.server.features.customitems.CustomItems.BC_REACTOR_CORE
+import net.horizonsend.ion.server.features.customitems.CustomItems.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_OXYGEN
@@ -61,8 +61,8 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SUPERCONDUCTO
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.UNCHARGED_SHELL
-import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_MISSILE
-import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_TURRET_SHELL
+import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_ARSENAL_MISSILE
+import net.horizonsend.ion.server.features.customitems.CustomItems.UNLOADED_SHELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_CORE
@@ -95,7 +95,6 @@ import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.GREEN_WOOL
 import org.bukkit.Material.HONEYCOMB
 import org.bukkit.Material.IRON_BLOCK
-import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.LAPIS_LAZULI
@@ -283,7 +282,7 @@ object Crafting : IonServerComponent() {
 		shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
 
 		//Unloaded Turret Shell Crafting
-		itemStackShapeRecipe("Unloaded_Turret_Shell", UNLOADED_TURRET_SHELL.constructItemStack().asQuantity(4)) {
+		itemStackShapeRecipe("Unloaded__Shell", UNLOADED_SHELL.constructItemStack().asQuantity(4)) {
 			shape("xyx", "xzx", "xzx")
 
 			setIngredient('x', AIR)
@@ -299,7 +298,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('z', COPPER_INGOT)
 		}
 
-		itemStackShapeRecipe("Unloaded_Missile", UNLOADED_MISSILE.constructItemStack()) {
+		itemStackShapeRecipe("Unloaded_Arsenal_Missile", UNLOADED_ARSENAL_MISSILE.constructItemStack()) {
 			shape("aba", "mum", "hlo")
 
 			setIngredient('a', ExactChoice(REACTIVE_HOUSING.constructItemStack()))
@@ -695,7 +694,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		//Reactor Core Crafting
-		itemStackShapeRecipe("bcreactorCore", BC_REACTOR_CORE.constructItemStack()) {
+		itemStackShapeRecipe("bcreactorCore", BATTLECRUISER_REACTOR_CORE.constructItemStack()) {
 			shape("wxw", "yzy", "wxw")
 
 			setIngredient('w', REACTOR_FRAME.constructItemStack())

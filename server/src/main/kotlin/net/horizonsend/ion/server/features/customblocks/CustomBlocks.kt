@@ -129,8 +129,8 @@ object CustomBlocks {
 		drops = customItemDrop("SUPERCONDUCTOR_BLOCK")
 	))
 
-	val BC_REACTOR_CORE = register(CustomBlock(
-		identifier = "BC_REACTOR_CORE",
+	val BATTLECRUISER_REACTOR_CORE = register(CustomBlock(
+		identifier = "BATTLECRUISER_REACTOR_CORE",
 		blockData = mushroomBlockData(setOf(NORTH, UP, WEST)),
 		tool = "pickaxe",
 		drops = listOf()
