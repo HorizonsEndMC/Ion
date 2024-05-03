@@ -355,6 +355,7 @@ object Multiblocks : IonServerComponent() {
 
 	/** Check if a sign has been registered as a multiblock, if so, return that value */
 	fun getFromPDC(sign: Sign): Multiblock? {
+		MultiblockNameUpgrader.upgrade(sign)
 		return getFromPDC(sign.persistentDataContainer)
 	}
 
@@ -421,6 +422,7 @@ object Multiblocks : IonServerComponent() {
 		if (cached != null) return cached
 
 		val sign = getBukkitBlockState(block, loadChunks) as? Sign ?: return null
+		MultiblockNameUpgrader.upgrade(sign)
 
 		for ((name, multiblock) in multiblocks) {
 			if (!matchesPersistentDataContainer(sign.persistentDataContainer, multiblock)) {
