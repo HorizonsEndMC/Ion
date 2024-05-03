@@ -21,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	val nodes: ConcurrentHashMap<Long, TransportNode> = ConcurrentHashMap()
+	val extractors: ConcurrentHashMap<Long, TransportNode> = ConcurrentHashMap()
+
 	val world get() = manager.chunk.world
 
 	val pdc get() = manager.chunk.inner.persistentDataContainer
@@ -42,7 +44,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	open suspend fun createNodeFromBlock(block: BlockSnapshot) {
 		val key = toBlockKey(block.x, block.y, block.z)
 
-		nodes[key] = nodeFactory.create(this, key, block) ?: return
+		nodeFactory.create(this, key, block)
 	}
 
 	abstract fun processBlockRemoval(key: Long)
