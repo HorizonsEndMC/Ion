@@ -10,7 +10,7 @@ class Vec3i: DBVec3i {
 	constructor(a: DBVec3i) : super(a.x, a.y, a.z)
 	constructor(x: Int, y: Int, z: Int) : super(x, y, z)
 	@Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
-	constructor(blockKey: Long) : super(blockKeyX(blockKey), blockKeyY(blockKey), blockKeyZ(blockKey))
+	constructor(blockKey: LegacyBlockKey) : super(blockKeyX(blockKey), blockKeyY(blockKey), blockKeyZ(blockKey))
 
 	constructor(vector: Vector) : super(vector.blockX, vector.blockY, vector.blockZ)
 
@@ -21,7 +21,7 @@ class Vec3i: DBVec3i {
 	fun toLocation(world: World): Location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
 
 	@Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
-	fun toBlockKey(): Long = blockKey(x, y, z)
+	fun toBlockKey(): LegacyBlockKey = blockKey(x, y, z)
 
 	fun toVector(): Vector = Vector(x, y, z)
 	fun toCenterVector(): Vector = Vector(x.toDouble() + 0.5, y.toDouble() + 0.5, z.toDouble() + 0.5)

@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.node.Consolidatable
+import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.power.TransportNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODES
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER_TRANSPORT
@@ -25,6 +26,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	val pdc get() = manager.chunk.inner.persistentDataContainer
 
 	protected abstract val namespacedKey: NamespacedKey
+	protected abstract val nodeFactory: NodeFactory<*>
 
 // val grids: Nothing = TODO("ChunkTransportNetwork system")
 
@@ -36,10 +38,12 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 
 	/**
 	 * Handle the creation / loading of the node into memory
-	 *
-	 * Inheritors may choose to save persistent data, or not
 	 **/
-	abstract suspend fun createNodeFromBlock(block: BlockSnapshot)
+	open suspend fun createNodeFromBlock(block: BlockSnapshot) {
+		val key = toBlockKey(block.x, block.y, block.z)
+
+		nodes[key] = nodeFactory.create(this, key, block) ?: return
+	}
 
 	abstract fun processBlockRemoval(key: Long)
 	abstract fun processBlockAddition(key: Long, new: BlockSnapshot)

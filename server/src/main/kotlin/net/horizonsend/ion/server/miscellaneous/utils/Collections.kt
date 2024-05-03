@@ -118,17 +118,6 @@ operator fun <A> Pair<A, A>.iterator(): Iterator<A> = object : Iterator<A> {
 	}
 }
 
-/**
- * Set a value in a map, or remove it if provided null
- **/
-fun <K, V> MutableMap<K, V>.setOrRemove(key: K, value: V?) {
-	if (value == null) {
-		remove(key)
-	} else {
-		set(key, value)
-	}
-}
-
 fun <K, V, R : Comparable<R>> MutableMap<K, V>.popMaxByOrNull(selector: (Map.Entry<K, V>) -> R): Map.Entry<K, V>? {
 	val max = maxByOrNull(selector) ?: return null
 	remove(max.key)
@@ -139,4 +128,14 @@ fun <K, V, R : Comparable<R>> MutableMap<K, V>.popMaxByOrNull(selector: (Map.Ent
 inline fun <K, V> Iterable<K>.associateWithNotNull(valueSelector: (K) -> V?): Map<K, V> {
 	@Suppress("UNCHECKED_CAST")
 	return associateWith(valueSelector).filterValues { it != null } as Map<K, V>
+}
+
+inline fun <reified T, K, V> Map<K, V>.filterValuesIsInstance(): Map<K, T> {
+	@Suppress("UNCHECKED_CAST")
+	return filterValues { it is T } as Map<K, T>
+}
+
+inline fun <reified T, K, V> Map<K, V>.filterKeysIsInstance(): Map<T, V> {
+	@Suppress("UNCHECKED_CAST")
+	return filterKeys { it is T } as Map<T, V>
 }
