@@ -95,7 +95,7 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = FabricatorMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.STEEL_ASSEMBLY, 1), progressHolderResult = CustomItems.REINFORCED_FRAME),
 		resources = listOf(power(150)),
-		result = ProgressItemResult(CustomItems.STEEL_ASSEMBLY, 60L * 60L * 20L, SoundResult("industry.fabricate", SoundCategory.BLOCKS, 1.0f, 1.0f))
+		result = ProgressItemResult(CustomItems.REINFORCED_FRAME, 60L * 60L * 20L, SoundResult("industry.fabricate", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	))
 
 	val CIRCUIT_BOARD_FABRICATION = registerRecipe(ProcessingMultiblockRecipe(
