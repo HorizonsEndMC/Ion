@@ -43,22 +43,31 @@ fun BlockPos.toVec3i() = Vec3i(this.x, this.y, this.z)
 
 fun isValidYLevel(y: Int) = y in 0..Bukkit.getServer().worlds[0].maxHeight
 
+/**
+ * A set of world coordinates packed into a 64-bit integer
+ *
+ * Cannot represent negative Y coordinates, deprecated in favor of Minecraft's method
+ * @see BlockKey
+ **/
+@Deprecated("Cannot represent negative Y coordinates, deprecated in favor of Minecraft's method via NewBlockKey")
+typealias LegacyBlockKey = Long
+
 @Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
-fun blockKey(x: Number, y: Number, z: Number): Long =
+fun blockKey(x: Number, y: Number, z: Number): LegacyBlockKey =
 	x.toLong() and 134217727L or (z.toLong() and 134217727L shl 27) or (y.toLong() shl 54)
 
 // the reason i'm suppressing nothing to inline is that I thing it might have *some* performance benefits to inline the math
 @Suppress("NOTHING_TO_INLINE")
 @Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
-inline fun blockKeyX(key: Long): Int = (key shl 37 shr 37).toInt()
+inline fun blockKeyX(key: LegacyBlockKey): Int = (key shl 37 shr 37).toInt()
 
 @Suppress("NOTHING_TO_INLINE")
 @Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
-inline fun blockKeyY(key: Long): Int = (key ushr 54).toInt()
+inline fun blockKeyY(key: LegacyBlockKey): Int = (key ushr 54).toInt()
 
 @Suppress("NOTHING_TO_INLINE")
 @Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
-inline fun blockKeyZ(key: Long): Int = (key shl 10 shr 37).toInt()
+inline fun blockKeyZ(key: LegacyBlockKey): Int = (key shl 10 shr 37).toInt()
 
 fun distanceSquared(fromX: Double, fromY: Double, fromZ: Double, toX: Double, toY: Double, toZ: Double): Double =
 	(fromX - toX).squared() + (fromY - toY).squared() + (fromZ - toZ).squared()
