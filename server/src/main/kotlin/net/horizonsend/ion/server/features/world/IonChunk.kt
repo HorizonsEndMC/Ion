@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.features.world
 import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.data.ChunkDataFixer
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.chunk.LevelChunkSection
 import org.bukkit.Chunk
@@ -13,8 +15,10 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.ChunkUnloadEvent
+import org.bukkit.persistence.PersistentDataType.INTEGER
 
 class IonChunk(val inner: Chunk) {
+	val dataVersion = inner.persistentDataContainer.getOrDefault(NamespacedKeys.DATA_VERSION, INTEGER, 0)
 	val locationKey = inner.chunkKey
 
 	/** The origin X coordinate of this chunk (in real coordinates) **/
@@ -105,6 +109,9 @@ class IonChunk(val inner: Chunk) {
 			ionWorld.addChunk(ionChunk)
 
 			ionChunk.onLoad()
+
+			// Upgrade data after it has been loaded
+			ChunkDataFixer.upgrade(ionChunk)
 
 			return ionChunk
 		}
