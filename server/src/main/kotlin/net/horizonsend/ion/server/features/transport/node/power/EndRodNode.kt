@@ -38,7 +38,7 @@ class EndRodNode() : MultiNode {
 
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			val node = PowerNodeFactory.getNodeForPosition(network as ChunkPowerNetwork, getBlockSnapshotAsync(network.world, it)!!.data as Directional, it)
+			val node = PowerNodeFactory.addEndRod(network as ChunkPowerNetwork, getBlockSnapshotAsync(network.world, it)!!.data as Directional, it)
 			network.nodes[it] = node
 		}
 	}
