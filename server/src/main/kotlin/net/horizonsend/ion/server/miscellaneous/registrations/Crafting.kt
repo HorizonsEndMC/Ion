@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
-//import net.horizonsend.ion.server.features.custom.items.CustomItems.CRUDE_FUEL
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItems
@@ -108,6 +107,7 @@ import org.bukkit.Material.MAGENTA_WOOL
 import org.bukkit.Material.MELON
 import org.bukkit.Material.MOSS_BLOCK
 import org.bukkit.Material.MOSS_CARPET
+import org.bukkit.Material.NAME_TAG
 import org.bukkit.Material.NAME_TAG
 import org.bukkit.Material.NETHERITE_BLOCK
 import org.bukkit.Material.NETHER_WART
