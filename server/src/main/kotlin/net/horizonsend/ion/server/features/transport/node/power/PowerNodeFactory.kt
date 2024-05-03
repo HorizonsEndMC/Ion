@@ -18,20 +18,25 @@ import org.bukkit.block.data.Directional
 
 object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 	override suspend fun create(network: ChunkPowerNetwork, key: BlockKey, snapshot: BlockSnapshot): TransportNode? {
-		println("Triggering event")
-
-		return when {
-			// Extract power from storage
-//			block.type == Material.CRAFTING_TABLE -> PowerExtractorNode(this, x, y, z).apply { extractors[toBlockKey(x, y, z)] = this }
-
-			// Add power to storage
-//			block.type == Material.NOTE_BLOCK -> PowerInputNode(this, x, y, z)
-
+		val node = when {
 			// Straight wires
-			snapshot.type == Material.END_ROD -> getNodeForPosition(network, snapshot.data as Directional, key)
+			snapshot.type == Material.END_ROD -> addEndRod(network, snapshot.data as Directional, key)
 
 			// Omnidirectional wires
 			snapshot.type == Material.SPONGE -> addSpongeNode(network, key)
+
+			// Extract power from storage
+			snapshot.type == Material.CRAFTING_TABLE -> if (matchesSolarPanelStructure(snapshot, key)) {
+				createSolarPanel(network, key)
+			} else {
+				val node = createExtractorNode(network, key)
+
+				network.extractors[key] = node
+				node
+			}
+
+			// Add power to storage
+//			block.type == Material.NOTE_BLOCK -> PowerInputNode(this, x, y, z)
 
 			// Merge node behavior
 //			block.type == Material.IRON_BLOCK -> MergeNode(this, x, y, z)
@@ -47,6 +52,10 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 
 			else -> throw NotImplementedError()
 		}
+
+		network.nodes[key] = node
+
+		return node
 	}
 
 	fun addSpongeNode(network: ChunkPowerNetwork, position: BlockKey): SpongeNode {
@@ -86,7 +95,7 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 		}
 	}
 
-	suspend fun getNodeForPosition(network: ChunkPowerNetwork, data: Directional, position: Long): EndRodNode {
+	suspend fun addEndRod(network: ChunkPowerNetwork, data: Directional, position: Long): EndRodNode {
 		val axis = data.facing.axis
 
 		// The neighbors in the direction of the wire's facing, that are also facing that direction
@@ -127,5 +136,23 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 
 			else -> throw IllegalArgumentException("Linear node had more than 2 neighbors")
 		}
+	}
+
+	private suspend fun matchesSolarPanelStructure(blockSnapshot: BlockSnapshot, key: BlockKey): Boolean {
+		if (blockSnapshot.type != Material.CRAFTING_TABLE) return false
+		val diamond = getRelative(key, BlockFace.UP)
+
+		if (getBlockSnapshotAsync(blockSnapshot.world, diamond)?.type != Material.DIAMOND_BLOCK) return false
+		val cell = getRelative(diamond, BlockFace.UP)
+
+		return getBlockSnapshotAsync(blockSnapshot.world, cell)?.type == Material.DAYLIGHT_DETECTOR
+	}
+
+	suspend fun createExtractorNode(network: ChunkPowerNetwork, key: BlockKey): PowerExtractorNode {
+
+	}
+
+	suspend fun createSolarPanel(network: ChunkPowerNetwork, key: BlockKey): SolarPanelNode {
+
 	}
 }
