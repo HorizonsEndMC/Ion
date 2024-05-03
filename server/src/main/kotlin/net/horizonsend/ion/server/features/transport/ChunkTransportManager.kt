@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot.Compani
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.world.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.IntervalExecutor
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.Chunk
 import org.bukkit.event.block.BlockBreakEvent
@@ -33,10 +34,12 @@ class ChunkTransportManager(
 //		gasGrid.setup()
 	}
 
+	val tickExecutor = IntervalExecutor(40) { scope.launch {
+
+	}}
+
 	fun tick() {
-		scope.launch { powerNetwork.tick() }
-//		scope.launch { pipeGrid.tick() }
-//		scope.launch { gasGrid.tick() }
+		tickExecutor()
 	}
 
 	fun save() {

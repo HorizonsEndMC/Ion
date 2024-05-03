@@ -4,17 +4,43 @@ import net.minecraft.core.BlockPos
 import org.bukkit.block.BlockFace
 
 /**
- * Packs a x, y, z coordinate into a long
+ * A world coordinate packed into a 64-bit integer
+ *
+ * Capable of representing any coordinate in world bounds
  **/
-fun toBlockKey(x: Int, y: Int, z: Int): Long = BlockPos.asLong(x, y, z)
-fun toBlockKey(vec3i: Vec3i): Long = BlockPos.asLong(vec3i.x, vec3i.y, vec3i.z)
-fun toVec3i(key: Long): Vec3i = Vec3i(getX(key), getY(key), getZ(key))
+typealias BlockKey = Long
 
-fun getX(key: Long) : Int = BlockPos.getX(key)
-fun getY(key: Long) : Int = BlockPos.getY(key)
-fun getZ(key: Long) : Int = BlockPos.getZ(key)
+/**
+ * Packs a (x, y, z) coordinate into a long
+ **/
+fun toBlockKey(x: Int, y: Int, z: Int): BlockKey = BlockPos.asLong(x, y, z)
 
-fun getRelative(key: Long, direction: BlockFace, distance: Int = 1): Long = toBlockKey(
+/**
+ * Packs a (x, y, z) coordinate into a long
+ **/
+fun toBlockKey(vec3i: Vec3i): BlockKey = BlockPos.asLong(vec3i.x, vec3i.y, vec3i.z)
+
+/**
+ * Creates a Vec3i from a set of packed coordinates
+ **/
+fun toVec3i(key: BlockKey): Vec3i = Vec3i(getX(key), getY(key), getZ(key))
+
+/**
+ * Get the X value of a packed coordinate
+ **/
+fun getX(key: BlockKey) : Int = BlockPos.getX(key)
+
+/**
+ * Get the Y value of a packed coordinate
+ **/
+fun getY(key: BlockKey) : Int = BlockPos.getY(key)
+
+/**
+ * Get the Z value of a packed coordinate
+ **/
+fun getZ(key: BlockKey) : Int = BlockPos.getZ(key)
+
+fun getRelative(key: BlockKey, direction: BlockFace, distance: Int = 1): BlockKey = toBlockKey(
 	getX(key) + (direction.modX * distance),
 	getY(key) + (direction.modY * distance),
 	getZ(key) + (direction.modZ * distance)
