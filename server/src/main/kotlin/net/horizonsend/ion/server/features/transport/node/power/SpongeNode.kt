@@ -2,8 +2,11 @@ package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
@@ -13,15 +16,15 @@ import org.bukkit.persistence.PersistentDataType
  * Since there is no use in keeping the individual steps, all touching sponges are consolidated into a single node with multiple inputs / outputs, weighted evenly
  **/
 class SpongeNode() : MultiNode {
-	constructor(origin: Long) : this() {
+	constructor(origin: BlockKey) : this() {
 		positions.add(origin)
 	}
 
-	override val positions: MutableSet<Long> = LongOpenHashSet()
+	override val positions: MutableSet<BlockKey> = LongOpenHashSet()
 
 	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
 
-	override fun isTransferable(position: Long, node: TransportNode): Boolean {
+	override fun isTransferable(position: BlockKey, node: TransportNode): Boolean {
 		return true
 	}
 
@@ -32,5 +35,13 @@ class SpongeNode() : MultiNode {
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
 		persistentDataContainer.set(NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY, positions.toLongArray())
+	}
+
+	override suspend fun rebuildNode(network: ChunkTransportNetwork, position: BlockKey) {
+		// Create new nodes, automatically merging together
+		positions.forEach {
+			val node = PowerNodeFactory.addSpongeNode(network as ChunkPowerNetwork, it)
+			network.nodes[it] = node
+		}
 	}
 }
