@@ -17,7 +17,7 @@ class BattlecruiserSink(starship: ActiveStarship) : StandardSinkProvider(starshi
 
 	override fun setup() {
 		starship.iterateBlocks { x, y, z ->
-			if (starship.world.getBlockAt(x, y, z).customBlock == CustomBlocks.BC_REACTOR_CORE) {
+			if (starship.world.getBlockAt(x, y, z).customBlock == CustomBlocks.BATTLECRUISER_REACTOR_CORE) {
 				starship.world.setType(x, y, z, Material.AIR)
 			}
 		}
