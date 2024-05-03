@@ -492,7 +492,7 @@ object CustomItems {
 	val REACTIVE_ASSEMBLY = register(
 		identifier = "REACTIVE_ASSEMBLY",
 		customModelData = 2010,
-		displayName = text("Reactive assembly").decoration(ITALIC, false)
+		displayName = text("Reactive Assembly").decoration(ITALIC, false)
 	)
 
 	val FABRICATED_ASSEMBLY = register(
@@ -628,6 +628,13 @@ object CustomItems {
 		displayName = text("Unloaded Shell").decoration(ITALIC, false)
 	) {})
 
+	val LOADED_TURRET_SHELL = register(object : ShellItem(
+		identifier = "LOADED_SHELL",
+		material = IRON_INGOT,
+		customModelData = 2001,
+		displayName = text("Loaded Shell").decoration(ITALIC, false)
+	) {})
+
 	val UNCHARGED_SHELL = register(object : ShellItem(
 		identifier = "UNCHARGED_SHELL",
 		material = WARPED_FUNGUS_ON_A_STICK,
@@ -638,15 +645,8 @@ object CustomItems {
 	val CHARGED_SHELL = register(object : ShellItem(
 		identifier = "CHARGED_SHELL",
 		material = IRON_INGOT,
-		customModelData = 514,
+		customModelData = 2002,
 		displayName = text("Charged Shell").decoration(ITALIC, false)
-	) {})
-
-	val LOADED_TURRET_SHELL = register(object : ShellItem(
-		identifier = "LOADED_SHELL",
-		material = IRON_INGOT,
-		customModelData = 512,
-		displayName = text("Loaded Shell").decoration(ITALIC, false)
 	) {})
 
 	val ARSENAL_MISSILE_ON = register(
