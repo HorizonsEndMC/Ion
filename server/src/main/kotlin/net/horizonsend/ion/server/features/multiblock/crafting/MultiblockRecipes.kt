@@ -24,7 +24,6 @@ import net.horizonsend.ion.server.features.multiblock.industry.GasFurnaceMultibl
 import net.horizonsend.ion.server.features.multiblock.industry.PlatePressMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.SoundCategory
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
@@ -107,9 +106,9 @@ object MultiblockRecipes : IonServerComponent() {
 
 	val LOADED_SHELL_LOADING = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = AmmoLoaderMultiblock,
-		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNLOADED_TURRET_SHELL, 1), progressHolderResult = CustomItems.LOADED_TURRET_SHELL),
+		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNLOADED_SHELL, 1), progressHolderResult = CustomItems.LOADED_SHELL),
 		resources = listOf(power(150)),
-		result = MultiRecipeResult(ProgressItemResult(CustomItems.LOADED_TURRET_SHELL, 90L * 20L, SoundResult("horizonsend:industry.load", SoundCategory.BLOCKS, 1.0f, 1.0f)))
+		result = MultiRecipeResult(ProgressItemResult(CustomItems.LOADED_SHELL, 90L * 20L, SoundResult("horizonsend:industry.load", SoundCategory.BLOCKS, 1.0f, 1.0f)))
 	))
 
 	val UNCHARGED_SHELL_CHARGING = registerRecipe(ProcessingMultiblockRecipe(
@@ -121,7 +120,7 @@ object MultiblockRecipes : IonServerComponent() {
 
 	val ARSENAL_MISSILE_LOADING = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = MissileLoaderMultiblock,
-		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNLOADED_MISSILE, 1), progressHolderResult = CustomItems.ARSENAL_MISSILE),
+		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNLOADED_ARSENAL_MISSILE, 1), progressHolderResult = CustomItems.ARSENAL_MISSILE),
 		resources = listOf(power(150)),
 		result = ProgressItemResult(CustomItems.ARSENAL_MISSILE, 60L * 60L * 20L, SoundResult("horizonsend:industry.mload", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	))
