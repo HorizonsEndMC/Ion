@@ -40,7 +40,7 @@ class SpongeNode() : MultiNode {
 	override suspend fun rebuildNode(network: ChunkTransportNetwork, position: BlockKey) {
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			val node = PowerNodeFactory.addSpongeNode(network as ChunkPowerNetwork, it)
+			val node = PowerNodeFactory.addSponge(network as ChunkPowerNetwork, it)
 			network.nodes[it] = node
 		}
 	}
