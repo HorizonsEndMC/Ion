@@ -95,6 +95,7 @@ object NamespacedKeys {
 
 	val TRANSFERABLE_NEIGHBORS = key("transferable_neighbors")
 	val NODE_COVERED_POSITIONS = key("node_covered_positions")
+	val SOLAR_CELL_COUNT = key("solar_cell_count")
 	val NODE_TYPE = key("node_type")
 
 	val NODES = key("chunk_power_nodes")
