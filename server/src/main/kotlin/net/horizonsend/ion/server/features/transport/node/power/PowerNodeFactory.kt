@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
+import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -23,13 +24,13 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 			snapshot.type == Material.END_ROD -> addEndRod(network, snapshot.data as Directional, key)
 
 			// Omnidirectional wires
-			snapshot.type == Material.SPONGE -> addSpongeNode(network, key)
+			snapshot.type == Material.SPONGE -> addSponge(network, key)
 
 			// Extract power from storage
 			snapshot.type == Material.CRAFTING_TABLE -> if (matchesSolarPanelStructure(snapshot, key)) {
-				createSolarPanel(network, key)
+				addSolarPanel(network, key)
 			} else {
-				val node = createExtractorNode(network, key)
+				val node = addExtractor(network, key)
 
 				network.extractors[key] = node
 				node
@@ -58,7 +59,7 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 		return node
 	}
 
-	fun addSpongeNode(network: ChunkPowerNetwork, position: BlockKey): SpongeNode {
+	fun addSponge(network: ChunkPowerNetwork, position: BlockKey): SpongeNode {
 		val neighbors = getNeighborNodes(position, network.nodes).filterValuesIsInstance<SpongeNode, BlockFace, TransportNode>()
 
 		when (neighbors.size) {
@@ -148,11 +149,19 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 		return getBlockSnapshotAsync(blockSnapshot.world, cell)?.type == Material.DAYLIGHT_DETECTOR
 	}
 
-	suspend fun createExtractorNode(network: ChunkPowerNetwork, key: BlockKey): PowerExtractorNode {
+	suspend fun addExtractor(network: ChunkPowerNetwork, key: BlockKey): PowerExtractorNode {
 
 	}
 
-	suspend fun createSolarPanel(network: ChunkPowerNetwork, key: BlockKey): SolarPanelNode {
+	suspend fun addSolarPanel(network: ChunkPowerNetwork, key: BlockKey): SolarPanelNode {
+		val neighbors = CARDINAL_BLOCK_FACES.flatMap { direction ->
+			val relativeSide = getRelative(key, direction)
+
+			(-1..3).map {
+				getRelative(relativeSide, BlockFace.UP, it)
+			}
+		}
+
 
 	}
 }
