@@ -57,7 +57,7 @@ object MultiblockRecipes : IonServerComponent() {
 	val STEEL_PRODUCTION = registerRecipe(FurnaceMultiblockRecipe(
 		multiblock = GasFurnaceMultiblock,
 		smelting = ConsumedItemIngredient(ItemStack(Material.IRON_INGOT), 1),
-		fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 100),
+		fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 5),
 		resources = listOf(power(150)),
 		result = ItemResult(CustomItems.STEEL_INGOT)
 	))
