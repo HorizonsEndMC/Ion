@@ -1,19 +1,21 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.ArsenalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArsenalRocketProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
@@ -24,7 +26,7 @@ class ArsenalRocketStarshipWeaponSubsystem(
 	private val multiblock: ArsenalRocketStarshipWeaponMultiblock,
 	private val upOrDown: BlockFace
 	) :
-	WeaponSubsystem(starship, pos), HeavyWeaponSubsystem, ManualWeaponSubsystem, DirectionalSubsystem {
+	WeaponSubsystem(starship, pos), HeavyWeaponSubsystem, ManualWeaponSubsystem, DirectionalSubsystem, AmmoConsumingWeaponSubsystem {
 	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.arsenalMissile
 	override val powerUsage: Int = balancing.powerUsage
 
@@ -41,7 +43,7 @@ class ArsenalRocketStarshipWeaponSubsystem(
 		}
 		val block = pos.toLocation(starship.world).block
 		val inward = block.getRelative(this.face)
-		return !starship.isInternallyObstructed(Vec3i(inward.x, inward.y.plus(5*yFactor), inward.z), dir)
+		return !starship.isInternallyObstructed(Vec3i(inward.x, inward.y.plus(5*yFactor), inward.z), Vector(0,yFactor,0))
 	}
 
 	private fun getSurroundingFaces(): Array<BlockFace> {
@@ -50,6 +52,10 @@ class ArsenalRocketStarshipWeaponSubsystem(
 		}
 
 		return arrayOf(BlockFace.SELF, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH)
+	}
+
+	override fun isAcceptableDirection(face: BlockFace): Boolean {
+		return super.isAcceptableDirection(face)
 	}
 
 	override fun isIntact(): Boolean {
@@ -73,4 +79,6 @@ class ArsenalRocketStarshipWeaponSubsystem(
 		val projectile = ArsenalRocketProjectile(starship, origin, dir, shooter, upOrDown)
 		projectile.fire()
 	}
+
+	override fun getRequiredAmmo(): ItemStack = CustomItems.ARSENAL_MISSILE.constructItemStack()
 }
