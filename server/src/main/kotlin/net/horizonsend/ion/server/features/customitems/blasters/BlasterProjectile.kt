@@ -191,7 +191,7 @@ class RayTracedParticleProjectile(
 			if ((it !in nearMissPlayers) && (location.distance(it.location) < whizzDistance)) {
 				var pitchFactor = 1.0f
 				if (SpaceWorlds.contains(it.world)) pitchFactor = 0.5f
-				it.playSound(sound(key("horizonsend:$soundWhizz"), Source.PLAYER, 1.0f, pitchFactor))
+				it.playSound(sound(key(soundWhizz), Source.PLAYER, 1.0f, pitchFactor))
 				nearMissPlayers.add(it)
 			}
 		}
