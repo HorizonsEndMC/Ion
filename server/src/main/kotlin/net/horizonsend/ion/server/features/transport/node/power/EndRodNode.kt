@@ -12,7 +12,7 @@ import org.bukkit.block.data.Directional
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-class EndRodNode() : MultiNode {
+class EndRodNode() : MultiNode<EndRodNode, EndRodNode> {
 	constructor(origin: Long) : this() {
 		positions.add(origin)
 	}
@@ -38,8 +38,7 @@ class EndRodNode() : MultiNode {
 
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			val node = PowerNodeFactory.addEndRod(network as ChunkPowerNetwork, getBlockSnapshotAsync(network.world, it)!!.data as Directional, it)
-			network.nodes[it] = node
+			PowerNodeFactory.addEndRod(network as ChunkPowerNetwork, getBlockSnapshotAsync(network.world, it)!!.data as Directional, it)
 		}
 	}
 }
