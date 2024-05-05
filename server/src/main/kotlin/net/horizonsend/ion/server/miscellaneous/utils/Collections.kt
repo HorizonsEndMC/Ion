@@ -50,28 +50,6 @@ fun <K, V> Collection<Map.Entry<K, V>>.toMap(): Map<K, V> {
 
 fun <T> List<T>.safeSubList(fromIndex: Int, toIndex: Int): List<T> = this.subList(fromIndex.coerceAtLeast(this.size), toIndex.coerceAtMost(this.size))
 
-/**
- * Returns a [List] containing all key-value pairs.
- */
-fun <K, V> Map<out K, V>.toMutableList(): MutableList<Pair<K, V>> {
-	if (isEmpty()) return mutableListOf()
-
-	val iterator = entries.iterator()
-	if (!iterator.hasNext()) return mutableListOf()
-
-	val first = iterator.next()
-	if (!iterator.hasNext()) return mutableListOf(first.toPair())
-
-	val result = ArrayList<Pair<K, V>>(size)
-	result.add(first.toPair())
-
-	do {
-		result.add(iterator.next().toPair())
-	} while (iterator.hasNext())
-
-	return result
-}
-
 fun <K, V, R, Z> Map<K, V>.mapTo(other: MutableMap<R, Z>, transform: (Map.Entry<K,V>) -> Pair<R, Z>) = other.putAll(map(transform))
 fun <K, V, R, Z> Map<K, V>.mapNotNullTo(other: MutableMap<R, Z>, transform: (Map.Entry<K,V>) -> Pair<R, Z>?) = other.putAll(map(transform).filterNotNull())
 fun <T> MutableSet<T>.and(vararg others: T): MutableSet<T> = apply { others.forEach { add(it) } }
