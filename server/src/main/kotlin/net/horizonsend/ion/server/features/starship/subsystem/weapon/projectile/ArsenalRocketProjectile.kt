@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.miscellaneous.utils.gayColors
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import net.kyori.adventure.key.Key
@@ -154,8 +155,9 @@ class ArsenalRocketProjectile(
 	}
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		newLocation.world.spawnParticle(Particle.REDSTONE, newLocation, 2, DustOptions(Color.BLACK, 3f))
-		newLocation.world.spawnParticle(Particle.SOUL_FIRE_FLAME, newLocation, 3)
+		val color: Color = if (starship?.rainbowToggle == true) gayColors.random() else Color.GRAY
+		newLocation.world.spawnParticle(Particle.REDSTONE, newLocation.x, newLocation.y, newLocation.z, 2,0.0,0.0,0.0, 0.0,DustOptions(color, 3f), true)
+		newLocation.world.spawnParticle(Particle.SOUL_FIRE_FLAME,newLocation, 3)
 		updateDisplayEntity(newLocation, dir.clone().normalize().multiply(speed))
 	}
 
