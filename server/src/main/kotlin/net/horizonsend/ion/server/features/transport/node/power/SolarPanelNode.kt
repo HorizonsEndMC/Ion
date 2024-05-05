@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_EXTRACTORS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -125,9 +126,12 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 	 * Returns the amount of power between ticks
 	 **/
 	fun getPower(network: ChunkPowerNetwork): Int {
-		val daylightMultiplier: Double = if (network.world.environment == World.Environment.NORMAL) {
+		val daylightMultiplier: Double = if (
+			network.world.environment == World.Environment.NORMAL &&
+			network.world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE) == true
+		) {
 			val daylight = sin((network.world.time / (12000.0 / PI)) - (PI / 2))
-			max(0.0, daylight)
+			max(0.0, daylight) * 1.5 // 1.5 to bring area under curve to around equal with night
 		} else 0.5
 
 		val time = System.currentTimeMillis()
