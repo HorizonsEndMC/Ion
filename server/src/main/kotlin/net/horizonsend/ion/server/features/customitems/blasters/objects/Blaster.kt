@@ -53,6 +53,7 @@ abstract class Blaster<T : Balancing>(
     private val balancingSupplier: Supplier<T>
 ) : AmmunitionHoldingItem(identifier, material, customModelData, displayName) {
 	val balancing get() = balancingSupplier.get()
+	override val displayAmmo = true
 
 	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
 		fireWeapon(livingEntity, itemStack)

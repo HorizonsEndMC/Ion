@@ -47,6 +47,7 @@ abstract class CratePlacer(
 		val cooldown = 20
 		val range = 16;
 	}
+	override val displayAmmo = true
 
 	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
 		if (livingEntity !is Player) return
@@ -63,12 +64,11 @@ abstract class CratePlacer(
 		//copy-paste from Blaster with some changes
 		if (livingEntity !is Player) return // Player Only
 		if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
-
 		val originalAmmo = getAmmunition(itemStack)
 
 		var ammo = originalAmmo
 
-		if (ammo == ((itemStack.customItem as? Blaster<*>)?.getMaximumAmmunition() ?: return)) return
+		if (ammo == ((itemStack.customItem as? CratePlacer)?.getMaximumAmmunition() ?: return)) return
 
 		for (magazineItem in livingEntity.inventory) {
 			if (magazineItem == null) continue // check not null
@@ -111,7 +111,7 @@ abstract class CratePlacer(
 			)
 		}
 
-		livingEntity.sendActionBar(text("Ammo: $ammo / ${magazineSize}", NamedTextColor.RED))
+		livingEntity.sendActionBar(text("Ammo: $ammo / ${magazineSize}", NamedTextColor.GOLD))
 
 		// Start reload
 		livingEntity.location.world.playSound(
@@ -128,10 +128,9 @@ abstract class CratePlacer(
 	override fun getAmmoPerRefill(): Int = ammoPerRefill
 	override fun getConsumesAmmo(): Boolean = true
 
-	fun placeCrate(livingEntity: Player, itemStack: ItemStack) {
+	private fun placeCrate(livingEntity: Player, itemStack: ItemStack) {
 		//todo fix check currently returing false
 		//if (!livingEntity.inventory.containsAtLeast(ItemStack(Material.SHULKER_BOX), 1)) return
-		//println("boop2")
 		val target = livingEntity.getTargetBlockExact(range) ?: return
 		if (target.type != Material.STICKY_PISTON) return
 
@@ -142,6 +141,8 @@ abstract class CratePlacer(
 		val z = target.z + face.modZ
 
 		val toReplace = livingEntity.world.getBlockAt(x, y, z)
+		// if you have lava on your ship I will judge you
+		if (!(toReplace.type == Material.AIR || toReplace.type == Material.WATER) ) return
 		val tempData = toReplace.blockData.clone()
 		val state = toReplace.state //current listeners dont seem to use this... hopefully
 
@@ -166,8 +167,6 @@ abstract class CratePlacer(
 			val chunk = entity.location.chunk.minecraft
 			// Save the full compound tag
 			val base = entity.saveWithFullMetadata()
-			println(base)
-			println(id)
 			//incomplete crates dont have shipment ids
 			if (id != null) base.put("shipment_oid", StringTag.valueOf(id))
 
@@ -185,7 +184,6 @@ abstract class CratePlacer(
 										livingEntity,
 								true, EquipmentSlot.HAND)
 			if (event.callEvent()) {
-				println("succes")
 				//placement is valid, delete item from inventory and decriement ammo
 				livingEntity.inventory.removeItem(item.asOne())
 				setAmmunition(itemStack, livingEntity.inventory,getAmmunition(itemStack) - 1)
@@ -203,7 +201,6 @@ abstract class CratePlacer(
 					1.0f)
 				break
 			} else {
-				println("fail")
 				//placement is invalid, revert back to old state
 				toReplace.setBlockData(tempData, true)
 				break
@@ -212,9 +209,9 @@ abstract class CratePlacer(
 
 	}
 
-	fun fireLaser(livingEntity: LivingEntity) {
+	private fun fireLaser(livingEntity: LivingEntity) {
 		val start = livingEntity.eyeLocation.clone()
-		start.y -= 0.125
+		start.y -= 0.15
 
 		val raytrace = livingEntity.world.rayTrace(
 			livingEntity.eyeLocation,

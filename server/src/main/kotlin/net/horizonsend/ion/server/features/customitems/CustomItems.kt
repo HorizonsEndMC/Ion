@@ -80,7 +80,7 @@ object CustomItems {
 			) {}
 		)
 
-	val ADHESIVE_TANK = //TODO FIX
+	val ADHESIVE_TANK =
 		register(
 			object : Magazine<PVPBalancingConfiguration.EnergyWeapons.AmmoStorage>(
 				identifier = "ADHESIVE_TANK",
@@ -95,19 +95,22 @@ object CustomItems {
 
 				override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
 					if (livingEntity !is Player) return // Player Only
+					if (getMaximumAmmunition() == getAmmunition(itemStack)) return
 					val inventory = livingEntity.inventory
 					val typeRefill = matchMaterial(getTypeRefill()) ?: return
 					if (!inventory.containsAtLeast(ItemStack(typeRefill), 1)) return
 
+					val honeycombStacks = inventory.storageContents.filter { it?.type == Material.HONEYCOMB }
+					val ammountInInv = honeycombStacks.sumOf { it!!.amount }
 					val ammoToSet = min(
 						getMaximumAmmunition() - getAmmunition(itemStack),
-						getAmmoPerRefill()
+						ammountInInv
 					)
 					setAmmunition(itemStack, inventory, getAmmunition(itemStack) + ammoToSet)
-					inventory.removeItemAnySlot(ItemStack(typeRefill))
+					inventory.removeItemAnySlot(ItemStack(typeRefill).asQuantity(ammoToSet))
 
 					// Finish reload
-					Tasks.syncDelay(20) {
+					Tasks.syncDelay(10) {
 						livingEntity.location.world.playSound(
 							livingEntity.location,
 							"block.barrel.close",
@@ -294,7 +297,7 @@ object CustomItems {
 	// Gun Parts End
 	// Tools Start
 
-	val CRATE_PLACER = register(object : CratePlacer( //TODO fix
+	val CRATE_PLACER = register(object : CratePlacer(
 		identifier = "CRATE_PLACER",
 		material = IRON_HOE,
 		customModelData = 4,

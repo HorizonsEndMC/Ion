@@ -30,6 +30,7 @@ abstract class AmmunitionHoldingItem(
 
 	private val shouldDeleteItem: Boolean = false
 ) : CustomItem(identifier) {
+	open val displayAmmo = false
 
 	override fun constructItemStack(): ItemStack {
 		val ammoCountComponent = empty()

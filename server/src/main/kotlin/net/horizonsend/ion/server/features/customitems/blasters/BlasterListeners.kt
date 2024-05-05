@@ -5,7 +5,9 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.blasters.objects.AmmunitionHoldingItem
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
+import net.horizonsend.ion.server.features.customitems.blasters.objects.CratePlacer
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.kyori.adventure.text.Component
@@ -71,17 +73,31 @@ class BlasterListeners : SLEventListener() {
 	@EventHandler
 	fun onPlayerItemHoldEvent(event: PlayerItemHeldEvent) {
 		val itemStack = event.player.inventory.getItem(event.newSlot) ?: return
-		val customItem = itemStack.customItem as? Blaster<*> ?: return
+		val customItem = itemStack.customItem as? AmmunitionHoldingItem ?: return
+		if (!customItem.displayAmmo) return
 
 		// adding a potion effect because it takes ages for that attack cooldown to come up
 		event.player.addPotionEffect(PotionEffect(PotionEffectType.FAST_DIGGING, 20, 5, false, false, false))
 
 		val ammunition = customItem.getAmmunition(itemStack)
 
+		var maxAmmo : Int = 0
+		var color : NamedTextColor = NamedTextColor.BLACK
+
+		if (customItem is Blaster<*>) {
+			maxAmmo = customItem.balancing.magazineSize
+			color = NamedTextColor.RED
+		}
+
+		if (customItem is CratePlacer) {
+			maxAmmo = CratePlacer.magazineSize
+			color = NamedTextColor.GOLD
+		}
+
 		event.player.sendActionBar(
 			Component.text(
-				"Ammo: $ammunition / ${customItem.balancing.magazineSize}",
-				NamedTextColor.RED
+				"Ammo: $ammunition / $maxAmmo",
+				color
 			)
 		)
 	}
