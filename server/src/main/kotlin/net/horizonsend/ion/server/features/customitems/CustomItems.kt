@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Energy
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.CratePlacer
+import net.horizonsend.ion.server.features.customitems.blasters.objects.CratePlacer.Companion.cooldown
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.features.customitems.minerals.Smeltable
 import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralItem
@@ -38,6 +39,7 @@ import org.bukkit.Material.RAW_IRON
 import org.bukkit.Material.RAW_IRON_BLOCK
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.Material.matchMaterial
+import org.bukkit.SoundCategory.PLAYERS
 import org.bukkit.block.Dispenser
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
@@ -103,6 +105,27 @@ object CustomItems {
 					)
 					setAmmunition(itemStack, inventory, getAmmunition(itemStack) + ammoToSet)
 					inventory.removeItemAnySlot(ItemStack(typeRefill))
+
+					// Finish reload
+					Tasks.syncDelay(20) {
+						livingEntity.location.world.playSound(
+							livingEntity.location,
+							"block.barrel.close",
+							PLAYERS,
+							1.0f,
+							1.0f
+						)
+					}
+
+
+					// Start reload
+					livingEntity.location.world.playSound(
+						livingEntity.location,
+						"block.brewing_stand.brew",
+						PLAYERS,
+						1.0f,
+						1.0f
+					)
 				}
 			}
 		)
@@ -277,8 +300,8 @@ object CustomItems {
 		customModelData = 4,
 		displayName = text("Crate Placer", GOLD, BOLD).decoration(ITALIC, false),
 		magazineType = ADHESIVE_TANK,
-		soundReloadStart = "blaster.cannon.reload.start",
-		soundReloadFinish = "blaster.cannon.reload.finish",
+		soundReloadStart = "block.brewing_stand.brew",
+		soundReloadFinish = "block.barrel.close",
 	) {})
 
 	// Tools End

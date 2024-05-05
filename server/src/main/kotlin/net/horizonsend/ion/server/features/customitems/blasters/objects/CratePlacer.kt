@@ -47,10 +47,8 @@ abstract class CratePlacer(
 		val cooldown = 20
 		val range = 16;
 	}
-	var laser : GuardianLaser? = null
 
 	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
-		println("boop")
 		if (livingEntity !is Player) return
 		if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
 		if (getAmmunition(itemStack) == 0) {
@@ -135,9 +133,6 @@ abstract class CratePlacer(
 		//if (!livingEntity.inventory.containsAtLeast(ItemStack(Material.SHULKER_BOX), 1)) return
 		//println("boop2")
 		val target = livingEntity.getTargetBlockExact(range) ?: return
-		println("target")
-		println(target)
-		println()
 		if (target.type != Material.STICKY_PISTON) return
 
 		val face = livingEntity.getTargetBlockFace(range) ?: return
@@ -147,25 +142,13 @@ abstract class CratePlacer(
 		val z = target.z + face.modZ
 
 		val toReplace = livingEntity.world.getBlockAt(x, y, z)
-		println("to replace")
-		println(toReplace)
-		println()
 		val tempData = toReplace.blockData.clone()
-		println("tempData")
-		println(tempData)
-		println()
 		val state = toReplace.state //current listeners dont seem to use this... hopefully
-		println("state")
-		println(state)
-		println()
 
 
 		for (item in livingEntity.inventory) {
 			if (item == null) continue
 			if (!item.type.name.contains("shulker_box", ignoreCase = true)) continue
-			println("item")
-			println(item)
-			println()
 			val itemState = (item.itemMeta as BlockStateMeta).blockState as ShulkerBox
 			//attempt to place the crate
 			//I copied gutins code and prayed that it worked
@@ -175,6 +158,7 @@ abstract class CratePlacer(
 			val boxEntity = toReplace.state as ShulkerBox
 			boxEntity.customName = item.itemMeta.displayName
 			boxEntity.inventory.addItem(*itemState.inventory.filterNotNull().toList().toTypedArray())
+			boxEntity.update()
 
 			// Add the raw nms tag for shipment id
 			val id = getShipmentItemId(item)
@@ -193,9 +177,6 @@ abstract class CratePlacer(
 
 			val blockEntity = BlockEntity.loadStatic(blockPos, entity.blockState, base)!!
 			chunk.addAndRegisterBlockEntity(blockEntity)
-			println("to replace")
-			println(toReplace)
-			println()
 			//event check
 			val event = BlockPlaceEvent(toReplace,
 										state,
@@ -206,8 +187,20 @@ abstract class CratePlacer(
 			if (event.callEvent()) {
 				println("succes")
 				//placement is valid, delete item from inventory and decriement ammo
-				livingEntity.inventory.remove(item)
+				livingEntity.inventory.removeItem(item.asOne())
 				setAmmunition(itemStack, livingEntity.inventory,getAmmunition(itemStack) - 1)
+				toReplace.world.playSound(
+					toReplace.location,
+					"minecraft:block.stone.place",
+					PLAYERS,
+					1.0f,
+					1.0f)
+				toReplace.world.playSound(
+					toReplace.location,
+					"minecraft:block.honey_block.slide",
+					PLAYERS,
+					1.0f,
+					1.0f)
 				break
 			} else {
 				println("fail")
@@ -235,6 +228,12 @@ abstract class CratePlacer(
 		val end : Location = raytrace?.hitPosition?.toLocation(livingEntity.world)
 			?: livingEntity.eyeLocation.clone().add(start.direction.clone().multiply(range))
 		GuardianLaser(end,start,5, -1).durationInTicks().start(IonServer)
+		start.world.playSound(
+			start,
+			"minecraft:entity.guardian.attack",
+			PLAYERS,
+			1.0f,
+			1.0f)
 	}
 
 }

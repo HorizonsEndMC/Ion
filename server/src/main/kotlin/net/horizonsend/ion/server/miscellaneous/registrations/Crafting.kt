@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems.ADHESIVE_TANK
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
@@ -34,66 +35,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.Material.AIR
-import org.bukkit.Material.AMETHYST_SHARD
-import org.bukkit.Material.BELL
-import org.bukkit.Material.BLACK_WOOL
-import org.bukkit.Material.BLUE_WOOL
-import org.bukkit.Material.BROWN_WOOL
-import org.bukkit.Material.COPPER_BLOCK
-import org.bukkit.Material.COPPER_INGOT
-import org.bukkit.Material.CYAN_WOOL
-import org.bukkit.Material.DIAMOND_BLOCK
-import org.bukkit.Material.EMERALD_BLOCK
-import org.bukkit.Material.GLASS
-import org.bukkit.Material.GLASS_PANE
-import org.bukkit.Material.GOLD_BLOCK
-import org.bukkit.Material.GOLD_INGOT
-import org.bukkit.Material.GRAY_WOOL
-import org.bukkit.Material.GREEN_DYE
-import org.bukkit.Material.GREEN_WOOL
-import org.bukkit.Material.HONEYCOMB
-import org.bukkit.Material.IRON_BLOCK
-import org.bukkit.Material.IRON_TRAPDOOR
-import org.bukkit.Material.LAPIS_BLOCK
-import org.bukkit.Material.LEATHER
-import org.bukkit.Material.LIGHT_BLUE_WOOL
-import org.bukkit.Material.LIGHT_GRAY_WOOL
-import org.bukkit.Material.LIME_WOOL
-import org.bukkit.Material.MAGENTA_WOOL
-import org.bukkit.Material.MELON
-import org.bukkit.Material.MOSS_BLOCK
-import org.bukkit.Material.MOSS_CARPET
-import org.bukkit.Material.NETHER_WART
-import org.bukkit.Material.NETHER_WART_BLOCK
-import org.bukkit.Material.OAK_LOG
-import org.bukkit.Material.OCHRE_FROGLIGHT
-import org.bukkit.Material.ORANGE_WOOL
-import org.bukkit.Material.PEARLESCENT_FROGLIGHT
-import org.bukkit.Material.PINK_WOOL
-import org.bukkit.Material.PRISMARINE
-import org.bukkit.Material.PRISMARINE_BRICKS
-import org.bukkit.Material.PRISMARINE_CRYSTALS
-import org.bukkit.Material.PURPLE_WOOL
-import org.bukkit.Material.QUARTZ
-import org.bukkit.Material.REDSTONE
-import org.bukkit.Material.REDSTONE_BLOCK
-import org.bukkit.Material.RED_WOOL
-import org.bukkit.Material.SADDLE
-import org.bukkit.Material.SEA_LANTERN
-import org.bukkit.Material.SHROOMLIGHT
-import org.bukkit.Material.SLIME_BALL
-import org.bukkit.Material.STICK
-import org.bukkit.Material.STRING
-import org.bukkit.Material.TRIPWIRE
-import org.bukkit.Material.VERDANT_FROGLIGHT
-import org.bukkit.Material.WHITE_WOOL
-import org.bukkit.Material.YELLOW_WOOL
-import org.bukkit.Material.NAME_TAG
-import org.bukkit.Material.PAPER
-import org.bukkit.Material.PINK_TULIP
-import org.bukkit.Material.SPORE_BLOSSOM
-import org.bukkit.Material.TRIPWIRE_HOOK
+import org.bukkit.Material.*
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
@@ -347,6 +289,17 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', AIR)
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 		}
+		//crate placer
+		itemStackShapeRecipe("crate_placer", CustomItems.CRATE_PLACER.constructItemStack()) {
+			shape("xax", "xcd", "txx")
+
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+			setIngredient('t', ADHESIVE_TANK.constructItemStack())
+			setIngredient('d', DIAMOND)
+			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('x', AIR)
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+		}
 
 		// Circuitry Crafting 1
 		itemStackShapeRecipe("circuitry_1", CIRCUITRY.constructItemStack()) {
@@ -388,6 +341,17 @@ object Crafting : IonServerComponent() {
 
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('e', EMERALD_BLOCK)
+			setIngredient('r', REDSTONE)
+			setIngredient('x', AIR)
+		}
+
+		// Adhesive tank Crafting
+		itemStackShapeRecipe("adhesive_tank", ADHESIVE_TANK.constructItemStack()) {
+			shape("xpx", "tgt", "trt")
+
+			setIngredient('g', ExactChoice(GAS_CANISTER_EMPTY.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('p', GLASS_PANE)
 			setIngredient('r', REDSTONE)
 			setIngredient('x', AIR)
 		}
