@@ -502,7 +502,7 @@ object PilotedStarships : IonServerComponent() {
 				}
 			else ->
 				for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 500.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
+					nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
 				}
 		}
 
