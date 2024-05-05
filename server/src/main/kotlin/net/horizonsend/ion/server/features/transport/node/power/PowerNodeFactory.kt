@@ -5,7 +5,9 @@ import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
+import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode.Companion.matchesSolarPanelStructure
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -15,11 +17,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.mapNotNullTo
 import net.horizonsend.ion.server.miscellaneous.utils.popMaxByOrNull
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.data.Directional
 
 object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
-	override suspend fun create(network: ChunkPowerNetwork, key: BlockKey, snapshot: BlockSnapshot): TransportNode? {
-		val node = when {
+	override suspend fun create(network: ChunkPowerNetwork, key: BlockKey, snapshot: BlockSnapshot) {
+		if (network.nodes.contains(key)) return
+
+		when {
 			// Straight wires
 			snapshot.type == Material.END_ROD -> addEndRod(network, snapshot.data as Directional, key)
 
@@ -27,13 +32,25 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 			snapshot.type == Material.SPONGE -> addSponge(network, key)
 
 			// Extract power from storage
-			snapshot.type == Material.CRAFTING_TABLE -> if (matchesSolarPanelStructure(snapshot, key)) {
+			snapshot.type == Material.CRAFTING_TABLE -> if (matchesSolarPanelStructure(network.world, key)) {
 				addSolarPanel(network, key)
 			} else {
-				val node = addExtractor(network, key)
+				addExtractor(network, key)
+			}
 
-				network.extractors[key] = node
-				node
+			// Check for extractor beneath
+			snapshot.type == Material.DIAMOND_BLOCK -> {
+				val extractorKey = getRelative(key, DOWN, 1)
+				if (matchesSolarPanelStructure(network.world, extractorKey)) {
+					addSolarPanel(network, extractorKey)
+				}
+			}
+
+			snapshot.type == Material.DAYLIGHT_DETECTOR -> {
+				val extractorKey = getRelative(key, DOWN, 2)
+				if (matchesSolarPanelStructure(network.world, extractorKey)) {
+					addSolarPanel(network, extractorKey)
+				}
 			}
 
 			// Add power to storage
@@ -51,26 +68,23 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 
 			// Power flow meter
 
-			else -> throw NotImplementedError()
+			else -> return
 		}
-
-		network.nodes[key] = node
-
-		return node
 	}
 
-	fun addSponge(network: ChunkPowerNetwork, position: BlockKey): SpongeNode {
+	fun addSponge(network: ChunkPowerNetwork, position: BlockKey) {
 		val neighbors = getNeighborNodes(position, network.nodes).filterValuesIsInstance<SpongeNode, BlockFace, TransportNode>()
 
 		when (neighbors.size) {
 			// New sponge node
-			0 -> return SpongeNode(position)
+			0 -> {
+				network.nodes[position] = SpongeNode(position)
+			}
+
 			// Consolidate into neighbor
 			1 -> {
 				val neighbor = neighbors.values.firstOrNull() ?: throw ConcurrentModificationException("Node removed during processing")
-
-				neighbor.positions += position
-				return neighbor
+				neighbor.addPosition(network, position)
 			}
 
 			// Join multiple neighbors together
@@ -84,19 +98,18 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 
 				// Merge all other connected nodes into the largest
 				spongeNeighbors.forEach {
-					it.value.drainTo(largestNeighbor, network.nodes)
+					it.value.drainTo(network, largestNeighbor)
 				}
 
 				// Add this node
-				largestNeighbor.positions.add(position)
-				return largestNeighbor
+				largestNeighbor.addPosition(network, position)
 			}
 
 			else -> throw NotImplementedError()
 		}
 	}
 
-	suspend fun addEndRod(network: ChunkPowerNetwork, data: Directional, position: Long): EndRodNode {
+	suspend fun addEndRod(network: ChunkPowerNetwork, data: Directional, position: Long) {
 		val axis = data.facing.axis
 
 		// The neighbors in the direction of the wire's facing, that are also facing that direction
@@ -107,13 +120,13 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 
 		when (neighbors.size) {
 			// Disconnected
-			0 -> return EndRodNode(position)
+			0 -> {
+				network.nodes[position] = EndRodNode(position)
+			}
 
 			1 -> {
 				val neighbor = neighbors.values.firstOrNull() ?: throw ConcurrentModificationException("Node removed during processing")
-				neighbor.positions += position
-
-				return neighbor
+				neighbor.addPosition(network, position)
 			}
 
 			// Should be a max of 2
@@ -127,41 +140,83 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 
 				// Merge all other connected nodes into the largest
 				wireNeighbors.forEach {
-					it.value.drainTo(largestNeighbor, network.nodes)
+					it.value.drainTo(network, largestNeighbor)
 				}
 
 				// Add this node
-				largestNeighbor.positions.add(position)
-				return largestNeighbor
+				largestNeighbor.addPosition(network, position)
 			}
 
 			else -> throw IllegalArgumentException("Linear node had more than 2 neighbors")
 		}
 	}
 
-	private suspend fun matchesSolarPanelStructure(blockSnapshot: BlockSnapshot, key: BlockKey): Boolean {
-		if (blockSnapshot.type != Material.CRAFTING_TABLE) return false
-		val diamond = getRelative(key, BlockFace.UP)
-
-		if (getBlockSnapshotAsync(blockSnapshot.world, diamond)?.type != Material.DIAMOND_BLOCK) return false
-		val cell = getRelative(diamond, BlockFace.UP)
-
-		return getBlockSnapshotAsync(blockSnapshot.world, cell)?.type == Material.DAYLIGHT_DETECTOR
+	suspend fun addExtractor(network: ChunkPowerNetwork, key: BlockKey) {
+//		when () {
+//
+//		}
 	}
 
-	suspend fun addExtractor(network: ChunkPowerNetwork, key: BlockKey): PowerExtractorNode {
+	/**
+	 * Provided the key of the extractor, create or combine solar panel nodes
+	 **/
+	suspend fun addSolarPanel(network: ChunkPowerNetwork, position: BlockKey) {
+		// The diamond and daylight detector
+		val panelPositions = (1..2).map { getRelative(position, BlockFace.UP, it) }
 
-	}
+		// Get the nodes that might be touching the solar panel
+		//
+		// 2d cross-section for demonstration: C is the origin crafting table, X are positions checked
+		//
+		// X   X
+		// X   X
+		// X C X
+		// X   X
 
-	suspend fun addSolarPanel(network: ChunkPowerNetwork, key: BlockKey): SolarPanelNode {
-		val neighbors = CARDINAL_BLOCK_FACES.flatMap { direction ->
-			val relativeSide = getRelative(key, direction)
+		// If another solar panel is found at any of those positions, handle merges
+		val neighboringNodes = CARDINAL_BLOCK_FACES.associateWithNotNull { direction ->
+			val relativeSide = getRelative(position, direction)
 
-			(-1..3).map {
-				getRelative(relativeSide, BlockFace.UP, it)
+			(-1..3).firstNotNullOfOrNull {
+				val neighborKey = getRelative(relativeSide, BlockFace.UP, it)
+				val node = network.nodes[neighborKey]
+				if (node !is SolarPanelNode) return@firstNotNullOfOrNull null
+
+				// Take only extractor locations
+				node.takeIf { node.isIntact(network.world, neighborKey) }
 			}
+		}.toMutableMap()
+
+		when (neighboringNodes.size) {
+			0 -> {
+				val node = SolarPanelNode()
+
+				// Add new position
+				node.addPosition(network, position, panelPositions)
+			}
+
+			1 -> {
+				val neighbor = neighboringNodes.values.firstOrNull() ?: throw ConcurrentModificationException("Node removed during processing")
+
+				// Add new position to neighbor
+				neighbor.addPosition(network, position, panelPositions)
+			}
+
+			in 2..4 -> {
+				val largestNeighbor = neighboringNodes
+					.popMaxByOrNull { it.value.positions.size }
+					?.value ?: throw ConcurrentModificationException("Node removed during processing")
+
+				// Merge all other connected nodes into the largest
+				neighboringNodes.forEach {
+					it.value.drainTo(network, largestNeighbor)
+				}
+
+				// Add this node
+				largestNeighbor.addPosition(network, position, panelPositions)
+			}
+
+			else -> throw IllegalArgumentException()
 		}
-
-
 	}
 }
