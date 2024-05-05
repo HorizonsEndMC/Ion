@@ -41,6 +41,7 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 			// Check for extractor beneath
 			snapshot.type == Material.DIAMOND_BLOCK -> {
 				val extractorKey = getRelative(key, DOWN, 1)
+				network.nodes.remove(extractorKey)
 				if (matchesSolarPanelStructure(network.world, extractorKey)) {
 					addSolarPanel(network, extractorKey)
 				}
@@ -48,13 +49,14 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 
 			snapshot.type == Material.DAYLIGHT_DETECTOR -> {
 				val extractorKey = getRelative(key, DOWN, 2)
+				network.nodes.remove(extractorKey)
 				if (matchesSolarPanelStructure(network.world, extractorKey)) {
 					addSolarPanel(network, extractorKey)
 				}
 			}
 
 			// Add power to storage
-//			block.type == Material.NOTE_BLOCK -> PowerInputNode(this, x, y, z)
+			snapshot.type == Material.NOTE_BLOCK -> addInput(network, key)
 
 			// Merge node behavior
 //			block.type == Material.IRON_BLOCK -> MergeNode(this, x, y, z)
@@ -151,10 +153,12 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 		}
 	}
 
-	suspend fun addExtractor(network: ChunkPowerNetwork, key: BlockKey) {
-//		when () {
-//
-//		}
+	fun addExtractor(network: ChunkPowerNetwork, position: BlockKey) {
+		network.nodes[position] = PowerExtractorNode(position)
+	}
+
+	fun addInput(network: ChunkPowerNetwork, position: BlockKey) {
+		network.nodes[position] = PowerInputNode(position)
 	}
 
 	/**
