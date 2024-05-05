@@ -15,7 +15,7 @@ import org.bukkit.persistence.PersistentDataType
  *
  * Since there is no use in keeping the individual steps, all touching sponges are consolidated into a single node with multiple inputs / outputs, weighted evenly
  **/
-class SpongeNode() : MultiNode {
+class SpongeNode() : MultiNode<SpongeNode, SpongeNode> {
 	constructor(origin: BlockKey) : this() {
 		positions.add(origin)
 	}
@@ -40,8 +40,7 @@ class SpongeNode() : MultiNode {
 	override suspend fun rebuildNode(network: ChunkTransportNetwork, position: BlockKey) {
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			val node = PowerNodeFactory.addSponge(network as ChunkPowerNetwork, it)
-			network.nodes[it] = node
+			PowerNodeFactory.addSponge(network as ChunkPowerNetwork, it)
 		}
 	}
 }

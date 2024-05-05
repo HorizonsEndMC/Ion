@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 /**
  * A transport node that may cover many blocks to avoid making unnecessary steps
  **/
-interface MultiNode : TransportNode {
+interface MultiNode<Self: MultiNode<Self, T>, T: MultiNode<T, Self>> : TransportNode {
 	/**
 	 * The positions occupied by the node
 	 **/
@@ -31,15 +31,30 @@ interface MultiNode : TransportNode {
 	}
 
 	/**
+	 * Adds new a position to this node
+	 **/
+	fun addPosition(network: ChunkTransportNetwork, position: BlockKey) {
+		positions += position
+		network.nodes[position] = this
+	}
+
+	/**
+	 * Adds new a position to this node
+	 **/
+	fun addPositions(network: ChunkTransportNetwork, newPositions: Iterable<BlockKey>) {
+		for (position in newPositions) {
+			positions += position
+			network.nodes[position] = this
+		}
+	}
+
+	/**
 	 * Drain all the positions and connections to the provided node
 	 **/
-	fun drainTo(new: MultiNode, nodes: MutableMap<BlockKey, TransportNode>) {
-		new.positions.addAll(positions)
+	fun drainTo(network: ChunkTransportNetwork, new: Self) {
 		new.transferableNeighbors.addAll(transferableNeighbors)
 
-		for (position in positions) {
-			nodes[position] = new
-		}
+		new.addPositions(network, positions)
 	}
 
 	override fun handlePlacement(network: ChunkTransportNetwork) {
