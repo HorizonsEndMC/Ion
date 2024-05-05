@@ -6,7 +6,6 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
-import net.horizonsend.ion.server.features.transport.node.Consolidatable
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.power.TransportNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODES
@@ -145,7 +144,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	 **/
 	private fun finalizeNodes() {
 		nodes.forEach { (_, node) ->
-			if (node is Consolidatable) node.consolidate()
+
 		}
 	}
 
