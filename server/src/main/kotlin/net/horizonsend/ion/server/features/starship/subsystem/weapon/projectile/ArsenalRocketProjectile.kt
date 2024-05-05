@@ -157,7 +157,7 @@ class ArsenalRocketProjectile(
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		val color: Color = if (starship?.rainbowToggle == true) gayColors.random() else Color.GRAY
 		newLocation.world.spawnParticle(Particle.REDSTONE, newLocation.x, newLocation.y, newLocation.z, 2,0.0,0.0,0.0, 0.0,DustOptions(color, 3f), true)
-		newLocation.world.spawnParticle(Particle.SOUL_FIRE_FLAME,newLocation.x, newLocation.y, newLocation.z, 3,0.0,0.0,0.0, true)
+		newLocation.world.spawnParticle(Particle.SOUL_FIRE_FLAME,newLocation, 3)
 		updateDisplayEntity(newLocation, dir.clone().normalize().multiply(speed))
 	}
 
