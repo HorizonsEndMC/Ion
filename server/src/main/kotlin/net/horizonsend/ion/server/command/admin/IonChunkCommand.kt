@@ -74,7 +74,6 @@ object IonChunkCommand : SLCommand() {
 
 		grid.nodes.forEach { (t, u) ->
 			val vec = toVec3i(t)
-			println(u)
 			sender.highlightBlock(vec, 50L)
 		}
 	}
@@ -91,11 +90,15 @@ object IonChunkCommand : SLCommand() {
 			 else -> return@launch fail { "invalid network" }
 		}
 
-		for (x in 0..15) for (y in ionChunk.world.minHeight..ionChunk.world.maxHeight) for (z in 0..15) {
-			val realX = x + ionChunk.originX
-			val realZ = z + ionChunk.originZ
+		grid.nodes.clear()
+		grid.extractors.clear()
 
-			grid.createNodeFromBlock(getBlockSnapshotAsync(sender.world, realX, y, realZ)!!)
+		for (x in ionChunk.originX ..ionChunk.originX + 15) {
+			for (z in ionChunk.originZ..ionChunk.originZ + 15) {
+				for (y in ionChunk.world.minHeight until ionChunk.world.maxHeight) {
+					grid.createNodeFromBlock(getBlockSnapshotAsync(sender.world, x, y, z)!!)
+				}
+			}
 		}
 	}
 }
