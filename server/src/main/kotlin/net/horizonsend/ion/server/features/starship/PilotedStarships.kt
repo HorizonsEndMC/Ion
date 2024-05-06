@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
+import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
