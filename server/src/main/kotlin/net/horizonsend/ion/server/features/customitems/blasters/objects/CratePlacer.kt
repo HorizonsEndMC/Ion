@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.customitems.blasters.objects
 
 
+import com.google.common.collect.ImmutableSet
 import fr.skytasul.guardianbeam.Laser.GuardianLaser
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.IonServer
@@ -18,10 +19,13 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.StringTag
 import net.minecraft.world.level.block.entity.BlockEntity
+import org.bukkit.ChatColor
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.SoundCategory.PLAYERS
+import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.ShulkerBox
 import org.bukkit.craftbukkit.v1_20_R3.block.CraftShulkerBox
 import org.bukkit.entity.LivingEntity
@@ -46,6 +50,14 @@ abstract class CratePlacer(
 		val ammoPerRefill = 1
 		val cooldown = 20
 		val range = 16;
+		val ADJACENT_BLOCK_FACES: Set<BlockFace> = ImmutableSet.of(
+			BlockFace.NORTH,
+			BlockFace.SOUTH,
+			BlockFace.EAST,
+			BlockFace.WEST,
+			BlockFace.UP,
+			BlockFace.DOWN
+		)
 	}
 	override val displayAmmo = true
 
@@ -56,8 +68,14 @@ abstract class CratePlacer(
 			handleTertiaryInteract(livingEntity, itemStack) // Force a reload
 			return // No Ammo
 		}
-		placeCrate(livingEntity, itemStack)
 		fireLaser(livingEntity)
+		val lookingAt = livingEntity.getTargetBlockExact(range) ?: return
+
+		nearTargets(lookingAt).forEach { pair ->
+			placeCrate(
+				livingEntity, itemStack, pair.key, pair.value)
+		}
+
 	}
 
 	override fun handleTertiaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
@@ -127,43 +145,29 @@ abstract class CratePlacer(
 	override fun getTypeRefill(): String = magazineType.getTypeRefill()
 	override fun getAmmoPerRefill(): Int = ammoPerRefill
 	override fun getConsumesAmmo(): Boolean = true
-
-	private fun placeCrate(livingEntity: Player, itemStack: ItemStack) {
-		//todo fix check currently returing false
-		//if (!livingEntity.inventory.containsAtLeast(ItemStack(Material.SHULKER_BOX), 1)) return
-		val target = livingEntity.getTargetBlockExact(range) ?: return
-		if (target.type != Material.STICKY_PISTON) return
-
-		val face = livingEntity.getTargetBlockFace(range) ?: return
-		//cordinates of the block above where to place crate
-		val x = target.x + face.modX
-		val y = target.y + face.modY
-		val z = target.z + face.modZ
-
-		val toReplace = livingEntity.world.getBlockAt(x, y, z)
-		// if you have lava on your ship I will judge you
-		if (!(toReplace.type == Material.AIR || toReplace.type == Material.WATER) ) return
-		val tempData = toReplace.blockData.clone()
-		val state = toReplace.state //current listeners dont seem to use this... hopefully
-
-
-		for (item in livingEntity.inventory) {
+	private fun placeCrate(player: Player,itemStack: ItemStack,target : Block, against : Block) {
+		val x = target.x
+		val y = target.y
+		val z = target.z
+		val state = target.state //current listeners dont seem to use this... hopefully
+		val tempData = target.blockData.clone() // save the data for failures
+		for (item in player.inventory) {
 			if (item == null) continue
 			if (!item.type.name.contains("shulker_box", ignoreCase = true)) continue
 			val itemState = (item.itemMeta as BlockStateMeta).blockState as ShulkerBox
 			//attempt to place the crate
 			//I copied gutins code and prayed that it worked
 			//fake block place event
-			toReplace.setBlockData(item.type.createBlockData(), true)
+			target.setBlockData(item.type.createBlockData(), true)
 
-			val boxEntity = toReplace.state as ShulkerBox
+			val boxEntity = target.state as ShulkerBox
 			boxEntity.customName = item.itemMeta.displayName
 			boxEntity.inventory.addItem(*itemState.inventory.filterNotNull().toList().toTypedArray())
 			boxEntity.update()
 
 			// Add the raw nms tag for shipment id
 			val id = getShipmentItemId(item)
-			val entity = (toReplace.state as CraftShulkerBox).tileEntity
+			val entity = (target.state as CraftShulkerBox).tileEntity
 			val chunk = entity.location.chunk.minecraft
 			// Save the full compound tag
 			val base = entity.saveWithFullMetadata()
@@ -177,24 +181,24 @@ abstract class CratePlacer(
 			val blockEntity = BlockEntity.loadStatic(blockPos, entity.blockState, base)!!
 			chunk.addAndRegisterBlockEntity(blockEntity)
 			//event check
-			val event = BlockPlaceEvent(toReplace,
-										state,
-										target,
-										item,
-										livingEntity,
-								true, EquipmentSlot.HAND)
+			val event = BlockPlaceEvent(target,
+				state,
+				against,
+				item,
+				player,
+				true, EquipmentSlot.HAND)
 			if (event.callEvent()) {
 				//placement is valid, delete item from inventory and decriement ammo
-				livingEntity.inventory.removeItem(item.asOne())
-				setAmmunition(itemStack, livingEntity.inventory,getAmmunition(itemStack) - 1)
-				toReplace.world.playSound(
-					toReplace.location,
+				player.inventory.removeItem(item.asOne())
+				setAmmunition(itemStack, player.inventory,getAmmunition(itemStack) - 1)
+				target.world.playSound(
+					target.location,
 					"minecraft:block.stone.place",
 					PLAYERS,
 					1.0f,
 					1.0f)
-				toReplace.world.playSound(
-					toReplace.location,
+				target.world.playSound(
+					target.location,
 					"minecraft:block.honey_block.slide",
 					PLAYERS,
 					1.0f,
@@ -202,11 +206,10 @@ abstract class CratePlacer(
 				break
 			} else {
 				//placement is invalid, revert back to old state
-				toReplace.setBlockData(tempData, true)
+				target.setBlockData(tempData, true)
 				break
 			}
 		}
-
 	}
 
 	private fun fireLaser(livingEntity: LivingEntity) {
@@ -231,6 +234,31 @@ abstract class CratePlacer(
 			PLAYERS,
 			1.0f,
 			1.0f)
+	}
+
+	private fun nearTargets(target : Block) : Map<Block, Block>{
+		val nearblocks :MutableList<Block> = mutableListOf()
+		for (x in -1..1) {
+			for (y in -1..1) {
+				for (z in -1..1) {
+					val relative = target.getRelative(x, y, z)
+					if (relative == target) continue
+					// if you have lava on your ship I will judge you
+					if (relative.type == Material.AIR || relative.type == Material.WATER)
+						nearblocks.add(relative)
+				}
+			}
+		}
+		val adjStikies : MutableList<Block> = mutableListOf()
+		val filtered = nearblocks.filter {
+			var valid = false
+			for (face in ADJACENT_BLOCK_FACES) {
+				val adj = it.getRelative(face)
+				if (adj.type == Material.STICKY_PISTON) {valid = true; adjStikies.add(adj);break}
+			}
+			valid
+		}
+		return filtered.zip(adjStikies).toMap()
 	}
 
 }
