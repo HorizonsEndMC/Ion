@@ -686,7 +686,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		PilotedStarships.tryPilot(sender, starshipData)
 	}
 
-	val uploadCooldown = object : PerPlayerCooldown(60L, TimeUnit.SECONDS) {
+	private val uploadCooldown = object : PerPlayerCooldown(5L, TimeUnit.SECONDS, bypassPermission = "ion.starship.bypassdownloadlimit") {
 		override fun cooldownRejected(player: UUID) {
 			Bukkit.getPlayer(player)?.userError("You're doing that too often!")
 		}

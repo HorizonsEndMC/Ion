@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import net.horizonsend.ion.common.utils.lpHasPermission
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import org.bukkit.entity.Player
@@ -14,7 +15,7 @@ open class AbstractCooldown <T> (cooldown: Long, timeUnit: TimeUnit = TimeUnit.M
 
 	fun tryExec(player: T, block: () -> Unit) = tryExec(player, this.cooldownNanos, TimeUnit.NANOSECONDS, block)
 
-	fun tryExec(player: T, cooldown: Long, timeUnit: TimeUnit, block: () -> Unit) {
+	open fun tryExec(player: T, cooldown: Long, timeUnit: TimeUnit, block: () -> Unit) {
 		if (nanoTime() - map.getOrElse(player) { 0 } >= timeUnit.toNanos(cooldown)) {
 			map[player] = nanoTime()
 			block()
@@ -24,11 +25,17 @@ open class AbstractCooldown <T> (cooldown: Long, timeUnit: TimeUnit = TimeUnit.M
 	open fun cooldownRejected(player: T) {}
 }
 
-open class PerPlayerCooldown(cooldown: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS): AbstractCooldown<UUID>(cooldown, timeUnit) {
+open class PerPlayerCooldown(cooldown: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS, val bypassPermission: String? = null): AbstractCooldown<UUID>(cooldown, timeUnit) {
 	fun tryExec(player: Player, block: () -> Unit) = tryExec(player.uniqueId, this.cooldownNanos, TimeUnit.NANOSECONDS, block)
 
+	override fun tryExec(player: UUID, cooldown: Long, timeUnit: TimeUnit, block: () -> Unit) {
+		if (bypassPermission != null && player.lpHasPermission(bypassPermission)) return block()
+
+		super.tryExec(player, cooldown, timeUnit, block)
+	}
+
 	companion object {
-		fun messagedCooldown(delay: Long, unit: TimeUnit, rejected: (UUID) -> Unit): PerPlayerCooldown = object : PerPlayerCooldown(delay, unit) {
+		fun callbackCooldown(delay: Long, unit: TimeUnit, rejected: (UUID) -> Unit): PerPlayerCooldown = object : PerPlayerCooldown(delay, unit) {
 			override fun cooldownRejected(player: UUID) = rejected(player)
 		}
 	}

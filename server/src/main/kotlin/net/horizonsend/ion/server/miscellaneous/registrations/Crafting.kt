@@ -108,6 +108,23 @@ object Crafting : IonServerComponent() {
 			setIngredient('p', PAPER)
 		}
 
+		// Gilded Blackstone
+		shapedRecipe("gilded_blackstone", GILDED_BLACKSTONE) {
+			shape("gbg", "bgb", "gbg")
+
+			setIngredient('g', GOLD_NUGGET)
+			setIngredient('b', BLACKSTONE)
+		}
+
+		// Sniffer Egg
+		shapedRecipe("sniffer_egg", SNIFFER_EGG) {
+			shape("rdr", "ded", "rdr")
+
+			setIngredient('r', RED_TERRACOTTA)
+			setIngredient('d', DARK_PRISMARINE)
+			setIngredient('e', TURTLE_EGG)
+		}
+
 		// Ochre Froglight
 		shapedRecipe("ochre_froglight", OCHRE_FROGLIGHT) {
 			shape("xhx", "hlh", "xhx")

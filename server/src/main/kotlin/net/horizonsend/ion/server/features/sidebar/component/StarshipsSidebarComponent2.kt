@@ -12,6 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import org.bukkit.entity.Player
+import java.util.concurrent.TimeUnit
 
 class StarshipsSidebarComponent2(starship: ActiveControlledStarship, player: Player) : SidebarComponent {
     private val currentVelocity = starship.cruiseData.velocity.length().roundToHundredth()
@@ -21,6 +22,7 @@ class StarshipsSidebarComponent2(starship: ActiveControlledStarship, player: Pla
     private val isDirectControlEnabled = starship.isDirectControlEnabled
     private val isCruising = StarshipCruising.isCruising(starship)
     private val isStopped = starship.cruiseData.velocity.lengthSquared() == 0.0
+    private val isBlocked = starship.lastBlockedTime > (System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(StarshipCruising.SECONDS_PER_CRUISE.toLong()))
     private val compassComponent = StarshipsSidebar.compassComponent(starship, player)
 
     override fun draw(drawable: LineDrawable) {
@@ -34,7 +36,7 @@ class StarshipsSidebarComponent2(starship: ActiveControlledStarship, player: Pla
 
             // Speed
             text("SPD: ", GRAY),
-            StarshipsSidebar.speedComponent(isDirectControlEnabled, isCruising, isStopped),
+            StarshipsSidebar.speedComponent(isDirectControlEnabled, isCruising, isStopped, isBlocked),
             space(),
             StarshipsSidebar.maxSpeedComponent(currentVelocity, maxVelocity, acceleration)
         )
