@@ -81,11 +81,6 @@ fun createShipFromTemplate(
 		template.miniMessageName,
 		createController
 	) { starship ->
-		starship.speedLimit = template.maxSpeed
-		starship.rewardsProviders.addAll(template.rewardProviders.map { it.createRewardsProvider(starship, template) })
-		starship.sinkMessageFactory = AISinkMessageFactory(starship)
-		(starship.controller as AIController).modules["Glow"] = GlowModule(starship.controller as AIController)
-
 		callback(starship)
 	}
 }

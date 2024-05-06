@@ -71,7 +71,7 @@ class ActiveControlledStarship(
 
 	override val type: StarshipType = data.starshipType.actualType
 	override val balancing = type.balancingSupplier.get()
-	override val rewardsProviders: LinkedList<RewardsProvider> = LinkedList<RewardsProvider>().apply { add(StandardRewardsProvider(this@ActiveControlledStarship)) }
+	override val rewardsProviders: LinkedList<RewardsProvider> = LinkedList<RewardsProvider>()
 	override var sinkMessageFactory: MessageFactory = SinkMessageFactory(this)
 
 	override val interdictionRange: Int = balancing.interdictionRange
