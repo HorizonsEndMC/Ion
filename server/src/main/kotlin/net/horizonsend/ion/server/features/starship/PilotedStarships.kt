@@ -44,8 +44,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.createData
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -347,21 +345,6 @@ object PilotedStarships : IonServerComponent() {
 			return false
 		}
 
-		when (data.starshipType) {
-			"BATTLECRUISER" ->
-				for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 69420.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.pilot.battlecruiser"), Sound.Source.AMBIENT, 7f, 1.0f))
-				}
-			"CRUISER" ->
-				for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 5000.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.pilot.cruiser"), Sound.Source.AMBIENT, 5f, 1.0f))
-				}
-			else -> for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 500.0)) {
-				nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.activate"), Sound.Source.AMBIENT, 5f, 0.05f))
-			}
-		}
-
-
 		val carriedShips = mutableListOf<StarshipData>()
 
 		for ((key: Long, blockData: BlockData) in state.blockMap) {
@@ -467,6 +450,10 @@ object PilotedStarships : IonServerComponent() {
 				)
 			}
 
+			for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 69420.0)) {
+				nearbyPlayer.playSound(data.starshipType.actualType.balancingSupplier.get().sounds.pilot.sound)
+			}
+
 			callback(activePlayerStarship)
 		}
 
@@ -485,21 +472,9 @@ object PilotedStarships : IonServerComponent() {
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
 
-		when {
-			starship.type == StarshipType.BATTLECRUISER ->
-				for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 69420.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.release.battlecruiser"), Sound.Source.AMBIENT, 7f, 1.0f))
-				}
-			starship.type == StarshipType.CRUISER ->
-				for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 5000.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("horizonsend:starship.release.cruiser"), Sound.Source.AMBIENT, 5f, 1.0f))
-				}
-			else ->
-				for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 500.0)) {
-					nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
-				}
+		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 69420.0)) {
+			nearbyPlayer.playSound(starship.balancing.sounds.release.sound)
 		}
-
 
 		controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")
 		return true

@@ -256,7 +256,7 @@ enum class StarshipType(
 			maxMiningLasers = 1,
 			miningLaserTier = 1,
 			sinkProvider = SinkProvider.SinkProviders.CRUISER,
-			balancingSupplier = IonServer.starshipBalancing::cruiser
+			balancingSupplier = IonServer.starshipBalancing::cruiser,
 	),
 	AI_CRUISER(
 			displayName = "Cruiser",
