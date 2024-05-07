@@ -10,6 +10,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.WallSign
+import org.bukkit.block.sign.Side
+import org.bukkit.block.sign.SignSide
 import java.util.EnumSet
 
 /**
@@ -135,3 +137,6 @@ fun BlockFace.matchesAxis(other: BlockFace) = this.axis == other.axis
 fun Sign.getFacing(): BlockFace =
 	(this.blockData as? org.bukkit.block.data.type.Sign)?.rotation
 		?: (this.blockData as WallSign).facing
+
+fun Sign.front(): SignSide = getSide(Side.FRONT)
+fun Sign.back(): SignSide = getSide(Side.BACK)
