@@ -36,7 +36,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		createNodeFromBlock(new)
 	}}
 
-	fun tickSolars() {
+	private fun tickSolars() {
 		for ((key, solarPanel) in nodes.filterValuesIsInstance<SolarPanelNode, BlockKey, TransportNode>()) {
 			val power = solarPanel.getPower(this)
 			solarPanel.lastTicked = System.currentTimeMillis()
@@ -45,7 +45,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		}
 	}
 
-	fun transferPower(start: TransportNode, amount: Int) {
+	private fun transferPower(start: TransportNode, amount: Int) { //TODO remove this
 		var steps: Int = 0
 
 		var currentNode = start
