@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.transport.node
 
 import com.manya.pdc.base.EnumDataType
+import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.power.EndRodNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
@@ -8,11 +10,14 @@ import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
 import net.horizonsend.ion.server.features.transport.node.power.SpongeNode
 import net.horizonsend.ion.server.features.transport.node.power.TransportNode
 
-enum class NodeType(val clazz: Class<out TransportNode>) {
+enum class NodeType(val clazz: Class<out TransportNode>, val loadCallback: (TransportNode, ChunkTransportNetwork) -> Unit = { _, _ -> }) {
 	//POWER
 	SPONGE_NODE(SpongeNode::class.java),
 	END_ROD_NODE(EndRodNode::class.java),
-	SOLAR_PANEL_NODE(SolarPanelNode::class.java),
+	SOLAR_PANEL_NODE(SolarPanelNode::class.java, { node, network ->
+		network as ChunkPowerNetwork
+		network.solarPanels.add(node as SolarPanelNode)
+	}),
 	POWER_EXTRACTOR_NODE(PowerExtractorNode::class.java),
 	POWER_INPUT_NODE(PowerInputNode::class.java),
 

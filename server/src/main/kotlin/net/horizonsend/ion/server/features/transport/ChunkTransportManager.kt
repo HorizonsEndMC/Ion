@@ -35,7 +35,7 @@ class ChunkTransportManager(
 	}
 
 	val tickExecutor = IntervalExecutor(40) { scope.launch {
-
+		powerNetwork.tick()
 	}}
 
 	fun tick() {
