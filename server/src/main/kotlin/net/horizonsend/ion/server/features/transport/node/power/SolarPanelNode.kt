@@ -102,8 +102,11 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 		network as ChunkPowerNetwork
 		network.solarPanels.remove(this)
 
+		transferableNeighbors.clear()
+
 		// Create new nodes, automatically merging together
-		extractorPositions.forEach {
+		positions.forEach {
+			buildRelations(network, it)
 			network.nodeFactory.addSolarPanel(it)
 		}
 	}
