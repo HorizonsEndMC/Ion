@@ -135,6 +135,14 @@ object CustomBlocks {
 		tool = "pickaxe",
 		drops = listOf()
 	))
+
+    val BARGE_REACTOR_CORE = register(CustomBlock(
+        identifier = "BARGE_REACTOR_CORE",
+        blockData = mushroomBlockData(setOf(NORTH, EAST, WEST)),
+        tool = "pickaxe",
+        drops = listOf()
+    ))
+
 	val CRUISER_REACTOR_CORE = register(CustomBlock(
         identifier = "CRUISER_REACTOR_CORE",
         blockData = mushroomBlockData(setOf(NORTH, DOWN, WEST)),
