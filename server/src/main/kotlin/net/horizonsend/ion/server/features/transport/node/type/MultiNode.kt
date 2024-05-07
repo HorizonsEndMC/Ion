@@ -35,31 +35,35 @@ interface MultiNode<Self: MultiNode<Self, T>, T: MultiNode<T, Self>> : Transport
 	/**
 	 * Adds new a position to this node
 	 **/
-	fun addPosition(network: ChunkTransportNetwork, position: BlockKey) {
+	suspend fun addPosition(network: ChunkTransportNetwork, position: BlockKey) {
 		positions += position
 		network.nodes[position] = this
+
+		onPlace(network, position)
 	}
 
 	/**
 	 * Adds new a position to this node
 	 **/
-	fun addPositions(network: ChunkTransportNetwork, newPositions: Iterable<BlockKey>) {
+	suspend fun addPositions(network: ChunkTransportNetwork, newPositions: Iterable<BlockKey>) {
 		for (position in newPositions) {
 			positions += position
 			network.nodes[position] = this
+
+			onPlace(network, position)
 		}
 	}
 
 	/**
 	 * Drain all the positions and connections to the provided node
 	 **/
-	fun drainTo(network: ChunkTransportNetwork, new: Self) {
+	suspend fun drainTo(network: ChunkTransportNetwork, new: Self) {
 		new.transferableNeighbors.addAll(transferableNeighbors)
 
 		new.addPositions(network, positions)
 	}
 
-	override fun handlePlacement(network: ChunkTransportNetwork) {
+	override fun loadIntoNetwork(network: ChunkTransportNetwork) {
 		for (key in positions) {
 			network.nodes[key] = this
 		}
@@ -76,5 +80,10 @@ interface MultiNode<Self: MultiNode<Self, T>, T: MultiNode<T, Self>> : Transport
 				transferableNeighbors.add(neighborNode)
 			}
 		}
+	}
+
+	override suspend fun onPlace(network: ChunkTransportNetwork, position: BlockKey) {
+		// Build relations for each position upon placement
+		buildRelations(network, position)
 	}
 }

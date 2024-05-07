@@ -27,5 +27,10 @@ class PowerExtractorNode() : SingleNode {
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
 		position = persistentDataContainer.get(NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
 	}
+
+	override fun toString(): String = """
+		POWER INPUT NODE:
+		Transferable to: ${transferableNeighbors.joinToString { it.javaClass.simpleName }} nodes
+	""".trimIndent()
 }
 
