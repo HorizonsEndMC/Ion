@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 interface SingleNode : TransportNode {
 	val position: Long
 
-	override fun handlePlacement(network: ChunkTransportNetwork) {
+	override fun loadIntoNetwork(network: ChunkTransportNetwork) {
 		network.nodes[position] = this
 	}
 
@@ -27,5 +27,9 @@ interface SingleNode : TransportNode {
 				transferableNeighbors.add(neighborNode)
 			}
 		}
+	}
+
+	override suspend fun onPlace(network: ChunkTransportNetwork, position: BlockKey) {
+		buildRelations(network, position)
 	}
 }

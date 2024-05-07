@@ -59,7 +59,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 		// Deserialize once
 		val nodeData = existing.get(NODES, PersistentDataType.TAG_CONTAINER_ARRAY)!!.map { TransportNode.fromPrimitive(it, pdc.adapterContext) }
 		nodeData.forEach {
-			it.handlePlacement(this)
+			it.loadIntoNetwork(this)
 		}
 	}
 
