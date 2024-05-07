@@ -556,10 +556,7 @@ object Multiblocks : IonServerComponent() {
 		)
 
 		sign.isWaxed = true
-
-		Tasks.sync {
-			sign.update()
-		}
+		sign.update()
 
 		if (multiblock is EntityMultiblock<*>) {
 			// Multiblock entities are stored inside the block that the sign is placed on
@@ -570,7 +567,7 @@ object Multiblocks : IonServerComponent() {
 
 			val chunk = sign.world.ion.getChunk(chunkX, chunkZ) ?: return@sync
 
-			chunk.multiblockManager.addNewMultiblockEntity(multiblock, sign)
+			multiblockCoroutineScope.launch { chunk.multiblockManager.addNewMultiblockEntity(multiblock, sign) }
 		}
 	}
 
