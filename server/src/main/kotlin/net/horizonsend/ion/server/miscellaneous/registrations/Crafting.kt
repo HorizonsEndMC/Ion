@@ -283,7 +283,7 @@ object Crafting : IonServerComponent() {
 
 		//Unloaded Turret Shell Crafting
 		itemStackShapeRecipe("Unloaded__Shell", UNLOADED_SHELL.constructItemStack().asQuantity(4)) {
-			shape("xyx", "xzx", "xzx")
+			shape("xyx", "xzx", "xxx")
 
 			setIngredient('x', AIR)
 			setIngredient('y', LAPIS_LAZULI)
@@ -291,7 +291,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		itemStackShapeRecipe("Uncharged_Shell", UNCHARGED_SHELL.constructItemStack().asQuantity(4)) {
-			shape("xyx", "xzx", "xzx")
+			shape("xyx", "xzx", "xxx")
 
 			setIngredient('x', AIR)
 			setIngredient('y', PRISMARINE_CRYSTALS)
@@ -303,7 +303,7 @@ object Crafting : IonServerComponent() {
 
 			setIngredient('a', ExactChoice(REACTIVE_HOUSING.constructItemStack()))
 			setIngredient('b', ExactChoice(STEEL_PLATE.constructItemStack()))
-			setIngredient('m', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
+			setIngredient('m', ExactChoice(CIRCUITRY.constructItemStack()))
 			setIngredient('u', ExactChoice(URANIUM_ROD.constructItemStack()))
 			setIngredient('h', ExactChoice(GAS_CANISTER_HYDROGEN.constructItemStack()))
 			setIngredient('l', LAPIS_BLOCK)
@@ -711,7 +711,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("cruiserreactorCore", CRUISER_REACTOR_CORE.constructItemStack()) {
 			shape("wxw", "wyw", "wzw")
 
-			setIngredient('w', REACTOR_FRAME.constructItemStack())
+			setIngredient('w', REINFORCED_FRAME.constructItemStack())
 			setIngredient('x', REACTOR_CONTROL.constructItemStack())
 			setIngredient('y', SUPERCONDUCTOR_CORE.constructItemStack())
 			setIngredient('z', FUEL_CONTROL.constructItemStack())
