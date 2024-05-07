@@ -35,9 +35,11 @@ class EndRodNode() : MultiNode<EndRodNode, EndRodNode> {
 	}
 
 	override suspend fun rebuildNode(network: ChunkTransportNetwork, position: BlockKey) {
+		transferableNeighbors.clear()
 
 		// Create new nodes, automatically merging together
 		positions.forEach {
+			buildRelations(network, it)
 			(network as ChunkPowerNetwork).nodeFactory.addEndRod(getBlockSnapshotAsync(network.world, it)!!.data as Directional, it)
 		}
 	}
