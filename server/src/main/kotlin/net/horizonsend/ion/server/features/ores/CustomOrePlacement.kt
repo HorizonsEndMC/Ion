@@ -98,7 +98,7 @@ object CustomOrePlacement : IonServerComponent(true) {
 						if (y > minBlockY) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
 
 						placementConfiguration.options.forEach { (ore, chance) ->
-							if (random.nextFloat() < .002f * chance) placedOres[Position(x, y, z)] = ore
+							if (random.nextFloat() < .00052f * chance) placedOres[Position(x, y, z)] = ore
 						}
 					}
 				}
