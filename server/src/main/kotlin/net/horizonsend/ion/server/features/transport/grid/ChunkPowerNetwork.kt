@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(manager) {
 	val poweredMultiblockEntities = ConcurrentHashMap<Long, PoweredMultiblockEntity>()
-//	val extractors = ConcurrentHashMap<Long, PowerExtractorNode>()
 
 	override val namespacedKey: NamespacedKey = NamespacedKeys.POWER_TRANSPORT
 	override val nodeFactory: PowerNodeFactory = PowerNodeFactory(this)
@@ -41,7 +40,6 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		for ((key, solarPanel) in nodes.filterValuesIsInstance<SolarPanelNode, BlockKey, TransportNode>()) {
 			val power = solarPanel.getPower(this)
 			solarPanel.lastTicked = System.currentTimeMillis()
-			println("Solar panel generated $power power!")
 
 			transferPower(solarPanel, power)
 		}

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.entity
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -33,6 +34,7 @@ abstract class MultiblockEntity(
 	var signDirection: BlockFace
 ): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion> {
 	override val type: PersistentMultiblockData.Companion = PersistentMultiblockData.Companion
+	val position: BlockKey get() = toBlockKey(x, y, z)
 
 	/**
 	 * Returns the origin of this multiblock as a Location
