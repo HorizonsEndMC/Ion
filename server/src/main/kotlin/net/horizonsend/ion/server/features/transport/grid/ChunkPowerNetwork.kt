@@ -1,13 +1,17 @@
 package net.horizonsend.ion.server.features.transport.grid
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
-import net.horizonsend.ion.server.features.transport.node.NodeFactory
+import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerNodeFactory
+import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
+import net.horizonsend.ion.server.features.transport.node.power.TransportNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.IntervalExecutor
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.filterValuesIsInstance
 import org.bukkit.NamespacedKey
 import java.util.concurrent.ConcurrentHashMap
 
@@ -16,7 +20,8 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 //	val extractors = ConcurrentHashMap<Long, PowerExtractorNode>()
 
 	override val namespacedKey: NamespacedKey = NamespacedKeys.POWER_TRANSPORT
-	override val nodeFactory: NodeFactory<*> = PowerNodeFactory
+	override val nodeFactory: PowerNodeFactory = PowerNodeFactory(this)
+	val solarPanels: ObjectOpenHashSet<SolarPanelNode> = ObjectOpenHashSet()
 
 	override fun setup() {
 		collectPowerMultiblockEntities()
@@ -32,15 +37,36 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		createNodeFromBlock(new)
 	}}
 
-	fun removeNode(key: Long) {
-		nodes.remove(key)
+	fun tickSolars() {
+		for ((key, solarPanel) in nodes.filterValuesIsInstance<SolarPanelNode, BlockKey, TransportNode>()) {
+			val power = solarPanel.getPower(this)
+			solarPanel.lastTicked = System.currentTimeMillis()
+			println("Solar panel generated $power power!")
+
+			transferPower(solarPanel, power)
+		}
 	}
 
-	val tickExecutor = IntervalExecutor(20) {
+	fun transferPower(start: TransportNode, amount: Int) {
+		var steps: Int = 0
 
+		var currentNode = start
+
+		while (steps < 10) {
+			steps++
+
+			if (currentNode is PowerInputNode) {
+				currentNode.multis.randomOrNull()?.addPower(amount)
+
+				break
+			}
+
+			currentNode = currentNode.transferableNeighbors.randomOrNull()?: break
+		}
 	}
 
 	override fun tick() {
+		tickSolars()
 //		tickExecutor()
 	}
 
