@@ -2,14 +2,12 @@ package net.horizonsend.ion.server.features.multiblock.type.powerbank.new
 
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataType
 
-object NewPowerBankMultiblockTier3 : NewPowerBankMultiblock<NewPowerBankMultiblockTier3.NewPowerBankMultiblockTier3Entity>("&bTier 3") {
+data object NewPowerBankMultiblockTier3 : NewPowerBankMultiblock<NewPowerBankMultiblockTier3.NewPowerBankMultiblockTier3Entity>("&bTier 3") {
 	override val tierMaterial = Material.DIAMOND_BLOCK
 
 	override fun createEntity(data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): NewPowerBankMultiblockTier3Entity {
@@ -32,8 +30,5 @@ object NewPowerBankMultiblockTier3 : NewPowerBankMultiblock<NewPowerBankMultiblo
 		world: World,
 		signDirection: BlockFace,
 		override var powerUnsafe: Int
-	) : PowerBankEntity(multiblock, x, y, z, world, signDirection, 500_000_000) {
-
-		override val position: BlockKey get() = toBlockKey(x, y, z)
-	}
+	) : PowerBankEntity(multiblock, x, y, z, world, signDirection, 500_000_000)
 }
