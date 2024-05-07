@@ -39,7 +39,7 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	/**
 	 * Handle placement into the network upon loading, after data has been loaded
 	 **/
-	fun handlePlacement(network: ChunkTransportNetwork) {}
+	fun loadIntoNetwork(network: ChunkTransportNetwork) {}
 
 	/**
 	 * Logic for handling the removal of this node
@@ -52,6 +52,11 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 * Builds relations between this node and transferrable nodes
 	 **/
 	suspend fun buildRelations(network: ChunkTransportNetwork, position: BlockKey)
+
+	/**
+	 * Additional logic to be run once the node is placed
+	 **/
+	suspend fun onPlace(network: ChunkTransportNetwork, position: BlockKey) {}
 
 	companion object : PersistentDataType<PersistentDataContainer, TransportNode> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
