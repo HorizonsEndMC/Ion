@@ -6,10 +6,12 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.data.ChunkDataFixer
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.chunk.LevelChunkSection
 import org.bukkit.Chunk
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -73,6 +75,18 @@ class IonChunk(val inner: Chunk) {
 		multiblockManager.tick()
 	}
 
+	/**
+	 * Gets the neighboring chunk in this direction
+	 **/
+	fun getNeighborIfLoaded(blockFace: BlockFace): IonChunk? {
+		require(CARDINAL_BLOCK_FACES.contains(blockFace))
+
+		val newX = x + blockFace.modX
+		val newZ = z + blockFace.modZ
+
+		return get(world, newX, newZ)
+	}
+
 	companion object : SLEventListener() {
 		@EventHandler
 		fun onChunkLoad(event: ChunkLoadEvent) {
@@ -128,7 +142,7 @@ class IonChunk(val inner: Chunk) {
 		}
 
 		/**
-		 * Returns the chunk at the specified coordinates in the world if it is loaded
+		 * Returns the chunk at the specified chunk coordinates in the world if it is loaded
 		 **/
 		operator fun get(world: World, x: Int, z: Int): IonChunk? {
 			return world.ion.getChunk(x, z)
