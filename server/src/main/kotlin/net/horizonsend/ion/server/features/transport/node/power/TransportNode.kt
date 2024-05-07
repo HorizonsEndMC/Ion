@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -45,7 +46,12 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 *
 	 * Cleanup, splitting into multiple, etc
 	 **/
-	suspend fun handleRemoval(network: ChunkTransportNetwork, position: Long) {}
+	suspend fun handleRemoval(network: ChunkTransportNetwork, position: BlockKey) {}
+
+	/**
+	 * Builds relations between this node and transferrable nodes
+	 **/
+	suspend fun buildRelations(network: ChunkTransportNetwork, position: BlockKey)
 
 	companion object : PersistentDataType<PersistentDataContainer, TransportNode> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
