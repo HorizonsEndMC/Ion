@@ -98,6 +98,9 @@ import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMu
 import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerCellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier3
@@ -326,6 +329,9 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(BargeReactorMultiBlock)
 		registerMultiblock(OdometerMultiblock)
 		registerMultiblock(TestMultiblock)
+		registerMultiblock(NewPowerBankMultiblockTier1)
+		registerMultiblock(NewPowerBankMultiblockTier2)
+		registerMultiblock(NewPowerBankMultiblockTier3)
 	}
 
 	private fun registerMultiblock(multiblock: Multiblock) {
