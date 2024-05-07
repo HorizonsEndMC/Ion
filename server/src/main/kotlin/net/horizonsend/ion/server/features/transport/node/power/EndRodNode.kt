@@ -38,7 +38,13 @@ class EndRodNode() : MultiNode<EndRodNode, EndRodNode> {
 
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			PowerNodeFactory.addEndRod(network as ChunkPowerNetwork, getBlockSnapshotAsync(network.world, it)!!.data as Directional, it)
+			(network as ChunkPowerNetwork).nodeFactory.addEndRod(getBlockSnapshotAsync(network.world, it)!!.data as Directional, it)
 		}
 	}
+
+	override fun toString(): String = """
+		EMD RPD NODE:
+		${positions.size} positions,
+		Transferable to: ${transferableNeighbors.size} nodes
+	""".trimIndent()
 }

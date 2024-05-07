@@ -3,11 +3,14 @@ package net.horizonsend.ion.server.features.multiblock.type.powerbank.new
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.persistence.PersistentDataType
 
 abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>(tierText: String) : Multiblock(), EntityMultiblock<T> {
 	abstract val tierMaterial: Material
@@ -80,5 +83,13 @@ abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>
 		world: World,
 		signDirection: BlockFace,
 		override val maxPower: Int
-	) : MultiblockEntity(multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity
+	) : MultiblockEntity(multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity {
+		override fun storeAdditionalData(store: PersistentMultiblockData) {
+			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
+		}
+
+		override fun toString(): String {
+			return "POWER BANK TIER: $multiblock! Power: $powerUnsafe!!!"
+		}
+	}
 }

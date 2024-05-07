@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.world.IonChunk.Companion.ion
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
@@ -100,5 +101,35 @@ object IonChunkCommand : SLCommand() {
 				}
 			}
 		}
+	}
+
+	@Subcommand("get node key")
+	fun getNode(sender: Player, key: Long, network: String) = CoroutineScope(Dispatchers.Default + Job()).launch {
+		val ionChunk = sender.chunk.ion()
+
+		val grid = when (network) {
+			"power" -> ionChunk.transportNetwork.powerNetwork
+//			"item" -> ionChunk.transportNetwork.pipeGrid
+//			"gas" -> ionChunk.transportNetwork.gasGrid
+			else -> return@launch fail { "invalid network" }
+		}
+
+		sender.information("Targeted node: ${grid.nodes[key]}")
+	}
+
+	@Subcommand("get node look")
+	fun getNode(sender: Player, network: String) = CoroutineScope(Dispatchers.Default + Job()).launch {
+		val ionChunk = sender.chunk.ion()
+		val targeted = sender.getTargetBlock(null, 10)
+		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
+
+		val grid = when (network) {
+			"power" -> ionChunk.transportNetwork.powerNetwork
+//			"item" -> ionChunk.transportNetwork.pipeGrid
+//			"gas" -> ionChunk.transportNetwork.gasGrid
+			else -> return@launch fail { "invalid network" }
+		}
+
+		sender.information("Targeted node: ${grid.nodes[key]}")
 	}
 }

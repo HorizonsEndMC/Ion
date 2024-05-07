@@ -17,7 +17,7 @@ class PowerExtractorNode() : SingleNode {
 	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
 
 	override fun isTransferable(position: Long, node: TransportNode): Boolean {
-		TODO("Not yet implemented")
+		return node !is PowerInputNode
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
