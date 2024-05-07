@@ -2,17 +2,22 @@ package net.horizonsend.ion.server.features.transport.grid
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
+import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerNodeFactory
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
 import net.horizonsend.ion.server.features.transport.node.power.TransportNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.filterValuesIsInstance
 import org.bukkit.NamespacedKey
+import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
 class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(manager) {
@@ -66,6 +71,19 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 	override fun tick() {
 		tickSolars()
 //		tickExecutor()
+	}
+
+	/**
+	 * Handle the addition of a new powered multiblock entity
+	 **/
+	suspend fun handleNewPoweredMultiblock(new: MultiblockEntity) {
+		// All directions
+		val neighboring = getNeighborNodes(new.position, nodes, BlockFace.entries)
+			.filterValues { it is PowerInputNode || it is PowerExtractorNode }
+
+		neighboring.forEach {
+			it.value.buildRelations(this, getRelative(new.locationKey, it.key))
+		}
 	}
 
 	private fun collectPowerMultiblockEntities() {

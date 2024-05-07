@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.TickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.world.IonChunk
@@ -65,7 +66,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	/**
 	 * Add a new multiblock to the chunk data
 	 **/
-	fun addNewMultiblockEntity(multiblock: EntityMultiblock<*>, sign: Sign) {
+	suspend fun addNewMultiblockEntity(multiblock: EntityMultiblock<*>, sign: Sign) {
 		// Allow smart cast
 		multiblock as Multiblock
 
@@ -87,6 +88,10 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 
 		// Place the entity into the chunk
 		addMultiblockEntity(entity)
+
+		if (entity is PoweredMultiblockEntity) {
+			chunk.transportNetwork.powerNetwork.handleNewPoweredMultiblock(entity)
+		}
 	}
 
 	/**
