@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_COUNT
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_EXTRACTORS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -16,7 +15,6 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.persistence.PersistentDataType.INTEGER
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
 import kotlin.math.PI
 import kotlin.math.max
@@ -26,27 +24,25 @@ import kotlin.math.sin
  * Represents a solar panel, or multiple
  **/
 class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
-	/** The number of solar cells contained in this node */
-	var cellNumber: Int = 1
 	override val positions: MutableSet<BlockKey> = LongOpenHashSet()
 	/** The positions of extractors in this solar panel */
 	val extractorPositions = LongOpenHashSet()
 
+	/** The number of solar cells contained in this node */
+	val cellNumber: Int get() = extractorPositions.size
+
 	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
 
 	override fun isTransferable(position: Long, node: TransportNode): Boolean {
-		TODO("Not yet implemented")
+		return true
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
-		persistentDataContainer.set(SOLAR_CELL_COUNT, INTEGER, cellNumber)
 		persistentDataContainer.set(NODE_COVERED_POSITIONS, LONG_ARRAY, positions.toLongArray())
 		persistentDataContainer.set(SOLAR_CELL_EXTRACTORS, LONG_ARRAY, extractorPositions.toLongArray())
 	}
 
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
-		cellNumber = persistentDataContainer.getOrDefault(SOLAR_CELL_COUNT, INTEGER, 1)
-
 		val coveredPositions = persistentDataContainer.get(NODE_COVERED_POSITIONS, LONG_ARRAY)
 		coveredPositions?.let { positions.addAll(it.asIterable()) }
 
@@ -89,8 +85,6 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 		for (position: BlockKey in positions) {
 			network.nodes[position] = this
 		}
-
-		cellNumber++
 	}
 
 	fun removePosition(network: ChunkPowerNetwork, extractorKey: BlockKey, others: Iterable<BlockKey>) {
@@ -102,14 +96,15 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 		for (position: BlockKey in positions) {
 			network.nodes.remove(position)
 		}
-
-		cellNumber--
 	}
 
 	override suspend fun rebuildNode(network: ChunkTransportNetwork, position: BlockKey) {
+		network as ChunkPowerNetwork
+		network.solarPanels.remove(this)
+
 		// Create new nodes, automatically merging together
 		extractorPositions.forEach {
-			PowerNodeFactory.addSolarPanel(network as ChunkPowerNetwork, it)
+			network.nodeFactory.addSolarPanel(it)
 		}
 	}
 
@@ -117,10 +112,9 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 		super.drainTo(network, new)
 
 		new.extractorPositions.addAll(extractorPositions)
-		new.cellNumber += cellNumber
 	}
 
-	private var lastTicked: Long = System.currentTimeMillis()
+	var lastTicked: Long = System.currentTimeMillis()
 
 	/**
 	 * Returns the amount of power between ticks
@@ -137,7 +131,7 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 		val time = System.currentTimeMillis()
 		val diff = time - this.lastTicked
 
-		return ((diff / 1000.0) * 5 * cellNumber * daylightMultiplier).toInt()
+		return ((diff / 1000.0) * POWER_PER_SECOND * cellNumber * daylightMultiplier).toInt()
 	}
 
 	/**
@@ -148,7 +142,7 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 	}
 
 	companion object {
-		const val POWER_PER_SECOND = 50
+		const val POWER_PER_SECOND = 5
 
 		suspend fun matchesSolarPanelStructure(world: World, key: BlockKey): Boolean {
 			if (getBlockSnapshotAsync(world, key)?.type != Material.CRAFTING_TABLE) return false
@@ -160,4 +154,12 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 			return getBlockSnapshotAsync(world, cell)?.type == Material.DAYLIGHT_DETECTOR
 		}
 	}
+
+	override fun toString(): String = """
+		SOLAR PANEL NODE:
+		${positions.size} positions,
+		${extractorPositions.size} extractor positions,
+		$cellNumber cells,
+		Transferable to: ${transferableNeighbors.size} nodes
+	""".trimIndent()
 }

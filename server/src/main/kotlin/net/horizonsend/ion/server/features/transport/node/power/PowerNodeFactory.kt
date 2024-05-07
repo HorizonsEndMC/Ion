@@ -20,22 +20,22 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.data.Directional
 
-object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
-	override suspend fun create(network: ChunkPowerNetwork, key: BlockKey, snapshot: BlockSnapshot) {
+class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwork>(network) {
+	override suspend fun create(key: BlockKey, snapshot: BlockSnapshot) {
 		if (network.nodes.contains(key)) return
 
 		when {
 			// Straight wires
-			snapshot.type == Material.END_ROD -> addEndRod(network, snapshot.data as Directional, key)
+			snapshot.type == Material.END_ROD -> addEndRod(snapshot.data as Directional, key)
 
 			// Omnidirectional wires
-			snapshot.type == Material.SPONGE -> addSponge(network, key)
+			snapshot.type == Material.SPONGE -> addSponge(key)
 
 			// Extract power from storage
 			snapshot.type == Material.CRAFTING_TABLE -> if (matchesSolarPanelStructure(network.world, key)) {
-				addSolarPanel(network, key)
+				addSolarPanel(key)
 			} else {
-				addExtractor(network, key)
+				addExtractor(key)
 			}
 
 			// Check for extractor beneath
@@ -43,7 +43,7 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 				val extractorKey = getRelative(key, DOWN, 1)
 				network.nodes.remove(extractorKey)
 				if (matchesSolarPanelStructure(network.world, extractorKey)) {
-					addSolarPanel(network, extractorKey)
+					addSolarPanel(extractorKey)
 				}
 			}
 
@@ -51,12 +51,12 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 				val extractorKey = getRelative(key, DOWN, 2)
 				network.nodes.remove(extractorKey)
 				if (matchesSolarPanelStructure(network.world, extractorKey)) {
-					addSolarPanel(network, extractorKey)
+					addSolarPanel(extractorKey)
 				}
 			}
 
 			// Add power to storage
-			snapshot.type == Material.NOTE_BLOCK -> addInput(network, key)
+			snapshot.type == Material.NOTE_BLOCK -> addInput(key)
 
 			// Merge node behavior
 //			block.type == Material.IRON_BLOCK -> MergeNode(this, x, y, z)
@@ -74,7 +74,7 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 		}
 	}
 
-	fun addSponge(network: ChunkPowerNetwork, position: BlockKey) {
+	fun addSponge(position: BlockKey) {
 		val neighbors = getNeighborNodes(position, network.nodes).filterValuesIsInstance<SpongeNode, BlockFace, TransportNode>()
 
 		when (neighbors.size) {
@@ -111,7 +111,7 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 		}
 	}
 
-	suspend fun addEndRod(network: ChunkPowerNetwork, data: Directional, position: Long) {
+	suspend fun addEndRod(data: Directional, position: Long) {
 		val axis = data.facing.axis
 
 		// The neighbors in the direction of the wire's facing, that are also facing that direction
@@ -153,18 +153,18 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 		}
 	}
 
-	fun addExtractor(network: ChunkPowerNetwork, position: BlockKey) {
+	fun addExtractor(position: BlockKey) {
 		network.nodes[position] = PowerExtractorNode(position)
 	}
 
-	fun addInput(network: ChunkPowerNetwork, position: BlockKey) {
+	fun addInput(position: BlockKey) {
 		network.nodes[position] = PowerInputNode(position)
 	}
 
 	/**
 	 * Provided the key of the extractor, create or combine solar panel nodes
 	 **/
-	suspend fun addSolarPanel(network: ChunkPowerNetwork, position: BlockKey) {
+	suspend fun addSolarPanel(position: BlockKey) {
 		// The diamond and daylight detector
 		val panelPositions = (1..2).map { getRelative(position, BlockFace.UP, it) }
 
@@ -197,6 +197,7 @@ object PowerNodeFactory : NodeFactory<ChunkPowerNetwork>() {
 
 				// Add new position
 				node.addPosition(network, position, panelPositions)
+				network.solarPanels += node
 			}
 
 			1 -> {
