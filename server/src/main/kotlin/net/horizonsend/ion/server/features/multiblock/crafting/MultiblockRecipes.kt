@@ -99,9 +99,9 @@ object MultiblockRecipes : IonServerComponent() {
 
 	val CIRCUIT_BOARD_FABRICATION = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = CircuitfabMultiblock,
-		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.CIRCUITRY, 1), progressHolderResult = CustomItems.ENHANCED_CIRCUITRY),
+		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.CIRCUITRY, 1), progressHolderResult = CustomItems.CIRCUIT_BOARD),
 		resources = listOf(power(150)),
-		result = ProgressItemResult(CustomItems.ENHANCED_CIRCUITRY, 60L * 60L * 20L, SoundResult("horizonsend:industry.cirfab", SoundCategory.BLOCKS, 1.0f, 1.0f))
+		result = ProgressItemResult(CustomItems.CIRCUIT_BOARD, 60L * 60L * 20L, SoundResult("horizonsend:industry.cirfab", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	))
 
 	val LOADED_SHELL_LOADING = registerRecipe(ProcessingMultiblockRecipe(

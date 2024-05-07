@@ -4,7 +4,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.horizonsend.ion.server.features.customitems.CustomItems.ADVANCED_CIRCUITY
+import net.horizonsend.ion.server.features.customitems.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
 import net.horizonsend.ion.server.features.customitems.CustomItems.DETONATOR
-import net.horizonsend.ion.server.features.customitems.CustomItems.ENHANCED_CIRCUITRY
+import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUIT_BOARD
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.FABRICATED_ASSEMBLY
@@ -82,7 +82,6 @@ import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.CYAN_TERRACOTTA
 import org.bukkit.Material.CYAN_WOOL
 import org.bukkit.Material.DARK_PRISMARINE
-import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.GILDED_BLACKSTONE
@@ -304,7 +303,7 @@ object Crafting : IonServerComponent() {
 
 			setIngredient('a', ExactChoice(REACTIVE_HOUSING.constructItemStack()))
 			setIngredient('b', ExactChoice(STEEL_PLATE.constructItemStack()))
-			setIngredient('m', ExactChoice(ENHANCED_CIRCUITRY.constructItemStack()))
+			setIngredient('m', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
 			setIngredient('u', ExactChoice(URANIUM_ROD.constructItemStack()))
 			setIngredient('h', ExactChoice(GAS_CANISTER_HYDROGEN.constructItemStack()))
 			setIngredient('l', LAPIS_BLOCK)
@@ -673,14 +672,14 @@ object Crafting : IonServerComponent() {
 		}
 
 		//Advanced Circuitry Crafting Recipe
-		itemStackShapelessRecipe("advancedCircuitry", ADVANCED_CIRCUITY.constructItemStack()) {
-			addIngredient(ENHANCED_CIRCUITRY.constructItemStack().asQuantity(9))
+		itemStackShapelessRecipe("circuitBoard", MOTHERBOARD.constructItemStack()) {
+			addIngredient(CIRCUIT_BOARD.constructItemStack().asQuantity(9))
 		}
 
 		//Reactor Control Crafting
 		itemStackShapelessRecipe("reactorControl", REACTOR_CONTROL.constructItemStack()) {
 			addIngredient(FABRICATED_ASSEMBLY.constructItemStack().asQuantity(6))
-			addIngredient(ADVANCED_CIRCUITY.constructItemStack().asQuantity(3))
+			addIngredient(MOTHERBOARD.constructItemStack().asQuantity(3))
 		}
 
 		//Superconductor Crafting
@@ -696,7 +695,7 @@ object Crafting : IonServerComponent() {
 		//Superconductor Core Crafting
 		itemStackShapelessRecipe("superconductorCore", SUPERCONDUCTOR_CORE.constructItemStack()) {
 			addIngredient(SUPERCONDUCTOR_BLOCK.constructItemStack())
-			addIngredient(ADVANCED_CIRCUITY.constructItemStack().asQuantity(4))
+			addIngredient(MOTHERBOARD.constructItemStack().asQuantity(4))
 		}
 
 		//Reactor Core Crafting
