@@ -291,7 +291,7 @@ enum class StarshipType(
 			dynmapIcon = "battlecruiser",
 			maxMiningLasers = 1,
 			miningLaserTier = 1,
-			overridePermission = "ion.ships.override.battlecruiser",
+			overridePermission = "ion.ships.override.80",
 			sinkProvider = SinkProvider.SinkProviders.BATTLECRUISER,
 			balancingSupplier = IonServer.starshipBalancing::battlecruiser
 	),
