@@ -2,11 +2,15 @@ package net.horizonsend.ion.server.configuration
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import net.horizonsend.ion.server.configuration.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
-import net.horizonsend.ion.server.features.starship.subsystem.FuelTankSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.BCReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.CruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import java.util.LinkedList
 import kotlin.math.PI
 
@@ -331,7 +335,12 @@ data class StarshipTypeBalancing(
 								1,
 								"Cruisers require a reactor to pilot!"
 						)
-				)
+				),
+			sounds = StarshipSounds(
+				pilot = SoundInfo("horizonsend:starship.pilot.cruiser", volume = 5f),
+				release = SoundInfo("horizonsend:starship.release.cruiser", volume = 5f),
+				enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter")
+			)
 		),
 		val battlecruiser: StarshipBalancing = StarshipBalancing(
 				sneakFlyAccelDistance = 3,
@@ -425,6 +434,11 @@ data class StarshipTypeBalancing(
 								1,
 								"Battlecruisers require fuel to pilot!"
 						)
+				),
+				sounds = StarshipSounds(
+					pilot = SoundInfo("horizonsend:starship.pilot.battlecruiser", volume = 7f),
+					release = SoundInfo("horizonsend:starship.release.battlecruiser", volume = 7f),
+					enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter")
 				)
 		),
 		val battleship: StarshipBalancing = StarshipBalancing(
@@ -579,19 +593,20 @@ data class AntiAirCannonBalancing(
 
 @Serializable
 data class StarshipBalancing(
-		var canMove: Boolean = true,
-		var accelMultiplier: Double = 1.0,
-		var maxSpeedMultiplier: Double = 1.0,
-		var weapons: StarshipWeapons = StarshipWeapons(),
+	var canMove: Boolean = true,
+	var accelMultiplier: Double = 1.0,
+	var maxSpeedMultiplier: Double = 1.0,
+	var weapons: StarshipWeapons = StarshipWeapons(),
 
-		val sneakFlyAccelDistance: Int,
-		val maxSneakFlyAccel: Int,
-		val interdictionRange: Int,
-		val hyperspaceRangeMultiplier: Double,
-		val cruiseSpeedMultiplier: Double = 1.0,
-		val shieldPowerMultiplier: Double = 1.0,
+	val sneakFlyAccelDistance: Int,
+	val maxSneakFlyAccel: Int,
+	val interdictionRange: Int,
+	val hyperspaceRangeMultiplier: Double,
+	val cruiseSpeedMultiplier: Double = 1.0,
+	val shieldPowerMultiplier: Double = 1.0,
 
-		val requiredMultiblocks: List<RequiredSubsystemInfo> = listOf()
+	val requiredMultiblocks: List<RequiredSubsystemInfo> = listOf(),
+	val sounds: StarshipSounds = StarshipSounds()
 )
 
 @Serializable
@@ -605,6 +620,25 @@ data class RequiredSubsystemInfo(
 	 **/
 	fun checkRequirements(subsystems: LinkedList<StarshipSubsystem>): Boolean {
 		return (subsystems.groupBy { it.javaClass }[subsystem]?.count() ?: 0) >= requiredAmount
+	}
+}
+
+@Serializable
+data class StarshipSounds(
+	val pilot: SoundInfo = SoundInfo("minecraft:block.beacon.activate", volume = 5f, pitch = 0.05f),
+	val release: SoundInfo = SoundInfo("minecraft:block.beacon.deactivate", volume = 5f, pitch = 0.05f),
+	val enterHyperspace: SoundInfo = SoundInfo("minecraft:entity.elder_guardian.hurt", volume = 5f, pitch = 0.05f),
+	val exitHyperspace: SoundInfo = SoundInfo("minecraft:entity.warden.sonic_boom", pitch = 0f),
+) {
+	@Serializable
+	data class SoundInfo(
+		val key: String,
+		val source: Sound.Source = Sound.Source.AMBIENT,
+		val volume: Float = 1f,
+		val pitch: Float = 1f
+	) {
+		@Transient
+		val sound = Sound.sound(Key.key(key), source, volume, pitch)
 	}
 }
 
