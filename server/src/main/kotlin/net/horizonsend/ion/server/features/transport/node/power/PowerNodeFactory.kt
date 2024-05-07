@@ -74,13 +74,15 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 		}
 	}
 
-	fun addSponge(position: BlockKey) {
+	suspend fun addSponge(position: BlockKey) {
 		val neighbors = getNeighborNodes(position, network.nodes).filterValuesIsInstance<SpongeNode, BlockFace, TransportNode>()
 
 		when (neighbors.size) {
 			// New sponge node
 			0 -> {
-				network.nodes[position] = SpongeNode(position)
+				network.nodes[position] = SpongeNode(position).apply {
+					onPlace(network, position)
+				}
 			}
 
 			// Consolidate into neighbor
@@ -123,7 +125,9 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 		when (neighbors.size) {
 			// Disconnected
 			0 -> {
-				network.nodes[position] = EndRodNode(position)
+				network.nodes[position] = EndRodNode(position).apply {
+					onPlace(network, position)
+				}
 			}
 
 			1 -> {
@@ -153,12 +157,16 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 		}
 	}
 
-	fun addExtractor(position: BlockKey) {
-		network.nodes[position] = PowerExtractorNode(position)
+	suspend fun addExtractor(position: BlockKey) {
+		network.nodes[position] = PowerExtractorNode(position).apply {
+			onPlace(network, position)
+		}
 	}
 
-	fun addInput(position: BlockKey) {
-		network.nodes[position] = PowerInputNode(position)
+	suspend fun addInput(position: BlockKey) {
+		network.nodes[position] = PowerInputNode(position).apply {
+			onPlace(network, position)
+		}
 	}
 
 	/**

@@ -50,7 +50,7 @@ class SpongeNode() : MultiNode<SpongeNode, SpongeNode> {
 	override fun toString(): String = """
 		SPONGE NODE:
 		${positions.size} positions,
-		Transferable to: ${transferableNeighbors.size} nodes
+		Transferable to: ${transferableNeighbors.joinToString { it.javaClass.simpleName }} nodes
 	""".trimIndent()
 
 }

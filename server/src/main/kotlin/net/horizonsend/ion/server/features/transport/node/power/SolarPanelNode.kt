@@ -77,7 +77,7 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 		rebuildNode(network, position)
 	}
 
-	fun addPosition(network: ChunkPowerNetwork, extractorKey: BlockKey, others: Iterable<BlockKey>) {
+	suspend fun addPosition(network: ChunkPowerNetwork, extractorKey: BlockKey, others: Iterable<BlockKey>) {
 		extractorPositions += extractorKey
 		addPosition(network, extractorKey)
 
@@ -111,7 +111,7 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 		}
 	}
 
-	override fun drainTo(network: ChunkTransportNetwork, new: SolarPanelNode) {
+	override suspend fun drainTo(network: ChunkTransportNetwork, new: SolarPanelNode) {
 		super.drainTo(network, new)
 
 		new.extractorPositions.addAll(extractorPositions)
@@ -163,6 +163,6 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 		${positions.size} positions,
 		${extractorPositions.size} extractor positions,
 		$cellNumber cells,
-		Transferable to: ${transferableNeighbors.size} nodes
+		Transferable to: ${transferableNeighbors.joinToString { it.javaClass.simpleName }} nodes
 	""".trimIndent()
 }
