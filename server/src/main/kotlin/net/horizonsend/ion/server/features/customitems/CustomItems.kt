@@ -502,16 +502,16 @@ object CustomItems {
 	)
 
 	// Circuitry line
-	val ENHANCED_CIRCUITRY = register(
-		identifier = "ENHANCED_CIRCUITRY",
+	val CIRCUIT_BOARD = register(
+		identifier = "CIRCUIT_BOARD",
 		customModelData = 2012,
-		displayName = text("Enhanced Circuitry").decoration(ITALIC, false)
+		displayName = text("Circuit Board").decoration(ITALIC, false)
 	)
 
-	val ADVANCED_CIRCUITY = register(
-		identifier = "ADVANCED_CIRCUITRY",
+	val MOTHERBOARD = register(
+		identifier = "MOTHERBOARD",
 		customModelData = 2013,
-		displayName = text("Advanced Circuitry").decoration(ITALIC, false)
+		displayName = text("Motherboard").decoration(ITALIC, false)
 	)
 
 	val REACTOR_CONTROL = register(
