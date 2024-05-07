@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.TickingMultibl
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.world.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.block.Sign
@@ -165,6 +166,13 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	 **/
 	operator fun get(key: Long): MultiblockEntity? {
 		return multiblockEntities[key]
+	}
+
+	/**
+	 * Multiblock entities are stored on the block the sign is placed on
+	 **/
+	operator fun get(sign: Sign): MultiblockEntity? {
+		return multiblockEntities[getRelative(toBlockKey(sign.x, sign.y, sign.z), sign.getFacing().oppositeFace)]
 	}
 
 	fun isOccupied(x: Int, y: Int, z: Int): Boolean = multiblockEntities.containsKey(toBlockKey(x, y, z))
