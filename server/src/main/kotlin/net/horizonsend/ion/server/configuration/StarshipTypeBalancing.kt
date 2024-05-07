@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.configuration.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
 import net.horizonsend.ion.server.features.starship.subsystem.BCReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.CruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.kyori.adventure.key.Key
@@ -441,6 +442,79 @@ data class StarshipTypeBalancing(
 					enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter")
 				)
 		),
+
+		val barge: StarshipBalancing = StarshipBalancing(
+			sneakFlyAccelDistance = 3,
+			maxSneakFlyAccel = 3,
+			interdictionRange = 4500,
+			hyperspaceRangeMultiplier = 2.5,
+			cruiseSpeedMultiplier = 0.88,
+			shieldPowerMultiplier = 1.30,
+			weapons = StarshipWeapons(
+
+				triTurret = StarshipWeapons.StarshipWeapon(
+					range = 500.0,
+					speed = 110.0,
+					areaShieldDamageMultiplier = 3.0,
+					starshipShieldDamageMultiplier = 3.0,
+					particleThickness = 0.8,
+					explosionPower = 6f,
+					volume = 1,
+					pitch = 2.0f,
+					soundName = "horizonsend:starship.weapon.turbolaser.tri.shoot",
+					powerUsage = 45000,
+					length = 0,
+					angleRadiansHorizontal = 0.0,
+					angleRadiansVertical = 0.0,
+					convergeDistance = 0.0,
+					extraDistance = 0,
+					fireCooldownMillis = 10,
+					boostChargeSeconds = 7,
+					aimDistance = 0,
+					inaccuracyRadians = 3.0,
+					applyCooldownToAll = false,
+					minBlockCount = 3400
+				),
+				heavyTurret = StarshipWeapons.StarshipWeapon(
+					canFire = true,
+					range = 500.0,
+					speed = 200.0,
+					areaShieldDamageMultiplier = 1.0,
+					starshipShieldDamageMultiplier = 1.0,
+					particleThickness = 0.3,
+					explosionPower = 3.0f,
+					volume = 0,
+					pitch = 2.0f,
+					soundName = "horizonsend:starship.weapon.turbolaser.heavy.shoot",
+					powerUsage = 8000,
+					length = 0,
+					angleRadiansHorizontal = 0.0,
+					angleRadiansVertical = 0.0,
+					convergeDistance = 0.0,
+					extraDistance = 0,
+					fireCooldownMillis = 250,
+					boostChargeSeconds = 0,
+					applyCooldownToAll = true,
+					aimDistance = 0,
+					maxBlockCount = 20000,
+					minBlockCount = 16500
+				),
+
+			),
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					BargeReactorSubsystem::class.java,
+					1,
+					"Barges require a reactor to pilot!"
+				),
+				RequiredSubsystemInfo(
+					FuelTankSubsystem::class.java,
+					1,
+					"Barges require fuel to pilot!"
+				)
+			)
+		),
+
 		val battleship: StarshipBalancing = StarshipBalancing(
 				sneakFlyAccelDistance = 3,
 				maxSneakFlyAccel = 3,

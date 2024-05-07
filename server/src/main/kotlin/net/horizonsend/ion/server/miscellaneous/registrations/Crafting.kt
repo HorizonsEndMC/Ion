@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.customitems.CustomItems.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE_BLOCK
@@ -706,6 +707,16 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', REACTOR_CONTROL.constructItemStack())
 			setIngredient('y', FUEL_CONTROL.constructItemStack())
 			setIngredient('z', SUPERCONDUCTOR_CORE.constructItemStack())
+		}
+
+		itemStackShapeRecipe("bargereactorCore", BARGE_REACTOR_CORE.constructItemStack()) {
+			shape("wxw", "zzz", "vyv")
+
+			setIngredient('w', REACTOR_FRAME.constructItemStack())
+			setIngredient('x', REACTOR_CONTROL.constructItemStack())
+			setIngredient('y', FUEL_CONTROL.constructItemStack())
+			setIngredient('z', SUPERCONDUCTOR.constructItemStack())
+			setIngredient('v', REINFORCED_FRAME.constructItemStack())
 		}
 
 		itemStackShapeRecipe("cruiserreactorCore", CRUISER_REACTOR_CORE.constructItemStack()) {
