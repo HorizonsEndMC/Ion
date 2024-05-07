@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.server.features.customblocks.CustomBlock
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10.buildStructure
@@ -258,6 +259,7 @@ class MultiblockShape {
 		fun glass() = type(Material.GLASS)
 		fun anvil() = type(Material.ANVIL)
 		fun bcReactorCore() = customBlock(BATTLECRUISER_REACTOR_CORE)
+		fun bargeReactorCore() = customBlock(BARGE_REACTOR_CORE)
 		fun cruiserReactorCore() = customBlock(CRUISER_REACTOR_CORE)
 		fun stainedGlass() = filteredTypes { it.isStainedGlass }
 		fun anyGlass() = filteredTypes { it.isGlass }

@@ -609,6 +609,14 @@ object CustomItems {
 		customBlockIdentifier = "BATTLECRUISER_REACTOR_CORE"
 	) {})
 
+	val BARGE_REACTOR_CORE = register(object : CustomBlockItem(
+		identifier = "BARGE_REACTOR_CORE",
+		material = IRON_BLOCK,
+		customModelData = 2002,
+		displayName = text("Barge Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
+		customBlockIdentifier = "BARGE_REACTOR_CORE"
+	) {})
+
 	val CRUISER_REACTOR_CORE = register(object : CustomBlockItem(
 		identifier = "CRUISER_REACTOR_CORE",
 		material = IRON_BLOCK,
