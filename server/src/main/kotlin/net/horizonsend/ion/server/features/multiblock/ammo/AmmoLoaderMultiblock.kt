@@ -97,11 +97,11 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 
 		z(+5) {
 			y(-1) {
-				x(-2).anyStairs()
+				x(-2).anyWall()
 				x(-1).ironBlock()
 				x(+0).ironBlock()
 				x(+1).ironBlock()
-				x(+2).anyStairs()
+				x(+2).anyWall()
 			}
 
 			y(+0) {
