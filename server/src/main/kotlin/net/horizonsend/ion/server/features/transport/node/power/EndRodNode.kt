@@ -47,6 +47,6 @@ class EndRodNode() : MultiNode<EndRodNode, EndRodNode> {
 	override fun toString(): String = """
 		EMD RPD NODE:
 		${positions.size} positions,
-		Transferable to: ${transferableNeighbors.size} nodes
+		Transferable to: ${transferableNeighbors.joinToString { it.javaClass.simpleName }} nodes
 	""".trimIndent()
 }
