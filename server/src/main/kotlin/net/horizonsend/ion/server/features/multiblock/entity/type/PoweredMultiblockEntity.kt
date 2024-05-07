@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type
 
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.kyori.adventure.text.Component
@@ -12,9 +11,7 @@ import org.bukkit.persistence.PersistentDataType
 interface PoweredMultiblockEntity {
 	val position: BlockKey
 	var powerUnsafe: Int
-	val type: PowerStoringMultiblock
-
-	val maxPower get() = type.maxPower
+	val maxPower: Int
 
 	fun setPower(amount: Int) {
 		val correctedPower = amount.coerceIn(0, maxPower)
