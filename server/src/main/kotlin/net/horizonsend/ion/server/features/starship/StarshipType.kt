@@ -277,12 +277,32 @@ enum class StarshipType(
 			sinkProvider = SinkProvider.SinkProviders.CRUISER,
 			balancingSupplier = IonServer.starshipBalancing::aiCruiser
 	),
+
+	BARGE(
+		displayName = "Barge",
+		icon = SidebarIcon.BARGE_ICON.text,
+		minSize = 16000,
+		maxSize = 20000,
+		minLevel = 80,
+		containerPercent = 0.045,
+		crateLimitMultiplier = 0.0,
+		menuItemMaterial = Material.DIAMOND_BLOCK,
+		isWarship = false,
+		color = "#0c5ce8",
+		dynmapIcon = "barge",
+		maxMiningLasers = 12,
+		miningLaserTier = 3,
+		overridePermission = "ion.ships.override.80",
+		sinkProvider = SinkProvider.SinkProviders.BARGE,
+		balancingSupplier = IonServer.starshipBalancing::barge
+	),
+
 	BATTLECRUISER(
 			displayName = "Battlecruiser",
 			icon = SidebarIcon.BATTLESHIP_ICON.text,
 			minSize = 16000,
 			maxSize = 20000,
-			minLevel = 1000,
+			minLevel = 80,
 			containerPercent = 0.025,
 			crateLimitMultiplier = 0.5,
 			menuItemMaterial = Material.DIAMOND_BLOCK,
