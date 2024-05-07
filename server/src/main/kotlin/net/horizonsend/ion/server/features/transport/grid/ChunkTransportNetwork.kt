@@ -27,12 +27,13 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	val pdc get() = manager.chunk.inner.persistentDataContainer
 
 	protected abstract val namespacedKey: NamespacedKey
-	protected abstract val nodeFactory: NodeFactory<*>
+	abstract val nodeFactory: NodeFactory<*>
 
 // val grids: Nothing = TODO("ChunkTransportNetwork system")
 
 	init {
 	    loadData()
+		build()
 	}
 
 	open fun setup() {}
@@ -43,7 +44,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	open suspend fun createNodeFromBlock(block: BlockSnapshot) {
 		val key = toBlockKey(block.x, block.y, block.z)
 
-		nodeFactory.create(this, key, block)
+		nodeFactory.create(key, block)
 	}
 
 	abstract fun processBlockRemoval(key: Long)
@@ -57,7 +58,9 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 
 		// Deserialize once
 		val nodeData = existing.get(NODES, PersistentDataType.TAG_CONTAINER_ARRAY)!!.map { TransportNode.fromPrimitive(it, pdc.adapterContext) }
-		nodeData.forEach { it.handlePlacement(this) }
+		nodeData.forEach {
+			it.handlePlacement(this)
+		}
 	}
 
 	fun save(adapterContext: PersistentDataAdapterContext) {
@@ -87,8 +90,8 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	 * Builds the transportNetwork TODO better documentation
 	 **/
 	fun build() = manager.scope.launch {
-		collectAllNodes().join()
-		collectNeighbors()
+//		collectAllNodes().join()
+		buildRelations()
 		finalizeNodes()
 		buildGraph()
 	}
@@ -133,8 +136,10 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	/**
 	 * Get the neighbors of a node
 	 **/
-	private fun collectNeighbors() {
-//		nodes.values.forEach { node -> node.collectNeighbors() }
+	suspend fun buildRelations() {
+		for ((key, node) in nodes) {
+			node.buildRelations(this, key)
+		}
 	}
 
 	/**
@@ -143,9 +148,9 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	 * e.g. a straight section may be represented as a single node
 	 **/
 	private fun finalizeNodes() {
-		nodes.forEach { (_, node) ->
-
-		}
+//		nodes.forEach { (_, node) ->
+//
+//		}
 	}
 
 	/**

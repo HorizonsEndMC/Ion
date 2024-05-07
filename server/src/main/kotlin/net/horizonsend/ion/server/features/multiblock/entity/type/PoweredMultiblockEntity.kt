@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.block.Sign
 import org.bukkit.persistence.PersistentDataType
 
 interface PoweredMultiblockEntity {
@@ -26,7 +25,7 @@ interface PoweredMultiblockEntity {
 	/**
 	 * Returns the amount of power that could not be added
 	 **/
-	fun addPower(sign: Sign, amount: Int): Int {
+	fun addPower(amount: Int): Int {
 		val newAmount = getPower() + amount
 
 		setPower(newAmount)

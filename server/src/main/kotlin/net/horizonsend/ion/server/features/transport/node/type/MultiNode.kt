@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.features.transport.node.type
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.power.TransportNode
+import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 
 /**
  * A transport node that may cover many blocks to avoid making unnecessary steps
@@ -60,6 +62,19 @@ interface MultiNode<Self: MultiNode<Self, T>, T: MultiNode<T, Self>> : Transport
 	override fun handlePlacement(network: ChunkTransportNetwork) {
 		for (key in positions) {
 			network.nodes[key] = this
+		}
+	}
+
+	override suspend fun buildRelations(network: ChunkTransportNetwork, position: BlockKey) {
+		for (offset in ADJACENT_BLOCK_FACES) {
+			val offsetKey = getRelative(position, offset, 1)
+			val neighborNode = network.nodes[offsetKey] ?: continue
+
+			if (this == neighborNode) continue
+
+			if (isTransferable(offsetKey, neighborNode)) {
+				transferableNeighbors.add(neighborNode)
+			}
 		}
 	}
 }

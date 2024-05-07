@@ -32,10 +32,7 @@ object NewPowerBankMultiblockTier3 : NewPowerBankMultiblock<NewPowerBankMultiblo
 		world: World,
 		signDirection: BlockFace,
 		override var powerUnsafe: Int
-	) : NewPowerBankMultiblock.PowerBankEntity(multiblock, x, y, z, world, signDirection, 500_000) {
-		override fun storeAdditionalData(store: PersistentMultiblockData) {
-			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, maxPower)
-		}
+	) : PowerBankEntity(multiblock, x, y, z, world, signDirection, 500_000_000) {
 
 		override val position: BlockKey get() = toBlockKey(x, y, z)
 	}

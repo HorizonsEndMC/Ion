@@ -40,7 +40,14 @@ class SpongeNode() : MultiNode<SpongeNode, SpongeNode> {
 	override suspend fun rebuildNode(network: ChunkTransportNetwork, position: BlockKey) {
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			PowerNodeFactory.addSponge(network as ChunkPowerNetwork, it)
+			(network as ChunkPowerNetwork).nodeFactory.addSponge(it)
 		}
 	}
+
+	override fun toString(): String = """
+		SPONGE NODE:
+		${positions.size} positions,
+		Transferable to: ${transferableNeighbors.size} nodes
+	""".trimIndent()
+
 }
