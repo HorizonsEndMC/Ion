@@ -30,7 +30,7 @@ class PowerInputNode(override val network: ChunkTransportNetwork) : SingleNode {
 	 **/
 	val multis: MutableSet<PoweredMultiblockEntity> = ObjectOpenHashSet()
 
-	override fun isTransferable(position: Long, node: TransportNode): Boolean {
+	override fun isTransferableTo(position: Long, node: TransportNode): Boolean {
 		return node is PowerExtractorNode
 	}
 
