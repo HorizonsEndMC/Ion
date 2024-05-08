@@ -6,12 +6,12 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerNodeFactory
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
-import net.horizonsend.ion.server.features.transport.node.power.TransportNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -34,7 +34,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 	override fun processBlockRemoval(key: Long) { manager.scope.launch {
 		val previousNode = nodes[key] ?: return@launch
 
-		previousNode.handleRemoval(this@ChunkPowerNetwork, key)
+		previousNode.handleRemoval(key)
 	}}
 
 	override fun processBlockAddition(key: Long, new: BlockSnapshot) { manager.scope.launch {
@@ -43,10 +43,23 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 
 	private fun tickSolars() {
 		for ((key, solarPanel) in nodes.filterValuesIsInstance<SolarPanelNode, BlockKey, TransportNode>()) {
-			val power = solarPanel.getPower(this)
+			val power = solarPanel.getPower()
 			solarPanel.lastTicked = System.currentTimeMillis()
 
 			transferPower(solarPanel, power)
+		}
+	}
+
+	private fun tickExtractors() {
+		for ((key, extractor) in extractors) {
+			extractor as PowerExtractorNode
+			if (!extractor.useful) continue
+
+			val multis = extractor.extractableNodes.flatMap { it.multis }
+
+			val power = multis.firstOrNull()?.removePower(1000) ?: continue
+
+			transferPower(extractor, 1000 - power)
 		}
 	}
 
@@ -70,6 +83,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 
 	override fun tick() {
 		tickSolars()
+		tickExtractors()
 //		tickExecutor()
 	}
 
@@ -82,7 +96,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 			.filterValues { it is PowerInputNode || it is PowerExtractorNode }
 
 		neighboring.forEach {
-			it.value.buildRelations(this, getRelative(new.locationKey, it.key))
+			it.value.buildRelations(getRelative(new.locationKey, it.key))
 		}
 	}
 
@@ -92,5 +106,9 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 
 			poweredMultiblockEntities[key] = entity
 		}
+	}
+
+	companion object {
+		const val POWER_EXTRACTOR_STEP = 1000
 	}
 }
