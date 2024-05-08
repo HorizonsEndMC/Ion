@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
+import net.horizonsend.ion.server.features.transport.node.type.SourceNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -12,7 +13,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode {
+class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, SourceNode {
 	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 	}
@@ -24,8 +25,9 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode {
 
 	val useful get() = extractableNodes.size >= 1
 
-	override fun isTransferable(position: Long, node: TransportNode): Boolean {
-		return node !is PowerInputNode
+	override fun isTransferableTo(position: Long, node: TransportNode): Boolean {
+		if (node is PowerInputNode) return false
+		return node !is SourceNode
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
@@ -47,7 +49,7 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode {
 				extractableNodes.add(neighborNode)
 			}
 
-			if (isTransferable(offsetKey, neighborNode)) {
+			if (isTransferableTo(offsetKey, neighborNode)) {
 				transferableNeighbors.add(neighborNode)
 			}
 		}
