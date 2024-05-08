@@ -99,6 +99,7 @@ object NamespacedKeys {
 	val SOLAR_CELL_EXTRACTORS = key("solar_cell_extractors")
 	val MULTIBLOCK_DESTINATIONS = key("multiblock_destinations")
 	val NODE_TYPE = key("node_type")
+	val NODE_ORIGIN = key("node_origin")
 
 	val NODES = key("chunk_power_nodes")
 

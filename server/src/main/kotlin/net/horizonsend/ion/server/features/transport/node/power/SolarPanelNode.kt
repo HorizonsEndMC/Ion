@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
-import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_EXTRACTORS
@@ -23,7 +23,7 @@ import kotlin.math.sin
 /**
  * Represents a solar panel, or multiple
  **/
-class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
+class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarPanelNode, SolarPanelNode> {
 	override val positions: MutableSet<BlockKey> = LongOpenHashSet()
 	/** The positions of extractors in this solar panel */
 	val extractorPositions = LongOpenHashSet()
@@ -50,12 +50,11 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 		extractors?.let { extractorPositions.addAll(it.asIterable()) }
 	}
 
-	override suspend fun handleRemoval(network: ChunkTransportNetwork, position: BlockKey) {
+	override suspend fun handleRemoval(position: BlockKey) {
 		// Need to handle the extractor positions manually
 		when {
 			// Removed extractor, easier to find
 			extractorPositions.contains(position) -> removePosition(
-				network as ChunkPowerNetwork,
 				position,
 				listOf(getRelative(position, BlockFace.UP, 1), getRelative(position, BlockFace.UP, 2))
 			)
@@ -67,19 +66,18 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 				}
 
 				removePosition(
-					network as ChunkPowerNetwork,
 					extractorPosition,
 					listOf(getRelative(extractorPosition, BlockFace.UP, 1), getRelative(extractorPosition, BlockFace.UP, 2))
 				)
 			}
 		}
 
-		rebuildNode(network, position)
+		rebuildNode(position)
 	}
 
-	suspend fun addPosition(network: ChunkPowerNetwork, extractorKey: BlockKey, others: Iterable<BlockKey>) {
+	suspend fun addPosition(extractorKey: BlockKey, others: Iterable<BlockKey>) {
 		extractorPositions += extractorKey
-		addPosition(network, extractorKey)
+		addPosition(extractorKey)
 
 		positions += others
 		for (position: BlockKey in positions) {
@@ -87,7 +85,7 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 		}
 	}
 
-	fun removePosition(network: ChunkPowerNetwork, extractorKey: BlockKey, others: Iterable<BlockKey>) {
+	fun removePosition(extractorKey: BlockKey, others: Iterable<BlockKey>) {
 		extractorPositions -= extractorKey
 		network.nodes.remove(extractorKey)
 		positions.remove(extractorKey)
@@ -98,7 +96,7 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 		}
 	}
 
-	override suspend fun rebuildNode(network: ChunkTransportNetwork, position: BlockKey) {
+	override suspend fun rebuildNode(position: BlockKey) {
 		network as ChunkPowerNetwork
 		network.solarPanels.remove(this)
 
@@ -106,13 +104,13 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			buildRelations(network, it)
+			buildRelations(it)
 			network.nodeFactory.addSolarPanel(it)
 		}
 	}
 
-	override suspend fun drainTo(network: ChunkTransportNetwork, new: SolarPanelNode) {
-		super.drainTo(network, new)
+	override suspend fun drainTo(new: SolarPanelNode) {
+		super.drainTo(new)
 
 		new.extractorPositions.addAll(extractorPositions)
 	}
@@ -122,7 +120,7 @@ class SolarPanelNode : MultiNode<SolarPanelNode, SolarPanelNode> {
 	/**
 	 * Returns the amount of power between ticks
 	 **/
-	fun getPower(network: ChunkPowerNetwork): Int {
+	fun getPower(): Int {
 		val daylightMultiplier: Double = if (
 			network.world.environment == World.Environment.NORMAL &&
 			network.world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE) == true

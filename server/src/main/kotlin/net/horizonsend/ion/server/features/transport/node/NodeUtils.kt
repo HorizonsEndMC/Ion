@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node
 
-import net.horizonsend.ion.server.features.transport.node.power.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX

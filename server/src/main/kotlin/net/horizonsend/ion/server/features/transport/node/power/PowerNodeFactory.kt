@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
+import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode.Companion.matchesSolarPanelStructure
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
@@ -80,15 +81,15 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 		when (neighbors.size) {
 			// New sponge node
 			0 -> {
-				network.nodes[position] = SpongeNode(position).apply {
-					onPlace(network, position)
+				network.nodes[position] = SpongeNode(network, position).apply {
+					onPlace(position)
 				}
 			}
 
 			// Consolidate into neighbor
 			1 -> {
 				val neighbor = neighbors.values.firstOrNull() ?: throw ConcurrentModificationException("Node removed during processing")
-				neighbor.addPosition(network, position)
+				neighbor.addPosition(position)
 			}
 
 			// Join multiple neighbors together
@@ -102,11 +103,11 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 
 				// Merge all other connected nodes into the largest
 				spongeNeighbors.forEach {
-					it.value.drainTo(network, largestNeighbor)
+					it.value.drainTo(largestNeighbor)
 				}
 
 				// Add this node
-				largestNeighbor.addPosition(network, position)
+				largestNeighbor.addPosition(position)
 			}
 
 			else -> throw NotImplementedError()
@@ -125,14 +126,14 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 		when (neighbors.size) {
 			// Disconnected
 			0 -> {
-				network.nodes[position] = EndRodNode(position).apply {
-					onPlace(network, position)
+				network.nodes[position] = EndRodNode(network, position).apply {
+					onPlace(position)
 				}
 			}
 
 			1 -> {
 				val neighbor = neighbors.values.firstOrNull() ?: throw ConcurrentModificationException("Node removed during processing")
-				neighbor.addPosition(network, position)
+				neighbor.addPosition(position)
 			}
 
 			// Should be a max of 2
@@ -146,11 +147,11 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 
 				// Merge all other connected nodes into the largest
 				wireNeighbors.forEach {
-					it.value.drainTo(network, largestNeighbor)
+					it.value.drainTo(largestNeighbor)
 				}
 
 				// Add this node
-				largestNeighbor.addPosition(network, position)
+				largestNeighbor.addPosition(position)
 			}
 
 			else -> throw IllegalArgumentException("Linear node had more than 2 neighbors")
@@ -158,14 +159,14 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 	}
 
 	suspend fun addExtractor(position: BlockKey) {
-		network.nodes[position] = PowerExtractorNode(position).apply {
-			onPlace(network, position)
+		network.nodes[position] = PowerExtractorNode(network, position).apply {
+			onPlace(position)
 		}
 	}
 
 	suspend fun addInput(position: BlockKey) {
-		network.nodes[position] = PowerInputNode(position).apply {
-			onPlace(network, position)
+		network.nodes[position] = PowerInputNode(network, position).apply {
+			onPlace(position)
 		}
 	}
 
@@ -201,10 +202,10 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 
 		when (neighboringNodes.size) {
 			0 -> {
-				val node = SolarPanelNode()
+				val node = SolarPanelNode(network)
 
 				// Add new position
-				node.addPosition(network, position, panelPositions)
+				node.addPosition(position, panelPositions)
 				network.solarPanels += node
 			}
 
@@ -212,7 +213,7 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 				val neighbor = neighboringNodes.values.firstOrNull() ?: throw ConcurrentModificationException("Node removed during processing")
 
 				// Add new position to neighbor
-				neighbor.addPosition(network, position, panelPositions)
+				neighbor.addPosition(position, panelPositions)
 			}
 
 			in 2..4 -> {
@@ -222,11 +223,11 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 
 				// Merge all other connected nodes into the largest
 				neighboringNodes.forEach {
-					it.value.drainTo(network, largestNeighbor)
+					it.value.drainTo(largestNeighbor)
 				}
 
 				// Add this node
-				largestNeighbor.addPosition(network, position, panelPositions)
+				largestNeighbor.addPosition(position, panelPositions)
 			}
 
 			else -> throw IllegalArgumentException()

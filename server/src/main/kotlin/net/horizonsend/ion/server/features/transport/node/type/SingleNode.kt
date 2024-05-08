@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.type
 
-import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
-import net.horizonsend.ion.server.features.transport.node.power.TransportNode
+import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -12,11 +11,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 interface SingleNode : TransportNode {
 	val position: Long
 
-	override fun loadIntoNetwork(network: ChunkTransportNetwork) {
+	override fun loadIntoNetwork() {
 		network.nodes[position] = this
 	}
 
-	override suspend fun buildRelations(network: ChunkTransportNetwork, position: BlockKey) {
+	override suspend fun buildRelations(position: BlockKey) {
 		for (offset in ADJACENT_BLOCK_FACES) {
 			val offsetKey = getRelative(position, offset, 1)
 			val neighborNode = network.nodes[offsetKey] ?: continue
@@ -29,7 +28,7 @@ interface SingleNode : TransportNode {
 		}
 	}
 
-	override suspend fun onPlace(network: ChunkTransportNetwork, position: BlockKey) {
-		buildRelations(network, position)
+	override suspend fun onPlace(position: BlockKey) {
+		buildRelations(position)
 	}
 }
