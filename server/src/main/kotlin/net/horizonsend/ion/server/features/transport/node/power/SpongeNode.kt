@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.transport.node.power
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
-import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -15,8 +15,8 @@ import org.bukkit.persistence.PersistentDataType
  *
  * Since there is no use in keeping the individual steps, all touching sponges are consolidated into a single node with multiple inputs / outputs, weighted evenly
  **/
-class SpongeNode() : MultiNode<SpongeNode, SpongeNode> {
-	constructor(origin: BlockKey) : this() {
+class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode, SpongeNode> {
+	constructor(network: ChunkPowerNetwork, origin: BlockKey) : this(network) {
 		positions.add(origin)
 	}
 
@@ -37,13 +37,13 @@ class SpongeNode() : MultiNode<SpongeNode, SpongeNode> {
 		persistentDataContainer.set(NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY, positions.toLongArray())
 	}
 
-	override suspend fun rebuildNode(network: ChunkTransportNetwork, position: BlockKey) {
+	override suspend fun rebuildNode(position: BlockKey) {
 		transferableNeighbors.clear()
 
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			buildRelations(network, it)
-			(network as ChunkPowerNetwork).nodeFactory.addSponge(it)
+			buildRelations(it)
+			network.nodeFactory.addSponge(it)
 		}
 	}
 
