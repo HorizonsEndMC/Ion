@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -16,8 +17,8 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class PowerInputNode() : SingleNode {
-	constructor(position: BlockKey) : this() {
+class PowerInputNode(override val network: ChunkTransportNetwork) : SingleNode {
+	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 	}
 
@@ -41,8 +42,8 @@ class PowerInputNode() : SingleNode {
 		position = persistentDataContainer.get(NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
 	}
 
-	override suspend fun buildRelations(network: ChunkTransportNetwork, position: BlockKey) {
-		super.buildRelations(network, position)
+	override suspend fun buildRelations(position: BlockKey) {
+		super.buildRelations(position)
 
 		network as ChunkPowerNetwork
 

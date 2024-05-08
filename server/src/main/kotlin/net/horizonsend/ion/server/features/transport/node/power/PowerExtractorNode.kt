@@ -1,20 +1,28 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
+import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class PowerExtractorNode() : SingleNode {
-	constructor(position: BlockKey) : this() {
+class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode {
+	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 	}
 
 	override var position by Delegates.notNull<Long>()
 	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
+
+	val extractableNodes: MutableSet<PowerInputNode> = ObjectOpenHashSet()
+
+	val useful get() = extractableNodes.size >= 1
 
 	override fun isTransferable(position: Long, node: TransportNode): Boolean {
 		return node !is PowerInputNode
@@ -26,6 +34,23 @@ class PowerExtractorNode() : SingleNode {
 
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
 		position = persistentDataContainer.get(NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
+	}
+
+	override suspend fun buildRelations(position: BlockKey) {
+		for (offset in ADJACENT_BLOCK_FACES) {
+			val offsetKey = getRelative(position, offset, 1)
+			val neighborNode = network.nodes[offsetKey] ?: continue
+
+			if (this == neighborNode) return
+
+			if (neighborNode is PowerInputNode) {
+				extractableNodes.add(neighborNode)
+			}
+
+			if (isTransferable(offsetKey, neighborNode)) {
+				transferableNeighbors.add(neighborNode)
+			}
+		}
 	}
 
 	override fun toString(): String = """
