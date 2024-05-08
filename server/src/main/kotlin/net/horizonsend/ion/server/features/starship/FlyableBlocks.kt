@@ -163,17 +163,22 @@ import org.bukkit.Material.WAXED_EXPOSED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
 import org.bukkit.Material.WAXED_WEATHERED_COPPER
 import org.bukkit.Material.WEATHERED_COPPER
+import org.bukkit.Material.WET_SPONGE
 import org.bukkit.Material.WHEAT
 import org.bukkit.Material.WITHER_SKELETON_SKULL
 import org.bukkit.Material.WITHER_SKELETON_WALL_SKULL
 import org.bukkit.Material.ZOMBIE_HEAD
 import java.util.EnumSet
 
+// For help in searching:
+// Pilotable Blocks
+// Detectable Blocks
 val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	JUKEBOX, // ship computer
 	NOTE_BLOCK, // used as power input/output for machines
 
 	SPONGE, // used for lots of ship subsystems, esp. weapons
+	WET_SPONGE,
 
 	GLASS,
 	GLASS_PANE,
