@@ -24,7 +24,7 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	/**
 	 * Returns whether this node may transport to the provided node
 	 **/
-	fun isTransferable(position: Long, node: TransportNode): Boolean
+	fun isTransferableTo(position: Long, node: TransportNode): Boolean
 
 	/**
 	 * Store additional required data in the serialized container
