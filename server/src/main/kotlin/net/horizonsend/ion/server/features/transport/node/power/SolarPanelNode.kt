@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
+import net.horizonsend.ion.server.features.transport.node.type.SourceNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_EXTRACTORS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -23,7 +24,7 @@ import kotlin.math.sin
 /**
  * Represents a solar panel, or multiple
  **/
-class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarPanelNode, SolarPanelNode> {
+class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarPanelNode, SolarPanelNode>, SourceNode {
 	override val positions: MutableSet<BlockKey> = LongOpenHashSet()
 	/** The positions of extractors in this solar panel */
 	val extractorPositions = LongOpenHashSet()
@@ -33,7 +34,8 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 
 	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
 
-	override fun isTransferable(position: Long, node: TransportNode): Boolean {
+	override fun isTransferableTo(position: Long, node: TransportNode): Boolean {
+		// Solar panels should be able to transfer through extractors and other solar panels
 		return true
 	}
 
