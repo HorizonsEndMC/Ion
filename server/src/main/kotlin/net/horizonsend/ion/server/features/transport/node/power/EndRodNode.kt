@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
+import net.horizonsend.ion.server.features.transport.node.type.SourceNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.block.data.Directional
@@ -21,8 +22,8 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 
 	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
 
-	override fun isTransferable(position: Long, node: TransportNode): Boolean {
-		return true
+	override fun isTransferableTo(position: Long, node: TransportNode): Boolean {
+		return node !is SourceNode
 	}
 
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
