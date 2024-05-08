@@ -3,11 +3,12 @@ package net.horizonsend.ion.server.features.transport.grid
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
-import net.horizonsend.ion.server.features.transport.node.power.TransportNode
+import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODES
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER_TRANSPORT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -57,9 +58,17 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 		val existing = pdc.get(POWER_TRANSPORT, PersistentDataType.TAG_CONTAINER) ?: return
 
 		// Deserialize once
-		val nodeData = existing.get(NODES, PersistentDataType.TAG_CONTAINER_ARRAY)!!.map { TransportNode.fromPrimitive(it, pdc.adapterContext) }
+		val nodeData = existing.getOrDefault(NODES, PersistentDataType.TAG_CONTAINER_ARRAY, arrayOf()).mapNotNull {
+			runCatching { TransportNode.load(it, this) }
+				.onFailure {
+					IonServer.slF4JLogger.error("Error deserializing multiblock data! $it")
+					it.printStackTrace()
+				}
+				.getOrNull()
+		}
+
 		nodeData.forEach {
-			it.loadIntoNetwork(this)
+			it.loadIntoNetwork()
 		}
 	}
 
@@ -138,7 +147,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	 **/
 	suspend fun buildRelations() {
 		for ((key, node) in nodes) {
-			node.buildRelations(this, key)
+			node.buildRelations(key)
 		}
 	}
 
