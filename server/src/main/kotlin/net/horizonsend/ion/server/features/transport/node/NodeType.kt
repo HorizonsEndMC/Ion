@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNo
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
 import net.horizonsend.ion.server.features.transport.node.power.SpongeNode
-import net.horizonsend.ion.server.features.transport.node.power.TransportNode
 
 enum class NodeType(val clazz: Class<out TransportNode>, val loadCallback: (TransportNode, ChunkTransportNetwork) -> Unit = { _, _ -> }) {
 	//POWER
@@ -25,6 +24,10 @@ enum class NodeType(val clazz: Class<out TransportNode>, val loadCallback: (Tran
 
 	//ITEM
 	;
+
+	fun newInstance(network: ChunkTransportNetwork): TransportNode {
+		return clazz.getDeclaredConstructor(network::class.java).newInstance(network)
+	}
 
 	fun newInstance(): TransportNode {
 		return clazz.getDeclaredConstructor().newInstance()
