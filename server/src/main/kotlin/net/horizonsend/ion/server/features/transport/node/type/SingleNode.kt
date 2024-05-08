@@ -22,7 +22,7 @@ interface SingleNode : TransportNode {
 
 			if (this == neighborNode) return
 
-			if (isTransferable(offsetKey, neighborNode)) {
+			if (isTransferableTo(offsetKey, neighborNode)) {
 				transferableNeighbors.add(neighborNode)
 			}
 		}

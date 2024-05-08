@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
+import net.horizonsend.ion.server.features.transport.node.type.SourceNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.persistence.PersistentDataContainer
@@ -24,8 +25,8 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 
 	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
 
-	override fun isTransferable(position: BlockKey, node: TransportNode): Boolean {
-		return true
+	override fun isTransferableTo(position: BlockKey, node: TransportNode): Boolean {
+		return node !is SourceNode
 	}
 
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {

@@ -59,7 +59,7 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 
 			if (this == neighborNode) continue
 
-			if (isTransferable(offsetKey, neighborNode)) {
+			if (isTransferableTo(offsetKey, neighborNode)) {
 				transferableNeighbors.add(neighborNode)
 			}
 		}
