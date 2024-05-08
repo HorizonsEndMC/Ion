@@ -1,8 +1,7 @@
-package net.horizonsend.ion.server.features.transport.node.power
+package net.horizonsend.ion.server.features.transport.node
 
 import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
-import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -14,7 +13,8 @@ import org.bukkit.persistence.PersistentDataType
  * Represents a single node, or step, in transport transportNetwork
  **/
 interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion> {
-	override val type: Companion get() = Companion
+	val network: ChunkTransportNetwork
+	override val persistentDataType: Companion get() = Companion
 
 	/**
 	 * The neighboring nodes that this node may transport to
@@ -39,24 +39,24 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	/**
 	 * Handle placement into the network upon loading, after data has been loaded
 	 **/
-	fun loadIntoNetwork(network: ChunkTransportNetwork) {}
+	fun loadIntoNetwork()
 
 	/**
 	 * Logic for handling the removal of this node
 	 *
 	 * Cleanup, splitting into multiple, etc
 	 **/
-	suspend fun handleRemoval(network: ChunkTransportNetwork, position: BlockKey) {}
+	suspend fun handleRemoval(position: BlockKey) {}
 
 	/**
 	 * Builds relations between this node and transferrable nodes
 	 **/
-	suspend fun buildRelations(network: ChunkTransportNetwork, position: BlockKey)
+	suspend fun buildRelations(position: BlockKey)
 
 	/**
 	 * Additional logic to be run once the node is placed
 	 **/
-	suspend fun onPlace(network: ChunkTransportNetwork, position: BlockKey) {}
+	suspend fun onPlace(position: BlockKey) {}
 
 	companion object : PersistentDataType<PersistentDataContainer, TransportNode> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
@@ -73,14 +73,26 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 
 		override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): TransportNode = try {
 			val type = primitive.get(NODE_TYPE, NodeType.type)!!
+
 			val instance = type.newInstance()
 
 			instance.loadData(primitive)
 
 			instance
 		} catch (e: Throwable) {
-			e.printStackTrace()
-			throw SerializationException("Error deserializing multiblock data!")
+			throw SerializationException("Error deserializing multiblock data!", e)
+		}
+
+		fun load(primitive: PersistentDataContainer, network: ChunkTransportNetwork): TransportNode = try {
+			val type = primitive.get(NODE_TYPE, NodeType.type)!!
+
+			val instance = type.newInstance(network)
+
+			instance.loadData(primitive)
+
+			instance
+		} catch (e: Throwable) {
+			throw SerializationException("Error deserializing multiblock data!", e)
 		}
 	}
 }
