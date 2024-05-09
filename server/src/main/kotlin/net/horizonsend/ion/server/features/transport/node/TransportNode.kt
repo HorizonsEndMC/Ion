@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.transport.node
 
 import kotlinx.serialization.SerializationException
-import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -57,6 +58,14 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 * Additional logic to be run once the node is placed
 	 **/
 	suspend fun onPlace(position: BlockKey) {}
+
+	/**
+	 * Handle the stepping of power through this node
+	 *
+	 * This may create a new step for a single node, spawn off multiple steps, or more
+	 * Each node defines how it is stepped.
+	 **/
+	suspend fun handleStep(step: Step)
 
 	companion object : PersistentDataType<PersistentDataContainer, TransportNode> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
