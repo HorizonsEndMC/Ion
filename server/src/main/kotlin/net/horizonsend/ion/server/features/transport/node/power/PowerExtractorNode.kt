@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
@@ -18,19 +19,21 @@ import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
 class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, SourceNode {
+	// The position will always be set
+	override var position by Delegates.notNull<Long>()
+
 	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 		network.extractors[position] = this
 	}
 
-	override var position by Delegates.notNull<Long>()
-	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
+	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
 	val extractableNodes: MutableSet<PowerInputNode> = ObjectOpenHashSet()
 
 	val useful get() = extractableNodes.size >= 1
 
-	override fun isTransferableTo(position: Long, node: TransportNode): Boolean {
+	override fun isTransferableTo(node: TransportNode): Boolean {
 		if (node is PowerInputNode) return false
 		return node !is SourceNode
 	}
@@ -59,9 +62,8 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 				extractableNodes.add(neighborNode)
 			}
 
-			if (isTransferableTo(offsetKey, neighborNode)) {
-				transferableNeighbors.add(neighborNode)
-			}
+			// Add a relationship, if one should be added
+			addRelationship(neighborNode)
 		}
 	}
 
@@ -74,7 +76,7 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 
 		step as PowerOriginStep
 
-		val next = transferableNeighbors.randomOrNull() ?: return
+		val next = relationships.randomOrNull()?.sideTwo?.node ?: return
 
 		// Simply move on to the next node
 		TransportStep(step, step.steps, next, step).invoke()
@@ -83,7 +85,7 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 
 	override fun toString(): String = """
 		POWER Extractor NODE:
-		Transferable to: ${transferableNeighbors.joinToString { it.javaClass.simpleName }} nodes
+		Transferable to: ${relationships.joinToString { it.sideTwo.node.javaClass.simpleName }} nodes
 	""".trimIndent()
 }
 
