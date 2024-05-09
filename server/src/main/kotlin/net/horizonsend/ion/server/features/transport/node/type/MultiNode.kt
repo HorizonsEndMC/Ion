@@ -59,9 +59,7 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 
 			if (this == neighborNode) continue
 
-			if (isTransferableTo(neighborNode)) {
-				addRelationship(neighborNode)
-			}
+			addRelationship(neighborNode)
 		}
 	}
 

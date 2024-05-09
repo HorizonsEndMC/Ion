@@ -28,8 +28,7 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 	}
 
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
-
-	val extractableNodes: MutableSet<PowerInputNode> = ObjectOpenHashSet()
+	val extractableNodes: MutableSet<PowerInputNode> get() = getTransferableNodes().mapNotNullTo(mutableSetOf()) { it as? PowerInputNode }
 
 	val useful get() = extractableNodes.size >= 1
 
@@ -49,6 +48,11 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 	override fun loadIntoNetwork() {
 		super.loadIntoNetwork()
 		network.extractors[position] = this
+	}
+
+	override suspend fun handleRemoval(position: BlockKey) {
+		network.extractors.remove(position)
+		super.handleRemoval(position)
 	}
 
 	override suspend fun buildRelations(position: BlockKey) {
@@ -82,10 +86,9 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 		TransportStep(step, step.steps, next, step).invoke()
 	}
 
-
 	override fun toString(): String = """
 		POWER Extractor NODE:
-		Transferable to: ${relationships.joinToString { it.sideTwo.node.javaClass.simpleName }} nodes
+		Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes
 	""".trimIndent()
 }
 
