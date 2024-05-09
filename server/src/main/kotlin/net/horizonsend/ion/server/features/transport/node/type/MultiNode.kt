@@ -76,6 +76,9 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 			network.nodes.remove(it)
 		}
 
+		// Rebuild relations after cleared
+		transferableNeighbors.clear()
+
 		// Rebuild the node without the lost position
 		rebuildNode(position)
 	}

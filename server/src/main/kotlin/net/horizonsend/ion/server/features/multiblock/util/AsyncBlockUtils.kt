@@ -26,6 +26,7 @@ import org.bukkit.craftbukkit.v1_20_R3.block.CraftBlockState
 import org.bukkit.craftbukkit.v1_20_R3.block.CraftBlockStates
 import org.bukkit.craftbukkit.v1_20_R3.block.data.CraftBlockData
 import org.bukkit.craftbukkit.v1_20_R3.util.CraftMagicNumbers
+import java.lang.reflect.Method
 
 /**
  * X and Z in real coordinates
@@ -99,15 +100,16 @@ suspend fun getBukkitBlockState(block: Block, loadChunks: Boolean) : BukkitBlock
 	return blockState
 }
 
-fun createBlockState(world: World, blockPos: BlockPos, data: BlockData, tileEntity: BlockEntity?): CraftBlockState {
-	val getFactoryForMaterial = CraftBlockStates::class.java.getDeclaredMethod("getFactory", Material::class.java)
-	getFactoryForMaterial.isAccessible = true
+val getFactoryForMaterial: Method = CraftBlockStates::class.java.getDeclaredMethod("getFactory", Material::class.java).apply {
+	isAccessible = true
+}
 
+fun createBlockState(world: World, blockPos: BlockPos, data: BlockData, tileEntity: BlockEntity?): CraftBlockState {
 	val material = CraftMagicNumbers.getMaterial((data as CraftBlockData).state.block)
 
 	val factory = getFactoryForMaterial.invoke(null, material)
 
-	val method = factory::class.java.getDeclaredMethod(
+	val blockStateFactory = factory::class.java.getDeclaredMethod(
 		"createBlockState",
 		World::class.javaObjectType,
 		BlockPos::class.javaObjectType,
@@ -115,7 +117,7 @@ fun createBlockState(world: World, blockPos: BlockPos, data: BlockData, tileEnti
 		BlockEntity::class.javaObjectType
 	)
 
-	method.isAccessible = true
+	blockStateFactory.isAccessible = true
 
-	return method.invoke(factory, world, blockPos, data.state, tileEntity) as CraftBlockState
+	return blockStateFactory.invoke(factory, world, blockPos, data.state, tileEntity) as CraftBlockState
 }

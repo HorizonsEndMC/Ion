@@ -3,10 +3,13 @@ package net.horizonsend.ion.server.features.transport.node.power
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
-import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
+import net.horizonsend.ion.server.features.transport.step.PowerOriginStep
+import net.horizonsend.ion.server.features.transport.step.Step
+import net.horizonsend.ion.server.features.transport.step.TransportStep
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_EXTRACTORS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -36,7 +39,7 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 
 	override fun isTransferableTo(position: Long, node: TransportNode): Boolean {
 		// Solar panels should be able to transfer through extractors and other solar panels
-		return true
+		return node !is PowerExtractorNode
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
@@ -99,10 +102,7 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 	}
 
 	override suspend fun rebuildNode(position: BlockKey) {
-		network as ChunkPowerNetwork
 		network.solarPanels.remove(this)
-
-		transferableNeighbors.clear()
 
 		// Create new nodes, automatically merging together
 		positions.forEach {
@@ -137,11 +137,45 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		return ((diff / 1000.0) * POWER_PER_SECOND * cellNumber * daylightMultiplier).toInt()
 	}
 
+	fun tickAndGetPower(): Int {
+		val power = getPower()
+		lastTicked = System.currentTimeMillis()
+
+		return power
+	}
+
 	/**
 	 * Returns whether the individual solar panel from the extractor location is intact
 	 **/
 	suspend fun isIntact(world: World, extractorKey: BlockKey): Boolean {
 		return matchesSolarPanelStructure(world, extractorKey)
+	}
+
+	override suspend fun handleStep(step: Step) {
+		when (step) {
+			is TransportStep -> {
+				val previousNode = step.previous.currentNode
+				val availableNeighbors = transferableNeighbors.filterNot { it == previousNode }
+				val next = availableNeighbors.randomOrNull() ?: return
+
+				// Simply move on to the next node
+				TransportStep(
+					step.origin,
+					step.steps,
+					next,
+					step
+				).invoke()
+			}
+
+			is PowerOriginStep -> {
+				val next = transferableNeighbors.randomOrNull() ?: return
+
+				// Simply move on to the next node
+				TransportStep(step, step.steps, next, step).invoke()
+			}
+
+			else -> throw NotImplementedError("Unrecognized step type $step")
+		}
 	}
 
 	companion object {

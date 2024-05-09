@@ -27,6 +27,7 @@ interface PoweredMultiblockEntity {
 
 		powerUnsafe = correctedPower
 
+		//TODO better solution
 		powerUpdateScope.launch { updatePowerVisually() }
 	}
 
