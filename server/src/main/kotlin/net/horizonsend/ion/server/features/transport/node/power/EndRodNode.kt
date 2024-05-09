@@ -38,11 +38,16 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 	}
 
 	override suspend fun rebuildNode(position: BlockKey) {
+		println("Rebuilding end rod! : Before Relations: $relationships")
+
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			buildRelations(it)
 			network.nodeFactory.addEndRod(getBlockSnapshotAsync(network.world, it)!!.data as Directional, it)
+			buildRelations(it)
 		}
+
+		relationships.forEach { it.removeSelfRelation() }
+		println("After Relations: $relationships")
 	}
 
 	override suspend fun handleStep(step: Step) {
@@ -50,8 +55,7 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 		step as TransportStep
 
 		val previousNode = step.previous.currentNode
-		val availableNeighbors = relationships.filterNot { it.sideTwo.node == previousNode }
-		val next = availableNeighbors.randomOrNull()?.sideTwo?.node ?: return
+		val next = getTransferableNodes().filterNot { it == previousNode }.randomOrNull() ?: return
 
 		// Simply move on to the next node
 		TransportStep(
@@ -62,9 +66,9 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 		).invoke()
 	}
 
-	override fun toString(): String = """
-		EMD ROD NODE:
-		${positions.size} positions,
-		Transferable to: ${relationships.joinToString { it.sideTwo.node.javaClass.simpleName }} nodes
-	""".trimIndent()
+//	override fun toString(): String = """
+//		EMD ROD NODE:
+//		${positions.size} positions,
+//		Transferable to: ${relationships.joinToString { it.sideTwo.node.javaClass.simpleName }} nodes
+//	""".trimIndent()
 }

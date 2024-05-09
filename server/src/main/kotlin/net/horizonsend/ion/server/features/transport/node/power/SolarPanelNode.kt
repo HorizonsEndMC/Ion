@@ -83,6 +83,9 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 
 	suspend fun addPosition(extractorKey: BlockKey, others: Iterable<BlockKey>) {
 		extractorPositions += extractorKey
+
+		// Make sure there isn't still an extractor
+		network.extractors.remove(extractorKey)
 		addPosition(extractorKey)
 
 		positions += others
@@ -156,8 +159,7 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		when (step) {
 			is TransportStep -> {
 				val previousNode = step.previous.currentNode
-				val availableNeighbors = relationships.filterNot { it.sideTwo.node == previousNode }
-				val next = availableNeighbors.randomOrNull()?.sideTwo?.node ?: return
+				val next = getTransferableNodes().filterNot { it == previousNode }.randomOrNull() ?: return
 
 				// Simply move on to the next node
 				TransportStep(
@@ -198,6 +200,6 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		${positions.size} positions,
 		${extractorPositions.size} extractor positions,
 		$cellNumber cells,
-		Transferable to: ${relationships.joinToString { it.sideTwo.node.javaClass.simpleName }} nodes
+		Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes
 	""".trimIndent()
 }

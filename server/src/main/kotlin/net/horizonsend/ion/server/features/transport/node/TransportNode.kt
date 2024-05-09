@@ -29,17 +29,32 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 		relationships.forEach { it.breakUp() }
 	}
 
+	/**
+	 * Create a relationship between this node and the provided node
+	 *
+	 * If neither side can transfer, a relation will not be created
+	 **/
 	fun addRelationship(other: TransportNode) {
 		// Null if relationship was not worth it
 		val relationship = NodeRelationship.create(this, other) ?: return
 
+		// Do not add duplicates
+		if (relationships.any { it.sideTwo.node == other }) return
+
 		relationships.add(relationship)
+		other.relationships.add(relationship)
 	}
 
 	/**
 	 * Returns whether this node may transport to the provided node
 	 **/
 	fun isTransferableTo(node: TransportNode): Boolean
+
+	/** Gets the nodes this can transfer to **/
+	fun getTransferableNodes(): Collection<TransportNode> = relationships.filter {
+		// That this node can transfer to the other
+		it.sideOne.transferAllowed
+	}.map { it.sideTwo.node }
 
 	/**
 	 * Store additional required data in the serialized container
