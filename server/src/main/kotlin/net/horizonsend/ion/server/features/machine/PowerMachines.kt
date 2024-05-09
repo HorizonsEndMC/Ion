@@ -72,8 +72,8 @@ object PowerMachines : IonServerComponent() {
 		if (!sign.persistentDataContainer.has(NamespacedKeys.MULTIBLOCK)) return power
 
 		sign.persistentDataContainer.set(NamespacedKeys.POWER, PersistentDataType.INTEGER, correctedPower)
-		sign.line(2, Component.text().append(prefixComponent, Component.text(correctedPower, NamedTextColor.GREEN)).build())
-		sign.update(false, false)
+//		sign.line(2, Component.text().append(prefixComponent, Component.text(correctedPower, NamedTextColor.GREEN)).build())
+//		sign.update(false, false)
 		return power
 	}
 
