@@ -2,10 +2,12 @@ package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
+import net.horizonsend.ion.server.features.transport.step.Step
+import net.horizonsend.ion.server.features.transport.step.TransportStep
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.persistence.PersistentDataContainer
@@ -39,13 +41,28 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 	}
 
 	override suspend fun rebuildNode(position: BlockKey) {
-		transferableNeighbors.clear()
-
 		// Create new nodes, automatically merging together
 		positions.forEach {
 			buildRelations(it)
 			network.nodeFactory.addSponge(it)
 		}
+	}
+
+	override suspend fun handleStep(step: Step) {
+		// This is not an origin node, so we can assume that it is not an origin step
+		step as TransportStep
+
+		val previousNode = step.previous.currentNode
+		val availableNeighbors = transferableNeighbors.filterNot { it == previousNode }
+		val next = availableNeighbors.randomOrNull() ?: return
+
+		// Simply move on to the next node
+		TransportStep(
+			step.origin,
+			step.steps,
+			next,
+			step
+		).invoke()
 	}
 
 	override fun toString(): String = """
