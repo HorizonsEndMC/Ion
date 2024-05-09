@@ -46,9 +46,9 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 	 * Drain all the positions and connections to the provided node
 	 **/
 	suspend fun drainTo(new: Self) {
-		transferableNeighbors.remove(new)
-		new.transferableNeighbors.addAll(transferableNeighbors)
+		relationships.forEach { it.replaceSide(this, new) }
 
+		new.relationships.forEach { it.removeSelfRelation() }
 		new.addPositions(positions)
 	}
 
@@ -59,8 +59,8 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 
 			if (this == neighborNode) continue
 
-			if (isTransferableTo(offsetKey, neighborNode)) {
-				transferableNeighbors.add(neighborNode)
+			if (isTransferableTo(neighborNode)) {
+				addRelationship(neighborNode)
 			}
 		}
 	}
@@ -77,7 +77,7 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 		}
 
 		// Rebuild relations after cleared
-		transferableNeighbors.clear()
+		clearRelations()
 
 		// Rebuild the node without the lost position
 		rebuildNode(position)
