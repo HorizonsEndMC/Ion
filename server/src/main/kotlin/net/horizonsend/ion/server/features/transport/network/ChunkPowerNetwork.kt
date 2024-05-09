@@ -29,6 +29,8 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 
 	override val namespacedKey: NamespacedKey = NamespacedKeys.POWER_TRANSPORT
 	override val nodeFactory: PowerNodeFactory = PowerNodeFactory(this)
+
+	/** Store solar panels for ticking */
 	val solarPanels: ObjectOpenHashSet<SolarPanelNode> = ObjectOpenHashSet()
 
 	override fun setup() {
@@ -37,6 +39,8 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 
 	override fun processBlockRemoval(key: Long) { manager.scope.launch {
 		val previousNode = nodes[key] ?: return@launch
+
+		extractors.remove(key)
 
 		previousNode.handleRemoval(key)
 	}}
@@ -48,12 +52,8 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 	private suspend fun tickSolars() {
 		for (solarPanel in nodes.filterValuesIsInstance<SolarPanelNode, BlockKey, TransportNode>().values.distinct()) {
 			val power = solarPanel.tickAndGetPower()
-			println("Ticking solar 1")
 
 			if (power <= 0) continue
-			println("Ticking solar 2")
-
-			println("Starting solar ticking")
 
 			runCatching { solarPanel.handleStep(PowerOriginStep(AtomicInteger(), solarPanel, power)) }.onFailure {
 				IonServer.slF4JLogger.error("Exception ticking solar panel! $it")
@@ -63,21 +63,14 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 	}
 
 	private suspend fun tickExtractors() {
-		if (extractors.isNotEmpty()) println("Ticking extractors")
-
 		for ((_, extractor) in extractors) {
-			println("Ticking extractor 1")
 			if (!extractor.useful) continue
-			println("Ticking extractor 2")
 
 			val extractablePowerPool = extractor.extractableNodes.flatMap { it.multis }
 			val sum = extractablePowerPool.sumOf { it.getPower() }
 			val extractablePower = min(sum, POWER_EXTRACTOR_STEP)
 
-			println("Starting step extractor")
-
 			runCatching { extractor.handleStep(PowerOriginStep(AtomicInteger(), extractor, extractablePower)) }.onFailure {
-				IonServer.slF4JLogger.error("Exception ticking extractor! $it")
 				it.printStackTrace()
 			}
 		}
