@@ -2,10 +2,11 @@ package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
-import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
+import net.horizonsend.ion.server.features.transport.step.Step
+import net.horizonsend.ion.server.features.transport.step.TransportStep
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -15,9 +16,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import kotlin.math.floor
+import kotlin.math.min
 import kotlin.properties.Delegates
 
-class PowerInputNode(override val network: ChunkTransportNetwork) : SingleNode {
+class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 	}
@@ -64,6 +67,44 @@ class PowerInputNode(override val network: ChunkTransportNetwork) : SingleNode {
 			val newKey = toBlockKey(newX, newY, newZ)
 			network.poweredMultiblockEntities[newKey]
 		}
+	}
+
+	override suspend fun handleStep(step: Step) {
+		// This is not an origin node, so we can assume that it is not an origin step
+		step as TransportStep
+
+		val origin = step.origin
+		val multi = multis.randomOrNull() ?: return
+
+		val share = floor(origin.power * step.share).toInt()
+
+		origin.power -= share
+
+		multi.addPower(share)
+
+		var remaining = share
+
+		if (origin.currentNode is PowerExtractorNode) {
+			for (extractable in origin.currentNode.extractableNodes.flatMap { it.multis }) {
+				val toTake = min(remaining, extractable.getPower())
+
+				remaining -= toTake
+				extractable.removePower(toTake)
+
+				if (remaining <= 0) break
+			}
+		}
+
+		println("""
+
+			Reached multiblock input
+			Origin: $origin
+
+			Selected $multi
+			Added $share to $multi
+			Remaining origin power: ${origin.power}
+
+		""".trimIndent())
 	}
 
 	companion object {

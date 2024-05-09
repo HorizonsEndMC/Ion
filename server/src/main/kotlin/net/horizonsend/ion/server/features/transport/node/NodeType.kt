@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.transport.node
 
 import com.manya.pdc.base.EnumDataType
-import net.horizonsend.ion.server.features.transport.grid.ChunkPowerNetwork
-import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.power.EndRodNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
