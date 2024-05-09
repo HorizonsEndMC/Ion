@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
@@ -21,10 +22,9 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 	}
 
 	override val positions: MutableSet<Long> = LongOpenHashSet()
+	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
-	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
-
-	override fun isTransferableTo(position: Long, node: TransportNode): Boolean {
+	override fun isTransferableTo(node: TransportNode): Boolean {
 		return node !is SourceNode
 	}
 
@@ -50,8 +50,8 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 		step as TransportStep
 
 		val previousNode = step.previous.currentNode
-		val availableNeighbors = transferableNeighbors.filterNot { it == previousNode }
-		val next = availableNeighbors.randomOrNull() ?: return
+		val availableNeighbors = relationships.filterNot { it.sideTwo.node == previousNode }
+		val next = availableNeighbors.randomOrNull()?.sideTwo?.node ?: return
 
 		// Simply move on to the next node
 		TransportStep(
@@ -65,6 +65,6 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 	override fun toString(): String = """
 		EMD ROD NODE:
 		${positions.size} positions,
-		Transferable to: ${transferableNeighbors.joinToString { it.javaClass.simpleName }} nodes
+		Transferable to: ${relationships.joinToString { it.sideTwo.node.javaClass.simpleName }} nodes
 	""".trimIndent()
 }
