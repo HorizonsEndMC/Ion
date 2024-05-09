@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.node.power
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
@@ -25,9 +26,9 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 
 	override val positions: MutableSet<BlockKey> = LongOpenHashSet()
 
-	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
+	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
-	override fun isTransferableTo(position: BlockKey, node: TransportNode): Boolean {
+	override fun isTransferableTo(node: TransportNode): Boolean {
 		return node !is SourceNode
 	}
 
@@ -53,8 +54,8 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 		step as TransportStep
 
 		val previousNode = step.previous.currentNode
-		val availableNeighbors = transferableNeighbors.filterNot { it == previousNode }
-		val next = availableNeighbors.randomOrNull() ?: return
+		val availableNeighbors = relationships.filterNot { it.sideTwo.node == previousNode }
+		val next = availableNeighbors.randomOrNull()?.sideTwo?.node ?: return
 
 		// Simply move on to the next node
 		TransportStep(
@@ -68,7 +69,9 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 	override fun toString(): String = """
 		SPONGE NODE:
 		${positions.size} positions,
-		Transferable to: ${transferableNeighbors.joinToString { it.javaClass.simpleName }} nodes
+		Transferable to: ${relationships.joinToString {
+			it.sideTwo.node.javaClass.simpleName + if (it.sideTwo.node == this) " [SELF]!!" else ""
+		}} nodes
 	""".trimIndent()
 
 }
