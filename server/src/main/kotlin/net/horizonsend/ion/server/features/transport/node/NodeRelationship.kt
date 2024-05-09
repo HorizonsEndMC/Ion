@@ -4,7 +4,7 @@ package net.horizonsend.ion.server.features.transport.node
  * This class represents a relationship between two nodes
  * The information contains whether they may transfer to / from each other, from each side
  **/
-class NodeRelationship(
+data class NodeRelationship(
 	val sideOne: RelationSide,
 	val sideTwo: RelationSide
 ) {
@@ -14,7 +14,7 @@ class NodeRelationship(
 	 * @param node The node on this side of the relationship
 	 * @param transferAllowed Whether this node is allowed to transfer to the other side
 	 **/
-	class RelationSide(val node: TransportNode, val transferAllowed: Boolean)
+	data class RelationSide(val node: TransportNode, val transferAllowed: Boolean)
 
 	/**
 	 * Break the relation between the two nodes
