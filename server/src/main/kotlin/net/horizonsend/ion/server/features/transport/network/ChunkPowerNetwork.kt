@@ -1,7 +1,8 @@
-package net.horizonsend.ion.server.features.transport.grid
+package net.horizonsend.ion.server.features.transport.network
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNo
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerNodeFactory
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
+import net.horizonsend.ion.server.features.transport.step.PowerOriginStep
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -19,6 +21,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.filterValuesIsInstance
 import org.bukkit.NamespacedKey
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.min
 
 class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(manager) {
 	val poweredMultiblockEntities = ConcurrentHashMap<Long, PoweredMultiblockEntity>()
@@ -41,25 +45,41 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		createNodeFromBlock(new)
 	}}
 
-	private fun tickSolars() {
-		for ((key, solarPanel) in nodes.filterValuesIsInstance<SolarPanelNode, BlockKey, TransportNode>()) {
-			val power = solarPanel.getPower()
-			solarPanel.lastTicked = System.currentTimeMillis()
+	private suspend fun tickSolars() {
+		for (solarPanel in nodes.filterValuesIsInstance<SolarPanelNode, BlockKey, TransportNode>().values.distinct()) {
+			val power = solarPanel.tickAndGetPower()
+			println("Ticking solar 1")
 
-			transferPower(solarPanel, power)
+			if (power <= 0) continue
+			println("Ticking solar 2")
+
+			println("Starting solar ticking")
+
+			runCatching { solarPanel.handleStep(PowerOriginStep(AtomicInteger(), solarPanel, power)) }.onFailure {
+				IonServer.slF4JLogger.error("Exception ticking solar panel! $it")
+				it.printStackTrace()
+			}
 		}
 	}
 
-	private fun tickExtractors() {
-		for ((key, extractor) in extractors) {
-			extractor as PowerExtractorNode
+	private suspend fun tickExtractors() {
+		if (extractors.isNotEmpty()) println("Ticking extractors")
+
+		for ((_, extractor) in extractors) {
+			println("Ticking extractor 1")
 			if (!extractor.useful) continue
+			println("Ticking extractor 2")
 
-			val multis = extractor.extractableNodes.flatMap { it.multis }
+			val extractablePowerPool = extractor.extractableNodes.flatMap { it.multis }
+			val sum = extractablePowerPool.sumOf { it.getPower() }
+			val extractablePower = min(sum, POWER_EXTRACTOR_STEP)
 
-			val power = multis.firstOrNull()?.removePower(1000) ?: continue
+			println("Starting step extractor")
 
-			transferPower(extractor, 1000 - power)
+			runCatching { extractor.handleStep(PowerOriginStep(AtomicInteger(), extractor, extractablePower)) }.onFailure {
+				IonServer.slF4JLogger.error("Exception ticking extractor! $it")
+				it.printStackTrace()
+			}
 		}
 	}
 
@@ -81,7 +101,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		}
 	}
 
-	override fun tick() {
+	override suspend fun tick() {
 		tickSolars()
 		tickExtractors()
 //		tickExecutor()
@@ -108,7 +128,21 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		}
 	}
 
+	/**
+	 * Find a destination by stepping along transferable nodes and following their rules
+	 **/
+	fun findDestination(origin: TransportNode) {
+		var steps = 1
+		var current: TransportNode = origin
+
+		while (steps < MAX_DEPTH) {
+
+			steps++
+		}
+	}
+
 	companion object {
 		const val POWER_EXTRACTOR_STEP = 1000
+		const val MAX_DEPTH = 200
 	}
 }
