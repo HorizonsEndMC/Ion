@@ -1,51 +1,35 @@
 package net.horizonsend.ion.server.features.transport.step
 
-import net.horizonsend.ion.server.features.transport.container.ResourceContainer
-import net.horizonsend.ion.server.features.transport.grid.ChunkTransportNetwork
-import org.bukkit.block.BlockFace
+import net.horizonsend.ion.server.features.transport.node.TransportNode
+import java.util.concurrent.atomic.AtomicInteger
 
-abstract class Step(
-	open val transportNetwork: ChunkTransportNetwork,
-	open val origin: ResourceContainer<*>?,
-	var direction: BlockFace,
-) {
-	var status: TransferStatus = TransferStatus.STEPPING
+interface Step {
+	val steps: AtomicInteger
+	val currentNode: TransportNode
+	val share: Float
 
-	var children = mutableSetOf<Step>()
+	suspend operator fun invoke() {
+		if (steps.incrementAndGet() > MAX_DEPTH) return
 
-	var depth: Int = 0
-
-	fun step() {
-		depth++
-
-		if (depth >= MAX_STEP_DEPTH) return
-
-		when (status) {
-			TransferStatus.COMPLETE -> return
-			TransferStatus.BLOCKED -> return
-			TransferStatus.SPLIT -> stepChildren()
-			TransferStatus.STEPPING -> step()
-		}
-	}
-
-	private fun stepChildren() {
-		val iterator = children.iterator()
-
-		while (iterator.hasNext()) {
-			val child = iterator.next()
-
-			// Remove finished children
-			if (child.status == TransferStatus.COMPLETE || child.status == TransferStatus.BLOCKED) {
-				iterator.remove()
-
-				continue
-			}
-
-			child.step()
-		}
+		currentNode.handleStep(this)
 	}
 
 	companion object {
-		const val MAX_STEP_DEPTH = 25
+		const val MAX_DEPTH = 200
 	}
 }
+
+data class PowerOriginStep(
+	override val steps: AtomicInteger,
+	override val currentNode: TransportNode,
+	var power: Int,
+	override val share: Float = 1f
+) : Step
+
+data class TransportStep(
+	val origin: PowerOriginStep,
+	override val steps: AtomicInteger,
+	override val currentNode: TransportNode,
+	val previous: Step,
+	override val share: Float = 1f
+) : Step
