@@ -18,14 +18,28 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	override val persistentDataType: Companion get() = Companion
 
 	/**
-	 * The neighboring nodes that this node may transport to
+	 * Stored relationships between nodes
 	 **/
-	val transferableNeighbors: MutableSet<TransportNode>
+	val relationships: MutableSet<NodeRelationship>
+
+	/**
+	 * Break all relations between this node and others
+	 **/
+	fun clearRelations() {
+		relationships.forEach { it.breakUp() }
+	}
+
+	fun addRelationship(other: TransportNode) {
+		// Null if relationship was not worth it
+		val relationship = NodeRelationship.create(this, other) ?: return
+
+		relationships.add(relationship)
+	}
 
 	/**
 	 * Returns whether this node may transport to the provided node
 	 **/
-	fun isTransferableTo(position: Long, node: TransportNode): Boolean
+	fun isTransferableTo(node: TransportNode): Boolean
 
 	/**
 	 * Store additional required data in the serialized container
