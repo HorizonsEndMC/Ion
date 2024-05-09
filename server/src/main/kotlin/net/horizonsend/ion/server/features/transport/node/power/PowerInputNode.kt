@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.node.power
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.step.Step
@@ -26,14 +27,14 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 	}
 
 	override var position by Delegates.notNull<Long>()
-	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
 
 	/**
 	 * Multiblocks that share this power input
 	 **/
 	val multis: MutableSet<PoweredMultiblockEntity> = ObjectOpenHashSet()
 
-	override fun isTransferableTo(position: Long, node: TransportNode): Boolean {
+	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
+	override fun isTransferableTo(node: TransportNode): Boolean {
 		return node is PowerExtractorNode
 	}
 
@@ -47,8 +48,6 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 
 	override suspend fun buildRelations(position: BlockKey) {
 		super.buildRelations(position)
-
-		network as ChunkPowerNetwork
 
 		multis.clear()
 		multis.addAll(getPoweredMultiblocks(network))
@@ -125,6 +124,6 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 	override fun toString(): String = """
 		POWER INPUT NODE:
 		${multis.size} powered multiblocks,
-		Transferable to: ${transferableNeighbors.size} nodes
+		Transferable to: ${relationships.joinToString { it.sideTwo.node.javaClass.simpleName }} nodes
 	""".trimIndent()
 }
