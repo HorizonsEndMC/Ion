@@ -22,9 +22,8 @@ interface SingleNode : TransportNode {
 
 			if (this == neighborNode) return
 
-			if (isTransferableTo(offsetKey, neighborNode)) {
-				transferableNeighbors.add(neighborNode)
-			}
+			// Add a relationship, if one should be added
+			addRelationship(neighborNode)
 		}
 	}
 

@@ -83,24 +83,6 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		}
 	}
 
-	private fun transferPower(start: TransportNode, amount: Int) { //TODO remove this
-		var steps: Int = 0
-
-		var currentNode = start
-
-		while (steps < 10) {
-			steps++
-
-			if (currentNode is PowerInputNode) {
-				currentNode.multis.randomOrNull()?.addPower(amount)
-
-				break
-			}
-
-			currentNode = currentNode.transferableNeighbors.randomOrNull()?: break
-		}
-	}
-
 	override suspend fun tick() {
 		tickSolars()
 		tickExtractors()

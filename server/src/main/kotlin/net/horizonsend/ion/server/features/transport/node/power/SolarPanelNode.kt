@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
@@ -35,9 +36,9 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 	/** The number of solar cells contained in this node */
 	val cellNumber: Int get() = extractorPositions.size
 
-	override val transferableNeighbors: MutableSet<TransportNode> = ObjectOpenHashSet()
+	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
-	override fun isTransferableTo(position: Long, node: TransportNode): Boolean {
+	override fun isTransferableTo(node: TransportNode): Boolean {
 		// Solar panels should be able to transfer through extractors and other solar panels
 		return node !is PowerExtractorNode
 	}
@@ -155,8 +156,8 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		when (step) {
 			is TransportStep -> {
 				val previousNode = step.previous.currentNode
-				val availableNeighbors = transferableNeighbors.filterNot { it == previousNode }
-				val next = availableNeighbors.randomOrNull() ?: return
+				val availableNeighbors = relationships.filterNot { it.sideTwo.node == previousNode }
+				val next = availableNeighbors.randomOrNull()?.sideTwo?.node ?: return
 
 				// Simply move on to the next node
 				TransportStep(
@@ -168,7 +169,7 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 			}
 
 			is PowerOriginStep -> {
-				val next = transferableNeighbors.randomOrNull() ?: return
+				val next = relationships.randomOrNull()?.sideTwo?.node ?: return
 
 				// Simply move on to the next node
 				TransportStep(step, step.steps, next, step).invoke()
@@ -197,6 +198,6 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		${positions.size} positions,
 		${extractorPositions.size} extractor positions,
 		$cellNumber cells,
-		Transferable to: ${transferableNeighbors.joinToString { it.javaClass.simpleName }} nodes
+		Transferable to: ${relationships.joinToString { it.sideTwo.node.javaClass.simpleName }} nodes
 	""".trimIndent()
 }
