@@ -54,8 +54,7 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 		step as TransportStep
 
 		val previousNode = step.previous.currentNode
-		val availableNeighbors = relationships.filterNot { it.sideTwo.node == previousNode }
-		val next = availableNeighbors.randomOrNull()?.sideTwo?.node ?: return
+		val next = getTransferableNodes().filterNot { it == previousNode }.randomOrNull() ?: return
 
 		// Simply move on to the next node
 		TransportStep(
@@ -69,9 +68,7 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 	override fun toString(): String = """
 		SPONGE NODE:
 		${positions.size} positions,
-		Transferable to: ${relationships.joinToString {
-			it.sideTwo.node.javaClass.simpleName + if (it.sideTwo.node == this) " [SELF]!!" else ""
-		}} nodes
+		Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes nodes
 	""".trimIndent()
 
 }

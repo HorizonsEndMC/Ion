@@ -94,16 +94,16 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 			}
 		}
 
-		println("""
-
-			Reached multiblock input
-			Origin: $origin
-
-			Selected $multi
-			Added $share to $multi
-			Remaining origin power: ${origin.power}
-
-		""".trimIndent())
+//		println("""
+//
+//			Reached multiblock input
+//			Origin: $origin
+//
+//			Selected $multi
+//			Added $share to $multi
+//			Remaining origin power: ${origin.power}
+//
+//		""".trimIndent())
 	}
 
 	companion object {
@@ -124,6 +124,6 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 	override fun toString(): String = """
 		POWER INPUT NODE:
 		${multis.size} powered multiblocks,
-		Transferable to: ${relationships.joinToString { if (it.sideTwo.transferAllowed) { it.sideTwo.node.javaClass.simpleName } else "" }} nodes
+		Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes
 	""".trimIndent()
 }
