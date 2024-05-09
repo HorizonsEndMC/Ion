@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.grid
+package net.horizonsend.ion.server.features.transport.network
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODES
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER_TRANSPORT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	val nodes: ConcurrentHashMap<Long, TransportNode> = ConcurrentHashMap()
-	val extractors: ConcurrentHashMap<Long, TransportNode> = ConcurrentHashMap()
+	val extractors: ConcurrentHashMap<Long, PowerExtractorNode> = ConcurrentHashMap()
 
 	val world get() = manager.chunk.world
 
@@ -93,7 +94,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	/**
 	 *
 	 **/
-	abstract fun tick()
+	abstract suspend fun tick()
 
 	/**
 	 * Builds the transportNetwork TODO better documentation
