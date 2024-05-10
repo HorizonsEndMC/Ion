@@ -20,50 +20,30 @@ data class NodeRelationship(
 	 * Break the relation between the two nodes
 	 **/
 	fun breakUp() {
-		sideOne.node.relationships.remove(this)
-		sideTwo.node.relationships.remove(this)
-	}
-
-	/**
-	 * If by some occurrence a node has entered into a relationship with itself, remove that relation
-	 **/
-	fun removeSelfRelation() {
-		if (sideOne.node == sideTwo.node) {
-			breakUp()
-		}
-	}
-
-	/**
-	 * Replace one side of the relationship with a new one
-	 *
-	 * This will clear relations to the previous node and add relations to the new one
-	 **/
-	fun replaceSide(replacedSide: TransportNode, newPartner: TransportNode) {
-		breakUp()
-
-		// Find which side is being replaced
-		when (replacedSide) {
-			sideOne.node -> {
-				val new = create(newPartner, sideTwo.node) ?: return
-				sideTwo.node.relationships.add(new)
-			}
-			sideTwo.node -> {
-				val new = create(newPartner, sideOne.node) ?: return
-				sideOne.node.relationships.add(new)
-			}
-			else -> throw IllegalArgumentException("Cannot replace node that is not present in relationship")
-		}
+		println("Removing ${sideOne.node}'s relation to ${sideTwo.node}")
+		sideOne.node.removeRelationship(sideTwo.node)
+		println("Removing ${sideTwo.node}'s relation to ${sideOne.node}")
+		sideTwo.node.removeRelationship(sideOne.node)
 	}
 
 	companion object {
-		fun create(nodeOne: TransportNode, nodeTwo: TransportNode): NodeRelationship? {
+		fun create(nodeOne: TransportNode, nodeTwo: TransportNode) {
+			println("Attempting to create relationship between $nodeOne and $nodeTwo")
+			Throwable().printStackTrace()
+
 			val canTransferTo = nodeOne.isTransferableTo(nodeTwo)
 			val canTransferFrom = nodeTwo.isTransferableTo(nodeOne)
 
-			// Do not add the relationship if neither side can transfer
-			if (!canTransferFrom && !canTransferTo) return null
+			println("Node one can transfer to node two: $canTransferTo")
+			println("Node two can transfer to node one: $canTransferFrom")
 
-			return NodeRelationship(RelationSide(nodeOne, canTransferTo), RelationSide(nodeTwo, canTransferFrom),)
+			// Do not add the relationship if neither side can transfer
+			if (!canTransferFrom && !canTransferTo) return
+
+			println("Adding a relation between $nodeOne and $nodeTwo")
+			nodeOne.relationships += NodeRelationship(RelationSide(nodeOne, canTransferTo), RelationSide(nodeTwo, canTransferFrom))
+			println("Adding a relation between $nodeTwo and $nodeOne")
+			nodeTwo.relationships += NodeRelationship(RelationSide(nodeTwo, canTransferFrom), RelationSide(nodeOne, canTransferTo))
 		}
 	}
 }
