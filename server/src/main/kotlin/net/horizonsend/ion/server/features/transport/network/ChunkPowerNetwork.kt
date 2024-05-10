@@ -55,7 +55,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 
 			if (power <= 0) continue
 
-			runCatching { solarPanel.handleStep(PowerOriginStep(AtomicInteger(), solarPanel, power)) }.onFailure {
+			runCatching { solarPanel.handleStep(PowerOriginStep(AtomicInteger(), solarPanel, power, mutableSetOf(solarPanel))) }.onFailure {
 				IonServer.slF4JLogger.error("Exception ticking solar panel! $it")
 				it.printStackTrace()
 			}
@@ -70,7 +70,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 			val sum = extractablePowerPool.sumOf { it.getPower() }
 			val extractablePower = min(sum, POWER_EXTRACTOR_STEP)
 
-			runCatching { extractor.handleStep(PowerOriginStep(AtomicInteger(), extractor, extractablePower)) }.onFailure {
+			runCatching { extractor.handleStep(PowerOriginStep(AtomicInteger(), extractor, extractablePower, mutableSetOf(extractor))) }.onFailure {
 				it.printStackTrace()
 			}
 		}
