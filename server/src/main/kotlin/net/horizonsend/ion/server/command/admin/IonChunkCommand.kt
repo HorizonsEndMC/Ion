@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
+import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.world.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -76,6 +77,30 @@ object IonChunkCommand : SLCommand() {
 		grid.nodes.forEach { (t, u) ->
 			val vec = toVec3i(t)
 			sender.highlightBlock(vec, 50L)
+		}
+	}
+
+	@Subcommand("dump")
+	@CommandCompletion("power") /* |item|gas") */
+	fun dumpNetwork(sender: Player, network: String) {
+		val ionChunk = sender.chunk.ion()
+
+		val grid = when (network) {
+			"power" -> ionChunk.transportNetwork.powerNetwork
+//			"item" -> ionChunk.transportNetwork.pipeGrid
+//			"gas" -> ionChunk.transportNetwork.gasGrid
+			 else -> fail { "invalid network" }
+		}
+
+		sender.information("${grid.nodes.size} covered position(s).")
+		sender.information("${grid.nodes.values.distinct().size} unique node(s).")
+		sender.information("${grid.extractors.size} extractor node(s).")
+
+		when (grid) {
+			is ChunkPowerNetwork -> {
+				sender.information("${grid.solarPanels.size} solar panels")
+				sender.information("Node list: ${grid.nodes.values.groupBy { it.javaClass.simpleName }.mapValues { it.value.size }.entries.joinToString { it.toString() + "\n" }}")
+			}
 		}
 	}
 

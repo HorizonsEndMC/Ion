@@ -36,7 +36,7 @@ class ChunkTransportManager(
 //		gasGrid.setup()
 	}
 
-	val tickExecutor = IntervalExecutor(5) { scope.launch {
+	val tickExecutor = IntervalExecutor(40) { scope.launch {
 		powerNetwork.tick()
 	}}
 
