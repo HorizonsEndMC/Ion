@@ -173,7 +173,8 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 					step.origin,
 					step.steps,
 					next,
-					step
+					step,
+					step.traversedNodes
 				).invoke()
 			}
 
@@ -181,7 +182,7 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 				val next = getTransferableNodes().randomOrNull() ?: return
 
 				// Simply move on to the next node
-				TransportStep(step, step.steps, next, step).invoke()
+				TransportStep(step, step.steps, next, step, step.traversedNodes).invoke()
 			}
 
 			else -> throw NotImplementedError("Unrecognized step type $step")
