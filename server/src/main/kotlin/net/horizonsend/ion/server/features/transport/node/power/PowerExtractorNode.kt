@@ -27,7 +27,7 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 	}
 
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
-	val extractableNodes: MutableSet<PowerInputNode> get() = getTransferableNodes().mapNotNullTo(mutableSetOf()) { it as? PowerInputNode }
+	val extractableNodes: MutableSet<PowerInputNode> get() = relationships.mapNotNullTo(mutableSetOf()) { it.sideTwo.node as? PowerInputNode }
 
 	val useful get() = extractableNodes.size >= 1
 
@@ -74,7 +74,9 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 		// Nothing can transfer to extractors
 		step as PowerOriginStep
 
-		val next = relationships.randomOrNull()?.sideTwo?.node ?: return
+		val next = getTransferableNodes().randomOrNull() ?: return
+
+		println("Next node is $next")
 
 		// Simply move on to the next node
 		TransportStep(step, step.steps, next, step).invoke()

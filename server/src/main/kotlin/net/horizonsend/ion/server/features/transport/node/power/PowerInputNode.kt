@@ -94,6 +94,8 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 			}
 		}
 
+		if (step.origin.currentNode is SolarPanelNode) return
+
 //		println("""
 //
 //			Reached multiblock input
