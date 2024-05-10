@@ -14,7 +14,8 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
-import net.horizonsend.ion.server.features.world.IonChunk.Companion.ion
+import net.horizonsend.ion.server.features.transport.node.NetworkType
+import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component.text
@@ -61,15 +62,9 @@ object IonChunkCommand : SLCommand() {
 
 	@Subcommand("dump nodes")
 	@CommandCompletion("power") /* |item|gas") */
-	fun dumpNodes(sender: Player, network: String) {
+	fun dumpNodes(sender: Player, network: NetworkType) {
 		val ionChunk = sender.chunk.ion()
-
-		val grid = when (network) {
-			"power" -> ionChunk.transportNetwork.powerNetwork
-//			"item" -> ionChunk.transportNetwork.pipeGrid
-//			"gas" -> ionChunk.transportNetwork.gasGrid
-			 else -> fail { "invalid network" }
-		}
+		val grid = network.get(ionChunk)
 
 		sender.information("${grid.nodes.size} covered position(s).")
 		sender.information("${grid.nodes.values.distinct().size} unique node(s).")
@@ -81,16 +76,10 @@ object IonChunkCommand : SLCommand() {
 	}
 
 	@Subcommand("dump")
-	@CommandCompletion("power") /* |item|gas") */
-	fun dumpNetwork(sender: Player, network: String) {
+	@CommandCompletion("power")
+	fun dumpNetwork(sender: Player, network: NetworkType) {
 		val ionChunk = sender.chunk.ion()
-
-		val grid = when (network) {
-			"power" -> ionChunk.transportNetwork.powerNetwork
-//			"item" -> ionChunk.transportNetwork.pipeGrid
-//			"gas" -> ionChunk.transportNetwork.gasGrid
-			 else -> fail { "invalid network" }
-		}
+		val grid = network.get(ionChunk)
 
 		sender.information("${grid.nodes.size} covered position(s).")
 		sender.information("${grid.nodes.values.distinct().size} unique node(s).")
@@ -106,15 +95,9 @@ object IonChunkCommand : SLCommand() {
 
 	@Subcommand("rebuild nodes")
 	@CommandCompletion("power") /* |item|gas") */
-	fun rebuildNodes(sender: Player, network: String) = CoroutineScope(Dispatchers.Default + Job()).launch {
+	fun rebuildNodes(sender: Player, network: NetworkType) = CoroutineScope(Dispatchers.Default + Job()).launch {
 		val ionChunk = sender.chunk.ion()
-
-		val grid = when (network) {
-			"power" -> ionChunk.transportNetwork.powerNetwork
-//			"item" -> ionChunk.transportNetwork.pipeGrid
-//			"gas" -> ionChunk.transportNetwork.gasGrid
-			 else -> return@launch fail { "invalid network" }
-		}
+		val grid = network.get(ionChunk)
 
 		grid.nodes.clear()
 		grid.extractors.clear()
@@ -129,31 +112,19 @@ object IonChunkCommand : SLCommand() {
 	}
 
 	@Subcommand("get node key")
-	fun getNode(sender: Player, key: Long, network: String) = CoroutineScope(Dispatchers.Default + Job()).launch {
+	fun getNode(sender: Player, key: Long, network: NetworkType) = CoroutineScope(Dispatchers.Default + Job()).launch {
 		val ionChunk = sender.chunk.ion()
-
-		val grid = when (network) {
-			"power" -> ionChunk.transportNetwork.powerNetwork
-//			"item" -> ionChunk.transportNetwork.pipeGrid
-//			"gas" -> ionChunk.transportNetwork.gasGrid
-			else -> return@launch fail { "invalid network" }
-		}
+		val grid = network.get(ionChunk)
 
 		sender.information("Targeted node: ${grid.nodes[key]}")
 	}
 
 	@Subcommand("get node look")
-	fun getNode(sender: Player, network: String) = CoroutineScope(Dispatchers.Default + Job()).launch {
+	fun getNode(sender: Player, network: NetworkType) = CoroutineScope(Dispatchers.Default + Job()).launch {
 		val ionChunk = sender.chunk.ion()
+		val grid = network.get(ionChunk)
 		val targeted = sender.getTargetBlock(null, 10)
 		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
-
-		val grid = when (network) {
-			"power" -> ionChunk.transportNetwork.powerNetwork
-//			"item" -> ionChunk.transportNetwork.pipeGrid
-//			"gas" -> ionChunk.transportNetwork.gasGrid
-			else -> return@launch fail { "invalid network" }
-		}
 
 		sender.information("Targeted node: ${grid.nodes[key]}")
 	}
