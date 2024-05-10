@@ -46,7 +46,6 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 			buildRelations(it)
 		}
 
-		relationships.forEach { it.removeSelfRelation() }
 		println("After Relations: $relationships")
 	}
 
