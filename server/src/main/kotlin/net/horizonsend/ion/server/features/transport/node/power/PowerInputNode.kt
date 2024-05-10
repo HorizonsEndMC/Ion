@@ -121,9 +121,5 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 		)
 	}
 
-	override fun toString(): String = """
-		POWER INPUT NODE:
-		${multis.size} powered multiblocks,
-		Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes
-	""".trimIndent()
+	override fun toString(): String = "POWER INPUT NODE: ${multis.size} powered multiblocks, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
 }
