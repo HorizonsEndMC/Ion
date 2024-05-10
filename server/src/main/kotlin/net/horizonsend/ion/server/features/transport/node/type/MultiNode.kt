@@ -23,11 +23,14 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 	/**
 	 * Adds new a position to this node
 	 **/
-	suspend fun addPosition(position: BlockKey) {
+	suspend fun addPosition(position: BlockKey): Self {
 		positions += position
 		network.nodes[position] = this
 
 		onPlace(position)
+
+		@Suppress("UNCHECKED_CAST")
+		return this as Self
 	}
 
 	/**
@@ -46,10 +49,11 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 	 * Drain all the positions and connections to the provided node
 	 **/
 	suspend fun drainTo(new: Self) {
-		relationships.forEach { it.replaceSide(this, new) }
+		clearRelations()
+		new.clearRelations()
 
-		new.relationships.forEach { it.removeSelfRelation() }
 		new.addPositions(positions)
+		new.positions.forEach { new.buildRelations(it) }
 	}
 
 	override suspend fun buildRelations(position: BlockKey) {
@@ -60,6 +64,14 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 			if (this == neighborNode) continue
 
 			addRelationship(neighborNode)
+		}
+	}
+
+	suspend fun rebuildRelations() {
+		clearRelations()
+
+		positions.forEach {
+			buildRelations(it)
 		}
 	}
 
@@ -81,10 +93,7 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 		rebuildNode(position)
 	}
 
-	override suspend fun onPlace(position: BlockKey) {
-		// Build relations for each position upon placement
-		buildRelations(position)
-	}
+	override suspend fun onPlace(position: BlockKey) {}
 
 	override fun loadIntoNetwork() {
 		for (key in positions) {

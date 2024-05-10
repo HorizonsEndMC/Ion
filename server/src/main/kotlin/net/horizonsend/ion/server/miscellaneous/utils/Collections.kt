@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap
 import com.google.common.collect.MultimapBuilder
 import com.google.common.collect.Table
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
+import org.checkerframework.checker.units.qual.K
 import java.util.EnumSet
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.random.Random
@@ -51,7 +52,10 @@ fun <K, V> Collection<Map.Entry<K, V>>.toMap(): Map<K, V> {
 fun <T> List<T>.safeSubList(fromIndex: Int, toIndex: Int): List<T> = this.subList(fromIndex.coerceAtLeast(this.size), toIndex.coerceAtMost(this.size))
 
 fun <K, V, R, Z> Map<K, V>.mapTo(other: MutableMap<R, Z>, transform: (Map.Entry<K,V>) -> Pair<R, Z>) = other.putAll(map(transform))
-fun <K, V, R, Z> Map<K, V>.mapNotNullTo(other: MutableMap<R, Z>, transform: (Map.Entry<K,V>) -> Pair<R, Z>?) = other.putAll(map(transform).filterNotNull())
+fun <K, V, R, Z> Map<K, V>.mapNotNullTo(destination: MutableMap<R, Z>, transform: (Map.Entry<K,V>) -> Pair<R, Z>?): MutableMap<R, Z> = destination.apply {
+	putAll(map(transform).filterNotNull())
+}
+
 fun <T> MutableSet<T>.and(vararg others: T): MutableSet<T> = apply { others.forEach { add(it) } }
 
 fun <T, R : Any> Iterable<T>.filterIsInstance(clazz: KClass<out R>, transform: (T) -> Any?): List<T> {
@@ -99,6 +103,13 @@ operator fun <A> Pair<A, A>.iterator(): Iterator<A> = object : Iterator<A> {
 fun <K, V, R : Comparable<R>> MutableMap<K, V>.popMaxByOrNull(selector: (Map.Entry<K, V>) -> R): Map.Entry<K, V>? {
 	val max = maxByOrNull(selector) ?: return null
 	remove(max.key)
+
+	return max
+}
+
+fun <V, R : Comparable<R>> MutableCollection<V>.popMaxByOrNull(selector: (V) -> R): V? {
+	val max = maxByOrNull(selector) ?: return null
+	remove(max)
 
 	return max
 }

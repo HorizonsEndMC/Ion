@@ -24,9 +24,11 @@ class ChunkTransportManager(
 
 	val extractorData = getExtractorData(chunk.inner)
 
-	val powerNetwork = ChunkPowerNetwork(this)
+	val powerNetwork = ChunkPowerNetwork(this).apply { loadData(); build() }
 //	val pipeGrid = ChunkPowerNetwork(this) // TODO
 //	val gasGrid = ChunkPowerNetwork(this) // TODO
+
+
 
 	fun setup() {
 		powerNetwork.setup()

@@ -81,7 +81,7 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		rebuildNode(position)
 	}
 
-	suspend fun addPosition(extractorKey: BlockKey, others: Iterable<BlockKey>) {
+	suspend fun addPosition(extractorKey: BlockKey, others: Iterable<BlockKey>): SolarPanelNode {
 		extractorPositions += extractorKey
 
 		// Make sure there isn't still an extractor
@@ -92,6 +92,8 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		for (position: BlockKey in positions) {
 			network.nodes[position] = this
 		}
+
+		return this
 	}
 
 	fun removePosition(extractorKey: BlockKey, others: Iterable<BlockKey>) {
@@ -171,7 +173,7 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 			}
 
 			is PowerOriginStep -> {
-				val next = relationships.randomOrNull()?.sideTwo?.node ?: return
+				val next = getTransferableNodes().randomOrNull() ?: return
 
 				// Simply move on to the next node
 				TransportStep(step, step.steps, next, step).invoke()
@@ -179,6 +181,11 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 
 			else -> throw NotImplementedError("Unrecognized step type $step")
 		}
+	}
+
+	override fun loadIntoNetwork() {
+		super.loadIntoNetwork()
+		network.solarPanels += this
 	}
 
 	companion object {
@@ -195,11 +202,6 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		}
 	}
 
-	override fun toString(): String = """
-		SOLAR PANEL NODE:
-		${positions.size} positions,
-		${extractorPositions.size} extractor positions,
-		$cellNumber cells,
-		Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes
-	""".trimIndent()
+	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
+
 }
