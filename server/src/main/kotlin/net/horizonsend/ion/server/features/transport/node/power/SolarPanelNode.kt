@@ -112,8 +112,12 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			buildRelations(it)
-			network.nodeFactory.addSolarPanel(it)
+			network.nodeFactory.addSolarPanel(it, handleRelationships = false)
+		}
+
+		// Handle relations once fully rebuilt
+		positions.forEach {
+			network.nodes[it]?.buildRelations(it)
 		}
 	}
 
