@@ -27,7 +27,6 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 **/
 	fun clearRelations() {
 		relationships.forEach {
-			println("Breaking up $it")
 			it.breakUp()
 		}
 	}

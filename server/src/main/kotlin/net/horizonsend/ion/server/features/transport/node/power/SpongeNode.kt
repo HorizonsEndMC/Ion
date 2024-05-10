@@ -58,8 +58,11 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 		// This is not an origin node, so we can assume that it is not an origin step
 		step as TransportStep
 
-		val previousNode = step.previous.currentNode
-		val next = getTransferableNodes().filterNot { it == previousNode }.randomOrNull() ?: return
+		val next = getTransferableNodes()
+			.filterNot { step.traversedNodes.contains(it) }
+			.randomOrNull() ?: return
+
+		println("Next node is $next")
 
 		// Simply move on to the next node
 		TransportStep(
