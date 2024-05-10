@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.node
 
 import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
@@ -100,6 +101,11 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 * Each node defines how it is stepped.
 	 **/
 	suspend fun handleStep(step: Step)
+
+	/**
+	 * Logic for the completion of a power transfer
+	 **/
+	suspend fun onCompleteChain(final: Step, destination: PowerInputNode, transferred: Int) {}
 
 	companion object : PersistentDataType<PersistentDataContainer, TransportNode> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
