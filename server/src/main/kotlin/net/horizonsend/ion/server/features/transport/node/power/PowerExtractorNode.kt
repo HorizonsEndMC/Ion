@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
@@ -73,11 +72,6 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 
 	override suspend fun handleStep(step: Step) {
 		// Nothing can transfer to extractors
-		if (step is TransportStep) {
-			println("Extractor location: ${toVec3i(position)}, ${network.world}")
-			println("========\nPower extractor step received step $step\n==========")
-		}
-
 		step as PowerOriginStep
 
 		val next = relationships.randomOrNull()?.sideTwo?.node ?: return

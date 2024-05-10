@@ -44,8 +44,13 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 	override suspend fun rebuildNode(position: BlockKey) {
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			buildRelations(it)
-			network.nodeFactory.addSponge(it)
+			// Do not handle relations
+			network.nodeFactory.addSponge(it, handleRelationships = false)
+		}
+
+		// Handle relations once fully rebuilt
+		positions.forEach {
+			network.nodes[it]?.buildRelations(it)
 		}
 	}
 
@@ -65,10 +70,5 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 		).invoke()
 	}
 
-	override fun toString(): String = """
-		SPONGE NODE:
-		${positions.size} positions,
-		Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes nodes
-	""".trimIndent()
-
+	override fun toString(): String = "(SPONGE NODE: ${positions.size} positions, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
 }
