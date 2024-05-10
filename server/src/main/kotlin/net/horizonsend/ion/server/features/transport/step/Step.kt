@@ -7,7 +7,7 @@ interface Step {
 	val steps: AtomicInteger
 	val currentNode: TransportNode
 	val share: Float
-	val traversedNodes: MutableList<TransportNode>
+	val traversedNodes: MutableSet<TransportNode>
 
 	suspend operator fun invoke() {
 		if (steps.incrementAndGet() > MAX_DEPTH) return
@@ -33,17 +33,15 @@ data class PowerOriginStep(
 	override val steps: AtomicInteger,
 	override val currentNode: TransportNode,
 	var power: Int,
+	override val traversedNodes: MutableSet<TransportNode>,
 	override val share: Float = 1f
-) : Step {
-	override val traversedNodes: MutableList<TransportNode> = mutableListOf()
-}
+) : Step
 
 data class TransportStep(
 	val origin: PowerOriginStep,
 	override val steps: AtomicInteger,
 	override val currentNode: TransportNode,
 	val previous: Step,
+	override val traversedNodes: MutableSet<TransportNode>,
 	override val share: Float = 1f
-) : Step {
-	override val traversedNodes: MutableList<TransportNode> = mutableListOf()
-}
+) : Step
