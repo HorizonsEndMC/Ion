@@ -26,8 +26,6 @@ data class NodeRelationship(
 
 	companion object {
 		fun create(nodeOne: TransportNode, nodeTwo: TransportNode) {
-			Throwable().printStackTrace()
-
 			val canTransferTo = nodeOne.isTransferableTo(nodeTwo)
 			val canTransferFrom = nodeTwo.isTransferableTo(nodeOne)
 

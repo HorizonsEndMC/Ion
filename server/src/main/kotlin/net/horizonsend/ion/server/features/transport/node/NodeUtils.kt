@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.transport.node
 
+import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -9,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.popMaxByOrNull
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 
 fun getNeighborNodes(position: BlockKey, nodes: Map<BlockKey, TransportNode>, checkFaces: Collection<BlockFace> = ADJACENT_BLOCK_FACES) = checkFaces.associateWithNotNull {
@@ -27,9 +30,6 @@ fun getNeighborNodes(position: BlockKey, nodes: Collection<BlockKey>, checkFaces
 	toBlockKey(x + it.modX, y + it.modY, z + it.modZ).takeIf { key -> nodes.contains(key) }
 }
 
-inline fun <reified T: TransportNode> getMatchingNeighborNodes(position: BlockKey, nodes: Map<BlockKey, TransportNode>): MutableList<T> =
-	getNeighborNodes(position, nodes).values.filterIsInstanceTo<T, MutableList<T>>(mutableListOf())
-
 /**
  * Merge the provided nodes into the largest node [by position] in the collection
  *
@@ -47,4 +47,25 @@ suspend fun <Self: MultiNode<Self, Self>> handleMerges(neighbors: MutableCollect
 	}
 
 	return largestNeighbor
+}
+
+fun getNode(world: World, key: BlockKey, networkType: NetworkType): TransportNode? {
+	val x = getX(key).shr(4)
+	val z = getZ(key).shr(4)
+
+	val chunk = IonChunk[world, x, z] ?: return null
+	return networkType.get(chunk).nodes[key]
+}
+
+enum class NetworkType {
+	POWER {
+		override fun get(chunk: IonChunk): ChunkTransportNetwork {
+			return chunk.transportNetwork.powerNetwork
+		}
+	}
+
+
+	;
+
+	abstract fun get(chunk: IonChunk): ChunkTransportNetwork
 }

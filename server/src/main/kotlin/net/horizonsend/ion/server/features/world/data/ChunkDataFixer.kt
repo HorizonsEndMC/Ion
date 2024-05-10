@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.world.data
 
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntityFixer
-import net.horizonsend.ion.server.features.world.IonChunk
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 
 object ChunkDataFixer {
 	const val DATA_VERSION = 1

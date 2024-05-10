@@ -10,8 +10,8 @@ import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DATA_VERSION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODES
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER_TRANSPORT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.seconds
 import org.bukkit.NamespacedKey
@@ -30,6 +30,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 
 	protected abstract val namespacedKey: NamespacedKey
 	abstract val nodeFactory: NodeFactory<*>
+	abstract val dataVersion: Int
 
 // val grids: Nothing = TODO("ChunkTransportNetwork system")
 
@@ -49,22 +50,32 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 
 	/**
 	 * Load stored node data from the chunk
+	 *
+	 * @return Whether the data was intact, or up to date
 	 **/
-	fun loadData() {
-		val existing = pdc.get(POWER_TRANSPORT, PersistentDataType.TAG_CONTAINER) ?: return
+	fun loadData(): Boolean {
+		val existing = pdc.get(namespacedKey, PersistentDataType.TAG_CONTAINER) ?: return false
+		val version	= pdc.getOrDefault(DATA_VERSION, PersistentDataType.INTEGER, 0)
+
+		if (version < dataVersion) {
+			IonServer.slF4JLogger.error("${manager.chunk}'s ${javaClass.simpleName} contained outdated data! It will be rebuilt")
+			return false
+		}
 
 		// Deserialize once
 		val nodeData = existing.getOrDefault(NODES, PersistentDataType.TAG_CONTAINER_ARRAY, arrayOf()).mapNotNull {
 			runCatching { TransportNode.load(it, this) }.onFailure {
-				IonServer.slF4JLogger.error("Error deserializing multiblock data! $it")
+				IonServer.slF4JLogger.error("${manager.chunk}'s ${javaClass.simpleName} contained corrupted data! It will be rebuilt")
 				it.printStackTrace()
-			}.getOrNull()
+			}.getOrElse { return false }
 		}
 
 		nodeData.forEach { runCatching { it.loadIntoNetwork() }.onFailure {
-			IonServer.slF4JLogger.error("Error loading node into network!")
+			IonServer.slF4JLogger.error("${manager.chunk}'s ${javaClass.simpleName} loading node into network!")
 			it.printStackTrace()
-		} }
+		}.onFailure { return false } }
+
+		return true
 	}
 
 	fun save(adapterContext: PersistentDataAdapterContext) {
@@ -80,24 +91,44 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 
 		pdc.set(namespacedKey, PersistentDataType.TAG_CONTAINER, container)
 
-		saveAdditional()
+		saveAdditional(pdc)
 	}
 
-	open fun saveAdditional() {}
+	open fun saveAdditional(pdc: PersistentDataContainer) {}
 
 	/**
 	 *
 	 **/
 	abstract suspend fun tick()
 
+	abstract suspend fun clearData()
+
 	/**
-	 * Builds the transportNetwork TODO better documentation
+	 * Logic for when the holding chunk is unloaded
+	 **/
+	open fun onUnload() {
+		// Break cross chunk relations
+		breakAllRelations()
+
+		save(manager.chunk.inner.persistentDataContainer.adapterContext)
+	}
+
+	/**
+	 * Builds the transportNetwork
+	 *
+	 * Existing data will be loaded from the chunk's persistent data container, relations between nodes will be built, and any finalization will be performed
 	 **/
 	fun build() = manager.scope.launch {
-//		collectAllNodes().join()
+		if (!loadData()) {
+			clearData()
+			collectAllNodes().join()
+		}
+
+		// Save rebuilt data
+		save(manager.chunk.inner.persistentDataContainer.adapterContext)
+
 		buildRelations()
 		finalizeNodes()
-		buildGraph()
 	}
 
 	/**
@@ -147,25 +178,16 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	}
 
 	/**
-	 * Consolidates network nodes where possible
-	 *
-	 * e.g. a straight section may be represented as a single node
+	 * Handles any cleanup tasks at the end of loading
 	 **/
-	private fun finalizeNodes() {
-//		nodes.forEach { (_, node) ->
-//
-//		}
-	}
-
-	/**
-	 *
-	 **/
-	private fun buildGraph() {
-		//TODO
-	}
+	open fun finalizeNodes() {}
 
 	fun getNode(x: Int, y: Int, z: Int): TransportNode? {
 		val key = toBlockKey(x, y, z)
 		return nodes[key]
+	}
+
+	fun breakAllRelations() {
+		nodes.values.forEach { it.clearRelations() }
 	}
 }
