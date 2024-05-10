@@ -4,6 +4,7 @@ import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.power.EndRodNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
+import net.horizonsend.ion.server.features.transport.node.power.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
 import net.horizonsend.ion.server.features.transport.node.power.SpongeNode
@@ -15,6 +16,7 @@ enum class NodeType(val clazz: Class<out TransportNode>) {
 	SOLAR_PANEL_NODE(SolarPanelNode::class.java),
 	POWER_EXTRACTOR_NODE(PowerExtractorNode::class.java),
 	POWER_INPUT_NODE(PowerInputNode::class.java),
+	POWER_FLOW_METER(PowerFlowMeter::class.java),
 
 	//GAS
 
