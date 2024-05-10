@@ -69,6 +69,8 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 	}
 
 	override suspend fun handleStep(step: Step) {
+		step.traversedNodes.add(this)
+
 		// This is not an origin node, so we can assume that it is not an origin step
 		step as TransportStep
 
@@ -92,6 +94,11 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 
 				if (remaining <= 0) break
 			}
+		}
+
+		println("Traversed nodes: ${step.traversedNodes}")
+		step.traversedNodes.forEach {
+			it.onCompleteChain(step, this, share)
 		}
 
 		if (step.origin.currentNode is SolarPanelNode) return
