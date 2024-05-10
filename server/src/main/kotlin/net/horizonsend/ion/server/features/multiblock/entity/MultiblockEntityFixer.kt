@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.entity
 
-import net.horizonsend.ion.server.features.world.IonChunk
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.data.DataFixer
 
 object MultiblockEntityFixer : DataFixer {
