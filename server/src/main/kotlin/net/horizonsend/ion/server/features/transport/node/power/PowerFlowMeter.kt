@@ -1,52 +1,41 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import com.google.common.collect.EvictingQueue
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.type.MultiNode
+import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
 import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.features.transport.step.TransportStep
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import org.bukkit.block.data.Directional
+import net.kyori.adventure.text.Component
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import kotlin.properties.Delegates
 
-class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode, EndRodNode> {
-	constructor(network: ChunkPowerNetwork, origin: Long) : this(network) {
-		positions.add(origin)
+class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode {
+	// The position will always be set
+	override var position by Delegates.notNull<Long>()
+
+	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
+		this.position = position
 	}
 
-	override val positions: MutableSet<Long> = LongOpenHashSet()
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		return node !is SourceNode
 	}
 
-	override fun loadData(persistentDataContainer: PersistentDataContainer) {
-		val coveredPositions = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY)
-		coveredPositions?.let { positions.addAll(it.asIterable()) }
-	}
-
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
-		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY, positions.toLongArray())
+		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG, position)
 	}
 
-	override suspend fun rebuildNode(position: BlockKey) {
-		// Create new nodes, automatically merging together
-		positions.forEach {
-			network.nodeFactory.addEndRod(getBlockSnapshotAsync(network.world, it)!!.data as Directional, it, handleRelationships = false)
-		}
-
-		// Handle relations once fully rebuilt
-		positions.forEach {
-			network.nodes[it]?.buildRelations(it)
-		}
+	override fun loadData(persistentDataContainer: PersistentDataContainer) {
+		position = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
 	}
 
 	override suspend fun handleStep(step: Step) {
@@ -56,10 +45,9 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 		val next = getTransferableNodes()
 			.filterNot { step.traversedNodes.contains(it) }
 			.filterNot { step.previous.currentNode == it }
-			.firstOrNull() ?: return
+			.randomOrNull() ?: return
 
 		println("Next node is $next")
-
 
 		// Simply move on to the next node
 		TransportStep(
@@ -71,5 +59,22 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 		).invoke()
 	}
 
-	override fun toString(): String = "(END ROD NODE: ${positions.size} positions, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
+	private var lastStepped: Long = System.currentTimeMillis()
+	private var steps: Int = 1
+	private val averages = EvictingQueue.create<Double>(10)
+
+	override suspend fun onCompleteChain(final: Step, destination: PowerInputNode, transferred: Int) {
+		final as TransportStep
+
+		val time = System.currentTimeMillis()
+		val diff = time - lastStepped
+		lastStepped = time
+
+		steps++
+
+		val seconds = diff / 1000.0
+		averages.add(transferred / seconds)
+
+		network.world.sendMessage(Component.text("Running average transferred is ${averages.average()}"))
+	}
 }

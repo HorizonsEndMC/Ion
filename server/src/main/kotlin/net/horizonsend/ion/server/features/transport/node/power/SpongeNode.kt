@@ -60,6 +60,7 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 
 		val next = getTransferableNodes()
 			.filterNot { step.traversedNodes.contains(it) }
+			.filterNot { step.previous.currentNode == it }
 			.randomOrNull() ?: return
 
 		println("Next node is $next")
@@ -69,7 +70,8 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 			step.origin,
 			step.steps,
 			next,
-			step
+			step,
+			step.traversedNodes
 		).invoke()
 	}
 
