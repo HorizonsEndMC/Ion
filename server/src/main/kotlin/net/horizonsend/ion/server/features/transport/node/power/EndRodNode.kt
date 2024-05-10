@@ -38,15 +38,15 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 	}
 
 	override suspend fun rebuildNode(position: BlockKey) {
-		println("Rebuilding end rod! : Before Relations: $relationships")
-
 		// Create new nodes, automatically merging together
 		positions.forEach {
-			network.nodeFactory.addEndRod(getBlockSnapshotAsync(network.world, it)!!.data as Directional, it)
-			buildRelations(it)
+			network.nodeFactory.addEndRod(getBlockSnapshotAsync(network.world, it)!!.data as Directional, it, handleRelationships = false)
 		}
 
-		println("After Relations: $relationships")
+		// Handle relations once fully rebuilt
+		positions.forEach {
+			network.nodes[it]?.buildRelations(it)
+		}
 	}
 
 	override suspend fun handleStep(step: Step) {
