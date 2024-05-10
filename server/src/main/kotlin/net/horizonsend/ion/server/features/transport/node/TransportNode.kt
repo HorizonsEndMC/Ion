@@ -26,7 +26,10 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 * Break all relations between this node and others
 	 **/
 	fun clearRelations() {
-		relationships.forEach { it.breakUp() }
+		relationships.forEach {
+			println("Breaking up $it")
+			it.breakUp()
+		}
 	}
 
 	/**
@@ -35,14 +38,17 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 * If neither side can transfer, a relation will not be created
 	 **/
 	fun addRelationship(other: TransportNode) {
-		// Null if relationship was not worth it
-		val relationship = NodeRelationship.create(this, other) ?: return
-
 		// Do not add duplicates
 		if (relationships.any { it.sideTwo.node == other }) return
 
-		relationships.add(relationship)
-		other.relationships.add(relationship)
+		NodeRelationship.create(this, other)
+	}
+
+	fun removeRelationship(to: TransportNode) {
+		// Handle duplicate cases
+		val toOther = relationships.filterTo(mutableSetOf()) { it.sideTwo.node == to }
+
+		relationships.removeAll(toOther)
 	}
 
 	/**
