@@ -33,11 +33,6 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 
 // val grids: Nothing = TODO("ChunkTransportNetwork system")
 
-	init {
-	    loadData()
-		build()
-	}
-
 	open fun setup() {}
 
 	/**
@@ -55,22 +50,21 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	/**
 	 * Load stored node data from the chunk
 	 **/
-	private fun loadData() {
+	fun loadData() {
 		val existing = pdc.get(POWER_TRANSPORT, PersistentDataType.TAG_CONTAINER) ?: return
 
 		// Deserialize once
 		val nodeData = existing.getOrDefault(NODES, PersistentDataType.TAG_CONTAINER_ARRAY, arrayOf()).mapNotNull {
-			runCatching { TransportNode.load(it, this) }
-				.onFailure {
-					IonServer.slF4JLogger.error("Error deserializing multiblock data! $it")
-					it.printStackTrace()
-				}
-				.getOrNull()
+			runCatching { TransportNode.load(it, this) }.onFailure {
+				IonServer.slF4JLogger.error("Error deserializing multiblock data! $it")
+				it.printStackTrace()
+			}.getOrNull()
 		}
 
-		nodeData.forEach {
-			it.loadIntoNetwork()
-		}
+		nodeData.forEach { runCatching { it.loadIntoNetwork() }.onFailure {
+			IonServer.slF4JLogger.error("Error loading node into network!")
+			it.printStackTrace()
+		} }
 	}
 
 	fun save(adapterContext: PersistentDataAdapterContext) {

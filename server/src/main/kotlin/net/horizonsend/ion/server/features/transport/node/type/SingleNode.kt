@@ -33,5 +33,6 @@ interface SingleNode : TransportNode {
 
 	override suspend fun handleRemoval(position: BlockKey) {
 		network.nodes.remove(position)
+		clearRelations()
 	}
 }
