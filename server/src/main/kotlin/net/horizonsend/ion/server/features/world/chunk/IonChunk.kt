@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.world
+package net.horizonsend.ion.server.features.world.chunk
 
 import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
@@ -38,7 +38,6 @@ class IonChunk(val inner: Chunk) {
 	val sections: Iterable<IndexedValue<LevelChunkSection>> get() = inner.minecraft.sections.withIndex()
 
 	// TODO
-	//  - Wires
 	//  - Ore upgrader
 	//  - Explosion Reversal
 

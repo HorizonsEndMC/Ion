@@ -60,7 +60,6 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 
 		println("Next node is $next")
 
-
 		// Simply move on to the next node
 		TransportStep(
 			step.origin,

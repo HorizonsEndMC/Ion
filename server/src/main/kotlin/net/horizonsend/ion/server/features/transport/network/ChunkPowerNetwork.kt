@@ -33,6 +33,8 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 	/** Store solar panels for ticking */
 	val solarPanels: ObjectOpenHashSet<SolarPanelNode> = ObjectOpenHashSet()
 
+	override val dataVersion: Int = 0 //TODO 1
+
 	override fun setup() {
 		collectPowerMultiblockEntities()
 	}
@@ -79,6 +81,12 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 	override suspend fun tick() {
 		tickSolars()
 		tickExtractors()
+	}
+
+	override suspend fun clearData() {
+		nodes.clear()
+		solarPanels.clear()
+		extractors.clear()
 	}
 
 	/**
