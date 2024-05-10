@@ -20,29 +20,21 @@ data class NodeRelationship(
 	 * Break the relation between the two nodes
 	 **/
 	fun breakUp() {
-		println("Removing ${sideOne.node}'s relation to ${sideTwo.node}")
 		sideOne.node.removeRelationship(sideTwo.node)
-		println("Removing ${sideTwo.node}'s relation to ${sideOne.node}")
 		sideTwo.node.removeRelationship(sideOne.node)
 	}
 
 	companion object {
 		fun create(nodeOne: TransportNode, nodeTwo: TransportNode) {
-			println("Attempting to create relationship between $nodeOne and $nodeTwo")
 			Throwable().printStackTrace()
 
 			val canTransferTo = nodeOne.isTransferableTo(nodeTwo)
 			val canTransferFrom = nodeTwo.isTransferableTo(nodeOne)
 
-			println("Node one can transfer to node two: $canTransferTo")
-			println("Node two can transfer to node one: $canTransferFrom")
-
 			// Do not add the relationship if neither side can transfer
 			if (!canTransferFrom && !canTransferTo) return
 
-			println("Adding a relation between $nodeOne and $nodeTwo")
 			nodeOne.relationships += NodeRelationship(RelationSide(nodeOne, canTransferTo), RelationSide(nodeTwo, canTransferFrom))
-			println("Adding a relation between $nodeTwo and $nodeOne")
 			nodeTwo.relationships += NodeRelationship(RelationSide(nodeTwo, canTransferFrom), RelationSide(nodeOne, canTransferTo))
 		}
 	}
