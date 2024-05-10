@@ -79,12 +79,9 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 		println("Next node is $next")
 
 		// Simply move on to the next node
-		TransportStep(step, step.steps, next, step).invoke()
+		TransportStep(step, step.steps, next, step, step.traversedNodes).invoke()
 	}
 
-	override fun toString(): String = """
-		POWER Extractor NODE:
-		Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes
-	""".trimIndent()
+	override fun toString(): String = "POWER Extractor NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
 }
 
