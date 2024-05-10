@@ -79,7 +79,6 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 	override suspend fun tick() {
 		tickSolars()
 		tickExtractors()
-//		tickExecutor()
 	}
 
 	/**
@@ -103,21 +102,8 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		}
 	}
 
-	/**
-	 * Find a destination by stepping along transferable nodes and following their rules
-	 **/
-	fun findDestination(origin: TransportNode) {
-		var steps = 1
-		var current: TransportNode = origin
-
-		while (steps < MAX_DEPTH) {
-
-			steps++
-		}
-	}
 
 	companion object {
 		const val POWER_EXTRACTOR_STEP = 1000
-		const val MAX_DEPTH = 200
 	}
 }
