@@ -1,10 +1,12 @@
 package net.horizonsend.ion.server.features.world
 
 import com.destroystokyo.paper.event.server.ServerTickStartEvent
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -30,6 +32,8 @@ class IonWorld private constructor(
 	 * Value: The IonChunk at that location
 	 **/
 	private val chunks: ConcurrentHashMap<Long, IonChunk> = ConcurrentHashMap()
+	val regionPositions: ConcurrentHashMap<Long, ChunkRegion> = ConcurrentHashMap()
+	val chunkRegions: MutableSet<ChunkRegion> = ObjectOpenHashSet<ChunkRegion>()
 
 	/**
 	 * Gets the IonChunk at the specified coordinates if it is loaded
@@ -159,8 +163,9 @@ class IonWorld private constructor(
 					log.warn("Exception while ticking starship!", result)
 				}
 
-				for ((_, chunk) in ionWorld.chunks) {
-					chunk.tick()
+				for (region in ionWorld.chunkRegions) {
+					val result = runCatching { region.tick() }.exceptionOrNull() ?: continue
+					log.warn("Exception while ticking chunk region!", result)
 				}
 			}
 		}

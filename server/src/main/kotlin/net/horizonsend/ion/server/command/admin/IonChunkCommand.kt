@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NetworkType
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -91,6 +92,15 @@ object IonChunkCommand : SLCommand() {
 				sender.information("Node list: ${grid.nodes.values.groupBy { it.javaClass.simpleName }.mapValues { it.value.size }.entries.joinToString { it.toString() + "\n" }}")
 			}
 		}
+	}
+
+	@Subcommand("dumpchunk")
+	fun dumpChunk(sender: Player) {
+		val ionChunk = sender.chunk.ion()
+
+		sender.information("Chunk: $ionChunk")
+		sender.information("Region: ${ionChunk.region}")
+		sender.information("World has: ${ionChunk.world.ion.regionPositions.values.distinct().size} unique regions")
 	}
 
 	@Subcommand("rebuild nodes")
