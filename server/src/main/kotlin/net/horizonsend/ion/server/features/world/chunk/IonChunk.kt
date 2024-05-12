@@ -19,7 +19,10 @@ import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.ChunkUnloadEvent
 import org.bukkit.persistence.PersistentDataType.INTEGER
 
-class IonChunk(val inner: Chunk) {
+class IonChunk(
+	val inner: Chunk,
+	val region: ChunkRegion,
+) {
 	val dataVersion = inner.persistentDataContainer.getOrDefault(NamespacedKeys.DATA_VERSION, INTEGER, 0)
 	val locationKey = inner.chunkKey
 
@@ -69,10 +72,7 @@ class IonChunk(val inner: Chunk) {
 	/**
 	 * Logic upon world tick
 	 **/
-	fun tick() {
-		transportNetwork.tick()
-		multiblockManager.tick()
-	}
+	fun tick() {}
 
 	/**
 	 * Gets the neighboring chunk in this direction
@@ -89,7 +89,7 @@ class IonChunk(val inner: Chunk) {
 	companion object : SLEventListener() {
 		@EventHandler
 		fun onChunkLoad(event: ChunkLoadEvent) {
-			registerChunk(event.chunk)
+			ChunkRegion.loadChunk(event.chunk)
 		}
 
 		@EventHandler
@@ -114,10 +114,11 @@ class IonChunk(val inner: Chunk) {
 		 *
 		 * It is imperative that every exception generated be handled
 		 **/
-		private fun registerChunk(chunk: Chunk): IonChunk {
+		fun registerChunk(chunk: Chunk, region: ChunkRegion): IonChunk {
 			val ionWorld = chunk.world.ion
 
-			val ionChunk = IonChunk(chunk)
+			val ionChunk = IonChunk(chunk, region)
+			region.chunks[chunk.chunkKey] = ionChunk
 
 			ionWorld.addChunk(ionChunk)
 
@@ -138,6 +139,7 @@ class IonChunk(val inner: Chunk) {
 			val removed = ionWorld.removeChunk(chunk) ?: return
 
 			removed.onUnload()
+			ChunkRegion.unloadChunk(removed)
 		}
 
 		/**
@@ -148,6 +150,9 @@ class IonChunk(val inner: Chunk) {
 		}
 
 		fun Chunk.ion(): IonChunk = this.world.ion.getChunk(chunkKey)!!
+
+		fun getXFromKey(key: Long): Int = key.toInt()
+		fun getZFromKey(key: Long): Int = (key shr 32).toInt()
 	}
 
 	override fun toString(): String {
