@@ -10,12 +10,15 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.loadChunkAsync
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.chunk.LevelChunk
+import org.bukkit.Bukkit
 import org.bukkit.ChunkSnapshot
 import org.bukkit.Material
 import org.bukkit.World
@@ -43,7 +46,22 @@ suspend fun getChunkSnapshotAsync(world: World, x: Int, z: Int, loadChunks: Bool
 
 /** Retrieves a snapshot of an async block */
 suspend fun getBlockSnapshotAsync(world: World, x: Int, y: Int, z: Int, loadChunks: Boolean = false): BlockSnapshot? {
-	return getChunkSnapshotAsync(world, x, z, loadChunks)?.getBlockSnapshot(x, y, z)
+	val chunkX = x.shr(4)
+	val chunkZ = z.shr(4)
+
+	if (world.isChunkLoaded(chunkX, chunkZ)) {
+		val type = getBlockTypeSafe(world, x, y, z) ?: return null
+		val data = getBlockDataSafe(world, x, y, z) ?: return null
+
+		return BlockSnapshot(world, x, y, z, type, data)
+	}
+
+	if (!loadChunks) return null
+
+	val chunk = world.getChunkAtAsync(x, z).asDeferred().await()
+	val state = chunk.minecraft.getBlockState(x, y, z)
+
+	return BlockSnapshot(world, x, y, z, state.bukkitMaterial, CraftBlockData.fromData(state))
 }
 
 /** Retrieves a snapshot of an async block */
@@ -88,6 +106,11 @@ suspend fun getNMSTileEntity(block: Block, loadChunks: Boolean): BlockEntity? {
 suspend fun <T: BlockEntity> getAndCastNMSTileEntity(block: Block, loadChunks: Boolean): T? = getNMSTileEntity(block, loadChunks) as? T
 
 suspend fun getBukkitBlockState(block: Block, loadChunks: Boolean) : BukkitBlockState? {
+	// If this is the main thread, we don't need to do laggy reflection
+	if (Bukkit.isPrimaryThread()) {
+		return block.state
+	}
+
 	val world = block.world
 	val blockPos = (block as CraftBlock).position
 	val data = getBlockSnapshotAsync(world, blockPos.x, blockPos.y, blockPos.z, loadChunks)?.data ?: return null
