@@ -96,7 +96,7 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 			}
 		}
 
-		println("Traversed nodes: ${step.traversedNodes}")
+//		println("Traversed nodes: ${step.traversedNodes}")
 		step.traversedNodes.forEach {
 			it.onCompleteChain(step, this, share)
 		}

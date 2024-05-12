@@ -47,8 +47,6 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode {
 			.filterNot { step.previous.currentNode == it }
 			.randomOrNull() ?: return
 
-		println("Next node is $next")
-
 		// Simply move on to the next node
 		TransportStep(
 			step.origin,
