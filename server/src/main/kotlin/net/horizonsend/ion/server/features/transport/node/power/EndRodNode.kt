@@ -58,8 +58,6 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 			.filterNot { step.previous.currentNode == it }
 			.firstOrNull() ?: return
 
-		println("Next node is $next")
-
 		// Simply move on to the next node
 		TransportStep(
 			step.origin,
