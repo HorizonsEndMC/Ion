@@ -63,8 +63,6 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 			.filterNot { step.previous.currentNode == it }
 			.randomOrNull() ?: return
 
-		println("Next node is $next")
-
 		// Simply move on to the next node
 		TransportStep(
 			step.origin,

@@ -1,15 +1,11 @@
 package net.horizonsend.ion.server.features.transport
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot.Companion.snapshot
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.IntervalExecutor
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.Chunk
 import org.bukkit.event.block.BlockBreakEvent
@@ -20,15 +16,12 @@ class ChunkTransportManager(
 	val chunk: IonChunk,
 ) {
 	// Each chunk gets a scope for parallelism
-	val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-
 	val extractorData = getExtractorData(chunk.inner)
 
+	val scope = ChunkRegion.scope
 	val powerNetwork = ChunkPowerNetwork(this).apply {  build() }
 //	val pipeGrid = ChunkPowerNetwork(this) // TODO
 //	val gasGrid = ChunkPowerNetwork(this) // TODO
-
-
 
 	fun setup() {
 		powerNetwork.setup()
@@ -36,12 +29,8 @@ class ChunkTransportManager(
 //		gasGrid.setup()
 	}
 
-	val tickExecutor = IntervalExecutor(40) { scope.launch {
+	suspend fun tick() {
 		powerNetwork.tick()
-	}}
-
-	fun tick() {
-		tickExecutor()
 	}
 
 	fun save() {
