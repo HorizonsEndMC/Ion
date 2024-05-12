@@ -76,8 +76,6 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 
 		val next = getTransferableNodes().randomOrNull() ?: return
 
-		println("Next node is $next")
-
 		// Simply move on to the next node
 		TransportStep(step, step.steps, next, step, step.traversedNodes).invoke()
 	}
