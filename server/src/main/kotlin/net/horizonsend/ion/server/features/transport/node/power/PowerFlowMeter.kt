@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
-import com.google.common.collect.EvictingQueue
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
@@ -58,21 +57,51 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode {
 	}
 
 	private var lastStepped: Long = System.currentTimeMillis()
-	private var steps: Int = 1
-	private val averages = EvictingQueue.create<Double>(10)
+
+	private val STORED_AVERAGES = 20
+	private val averages = mutableListOf<TransferredPower>()
 
 	override suspend fun onCompleteChain(final: Step, destination: PowerInputNode, transferred: Int) {
 		final as TransportStep
 
-		val time = System.currentTimeMillis()
-		val diff = time - lastStepped
-		lastStepped = time
+		addAverage(TransferredPower(transferred, System.currentTimeMillis()))
 
-		steps++
-
-		val seconds = diff / 1000.0
-		averages.add(transferred / seconds)
-
-		network.world.sendMessage(Component.text("Running average transferred is ${averages.average()}"))
+		network.world.sendMessage(Component.text("Running average transferred is ${calculateAverage()}"))
 	}
+
+	private fun addAverage(average: TransferredPower) {
+		val currentSize = averages.size
+
+		if (currentSize < STORED_AVERAGES) {
+			averages.add(average)
+			return
+		}
+
+		// If it is full, shift all averages to the right
+		for (index in 18 downTo 0) {
+			averages[index + 1] = averages[index]
+		}
+
+		averages[0] = average
+	}
+
+	fun calculateAverage(): Double {
+		println("Averages: $averages")
+
+		val last = averages.first()
+
+		println("Last: $last")
+
+		val sum = averages.sumOf { it.transferred }
+
+		println("Transferred sum: $sum")
+
+		val timeDiff = (System.currentTimeMillis() - averages.minOf { it.time }) / 1000.0
+
+		println("Seconds diff $timeDiff")
+
+		return sum / timeDiff
+	}
+
+	private data class TransferredPower(val transferred: Int, val time: Long)
 }
