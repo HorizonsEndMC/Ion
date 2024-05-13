@@ -164,9 +164,8 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 	override suspend fun handleStep(step: Step) {
 		when (step) {
 			is TransportStep -> {
-				val next = getTransferableNodes()
-					.filterNot { step.traversedNodes.contains(it) }
-					.randomOrNull() ?: return
+				val neighbors = getTransferableNodes()
+				val next = neighbors.shuffled().firstOrNull { it !is SolarPanelNode } ?: neighbors.randomOrNull() ?: return
 
 				// Simply move on to the next node
 				TransportStep(
@@ -179,7 +178,8 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 			}
 
 			is PowerOriginStep -> {
-				val next = getTransferableNodes().randomOrNull() ?: return
+				val neighbors = getTransferableNodes()
+				val next = neighbors.shuffled().firstOrNull { it !is SolarPanelNode } ?: neighbors.randomOrNull() ?: return
 
 				// Simply move on to the next node
 				TransportStep(step, step.steps, next, step, step.traversedNodes).invoke()
