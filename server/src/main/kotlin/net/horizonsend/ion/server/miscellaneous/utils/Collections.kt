@@ -128,3 +128,13 @@ inline fun <reified T, K, V> Map<K, V>.filterKeysIsInstance(): Map<T, V> {
 	@Suppress("UNCHECKED_CAST")
 	return filterKeys { it is T } as Map<T, V>
 }
+
+inline fun <T: Any> Collection<T>.averageBy(transform: (T) -> Double): Double {
+	var total = 0.0
+
+	for (entry in this) {
+		total += transform(entry)
+	}
+
+	return total / size
+}
