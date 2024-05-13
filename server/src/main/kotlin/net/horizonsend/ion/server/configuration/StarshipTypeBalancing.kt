@@ -447,7 +447,7 @@ data class StarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
 			interdictionRange = 4500,
-			hyperspaceRangeMultiplier = 2.5,
+			hyperspaceRangeMultiplier = 3.0,
 			cruiseSpeedMultiplier = 0.88,
 			shieldPowerMultiplier = 1.30,
 			weapons = StarshipWeapons(
@@ -486,7 +486,7 @@ data class StarshipTypeBalancing(
 					volume = 0,
 					pitch = 2.0f,
 					soundName = "horizonsend:starship.weapon.turbolaser.heavy.shoot",
-					powerUsage = 8000,
+					powerUsage = 10000,
 					length = 0,
 					angleRadiansHorizontal = 0.0,
 					angleRadiansVertical = 0.0,

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 //import net.horizonsend.ion.server.features.customitems.CustomItems.CRUDE_FUEL
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.command.AnyItem
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_BLOCK
@@ -41,6 +42,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.CRUISER_REACT
 import net.horizonsend.ion.server.features.customitems.CustomItems.FUEL_CELL
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_OXYGEN
+import net.horizonsend.ion.server.features.customitems.CustomItems.NETHERITE_CASING
 import net.horizonsend.ion.server.features.customitems.CustomItems.REACTOR_FRAME
 import net.horizonsend.ion.server.features.customitems.CustomItems.REINFORCED_FRAME
 import net.horizonsend.ion.server.features.customitems.CustomItems.RIFLE
@@ -108,6 +110,7 @@ import org.bukkit.Material.MELON
 import org.bukkit.Material.MOSS_BLOCK
 import org.bukkit.Material.MOSS_CARPET
 import org.bukkit.Material.NAME_TAG
+import org.bukkit.Material.NETHERITE_BLOCK
 import org.bukkit.Material.NETHER_WART
 import org.bukkit.Material.NETHER_WART_BLOCK
 import org.bukkit.Material.OAK_LOG
@@ -644,6 +647,14 @@ object Crafting : IonServerComponent() {
 
 			setIngredient('x', CYAN_TERRACOTTA )
 			setIngredient('y', SPONGE)
+		}
+
+		itemStackShapeRecipe("netheriteCasing", NETHERITE_CASING.constructItemStack()) {
+			shape("xvx", "xyx", "xvx")
+
+			setIngredient('x', NETHERITE_BLOCK)
+			setIngredient('y', STEEL_PLATE.constructItemStack())
+			setIngredient('v', REACTIVE_HOUSING.constructItemStack())
 		}
 
 		//Reactive Housing Crafting
