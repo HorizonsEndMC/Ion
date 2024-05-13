@@ -9,7 +9,7 @@ import net.horizonsend.ion.common.utils.text.leftShift
 import net.horizonsend.ion.common.utils.text.minecraftLength
 import net.horizonsend.ion.common.utils.text.shift
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.shiftToLeftOfComponent
+import net.horizonsend.ion.common.utils.text.shiftToStartOfComponent
 import net.horizonsend.ion.common.utils.text.shiftToLine
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -17,7 +17,6 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 
 class GuiText(
     private val name: String,
-    private val backgroundChar: Char = DEFAULT_BACKGROUND_CHAR,
     private val guiWidth: Int = DEFAULT_GUI_WIDTH,
     private val initialShiftDown: Int = GUI_HEADER_MARGIN
 ) {
@@ -26,6 +25,11 @@ class GuiText(
      * The list of GuiComponents added to this GuiText
      */
     private val guiComponents = mutableListOf<GuiComponent>()
+
+    /**
+     * The backgrounds added to this GuiText
+     */
+    private val guiBackgrounds = mutableListOf<GuiBackground>()
 
     /**
      * Adds a GuiComponent to the GuiText
@@ -62,6 +66,21 @@ class GuiText(
     }
 
     /**
+     * Adds a default GuiBackground to the GuiText
+     */
+    fun addBackground() {
+        addBackground(GuiBackground())
+    }
+
+    /**
+     * Adds a GuiBackground to the GuiText
+     * @param background the GuiBackground to add
+     */
+    fun addBackground(background: GuiBackground) {
+        guiBackgrounds.add(background)
+    }
+
+    /**
      * Removes a GuiComponent at the specified line and alignment
      * @param line the line to remove the GuiComponent from
      * @param alignment the column to remove the GuiComponent from
@@ -90,13 +109,17 @@ class GuiText(
     fun build(): Component {
         val renderedComponents = mutableListOf<Component>()
 
-        // add GUI background and header
-        renderedComponents.add(customGuiBackground(backgroundChar))
-        renderedComponents.add(customGuiHeader(name))
+        // add GUI background. this operation must be performed first as subsequent text components will be placed on
+        // top of previous components
+        for (background in guiBackgrounds) {
+            renderedComponents.add(buildGuiBackground(background))
+        }
+
+        // add GUI header
+        renderedComponents.add(buildGuiHeader(name))
 
         // get sorted list of all lines in the builder
         for (line in guiComponents.map { it.line }.toSet().sorted()) {
-
 
             // get the maximum of three GuiComponents on this line
             val leftGuiComponent = guiComponents.find { it.line == line && it.alignment == TextAlignment.LEFT }
@@ -147,7 +170,7 @@ class GuiText(
                 centerTextComponent,
                 rightTextShiftComponent,
                 rightTextComponent
-            ).shiftToLine(line, initialShiftDown + verticalShift).shiftToLeftOfComponent()
+            ).shiftToLine(line, initialShiftDown + verticalShift).shiftToStartOfComponent()
 
             renderedComponents.add(currentComponent)
         }
@@ -174,20 +197,33 @@ class GuiText(
     )
 
     /**
-     * Display a custom GUI background. Assumes that the background is the same width as the Minecraft GUI (176 pixels)
-     * @param backgroundChar the character representing the background to display
+     * Stores background information for use in a GuiText
+     * @param backgroundChar the character associated with the background with the font horizonsend:special
+     * @param backgroundWidth the width that text and other usable elements within the GUI occupies. This is different
+     * from the total pixel width of the background element. By default, this should be the total pixel width minus
+     * 16, where a margin of 8 pixels is subtracted from the left and right border of the background
      */
-    private fun customGuiBackground(
-        backgroundChar: Char = DEFAULT_BACKGROUND_CHAR,
-        backgroundWidth: Int = DEFAULT_GUI_WIDTH
-    ) = leftShift(GUI_MARGIN).append(text(backgroundChar).color(WHITE).font(SPECIAL_FONT_KEY))
-            .append(leftShift(backgroundWidth))
+    data class GuiBackground(
+        val backgroundChar: Char = DEFAULT_BACKGROUND_CHAR,
+        val backgroundWidth: Int = DEFAULT_GUI_WIDTH,
+        val horizontalShift: Int = 0
+    )
+
+    /**
+     * Display a custom GUI background. Assumes that the background is the same width as the Minecraft GUI (176 pixels)
+     * @param guiBackground the GuiBackground representing the background to display
+     */
+
+    private fun buildGuiBackground(guiBackground: GuiBackground) =
+        shift(-GUI_MARGIN + guiBackground.horizontalShift)
+            .append(text(guiBackground.backgroundChar).color(WHITE).font(SPECIAL_FONT_KEY))
+            .append(leftShift(guiBackground.backgroundWidth))
 
     /**
      * Set the custom GUI header
      * @param header the title of the GUI to be displayed
      */
-    private fun customGuiHeader(header: String) = ofChildren(text(header), leftShift(header.minecraftLength))
+    private fun buildGuiHeader(header: String) = ofChildren(text(header), leftShift(header.minecraftLength))
 
     /**
      * Checks if a GuiComponent occupies the line and alignment of another GuiComponent

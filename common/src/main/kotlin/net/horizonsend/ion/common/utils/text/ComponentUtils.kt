@@ -87,23 +87,26 @@ val SPECIAL_FONT_KEY = Key.key("horizonsend:special")
 private fun yFontKey(y: Int) = Key.key("horizonsend:y$y")
 
 const val TEXT_HEIGHT = 9
+// DEFAULT_GUI_WIDTH is the width that text will be formatted within. The actual GUI image width will be this plus
+// some margin, usually 8 pixels for each side. The default GUI width in pixels is 176 pixels wide (with an additional
+// spacer pixel).
 const val DEFAULT_GUI_WIDTH = 169
 const val GUI_MARGIN = 8
 const val GUI_HEADER_MARGIN = 3
 
 const val SHIFT_LEFT_MIN = 1
-const val SHIFT_LEFT_MAX = 169
+const val SHIFT_LEFT_MAX = 256
 const val SHIFT_RIGHT_MIN = 1
-const val SHIFT_RIGHT_MAX = 169
+const val SHIFT_RIGHT_MAX = 256
 const val SHIFT_DOWN_MIN = 1
 const val SHIFT_DOWN_MAX = 110
 
 // Custom characters begin
 
 const val SHIFT_LEFT_BEGIN = 0xE000
-const val SHIFT_LEFT_END = 0xE0A8
+const val SHIFT_LEFT_END = 0xE0FF
 const val SHIFT_RIGHT_BEGIN = 0xE100
-const val SHIFT_RIGHT_END = 0xE1A8
+const val SHIFT_RIGHT_END = 0xE1FF
 
 const val SHIFT_LEFT_BEGIN_MIN_1 = 0xDFFF
 const val SHIFT_RIGHT_BEGIN_MIN_1 = 0xE0FF
@@ -144,9 +147,9 @@ val String.minecraftLength: Int
  * @param shift number of pixels to shift left between -169 and -1, or number of pixels to shift right between 1 and 169
  */
 fun shift(shift: Int): Component {
-	return when (shift) {
-		in SHIFT_RIGHT_MIN..SHIFT_RIGHT_MAX -> rightShift(shift)
-		in -SHIFT_LEFT_MAX..-SHIFT_LEFT_MIN -> leftShift(-shift)
+	return when {
+		shift > 0 -> rightShift(shift) // positive = right
+		shift < 0 -> leftShift(-shift) // negative = left
 		else -> empty()
 	}
 }
@@ -157,6 +160,10 @@ fun shift(shift: Int): Component {
  */
 fun leftShift(shift: Int): Component = if (shift in SHIFT_LEFT_MIN..SHIFT_LEFT_MAX) {
 	text((SHIFT_LEFT_BEGIN_MIN_1 + shift).toChar()).font(SPECIAL_FONT_KEY)
+} else if (shift > 0) {
+	// more than one line: chain multiple 256 left shifts and a remainder shift
+	text(repeatString(SHIFT_LEFT_END.toChar().toString(), shift / SHIFT_LEFT_MAX) +
+			(SHIFT_LEFT_BEGIN_MIN_1 + (shift % SHIFT_LEFT_MAX)).toChar()).font(SPECIAL_FONT_KEY)
 } else empty()
 
 /**
@@ -165,13 +172,17 @@ fun leftShift(shift: Int): Component = if (shift in SHIFT_LEFT_MIN..SHIFT_LEFT_M
  */
 fun rightShift(shift: Int): Component = if (shift in SHIFT_RIGHT_MIN..SHIFT_RIGHT_MAX) {
 	text((SHIFT_RIGHT_BEGIN_MIN_1 + shift).toChar()).font(SPECIAL_FONT_KEY)
+} else if (shift > 0) {
+	// more than one line: chain multiple 256 right shifts and a remainder shift
+	text(repeatString(SHIFT_RIGHT_END.toChar().toString(), shift / SHIFT_RIGHT_MAX) +
+			(SHIFT_RIGHT_BEGIN_MIN_1 + (shift % SHIFT_RIGHT_MAX)).toChar()).font(SPECIAL_FONT_KEY)
 } else empty()
 
 /**
- * Add a left shift that returns the text to the left (beginning) of the Component
+ * Add a horizontal shift that returns the text to the start position of the Component
  */
-fun Component.shiftToLeftOfComponent(): Component {
-	return this.append(leftShift(this.minecraftLength))
+fun Component.shiftToStartOfComponent(): Component {
+	return this.append(shift(-this.minecraftLength))
 }
 
 /**

@@ -114,9 +114,24 @@ object AchievementsCommand : SLCommand() {
 
 		val text = GuiText("WE WORK TO EARN THE RIGHT")
 		val componentList = originalText.wrap(DEFAULT_GUI_WIDTH - GUI_MARGIN)
+		/*
 		for ((index, component) in componentList.withIndex()) {
 			text.add(component, line = index, verticalShift = GUI_HEADER_MARGIN)
 		}
+		 */
+		text.addBackground()
+		//text.addBackground(GuiText.GuiBackground(horizontalShift = DEFAULT_GUI_WIDTH))
+		text.addBackground(GuiText.GuiBackground(horizontalShift = -DEFAULT_GUI_WIDTH - GUI_MARGIN))
+		text.addBackground(GuiText.GuiBackground(horizontalShift = DEFAULT_GUI_WIDTH * 2 + GUI_MARGIN * 2))
+
+		text.add(Component.text("WE WORK TO EARN THE RIGHT TO WORK"), line = 1, horizontalShift = 40)
+		text.add(Component.text("TO EARN THE RIGHT TO WORK"), line = 2, horizontalShift = 80)
+		text.add(Component.text("TO EARN THE RIGHT TO WORK"), line = 3, horizontalShift = 120)
+		text.add(Component.text("TO EARN THE RIGHT TO WORK"), line = 4, horizontalShift = 160)
+		text.add(Component.text("TO EARN THE RIGHT TO WORK"), line = 5, horizontalShift = 200)
+		text.add(Component.text("TO EARN THE RIGHT TO WORK"), line = 6, horizontalShift = 240)
+		text.add(Component.text("TO EARN THE RIGHT TO WORK"), line = 7, horizontalShift = 280)
+		text.add(Component.text("TO EARN THE RIGHT TO WORK"), line = 8, horizontalShift = 320)
 
 		val window = Window.single()
 			.setViewer(sender)
