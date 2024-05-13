@@ -1,9 +1,12 @@
 package net.horizonsend.ion.server.features.customblocks
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.server.features.customitems.CustomBlockItem
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -114,6 +117,13 @@ object CustomBlocks {
 		tool = "pickaxe",
 		drops = customItemDrop("ENRICHED_URANIUM_BLOCK")
 	))
+
+    val NETHERITE_CASING = register(CustomBlock(
+        identifier = "NETHERITE_CASING",
+        blockData = mushroomBlockData(setOf(WEST,NORTH,DOWN,UP)),
+        tool = "pickaxe",
+        drops = customItemDrop("NETHERITE_CASING")
+    ))
 
     val RAW_URANIUM_BLOCK = register(CustomBlock(
         identifier = "RAW_URANIUM_BLOCK",

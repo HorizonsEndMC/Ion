@@ -5,6 +5,8 @@ import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.customblocks.CustomBlocks.CRUISER_REACTOR_CORE
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks.NETHERITE_CASING
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10.buildStructure
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.Wires
@@ -261,6 +263,8 @@ class MultiblockShape {
 		fun bcReactorCore() = customBlock(BATTLECRUISER_REACTOR_CORE)
 		fun bargeReactorCore() = customBlock(BARGE_REACTOR_CORE)
 		fun cruiserReactorCore() = customBlock(CRUISER_REACTOR_CORE)
+		fun netheriteCasing() = customBlock(NETHERITE_CASING)
+		fun enrichedUraniumBlock() = customBlock(ENRICHED_URANIUM_BLOCK)
 		fun stainedGlass() = filteredTypes { it.isStainedGlass }
 		fun anyGlass() = filteredTypes { it.isGlass }
 		fun seaLantern() = type(Material.SEA_LANTERN)
