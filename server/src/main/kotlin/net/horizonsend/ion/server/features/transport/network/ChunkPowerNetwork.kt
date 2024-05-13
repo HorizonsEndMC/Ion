@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
@@ -25,10 +26,14 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
 class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(manager) {
-	val poweredMultiblockEntities = ConcurrentHashMap<Long, PoweredMultiblockEntity>()
-
+	override val type: NetworkType = NetworkType.POWER
 	override val namespacedKey: NamespacedKey = NamespacedKeys.POWER_TRANSPORT
 	override val nodeFactory: PowerNodeFactory = PowerNodeFactory(this)
+
+	/**
+	 * A list of all the powered multiblock entities within the chunk
+	 **/
+	val poweredMultiblockEntities = ConcurrentHashMap<Long, PoweredMultiblockEntity>()
 
 	/** Store solar panels for ticking */
 	val solarPanels: ObjectOpenHashSet<SolarPanelNode> = ObjectOpenHashSet()
