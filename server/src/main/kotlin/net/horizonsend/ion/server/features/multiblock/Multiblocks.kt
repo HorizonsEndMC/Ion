@@ -54,6 +54,8 @@ import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMu
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier2Top
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier3Bottom
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier3Top
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Bottom
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Top
 import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
@@ -121,6 +123,7 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopQ
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopTriTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.supercapreactor.BCReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.supercapreactor.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.supercapreactor.BargeReactorMultiBlock
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamStarshipWeaponMultiblockTop
@@ -258,6 +261,8 @@ object Multiblocks : IonServerComponent() {
 			MiningLaserMultiblockTier2Bottom,
 			MiningLaserMultiblockTier3Top,
 			MiningLaserMultiblockTier3Bottom,
+			MiningLaserMultiblockTier4Top,
+			MiningLaserMultiblockTier4Bottom,
 			TopArsenalStarshipWeaponMultiblock,
 			BottomArsenalStarshipWeaponMultiblock,
 
@@ -290,7 +295,8 @@ object Multiblocks : IonServerComponent() {
 //			AntiAirCannonTurretMultiblock,
 
 			BCReactorMultiblock,
-			CruiserReactorMultiblock
+			CruiserReactorMultiblock,
+			BargeReactorMultiBlock
 		)
 	}
 

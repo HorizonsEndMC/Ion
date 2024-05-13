@@ -412,6 +412,14 @@ object CustomItems {
 
 	// Industry start
 
+	val NETHERITE_CASING = register(object: CustomBlockItem(
+		identifier = "NETHERITE_CASING",
+		material = IRON_BLOCK,
+		customModelData = 1400,
+		displayName = text("Netherite Casing").decoration(ITALIC, false),
+		customBlockIdentifier = "NETHERITE_CASING"
+	) {})
+
 	// Uranium line
 	val ENRICHED_URANIUM = register(object: MineralItem(
 		identifier = "ENRICHED_URANIUM",
