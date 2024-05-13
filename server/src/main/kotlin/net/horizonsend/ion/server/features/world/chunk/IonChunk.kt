@@ -59,6 +59,7 @@ class IonChunk(
 	 **/
 	fun onUnload() {
 		save()
+		transportNetwork.onUnload()
 	}
 
 	/**

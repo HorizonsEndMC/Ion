@@ -5,19 +5,13 @@ import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot.Compani
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import org.bukkit.Chunk
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import java.util.concurrent.ConcurrentLinkedQueue
 
 class ChunkTransportManager(
 	val chunk: IonChunk,
 ) {
-	// Each chunk gets a scope for parallelism
-	val extractorData = getExtractorData(chunk.inner)
-
 	val scope = ChunkRegion.scope
 	val powerNetwork = ChunkPowerNetwork(this).apply {  build() }
 //	val pipeGrid = ChunkPowerNetwork(this) // TODO
@@ -25,16 +19,26 @@ class ChunkTransportManager(
 
 	fun setup() {
 		powerNetwork.setup()
-//		pipeGrid.setup()
-//		gasGrid.setup()
+		// TODO
+		// TODO
 	}
 
 	suspend fun tick() {
 		powerNetwork.tick()
+		// TODO
+		// TODO
+	}
+
+	fun onUnload() {
+		powerNetwork.onUnload()
+		// TODO
+		// TODO
 	}
 
 	fun save() {
 		powerNetwork.save(chunk.inner.persistentDataContainer.adapterContext)
+		// TODO
+		// TODO
 	}
 
 	fun processBlockRemoval(event: BlockBreakEvent) {
@@ -55,19 +59,17 @@ class ChunkTransportManager(
 
 	fun processBlockRemoval(key: Long) {
 		powerNetwork.processBlockRemoval(key)
+		// TODO
+		// TODO
 //		pipeGrid.processBlockRemoval(key)
 //		gasGrid.processBlockRemoval(key)
 	}
 
 	fun processBlockAddition(key: Long, new: BlockSnapshot) {
 		powerNetwork.processBlockAddition(key, new)
+		// TODO
+		// TODO
 //		pipeGrid.processBlockAddition(key, new)
 //		gasGrid.processBlockAddition(key, new)
-	}
-
-	private fun getExtractorData(chunk: Chunk): ExtractorData {
-		val extractors = chunk.persistentDataContainer.get(NamespacedKeys.EXTRACTOR_DATA, ExtractorData)
-
-		return extractors ?: ExtractorData(ConcurrentLinkedQueue())
 	}
 }
