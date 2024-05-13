@@ -17,7 +17,7 @@ class ChunkRegion(val world: IonWorld) {
 
 	val size get() = chunks.long2ObjectEntrySet().size
 
-	val tickChunkTransport = IntervalExecutor(40) {
+	val tickChunkTransport = IntervalExecutor(4) {
 
 		scope.launch {
 			for ((_, chunk) in chunks) {
