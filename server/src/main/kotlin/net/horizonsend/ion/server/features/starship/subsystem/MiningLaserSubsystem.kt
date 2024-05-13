@@ -50,7 +50,7 @@ class MiningLaserSubsystem(
 		pitch = 0.0f,
 		soundName = "",
 		powerUsage = 0,
-		length = 0,
+		length = 0 ,
 		angleRadiansHorizontal = 0.0,
 		angleRadiansVertical = 0.0,
 		convergeDistance = 0.0,
