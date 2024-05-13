@@ -59,7 +59,7 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 	override suspend fun buildRelations(position: BlockKey) {
 		for (offset in ADJACENT_BLOCK_FACES) {
 			val offsetKey = getRelative(position, offset, 1)
-			val neighborNode = network.nodes[offsetKey] ?: continue
+			val neighborNode = network.getNode(offsetKey) ?: continue
 
 			if (this == neighborNode) continue
 
