@@ -7,11 +7,16 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DATA_VERSION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODES
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.seconds
 import org.bukkit.NamespacedKey
@@ -29,10 +34,9 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	val pdc get() = manager.chunk.inner.persistentDataContainer
 
 	protected abstract val namespacedKey: NamespacedKey
+	protected abstract val type: NetworkType
 	abstract val nodeFactory: NodeFactory<*>
 	abstract val dataVersion: Int
-
-// val grids: Nothing = TODO("ChunkTransportNetwork system")
 
 	open fun setup() {}
 
@@ -106,7 +110,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	/**
 	 * Logic for when the holding chunk is unloaded
 	 **/
-	open fun onUnload() {
+	fun onUnload() {
 		// Break cross chunk relations
 		breakAllRelations()
 
@@ -132,7 +136,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	}
 
 	/**
-	 *
+	 * Build node data from an unregistered state
 	 **/
 	private fun collectAllNodes(): Job = manager.scope.launch {
 		// Parallel collect the nodes of each section
@@ -182,12 +186,37 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	 **/
 	open fun finalizeNodes() {}
 
+	fun breakAllRelations() {
+		nodes.values.forEach { it.clearRelations() }
+	}
+
 	fun getNode(x: Int, y: Int, z: Int): TransportNode? {
 		val key = toBlockKey(x, y, z)
 		return nodes[key]
 	}
 
-	fun breakAllRelations() {
-		nodes.values.forEach { it.clearRelations() }
+	/**
+	 * Gets a node from this chunk, or a direct neighbor, if loaded
+	 **/
+	fun getNode(key: BlockKey, allowNeighborChunks: Boolean = true): TransportNode? {
+		val chunkX = getX(key).shr(4)
+		val chunkZ = getZ(key).shr(4)
+
+		val isThisChunk = chunkX == manager.chunk.x && chunkZ == manager.chunk.z
+
+		if (!allowNeighborChunks && isThisChunk) return null
+
+		if (isThisChunk) {
+			return nodes[key]
+		}
+
+		val xDiff = manager.chunk.x - chunkX
+		val zDiff = manager.chunk.z - chunkZ
+
+		if (xDiff > 1 || xDiff < -1) return null
+		if (zDiff > 1 || zDiff < -1) return null
+
+		val chunk = IonChunk[world, chunkX, chunkZ] ?: return null
+		return type.get(chunk).nodes[key]
 	}
 }
