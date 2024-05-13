@@ -86,19 +86,19 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode {
 	}
 
 	fun calculateAverage(): Double {
-		println("Averages: $averages")
+//		println("Averages: $averages")
 
 		val last = averages.first()
 
-		println("Last: $last")
+//		println("Last: $last")
 
 		val sum = averages.sumOf { it.transferred }
 
-		println("Transferred sum: $sum")
+//		println("Transferred sum: $sum")
 
 		val timeDiff = (System.currentTimeMillis() - averages.minOf { it.time }) / 1000.0
 
-		println("Seconds diff $timeDiff")
+//		println("Seconds diff $timeDiff")
 
 		return sum / timeDiff
 	}
