@@ -83,6 +83,7 @@ object Achievements {
 		// create a new GuiText builder
 		val header = "${player.name}'s Achievements"
 		val guiText = GuiText(header)
+		guiText.addBackground()
 
 		// get the index of the first achievement to display for this page
 		val startIndex = currentPage * ACHIEVEMENTS_PER_PAGE
