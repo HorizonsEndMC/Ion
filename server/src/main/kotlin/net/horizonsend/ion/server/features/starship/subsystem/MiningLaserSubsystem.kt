@@ -69,7 +69,7 @@ class MiningLaserSubsystem(
 	override val powerUsage: Int = 0
 
 	// Power used per block broken
-	private val blockBreakPowerUsage: Double = 6.0
+	private val blockBreakPowerUsage: Double = 9.0
 
 	// Save some calc time
 	private val radiusSquared = multiblock.mineRadius * multiblock.mineRadius
