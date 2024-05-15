@@ -27,6 +27,6 @@ class QuadTurretWeaponSubsystem(
 	override val permission: String = "ion.multiblock.quadturret"
 
 	override fun getRequiredAmmo(): ItemStack {
-		return CustomItems.LOADED_TURRET_SHELL.constructItemStack()
+		return CustomItems.LOADED_SHELL.constructItemStack()
 	}
 }
