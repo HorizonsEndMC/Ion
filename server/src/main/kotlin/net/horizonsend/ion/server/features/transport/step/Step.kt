@@ -33,7 +33,7 @@ data class PowerOriginStep(
 	override val steps: AtomicInteger,
 	override val currentNode: TransportNode,
 	var power: Int,
-	override val traversedNodes: MutableSet<TransportNode>,
+	override val traversedNodes: MutableSet<TransportNode> = mutableSetOf(),
 	override val share: Float = 1f
 ) : Step
 
