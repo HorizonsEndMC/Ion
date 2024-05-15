@@ -304,7 +304,7 @@ enum class StarshipType(
 			maxSize = 20000,
 			minLevel = 80,
 			containerPercent = 0.025,
-			crateLimitMultiplier = 0.5,
+			crateLimitMultiplier = 0.0,
 			menuItemMaterial = Material.DIAMOND_BLOCK,
 			isWarship = true,
 			color = "#0c5ce8",
