@@ -63,6 +63,10 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			throw StarshipMovementException("Battlecruisers cannot support their weight within strong gravity wells!")
 		}
 
+		if (starship.type == StarshipType.BARGE && !SpaceWorlds.contains(world2)) {
+			throw StarshipMovementException("Barges cannot support their weight within strong gravity wells!")
+		}
+
 		if (!ActiveStarships.isActive(starship)) {
 			starship.serverError("Starship not active, movement cancelled.")
 			return

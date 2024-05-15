@@ -414,6 +414,12 @@ object PilotedStarships : IonServerComponent() {
 				return@activateAsync
 			}
 
+			if (activePlayerStarship.type == StarshipType.BARGE && (!SpaceWorlds.contains(activePlayerStarship.world) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
+				player.userError("Barges can only be piloted in space!")
+				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+				return@activateAsync
+			}
+
 			// Check required subsystems
 			for (requiredSubsystem in activePlayerStarship.balancing.requiredMultiblocks) {
 				if (!requiredSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
