@@ -21,6 +21,7 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
 import kotlin.math.PI
 import kotlin.math.max
@@ -232,6 +233,13 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 			is PowerOriginStep -> TransportStep(step, step.steps, next, step, step.traversedNodes)
 			else -> throw NotImplementedError("Unrecognized step type $step")
 		}.invoke()
+	}
+
+	override suspend fun startStep(): PowerOriginStep? {
+		val power = tickAndGetPower()
+		if (power <= 0) return null
+
+		return PowerOriginStep(AtomicInteger(), this, power)
 	}
 
 	override fun loadIntoNetwork() {

@@ -15,10 +15,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.min
 import kotlin.properties.Delegates
 
 class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, SourceNode {
-	// The position will always be set
 	override var position by Delegates.notNull<Long>()
 
 	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
@@ -29,6 +30,7 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 	val extractableNodes: MutableSet<PowerInputNode> get() = relationships.mapNotNullTo(mutableSetOf()) { it.sideTwo.node as? PowerInputNode }
 
+	/** Whether this node would be useful to extract from this node */
 	val useful get() = extractableNodes.size >= 1
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
@@ -78,6 +80,19 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 
 		// Simply move on to the next node
 		TransportStep(step, step.steps, next, step, step.traversedNodes).invoke()
+	}
+
+	override suspend fun startStep(): PowerOriginStep? {
+		if (extractableNodes.isEmpty()) return null
+
+		val extractablePowerPool = extractableNodes.flatMap { it.multis }
+		val sum = extractablePowerPool.sumOf { it.getPower() }
+
+		if (sum == 0) return null
+
+		val extractablePower = min(sum, ChunkPowerNetwork.POWER_EXTRACTOR_STEP)
+
+		return PowerOriginStep(AtomicInteger(), this, extractablePower)
 	}
 
 	override fun toString(): String = "POWER Extractor NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
