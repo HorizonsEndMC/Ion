@@ -21,6 +21,7 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
+import java.util.function.Consumer
 import kotlin.math.PI
 import kotlin.math.max
 import kotlin.math.sin
@@ -30,13 +31,98 @@ import kotlin.math.sin
  **/
 class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarPanelNode, SolarPanelNode>, SourceNode {
 	override val positions: MutableSet<BlockKey> = LongOpenHashSet()
+	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
+
 	/** The positions of extractors in this solar panel */
-	val extractorPositions = LongOpenHashSet()
+	private val extractorPositions = LongOpenHashSet()
 
 	/** The number of solar cells contained in this node */
-	val cellNumber: Int get() = extractorPositions.size
+	private val cellNumber: Int get() = extractorPositions.size
 
-	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
+	/**
+	 * The distance this solar node is from the nearest exit of the solar field
+	 * This value will be -1 if there are no exits present
+	 **/
+	private var exitDistance: Int = 0
+
+	private var lastTicked: Long = System.currentTimeMillis()
+
+	/**
+	 * Returns the amount of power between ticks
+	 **/
+	fun getPower(): Int {
+		val daylightMultiplier: Double = if (
+			network.world.environment == World.Environment.NORMAL &&
+			network.world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE) == true
+		) {
+			val daylight = sin((network.world.time / (12000.0 / PI)) - (PI / 2))
+			max(0.0, daylight) * 1.5 // 1.5 to bring area under curve to around equal with night
+		} else 0.5
+
+		val time = System.currentTimeMillis()
+		val diff = time - this.lastTicked
+
+		return ((diff / 1000.0) * POWER_PER_SECOND * cellNumber * daylightMultiplier).toInt()
+	}
+
+	/**
+	 * Get the power and reset the last ticked time
+	 **/
+	fun tickAndGetPower(): Int {
+		val power = getPower()
+		lastTicked = System.currentTimeMillis()
+
+		return power
+	}
+
+	/**
+	 * Calculate the distance to an exit of a solar field
+	 * This method is run upon neighbor unloads
+	 **/
+	private fun calculateExitDistance() {
+		val neighbors = getTransferableNodes()
+
+		// Borders an exit
+		if (neighbors.any { it !is SolarPanelNode }) {
+			exitDistance = 0
+			return
+		}
+
+		val solars = neighbors.filterIsInstance<SolarPanelNode>()
+		if (solars.isEmpty()) {
+			exitDistance = -1
+			return
+		}
+
+		exitDistance = solars.minOf { it.exitDistance } + 1
+	}
+
+	/**
+	 * Execute the provided consumer across every interconnected solar node
+	 *
+	 * WARNING: use this carefully
+	 **/
+	private fun traverseField(visited: MutableList<SolarPanelNode> = mutableListOf(), consumer: Consumer<SolarPanelNode>) {
+		if (visited.contains(this)) return
+
+		consumer.accept(this)
+
+		getTransferableNodes().filterIsInstance<SolarPanelNode>().filterNot { visited.contains(it) }.forEach(consumer)
+	}
+
+	/**
+	 * Returns whether the individual solar panel from the extractor location is intact
+	 **/
+	suspend fun isIntact(world: World, extractorKey: BlockKey): Boolean {
+		return matchesSolarPanelStructure(world, extractorKey)
+	}
+
+	// If relations have changed, update the exit distances of the whole field
+	override suspend fun buildRelations(position: BlockKey) {
+		traverseField { it.calculateExitDistance() }
+
+		super.buildRelations(position)
+	}
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		// Solar panels should be able to transfer through extractors and other solar panels
@@ -96,13 +182,13 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		return this
 	}
 
-	fun removePosition(extractorKey: BlockKey, others: Iterable<BlockKey>) {
+	private fun removePosition(extractorKey: BlockKey, others: Iterable<BlockKey>) {
 		extractorPositions -= extractorKey
-		network.nodes.remove(extractorKey)
 		positions.remove(extractorKey)
+		network.nodes.remove(extractorKey)
+		positions.removeAll(others.toSet())
 
-		positions += others
-		for (position: BlockKey in positions) {
+		for (position: BlockKey in others) {
 			network.nodes.remove(position)
 		}
 	}
@@ -127,66 +213,25 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		new.extractorPositions.addAll(extractorPositions)
 	}
 
-	var lastTicked: Long = System.currentTimeMillis()
-
-	/**
-	 * Returns the amount of power between ticks
-	 **/
-	fun getPower(): Int {
-		val daylightMultiplier: Double = if (
-			network.world.environment == World.Environment.NORMAL &&
-			network.world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE) == true
-		) {
-			val daylight = sin((network.world.time / (12000.0 / PI)) - (PI / 2))
-			max(0.0, daylight) * 1.5 // 1.5 to bring area under curve to around equal with night
-		} else 0.5
-
-		val time = System.currentTimeMillis()
-		val diff = time - this.lastTicked
-
-		return ((diff / 1000.0) * POWER_PER_SECOND * cellNumber * daylightMultiplier).toInt()
+	private fun findClosestOrExit(): TransportNode? {
+		val neighbors = getTransferableNodes()
+		return neighbors.shuffled().firstOrNull { it !is SolarPanelNode } ?:
+			neighbors
+				.filterIsInstance<SolarPanelNode>()
+				.shuffled() // Make sure the lowest priority, if multiple is random every time
+				.minByOrNull { it.exitDistance }
 	}
 
-	fun tickAndGetPower(): Int {
-		val power = getPower()
-		lastTicked = System.currentTimeMillis()
-
-		return power
-	}
-
-	/**
-	 * Returns whether the individual solar panel from the extractor location is intact
-	 **/
-	suspend fun isIntact(world: World, extractorKey: BlockKey): Boolean {
-		return matchesSolarPanelStructure(world, extractorKey)
-	}
-
+	// Solar panel pathfinding logic:
+	// Find the closest exit from the solar fiend and transfer to it
 	override suspend fun handleStep(step: Step) {
+		val next = findClosestOrExit() ?: return
+
 		when (step) {
-			is TransportStep -> {
-				val neighbors = getTransferableNodes()
-				val next = neighbors.shuffled().firstOrNull { it !is SolarPanelNode } ?: neighbors.randomOrNull() ?: return
-
-				// Simply move on to the next node
-				TransportStep(
-					step.origin,
-					step.steps,
-					next,
-					step,
-					step.traversedNodes
-				).invoke()
-			}
-
-			is PowerOriginStep -> {
-				val neighbors = getTransferableNodes()
-				val next = neighbors.shuffled().firstOrNull { it !is SolarPanelNode } ?: neighbors.randomOrNull() ?: return
-
-				// Simply move on to the next node
-				TransportStep(step, step.steps, next, step, step.traversedNodes).invoke()
-			}
-
+			is TransportStep -> TransportStep(step.origin, step.steps, next, step, step.traversedNodes)
+			is PowerOriginStep -> TransportStep(step, step.steps, next, step, step.traversedNodes)
 			else -> throw NotImplementedError("Unrecognized step type $step")
-		}
+		}.invoke()
 	}
 
 	override fun loadIntoNetwork() {
@@ -209,5 +254,4 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 	}
 
 	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
-
 }
