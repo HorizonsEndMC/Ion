@@ -14,16 +14,14 @@ import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNo
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerNodeFactory
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
-import net.horizonsend.ion.server.features.transport.step.PowerOriginStep
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.filterValuesIsInstance
 import org.bukkit.NamespacedKey
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.min
 
 class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(manager) {
 	override val type: NetworkType = NetworkType.POWER
@@ -58,28 +56,17 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 
 	private suspend fun tickSolars() {
 		for (solarPanel in nodes.filterValuesIsInstance<SolarPanelNode, BlockKey, TransportNode>().values.distinct()) {
-			val power = solarPanel.tickAndGetPower()
-
-			if (power <= 0) continue
-
-			runCatching { solarPanel.handleStep(PowerOriginStep(AtomicInteger(), solarPanel, power, mutableSetOf(solarPanel))) }.onFailure {
+			runCatching { solarPanel.startStep()?.invoke() }.onFailure {
 				IonServer.slF4JLogger.error("Exception ticking solar panel! $it")
 				it.printStackTrace()
 			}
 		}
 	}
 
-	private suspend fun tickExtractors() {
-		for ((_, extractor) in extractors) {
-			if (!extractor.useful) continue
-
-			val extractablePowerPool = extractor.extractableNodes.flatMap { it.multis }
-			val sum = extractablePowerPool.sumOf { it.getPower() }
-			val extractablePower = min(sum, POWER_EXTRACTOR_STEP)
-
-			runCatching { extractor.handleStep(PowerOriginStep(AtomicInteger(), extractor, extractablePower, mutableSetOf(extractor))) }.onFailure {
-				it.printStackTrace()
-			}
+	private suspend fun tickExtractors() = extractors.forEach { (key, extractor) ->
+		runCatching { extractor.startStep()?.invoke() }.onFailure {
+			IonServer.slF4JLogger.error("Exception ticking extractor at ${toVec3i(key)}! $it")
+			it.printStackTrace()
 		}
 	}
 
@@ -114,7 +101,6 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 			poweredMultiblockEntities[key] = entity
 		}
 	}
-
 
 	companion object {
 		const val POWER_EXTRACTOR_STEP = 1000
