@@ -132,7 +132,7 @@ object WaypointManager : IonServerComponent() {
         graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
         name: String
     ): WaypointVertex? {
-        return graph.vertexSet().find { it.name == name }
+        return graph.vertexSet().find { it.name.equals(name, ignoreCase = true) }
     }
 
     private fun connectVerticesInSameWorld(

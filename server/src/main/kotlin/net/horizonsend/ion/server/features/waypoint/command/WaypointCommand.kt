@@ -46,7 +46,7 @@ object WaypointCommand : SLCommand() {
         }
         val vertex = WaypointManager.getVertex(playerGraph, option)
         if (vertex == null) {
-            sender.userError("Vertex not found")
+            sender.userError("Entered destination not found")
             return
         }
         if (WaypointManager.getLastWaypoint(sender) == vertex.name) {
