@@ -9,7 +9,7 @@ import java.util.EnumSet
 TODO: This should be loaded from a configuration file.
 */
 
-const val algorithmVersion = 10
+const val algorithmVersion = 11
 
 @Suppress("unused")
 enum class OrePlacementConfig(
@@ -25,7 +25,8 @@ enum class OrePlacementConfig(
 			Material.COBBLED_DEEPSLATE
 		),
 		mapOf(
-			Ore.Titanium to 3
+			Ore.Titanium to 3,
+			Ore.Aluminium to 2
 		)
 	),
 	Ilius(
@@ -89,6 +90,7 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
+			Ore.Chetherite to 2,
 			Ore.Coal to 2
 		)
 	),
@@ -99,7 +101,8 @@ enum class OrePlacementConfig(
 			Material.ORANGE_TERRACOTTA
 		),
 		mapOf(
-			Ore.Copper to 2
+			Ore.Copper to 2,
+			Ore.Redstone to 2
 		)
 	),
 	Gahara(
@@ -126,7 +129,8 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
-			Ore.Aluminium to 2
+			Ore.Netherite to 2,
+			Ore.Gold to 2
 		),
 		configVersion = 1
 	),
@@ -169,7 +173,7 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
-			Ore.Coal to 3,
+			Ore.Uranium to 2,
 			Ore.Gold to 2
 		)
 	),
@@ -207,6 +211,16 @@ enum class OrePlacementConfig(
 		mapOf(
 			Ore.Lapis to 3,
 			Ore.Emerald to 2
+		)
+	),
+	world_horizonsend_eden(
+		enumSetOf(
+			Material.STONE,
+			// TODO: Get the stone mix for Eden here
+		),
+		mapOf(
+			Ore.Iron to 2,
+			Ore.Chetherite to 2
 		)
 	);
 
