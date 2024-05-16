@@ -213,10 +213,12 @@ enum class OrePlacementConfig(
 			Ore.Emerald to 2
 		)
 	),
-	world_horizonsend_eden(
+	Ilius_horizonsend_eden(
 		enumSetOf(
 			Material.STONE,
-			// TODO: Get the stone mix for Eden here
+			Material.DEEPSLATE,
+			Material.POLISHED_DEEPSLATE,
+			Material.COBBLED_DEEPSLATE
 		),
 		mapOf(
 			Ore.Iron to 2,
