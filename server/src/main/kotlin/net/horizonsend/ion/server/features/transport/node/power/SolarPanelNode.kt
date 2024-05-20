@@ -8,9 +8,9 @@ import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
-import net.horizonsend.ion.server.features.transport.step.PowerOriginStep
+import net.horizonsend.ion.server.features.transport.step.PowerTransportStep
+import net.horizonsend.ion.server.features.transport.step.SolarPowerOriginStep
 import net.horizonsend.ion.server.features.transport.step.Step
-import net.horizonsend.ion.server.features.transport.step.TransportStep
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_EXTRACTORS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -71,6 +71,7 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 	 **/
 	fun tickAndGetPower(): Int {
 		val power = getPower()
+
 		lastTicked = System.currentTimeMillis()
 
 		return power
@@ -229,17 +230,19 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		val next = findClosestOrExit() ?: return
 
 		when (step) {
-			is TransportStep -> TransportStep(step.origin, step.steps, next, step, step.traversedNodes)
-			is PowerOriginStep -> TransportStep(step, step.steps, next, step, step.traversedNodes)
+			is PowerTransportStep -> PowerTransportStep(step.origin, step.steps, next, step, step.traversedNodes)
+			is SolarPowerOriginStep -> PowerTransportStep(step, step.steps, next, step, step.traversedNodes)
 			else -> throw NotImplementedError("Unrecognized step type $step")
 		}.invoke()
 	}
 
-	override suspend fun startStep(): PowerOriginStep? {
+	override suspend fun startStep(): SolarPowerOriginStep? {
 		val power = tickAndGetPower()
 		if (power <= 0) return null
 
-		return PowerOriginStep(AtomicInteger(), this, power)
+//		println("Starting solar step")
+
+		return SolarPowerOriginStep(AtomicInteger(), this, power)
 	}
 
 	override fun loadIntoNetwork() {
@@ -261,5 +264,5 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		}
 	}
 
-	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
+	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes, distance = $exitDistance"
 }
