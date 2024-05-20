@@ -6,9 +6,9 @@ import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
-import net.horizonsend.ion.server.features.transport.step.PowerOriginStep
+import net.horizonsend.ion.server.features.transport.step.PowerExtractorOriginStep
+import net.horizonsend.ion.server.features.transport.step.PowerTransportStep
 import net.horizonsend.ion.server.features.transport.step.Step
-import net.horizonsend.ion.server.features.transport.step.TransportStep
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -17,6 +17,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
 class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, SourceNode {
@@ -29,9 +30,6 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 	val extractableNodes: MutableSet<PowerInputNode> get() = relationships.mapNotNullTo(mutableSetOf()) { it.sideTwo.node as? PowerInputNode }
-
-	/** Whether this node would be useful to extract from this node */
-	val useful get() = extractableNodes.size >= 1
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		if (node is PowerInputNode) return false
@@ -74,25 +72,33 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 
 	override suspend fun handleStep(step: Step) {
 		// Nothing can transfer to extractors
-		step as PowerOriginStep
+		step as PowerExtractorOriginStep
 
 		val next = getTransferableNodes().randomOrNull() ?: return
 
 		// Simply move on to the next node
-		TransportStep(step, step.steps, next, step, step.traversedNodes).invoke()
+		PowerTransportStep(step, step.steps, next, step, step.traversedNodes).invoke()
 	}
 
-	override suspend fun startStep(): PowerOriginStep? {
+	var lastTicked: Long = System.currentTimeMillis()
+
+	override suspend fun startStep(): PowerExtractorOriginStep? {
 		if (extractableNodes.isEmpty()) return null
+
+		val limit = getTransferPower()
 
 		val extractablePowerPool = extractableNodes.flatMap { it.multis }
 		val sum = extractablePowerPool.sumOf { it.getPower() }
 
 		if (sum == 0) return null
 
-		val extractablePower = min(sum, ChunkPowerNetwork.POWER_EXTRACTOR_STEP)
+		val extractablePower = min(sum, limit)
 
-		return PowerOriginStep(AtomicInteger(), this, extractablePower)
+		return PowerExtractorOriginStep(AtomicInteger(), this, extractablePower, extractablePowerPool)
+	}
+
+	fun getTransferPower(): Int {
+		return (ChunkPowerNetwork.POWER_EXTRACTOR_STEP * ((System.currentTimeMillis() - lastTicked) / 2000.0)).roundToInt()
 	}
 
 	override fun toString(): String = "POWER Extractor NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
