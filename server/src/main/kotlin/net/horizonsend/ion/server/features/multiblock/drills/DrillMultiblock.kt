@@ -275,7 +275,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			}
 		)
 
-		val powerUsage = broken * 10
+		val powerUsage = broken * 60
 		PowerMachines.setPower(sign, power - powerUsage, true)
 	}
 
