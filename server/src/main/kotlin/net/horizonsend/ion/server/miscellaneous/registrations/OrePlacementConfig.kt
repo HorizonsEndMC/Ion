@@ -13,7 +13,7 @@ const val algorithmVersion = 11
 
 @Suppress("unused")
 enum class OrePlacementConfig(
-	val groundMaterial: EnumSet<Material> = enumSetOf(),
+	val groundMaterial: EnumSet<Material>,
 	val options: Map<OldOreData, Int> = mapOf(),
 	val configVersion: Int = 0
 ) {
