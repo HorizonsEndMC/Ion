@@ -23,12 +23,12 @@ data object NewPowerBankMultiblockTier3 : NewPowerBankMultiblock<NewPowerBankMul
 	}
 
 	class NewPowerBankMultiblockTier3Entity(
-		multiblock: NewPowerBankMultiblock<*>,
+		multiblock: NewPowerBankMultiblock<NewPowerBankMultiblockTier3Entity>,
 		x: Int,
 		y: Int,
 		z: Int,
 		world: World,
 		signDirection: BlockFace,
-		override var powerUnsafe: Int
-	) : PowerBankEntity(multiblock, x, y, z, world, signDirection, 500_000_000)
+		powerUnsafe: Int
+	) : PowerBankEntity(multiblock, x, y, z, world, signDirection, 500_000_000, powerUnsafe)
 }
