@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.transport.pipe
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.debugHighlightBlock
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
-import net.horizonsend.ion.server.features.customitems.GasCanister
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.GasCanister
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.machine.GeneratorFuel

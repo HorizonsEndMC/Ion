@@ -12,8 +12,8 @@ import org.bukkit.event.player.PlayerChangedWorldEvent
 object WorldPacket : Listener, IonPacketHandler() {
 
 	@EventHandler
-	fun onChangeWorld(event: PlayerChangedWorldEvent){
-		if (SpaceWorlds.contains(event.player.world)){
+	fun onChangeWorld(event: PlayerChangedWorldEvent) {
+		if (SpaceWorlds.contains(event.player.world)) {
 			Packets.WORLD_PACKET.send(event.player)
 		}
 	}

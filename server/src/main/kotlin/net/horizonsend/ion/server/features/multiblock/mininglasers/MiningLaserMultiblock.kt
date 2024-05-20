@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.features.multiblock.mininglasers
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.subsystem.MiningLaserSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace

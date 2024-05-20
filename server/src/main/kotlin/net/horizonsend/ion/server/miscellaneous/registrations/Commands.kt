@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.admin.AdminCommands
 import net.horizonsend.ion.server.command.admin.BatteryCommand
+import net.horizonsend.ion.server.command.admin.ConvertCommand
+import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
@@ -64,7 +66,6 @@ import net.horizonsend.ion.server.configuration.ConfigurationCommands
 import net.horizonsend.ion.server.features.achievements.AchievementsCommand
 import net.horizonsend.ion.server.features.client.commands.HudCommand
 import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
-import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarCommand
@@ -137,7 +138,7 @@ val commands: List<SLCommand> = listOf(
 	SpaceGenCommand,
 	ConfigurationCommands,
 	ConvertCommand,
-	net.horizonsend.ion.server.features.customitems.commands.CustomItemCommand,
+	CustomItemCommand,
 	IonCommand,
 	SearchCommand,
 	CalcExpCommand,

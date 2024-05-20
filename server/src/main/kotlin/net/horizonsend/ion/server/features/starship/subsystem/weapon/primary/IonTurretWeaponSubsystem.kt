@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.IonTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager

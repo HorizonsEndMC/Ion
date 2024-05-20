@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
+import net.horizonsend.ion.server.features.custom.items.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.space.SpaceWorlds
@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
-import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.listen

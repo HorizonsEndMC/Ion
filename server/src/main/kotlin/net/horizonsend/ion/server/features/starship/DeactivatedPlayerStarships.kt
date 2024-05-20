@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtectio
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.subsystem.LandingGearSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld

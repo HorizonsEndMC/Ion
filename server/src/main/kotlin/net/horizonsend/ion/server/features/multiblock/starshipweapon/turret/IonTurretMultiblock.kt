@@ -25,35 +25,35 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.ionTurret
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
-			listOf(Vec3i(-1, getSign() * 4, +3), Vec3i(1, getSign() * 4, +3))
+		listOf(Vec3i(-1, getSign() * 4, +3), Vec3i(1, getSign() * 4, +3))
 
 	override fun MultiblockShape.buildStructure() {
 		z(-3) {
-			y(getSign()*3) {
+			y(getSign() * 3) {
 				x(-1).anyStairs()
 				x(+0).terracottaOrDoubleslab()
 				x(+1).anyStairs()
 			}
 		}
 		z(-2) {
-			y(getSign()*3) {
+			y(getSign() * 3) {
 				x(-2).ironBlock()
 				x(-1).carbyne()
 				x(+0).carbyne()
 				x(+1).carbyne()
 				x(+2).ironBlock()
 			}
-			y(getSign()*4) {
+			y(getSign() * 4) {
 				x(-1).anyStairs()
 				x(+0).terracottaOrDoubleslab()
 				x(+1).anyStairs()
 			}
 		}
 		z(-1) {
-			y(getSign()*2) {
+			y(getSign() * 2) {
 				x(+0).sponge()
 			}
-			y(getSign()*3) {
+			y(getSign() * 3) {
 				x(-3).anyStairs()
 				x(-2).carbyne()
 				x(-1).carbyne()
@@ -62,7 +62,7 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 				x(+2).carbyne()
 				x(+3).anyStairs()
 			}
-			y(getSign()*4) {
+			y(getSign() * 4) {
 				x(-2).anySlab()
 				x(-1).terracottaOrDoubleslab()
 				x(+0).terracottaOrDoubleslab()
@@ -71,11 +71,11 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 			}
 		}
 		z(+0) {
-			y(getSign()*2) {
+			y(getSign() * 2) {
 				x(-1).sponge()
 				x(+1).sponge()
 			}
-			y(getSign()*3) {
+			y(getSign() * 3) {
 				x(-3).terracottaOrDoubleslab()
 				x(-2).carbyne()
 				x(-1).terracottaOrDoubleslab()
@@ -84,7 +84,7 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 				x(+2).carbyne()
 				x(+3).terracottaOrDoubleslab()
 			}
-			y(getSign()*4) {
+			y(getSign() * 4) {
 				x(-2).anySlab()
 				x(-1).type(GRINDSTONE)
 				x(+0).anyStairs()
@@ -93,10 +93,10 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 			}
 		}
 		z(+1) {
-			y(getSign()*2) {
+			y(getSign() * 2) {
 				x(+0).sponge()
 			}
-			y(getSign()*3) {
+			y(getSign() * 3) {
 				x(-3).anyStairs()
 				x(-2).carbyne()
 				x(-1).terracottaOrDoubleslab()
@@ -105,7 +105,7 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 				x(+2).carbyne()
 				x(+3).anyStairs()
 			}
-			y(getSign()*4) {
+			y(getSign() * 4) {
 				x(-2).anySlab()
 				x(-1).type(END_ROD)
 				x(+0).anySlab()
@@ -114,29 +114,31 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 			}
 		}
 		z(+2) {
-			y(getSign()*3) {
+			y(getSign() * 3) {
 				x(-2).ironBlock()
 				x(-1).terracottaOrDoubleslab()
 				x(+0).carbyne()
 				x(+1).terracottaOrDoubleslab()
 				x(+2).ironBlock()
 			}
-			y(getSign()*4) {
+			y(getSign() * 4) {
 				x(-1).type(END_ROD)
 				x(+0).type(IRON_TRAPDOOR)
 				x(+1).type(END_ROD)
 			}
 		}
 		z(+3) {
-			y(getSign()*3) {
+			y(getSign() * 3) {
 				x(-1).anyStairs()
 				x(+0).terracottaOrDoubleslab()
 				x(+1).anyStairs()
 			}
 		}
 	}
+
 	private fun getAdjustedFirePoints(pos: Vec3i, face: BlockFace) = getFirePoints(face)
-			.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
+		.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
+
 	override fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, isAuto: Boolean) {
 		val speed = getProjectileSpeed(starship)
 

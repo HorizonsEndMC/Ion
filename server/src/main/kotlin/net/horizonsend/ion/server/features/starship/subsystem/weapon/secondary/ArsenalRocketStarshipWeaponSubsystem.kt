@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.ArsenalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -36,14 +36,14 @@ class ArsenalRocketStarshipWeaponSubsystem(
 	}
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
-		val yFactor = when(upOrDown){
+		val yFactor = when(upOrDown) {
 			BlockFace.UP -> 1
 			BlockFace.DOWN -> -1
 			else -> 1
 		}
 		val block = pos.toLocation(starship.world).block
 		val inward = block.getRelative(this.face)
-		return !starship.isInternallyObstructed(Vec3i(inward.x, inward.y.plus(5*yFactor), inward.z), Vector(0,yFactor,0))
+		return !starship.isInternallyObstructed(Vec3i(inward.x, inward.y.plus(5 * yFactor), inward.z), Vector(0,yFactor,0))
 	}
 
 	private fun getSurroundingFaces(): Array<BlockFace> {
@@ -65,14 +65,14 @@ class ArsenalRocketStarshipWeaponSubsystem(
 	}
 
 	private fun getFirePos(): Vector {
-		val yFactor = when(upOrDown){
+		val yFactor = when(upOrDown) {
 			BlockFace.UP -> 1
 			BlockFace.DOWN -> -1
 			else -> 1
 		}
 		val block = pos.toLocation(starship.world).block
 		val inward = block.getRelative(this.face)
-		return inward.location.toVector().add(Vector(0.0, 10.0*yFactor, 0.0))
+		return inward.location.toVector().add(Vector(0.0, 10.0 * yFactor, 0.0))
 	}
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.world)

@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.starship.movement
 
 import io.papermc.paper.entity.TeleportFlag
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks
-import net.minecraft.world.level.block.Rotation
-import net.minecraft.world.level.block.state.BlockState
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
+import net.minecraft.world.level.block.Rotation
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity

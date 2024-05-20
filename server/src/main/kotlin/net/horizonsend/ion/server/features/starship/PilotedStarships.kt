@@ -28,8 +28,8 @@ import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
-import net.horizonsend.ion.server.features.starship.subsystem.LandingGearSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.MiningLaserSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
@@ -456,7 +456,7 @@ object PilotedStarships : IonServerComponent() {
 				)
 			}
 
-			for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 69420.0)) {
+			for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 10_000.0)) {
 				nearbyPlayer.playSound(data.starshipType.actualType.balancingSupplier.get().sounds.pilot.sound)
 			}
 
@@ -478,7 +478,7 @@ object PilotedStarships : IonServerComponent() {
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
 
-		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 69420.0)) {
+		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 10_000.0)) {
 			nearbyPlayer.playSound(starship.balancing.sounds.release.sound)
 		}
 

@@ -11,7 +11,6 @@ import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.informationTitle
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
@@ -55,8 +54,8 @@ import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
-import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
@@ -719,7 +718,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("unused")
 	@CommandAlias("targetposition")
 	@Description("Targets a currentPosition")
-	fun onTargetPosition(sender: Player, x: Double, y: Double, z: Double){
+	fun onTargetPosition(sender: Player, x: Double, y: Double, z: Double) {
 		val starship = getStarshipPiloting(sender)
 		if (!starship.weapons.any {it is ArsenalRocketStarshipWeaponSubsystem}) sender.userError("Error: No Arsenal Missiles found, position not targeted")
 

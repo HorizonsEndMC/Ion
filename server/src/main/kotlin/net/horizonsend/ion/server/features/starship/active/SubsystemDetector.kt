@@ -3,6 +3,9 @@ package net.horizonsend.ion.server.features.starship.active
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
+import net.horizonsend.ion.server.features.multiblock.checklist.BargeReactorMultiBlock
+import net.horizonsend.ion.server.features.multiblock.checklist.BattleCruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.checklist.CruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
@@ -16,21 +19,18 @@ import net.horizonsend.ion.server.features.multiblock.particleshield.EventShield
 import net.horizonsend.ion.server.features.multiblock.particleshield.SphereShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
-import net.horizonsend.ion.server.features.multiblock.supercapreactor.BCReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.supercapreactor.BargeReactorMultiBlock
-import net.horizonsend.ion.server.features.multiblock.supercapreactor.CruiserReactorMultiblock
-import net.horizonsend.ion.server.features.starship.subsystem.CryoSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.FuelTankSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.MagazineSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.BCReactorSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.BargeReactorSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.CruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.CryoSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.BoxShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
@@ -142,8 +142,8 @@ object SubsystemDetector {
 				starship.subsystems += BoxShieldSubsystem(starship, sign, multiblock)
 			}
 
-			is BCReactorMultiblock -> {
-				starship.subsystems += BCReactorSubsystem(starship, sign, multiblock)
+			is BattleCruiserReactorMultiblock -> {
+				starship.subsystems += BattlecruiserReactorSubsystem(starship, sign, multiblock)
 			}
 
 			is CruiserReactorMultiblock -> {

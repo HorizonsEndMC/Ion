@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.machine
 
-import net.horizonsend.ion.server.features.customitems.CustomItem
-import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 

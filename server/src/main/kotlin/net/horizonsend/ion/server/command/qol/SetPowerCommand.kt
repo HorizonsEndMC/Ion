@@ -7,11 +7,11 @@ import co.aikar.commands.annotation.Optional
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.machine.PowerMachines.setPower
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.entity.Player
-import net.horizonsend.ion.server.command.admin.debug
 
 @CommandAlias("setpower")
 @CommandPermission("ion.setpower")
@@ -19,7 +19,7 @@ object SetPowerCommand : SLCommand() {
 	@Default
 	@Suppress("unused")
 
-	fun onSetPower(sender: Player, amount: Int, @Optional restricted: Boolean?){
+	fun onSetPower(sender: Player, amount: Int, @Optional restricted: Boolean?) {
 		val maxSelectionVolume = 200000
 		val selection = sender.getSelection() ?: return
 		val limited = restricted ?: true

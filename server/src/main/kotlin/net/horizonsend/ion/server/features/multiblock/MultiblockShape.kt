@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.multiblock
 
-import net.horizonsend.ion.server.features.customblocks.CustomBlock
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks.BARGE_REACTOR_CORE
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks.BATTLECRUISER_REACTOR_CORE
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks.CRUISER_REACTOR_CORE
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks.NETHERITE_CASING
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BARGE_REACTOR_CORE
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BATTLECRUISER_REACTOR_CORE
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.CRUISER_REACTOR_CORE
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_CASING
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10.buildStructure
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.Wires

@@ -5,8 +5,7 @@ import co.aikar.commands.PaperCommandManager
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -34,7 +33,7 @@ object GlobalCompletions {
 
 	fun stringToItem(string: String): ItemStack? {
 		// if a custom item is found, use that
-		CustomItems.getByIdentifier(string)?.let { return it.constructItemStack() }
+		net.horizonsend.ion.server.features.custom.items.CustomItems.getByIdentifier(string)?.let { return it.constructItemStack() }
 		LegacyCustomItems[string]?.let { return it.itemStack(1) }
 
 		val material: Material = try { Material.valueOf(string) } catch (e: Throwable) { return null }

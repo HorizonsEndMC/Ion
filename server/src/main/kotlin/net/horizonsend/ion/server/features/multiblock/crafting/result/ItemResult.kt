@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.result
 
-import net.horizonsend.ion.server.features.customitems.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import org.bukkit.block.Sign
 import org.bukkit.inventory.CraftingInventory

@@ -16,9 +16,9 @@ import net.horizonsend.ion.server.features.starship.damager.entityDamagerCache
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
-import net.horizonsend.ion.server.features.starship.subsystem.BCReactorSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.BargeReactorSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.CruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -125,7 +125,8 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	private fun handleSupercapitalMechanics() {
 		// Consume fuel
 		ActiveStarships.all()
-			.filter { it.type == StarshipType.BATTLECRUISER || it.type == StarshipType.CRUISER || it.type == StarshipType.BARGE}
+			.filter { it.type == StarshipType.BATTLECRUISER || it.type == StarshipType.CRUISER || it.type == StarshipType.BARGE }
+			//TODO replace this system with something better
 			.filter { it.controller is ActivePlayerController }
 			.forEach { superCapital: ActiveStarship ->
 
@@ -143,13 +144,16 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			PilotedStarships.unpilot(superCapital as ActiveControlledStarship)
 		}
 
+		//TODO replace this system with something better
+
 		// Destroy BCs without intact reactors
 		ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER }.forEach { ship ->
-			if (ship.subsystems.filterIsInstance<BCReactorSubsystem>().none { it.isIntact() }) {
+			if (ship.subsystems.filterIsInstance<BattlecruiserReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
 			}
 		}
+
 		// Destroy Cruisers without intact reactors
 		ActiveStarships.all().filter { it.type == StarshipType.CRUISER }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<CruiserReactorSubsystem>().none { it.isIntact() }) {

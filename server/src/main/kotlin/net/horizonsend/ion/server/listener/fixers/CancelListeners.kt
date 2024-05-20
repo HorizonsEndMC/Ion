@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.listener.fixers
 
 import io.papermc.paper.event.player.PlayerOpenSignEvent
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks.customBlock
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
