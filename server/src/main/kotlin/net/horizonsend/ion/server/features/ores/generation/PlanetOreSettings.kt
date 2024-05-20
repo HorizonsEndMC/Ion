@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ores.generation
 
+import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.ores.storage.Ore
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
@@ -271,10 +272,15 @@ enum class PlanetOreSettings(
 	 * @param ore The ore that can be generated
 	 * @param stars The number of stars this ore has //TODO explain that better
 	 **/
+	@Serializable
 	data class OreSetting(
 		val ore: Ore,
-		val stars: Int
-	)
+		val stars: Int,
+		val blobSizeMin: Int = 3,
+		val blobSizeMax: Int = 5
+	) {
+		fun getVolume(): Double = TODO()
+	}
 
 	fun getWorld() = IonServer.server.getWorld(planetName)!!
 
