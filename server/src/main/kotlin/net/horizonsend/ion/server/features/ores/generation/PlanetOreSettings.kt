@@ -22,7 +22,7 @@ enum class PlanetOreSettings(
 ) {
 	CHANDRA(
 		"Chandra",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.TUFF,
@@ -36,7 +36,7 @@ enum class PlanetOreSettings(
 	),
 	ILIUS(
 		"Ilius",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.DEEPSLATE
@@ -47,7 +47,7 @@ enum class PlanetOreSettings(
 	),
 	LUXITERNA(
 		"Luxiterna",
-		11,
+		12,
 		enumSetOf(
 			Material.DIORITE,
 			Material.CALCITE
@@ -59,7 +59,7 @@ enum class PlanetOreSettings(
 	),
 	HERDOLI(
 		"Herdoli",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.GRANITE,
@@ -72,7 +72,7 @@ enum class PlanetOreSettings(
 	),
 	RUBACIEA(
 		"Rubaciea",
-		11,
+		12,
 		enumSetOf(
 			Material.NETHERRACK,
 			Material.RED_TERRACOTTA,
@@ -85,7 +85,7 @@ enum class PlanetOreSettings(
 	),
 	ARET(
 		"Aret",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.GRANITE,
@@ -99,7 +99,7 @@ enum class PlanetOreSettings(
 	),
 	AERACH(
 		"Aerach",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.GRANITE,
@@ -113,7 +113,7 @@ enum class PlanetOreSettings(
 	),
 	VASK(
 		"Vask",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.POLISHED_GRANITE,
@@ -126,7 +126,7 @@ enum class PlanetOreSettings(
 	),
 	GAHARA(
 		"Gahara",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.GRANITE,
@@ -144,7 +144,7 @@ enum class PlanetOreSettings(
 	),
 	ISIK(
 		"Isik",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.GRANITE,
@@ -158,7 +158,7 @@ enum class PlanetOreSettings(
 	),
 	CHIMGARA(
 		"Chimgara",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.GRANITE,
@@ -172,7 +172,7 @@ enum class PlanetOreSettings(
 	),
 	DAMKOTH(
 		"Damkoth",
-		11,
+		12,
 		enumSetOf(
 			Material.DEEPSLATE
 		),
@@ -182,7 +182,7 @@ enum class PlanetOreSettings(
 	),
 	KRIO(
 		"Krio",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.GRANITE,
@@ -196,7 +196,7 @@ enum class PlanetOreSettings(
 	),
 	QATRA(
 		"Qatra",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.GRANITE,
@@ -210,7 +210,7 @@ enum class PlanetOreSettings(
 	),
 	KOVFEFE(
 		"Kovfefe",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.GRANITE,
@@ -224,7 +224,7 @@ enum class PlanetOreSettings(
 	),
 	LIODA(
 		"Lioda",
-		11,
+		12,
 		enumSetOf(
 			Material.DIORITE,
 			Material.CALCITE,
@@ -238,7 +238,7 @@ enum class PlanetOreSettings(
 	),
 	TURMS(
 		"Turms",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.GRANITE,
@@ -252,7 +252,7 @@ enum class PlanetOreSettings(
 	),
 	EDEN(
 		"Ilius_horizonsend_eden",
-		11,
+		12,
 		enumSetOf(
 			Material.STONE,
 			Material.DEEPSLATE,
