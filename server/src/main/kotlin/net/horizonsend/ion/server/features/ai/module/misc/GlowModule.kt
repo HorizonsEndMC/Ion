@@ -8,7 +8,7 @@ import org.bukkit.Material
 import java.util.UUID
 
 class GlowModule(controller: AIController) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
-	private val entity = ClientDisplayEntities.displayBlock(world.minecraft, JUKEBOX, getCenter().toVector(), 2.5f, true)
+	private val entity = ClientDisplayEntities.displayBlock(world.minecraft, JUKEBOX, getCenter().toVector(), 1.5f, true)
 	private val seen = LinkedHashMap<UUID, Long>()
 
 	override fun onMove(movement: StarshipMovement) {

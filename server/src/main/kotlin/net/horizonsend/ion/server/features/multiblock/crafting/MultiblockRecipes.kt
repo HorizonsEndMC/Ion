@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.crafting
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.ammo.MissileLoaderMultiblock

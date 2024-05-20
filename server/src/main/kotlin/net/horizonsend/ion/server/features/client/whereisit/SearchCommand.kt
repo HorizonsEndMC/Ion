@@ -10,7 +10,6 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
-import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toVec3i
@@ -33,7 +32,7 @@ object SearchCommand : net.horizonsend.ion.server.command.SLCommand() {
 		player: Player,
 		customItem: String
 	) {
-		val itemStack = CustomItems.getByIdentifier(customItem)?.constructItemStack() ?: run {
+		val itemStack = net.horizonsend.ion.server.features.custom.items.CustomItems.getByIdentifier(customItem)?.constructItemStack() ?: run {
 			player.userError("Can't find item $customItem!")
 			return
 		}

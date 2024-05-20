@@ -32,7 +32,7 @@ interface DisplayEntityProjectile {
 
 			val displayEntity = displayEntities[player as CraftPlayer] ?: makeDisplayEntity(player) ?: continue
 
-			if (player.location.distance(Vector(displayEntity.x, displayEntity.y, displayEntity.z).toLocation(player.world)) > 100.0){
+			if (player.location.distance(Vector(displayEntity.x, displayEntity.y, displayEntity.z).toLocation(player.world)) > 100.0) {
 				displayEntity.setPos(player.x,player.y,player.z)
 				val teleportEntityPacket = ClientboundTeleportEntityPacket(displayEntity)
 				player.handle.connection.send(teleportEntityPacket)
@@ -71,7 +71,7 @@ interface DisplayEntityProjectile {
 		}
 	}
 
-	fun destroyDisplayEntity(player: Player){
+	fun destroyDisplayEntity(player: Player) {
 		val displayEntity = displayEntities[player]
 		val packet = ClientboundRemoveEntitiesPacket(displayEntity?.id ?: return)
 		displayEntities.remove(player)

@@ -22,8 +22,8 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveE
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
-import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Location

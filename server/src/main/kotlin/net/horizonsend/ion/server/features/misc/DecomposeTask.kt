@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.features.misc
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks
-import net.horizonsend.ion.server.features.ores.Ore
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
+import net.horizonsend.ion.server.features.ores.Ore
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.nms
@@ -20,7 +20,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.*
+import java.util.UUID
 
 /**
  * @param width Iterated first,

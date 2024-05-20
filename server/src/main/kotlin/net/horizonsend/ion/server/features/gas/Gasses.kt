@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.features.gas
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
-import net.horizonsend.ion.server.features.customitems.GasCanister
+import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_EMPTY
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.GasCanister
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer

@@ -52,7 +52,7 @@ object ContainerCommand : SLCommand() {
 	}
 	@Suppress("unused")
 	@Subcommand("empty")
-	fun onEmpty(sender: Player){
+	fun onEmpty(sender: Player) {
 		val maxSelectionVolume = 200000
 		val selection = sender.getSelection() ?: return
 		if(selection.volume > maxSelectionVolume) {

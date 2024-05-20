@@ -7,12 +7,11 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.A
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 
-sealed class ArsenalRocketStarshipWeaponMultiblock :
-	SignlessStarshipWeaponMultiblock<ArsenalRocketStarshipWeaponSubsystem>() {
+sealed class ArsenalRocketStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<ArsenalRocketStarshipWeaponSubsystem>() {
 	override fun createSubsystem(
 		starship: ActiveStarship,
 		pos: Vec3i,
-		face: BlockFace
+		face: BlockFace,
 	): ArsenalRocketStarshipWeaponSubsystem {
 		return ArsenalRocketStarshipWeaponSubsystem(starship, pos, face, this, upOrDown())
 	}
@@ -26,86 +25,86 @@ sealed class VerticalArsenalStarshipWeaponMultiblock : ArsenalRocketStarshipWeap
 	override fun MultiblockShape.buildStructure() {
 		val yFactor = getYFactor()
 
-		y(0*yFactor){
-			z(+0){
-				x(-1).anyStairs()
-				x(0).noteBlock()
-				x(+1).anyStairs()
+		y(0) {
+			z(+0) {
+			 	 x(-1).anyStairs()
+			 	 x(0).noteBlock()
+			 	 x(+1).anyStairs()
 			}
-			z(1){
+			z(1) {
 				x(-1).ironBlock()
 				x(0).sponge()
 				x(+1).ironBlock()
 			}
-			z(2){
+			z(2) {
 				x(-1).anyStairs()
 				x(0).ironBlock()
 				x(1).anyStairs()
 			}
 		}
-		y(1*yFactor){
-			z(0){
+		y(1 * yFactor) {
+			z(0) {
 				x(0).sponge()
 			}
-			z(1){
+			z(1) {
 				x(-1).sponge()
 				x(0).sponge()
 				x(1).sponge()
 			}
-			z(2){
+			z(2) {
 				x(0).sponge()
 			}
 		}
-		y(2*yFactor){
-			z(0){
+		y(2 * yFactor) {
+			z(0) {
 				x(0).titaniumBlock()
 			}
-			z(1){
+			z(1) {
 				x(-1).titaniumBlock()
 				x(0).sponge()
 				x(1).titaniumBlock()
 			}
-			z(2){
+			z(2) {
 				x(0).titaniumBlock()
 			}
 		}
-		y(3*yFactor){
-			z(0){
+		y(3 * yFactor) {
+			z(0) {
 				x(0).titaniumBlock()
 			}
-			z(1){
+			z(1) {
 				x(-1).titaniumBlock()
 				x(0).sponge()
 				x(1).titaniumBlock()
 			}
-			z(2){
+			z(2) {
 				x(0).titaniumBlock()
 			}
 		}
-		y(4*yFactor){
-			z(0){
+		y(4 * yFactor) {
+			z(0) {
 				x(0).titaniumBlock()
 			}
-			z(1){
+			z(1) {
 				x(-1).titaniumBlock()
 				x(0).dispenser()
 				x(1).titaniumBlock()
 			}
-			z(2){
+			z(2) {
 				x(0).titaniumBlock()
 			}
 		}
-		y(5*yFactor){
-			z(0){
+		y(5 * yFactor) {
+			z(0) {
 				x(-1).anyStairs()
 				x(0).ironBlock()
 				x(1).anyStairs()
 			}
-			z(1){
+			z(1) {
 				x(-1).ironBlock()
 				x(1).ironBlock()
 			}
-			z(2){
+			z(2) {
 				x(-1).anyStairs()
 				x(0).ironBlock()
 				x(1).anyStairs()

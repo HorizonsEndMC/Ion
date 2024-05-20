@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
-import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -190,7 +189,7 @@ object PlanetSpaceRendering : IonServerComponent() {
 
         val entity = ClientDisplayEntityFactory.createItemDisplay(player)
 
-        entity.itemStack = CustomItems.PLANET_SELECTOR.constructItemStack()
+        entity.itemStack = net.horizonsend.ion.server.features.custom.items.CustomItems.PLANET_SELECTOR.constructItemStack()
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
         //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
@@ -402,33 +401,33 @@ object PlanetSpaceRendering : IonServerComponent() {
      * @param name the name of the planet
      */
     private fun getPlanetItemStack(name: String): ItemStack = when (name) {
-        "Aerach" -> CustomItems.AERACH
-        "Aret" -> CustomItems.ARET
-        "Chandra" -> CustomItems.CHANDRA
-        "Chimgara" -> CustomItems.CHIMGARA
-        "Damkoth" -> CustomItems.DAMKOTH
-        "Disterra" -> CustomItems.DISTERRA
-        "Eden" -> CustomItems.EDEN
-        "Gahara" -> CustomItems.GAHARA
-        "Herdoli" -> CustomItems.HERDOLI
-        "Ilius" -> CustomItems.ILIUS
-        "Isik" -> CustomItems.ISIK
-        "Kovfefe" -> CustomItems.KOVFEFE
-        "Krio" -> CustomItems.KRIO
-        "Lioda" -> CustomItems.LIODA
-        "Luxiterna" -> CustomItems.LUXITERNA
-        "Qatra" -> CustomItems.QATRA
-        "Rubaciea" -> CustomItems.RUBACIEA
-        "Turms" -> CustomItems.TURMS
-        "Vask" -> CustomItems.VASK
+        "Aerach" -> net.horizonsend.ion.server.features.custom.items.CustomItems.AERACH
+        "Aret" -> net.horizonsend.ion.server.features.custom.items.CustomItems.ARET
+        "Chandra" -> net.horizonsend.ion.server.features.custom.items.CustomItems.CHANDRA
+        "Chimgara" -> net.horizonsend.ion.server.features.custom.items.CustomItems.CHIMGARA
+        "Damkoth" -> net.horizonsend.ion.server.features.custom.items.CustomItems.DAMKOTH
+        "Disterra" -> net.horizonsend.ion.server.features.custom.items.CustomItems.DISTERRA
+        "Eden" -> net.horizonsend.ion.server.features.custom.items.CustomItems.EDEN
+        "Gahara" -> net.horizonsend.ion.server.features.custom.items.CustomItems.GAHARA
+        "Herdoli" -> net.horizonsend.ion.server.features.custom.items.CustomItems.HERDOLI
+        "Ilius" -> net.horizonsend.ion.server.features.custom.items.CustomItems.ILIUS
+        "Isik" -> net.horizonsend.ion.server.features.custom.items.CustomItems.ISIK
+        "Kovfefe" -> net.horizonsend.ion.server.features.custom.items.CustomItems.KOVFEFE
+        "Krio" -> net.horizonsend.ion.server.features.custom.items.CustomItems.KRIO
+        "Lioda" -> net.horizonsend.ion.server.features.custom.items.CustomItems.LIODA
+        "Luxiterna" -> net.horizonsend.ion.server.features.custom.items.CustomItems.LUXITERNA
+        "Qatra" -> net.horizonsend.ion.server.features.custom.items.CustomItems.QATRA
+        "Rubaciea" -> net.horizonsend.ion.server.features.custom.items.CustomItems.RUBACIEA
+        "Turms" -> net.horizonsend.ion.server.features.custom.items.CustomItems.TURMS
+        "Vask" -> net.horizonsend.ion.server.features.custom.items.CustomItems.VASK
 
-        "Asteri" -> CustomItems.ASTERI
-        "EdenHack" -> CustomItems.HORIZON
-        "Ilios" -> CustomItems.ILIOS
-        "Regulus" -> CustomItems.REGULUS
-        "Sirius" -> CustomItems.SIRIUS
+        "Asteri" -> net.horizonsend.ion.server.features.custom.items.CustomItems.ASTERI
+        "EdenHack" -> net.horizonsend.ion.server.features.custom.items.CustomItems.HORIZON
+        "Ilios" -> net.horizonsend.ion.server.features.custom.items.CustomItems.ILIOS
+        "Regulus" -> net.horizonsend.ion.server.features.custom.items.CustomItems.REGULUS
+        "Sirius" -> net.horizonsend.ion.server.features.custom.items.CustomItems.SIRIUS
 
-        else -> CustomItems.AERACH
+        else -> net.horizonsend.ion.server.features.custom.items.CustomItems.AERACH
     }.constructItemStack()
 
     /**

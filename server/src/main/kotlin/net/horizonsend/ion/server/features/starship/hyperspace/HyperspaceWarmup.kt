@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
-import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Vibration
@@ -23,11 +23,11 @@ import kotlin.math.min
 import kotlin.math.pow
 
 class HyperspaceWarmup(
-	val ship: ActiveStarship,
-	var warmup: Int,
-	val dest: Location,
-	val drive: HyperdriveSubsystem,
-	private val useFuel: Boolean
+    val ship: ActiveStarship,
+    var warmup: Int,
+    val dest: Location,
+    val drive: HyperdriveSubsystem,
+    private val useFuel: Boolean
 ) : BukkitRunnable() {
 	init {
 		if (ship is ActiveControlledStarship) {

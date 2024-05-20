@@ -27,7 +27,7 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.quadTurret
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
-		listOf(Vec3i(-2, getSign() * 4, +3), Vec3i(-1, getSign() * 4, +4), Vec3i(1, getSign() * 4, +4), Vec3i(2, getSign() * 4, + 3))
+		listOf(Vec3i(-2, getSign() * 4, +3), Vec3i(-1, getSign() * 4, +4), Vec3i(1, getSign() * 4, +4), Vec3i(2, getSign() * 4, +3))
 
 	override fun MultiblockShape.buildStructure() {
 		z(-4) {
@@ -185,8 +185,10 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 			}
 		}
 	}
+
 	private fun getAdjustedFirePoints(pos: Vec3i, face: BlockFace) = getFirePoints(face)
-			.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
+		.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
+
 	override fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, isAuto: Boolean) {
 		val speed = getProjectileSpeed(starship)
 
@@ -196,19 +198,19 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 			val loc = point.toLocation(world).toCenterLocation()
 
 			QuadTurretProjectile(
-					starship,
-					loc,
-					dir,
-					speed,
-					shooter.color,
-					getRange(starship),
-					getParticleThickness(starship),
-					getExplosionPower(starship),
-					getStarshipShieldDamageMultiplier(starship),
-					getAreaShieldDamageMultiplier(starship),
-					getSound(starship),
-					starship.balancing.weapons.quadTurret, // Not used by anything
-					shooter
+				starship,
+				loc,
+				dir,
+				speed,
+				shooter.color,
+				getRange(starship),
+				getParticleThickness(starship),
+				getExplosionPower(starship),
+				getStarshipShieldDamageMultiplier(starship),
+				getAreaShieldDamageMultiplier(starship),
+				getSound(starship),
+				starship.balancing.weapons.quadTurret, // Not used by anything
+				shooter
 			).fire()
 		}
 	}

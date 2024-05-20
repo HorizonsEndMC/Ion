@@ -4,7 +4,7 @@ import com.mojang.math.Transformation
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.gayColors
@@ -61,15 +61,15 @@ class ArsenalRocketProjectile(
 		normal direction refers to it not moving straight up anymore
 		 */
 		age++
-		if (age< randomInt(10,15) && !hasSwitchedToNormalDirection){
+		if (age< randomInt(10,15) && !hasSwitchedToNormalDirection) {
 			if (face == BlockFace.UP) dir = Vector(0,1,0).multiply(dir.length()) //move it up
 			else dir = Vector(0,-1,0).multiply(dir.length()) //move it down
-			val yFactor = when(face){
+			val yFactor = when(face) {
 				BlockFace.UP-> 1
 				BlockFace.DOWN-> -1
 				else -> 1
 			}
-			val predictedNewLoc = loc.clone().add(0.0, delta * speed/2*yFactor, 0.0)
+			val predictedNewLoc = loc.clone().add(0.0, delta * speed/2 * yFactor, 0.0)
 			//We're not doing any impact stuff as we dont want the projectile to be able to hit stuff at this stage
 			val travel = loc.distance(predictedNewLoc)
 
@@ -89,7 +89,7 @@ class ArsenalRocketProjectile(
 			return
 		}
 		else {
-			if (!hasSwitchedToNormalDirection){
+			if (!hasSwitchedToNormalDirection) {
 				if (starship != null) {
 					for (nearbyPlayer in starship.world.getNearbyPlayers(
 						starship.centerOfMass.toLocation(starship.world),
@@ -163,7 +163,7 @@ class ArsenalRocketProjectile(
 
 	override fun fire() {
 		if (starship == null) return
-		if (starship.targetedPosition == null){
+		if (starship.targetedPosition == null) {
 			starship.audiences().forEach { it.userError("Error: Arsenal Missiles need a targeted position to fire, do /targetposition x y z to target a Position!") }
 			return
 		}

@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import org.bukkit.Material
 import java.util.EnumSet
 
