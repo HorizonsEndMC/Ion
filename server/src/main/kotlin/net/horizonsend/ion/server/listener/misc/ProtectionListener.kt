@@ -18,9 +18,6 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
-import org.bukkit.block.data.type.Door
-import org.bukkit.block.data.type.Switch
-import org.bukkit.block.data.type.TrapDoor
 import org.bukkit.entity.Animals
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
@@ -49,9 +46,9 @@ object ProtectionListener : SLEventListener() {
 		// Chests, button doors
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 
-		if (clickedBlockData is Switch) return onUseSwitch(event, clickedBlock)
+//		if (clickedBlockData is Switch) return onUseSwitch(event, clickedBlock)
 		if (clickedBlockData is InventoryHolder) return onEditInventory(event, clickedBlock)
-		if (clickedBlockData is TrapDoor || clickedBlockData is Door) return onUseDoor(event, clickedBlock)
+//		if (clickedBlockData is TrapDoor || clickedBlockData is Door) return onUseDoor(event, clickedBlock)
 	}
 
 	private fun onUseSwitch(event: PlayerInteractEvent, clickedBlock: Block) {
