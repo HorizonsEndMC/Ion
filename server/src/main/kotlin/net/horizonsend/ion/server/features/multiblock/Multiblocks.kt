@@ -522,21 +522,22 @@ object Multiblocks : IonServerComponent() {
 	}
 
 	@EventHandler
-	fun onPlayerBreakBlock(event: BlockBreakEvent) = multiblockCoroutineScope.launch {
-		if (getBlockTypeSafe(event.block.world, event.block.x, event.block.y, event.block.z)?.isSign == false) return@launch
+	fun onPlayerBreakBlock(event: BlockBreakEvent) {
+		if (getBlockTypeSafe(event.block.world, event.block.x, event.block.y, event.block.z)?.isSign == false) return
+		val sign = event.block.state as? Sign ?: return
 
-		val sign = getBukkitBlockState(event.block, false) as? Sign ?: return@launch
+		runBlocking { //TODO replace this
+			val multiblock = getFromSignPosition(
+				sign.world,
+				sign.x,
+				sign.y,
+				sign.z,
+				checkStructure = true,
+				loadChunks = false
+			) ?: return@runBlocking
 
-		val multiblock = getFromSignPosition(
-			sign.world,
-			sign.x,
-			sign.y,
-			sign.z,
-			checkStructure = true,
-			loadChunks = false
-		) ?: return@launch
-
-		removeMultiblock(multiblock, sign)
+			removeMultiblock(multiblock, sign)
+		}
 	}
 
 	/**

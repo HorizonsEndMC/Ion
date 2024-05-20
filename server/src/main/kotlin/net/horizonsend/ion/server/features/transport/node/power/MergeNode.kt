@@ -6,8 +6,8 @@ import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
+import net.horizonsend.ion.server.features.transport.step.PowerTransportStep
 import net.horizonsend.ion.server.features.transport.step.Step
-import net.horizonsend.ion.server.features.transport.step.TransportStep
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.persistence.PersistentDataContainer
@@ -24,7 +24,7 @@ class MergeNode(override val network: ChunkTransportNetwork) : SingleNode {
 
 	override suspend fun handleStep(step: Step) {
 		// This is not an origin node, so we can assume that it is not an origin step
-		step as TransportStep
+		step as PowerTransportStep
 
 		val next = getTransferableNodes()
 			.filterNot { step.traversedNodes.contains(it) }
@@ -32,7 +32,7 @@ class MergeNode(override val network: ChunkTransportNetwork) : SingleNode {
 			.randomOrNull() ?: return
 
 		// Simply move on to the next node
-		TransportStep(
+		PowerTransportStep(
 			step.origin,
 			step.steps,
 			next,
