@@ -24,7 +24,7 @@ import org.bukkit.persistence.PersistentDataType
 import kotlin.random.Random
 
 /*
-TODO: Ore logic should be separated from the Listener, and the Async code should avoid using the scheduler, as well
+TODO: OldOreData logic should be separated from the Listener, and the Async code should avoid using the scheduler, as well
 	as well as being its own class.
 */
 
@@ -58,7 +58,7 @@ object CustomOrePlacement : IonServerComponent(true) {
 				// These are kept separate as ores need to be written to a file,
 				// reversing ores does not need to be written to a file.
 				val placedBlocks = mutableMapOf<Position<Int>, BlockData>() // Everything
-				val placedOres = mutableMapOf<Position<Int>, Ore>() // Everything that needs to be written to a file.
+				val placedOres = mutableMapOf<Position<Int>, OldOreData>() // Everything that needs to be written to a file.
 
 				val file =
 					IonServer.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
@@ -77,7 +77,7 @@ object CustomOrePlacement : IonServerComponent(true) {
 						val y = oreData[1].toInt()
 						val z = oreData[2].toInt()
 						val original = Material.valueOf(oreData[3])
-						val placedOre = Ore.valueOf(oreData[4])
+						val placedOre = OldOreData.valueOf(oreData[4])
 
 						if (chunkSnapshot.getBlockData(x, y, z) == placedOre.blockData) {
 							placedBlocks[Position(x, y, z)] = original.createBlockData()
@@ -147,7 +147,7 @@ object CustomOrePlacement : IonServerComponent(true) {
 		val chunkStartX = chunk.x.shl(4)
 		val chunkStartZ = chunk.z.shl(4)
 
-		val toPlace = mutableMapOf<Vec3i, Ore>()
+		val toPlace = mutableMapOf<Vec3i, OldOreData>()
 
 		file.readText().split("\n").forEach { oreLine ->
 			if (oreLine.isEmpty()) return@forEach
@@ -164,7 +164,7 @@ object CustomOrePlacement : IonServerComponent(true) {
 
 			if (region?.contains(BlockVector3.at(x + chunkStartX, y, z + chunkStartZ)) == false) return@forEach
 
-			val placedOre = Ore.valueOf(oreData[4])
+			val placedOre = OldOreData.valueOf(oreData[4])
 
 			toPlace[Vec3i(x + chunkStartX, y, z + chunkStartZ)] = placedOre
 		}

@@ -10,7 +10,7 @@ TODO: Enums should have full caps names, however simply renaming it will break t
 	data storage.
 */
 
-enum class Ore(
+enum class OldOreData(
 	val blockData: BlockData
 ) {
 	Chetherite(

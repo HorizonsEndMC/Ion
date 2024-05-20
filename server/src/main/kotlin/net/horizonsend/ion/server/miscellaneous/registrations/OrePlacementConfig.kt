@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
-import net.horizonsend.ion.server.features.ores.Ore
+import net.horizonsend.ion.server.features.ores.OldOreData
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import org.bukkit.Material
 import java.util.EnumSet
@@ -14,7 +14,7 @@ const val algorithmVersion = 11
 @Suppress("unused")
 enum class OrePlacementConfig(
 	val groundMaterial: EnumSet<Material> = enumSetOf(),
-	val options: Map<Ore, Int> = mapOf(),
+	val options: Map<OldOreData, Int> = mapOf(),
 	val configVersion: Int = 0
 ) {
 	Chandra(
@@ -25,8 +25,8 @@ enum class OrePlacementConfig(
 			Material.COBBLED_DEEPSLATE
 		),
 		mapOf(
-			Ore.Titanium to 3,
-			Ore.Aluminium to 2
+			OldOreData.Titanium to 3,
+			OldOreData.Aluminium to 2
 		)
 	),
 	Ilius(
@@ -35,7 +35,7 @@ enum class OrePlacementConfig(
 			Material.DEEPSLATE
 		),
 		mapOf(
-			Ore.Iron to 2
+			OldOreData.Iron to 2
 		)
 	),
 	Luxiterna(
@@ -44,8 +44,8 @@ enum class OrePlacementConfig(
 			Material.CALCITE
 		),
 		mapOf(
-			Ore.Uranium to 2,
-			Ore.Chetherite to 2
+			OldOreData.Uranium to 2,
+			OldOreData.Chetherite to 2
 		)
 	),
 	Herdoli(
@@ -56,7 +56,7 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
-			Ore.Copper to 3
+			OldOreData.Copper to 3
 		)
 	),
 	Rubaciea(
@@ -66,8 +66,8 @@ enum class OrePlacementConfig(
 			Material.RED_CONCRETE
 		),
 		mapOf(
-			Ore.Redstone to 3,
-			Ore.Quartz to 2
+			OldOreData.Redstone to 3,
+			OldOreData.Quartz to 2
 		)
 	),
 	Aret(
@@ -78,8 +78,8 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
-			Ore.Iron to 3,
-			Ore.Titanium to 2
+			OldOreData.Iron to 3,
+			OldOreData.Titanium to 2
 		)
 	),
 	Aerach(
@@ -90,8 +90,8 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
-			Ore.Chetherite to 2,
-			Ore.Coal to 2
+			OldOreData.Chetherite to 2,
+			OldOreData.Coal to 2
 		)
 	),
 	Vask(
@@ -101,8 +101,8 @@ enum class OrePlacementConfig(
 			Material.ORANGE_TERRACOTTA
 		),
 		mapOf(
-			Ore.Copper to 2,
-			Ore.Redstone to 2
+			OldOreData.Copper to 2,
+			OldOreData.Redstone to 2
 		)
 	),
 	Gahara(
@@ -117,8 +117,8 @@ enum class OrePlacementConfig(
 			Material.PACKED_ICE
 		),
 		mapOf(
-			Ore.Gold to 3,
-			Ore.Emerald to 2
+			OldOreData.Gold to 3,
+			OldOreData.Emerald to 2
 		)
 	),
 	Isik(
@@ -129,8 +129,8 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
-			Ore.Netherite to 2,
-			Ore.Gold to 2
+			OldOreData.Netherite to 2,
+			OldOreData.Gold to 2
 		),
 		configVersion = 1
 	),
@@ -142,7 +142,7 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
-			Ore.Redstone to 2
+			OldOreData.Redstone to 2
 		)
 	),
 	Damkoth(
@@ -150,7 +150,7 @@ enum class OrePlacementConfig(
 			Material.DEEPSLATE
 		),
 		mapOf(
-			Ore.Chetherite to 3
+			OldOreData.Chetherite to 3
 		)
 	),
 	Krio(
@@ -161,8 +161,8 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
-			Ore.Diamond to 3,
-			Ore.Lapis to 2
+			OldOreData.Diamond to 3,
+			OldOreData.Lapis to 2
 		)
 	),
 	Qatra(
@@ -173,8 +173,8 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
-			Ore.Uranium to 2,
-			Ore.Gold to 2
+			OldOreData.Uranium to 2,
+			OldOreData.Gold to 2
 		)
 	),
 	Kovfefe(
@@ -186,7 +186,7 @@ enum class OrePlacementConfig(
 			Material.END_STONE
 		),
 		mapOf(
-			Ore.Aluminium to 3
+			OldOreData.Aluminium to 3
 		)
 	),
 	Lioda(
@@ -197,8 +197,8 @@ enum class OrePlacementConfig(
 			Material.STONE
 		),
 		mapOf(
-			Ore.Quartz to 2,
-			Ore.Diamond to 2
+			OldOreData.Quartz to 2,
+			OldOreData.Diamond to 2
 		)
 	),
 	Turms(
@@ -209,8 +209,8 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
-			Ore.Lapis to 3,
-			Ore.Emerald to 2
+			OldOreData.Lapis to 3,
+			OldOreData.Emerald to 2
 		)
 	),
 	Ilius_horizonsend_eden(
@@ -221,8 +221,8 @@ enum class OrePlacementConfig(
 			Material.COBBLED_DEEPSLATE
 		),
 		mapOf(
-			Ore.Iron to 2,
-			Ore.Chetherite to 2
+			OldOreData.Iron to 2,
+			OldOreData.Chetherite to 2
 		)
 	);
 

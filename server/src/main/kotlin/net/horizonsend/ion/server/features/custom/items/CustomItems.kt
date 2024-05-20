@@ -261,7 +261,7 @@ object CustomItems {
 			identifier = "ALUMINUM_ORE",
 			material = IRON_ORE,
 			customModelData = 1,
-			displayName = text("Aluminum Ore").decoration(ITALIC, false),
+			displayName = text("Aluminum OldOreData").decoration(ITALIC, false),
 			customBlockIdentifier = "ALUMINUM_ORE"
 		), Smeltable {
 			override val smeltResultIdentifier: String = "ALUMINUM_INGOT"
@@ -302,7 +302,7 @@ object CustomItems {
 			identifier = "CHETHERITE_ORE",
 			material = IRON_ORE,
 			customModelData = 2,
-			displayName = text("Chetherite Ore").decoration(ITALIC, false),
+			displayName = text("Chetherite OldOreData").decoration(ITALIC, false),
 			customBlockIdentifier = "CHETHERITE_ORE"
 		), Smeltable {
 			override val smeltResultIdentifier: String = "CHETHERITE"
@@ -344,7 +344,7 @@ object CustomItems {
 			identifier = "TITANIUM_ORE",
 			material = IRON_ORE,
 			customModelData = 3,
-			displayName = text("Titanium Ore").decoration(ITALIC, false),
+			displayName = text("Titanium OldOreData").decoration(ITALIC, false),
 			customBlockIdentifier = "TITANIUM_ORE"
 		), Smeltable {
 			override val smeltResultIdentifier: String = "TITANIUM_INGOT"
@@ -396,7 +396,7 @@ object CustomItems {
 			identifier = "URANIUM_ORE",
 			material = IRON_ORE,
 			customModelData = 4,
-			displayName = text("Uranium Ore").decoration(ITALIC, false),
+			displayName = text("Uranium OldOreData").decoration(ITALIC, false),
 			customBlockIdentifier = "URANIUM_ORE"
 		), Smeltable {
 			override val smeltResultIdentifier: String = "URANIUM"
