@@ -6,8 +6,8 @@ import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
+import net.horizonsend.ion.server.features.transport.step.PowerTransportStep
 import net.horizonsend.ion.server.features.transport.step.Step
-import net.horizonsend.ion.server.features.transport.step.TransportStep
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -17,8 +17,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
-import kotlin.math.floor
-import kotlin.math.min
 import kotlin.properties.Delegates
 
 class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
@@ -72,46 +70,31 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 		step.traversedNodes.add(this)
 
 		// This is not an origin node, so we can assume that it is not an origin step
-		step as TransportStep
+		step as PowerTransportStep
 
 		val origin = step.origin
 		val multi = multis.randomOrNull() ?: return
 
-		val share = floor(origin.power * step.share).toInt()
+		val room = multi.maxPower - multi.getPower()
+		val power = origin.finishExtraction(step, room)
 
-		origin.power -= share
+		println("Finished extraction, returned $power power")
 
-		multi.addPower(share)
-
-		var remaining = share
-
-		if (origin.currentNode is PowerExtractorNode) {
-			for (extractable in origin.currentNode.extractableNodes.flatMap { it.multis }) {
-				val toTake = min(remaining, extractable.getPower())
-
-				remaining -= toTake
-				extractable.removePower(toTake)
-
-				if (remaining <= 0) break
-			}
-		}
+		multi.addPower(power)
 
 //		println("Traversed nodes: ${step.traversedNodes}")
 		step.traversedNodes.forEach {
-			it.onCompleteChain(step, this, share)
+			it.onCompleteChain(step, this, power)
 		}
 
-		if (step.origin.currentNode is SolarPanelNode) return
-
-//		println("""
+//		if (step.origin.currentNode is SolarPanelNode) return
 //
+//		println("""
 //			Reached multiblock input
 //			Origin: $origin
 //
 //			Selected $multi
-//			Added $share to $multi
-//			Remaining origin power: ${origin.power}
-//
+//			Added $power to $multi
 //		""".trimIndent())
 	}
 
