@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.client.display
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createBlockDisplay
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createItemDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -17,11 +18,14 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Slime
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.block.data.BlockData
+import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
 import org.joml.AxisAngle4f
@@ -207,6 +211,56 @@ object ClientDisplayEntities : IonServerComponent() {
 
         return block.getNMSData(pos.x + offset, pos.y + offset, pos.z + offset)
     }
+
+	/**
+	 * Creates a client-side block object.
+	 * @return the NMS BlockDisplay object
+	 * @param level the level that the entity should be in
+	 * @param pos the position of the entity
+	 * @param scale the size of the entity
+	 */
+	fun displayCurrentBlock(
+		level: ServerLevel,
+		pos: Vector,
+		scale: Float = 0.75f,
+	): net.minecraft.world.entity.Display.BlockDisplay {
+
+		val block = createBlockDisplay(level)
+		val offset = (-scale / 2) + 0.5
+		block.block = level.world.getBlockAt(pos.x.toInt(),pos.y.toInt(),pos.z.toInt()).blockData
+		block.isGlowing = true
+		block.transformation = Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf())
+
+		return block.getNMSData(pos.x + offset, pos.y + offset, pos.z + offset)
+	}
+
+	/**
+	 * Creates a client-side item object.
+	 * @return the NMS ItemDisplay object
+	 * @param player the player that the entity should be seen by
+	 * @param item the item information to use
+	 * @param pos the position of the entity
+	 * @param scale the size of the entity
+	 */
+	fun displayItem(
+		player: Player,
+		item: ItemStack,
+		pos: Vector,
+		scale: Float = 0.75f,
+	): net.minecraft.world.entity.Display.ItemDisplay {
+
+		val block = createItemDisplay(player)
+		block.itemStack = item
+		block.isGlowing = true
+		val dir = player.location.clone().subtract(block.location).toVector()
+		block.location.setDirection(dir)
+		block.transformation = Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf())
+		val heightOffset =
+			if(player.world.getBlockAt(pos.x.toInt(),pos.y.toInt(),pos.z.toInt()).type == Material.CHEST) 0.4f
+			else 0.5f
+		block.billboard = Display.Billboard.CENTER
+		return block.getNMSData(pos.x + 0.5, pos.y + heightOffset, pos.z + 0.5)
+	}
 
     /**
      * Handler that adds a new entry to the DisplayEntityData map when a player joins the server.
