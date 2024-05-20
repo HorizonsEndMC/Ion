@@ -82,8 +82,10 @@ abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>
 		z: Int,
 		world: World,
 		signDirection: BlockFace,
-		override val maxPower: Int
+		override val maxPower: Int,
+		override var powerUnsafe: Int = 0
 	) : MultiblockEntity(multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity {
+
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
 		}
