@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger
 interface Step {
 	val steps: AtomicInteger
 	val currentNode: TransportNode
-	val share: Float
 	val traversedNodes: MutableSet<TransportNode>
 
 	suspend operator fun invoke() {
@@ -29,19 +28,19 @@ interface Step {
 	}
 }
 
-data class PowerOriginStep(
-	override val steps: AtomicInteger,
-	override val currentNode: TransportNode,
-	var power: Int,
-	override val traversedNodes: MutableSet<TransportNode> = mutableSetOf(),
-	override val share: Float = 1f
-) : Step
+/**
+ * A step that is the first in a chain
+ **/
+interface OriginStep : Step {
+	/**
+	 * Removes the appropriate amount of power. Returns the amount that was removed (and is available)
+	 *
+	 * @param final The final step of the chain
+	 * @param amount The limit of extraction (will use either this value or the maximum amount defined in this config, whichever is lower)
+	 **/
+	fun finishExtraction(final: TransportStep, amount: Int): Int
+}
 
-data class TransportStep(
-	val origin: PowerOriginStep,
-	override val steps: AtomicInteger,
-	override val currentNode: TransportNode,
-	val previous: Step,
-	override val traversedNodes: MutableSet<TransportNode>,
-	override val share: Float = 1f
-) : Step
+interface TransportStep : Step {
+	val share: Float
+}
