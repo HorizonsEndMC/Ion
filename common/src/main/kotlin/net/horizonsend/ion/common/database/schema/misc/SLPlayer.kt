@@ -82,6 +82,8 @@ data class SLPlayer(
 	var hudPlanetsImage: Boolean = true,
 	var hudPlanetsSelector: Boolean = true,
 
+	var showItemSearchItem: Boolean = true,
+
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 ) : DbObject {
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(
