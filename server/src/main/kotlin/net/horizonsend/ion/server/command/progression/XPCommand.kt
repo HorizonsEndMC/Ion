@@ -4,9 +4,9 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Optional
-import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.MAX_LEVEL
 import org.bukkit.command.CommandSender
@@ -23,7 +23,7 @@ object XPCommand : SLCommand() {
 
 		val name = SLPlayer.getName(playerID.slPlayerId) ?: fail { "Player not found" }
 
-		val (xp: Int?, level: Int?) = SLPlayer.getXPAndLevel(
+		val (xp: Int, level: Int) = SLPlayer.getXPAndLevel(
 			playerID.slPlayerId
 		) ?: throw ConditionFailedException("$name doesn't have any XP data.")
 
