@@ -285,7 +285,7 @@ object Crafting : IonServerComponent() {
 		shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
 
 		//Unloaded Turret Shell Crafting
-		itemStackShapeRecipe("Unloaded__Shell", UNLOADED_SHELL.constructItemStack().asQuantity(4)) {
+		itemStackShapeRecipe("Unloaded__Shell", UNLOADED_SHELL.constructItemStack()) {
 			shape("xyx", "xzx", "xxx")
 
 			setIngredient('x', AIR)
@@ -293,7 +293,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('z', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 		}
 
-		itemStackShapeRecipe("Uncharged_Shell", UNCHARGED_SHELL.constructItemStack().asQuantity(4)) {
+		itemStackShapeRecipe("Uncharged_Shell", UNCHARGED_SHELL.constructItemStack()) {
 			shape("xyx", "xzx", "xxx")
 
 			setIngredient('x', AIR)

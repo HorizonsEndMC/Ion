@@ -21,7 +21,7 @@ object ReminderManager : IonComponent() {
 		"<$HE_MEDIUM_GRAY>Need an item? Use /bazaar browse, although be aware: the prices are quadrupled if you're buying remotely!",
 		"<$HE_MEDIUM_GRAY>24 siegeable stations exist in space. Only nations can siege stations, and owning between 1-6 stations reaps benefits for all nation members.",
 		"<$HE_MEDIUM_GRAY>Just starting out? Try visiting the planets of Luxiterna or Aret. Both have valuable resources for new players.",
-		"<$HE_MEDIUM_GRAY>Level 60 is currently the highest level required to unlock the biggest available ship classes: Destroyers & Heavy Freighters (12,000 blocks).",
+		"<$HE_MEDIUM_GRAY>Level 80 is currently the highest level required to unlock the biggest available ship classes: Battlecruisers & Barges (20,000 blocks).",
 		"<$HE_MEDIUM_GRAY>Want to pick a fight with AI ships? It's recommended you take a gunship, at least.",
 		"<$HE_MEDIUM_GRAY>Looking for a settlement or nation to join? Be sure to ask in global chat using /g. There are always players recruiting.",
 		"<$HE_MEDIUM_GRAY>Setting up machinery? Solar panels and Gas generators are clean and reliable. Do /wiki to learn more.",
