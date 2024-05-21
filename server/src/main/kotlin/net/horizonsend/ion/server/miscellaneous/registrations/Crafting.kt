@@ -641,7 +641,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		//Reactive Component Crafting
-		itemStackShapeRecipe("reactiveComponent", REACTIVE_COMPONENT.constructItemStack()) {
+		itemStackShapeRecipe("reactiveComponent", REACTIVE_HOUSING.constructItemStack()) {
 			shape("xxx", "yyy", "xxx")
 
 			setIngredient('x', CYAN_TERRACOTTA )
@@ -657,7 +657,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		//Reactive Housing Crafting
-		itemStackShapeRecipe("reactiveHousing", REACTIVE_HOUSING.constructItemStack()) {
+		itemStackShapeRecipe("reactiveHousing", REACTIVE_COMPONENT.constructItemStack()) {
 			shape("xxx", "yyy", "xxx")
 
 			setIngredient('x', REDSTONE_BLOCK )
