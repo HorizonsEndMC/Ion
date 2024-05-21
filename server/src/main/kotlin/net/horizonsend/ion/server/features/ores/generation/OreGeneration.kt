@@ -29,7 +29,7 @@ object OreGeneration : IonServerComponent() {
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onChunkLoad(event: ChunkLoadEvent) = scope.launch {
 		// Only handle planets with defined generation settings
-		val oreSettings = PlanetOreSettings.byPlanet[event.world] ?: return@launch
+		val oreSettings = PlanetOreSettings[event.world] ?: return@launch
 
 		var oreData = event.chunk.persistentDataContainer.get(ORE_DATA, OreData)
 		val chunkSnapshot = event.chunk.getChunkSnapshot(true, false, false)

@@ -5,7 +5,9 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.ores.storage.Ore
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import org.bukkit.Material
+import org.bukkit.World
 import java.util.EnumSet
+import kotlin.math.PI
 
 /**
  * A planet's ore settings
@@ -279,12 +281,19 @@ enum class PlanetOreSettings(
 		val blobSizeMin: Int = 3,
 		val blobSizeMax: Int = 5
 	) {
-		fun getVolume(): Double = TODO()
+		/**
+		 * An estimate of the average volume of each ore blob
+		 **/
+		fun getVolume(): Double = (4.0 / 3.0) * (blobSizeMax * blobSizeMax * blobSizeMax) * PI
 	}
 
-	fun getWorld() = IonServer.server.getWorld(planetName)!!
+	fun getWorld() = IonServer.server.getWorld(planetName)
 
 	companion object {
-		val byPlanet = entries.associateBy { it.getWorld() }
+		private val byPlanet = mutableMapOf<World, PlanetOreSettings?>()
+
+		operator fun get(world: World) = byPlanet.getOrPut(world) {
+			entries.firstOrNull { it.getWorld()?.uid == world.uid }
+		}
 	}
 }

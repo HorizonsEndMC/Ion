@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.ores.generation
 import net.horizonsend.ion.server.features.ores.storage.Ore
 import net.minecraft.core.BlockPos
 import org.bukkit.Chunk
+import kotlin.math.pow
 import kotlin.random.Random
 
 private const val BUILT_HEIGHT = 384
@@ -51,9 +52,8 @@ fun generateBlob(random: Random, ore: PlanetOreSettings.OreSetting): List<OreBlo
 		val y = random.nextFloat() * 15
 		val z = random.nextFloat() * 15
 		val size = (random.nextFloat() * (ore.blobSizeMax - ore.blobSizeMin)) + ore.blobSizeMin
-		val length = size / 2
 
-		blobs += OreBlob(ore.ore, x, y, z, size, length)
+		blobs += OreBlob(ore.ore, x, y, z, size)
 	}
 
 	return blobs
@@ -64,8 +64,9 @@ data class OreBlob(
 	val originX: Float,
 	val originY: Float,
 	val originZ: Float,
-	val size: Float,
-	val length: Float
+	val size: Float
 ) {
-	fun contains(x: Int, y: Int, z: Int): Boolean = false
+	fun contains(x: Int, y: Int, z: Int): Boolean {
+		return (originX - x).pow(2) + (originY - y).pow(2) + (originZ - z).pow(2) <= size
+	}
 }
