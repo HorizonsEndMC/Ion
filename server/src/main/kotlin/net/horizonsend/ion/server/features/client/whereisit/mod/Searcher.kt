@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.client.whereisit.mod
 
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.features.nations.region.AccessType
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -31,18 +30,19 @@ object Searcher {
 
 		val basePos = player.minecraft.blockPosition()
 		val world = player.world.minecraft
-		val positions = searchWorld(
-			basePos,
-			world,
-			itemToFind,
-			searchContext.tag
-		).filterNot {
-			ProtectionListener.denyBlockAccess(
-				player,
-				it.key.toLocation(player.world),
-				AccessType.INVENTORY_ACCESS
-			)
-		}
+		val positions =
+			searchWorld(
+				basePos,
+				world,
+				itemToFind,
+				searchContext.tag
+			).filterNot {
+				ProtectionListener.denyBlockAccess(
+					player,
+					it.key.toLocation(player.world),
+					null
+				)
+			}
 
 		if (positions.isNotEmpty()) {
 			val packet = FoundS2C(positions)
@@ -72,7 +72,7 @@ object Searcher {
 			ProtectionListener.denyBlockAccess(
 				player,
 				it.key.toLocation(player.world),
-				AccessType.INVENTORY_ACCESS
+				null
 			)
 		}
 	}
