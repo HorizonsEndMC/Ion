@@ -55,6 +55,8 @@ object OreGeneration : IonServerComponent() {
 	 * If there is no data, add an empty PDC to mark no ores generated
 	 **/
 	private fun migrateFormats(chunk: Chunk, chunkSnapshot: ChunkSnapshot): OreData {
+		val chunkMinX = chunk.x.shl(4)
+		val chunkMinZ = chunk.z.shl(4)
 		val chunkOreVersion = chunk.persistentDataContainer.getOrDefault(NamespacedKeys.ORE_CHECK, PersistentDataType.INTEGER, 0)
 
 		val file = IonServer.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
@@ -82,7 +84,7 @@ object OreGeneration : IonServerComponent() {
 				val placedOre = OldOreData.valueOf(rawOreData[4])
 
 				// The packed position
-				locations.add(BlockPos.asLong(x, y, z))
+				locations.add(BlockPos.asLong(x + chunkMinX, y, z + chunkMinZ))
 
 				// Get the index of the ore in the ore index
 				var oreIndex = oreTypes.indexOf(placedOre.new)
