@@ -129,7 +129,8 @@ object Pipes : IonServerComponent() {
 		Material.BARREL,
 		Material.FURNACE,
 		Material.DISPENSER,
-		Material.DROPPER
+		Material.DROPPER,
+		Material.DECORATED_POT
 	)
 
 	fun isPipedInventory(material: Material): Boolean = inventoryTypes.contains(material)
