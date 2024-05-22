@@ -21,6 +21,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType
+import kotlin.random.Random
 
 object OreGeneration : IonServerComponent() {
 	// Scope for ore generation / migration tasks
@@ -46,7 +47,7 @@ object OreGeneration : IonServerComponent() {
 		// Up to date
 		if (chunkOreVersion == currentWorldVersion) return@launch
 
-		upgrade(event.chunk, chunkSnapshot, oreSettings, oreData)
+		upgrade(event.chunk, chunkOreVersion, chunkSnapshot, oreSettings, oreData)
 	}
 
 	/**
@@ -119,10 +120,12 @@ object OreGeneration : IonServerComponent() {
 
 		chunk.persistentDataContainer.set(ORE_DATA, OreData, data)
 
+		file.delete()
+
 		return data
 	}
 
-	private fun upgrade(chunk: Chunk, snapshot: ChunkSnapshot, config: PlanetOreSettings, data: OreData) {
+	private fun upgrade(chunk: Chunk, currentVersion: Int, snapshot: ChunkSnapshot, config: PlanetOreSettings, data: OreData) {
 		val blockUpdates: MutableMap<Long, BlockData> = mutableMapOf()
 
 		clearOres(data, blockUpdates)
@@ -131,7 +134,7 @@ object OreGeneration : IonServerComponent() {
 
 		Tasks.sync {
 			executeChanges(chunk, oreData, blockUpdates)
-			log.info("Updated ores in ${chunk.x} ${chunk.z} @ ${chunk.world.name} to version ${config.dataVersion}. ${oreData.ores.size} ores placed.")
+			log.info("Updated ores in ${chunk.x} ${chunk.z} @ ${chunk.world.name} to version ${config.dataVersion} from $currentVersion. ${oreData.positions.size} ores placed.")
 		}
 	}
 
@@ -156,7 +159,8 @@ object OreGeneration : IonServerComponent() {
 		config: PlanetOreSettings,
 		blockUpdates: MutableMap<Long, BlockData>
 	): OreData {
-		val blobPlacements = generateBlobs(chunk, config.ores)
+		val random = Random(chunk.chunkKey)
+
 		val chunkOriginX = chunk.x.shl(4)
 		val chunkOriginZ = chunk.z.shl(4)
 
@@ -166,28 +170,30 @@ object OreGeneration : IonServerComponent() {
 		val replacementIndexes = mutableListOf<Byte>()
 		val replacementTypes = mutableListOf<Material>()
 
+		val minBlockY = chunk.world.minHeight
+
 		for (x in 0..15) for (z in 0..15) {
-			val minBlockY = chunk.world.minHeight
 			val maxBlockY = chunkSnapshot.getHighestBlockYAt(x, z)
 
 			for (y in minBlockY..maxBlockY) {
 				val blockData = chunkSnapshot.getBlockData(x, y, z)
 
 				if (!config.groundMaterials.contains(blockData.material)) continue
-
 				if (y < maxBlockY) if (chunkSnapshot.getBlockType(x, y + 1, z).isAir) continue
 				if (y > minBlockY) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
 
 				val realX = chunkOriginX + x
 				val realZ = chunkOriginZ + z
 
-				val blob = blobPlacements.firstOrNull { it.contains(chunkOriginX + x, y, chunkOriginZ + z) } ?: continue
+				val placedOre = config.ores.firstOrNull { oreSetting ->
+					random.nextFloat() < .002f * oreSetting.stars
+				}?.ore ?: continue
 
-				val placedOre = blob.ore
-				blockUpdates[BlockPos.asLong(realX, y, realZ)] = placedOre.getReplacementType(blockData)
+				val key = BlockPos.asLong(realX, y, realZ)
+				blockUpdates[key] = placedOre.getReplacementType(blockData)
 
 				// The packed position
-				locations.add(BlockPos.asLong(x, y, z))
+				locations.add(key)
 
 				// Get the index of the ore in the ore index
 				var oreIndex = oreTypes.indexOf(placedOre)
@@ -225,13 +231,20 @@ object OreGeneration : IonServerComponent() {
 
 	private fun executeChanges(chunk: Chunk, newData: OreData, blockUpdates: MutableMap<Long, BlockData>) {
 		chunk.persistentDataContainer.set(ORE_DATA, OreData, newData)
+		val minY = chunk.world.minHeight
+		val maxY = chunk.world.maxHeight
 
 		blockUpdates.forEach { (postion, data) ->
 			val x = BlockPos.getX(postion)
 			val y = BlockPos.getY(postion)
 			val z = BlockPos.getZ(postion)
 
- 			chunk.world.setBlockData(x, y, z, data)
+			if (y > maxY || y < minY) {
+				log.warn("Attempted to place ore outside of build limit! Did the world height change?")
+				return@forEach
+			}
+
+			chunk.getBlock(x and 15, y, z and 15).setBlockData(data, false)
 		}
 	}
 }
