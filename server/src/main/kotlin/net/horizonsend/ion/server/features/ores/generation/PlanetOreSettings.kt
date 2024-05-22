@@ -227,7 +227,7 @@ enum class PlanetOreSettings(
 	),
 	LIODA(
 		"Lioda",
-		12,
+		13,
 		enumSetOf(
 			Material.DIORITE,
 			Material.CALCITE,
@@ -235,8 +235,8 @@ enum class PlanetOreSettings(
 			Material.STONE
 		),
 		listOf(
-			OreSetting(Ore.QUARTZ, 3),
-			OreSetting(Ore.DIAMOND, 2)
+			OreSetting(Ore.QUARTZ, 1),
+			OreSetting(Ore.DIAMOND, 1)
 		)
 	),
 	TURMS(

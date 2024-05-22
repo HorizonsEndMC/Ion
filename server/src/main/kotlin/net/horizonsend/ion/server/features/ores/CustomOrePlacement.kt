@@ -1,16 +1,10 @@
 package net.horizonsend.ion.server.features.ores
 
-import com.sk89q.worldedit.math.BlockVector3
-import com.sk89q.worldedit.regions.Region
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.OrePlacementConfig
 import net.horizonsend.ion.server.miscellaneous.utils.Position
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Material
@@ -139,44 +133,5 @@ object CustomOrePlacement : IonServerComponent(true) {
 					)
 			}
 		)
-	}
-
-	fun placeOresFromStored(audience: Audience?, chunk: Chunk, region: Region? = null) = Tasks.async {
-		val chunkSnapshot = chunk.getChunkSnapshot(true, false, false)
-		val file = IonServer.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
-		val chunkStartX = chunk.x.shl(4)
-		val chunkStartZ = chunk.z.shl(4)
-
-		val toPlace = mutableMapOf<Vec3i, OldOreData>()
-
-		file.readText().split("\n").forEach { oreLine ->
-			if (oreLine.isEmpty()) return@forEach
-
-			val oreData = oreLine.split(",")
-
-			if (oreData.size != 5) {
-				throw IllegalArgumentException("${file.absolutePath} ore data line $oreLine is not valid.")
-			}
-
-			val x = oreData[0].toInt()
-			val y = oreData[1].toInt()
-			val z = oreData[2].toInt()
-
-			if (region?.contains(BlockVector3.at(x + chunkStartX, y, z + chunkStartZ)) == false) return@forEach
-
-			val placedOre = OldOreData.valueOf(oreData[4])
-
-			toPlace[Vec3i(x + chunkStartX, y, z + chunkStartZ)] = placedOre
-		}
-
-		Tasks.sync {
-			for ((location, ore) in toPlace) {
-				val (x, y, z) = location
-
-				chunk.world.setBlockData(x, y, z, ore.blockData)
-			}
-
-			audience?.information("Placed ${toPlace.size} ore blocks for chunk ${chunk.x} ${chunk.z}.")
-		}
 	}
 }

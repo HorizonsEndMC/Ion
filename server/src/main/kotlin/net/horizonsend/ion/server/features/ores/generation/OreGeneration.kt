@@ -32,16 +32,19 @@ object OreGeneration : IonServerComponent() {
 		// Only handle planets with defined generation settings
 		val oreSettings = PlanetOreSettings[event.world] ?: return@launch
 
-		var oreData = event.chunk.persistentDataContainer.get(ORE_DATA, OreData)
+		var oreData = runCatching { event.chunk.persistentDataContainer.get(ORE_DATA, OreData) }.getOrNull()
 		val chunkSnapshot = event.chunk.getChunkSnapshot(true, false, false)
 
+		@Suppress("DEPRECATION")
+		val oldChunkVersion = event.chunk.persistentDataContainer.getOrDefault(NamespacedKeys.ORE_CHECK, PersistentDataType.INTEGER, 0)
+
 		// Ore data likely in old format if not present and world has generation settings
-		if (oreData == null) {
-			oreData = migrateFormats(event.chunk, chunkSnapshot)
+		if (oldChunkVersion != 0 && oreData == null) {
+			oreData = migrateFormats(event.chunk, chunkSnapshot, oldChunkVersion)
 		}
 
 		// Data should be migrated by now
-		val chunkOreVersion = oreData.dataVersion
+		val chunkOreVersion = oreData?.dataVersion ?: 0
 		val currentWorldVersion = oreSettings.dataVersion
 
 		// Up to date
@@ -55,11 +58,7 @@ object OreGeneration : IonServerComponent() {
 	 *
 	 * If there is no data, add an empty PDC to mark no ores generated
 	 **/
-	private fun migrateFormats(chunk: Chunk, chunkSnapshot: ChunkSnapshot): OreData {
-		val chunkMinX = chunk.x.shl(4)
-		val chunkMinZ = chunk.z.shl(4)
-		val chunkOreVersion = chunk.persistentDataContainer.getOrDefault(NamespacedKeys.ORE_CHECK, PersistentDataType.INTEGER, 0)
-
+	private fun migrateFormats(chunk: Chunk, chunkSnapshot: ChunkSnapshot, version: Int): OreData {
 		val file = IonServer.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
 
 		val locations = mutableListOf<Long>()
@@ -67,6 +66,8 @@ object OreGeneration : IonServerComponent() {
 		val oreTypes = mutableListOf<Ore>()
 		val replacementIndexes = mutableListOf<Byte>()
 		val replacementTypes = mutableListOf<Material>()
+
+		val oreData = OreData(version)
 
 		if (file.exists()) {
 			file.readText().split("\n").forEach { oreLine ->
@@ -84,51 +85,36 @@ object OreGeneration : IonServerComponent() {
 				val original = Material.valueOf(rawOreData[3])
 				val placedOre = OldOreData.valueOf(rawOreData[4])
 
-				// The packed position
-				locations.add(BlockPos.asLong(x + chunkMinX, y, z + chunkMinZ))
-
-				// Get the index of the ore in the ore index
-				var oreIndex = oreTypes.indexOf(placedOre.new)
-				if (oreIndex == -1) {
-					oreTypes.add(placedOre.new)
-					oreIndex = oreTypes.indexOf(placedOre.new)
-				}
-
-				require(oreIndex != -1)
-				oreIndexes.add(oreIndex.toByte())
-
-				// Get the index of the ore in the ore index
-				var replacementIndex = replacementTypes.indexOf(original)
-				if (replacementIndex == -1) {
-					replacementTypes.add(original)
-					replacementIndex = replacementTypes.indexOf(original)
-				}
-
-				require(replacementIndex != -1)
-				replacementIndexes.add(replacementIndex.toByte())
+				oreData.addPosition(x, y, z, placedOre.new, original)
 			}
+
+			file.delete()
 		}
 
 		val data = OreData(
-			dataVersion = chunkOreVersion,
+			dataVersion = version,
 			positions = locations.toLongArray(),
 			oreIndexes = oreIndexes.toByteArray(),
-			ores = oreTypes.toTypedArray(),
+			orePalette = oreTypes.toTypedArray(),
 			replacedIndexes = replacementIndexes.toByteArray(),
-			replaced = replacementTypes.toTypedArray(),
+			replacedPalette = replacementTypes.toTypedArray(),
 		)
 
 		chunk.persistentDataContainer.set(ORE_DATA, OreData, data)
-
-		file.delete()
+		log.info("Updated ores in ${chunk.x} ${chunk.z} @ ${chunk.world.name} to new storage method.")
 
 		return data
 	}
 
-	private fun upgrade(chunk: Chunk, currentVersion: Int, snapshot: ChunkSnapshot, config: PlanetOreSettings, data: OreData) {
+	private fun upgrade(chunk: Chunk, currentVersion: Int, snapshot: ChunkSnapshot, config: PlanetOreSettings, data: OreData?) {
 		val blockUpdates: MutableMap<Long, BlockData> = mutableMapOf()
 
-		clearOres(data, blockUpdates)
+		data?.let { runCatching {
+			clearOres(data, blockUpdates)
+		}.onFailure {
+			log.warn("Error clearing old ores for chunk ${chunk.x}, ${chunk.z} @ ${chunk.world.name}")
+			it.printStackTrace()
+		} }
 
 		val oreData = placeOres(chunk, snapshot, config, blockUpdates)
 
@@ -144,7 +130,7 @@ object OreGeneration : IonServerComponent() {
 	private fun clearOres(data: OreData, blockUpdates: MutableMap<Long, BlockData>) {
 		for (index in 0..data.positions.lastIndex) {
 			val position = data.positions[index]
-			val replaced = data.replaced[data.replacedIndexes[index].toInt()]
+			val replaced = data.replacedPalette[data.replacedIndexes[index].toInt()]
 
 			blockUpdates[position] = replaced.createBlockData()
 		}
@@ -161,16 +147,9 @@ object OreGeneration : IonServerComponent() {
 	): OreData {
 		val random = Random(chunk.chunkKey)
 
-		val chunkOriginX = chunk.x.shl(4)
-		val chunkOriginZ = chunk.z.shl(4)
-
-		val locations = mutableListOf<Long>()
-		val oreIndexes = mutableListOf<Byte>()
-		val oreTypes = mutableListOf<Ore>()
-		val replacementIndexes = mutableListOf<Byte>()
-		val replacementTypes = mutableListOf<Material>()
-
 		val minBlockY = chunk.world.minHeight
+
+		val oreData = OreData(config.dataVersion)
 
 		for (x in 0..15) for (z in 0..15) {
 			val maxBlockY = chunkSnapshot.getHighestBlockYAt(x, z)
@@ -182,51 +161,16 @@ object OreGeneration : IonServerComponent() {
 				if (y < maxBlockY) if (chunkSnapshot.getBlockType(x, y + 1, z).isAir) continue
 				if (y > minBlockY) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
 
-				val realX = chunkOriginX + x
-				val realZ = chunkOriginZ + z
-
 				val placedOre = config.ores.firstOrNull { oreSetting ->
 					random.nextFloat() < .002f * oreSetting.stars
 				}?.ore ?: continue
 
-				val key = BlockPos.asLong(realX, y, realZ)
+				val key = oreData.addPosition(x, y, z, placedOre, blockData.material)
 				blockUpdates[key] = placedOre.getReplacementType(blockData)
-
-				// The packed position
-				locations.add(key)
-
-				// Get the index of the ore in the ore index
-				var oreIndex = oreTypes.indexOf(placedOre)
-				if (oreIndex == -1) {
-					oreTypes.add(placedOre)
-					oreIndex = oreTypes.indexOf(placedOre)
-				}
-
-				require(oreIndex != -1)
-				oreIndexes.add(oreIndex.toByte())
-
-				val original = blockData.material
-
-				// Get the index of the ore in the ore index
-				var replacementIndex = replacementTypes.indexOf(original)
-				if (replacementIndex == -1) {
-					replacementTypes.add(original)
-					replacementIndex = replacementTypes.indexOf(original)
-				}
-
-				require(replacementIndex != -1)
-				replacementIndexes.add(replacementIndex.toByte())
 			}
 		}
 
-		return OreData(
-			dataVersion = config.dataVersion,
-			positions = locations.toLongArray(),
-			oreIndexes = oreIndexes.toByteArray(),
-			ores = oreTypes.toTypedArray(),
-			replacedIndexes = replacementIndexes.toByteArray(),
-			replaced = replacementTypes.toTypedArray(),
-		)
+		return oreData
 	}
 
 	private fun executeChanges(chunk: Chunk, newData: OreData, blockUpdates: MutableMap<Long, BlockData>) {
@@ -234,17 +178,17 @@ object OreGeneration : IonServerComponent() {
 		val minY = chunk.world.minHeight
 		val maxY = chunk.world.maxHeight
 
-		blockUpdates.forEach { (postion, data) ->
-			val x = BlockPos.getX(postion)
-			val y = BlockPos.getY(postion)
-			val z = BlockPos.getZ(postion)
+		blockUpdates.forEach { (position, data) ->
+			val x = BlockPos.getX(position)
+			val y = BlockPos.getY(position)
+			val z = BlockPos.getZ(position)
 
 			if (y > maxY || y < minY) {
 				log.warn("Attempted to place ore outside of build limit! Did the world height change?")
 				return@forEach
 			}
 
-			chunk.getBlock(x and 15, y, z and 15).setBlockData(data, false)
+			chunk.getBlock(x, y, z).setBlockData(data, false)
 		}
 	}
 }
