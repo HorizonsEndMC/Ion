@@ -280,7 +280,8 @@ object StarshipDetection : IonServerComponent() {
 			Material.HOPPER,
 			Material.DISPENSER,
 			Material.BARREL,
-			Material.DROPPER -> true
+			Material.DROPPER,
+			Material.DECORATED_POT -> true
 
 			else -> false
 		}
