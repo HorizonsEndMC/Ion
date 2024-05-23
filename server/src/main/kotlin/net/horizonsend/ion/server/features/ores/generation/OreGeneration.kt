@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ores.OldOreData
+import net.horizonsend.ion.server.features.ores.generation.PlanetOreSettings.Companion.STAR_BALANCE
 import net.horizonsend.ion.server.features.ores.storage.Ore
 import net.horizonsend.ion.server.features.ores.storage.OreData
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
@@ -162,7 +163,7 @@ object OreGeneration : IonServerComponent() {
 				if (y > minBlockY) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
 
 				val placedOre = config.ores.firstOrNull { oreSetting ->
-					random.nextFloat() < .002f * oreSetting.stars
+					random.nextFloat() < STAR_BALANCE * oreSetting.stars
 				}?.ore ?: continue
 
 				val key = oreData.addPosition(x, y, z, placedOre, blockData.material)

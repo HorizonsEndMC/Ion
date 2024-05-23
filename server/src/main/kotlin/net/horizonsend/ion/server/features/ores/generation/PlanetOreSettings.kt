@@ -227,7 +227,7 @@ enum class PlanetOreSettings(
 	),
 	LIODA(
 		"Lioda",
-		13,
+		12,
 		enumSetOf(
 			Material.DIORITE,
 			Material.CALCITE,
@@ -291,6 +291,7 @@ enum class PlanetOreSettings(
 
 	companion object {
 		private val byPlanet = mutableMapOf<World, PlanetOreSettings?>()
+		const val STAR_BALANCE = 0.00132f
 
 		operator fun get(world: World) = byPlanet.getOrPut(world) {
 			entries.firstOrNull { it.getWorld()?.uid == world.uid }
