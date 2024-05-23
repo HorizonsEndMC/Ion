@@ -261,4 +261,730 @@ data class ServerConfiguration(
 			return WeightedRandomList(*mobs.map { it to it.weight }.toTypedArray())
 		}
 	}
+
+	val spaceGenerationDefault = mapOf(
+		"Asteri" to AsteroidConfig(
+			baseAsteroidDensity = 0.0145,
+			maxAsteroidSize = 60.0,
+			blockPalettes = arrayListOf(
+				ancientDebrisAsteroid(3, 0.0115),
+				ironCoal(3, 0.0115),
+				deepslateLapisCopper(3, 0.0115),
+				netherQuartz(3, 0.0115),
+				coal(3, 0.0115),
+				copper(3, 0.0115),
+				iron(3, 0.0115),
+				emerald(3, 0.0115),
+				uranium(3, 0.0115),
+				gold(3, 0.0115),
+				redstone(3, 0.0115),
+				diamond(3, 0.0115),
+				aluminumIron(3, 0.0115),
+				titanium(3, 0.0115),
+				lapis(3, 0.0115),
+				cheth(3, 0.0115),
+			),
+			features = listOf(
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt1",
+					baseDensity = 0.0235,
+					tubeSize = 15500.0,
+					tubeRadius = 2000.0,
+					origin = Pos(
+						world = "Asteri",
+						x = 30000,
+						y = 100,
+						z = 30000
+					)
+				),
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt2",
+					baseDensity = 0.0275,
+					tubeSize = 6500.0,
+					tubeRadius = 1500.0,
+					origin = Pos(
+						world = "Asteri",
+						x = 30000,
+						y = 100,
+						z = 30000
+					)
+				)
+			),
+			wreckClasses = arrayListOf(),
+			wreckMultiplier = 0.05,
+		),
+		"Regulus" to AsteroidConfig(
+			baseAsteroidDensity = 0.0145,
+			maxAsteroidSize = 60.0,
+			blockPalettes = arrayListOf(
+				ancientDebrisAsteroid(3, 0.0115),
+				copperGold(3, 0.0115),
+				netherQuartz(3, 0.0115),
+				coal(3, 0.0115),
+				copper(3, 0.0115),
+				iron(3, 0.0115),
+				emerald(3, 0.0115),
+				uranium(3, 0.0115),
+				gold(3, 0.0115),
+				redstone(3, 0.0115),
+				diamond(3, 0.0115),
+				aluminum(3, 0.0115),
+				titanium(3, 0.0115),
+				lapis(3, 0.0115),
+				cheth(3, 0.0115),
+			),
+			features = listOf(
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt1",
+					baseDensity = 0.0235,
+					tubeSize = 23000.0,
+					tubeRadius = 1500.0,
+					origin = Pos(
+						world = "Regulus",
+						x = 30000,
+						y = 100,
+						z = 30000
+					)
+				),
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt2",
+					baseDensity = 0.0275,
+					tubeSize = 6500.0,
+					tubeRadius = 1250.0,
+					origin = Pos(
+						world = "Regulus",
+						x = 30000,
+						y = 100,
+						z = 30000
+					)
+				)
+			),
+			wreckClasses = arrayListOf(),
+			wreckMultiplier = 0.05,
+		),
+		"Sirius" to AsteroidConfig(
+			baseAsteroidDensity = 0.0145,
+			maxAsteroidSize = 60.0,
+			blockPalettes = arrayListOf(
+				ancientDebrisAsteroid(3, 0.0115),
+				ironGoldRedstone(3, 0.0115),
+				netherQuartz(3, 0.0115),
+				coal(3, 0.0115),
+				copper(3, 0.0115),
+				iron(3, 0.0115),
+				emerald(3, 0.0115),
+				uranium(3, 0.0115),
+				gold(3, 0.0115),
+				redstone(3, 0.0115),
+				diamond(3, 0.0115),
+				aluminum(3, 0.0115),
+				titanium(3, 0.0115),
+				lapis(3, 0.0115),
+				cheth(3, 0.0115),
+			),
+			features = listOf(
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt1",
+					baseDensity = 0.0235,
+					tubeSize = 15500.0,
+					tubeRadius = 2000.0,
+					origin = Pos(
+						world = "Sirius",
+						x = 30000,
+						y = 100,
+						z = 30000
+					)
+				),
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt2",
+					baseDensity = 0.0275,
+					tubeSize = 7000.0,
+					tubeRadius = 1000.0,
+					origin = Pos(
+						world = "Sirius",
+						x = 30000,
+						y = 100,
+						z = 30000
+					)
+				)
+			),
+			wreckClasses = arrayListOf(),
+			wreckMultiplier = 0.05,
+		),
+		"Ilios" to AsteroidConfig(
+			baseAsteroidDensity = 0.0145,
+			maxAsteroidSize = 60.0,
+			blockPalettes = arrayListOf(
+				ancientDebrisAsteroid(3, 0.0115),
+				ilios1(3, 0.0115),
+				ilios2(3, 0.0115),
+				netherQuartz(3, 0.0115),
+				coal(3, 0.0115),
+				copper(3, 0.0115),
+				iron(3, 0.0115),
+				emerald(3, 0.0115),
+				uranium(3, 0.0115),
+				gold(3, 0.0115),
+				redstone(3, 0.0115),
+				diamond(3, 0.0115),
+				aluminum(3, 0.0115),
+				titanium(3, 0.0115),
+				lapis(3, 0.0115),
+				cheth(3, 0.0115),
+			),
+			features = listOf(
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt1",
+					baseDensity = 0.0235,
+					tubeSize = 5500.0,
+					tubeRadius = 1500.0,
+					origin = Pos(
+						world = "Ilios",
+						x = 30000,
+						y = 100,
+						z = 30000
+					)
+				),
+				AsteroidConfig.AsteroidFeature(
+					name = "Ilios",
+					baseDensity = 0.0275,
+					tubeSize = 22500.0,
+					tubeRadius = 2000.0,
+					origin = Pos(
+						world = "Sirius",
+						x = 30000,
+						y = 100,
+						z = 30000
+					)
+				)
+			),
+			wreckClasses = arrayListOf(),
+			wreckMultiplier = 0.05,
+		),
+		"Trench" to AsteroidConfig(
+			baseAsteroidDensity = 0.02,
+			maxAsteroidSize = 75.0,
+			blockPalettes = arrayListOf(
+				ancientDebrisAsteroid(3, 0.014),
+				netherQuartz(3, 0.014),
+				coal(3, 0.014),
+				copper(3, 0.014),
+				iron(3, 0.014),
+				emerald(3, 0.014),
+				uranium(3, 0.014),
+				gold(3, 0.014),
+				redstone(3, 0.014),
+				diamond(3, 0.014),
+				aluminum(3, 0.014),
+				titanium(3, 0.014),
+				lapis(3, 0.014),
+				cheth(3, 0.014),
+			),
+			features = listOf(
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt1",
+					baseDensity = 0.07325,
+					tubeSize = 6500.0,
+					tubeRadius = 3500.0,
+					origin = Pos(
+						world = "Trench",
+						x = 30000,
+						y = 100,
+						z = 30000
+					),
+				),
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt2",
+					baseDensity = 0.07325,
+					tubeSize = 15500.0,
+					tubeRadius = 2000.0,
+					origin = Pos(
+						world = "Trench",
+						x = 30000,
+						y = 100,
+						z = 30000
+					),
+				),
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt3",
+					baseDensity = 0.07325,
+					tubeSize = 20500.0,
+					tubeRadius = 1000.0,
+					origin = Pos(
+						world = "Trench",
+						x = 30000,
+						y = 100,
+						z = 30000
+					),
+				),
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt4",
+					baseDensity = 0.07325,
+					tubeSize = 23000.0,
+					tubeRadius = 500.0,
+					origin = Pos(
+						world = "Trench",
+						x = 30000,
+						y = 100,
+						z = 30000
+					),
+				),
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt5",
+					baseDensity = 0.07325,
+					tubeSize = 25500.0,
+					tubeRadius = 1000.0,
+					origin = Pos(
+						world = "Trench",
+						x = 30000,
+						y = 100,
+						z = 30000
+					),
+				),
+			),
+			wreckClasses = arrayListOf(),
+			wreckMultiplier = 0.05,
+		),
+		"AU-0821" to AsteroidConfig(
+			baseAsteroidDensity = 0.0145,
+			maxAsteroidSize = 60.0,
+			blockPalettes = arrayListOf(
+				au(3),
+			),
+			features = listOf(
+				AsteroidConfig.AsteroidFeature(
+					name = "Belt1",
+					baseDensity = 0.0235,
+					tubeSize = 5500.0,
+					tubeRadius = 1500.0,
+					origin = Pos(
+						world = "Ilios",
+						x = 30000,
+						y = 100,
+						z = 30000
+					)
+				),
+				AsteroidConfig.AsteroidFeature(
+					name = "Ilios",
+					baseDensity = 0.0275,
+					tubeSize = 22500.0,
+					tubeRadius = 2000.0,
+					origin = Pos(
+						world = "Sirius",
+						x = 30000,
+						y = 100,
+						z = 30000
+					)
+				)
+			),
+			wreckClasses = arrayListOf(),
+			wreckMultiplier = 0.05,
+		),
+	)
+
+	fun ancientDebrisAsteroid(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:dead_tube_coral_block", 6),
+			Palette.PaletteEntry("minecraft:andesite", 6),
+			Palette.PaletteEntry("minecraft:basalt", 4),
+			Palette.PaletteEntry("minecraft:smooth_basalt", 3),
+			Palette.PaletteEntry("minecraft:polished_blackstone", 8),
+			Palette.PaletteEntry("minecraft:nether_bricks", 10),
+			Palette.PaletteEntry("minecraft:red_nether_bricks", 2),
+			Palette.PaletteEntry("minecraft:netherrack", 3),
+			Palette.PaletteEntry("minecraft:red_glazed_terracotta", 3),
+			Palette.PaletteEntry("minecraft:netherrack", 3),
+			Palette.PaletteEntry("minecraft:red_nether_bricks", 2),
+			Palette.PaletteEntry("minecraft:nether_bricks", 3),
+			Palette.PaletteEntry("minecraft:polished_blackstone", 8),
+			Palette.PaletteEntry("minecraft:smooth_basalt", 3),
+			Palette.PaletteEntry("minecraft:basalt", 4),
+			Palette.PaletteEntry("minecraft:andesite", 6),
+			Palette.PaletteEntry("minecraft:dead_tube_coral_block", 6)
+		),
+		ores = setOf(AsteroidConfig.Ore("minecraft:ancient_debris", 4)),
+		oreRatio = oreRatio
+	)
+
+	fun ironCoal(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:white_glazed_terracotta", 4),
+			Palette.PaletteEntry("minecraft:white_concrete", 1),
+			Palette.PaletteEntry("minecraft:diorite", 4),
+			Palette.PaletteEntry("minecraft:polished_diorite", 3),
+			Palette.PaletteEntry("minecraft:calcite", 4),
+			Palette.PaletteEntry("minecraft:quartz_block", 4),
+			Palette.PaletteEntry("minecraft:smooth_quartz", 1)
+		),
+		ores = setOf(
+			AsteroidConfig.Ore("minecraft:brown_mushroom_block[down=false,east=true,north=true,south=false,up=true,west=false]", 6),
+			AsteroidConfig.Ore("minecraft:iron_ore", 4),
+			AsteroidConfig.Ore("minecraft:coal_ore", 2)
+		),
+		oreRatio = oreRatio
+	)
+
+	fun deepslateLapisCopper(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:purple_glazed_terracotta", 4),
+			Palette.PaletteEntry("minecraft:purple_terracotta", 3),
+			Palette.PaletteEntry("minecraft:polished_blackstone", 4),
+			Palette.PaletteEntry("minecraft:blackstone", 3),
+			Palette.PaletteEntry("minecraft:crying_obsidian", 4),
+			Palette.PaletteEntry("minecraft:blackstone", 4),
+			Palette.PaletteEntry("minecraft:polished_blackstone", 4),
+			Palette.PaletteEntry("minecraft:deepslate_tiles", 4)
+		),
+		ores = setOf(
+			AsteroidConfig.Ore("minecraft:brown_mushroom_block[down=false,east=true,north=true,south=false,up=true,west=false]", 2),
+			AsteroidConfig.Ore("minecraft:deepslate_lapis_ore", 4),
+			AsteroidConfig.Ore("minecraft:copper_ore", 6)
+		),
+		oreRatio = oreRatio
+	)
+
+	fun netherQuartz(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:magma_block", 2),
+			Palette.PaletteEntry("minecraft:granite", 3),
+			Palette.PaletteEntry("minecraft:netherrack", 4),
+			Palette.PaletteEntry("minecraft:polished_granite", 2),
+			Palette.PaletteEntry("minecraft:red_terracotta", 2),
+		),
+		ores = setOf(AsteroidConfig.Ore("minecraft:nether_quartz_ore", 4)),
+		oreRatio = oreRatio
+	)
+
+	fun coal(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:blackstone", 5),
+			Palette.PaletteEntry("minecraft:polished_blackstone", 8),
+			Palette.PaletteEntry("minecraft:smooth_basalt", 4),
+			Palette.PaletteEntry("minecraft:deepslate", 6),
+			Palette.PaletteEntry("minecraft:tuff", 6),
+			Palette.PaletteEntry("minecraft:red_sandstone", 4),
+			Palette.PaletteEntry("minecraft:smooth_red_sandstone", 4),
+		),
+		ores = setOf(AsteroidConfig.Ore("minecraft:coal_ore", 4)),
+		oreRatio = oreRatio
+	)
+
+	fun copper(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:dirt", 3),
+			Palette.PaletteEntry("minecraft:dripstone_block", 6),
+			Palette.PaletteEntry("minecraft:granite", 3),
+			Palette.PaletteEntry("minecraft:packed_ice", 2),
+			Palette.PaletteEntry("minecraft:blue_ice", 2),
+			Palette.PaletteEntry("minecraft:packed_ice", 2),
+			Palette.PaletteEntry("minecraft:packed_mud", 6),
+			Palette.PaletteEntry("minecraft:polished_granite", 3)
+		),
+		ores = setOf(AsteroidConfig.Ore( "minecraft:copper_ore", 4)),
+		oreRatio = oreRatio
+	)
+
+	fun iron(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:granite", 8),
+			Palette.PaletteEntry("minecraft:polished_granite", 6),
+			Palette.PaletteEntry("minecraft:packed_mud", 7),
+			Palette.PaletteEntry("minecraft:dripstone_block", 6),
+			Palette.PaletteEntry("minecraft:deepslate", 4),
+			Palette.PaletteEntry("minecraft:polished_basalt", 4),
+			Palette.PaletteEntry("minecraft:stone", 4),
+			Palette.PaletteEntry("minecraft:polished_andesite", 4),
+			Palette.PaletteEntry("minecraft:andesite", 4),
+			Palette.PaletteEntry("minecraft:cobblestone", 4),
+			Palette.PaletteEntry("minecraft:clay", 6)
+		),
+		ores = setOf(AsteroidConfig.Ore( "minecraft:iron_ore", 4)),
+		oreRatio = oreRatio
+	)
+
+	fun emerald(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:verdant_froglight[axis=y]", 4),
+			Palette.PaletteEntry("minecraft:lime_terracotta", 3),
+			Palette.PaletteEntry("minecraft:dark_prismarine", 3),
+			Palette.PaletteEntry("minecraft:purple_terracotta", 3),
+			Palette.PaletteEntry("minecraft:magenta_terracotta", 2),
+			Palette.PaletteEntry("minecraft:purple_terracotta", 2),
+			Palette.PaletteEntry("minecraft:cobbled_deepslate", 6),
+			Palette.PaletteEntry("minecraft:smooth_basalt", 4),
+			Palette.PaletteEntry("minecraft:deepslate", 4),
+			Palette.PaletteEntry("minecraft:tuff", 3),
+			Palette.PaletteEntry("minecraft:andesite", 4),
+			Palette.PaletteEntry("minecraft:polished_diorite", 4),
+			Palette.PaletteEntry("minecraft:diorite", 3),
+			Palette.PaletteEntry("minecraft:calcite", 4)
+		),
+		ores = setOf(AsteroidConfig.Ore( "minecraft:deepslate_emerald_ore", 7)),
+		oreRatio = oreRatio
+	)
+
+	fun uranium(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:verdant_froglight[axis=y]", 2),
+			Palette.PaletteEntry("minecraft:slime_block", 2),
+			Palette.PaletteEntry("minecraft:lime_terracotta", 1),
+			Palette.PaletteEntry("minecraft:tuff", 6),
+			Palette.PaletteEntry("minecraft:end_stone", 3),
+			Palette.PaletteEntry("minecraft:end_stone_bricks", 1),
+			Palette.PaletteEntry("minecraft:sandstone", 3),
+			Palette.PaletteEntry("minecraft:smooth_sandstone", 4)
+		),
+		ores = setOf(AsteroidConfig.Ore( "minecraft:brown_mushroom_block[down=false,east=false,north=false,south=false,up=true,west=false]", 7)),
+		oreRatio = oreRatio
+	)
+
+	fun gold(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:sandstone", 2),
+			Palette.PaletteEntry("minecraft:smooth_sandstone", 3),
+			Palette.PaletteEntry("minecraft:sandstone", 4),
+			Palette.PaletteEntry("minecraft:ochre_froglight", 3),
+			Palette.PaletteEntry("minecraft:sandstone", 4),
+			Palette.PaletteEntry("minecraft:diorite", 3),
+			Palette.PaletteEntry("minecraft:polished_diorite", 3),
+			Palette.PaletteEntry("minecraft:calcite", 2),
+			Palette.PaletteEntry("minecraft:polished_diorite", 3),
+			Palette.PaletteEntry("minecraft:diorite", 3),
+			Palette.PaletteEntry("minecraft:clay", 4),
+			Palette.PaletteEntry("minecraft:diorite", 3)
+		),
+		ores = setOf(AsteroidConfig.Ore( "minecraft:gold_ore", 2)),
+		oreRatio = oreRatio
+	)
+
+	fun redstone(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:red_nether_bricks", 8),
+			Palette.PaletteEntry("minecraft:netherrack", 5),
+			Palette.PaletteEntry("minecraft:red_glazed_terracotta", 1),
+			Palette.PaletteEntry("minecraft:diorite", 2),
+			Palette.PaletteEntry("minecraft:polished_diorite", 2),
+			Palette.PaletteEntry("minecraft:calcite", 2),
+			Palette.PaletteEntry("minecraft:quartz_bricks", 3),
+			Palette.PaletteEntry("minecraft:quartz_block", 3),
+			Palette.PaletteEntry("minecraft:smooth_quartz", 3)
+		),
+		ores = setOf(AsteroidConfig.Ore( "minecraft:redstone_ore", 2)),
+		oreRatio = oreRatio
+	)
+
+	fun diamond(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:blue_ice", 2),
+			Palette.PaletteEntry("minecraft:packed_ice", 2),
+			Palette.PaletteEntry("minecraft:ice", 1),
+			Palette.PaletteEntry("minecraft:prismarine", 2),
+			Palette.PaletteEntry("minecraft:prismarine_bricks", 2),
+			Palette.PaletteEntry("minecraft:tuff", 4),
+			Palette.PaletteEntry("minecraft:polished_diorite", 6),
+			Palette.PaletteEntry("minecraft:calcite", 6),
+			Palette.PaletteEntry("minecraft:quartz_block", 6),
+			Palette.PaletteEntry("minecraft:smooth_quartz", 6),
+		),
+		ores = setOf(AsteroidConfig.Ore( "minecraft:diamond_ore", 2)),
+		oreRatio = oreRatio
+	)
+
+	fun aluminumIron(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:andesite", 8),
+			Palette.PaletteEntry("minecraft:diorite", 2),
+			Palette.PaletteEntry("minecraft:calcite", 2),
+			Palette.PaletteEntry("minecraft:snow_block", 3),
+			Palette.PaletteEntry("minecraft:calcite", 1),
+			Palette.PaletteEntry("minecraft:diorite", 2),
+			Palette.PaletteEntry("minecraft:andesite", 5),
+			Palette.PaletteEntry("minecraft:tuff", 12),
+			Palette.PaletteEntry("minecraft:polished_basalt", 3)
+		),
+		ores = setOf(
+			AsteroidConfig.Ore( "minecraft:brown_mushroom_block[down=false,east=false,north=true,south=false,up=true,west=false]", 4),
+			AsteroidConfig.Ore( "minecraft:iron_ore", 5)
+		),
+		oreRatio = oreRatio
+	)
+
+	fun aluminum(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:andesite", 8),
+			Palette.PaletteEntry("minecraft:diorite", 2),
+			Palette.PaletteEntry("minecraft:calcite", 2),
+			Palette.PaletteEntry("minecraft:snow_block", 3),
+			Palette.PaletteEntry("minecraft:calcite", 1),
+			Palette.PaletteEntry("minecraft:diorite", 2),
+			Palette.PaletteEntry("minecraft:andesite", 5),
+			Palette.PaletteEntry("minecraft:tuff", 12),
+			Palette.PaletteEntry("minecraft:polished_basalt", 3)
+		),
+		ores = setOf(AsteroidConfig.Ore( "minecraft:brown_mushroom_block[down=false,east=false,north=true,south=false,up=true,west=false]", 4)),
+		oreRatio = oreRatio
+	)
+
+	fun titanium(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:sea_lantern", 1),
+			Palette.PaletteEntry("minecraft:andesite", 5),
+			Palette.PaletteEntry("minecraft:cyan_terracotta", 3),
+			Palette.PaletteEntry("minecraft:packed_ice", 2),
+			Palette.PaletteEntry("minecraft:stone", 8),
+			Palette.PaletteEntry("minecraft:cyan_terracotta", 3),
+			Palette.PaletteEntry("minecraft:packed_ice", 2)
+		),
+		ores = setOf(AsteroidConfig.Ore( "minecraft:brown_mushroom_block[down=false,east=false,north=false,south=false,up=true,west=true]", 4)),
+		oreRatio = oreRatio
+	)
+
+	fun lapis(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:crying_obsidian", 3),
+			Palette.PaletteEntry("minecraft:blackstone", 2),
+			Palette.PaletteEntry("minecraft:polished_blackstone", 1),
+			Palette.PaletteEntry("minecraft:smooth_basalt", 6),
+			Palette.PaletteEntry("minecraft:cyan_terracotta", 4),
+			Palette.PaletteEntry("minecraft:mud", 4)
+		),
+		ores = setOf(AsteroidConfig.Ore( "minecraft:deepslate_lapis_ore", 4)),
+		oreRatio = oreRatio
+	)
+
+	fun cheth(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:pearlescent_froglight[axis=z]", 3),
+			Palette.PaletteEntry("minecraft:purpur_block", 4),
+			Palette.PaletteEntry("minecraft:amethyst_block", 3),
+			Palette.PaletteEntry("minecraft:budding_amethyst", 1),
+			Palette.PaletteEntry("minecraft:amethyst_block", 3),
+			Palette.PaletteEntry("minecraft:blue_terracotta", 4),
+			Palette.PaletteEntry("minecraft:smooth_basalt", 4),
+			Palette.PaletteEntry("minecraft:tuff", 1),
+			Palette.PaletteEntry("minecraft:andesite", 1),
+			Palette.PaletteEntry("minecraft:tuff", 1),
+			Palette.PaletteEntry("minecraft:deepslate", 1),
+			Palette.PaletteEntry("minecraft:cobbled_deepslate", 1)
+		),
+		ores = setOf(AsteroidConfig.Ore( "minecraft:brown_mushroom_block[down=false,east=true,north=true,south=false,up=true,west=false]", 4)),
+		oreRatio = oreRatio
+	)
+
+	fun copperGold(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:green_glazed_terracotta", 4),
+			Palette.PaletteEntry("minecraft:lime_terracotta", 3),
+			Palette.PaletteEntry("minecraft:mossy_cobblestone", 4),
+			Palette.PaletteEntry("minecraft:tuff", 3),
+			Palette.PaletteEntry("minecraft:polished_basalt", 4),
+			Palette.PaletteEntry("minecraft:cyan_terracotta", 4),
+			Palette.PaletteEntry("minecraft:tuff", 4),
+			Palette.PaletteEntry("minecraft:light_gray_terracotta", 4),
+			Palette.PaletteEntry("minecraft:granite", 4),
+			Palette.PaletteEntry("minecraft:polished_granite", 4)
+		),
+		ores = setOf(
+			AsteroidConfig.Ore( "minecraft:copper_ore", 4),
+			AsteroidConfig.Ore( "minecraft:brown_mushroom_block[down=false,east=false,north=false,south=false,up=true,west=false]", 2),
+			AsteroidConfig.Ore( "minecraft:gold_ore", 6),
+		),
+		oreRatio = oreRatio
+	)
+
+	fun ironGoldRedstone(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:orange_terracotta", 4),
+			Palette.PaletteEntry("minecraft:smooth_red_sandstone", 4),
+			Palette.PaletteEntry("minecraft:red_sandstone", 3),
+			Palette.PaletteEntry("minecraft:packed_mud", 4),
+			Palette.PaletteEntry("minecraft:light_gray_terracotta", 4),
+			Palette.PaletteEntry("minecraft:dripstone_block", 4),
+			Palette.PaletteEntry("minecraft:granite", 4),
+			Palette.PaletteEntry("minecraft:polished_granite", 4)
+		),
+		ores = setOf(
+			AsteroidConfig.Ore( "minecraft:iron_ore", 6),
+			AsteroidConfig.Ore( "minecraft:gold_ore", 4),
+			AsteroidConfig.Ore( "minecraft:redstone_ore", 2),
+		),
+		oreRatio = oreRatio
+	)
+
+	fun ilios1(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:light_blue_glazed_terracotta", 4),
+			Palette.PaletteEntry("minecraft:ice", 3),
+			Palette.PaletteEntry("minecraft:light_blue_terracotta", 4),
+			Palette.PaletteEntry("minecraft:tuff", 4),
+			Palette.PaletteEntry("minecraft:cobblestone", 4),
+			Palette.PaletteEntry("minecraft:andesite", 4),
+			Palette.PaletteEntry("minecraft:polished_andesite", 4),
+			Palette.PaletteEntry("minecraft:smooth_basalt", 4),
+			Palette.PaletteEntry("minecraft:basalt", 4),
+			Palette.PaletteEntry("minecraft:polished_basalt", 4)
+		),
+		ores = setOf(
+			AsteroidConfig.Ore( "minecraft:brown_mushroom_block[down=false,east=false,north=true,south=false,up=true,west=false]", 6),
+			AsteroidConfig.Ore( "minecraft:brown_mushroom_block[down=false,east=false,north=false,south=false,up=true,west=true]", 4),
+			AsteroidConfig.Ore( "minecraft:nether_quartz_ore", 2),
+		),
+		oreRatio = oreRatio
+	)
+
+	fun ilios2(weight: Int, oreRatio: Double): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:sea_lantern", 4),
+			Palette.PaletteEntry("minecraft:prismarine", 3),
+			Palette.PaletteEntry("minecraft:andesite", 4),
+			Palette.PaletteEntry("minecraft:tuff", 4),
+			Palette.PaletteEntry("minecraft:cyan_terracotta", 4),
+			Palette.PaletteEntry("minecraft:smooth_basalt", 4),
+			Palette.PaletteEntry("minecraft:cyan_terracotta", 4),
+			Palette.PaletteEntry("minecraft:tuff", 4)
+		),
+		ores = setOf(
+			AsteroidConfig.Ore( "minecraft:brown_mushroom_block[down=false,east=false,north=true,south=false,up=true,west=false]", 4),
+			AsteroidConfig.Ore(  "minecraft:brown_mushroom_block[down=false,east=false,north=false,south=false,up=true,west=true]", 2),
+			AsteroidConfig.Ore( "minecraft:nether_quartz_ore", 6),
+		),
+		oreRatio = oreRatio
+	)
+
+	fun au(weight: Int): Palette = Palette(
+		weight = weight,
+		materials = listOf(
+			Palette.PaletteEntry("minecraft:purple_glazed_terracotta", 4),
+			Palette.PaletteEntry("minecraft:purple_terracotta", 3),
+			Palette.PaletteEntry("minecraft:polished_blackstone", 4),
+			Palette.PaletteEntry("minecraft:blackstone", 3),
+			Palette.PaletteEntry("minecraft:crying_obsidian", 4),
+			Palette.PaletteEntry("minecraft:blackstone", 4),
+			Palette.PaletteEntry("minecraft:polished_blackstone", 4),
+			Palette.PaletteEntry("minecraft:deepslate_tiles", 4),
+		),
+		ores = setOf(),
+		oreRatio = 0.0
+	)
 }
