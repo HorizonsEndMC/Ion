@@ -56,8 +56,6 @@ class OreData(
 		oreIndexes += oreIndex.toByte()
 		replacedIndexes += replacedIndex.toByte()
 
-		println("Added $ore to ore data! Ore index was $oreIndex, but there are only ${orePalette.size} indexes")
-
 		return key
 	}
 
@@ -96,7 +94,7 @@ class OreData(
 			pdc.set(NamespacedKeys.ORE_INDEXES, PersistentDataType.BYTE_ARRAY, complex.oreIndexes)
 			pdc.set(NamespacedKeys.ORE_DATA, stringType, Array(complex.orePalette.size) { complex.orePalette[it].name })
 			pdc.set(NamespacedKeys.ORE_REPLACED_INDEXES, PersistentDataType.BYTE_ARRAY, complex.replacedIndexes)
-			pdc.set(NamespacedKeys.ORE_REPLACED, stringType, Array(complex.orePalette.size) { complex.replacedPalette[it].name })
+			pdc.set(NamespacedKeys.ORE_REPLACED, stringType, Array(complex.replacedPalette.size) { complex.replacedPalette[it].name })
 
 			return pdc
 		}

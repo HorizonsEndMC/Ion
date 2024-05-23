@@ -241,10 +241,6 @@ object RegenerateCommand : SLCommand() {
 
 				val toPlace = mutableMapOf<Vec3i, Ore>()
 
-				println("${stored.positions.size} stored positions")
-				println("${stored.oreIndexes.size} stored ore indexes")
-				println("${stored.replacedIndexes.size} stored replacement indexes")
-
 				for (i in 0 until stored.positions.size) {
 					val key = stored.positions[i]
 					val x = BlockPos.getX(key)
@@ -256,8 +252,6 @@ object RegenerateCommand : SLCommand() {
 
 					toPlace[Vec3i(x, y, z)] = ore
 				}
-
-				println("TO place: $toPlace")
 
 				Tasks.sync {
 					for ((location, ore) in toPlace) {
