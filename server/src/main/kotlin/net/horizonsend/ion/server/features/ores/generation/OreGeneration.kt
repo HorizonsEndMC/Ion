@@ -97,7 +97,7 @@ object OreGeneration : IonServerComponent() {
 		val blockUpdates: MutableMap<Long, BlockData> = mutableMapOf()
 
 		data?.let { runCatching {
-			clearOres(data, blockUpdates)
+			clearOres(data, snapshot, blockUpdates)
 		}.onFailure {
 			log.warn("Error clearing old ores for chunk ${chunk.x}, ${chunk.z} @ ${chunk.world.name}")
 			it.printStackTrace()
@@ -114,13 +114,23 @@ object OreGeneration : IonServerComponent() {
 	/**
 	 * Clear old ores
 	 **/
-	private fun clearOres(data: OreData, blockUpdates: MutableMap<Long, BlockData>) {
+	private fun clearOres(data: OreData, snapshot: ChunkSnapshot, blockUpdates: MutableMap<Long, BlockData>) {
 		for (index in 0..data.positions.lastIndex) {
 			val position = data.positions[index]
+
+			val oreIndex = data.oreIndexes[index].toInt()
+			val ore = data.orePalette[oreIndex]
+
 			val replacementIndex = data.replacedIndexes[index].toInt()
 			val replaced = data.replacedPalette[replacementIndex]
 
-			blockUpdates[position] = replaced.createBlockData()
+			val x = BlockPos.getX(position)
+			val y = BlockPos.getY(position)
+			val z = BlockPos.getZ(position)
+
+			if (snapshot.getBlockData(x, y, z) == ore.blockData) {
+				blockUpdates[position] = replaced.createBlockData()
+			}
 		}
 	}
 
