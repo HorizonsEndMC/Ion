@@ -22,7 +22,6 @@ TODO: OldOreData logic should be separated from the Listener, and the Async code
 	as well as being its own class.
 */
 
-@Suppress("Unused")
 object CustomOrePlacement : IonServerComponent(true) {
 	val worldContainsOres: MutableMap<World, OrePlacementConfig?> = mutableMapOf()
 

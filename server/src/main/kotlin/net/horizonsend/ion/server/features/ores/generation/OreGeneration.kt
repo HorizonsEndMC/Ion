@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ores.OldOreData
 import net.horizonsend.ion.server.features.ores.generation.PlanetOreSettings.Companion.STAR_BALANCE
-import net.horizonsend.ion.server.features.ores.storage.Ore
 import net.horizonsend.ion.server.features.ores.storage.OreData
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.ORE_DATA
@@ -62,12 +61,6 @@ object OreGeneration : IonServerComponent() {
 	private fun migrateFormats(chunk: Chunk, chunkSnapshot: ChunkSnapshot, version: Int): OreData {
 		val file = IonServer.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
 
-		val locations = mutableListOf<Long>()
-		val oreIndexes = mutableListOf<Byte>()
-		val oreTypes = mutableListOf<Ore>()
-		val replacementIndexes = mutableListOf<Byte>()
-		val replacementTypes = mutableListOf<Material>()
-
 		val oreData = OreData(version)
 
 		if (file.exists()) {
@@ -92,19 +85,10 @@ object OreGeneration : IonServerComponent() {
 			file.delete()
 		}
 
-		val data = OreData(
-			dataVersion = version,
-			positions = locations.toLongArray(),
-			oreIndexes = oreIndexes.toByteArray(),
-			orePalette = oreTypes.toTypedArray(),
-			replacedIndexes = replacementIndexes.toByteArray(),
-			replacedPalette = replacementTypes.toTypedArray(),
-		)
-
-		chunk.persistentDataContainer.set(ORE_DATA, OreData, data)
+		chunk.persistentDataContainer.set(ORE_DATA, OreData, oreData)
 		log.info("Updated ores in ${chunk.x} ${chunk.z} @ ${chunk.world.name} to new storage method.")
 
-		return data
+		return oreData
 	}
 
 	private fun upgrade(chunk: Chunk, currentVersion: Int, snapshot: ChunkSnapshot, config: PlanetOreSettings, data: OreData?) {
@@ -131,7 +115,8 @@ object OreGeneration : IonServerComponent() {
 	private fun clearOres(data: OreData, blockUpdates: MutableMap<Long, BlockData>) {
 		for (index in 0..data.positions.lastIndex) {
 			val position = data.positions[index]
-			val replaced = data.replacedPalette[data.replacedIndexes[index].toInt()]
+			val replacementIndex = data.replacedIndexes[index].toInt()
+			val replaced = data.replacedPalette[replacementIndex]
 
 			blockUpdates[position] = replaced.createBlockData()
 		}

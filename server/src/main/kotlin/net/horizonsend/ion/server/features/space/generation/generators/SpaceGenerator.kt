@@ -78,10 +78,6 @@ class SpaceGenerator(
 
 		val palette = weightedPalettes.random(chunkRandom)
 
-		val oreRatio = index?.let {
-			configuration.blockPalettes[it].oreRatio
-		} ?: configuration.blockPalettes[palette.first].oreRatio
-
 		val blockPalette = index?.let {
 			if (!IntRange(0, configuration.blockPalettes.size - 1).contains(index)) {
 				throw IndexOutOfBoundsException("ERROR: index out of range: 0..${configuration.blockPalettes.size - 1}")
@@ -96,7 +92,6 @@ class SpaceGenerator(
 			x,
 			newY,
 			z,
-			oreRatio,
 			blockPalette.second,
 			blockPalette.first,
 			formattedSize,
@@ -134,7 +129,6 @@ class SpaceGenerator(
 			x,
 			newY,
 			z,
-			configuration.blockPalettes[palette.first].oreRatio,
 			palette.second,
 			palette.first,
 			size,

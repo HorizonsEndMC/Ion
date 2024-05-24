@@ -44,6 +44,7 @@ data class ServerConfiguration(
 		val baseAsteroidDensity: Double = 0.25,
 		val maxAsteroidSize: Double = 14.0,
 		val blockPalettes: ArrayList<Palette>,
+		val oreRatio: Double,
 		val features: List<AsteroidFeature>,
 		val wreckClasses: ArrayList<WreckClass>,
 		val wreckMultiplier: Double = 0.01
@@ -52,7 +53,6 @@ data class ServerConfiguration(
 		 * @param weight: Number of rolls for this Palette
 		 * @param materials: Map of Materials to their Weight
 		 * @param ores:  list of Palettes used for ore placement
-		 * @param oreRatio: Number of attempts to place an ore blob per chunk
 		 *
 		 * Each Palette is a set of materials, and their weights that might make up an asteroid. Asteroids may pick from a list of Palettes.
 		 */
@@ -60,8 +60,7 @@ data class ServerConfiguration(
 		data class Palette(
 			val weight: Int,
 			val materials: List<PaletteEntry>,
-			val ores: Set<Ore>,
-			val oreRatio: Double = 0.25
+			val ores: Set<Ore>
 		) {
 			@Serializable
 			data class PaletteEntry(
