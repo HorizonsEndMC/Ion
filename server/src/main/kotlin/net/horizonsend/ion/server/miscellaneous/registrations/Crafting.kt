@@ -70,6 +70,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_ROD
+import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Material.AIR
@@ -81,7 +82,6 @@ import org.bukkit.Material.BLUE_WOOL
 import org.bukkit.Material.BROWN_WOOL
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
-import org.bukkit.Material.CYAN_TERRACOTTA
 import org.bukkit.Material.CYAN_WOOL
 import org.bukkit.Material.DARK_PRISMARINE
 import org.bukkit.Material.DIAMOND_BLOCK
@@ -145,6 +145,7 @@ import org.bukkit.Material.YELLOW_WOOL
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.RecipeChoice.ExactChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
@@ -644,7 +645,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("reactiveComponent", REACTIVE_HOUSING.constructItemStack()) {
 			shape("xxx", "yyy", "xxx")
 
-			setIngredient('x', CYAN_TERRACOTTA )
+			setIngredient('x', RecipeChoice.MaterialChoice(*TERRACOTTA_TYPES.toTypedArray()) )
 			setIngredient('y', SPONGE)
 		}
 
