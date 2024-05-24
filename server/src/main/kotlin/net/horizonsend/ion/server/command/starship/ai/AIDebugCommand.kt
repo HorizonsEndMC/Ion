@@ -132,8 +132,6 @@ object AIDebugCommand : SLCommand() {
 		require(spawner is StandardFactionSpawner)
 
 		val templates = spawner.worlds.flatMapTo(mutableSetOf()) { world -> world.templates.map { it.template } }
-		println("Templates: $templates")
-		println("Idemtifier: $identifier")
 		val template = templates.first { it.identifier == identifier }
 
 		@Suppress("DeferredResultUnused")

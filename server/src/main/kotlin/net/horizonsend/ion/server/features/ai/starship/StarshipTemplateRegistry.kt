@@ -272,7 +272,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val DESSLE = registerTemplate(StarshipTemplate(
 		schematicName = "Dessle",
 		type = AI_LIGHT_FREIGHTER,
-		miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Dessle <${HE_LIGHT_GRAY.asHexString()}>Ore Transporter",
+		miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Dessle <${HE_LIGHT_GRAY.asHexString()}>OldOreData Transporter",
 	))
 
 	val MINHAUL_CHETHERITE = registerTemplate(StarshipTemplate(

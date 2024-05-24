@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
-import net.horizonsend.ion.server.features.ores.Ore
+import net.horizonsend.ion.server.features.ores.OldOreData
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.nms
@@ -122,7 +122,7 @@ class DecomposeTask(
 				var drops: List<ItemStack> = block.drops.toList()
 
 				var customOre = false
-				Ore.entries.forEach { ore -> if (ore.blockData == (customBlock?.blockData ?: false)) customOre = true }
+				OldOreData.entries.forEach { ore -> if (ore.blockData == (customBlock?.blockData ?: false)) customOre = true }
 
 				if (customBlock != null && !customOre) drops = customBlock.getDrops().toList()
 
