@@ -71,7 +71,7 @@ class StandardFactionSpawner(
 			message = spawnMessage,
 			paramColor = HEColorScheme.HE_LIGHT_GRAY,
 			useQuotesAroundObjects = false,
-			template.starshipInfo.miniMessageName,
+			template.starshipInfo.componentName(),
 			x,
 			y,
 			z,
