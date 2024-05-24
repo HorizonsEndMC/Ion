@@ -28,29 +28,31 @@ object OreGeneration : IonServerComponent() {
 	private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	fun onChunkLoad(event: ChunkLoadEvent) = scope.launch {
-		// Only handle planets with defined generation settings
-		val oreSettings = PlanetOreSettings[event.world] ?: return@launch
+	fun onChunkLoad(event: ChunkLoadEvent) {
+		scope.launch {
+			// Only handle planets with defined generation settings
+			val oreSettings = PlanetOreSettings[event.world] ?: return@launch
 
-		var oreData = runCatching { event.chunk.persistentDataContainer.get(ORE_DATA, OreData) }.getOrNull()
-		val chunkSnapshot = event.chunk.getChunkSnapshot(true, false, false)
+			var oreData = runCatching { event.chunk.persistentDataContainer.get(ORE_DATA, OreData) }.getOrNull()
+			val chunkSnapshot = event.chunk.getChunkSnapshot(true, false, false)
 
-		@Suppress("DEPRECATION")
-		val oldChunkVersion = event.chunk.persistentDataContainer.getOrDefault(NamespacedKeys.ORE_CHECK, PersistentDataType.INTEGER, 0)
+			@Suppress("DEPRECATION")
+			val oldChunkVersion = event.chunk.persistentDataContainer.getOrDefault(NamespacedKeys.ORE_CHECK, PersistentDataType.INTEGER, 0)
 
-		// Ore data likely in old format if not present and world has generation settings
-		if (oldChunkVersion != 0 && oreData == null) {
-			oreData = migrateFormats(event.chunk, chunkSnapshot, oldChunkVersion)
+			// Ore data likely in old format if not present and world has generation settings
+			if (oldChunkVersion != 0 && oreData == null) {
+				oreData = migrateFormats(event.chunk, chunkSnapshot, oldChunkVersion)
+			}
+
+			// Data should be migrated by now
+			val chunkOreVersion = oreData?.dataVersion ?: 0
+			val currentWorldVersion = oreSettings.dataVersion
+
+			// Up to date
+			if (chunkOreVersion == currentWorldVersion) return@launch
+
+			upgrade(event.chunk, chunkOreVersion, chunkSnapshot, oreSettings, oreData)
 		}
-
-		// Data should be migrated by now
-		val chunkOreVersion = oreData?.dataVersion ?: 0
-		val currentWorldVersion = oreSettings.dataVersion
-
-		// Up to date
-		if (chunkOreVersion == currentWorldVersion) return@launch
-
-		upgrade(event.chunk, chunkOreVersion, chunkSnapshot, oreSettings, oreData)
 	}
 
 	/**
