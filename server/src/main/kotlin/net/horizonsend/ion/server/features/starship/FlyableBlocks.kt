@@ -53,6 +53,7 @@ import org.bukkit.Material.CRIMSON_FENCE_GATE
 import org.bukkit.Material.DAMAGED_ANVIL
 import org.bukkit.Material.DARK_OAK_FENCE_GATE
 import org.bukkit.Material.DAYLIGHT_DETECTOR
+import org.bukkit.Material.DECORATED_POT
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DISPENSER
 import org.bukkit.Material.DRAGON_HEAD
@@ -211,6 +212,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	DROPPER,
 	HOPPER,
 	DISPENSER,
+	DECORATED_POT,
 
 	// misc stuff
 	TORCH,
