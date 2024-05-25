@@ -11,12 +11,14 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.isFlyable
-import net.horizonsend.ion.server.features.starship.subsystem.CryoSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.CryoSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
@@ -56,6 +58,16 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		val oldLocationSet: LongOpenHashSet = starship.blocks
 
 		check(newWorld != world1) { "New world can't be the same as the current world" }
+
+		if (starship.type == StarshipType.BATTLECRUISER && !SpaceWorlds.contains(world2)) {
+			throw StarshipMovementException("Battlecruisers cannot support their weight within strong gravity wells!")
+		}
+
+		if (starship.type == StarshipType.BARGE && !SpaceWorlds.contains(world2)) {
+			throw StarshipMovementException("Barges cannot support their weight within strong gravity wells!")
+		}
+
+		//TODO replace this system with something better
 
 		if (!ActiveStarships.isActive(starship)) {
 			starship.serverError("Starship not active, movement cancelled.")
@@ -128,9 +140,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	}
 
 	private fun findPassengers(world1: World): List<Entity> {
-		val passengerChunks = starship.blocks
-			.map { world1.getChunkAt(blockKeyX(it) shr 4, blockKeyZ(it) shr 4) }
-			.toSet()
+		val passengerChunks = starship.blocks.clone()
+			.mapTo(mutableSetOf()) { world1.getChunkAt(blockKeyX(it) shr 4, blockKeyZ(it) shr 4) }
 
 		val passengers = mutableSetOf<Entity>()
 

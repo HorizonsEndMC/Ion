@@ -2,7 +2,7 @@ server_connect_timeout: 5000
 enforce_secure_profile: false
 forge_support: true
 player_limit: -1
-ip_forward: true
+log_pings: true
 permissions:
   default:
   - bungeecord.command.server
@@ -17,6 +17,8 @@ timeout: 30000
 log_commands: false
 network_compression_threshold: 256
 online_mode: true
+disabled_commands:
+- disabledcommandhere
 servers:
   paper:
     address: paper:25565
@@ -38,9 +40,7 @@ listeners:
   ping_passthrough: false
   query_enabled: false
   proxy_protocol: false
-log_pings: true
-disabled_commands:
-- disabledcommandhere
+ip_forward: true
 remote_ping_timeout: 5000
 reject_transfers: false
 remote_ping_cache: -1

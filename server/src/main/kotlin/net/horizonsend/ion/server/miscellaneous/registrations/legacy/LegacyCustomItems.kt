@@ -241,7 +241,7 @@ object CustomItems {
 				model = model,
 				ore = makeBlockItem(
 					id = "${type}_ore",
-					displayName = "$typeName Ore",
+					displayName = "$typeName OldOreData",
 					material = IRON_ORE,
 					model = model,
 					blockId = "${type}_ore"

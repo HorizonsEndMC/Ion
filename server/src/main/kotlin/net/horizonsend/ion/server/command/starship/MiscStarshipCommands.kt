@@ -42,7 +42,6 @@ import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
 import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -52,11 +51,13 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
+import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
-import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.Component
@@ -713,5 +714,15 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				))
 			}
 		}
+	}
+	@Suppress("unused")
+	@CommandAlias("targetposition")
+	@Description("Targets a currentPosition")
+	fun onTargetPosition(sender: Player, x: Double, y: Double, z: Double) {
+		val starship = getStarshipPiloting(sender)
+		if (!starship.weapons.any {it is ArsenalRocketStarshipWeaponSubsystem}) sender.userError("Error: No Arsenal Missiles found, position not targeted")
+
+		starship.targetedPosition = Location(starship.world, x, y, z)
+		sender.information("Targeted: $x, $y, $z with the ships Arsenal Missiles")
 	}
 }

@@ -13,12 +13,11 @@ import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class TriTurretWeaponSubsystem(
-		ship: ActiveStarship,
-		pos: Vec3i,
-		face: BlockFace,
-		override val multiblock: TriTurretMultiblock
-) : TurretWeaponSubsystem(ship, pos, face),
-	HeavyWeaponSubsystem, AutoWeaponSubsystem {
+	ship: ActiveStarship,
+	pos: Vec3i,
+	face: BlockFace,
+	override val multiblock: TriTurretMultiblock
+) : TurretWeaponSubsystem(ship, pos, face), HeavyWeaponSubsystem, AutoWeaponSubsystem {
 	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.triTurret
 	override val inaccuracyRadians: Double = Math.toRadians(balancing.inaccuracyRadians)
 	override val powerUsage: Int = balancing.powerUsage

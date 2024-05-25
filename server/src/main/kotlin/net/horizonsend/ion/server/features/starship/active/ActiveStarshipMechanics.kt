@@ -1,17 +1,24 @@
 package net.horizonsend.ion.server.features.starship.active
 
-import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.StarshipDestruction
-import net.horizonsend.ion.server.features.starship.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
+import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.entityDamagerCache
+import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
+import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
+import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -44,6 +51,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.syncRepeat(1L, 1L, this::chargeSubsystems)
 		Tasks.syncRepeat(5L, 5L, this::fireAutoWeapons)
 		Tasks.syncRepeat(60L, 60L, this::destroyLowHullIntegrityShips)
+		Tasks.syncRepeat(60L, 60L, this::handleSupercapitalMechanics)
 		Tasks.syncRepeat(20L, 20L, this::tickPlayers)
 	}
 
@@ -105,6 +113,58 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		ActiveStarships.all().forEach { ship ->
 			ship.updateHullIntegrity()
 			if (ship.hullIntegrity < MAX_SAFE_HULL_INTEGRITY) {
+				ship.alert("Critical hull integrity failure!")
+
+				StarshipDestruction.destroy(ship)
+			}
+		}
+	}
+
+	const val SUPERCAPITAL_FUEL_CONSUMPTION = 18
+
+	private fun handleSupercapitalMechanics() {
+		// Consume fuel
+		ActiveStarships.all()
+			.filter { it.type == StarshipType.BATTLECRUISER || it.type == StarshipType.CRUISER || it.type == StarshipType.BARGE }
+			//TODO replace this system with something better
+			.filter { it.controller is ActivePlayerController }
+			.forEach { superCapital: ActiveStarship ->
+
+			var remaining = SUPERCAPITAL_FUEL_CONSUMPTION
+
+			for (fuelTank in superCapital.fuelTanks) {
+				remaining -= fuelTank.tryConsumeFuel(remaining)
+
+				if (remaining <= 0) break
+			}
+
+			if (remaining <= 0) return@forEach
+
+			superCapital.alert("WARNING: Fuel depleted! Shutdown sequence initiated")
+			PilotedStarships.unpilot(superCapital as ActiveControlledStarship)
+		}
+
+		//TODO replace this system with something better
+
+		// Destroy BCs without intact reactors
+		ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER }.forEach { ship ->
+			if (ship.subsystems.filterIsInstance<BattlecruiserReactorSubsystem>().none { it.isIntact() }) {
+				ship.alert("All reactors are down, ship explosion imminent!")
+				StarshipDestruction.destroy(ship)
+			}
+		}
+
+		// Destroy Cruisers without intact reactors
+		ActiveStarships.all().filter { it.type == StarshipType.CRUISER }.forEach { ship ->
+			if (ship.subsystems.filterIsInstance<CruiserReactorSubsystem>().none { it.isIntact() }) {
+				ship.alert("All reactors are down, ship explosion imminent!")
+				StarshipDestruction.destroy(ship)
+			}
+		}
+
+		ActiveStarships.all().filter { it.type == StarshipType.BARGE }.forEach { ship ->
+			if (ship.subsystems.filterIsInstance<BargeReactorSubsystem>().none { it.isIntact() }) {
+				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
 			}
 		}
@@ -182,6 +242,15 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 
 		event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onAIUnpilot(event: StarshipUnpilotedEvent) {
+		val starship = event.starship
+
+		if (starship.controller !is AIController && !starship.isExploding) return
+
+		StarshipDestruction.vanish(starship)
 	}
 
 	private fun tickPlayers() {

@@ -21,24 +21,40 @@ object PowerMachines : IonServerComponent() {
 
 		val deadBush = ItemStack(Material.DEAD_BUSH)
 		if (Bukkit.getRecipesFor(deadBush).size == 0) {
-			val key = NamespacedKey(IonServer, "focusing_crystal")
-			val recipe = FurnaceRecipe(key, deadBush, Material.PRISMARINE_CRYSTALS, 0.0f, 200)
-			Bukkit.addRecipe(recipe)
-		}
+			Bukkit.addRecipe(FurnaceRecipe(
+				NamespacedKey(IonServer, "focusing_crystal"),
+				deadBush,
+				Material.PRISMARINE_CRYSTALS,
+				0.0f,
+				200
+			))
 
-		// Another hacky fix that should be removed to make gas power plants work
-		val bone = ItemStack(Material.BONE)
-		if (Bukkit.getRecipesFor(bone).size == 0) {
-			val key = NamespacedKey(IonServer, "gas_canisters")
-			val recipe = FurnaceRecipe(key, deadBush, Material.WARPED_FUNGUS_ON_A_STICK, 0.0f, 200)
-			Bukkit.addRecipe(recipe)
-		}
+			// Another hacky fix that should be removed to make gas power plants work
+			Bukkit.addRecipe(FurnaceRecipe(
+				NamespacedKey(IonServer, "gas_canisters"),
+				deadBush,
+				Material.WARPED_FUNGUS_ON_A_STICK,
+				0.0f,
+				200
+			))
 
-		val yellowFlower = ItemStack(Material.DANDELION)
-		if (Bukkit.getRecipesFor(yellowFlower).size == 0) {
-			val key = NamespacedKey(IonServer, "dud")
-			val recipe = FurnaceRecipe(key, yellowFlower, Material.SNOWBALL, 0.0f, 200)
-			Bukkit.addRecipe(recipe)
+			// Batteries
+			Bukkit.addRecipe(FurnaceRecipe(
+				NamespacedKey(IonServer, "batteries"),
+				deadBush,
+				Material.SNOWBALL,
+				0.0f,
+				200
+			))
+
+			// Gas furnaces
+			Bukkit.addRecipe(FurnaceRecipe(
+				NamespacedKey(IonServer, "gas_furnaces"),
+				ItemStack(Material.IRON_INGOT),
+				Material.IRON_INGOT,
+				0.0f,
+				Int.MAX_VALUE
+			))
 		}
 	}
 

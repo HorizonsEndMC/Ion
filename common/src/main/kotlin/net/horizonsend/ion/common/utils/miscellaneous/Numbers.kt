@@ -5,6 +5,8 @@ import java.util.Locale
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
+import kotlin.random.Random
+import kotlin.random.asKotlinRandom
 
 fun Double.roundToHundredth(): Double = times(100.0).roundToInt().toDouble().div(100.0)
 
@@ -70,4 +72,12 @@ fun getDurationBreakdown(input: Long): String {
 	val seconds: Long = TimeUnit.MILLISECONDS.toSeconds(millis)
 
 	return "$days Days $hours Hours $minutes Minutes $seconds Seconds"
+}
+
+fun testRandom(chance: Double, random: Random = ThreadLocalRandom.current().asKotlinRandom()): Boolean {
+	return random.nextDouble() <= chance
+}
+
+fun testRandom(chance: Float, random: Random = ThreadLocalRandom.current().asKotlinRandom()): Boolean {
+	return random.nextFloat() <= chance
 }

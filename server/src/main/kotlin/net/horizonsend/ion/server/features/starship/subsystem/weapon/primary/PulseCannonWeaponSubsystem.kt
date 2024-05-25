@@ -13,6 +13,8 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
+
 
 class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
 	CannonWeaponSubsystem(starship, pos, face) {
@@ -28,6 +30,7 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 	override val angleRadiansVertical: Double = Math.toRadians(balancing.angleRadiansVertical) // unrestricted
 	override val convergeDist: Double = balancing.convergeDistance
 	override val extraDistance: Int = balancing.extraDistance
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 
 	private val color: Color = getColor(starship, pos, face)
 

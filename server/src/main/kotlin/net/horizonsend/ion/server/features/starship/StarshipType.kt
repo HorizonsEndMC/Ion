@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
+import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
 import net.kyori.adventure.text.Component
@@ -37,6 +38,8 @@ enum class StarshipType(
 
 	val maxMiningLasers: Int = 0,
 	val miningLaserTier: Int = 0,
+
+	val sinkProvider: SinkProvider.SinkProviders = SinkProvider.SinkProviders.STANDARD,
 
 	val balancingSupplier: Supplier<StarshipBalancing>
 ) {
@@ -237,23 +240,64 @@ enum class StarshipType(
 		overridePermission = "ion.ships.ai.destroyer",
 		balancingSupplier = IonServer.starshipBalancing::aiDestroyer
 	),
-	BATTLECRUISER(
-		displayName = "Battlecruiser",
+	CRUISER(
+		displayName = "Cruiser",
 		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 12000,
-		maxSize = 20000,
-		minLevel = 1000,
+		maxSize = 16000,
+		minLevel = 70,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
+		menuItemMaterial = Material.COPPER_BLOCK,
+		isWarship = true,
+		color = "#FFD700",
+		overridePermission = "ion.ships.override.70",
+		dynmapIcon = "cruiser",
+		maxMiningLasers = 1,
+		miningLaserTier = 1,
+		sinkProvider = SinkProvider.SinkProviders.CRUISER,
+		balancingSupplier = IonServer.starshipBalancing::cruiser,
+	),
+	AI_CRUISER(
+		displayName = "Cruiser",
+		icon = SidebarIcon.AI_BATTLECRUISER_ICON.text,
+		minSize = 12000,
+		maxSize = 16000,
+		minLevel = 1000,
+		containerPercent = 0.5,
+		crateLimitMultiplier = 0.5,
+		menuItemMaterial = Material.SPONGE,
+		isWarship = true,
+		color = "#FFD700",
+		dynmapIcon = "cruiser",
+		maxMiningLasers = 1,
+		miningLaserTier = 1,
+		concretePercent = 0.0,
+		overridePermission = "ion.ships.ai.cruiser",
+		sinkProvider = SinkProvider.SinkProviders.CRUISER,
+		balancingSupplier = IonServer.starshipBalancing::aiCruiser
+	),
+	BATTLECRUISER(
+		displayName = "Battlecruiser",
+		icon = SidebarIcon.BATTLESHIP_ICON.text,
+		minSize = 16000,
+		maxSize = 20000,
+		minLevel = 80,
+		containerPercent = 0.025,
+		crateLimitMultiplier = 0.0,
 		menuItemMaterial = Material.DIAMOND_BLOCK,
 		isWarship = true,
 		color = "#0c5ce8",
-		overridePermission = "ion.ships.override.battlecruiser",
+		dynmapIcon = "battlecruiser",
+		maxMiningLasers = 1,
+		miningLaserTier = 1,
+		overridePermission = "ion.ships.override.80",
+		sinkProvider = SinkProvider.SinkProviders.BATTLECRUISER,
 		balancingSupplier = IonServer.starshipBalancing::battlecruiser
 	),
 	AI_BATTLECRUISER(
 		displayName = "Battlecruiser",
-		icon = SidebarIcon.AI_BATTLECRUISER_ICON.text,
+		icon = SidebarIcon.AI_BATTLESHIP_ICON.text,
 		minSize = 12000,
 		maxSize = 20000,
 		minLevel = 1000,
@@ -262,8 +306,12 @@ enum class StarshipType(
 		menuItemMaterial = Material.SPONGE,
 		isWarship = true,
 		color = "#0c5ce8",
+		dynmapIcon = "battlecruiser",
+		maxMiningLasers = 1,
+		miningLaserTier = 1,
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.battlecruiser",
+		sinkProvider = SinkProvider.SinkProviders.BATTLECRUISER,
 		balancingSupplier = IonServer.starshipBalancing::aiBattlecruiser
 	),
 	BATTLESHIP(
@@ -490,6 +538,43 @@ enum class StarshipType(
 		overridePermission = "ion.ships.ai.heavy_freighter",
 		balancingSupplier = IonServer.starshipBalancing::aiHeavyFreighter
 	),
+	BARGE(
+		displayName = "Barge",
+		icon = SidebarIcon.BARGE_ICON.text,
+		minSize = 16000,
+		maxSize = 20000,
+		minLevel = 80,
+		containerPercent = 0.075,
+		crateLimitMultiplier = 0.0,
+		menuItemMaterial = Material.DIAMOND_BLOCK,
+		isWarship = false,
+		color = "#0c5ce8",
+		dynmapIcon = "barge",
+		maxMiningLasers = 10,
+		miningLaserTier = 4,
+		overridePermission = "ion.ships.override.80",
+		sinkProvider = SinkProvider.SinkProviders.BARGE,
+		balancingSupplier = IonServer.starshipBalancing::barge
+	),
+	AI_BARGE(
+		displayName = "Barge",
+		icon = SidebarIcon.BARGE_ICON.text,
+		minSize = 16000,
+		maxSize = 20000,
+		minLevel = 1000,
+		containerPercent = 0.075,
+		crateLimitMultiplier = 0.0,
+		menuItemMaterial = Material.SPONGE,
+		isWarship = false,
+		color = "#0c5ce8",
+		dynmapIcon = "barge",
+		maxMiningLasers = 10,
+		miningLaserTier = 4,
+		concretePercent = 0.0,
+		overridePermission = "ion.ships.ai.barge",
+		sinkProvider = SinkProvider.SinkProviders.BARGE,
+		balancingSupplier = IonServer.starshipBalancing::barge
+	),
 	PLATFORM(
 		displayName = "Platform",
 		minSize = 25,
@@ -500,16 +585,16 @@ enum class StarshipType(
 		concretePercent = 0.0,
 		menuItemMaterial = Material.BEDROCK,
 		isWarship = false,
-		color = "#ffffff",
-		overridePermission = "ion.ships.override.1",
-		poweroverrider = 0.0,
-		balancingSupplier = IonServer.starshipBalancing::platformBalancing
+			color = "#ffffff",
+			overridePermission = "ion.ships.override.1",
+			poweroverrider = 0.0,
+			balancingSupplier = IonServer.starshipBalancing::platformBalancing
 	),
 	UNIDENTIFIEDSHIP(
 		displayName = "UnidentifiedShip",
 		minSize = 25,
 		maxSize = 250000,
-		minLevel = 69420,
+		minLevel = 1000,
 		containerPercent = 100.0,
 		concretePercent = 0.0,
 		crateLimitMultiplier = 100.0,
@@ -541,26 +626,24 @@ enum class StarshipType(
 
 	val menuItem: ItemStack = ItemStack(menuItemMaterial)
 		.setDisplayNameAndGet(displayNameComponent)
-		.setLoreAndGet(
-			listOf(
-				"Min Block Count: $minSize",
-				"Max Block Count: $maxSize",
-				"Min Level: $minLevel",
-				"Max Container:Total Blocks Ratio: $containerPercent",
-				"Crate Limit Multiplier: $crateLimitMultiplier",
-				"Sneak Fly Accel Distance: ${balancingSupplier.get().sneakFlyAccelDistance}",
-				"Max Sneak Fly Accel: ${balancingSupplier.get().maxSneakFlyAccel}",
-				"Interdiction Range: ${balancingSupplier.get().interdictionRange}",
-				"Hyperspace Range Multiplier: ${balancingSupplier.get().hyperspaceRangeMultiplier}",
-				"Warship: $isWarship"
-			)
-		)
+		.setLoreAndGet(listOf(
+			"Min Block Count: $minSize",
+			"Max Block Count: $maxSize",
+			"Min Level: $minLevel",
+			"Max Container:Total Blocks Ratio: $containerPercent",
+			"Crate Limit Multiplier: $crateLimitMultiplier",
+			"Sneak Fly Accel Distance: ${balancingSupplier.get().sneakFlyAccelDistance}",
+			"Max Sneak Fly Accel: ${balancingSupplier.get().maxSneakFlyAccel}",
+			"Interdiction Range: ${balancingSupplier.get().interdictionRange}",
+			"Hyperspace Range Multiplier: ${balancingSupplier.get().hyperspaceRangeMultiplier}",
+			"Warship: $isWarship"
+		))
 
 	fun canUse(player: Player): Boolean =
-		player.hasPermission("starships.anyship") || player.hasPermission(overridePermission) || Levels[player] >= minLevel
+			player.hasPermission("starships.anyship") || player.hasPermission(overridePermission) || Levels[player] >= minLevel
 
 	companion object {
-		fun getUnlockedTypes(player: Player): List<StarshipType> = values()
+		fun getUnlockedTypes(player: Player): List<StarshipType> = entries
 			.filter { it.canUse(player) }
 			.filter { !it.eventship.and(!player.hasPermission("ion.ships.eventship")) }
 			.sortedBy { it.minLevel }

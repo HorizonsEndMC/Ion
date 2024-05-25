@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.gas
 
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
-import net.horizonsend.ion.server.features.customitems.GasCanister
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock

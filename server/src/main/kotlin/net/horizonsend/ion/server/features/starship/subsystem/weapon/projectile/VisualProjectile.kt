@@ -16,7 +16,7 @@ class VisualProjectile(
 	val speed: Double,
 	val color: Color,
 	val particleThickness: Float,
-	val extraParticles: Int
+	val extraParticles: Int,
 ) : Projectile(null, noOpDamager) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = AntiAirCannonBalancing(
 		range = 0.0,

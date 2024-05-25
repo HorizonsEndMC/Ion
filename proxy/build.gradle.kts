@@ -23,12 +23,12 @@ dependencies {
 
 	// Included Dependencies
 	implementation("co.aikar:acf-bungee:0.5.1-SNAPSHOT")
-	implementation("net.dv8tion:JDA:5.0.0-beta.23")
+	implementation("net.dv8tion:JDA:5.0.0-beta.24")
 	implementation("net.kyori:adventure-platform-bungeecord:4.3.2")
-	implementation("net.kyori:adventure-text-logger-slf4j:4.16.0")
+	implementation("net.kyori:adventure-text-logger-slf4j:4.17.0")
 
-	implementation("net.kyori:adventure-text-minimessage:4.16.0")
-	implementation("net.kyori:adventure-text-serializer-plain:4.16.0")
+	implementation("net.kyori:adventure-text-minimessage:4.17.0")
+	implementation("net.kyori:adventure-text-serializer-plain:4.17.0")
 
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 }

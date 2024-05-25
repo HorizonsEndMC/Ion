@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.redis.RedisActions
+import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.chat.ChannelSelections
@@ -36,12 +38,13 @@ import net.horizonsend.ion.server.features.misc.PacketHandler
 import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipes
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
 import net.horizonsend.ion.server.features.nations.StationSieges
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.features.ores.CustomOrePlacement
+import net.horizonsend.ion.server.features.ores.generation.OreGeneration
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -63,9 +66,6 @@ import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.StarshipDisplay
-import net.horizonsend.ion.server.features.starship.ai.AIManager
-import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
-import net.horizonsend.ion.server.features.starship.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -117,6 +117,7 @@ val components: List<IonComponent> = listOf(
 	StationSieges,
 
 	Multiblocks,
+	MultiblockRecipes,
 	PowerMachines,
 	AreaShields,
 
@@ -194,13 +195,13 @@ val components: List<IonComponent> = listOf(
 
 	CustomMobSpawning,
 
+	AISpawners,
 	AISpawningManager,
-	AIManager,
 	StarshipDisplay,
-	NPCFakePilot,
 
 	AntiAirCannons,
-	CustomOrePlacement,
+//	CustomOrePlacement,
+	OreGeneration,
 	CapturableStationCache,
 	UnusedSoldShipPurge,
 	ClientDisplayEntities,

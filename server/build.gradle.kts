@@ -1,7 +1,7 @@
 import java.io.ByteArrayOutputStream
 
 plugins {
-	id("io.papermc.paperweight.userdev") version "1.6.3"
+	id("io.papermc.paperweight.userdev") version "1.7.1"
 	id("com.github.johnrengelman.shadow")
 
 	kotlin("plugin.serialization")
@@ -47,7 +47,7 @@ dependencies {
 	implementation("com.manya:persistent-data-types:1.0.25")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
-	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.13")
+	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.14")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("io.github.config4k:config4k:0.7.0")
 	implementation("net.wesjd:anvilgui:1.9.2-SNAPSHOT")

@@ -1,22 +1,22 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
-import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.extensions.prefixProvider
+import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.configuration.GassesConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.TradeConfiguration
+import net.horizonsend.ion.server.features.ai.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator

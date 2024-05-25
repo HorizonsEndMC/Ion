@@ -3,10 +3,14 @@ package net.horizonsend.ion.server.features.starship.active
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
+import net.horizonsend.ion.server.features.multiblock.checklist.BargeReactorMultiBlock
+import net.horizonsend.ion.server.features.multiblock.checklist.BattleCruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.checklist.CruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblock
@@ -15,14 +19,18 @@ import net.horizonsend.ion.server.features.multiblock.particleshield.EventShield
 import net.horizonsend.ion.server.features.multiblock.particleshield.SphereShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
-import net.horizonsend.ion.server.features.starship.subsystem.CryoSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.MagazineSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.CryoSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.BoxShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
@@ -53,6 +61,7 @@ object SubsystemDetector {
 		val potentialSignBlocks = LinkedList<Block>()
 		val potentialLandingGearBlocks = LinkedList<Block>()
 
+
 		starship.iterateBlocks { x, y, z ->
 			val block = starship.world.getBlockAt(x, y, z)
 			val type = block.type
@@ -62,11 +71,11 @@ object SubsystemDetector {
 			potentialWeaponBlocks.add(block)
 
 			if (
-				type == Material.GLOWSTONE ||
-				type == Material.REDSTONE_LAMP ||
-				type == Material.SEA_LANTERN ||
-				type == Material.MAGMA_BLOCK ||
-				type.isFroglight
+					type == Material.GLOWSTONE ||
+					type == Material.REDSTONE_LAMP ||
+					type == Material.SEA_LANTERN ||
+					type == Material.MAGMA_BLOCK ||
+					type.isFroglight
 			) {
 				potentialThrusterBlocks += block
 			}
@@ -74,12 +83,14 @@ object SubsystemDetector {
 			if (type == Material.OBSERVER) potentialLandingGearBlocks.add(block)
 		}
 
+
 		starship.reactor = ReactorSubsystem(starship)
 		starship.subsystems += starship.reactor
 
 		for (block in potentialThrusterBlocks) {
 			detectThruster(starship, block)
 		}
+
 		for (block in potentialWeaponBlocks) {
 			detectWeapon(feedbackDestination, starship, block)
 		}
@@ -131,6 +142,22 @@ object SubsystemDetector {
 				starship.subsystems += BoxShieldSubsystem(starship, sign, multiblock)
 			}
 
+			is BattleCruiserReactorMultiblock -> {
+				starship.subsystems += BattlecruiserReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is CruiserReactorMultiblock -> {
+				starship.subsystems += CruiserReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is BargeReactorMultiBlock -> {
+				starship.subsystems += BargeReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is FuelTankMultiblock -> {
+				starship.subsystems += FuelTankSubsystem(starship, sign, multiblock)
+			}
+
 			is HyperdriveMultiblock -> {
 				starship.subsystems += HyperdriveSubsystem(starship, sign, multiblock)
 			}
@@ -159,6 +186,7 @@ object SubsystemDetector {
 		}
 	}
 
+
 	private fun detectThruster(starship: ActiveControlledStarship, block: Block) {
 		for (face in CARDINAL_BLOCK_FACES) {
 			val thrusterType: ThrusterType = ThrusterType.values()
@@ -168,6 +196,7 @@ object SubsystemDetector {
 			starship.subsystems += ThrusterSubsystem(starship, pos, face, thrusterType)
 		}
 	}
+
 
 	private fun detectWeapon(feedbackDestination: Audience, starship: ActiveControlledStarship, block: Block) {
 		for (face: BlockFace in CARDINAL_BLOCK_FACES) {
@@ -217,6 +246,7 @@ object SubsystemDetector {
 		}
 	}
 
+
 	private fun getSignWeaponMultiblock(block: Block, face: BlockFace): SubsystemMultiblock<*>? {
 		val sign = block.state as Sign
 
@@ -250,5 +280,6 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.magazines)
 		starship.subsystems.filterIsInstanceTo(starship.gravityWells)
 		starship.subsystems.filterIsInstanceTo(starship.drills)
+		starship.subsystems.filterIsInstanceTo(starship.fuelTanks)
 	}
 }

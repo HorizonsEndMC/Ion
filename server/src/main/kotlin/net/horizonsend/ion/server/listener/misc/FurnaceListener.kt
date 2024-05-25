@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.features.customitems.CustomBlockItem
-import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
-import net.horizonsend.ion.server.features.customitems.minerals.Smeltable
+import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -31,8 +30,6 @@ object FurnaceListener : SLEventListener() {
 		if (!type.isWallSign) {
 			return
 		}
-
-		state.world.monsterSpawnLimit
 
 		val sign = signBlock.getState(false) as Sign
 		val checkStructure = false

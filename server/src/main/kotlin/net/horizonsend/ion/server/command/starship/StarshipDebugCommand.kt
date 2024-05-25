@@ -8,13 +8,14 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VariableVisualProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -88,6 +89,36 @@ object StarshipDebugCommand : SLCommand() {
 		helixAroundVector(origin, direction, radius, points, step = step, wavelength = wavelength, offsetRadians = offset).forEach {
 			sender.world.spawnParticle(particle, it, 1, 0.0, 0.0, 0.0, 0.0, null)
 		}
+	}
+
+	@Subcommand("testVectorParticle")
+	@Suppress("Unused")
+	fun onTestVectorParticle(sender: Player, speed: Double, radius: Double, points: Int, step: Double, length: Double, wavelength: Double, offset: Double) {
+		val dir = sender.location.direction
+		val origin = sender.eyeLocation.clone().add(dir)
+
+		VariableVisualProjectile(
+			origin,
+			dir,
+			500.0,
+			speed,
+		) { loc, travel ->
+			val vector = dir.clone().normalize().multiply(travel)
+
+			helixAroundVector(loc, vector, radius, points, step = step, wavelength = wavelength, offsetRadians = offset) {
+				loc.world.spawnParticle(
+					Particle.WAX_OFF,
+					it,
+					0,
+					0.0,
+					0.0,
+					0.0,
+					0.0,
+					null,
+					true
+				)
+			}
+		}.fire()
 	}
 
 	@Subcommand("ride")

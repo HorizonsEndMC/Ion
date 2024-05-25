@@ -57,5 +57,16 @@ object NamespacedKeys {
 	val TUBE_BUTTONS = key("tube_buttons")
 	val MATERIAL = key("material")
 
+	val PROGRESS = key("progress")
+	val CUSTOM_ITEM_RESULT = key("custom_item_result")
+
+	val ORE_POSITIONS = key("ore_positions")
+	val ORE_INDEXES = key("ore_indexes")
+	val ORE_DATA = key("ore_data")
+	val ORE_REPLACED_INDEXES = key("ore_replaced_indexes")
+	val ORE_REPLACED = key("ore_replaced")
+
+	val DATA_VERSION = key("data_version")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 }

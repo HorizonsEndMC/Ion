@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.client.networking.packets
 
-import net.horizonsend.ion.server.features.customitems.CustomItems as LegacyCustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItems as LegacyCustomItems
 import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.client.networking.IonPacketHandler
 import net.horizonsend.ion.server.features.client.networking.Packets

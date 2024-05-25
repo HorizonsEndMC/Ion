@@ -8,7 +8,7 @@ class WorldChanceFactor(val worlds: Map<String, Double>) : CollectionFactor() {
 		val sample = Random.nextFloat()
 
 		return worlds.any { (world, chance) ->
-			location.world.name.equals(world, ignoreCase = true) && sample >= chance
+			location.world.name.equals(world, ignoreCase = true) && sample <= chance
 		}
     }
 

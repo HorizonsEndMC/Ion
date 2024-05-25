@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.alertSubtitle
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
@@ -275,7 +275,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			}
 		)
 
-		val powerUsage = broken * 10
+		val powerUsage = broken * 50
 		PowerMachines.setPower(sign, power - powerUsage, true)
 	}
 

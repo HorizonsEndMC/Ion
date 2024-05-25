@@ -28,12 +28,13 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.U
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.MagazineSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
@@ -103,7 +104,7 @@ abstract class ActiveStarship (
 
 	var pilotDisconnectLocation: Vec3i? = null
 
-	abstract var rewardsProvider: RewardsProvider
+	abstract val rewardsProviders: LinkedList<RewardsProvider>
 	abstract var sinkMessageFactory: MessageFactory
 
 	/**
@@ -155,6 +156,7 @@ abstract class ActiveStarship (
 	val magazines = LinkedList<MagazineSubsystem>()
 	val gravityWells = LinkedList<GravityWellSubsystem>()
 	val drills = LinkedList<PlanetDrillSubsystem>()
+	val fuelTanks = LinkedList<FuelTankSubsystem>()
 
 	val weaponSets: HashMultimap<String, WeaponSubsystem> = HashMultimap.create()
 	val weaponSetSelections: HashBiMap<UUID, String> = HashBiMap.create()
@@ -179,13 +181,13 @@ abstract class ActiveStarship (
 	/** Ignore weapon color, use rainbows for pride month **/
 	var rainbowToggle = false
 
+	var targetedPosition: Location? = null
+
 	var forward: BlockFace = BlockFace.NORTH
 	var isExploding = false
 
 	var isInterdicting = false; private set
 	abstract val interdictionRange: Int
-
-	var hullIntegrity = 1.0
 
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
@@ -214,6 +216,9 @@ abstract class ActiveStarship (
 			x(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
 		}
 	}
+
+	val disabledThrusterRatio: Double get() =
+		thrusters.count { it.lastIonTurretLimited < (System.currentTimeMillis() - 5000L) } / thrusters.size.toDouble()
 
 	fun generateThrusterMap() {
 		for (face in CARDINAL_BLOCK_FACES) {
@@ -249,6 +254,7 @@ abstract class ActiveStarship (
 		val acceleration = ln(2.0 + totalAccel) * ln(2.0 + totalWeight) / ln(mass.squared()) * reduction * 30.0
 		return ThrustData(acceleration, speed)
 	}
+
 
 	fun calculateHitbox() {
 		this.hitbox.calculate(this.blocks)
@@ -361,6 +367,8 @@ abstract class ActiveStarship (
 		}
 	}
 
+	var hullIntegrity = 1.0
+
 	fun updateHullIntegrity() {
 		currentBlockCount = blocks.count {
 			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
@@ -387,9 +395,9 @@ abstract class ActiveStarship (
 	val damagers = mutableMapOf<Damager, ShipKillXP.ShipDamageData>()
 	fun lastDamagedOrNull(): Long? = damagers.maxOfOrNull { it.value.lastDamaged }
 
-	fun addToDamagers(damager: Damager) {
+	fun addToDamagers(damager: Damager, points: Int = 1) {
 		val data = damagers.getOrPut(damager) { ShipKillXP.ShipDamageData() }
-		data.points.incrementAndGet()
+		data.points.getAndAdd(points)
 		data.lastDamaged = System.currentTimeMillis()
 
 		debug("$damager added to damagers")

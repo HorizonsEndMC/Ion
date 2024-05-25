@@ -14,9 +14,10 @@ import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.ai.spawning.SpawningException
+import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
@@ -27,8 +28,8 @@ import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
-import net.horizonsend.ion.server.features.starship.subsystem.LandingGearSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.MiningLaserSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
@@ -43,8 +44,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.createData
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -182,6 +181,8 @@ object PilotedStarships : IonServerComponent() {
 		return true
 	}
 
+	fun isPiloting(player: Player): Boolean = map.any { (controller, _) -> (controller is ActivePlayerController) && controller.player == player }
+
 	fun canTakeControl(starship: ActiveControlledStarship, player: Player): Boolean {
 		return (starship.controller as? PlayerController)?.player?.uniqueId == player.uniqueId
 	}
@@ -236,7 +237,7 @@ object PilotedStarships : IonServerComponent() {
 	): Boolean {
 		val world: World = data.bukkitWorld()
 
-		val state: StarshipState = DeactivatedPlayerStarships.getSavedState(data) ?: throw AISpawner.SpawningException("Not detected.", world, Vec3i(data.blockKey))
+		val state: StarshipState = DeactivatedPlayerStarships.getSavedState(data) ?: throw SpawningException("Not detected.", world, Vec3i(data.blockKey))
 
 		for ((key: Long, blockData: BlockData) in state.blockMap) {
 			val x: Int = blockKeyX(key)
@@ -248,7 +249,7 @@ object PilotedStarships : IonServerComponent() {
 				val expected: String = blockData.material.name
 				val found: String = foundData.material.name
 
-				throw AISpawner.SpawningException(
+				throw SpawningException(
 					"Block at $x, $y, $z does not match! Expected $expected but found $found",
 					world,
 					Vec3i(data.blockKey)
@@ -257,7 +258,7 @@ object PilotedStarships : IonServerComponent() {
 
 			if (foundData.material == StarshipComputers.COMPUTER_TYPE) {
 				if (ActiveStarships.getByComputerLocation(world, x, y, z) != null) {
-					throw AISpawner.SpawningException(
+					throw SpawningException(
 						"Block at $x, $y, $z is the computer of a piloted ship!",
 						world,
 						Vec3i(data.blockKey)
@@ -344,10 +345,6 @@ object PilotedStarships : IonServerComponent() {
 			return false
 		}
 
-		for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 500.0)) {
-			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.activate"), Sound.Source.AMBIENT, 5f, 0.05f))
-		}
-
 		val carriedShips = mutableListOf<StarshipData>()
 
 		for ((key: Long, blockData: BlockData) in state.blockMap) {
@@ -411,6 +408,28 @@ object PilotedStarships : IonServerComponent() {
 				return@activateAsync
 			}
 
+			if (activePlayerStarship.type == StarshipType.BATTLECRUISER && (!SpaceWorlds.contains(activePlayerStarship.world) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
+				player.userError("Battlecruisers can only be piloted in space!")
+				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+				return@activateAsync
+			}
+
+			if (activePlayerStarship.type == StarshipType.BARGE && (!SpaceWorlds.contains(activePlayerStarship.world) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
+				player.userError("Barges can only be piloted in space!")
+				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+				return@activateAsync
+			}
+
+			// Check required subsystems
+			for (requiredSubsystem in activePlayerStarship.balancing.requiredMultiblocks) {
+				if (!requiredSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+					player.userError("Subsystem requirement not met! ${requiredSubsystem.failMessage}")
+					DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+					return@activateAsync
+				}
+			}
+
+			// Limit mining laser tiers and counts
 			val miningLasers = activePlayerStarship.subsystems.filterIsInstance<MiningLaserSubsystem>()
 			if (miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {
 				player.userErrorAction("Your starship can only support tier ${activePlayerStarship.type.miningLaserTier} mining lasers!")
@@ -437,6 +456,10 @@ object PilotedStarships : IonServerComponent() {
 				)
 			}
 
+			for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 10_000.0)) {
+				nearbyPlayer.playSound(data.starshipType.actualType.balancingSupplier.get().sounds.pilot.sound)
+			}
+
 			callback(activePlayerStarship)
 		}
 
@@ -455,8 +478,8 @@ object PilotedStarships : IonServerComponent() {
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
 
-		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 500.0)) {
-			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
+		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 10_000.0)) {
+			nearbyPlayer.playSound(starship.balancing.sounds.release.sound)
 		}
 
 		controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")

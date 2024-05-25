@@ -6,6 +6,9 @@ import com.google.common.collect.Table
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import java.util.EnumSet
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.random.Random
+import kotlin.random.asKotlinRandom
+import kotlin.reflect.KClass
 
 fun <T> List<T>.randomEntry(): T = when {
 	this.isEmpty() -> error("No entries in list to pick from!")
@@ -72,3 +75,31 @@ fun <K, V> Map<out K, V>.toMutableList(): MutableList<Pair<K, V>> {
 fun <K, V, R, Z> Map<K, V>.mapTo(other: MutableMap<R, Z>, transform: (Map.Entry<K,V>) -> Pair<R, Z>) = other.putAll(map(transform))
 fun <K, V, R, Z> Map<K, V>.mapNotNullTo(other: MutableMap<R, Z>, transform: (Map.Entry<K,V>) -> Pair<R, Z>?) = other.putAll(map(transform).filterNotNull())
 fun <T> MutableSet<T>.and(vararg others: T): MutableSet<T> = apply { others.forEach { add(it) } }
+
+fun <T, R : Any> Iterable<T>.filterIsInstance(clazz: KClass<out R>, transform: (T) -> Any?): List<T> {
+	val destination = ArrayList<T>()
+
+	for (element in this) if (clazz.isInstance(transform(element))) destination.add(element)
+
+	return destination
+}
+
+fun <T> Iterable<T>.weightedRandomOrNull(random: Random = ThreadLocalRandom.current().asKotlinRandom(), selector: (T) -> Double): T? {
+	val sum = this.sumOf { selector(it) }
+	if (sum <= 0.0) return null
+	val selectionPoint = random.nextDouble(0.0, sum)
+
+	var running = 0.0
+
+	for (entry: T in this) {
+		val probability = selector(entry)
+
+		if (selectionPoint in running..(running + probability)) return entry
+
+		running += probability
+	}
+
+	return null
+}
+
+fun <T> Iterable<T>.weightedRandom(random: Random = ThreadLocalRandom.current().asKotlinRandom(), selector: (T) -> Double): T = weightedRandomOrNull(random, selector) ?: throw NoSuchElementException()

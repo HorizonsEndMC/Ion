@@ -1,7 +1,12 @@
 package net.horizonsend.ion.server.features.multiblock
 
-import net.horizonsend.ion.server.features.customblocks.CustomBlock
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BARGE_REACTOR_CORE
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BATTLECRUISER_REACTOR_CORE
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.CRUISER_REACTOR_CORE
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_CASING
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10.buildStructure
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.Wires
@@ -9,8 +14,8 @@ import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
-import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
@@ -34,7 +39,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
 import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.isWool
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-
 import net.minecraft.world.level.block.AbstractFurnaceBlock
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -255,9 +259,15 @@ class MultiblockShape {
 		fun stainedTerracotta() = anyType(STAINED_TERRACOTTA_TYPES)
 
 		fun glass() = type(Material.GLASS)
+		fun anvil() = type(Material.ANVIL)
+		fun bcReactorCore() = customBlock(BATTLECRUISER_REACTOR_CORE)
+		fun bargeReactorCore() = customBlock(BARGE_REACTOR_CORE)
+		fun cruiserReactorCore() = customBlock(CRUISER_REACTOR_CORE)
+		fun netheriteCasing() = customBlock(NETHERITE_CASING)
+		fun enrichedUraniumBlock() = customBlock(ENRICHED_URANIUM_BLOCK)
 		fun stainedGlass() = filteredTypes { it.isStainedGlass }
 		fun anyGlass() = filteredTypes { it.isGlass }
-
+		fun seaLantern() = type(Material.SEA_LANTERN)
 		fun glassPane() = type(Material.GLASS_PANE)
 		fun stainedGlassPane() = filteredTypes { it.isStainedGlassPane }
 		fun anyGlassPane() = filteredTypes { it.isGlassPane }
@@ -293,6 +303,7 @@ class MultiblockShape {
 
 		fun concrete() = filteredTypes { it.isConcrete }
 
+		fun sculkCatalyst() = type(Material.SCULK_CATALYST)
 		fun stoneBrick() = type(Material.STONE_BRICKS)
 
 		fun ironBlock() = type(Material.IRON_BLOCK)
@@ -324,6 +335,7 @@ class MultiblockShape {
 		fun titaniumBlock() = customBlock(CustomBlocks.TITANIUM_BLOCK)
 		fun aluminumBlock() = customBlock(CustomBlocks.ALUMINUM_BLOCK)
 		fun chetheriteBlock() = customBlock(CustomBlocks.CHETHERITE_BLOCK)
+		fun steelBlock() = customBlock(CustomBlocks.STEEL_BLOCK)
 		fun wireInputComputer() = type(Wires.INPUT_COMPUTER_BLOCK)
 
 		fun redstoneLamp() = filteredTypes { it.isRedstoneLamp }
@@ -335,7 +347,7 @@ class MultiblockShape {
 
 		fun glowstone() = type(Material.GLOWSTONE)
 
-		fun sponge() = type(Material.SPONGE)
+		fun sponge() = anyType(Material.SPONGE, Material.WET_SPONGE)
 		fun endRod() = type(Material.END_ROD)
 
 		fun hopper() = type(Material.HOPPER)

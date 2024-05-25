@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.listener.gear
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.gear.TreeCutter
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.removePower

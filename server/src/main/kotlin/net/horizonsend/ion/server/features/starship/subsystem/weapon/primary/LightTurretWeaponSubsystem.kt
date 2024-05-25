@@ -1,11 +1,10 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
-import net.horizonsend.ion.common.extensions.userError
+import java.util.concurrent.TimeUnit
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.LightTurretMultiblock
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting.AutoTurretTarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -23,6 +22,7 @@ class LightTurretWeaponSubsystem(
 
 	override val powerUsage: Int = balancing.powerUsage
 	override val inaccuracyRadians: Double = Math.toRadians(balancing.inaccuracyRadians)
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 
 	override val range: Double get() = multiblock.getRange(starship)
 
