@@ -455,14 +455,13 @@ object Crafting : IonServerComponent() {
 		}
 		//crate placer
 		itemStackShapeRecipe("crate_placer", CustomItems.CRATE_PLACER.constructItemStack()) {
-			shape("xax", "xcd", "txx")
+			shape("xsx", "xcd", "txx")
 
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+			setIngredient('s', ExactChoice(STEEL_INGOT.constructItemStack()))
 			setIngredient('t', ADHESIVE_TANK.constructItemStack())
 			setIngredient('d', DIAMOND)
 			setIngredient('c', CIRCUITRY.constructItemStack())
 			setIngredient('x', AIR)
-			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 		}
 
 		// Circuitry Crafting 1
