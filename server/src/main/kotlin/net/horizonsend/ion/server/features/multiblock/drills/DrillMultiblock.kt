@@ -49,7 +49,8 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		private val DISABLED = text("[DISABLED]", RED)
 		private val blacklist = EnumSet.of(
 			Material.BARRIER,
-			Material.BEDROCK
+			Material.BEDROCK,
+			Material.VOID_AIR
 		)
 
 		private var lastDrillCount: Map<UUID, Int> = mutableMapOf()
