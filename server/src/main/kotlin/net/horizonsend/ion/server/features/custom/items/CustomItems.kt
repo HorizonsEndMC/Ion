@@ -50,8 +50,8 @@ import kotlin.math.roundToInt
 // budget minecraft registry lmao
 object CustomItems {
 	// If we want to be extra fancy we can replace this with some fastutils thing later .
-	val ALL get() = CustomItems.customItems.values
-	private val customItems: MutableMap<String, net.horizonsend.ion.server.features.custom.items.CustomItem> = mutableMapOf()
+	val ALL get() = customItems.values
+	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
 	// Magazines Start
 
@@ -81,7 +81,7 @@ object CustomItems {
 				material = DIAMOND_HOE,
 				customModelData = 1,
 				displayName = text("Blaster Pistol", RED, BOLD).decoration(ITALIC, false),
-				magazineType = CustomItems.STANDARD_MAGAZINE,
+				magazineType = STANDARD_MAGAZINE,
 				particleSize = 0.25f,
 				soundRange = 50.0,
 				soundFire = "horizonsend:blaster.pistol.shoot",
@@ -101,7 +101,7 @@ object CustomItems {
 				material = IRON_HOE,
 				customModelData = 1,
 				displayName = text("Blaster Rifle", RED, BOLD).decoration(ITALIC, false),
-				magazineType = CustomItems.STANDARD_MAGAZINE,
+				magazineType = STANDARD_MAGAZINE,
 				particleSize = 0.25f,
 				soundRange = 50.0,
 				soundFire = "horizonsend:blaster.rifle.shoot",
@@ -121,7 +121,7 @@ object CustomItems {
 				material = IRON_HOE,
 				customModelData = 2,
 				displayName = text("Submachine Blaster", RED, BOLD).decoration(ITALIC, false),
-				magazineType = CustomItems.STANDARD_MAGAZINE,
+				magazineType = STANDARD_MAGAZINE,
 				particleSize = 0.25f,
 				soundRange = 50.0,
 				soundFire = "horizonsend:blaster.submachine_blaster.shoot",
@@ -162,7 +162,7 @@ object CustomItems {
 				material = GOLDEN_HOE,
 				customModelData = 1,
 				displayName = text("Blaster Shotgun", RED, BOLD).decoration(ITALIC, false),
-				magazineType = CustomItems.SPECIAL_MAGAZINE,
+				magazineType = SPECIAL_MAGAZINE,
 				particleSize = 0.25f,
 				soundRange = 50.0,
 				soundFire = "horizonsend:blaster.shotgun.shoot",
@@ -186,7 +186,7 @@ object CustomItems {
 				material = GOLDEN_HOE,
 				customModelData = 2,
 				displayName = text("Blaster Sniper", RED, BOLD).decoration(ITALIC, false),
-				magazineType = CustomItems.SPECIAL_MAGAZINE,
+				magazineType = SPECIAL_MAGAZINE,
 				particleSize = 0.5f,
 				soundRange = 100.0,
 				soundFire = "horizonsend:blaster.sniper.shoot",
@@ -206,7 +206,7 @@ object CustomItems {
 				material = IRON_HOE,
 				customModelData = 3,
 				displayName = text("Blaster Cannon", RED, BOLD).decoration(ITALIC, false),
-				magazineType = CustomItems.STANDARD_MAGAZINE,
+				magazineType = STANDARD_MAGAZINE,
 				particleSize = 0.80f,
 				soundRange = 50.0,
 				soundFire = "horizonsend:blaster.cannon.shoot",
@@ -256,12 +256,12 @@ object CustomItems {
 		}
 	)
 
-	val ALUMINUM_ORE : net.horizonsend.ion.server.features.custom.items.CustomBlockItem = register(
-		object : net.horizonsend.ion.server.features.custom.items.CustomBlockItem(
+	val ALUMINUM_ORE : CustomBlockItem = register(
+		object : CustomBlockItem(
 			identifier = "ALUMINUM_ORE",
 			material = IRON_ORE,
 			customModelData = 1,
-			displayName = text("Aluminum OldOreData").decoration(ITALIC, false),
+			displayName = text("Aluminum Ore").decoration(ITALIC, false),
 			customBlockIdentifier = "ALUMINUM_ORE"
 		), Smeltable {
 			override val smeltResultIdentifier: String = "ALUMINUM_INGOT"
@@ -302,7 +302,7 @@ object CustomItems {
 			identifier = "CHETHERITE_ORE",
 			material = IRON_ORE,
 			customModelData = 2,
-			displayName = text("Chetherite OldOreData").decoration(ITALIC, false),
+			displayName = text("Chetherite Ore").decoration(ITALIC, false),
 			customBlockIdentifier = "CHETHERITE_ORE"
 		), Smeltable {
 			override val smeltResultIdentifier: String = "CHETHERITE"
@@ -344,7 +344,7 @@ object CustomItems {
 			identifier = "TITANIUM_ORE",
 			material = IRON_ORE,
 			customModelData = 3,
-			displayName = text("Titanium OldOreData").decoration(ITALIC, false),
+			displayName = text("Titanium Ore").decoration(ITALIC, false),
 			customBlockIdentifier = "TITANIUM_ORE"
 		), Smeltable {
 			override val smeltResultIdentifier: String = "TITANIUM_INGOT"
@@ -396,7 +396,7 @@ object CustomItems {
 			identifier = "URANIUM_ORE",
 			material = IRON_ORE,
 			customModelData = 4,
-			displayName = text("Uranium OldOreData").decoration(ITALIC, false),
+			displayName = text("Uranium Ore").decoration(ITALIC, false),
 			customBlockIdentifier = "URANIUM_ORE"
 		), Smeltable {
 			override val smeltResultIdentifier: String = "URANIUM"
@@ -717,7 +717,7 @@ object CustomItems {
 			identifier = "GAS_CANISTER_HYDROGEN",
 			customModelData = 1001,
 			gasIdentifier = "HYDROGEN",
-			displayName = CustomItems.canisterName(text("Hydrogen", RED))
+			displayName = canisterName(text("Hydrogen", RED))
 		) {}
 	)
 	val GAS_CANISTER_NITROGEN = register(
@@ -725,7 +725,7 @@ object CustomItems {
 			identifier = "GAS_CANISTER_NITROGEN",
 			customModelData = 1002,
 			gasIdentifier = "NITROGEN",
-			displayName = CustomItems.canisterName(text("Nitrogen", RED))
+			displayName = canisterName(text("Nitrogen", RED))
 		) {}
 	)
 	val GAS_CANISTER_METHANE = register(
@@ -733,7 +733,7 @@ object CustomItems {
 			identifier = "GAS_CANISTER_METHANE",
 			customModelData = 1003,
 			gasIdentifier = "METHANE",
-			displayName = CustomItems.canisterName(text("Methane", RED))
+			displayName = canisterName(text("Methane", RED))
 		) {}
 	)
 
@@ -743,7 +743,7 @@ object CustomItems {
 			identifier = "GAS_CANISTER_OXYGEN",
 			customModelData = 1010,
 			gasIdentifier = "OXYGEN",
-			displayName = CustomItems.canisterName(text("Oxygen", YELLOW))
+			displayName = canisterName(text("Oxygen", YELLOW))
 		) {}
 	)
 	val GAS_CANISTER_CHLORINE = register(
@@ -751,7 +751,7 @@ object CustomItems {
 			identifier = "GAS_CANISTER_CHLORINE",
 			customModelData = 1011,
 			gasIdentifier = "CHLORINE",
-			displayName = CustomItems.canisterName(text("Chlorine", YELLOW))
+			displayName = canisterName(text("Chlorine", YELLOW))
 		) {}
 	)
 	val GAS_CANISTER_FLUORINE = register(
@@ -759,7 +759,7 @@ object CustomItems {
 			identifier = "GAS_CANISTER_FLUORINE",
 			customModelData = 1012,
 			gasIdentifier = "FLUORINE",
-			displayName = CustomItems.canisterName(text("Fluorine", YELLOW))
+			displayName = canisterName(text("Fluorine", YELLOW))
 		) {}
 	)
 
@@ -769,7 +769,7 @@ object CustomItems {
 			identifier = "GAS_CANISTER_HELIUM",
 			customModelData = 1020,
 			gasIdentifier = "HELIUM",
-			displayName = CustomItems.canisterName(text("Helium", BLUE))
+			displayName = canisterName(text("Helium", BLUE))
 		) {}
 	)
 	val GAS_CANISTER_CARBON_DIOXIDE = register(
@@ -777,7 +777,7 @@ object CustomItems {
 			identifier = "GAS_CANISTER_CARBON_DIOXIDE",
 			customModelData = 1021,
 			gasIdentifier = "CARBON_DIOXIDE",
-			displayName = CustomItems.canisterName(text("Carbon Dioxide", BLUE))
+			displayName = canisterName(text("Carbon Dioxide", BLUE))
 		) {}
 	)
 
@@ -901,7 +901,7 @@ object CustomItems {
 	}
 
 	private fun <T : CustomItem> register(customItem: T): T {
-		CustomItems.customItems[customItem.identifier] = customItem
+		customItems[customItem.identifier] = customItem
 		return customItem
 	}
 
@@ -910,12 +910,12 @@ object CustomItems {
 			// Who tf annotated itemMeta with "UndefinedNullability"
 			// if ya cant promise it's not null, then mark it nullable
 			// ^ he did not know how nullability works in java
-			return CustomItems.customItems[itemMeta?.persistentDataContainer?.get(CUSTOM_ITEM, STRING) ?: return null]
+			return customItems[itemMeta?.persistentDataContainer?.get(CUSTOM_ITEM, STRING) ?: return null]
 		}
 
-	val identifiers = CustomItems.customItems.keys
+	val identifiers = customItems.keys
 
-	fun getByIdentifier(identifier: String): CustomItem? = CustomItems.customItems[identifier]
+	fun getByIdentifier(identifier: String): CustomItem? = customItems[identifier]
 }
 
 abstract class CustomItem(val identifier: String) {
