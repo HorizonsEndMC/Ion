@@ -546,7 +546,7 @@ enum class StarshipType(
 		minLevel = 80,
 		containerPercent = 0.075,
 		crateLimitMultiplier = 0.0,
-		menuItemMaterial = Material.DIAMOND_BLOCK,
+		menuItemMaterial = Material.SEA_LANTERN,
 		isWarship = false,
 		color = "#0c5ce8",
 		dynmapIcon = "barge",
