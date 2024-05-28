@@ -60,11 +60,11 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		check(newWorld != world1) { "New world can't be the same as the current world" }
 
-		if (starship.type == StarshipType.BATTLECRUISER && (!SpaceWorlds.contains(world2) || (!Hyperspace.isHyperspaceWorld(world2)))) {
+		if (starship.type == StarshipType.BATTLECRUISER && (!SpaceWorlds.contains(world2) && (!Hyperspace.isHyperspaceWorld(world2)))) {
 			throw StarshipMovementException("Battlecruisers cannot support their weight within strong gravity wells!")
 		}
 
-		if (starship.type == StarshipType.BARGE && (!SpaceWorlds.contains(world2) || (!Hyperspace.isHyperspaceWorld(world2)))) {
+		if (starship.type == StarshipType.BARGE && (!SpaceWorlds.contains(world2) && (!Hyperspace.isHyperspaceWorld(world2)))) {
 			throw StarshipMovementException("Barges cannot support their weight within strong gravity wells!")
 		}
 
