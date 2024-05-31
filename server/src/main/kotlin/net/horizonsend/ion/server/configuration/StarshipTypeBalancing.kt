@@ -47,7 +47,32 @@ data class StarshipTypeBalancing(
 		maxSneakFlyAccel = 3,
 		interdictionRange = 900,
 		hyperspaceRangeMultiplier = 1.3,
-		shieldPowerMultiplier = 1.0
+		shieldPowerMultiplier = 1.0,
+		weapons = StarshipWeapons(
+			lightTurret = StarshipWeapons.StarshipWeapon(
+				range = 200.0,
+				speed = 250.0,
+				areaShieldDamageMultiplier = 2.0,
+				starshipShieldDamageMultiplier = 2.0,
+				particleThickness = 0.3,
+				explosionPower = 4.0f,
+				volume = 10,
+				pitch = 2.0f,
+				soundName = "horizonsend:starship.weapon.turbolaser.light.shoot",
+				powerUsage = 5300,
+				length = 0,
+				angleRadiansHorizontal = 0.0,
+				angleRadiansVertical = 0.0,
+				convergeDistance = 0.0,
+				extraDistance = 0,
+				fireCooldownMillis = 250,
+				aimDistance = 0,
+				inaccuracyRadians = 2.0,
+				applyCooldownToAll = true,
+				maxBlockCount = 12000,
+				minBlockCount = 1750
+			),
+		)
 	),
 	val mediumFreighter: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 10,
