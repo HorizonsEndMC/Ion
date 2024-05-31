@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.misc
 
+import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.FLYABLE_BLOCKS
 import net.horizonsend.ion.server.features.starship.Mass
@@ -72,6 +73,11 @@ object GameplayTweaks : IonServerComponent() {
 
 	@EventHandler
 	fun onPortalCreate(event: PortalCreateEvent) {
+		event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onFireworkBoost(event: PlayerElytraBoostEvent) {
 		event.isCancelled = true
 	}
 
