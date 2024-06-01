@@ -15,7 +15,7 @@ class RandomByHeightFactor(
 		val slope = (maxChance - minChance) / (maxAtmosphereHeight - minAtmosphereHeight)
 		val ramp = (location.y - minAtmosphereHeight) * slope
 
-		return Random.nextDouble() >= ramp
+		return Random.nextDouble() <= ramp
 	}
 
 	override fun canBeFound(location: Location): Boolean {
