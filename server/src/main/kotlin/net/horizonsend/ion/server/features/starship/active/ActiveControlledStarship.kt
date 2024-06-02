@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.starship.BlockingExplosion
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
@@ -164,6 +165,12 @@ class ActiveControlledStarship(
 			val location = if (e is StarshipBlockedException) e.location else null
 			controller.onBlocked(movement, e, location)
 			controller.sendMessage(e.formatMessage())
+
+			if (location != null) {
+				Tasks.async {
+					BlockingExplosion.explodeBlocking(location, this.world)
+				}
+			}
 
 			sneakMovements = 0
 			lastBlockedTime = System.currentTimeMillis()
