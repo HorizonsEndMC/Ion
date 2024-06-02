@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.movement
 
+import net.horizonsend.ion.server.features.starship.BlockingExplosion
 import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -119,7 +120,7 @@ object OptimizedMovement {
 					val blockData = section.getBlockState(localX, localY, localZ)
 
 					if (!passThroughBlocks.contains(blockData)) {
-						if (!isHangar(blockData)) {
+						if (!isHangar(blockData) && !BlockingExplosion.objectIsSmallEnough(blockKey, world)) {
 							throw StarshipBlockedException(Vec3i(x, y, z), blockData)
 						}
 

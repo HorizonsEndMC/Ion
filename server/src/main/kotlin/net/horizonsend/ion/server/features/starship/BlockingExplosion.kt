@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit
 
 object BlockingExplosion {
     private const val MAX_OBJECT_SIZE_TO_EXPLODE = 20
+    /*
     private const val EXPLOSION_SIZE = 8.0f
 
     fun explodeBlocking(vec: Vec3i, world: World) {
@@ -30,8 +31,9 @@ object BlockingExplosion {
             }
         }
     }
+     */
 
-    private fun objectIsSmallEnough(vec: Vec3i, world: World): Boolean {
+    fun objectIsSmallEnough(blockKey: Long, world: World): Boolean {
         // Copied from StarshipDetection.detectNewState()
 
         // blocks that were accepted
@@ -44,7 +46,7 @@ object BlockingExplosion {
         val visited = mutableSetOf<Long>()
 
         // Jumpstart the queue by adding the origin block
-        val originKey = vec.toBlockKey()
+        val originKey = blockKey
         visited.add(originKey)
         queue.push(originKey)
 

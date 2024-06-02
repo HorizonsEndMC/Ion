@@ -166,12 +166,6 @@ class ActiveControlledStarship(
 			controller.onBlocked(movement, e, location)
 			controller.sendMessage(e.formatMessage())
 
-			if (location != null) {
-				Tasks.async {
-					BlockingExplosion.explodeBlocking(location, this.world)
-				}
-			}
-
 			sneakMovements = 0
 			lastBlockedTime = System.currentTimeMillis()
 			return false
