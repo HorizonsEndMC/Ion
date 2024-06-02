@@ -2,8 +2,6 @@ package net.horizonsend.ion.server.features.starship
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
@@ -13,25 +11,11 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
-import java.util.*
+import java.util.Stack
 import java.util.concurrent.TimeUnit
 
-object BlockingExplosion {
+object BlockingBypass {
     private const val MAX_OBJECT_SIZE_TO_EXPLODE = 20
-    /*
-    private const val EXPLOSION_SIZE = 8.0f
-
-    fun explodeBlocking(vec: Vec3i, world: World) {
-        if (objectIsSmallEnough(vec, world)) {
-            Tasks.sync {
-                world.createExplosion(
-                    Location(world, vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble()),
-                    EXPLOSION_SIZE
-                )
-            }
-        }
-    }
-     */
 
     fun objectIsSmallEnough(blockKey: Long, world: World): Boolean {
         // Copied from StarshipDetection.detectNewState()
@@ -55,13 +39,10 @@ object BlockingExplosion {
         while (!queue.isEmpty()) {
             if (System.nanoTime() - start > TimeUnit.SECONDS.toNanos(30)) {
                 // Took too long; assume that the object is too large
-                println("RETURNING FALSE TOOK TOO LONG")
                 return false
             }
 
             if (blockTypes.count() > MAX_OBJECT_SIZE_TO_EXPLODE) {
-                println("RETURNING FALSE TOO LARGE")
-                println("visited: ${blockTypes.count()}, $blockTypes")
                 return false
             }
 
@@ -69,22 +50,18 @@ object BlockingExplosion {
             val x = blockKeyX(key)
             val y = blockKeyY(key)
             val z = blockKeyZ(key)
-            println("CHECKING: $x, $y, $z")
 
             if (ActiveStarships.findByBlock(Location(world, x.toDouble(), y.toDouble(), z.toDouble())) != null) {
-                println("THIS BLOCK IS PART OF AN ACTIVE STARSHIP")
                 continue
             }
 
             // Do not allow checking ships larger than render distance.
             // The type being null usually means the chunk is unloaded.
             val blockData = getBlockDataSafe(world, x, y, z) ?: return false
-            println("PASSED GET BLOCK DATA SAFE")
 
             val material = blockData.material
 
             if (material == Material.AIR || material == Material.VOID_AIR || material == Material.CAVE_AIR) {
-                println("THIS BLOCK IS JUST AIR")
                 continue
             }
 
