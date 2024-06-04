@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.custom.items.blasters.objects
+package net.horizonsend.ion.server.features.custom.items.blasters
 
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Balancing
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.blasters.RayTracedParticleProjectile
+import net.horizonsend.ion.server.features.custom.items.objects.AmmunitionHoldingItem
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.audience.Audience
@@ -35,22 +35,22 @@ import java.util.Locale
 import java.util.function.Supplier
 
 abstract class Blaster<T : Balancing>(
-    identifier: String,
+	identifier: String,
 
-    material: Material,
-    customModelData: Int,
-    displayName: Component,
-    val magazineType: Magazine<*>,
-    val particleSize: Float,
-    val soundRange: Double,
-    val soundFire: String,
-    val soundWhizz: String,
-    val soundShell: String,
-    val soundReloadStart: String,
-    val soundReloadFinish: String,
-    val explosiveShot: Boolean,
+	material: Material,
+	customModelData: Int,
+	displayName: Component,
+	val magazineType: Magazine<*>,
+	val particleSize: Float,
+	val soundRange: Double,
+	val soundFire: String,
+	val soundWhizz: String,
+	val soundShell: String,
+	val soundReloadStart: String,
+	val soundReloadFinish: String,
+	val explosiveShot: Boolean,
 
-    private val balancingSupplier: Supplier<T>
+	private val balancingSupplier: Supplier<T>
 ) : AmmunitionHoldingItem(identifier, material, customModelData, displayName) {
 	val balancing get() = balancingSupplier.get()
 

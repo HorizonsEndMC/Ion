@@ -1,6 +1,7 @@
-package net.horizonsend.ion.server.features.custom.items.blasters.objects
+package net.horizonsend.ion.server.features.custom.items.blasters
 
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
+import net.horizonsend.ion.server.features.custom.items.objects.AmmunitionHoldingItem
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import java.util.function.Supplier

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.ammo
 
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.blasters.objects.AmmunitionHoldingItem
+import net.horizonsend.ion.server.features.custom.items.objects.AmmunitionHoldingItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock

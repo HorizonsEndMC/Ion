@@ -1,6 +1,7 @@
-package net.horizonsend.ion.server.features.custom.items.blasters.objects
+package net.horizonsend.ion.server.features.custom.items.objects
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.AMMO
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
