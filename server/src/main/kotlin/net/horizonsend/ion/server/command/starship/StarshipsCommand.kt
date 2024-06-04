@@ -20,9 +20,9 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
