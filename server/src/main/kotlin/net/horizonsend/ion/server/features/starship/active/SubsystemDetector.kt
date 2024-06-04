@@ -6,10 +6,10 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.misc.FuelTankMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.type.checklist.BargeReactorMultiBlock
 import net.horizonsend.ion.server.features.multiblock.type.checklist.BattleCruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.checklist.CruiserReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblock
