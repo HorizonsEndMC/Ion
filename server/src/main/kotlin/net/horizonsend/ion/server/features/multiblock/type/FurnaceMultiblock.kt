@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.FurnaceEventHandler
 import net.horizonsend.ion.server.features.multiblock.type.crafting.MultiblockRecipes
-import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.FurnaceEventHandler
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
