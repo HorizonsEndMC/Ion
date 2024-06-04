@@ -58,7 +58,7 @@ object PowerMachines : IonServerComponent() {
 		}
 	}
 
-	private val prefixComponent = Component.text("E: ", NamedTextColor.YELLOW)
+	val prefixComponent = Component.text("E: ", NamedTextColor.YELLOW)
 
 	@JvmOverloads
 	fun setPower(sign: Sign, power: Int, fast: Boolean = true): Int {
