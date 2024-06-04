@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.util
 
 import kotlinx.coroutines.runBlocking
-import net.horizonsend.ion.server.features.customblocks.CustomBlock
-import net.horizonsend.ion.server.features.customblocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import org.bukkit.Bukkit
 import org.bukkit.ChunkSnapshot
 import org.bukkit.Material

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient
+package net.horizonsend.ion.server.features.multiblock.crafting.ingredient
 
 import net.horizonsend.ion.server.features.machine.PowerMachines.getPower
 import net.horizonsend.ion.server.features.machine.PowerMachines.removePower
