@@ -5,8 +5,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
-import net.horizonsend.ion.server.features.custom.items.blasters.objects.Blaster
-import net.horizonsend.ion.server.features.custom.items.blasters.objects.Magazine
+import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
+import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
 import net.horizonsend.ion.server.features.custom.items.minerals.objects.MineralItem
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
