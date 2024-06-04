@@ -3,8 +3,6 @@ package net.horizonsend.ion.server.features.multiblock.crafting
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ConsumedItemIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.GasCanisterIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ProgressHolderItemIngredient
@@ -16,6 +14,8 @@ import net.horizonsend.ion.server.features.multiblock.crafting.result.ItemResult
 import net.horizonsend.ion.server.features.multiblock.crafting.result.MultiRecipeResult
 import net.horizonsend.ion.server.features.multiblock.crafting.result.ProgressItemResult
 import net.horizonsend.ion.server.features.multiblock.crafting.result.SoundResult
+import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock

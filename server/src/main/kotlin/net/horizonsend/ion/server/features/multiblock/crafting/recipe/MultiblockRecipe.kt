@@ -1,7 +1,7 @@
-package net.horizonsend.ion.server.features.multiblock.type.crafting.recipe
+package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.type.crafting.result.MultiblockRecipeResult
+import net.horizonsend.ion.server.features.multiblock.crafting.result.MultiblockRecipeResult
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 

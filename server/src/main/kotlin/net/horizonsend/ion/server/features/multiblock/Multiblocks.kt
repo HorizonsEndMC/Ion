@@ -297,6 +297,8 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(MiningLaserMultiblockTier4Top)
 		registerMultiblock(MiningLaserMultiblockTier4Bottom)
 		registerMultiblock(MiningLaserMultiblockTier4Side)
+		registerMultiblock(TopArsenalStarshipWeaponMultiblock)
+		registerMultiblock(BottomArsenalStarshipWeaponMultiblock)
 
 		registerMultiblock(ItemSplitterMultiblock)
 		registerMultiblock(GasCollectorMultiblock)
