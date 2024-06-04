@@ -8,7 +8,6 @@ import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 
-
 object CircuitfabMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val name = "circuitfab"
 
