@@ -422,13 +422,13 @@ object PilotedStarships : IonServerComponent() {
 				return@activateAsync
 			}
 
-			if (activePlayerStarship.type == StarshipType.BATTLECRUISER && (!activePlayerStarship.world.ion.hasFlag(WorldFlag.SPACE_WORLD) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
+			if (activePlayerStarship.type == StarshipType.BATTLECRUISER && !world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 				player.userError("Battlecruisers can only be piloted in space!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
 
-			if (activePlayerStarship.type == StarshipType.BARGE && (!activePlayerStarship.world.ion.hasFlag(WorldFlag.SPACE_WORLD) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
+			if (activePlayerStarship.type == StarshipType.BARGE && !world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 				player.userError("Barges can only be piloted in space!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
