@@ -1,11 +1,11 @@
-package net.horizonsend.ion.server.features.multiblock.type.crafting.recipe
+package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ItemConsumable
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.MultiblockRecipeIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ResourceIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.result.MultiblockRecipeResult
+import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
