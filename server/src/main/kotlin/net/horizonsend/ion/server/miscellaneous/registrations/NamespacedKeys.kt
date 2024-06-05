@@ -70,5 +70,7 @@ object NamespacedKeys {
 	val BLOCKS_TRAVELED = key("blocks_traveled")
 	val HYPERSPACE_BLOCKS_TRAVELED = key("hyperspace_blocks_traveled")
 
+	val TOOL_MODIFICATIONS = key("tool_modifications")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 }
