@@ -7,10 +7,11 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Energy
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
+import net.horizonsend.ion.server.features.custom.items.minerals.MineralItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
-import net.horizonsend.ion.server.features.custom.items.minerals.objects.MineralItem
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.misc.ShellItem
+import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownPumpkinGrenade
@@ -34,7 +35,6 @@ import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.Material.DIAMOND_HOE
 import org.bukkit.Material.GOLDEN_HOE
-import org.bukkit.Material.HEART_OF_THE_SEA
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_HOE
 import org.bukkit.Material.IRON_INGOT
@@ -46,6 +46,7 @@ import org.bukkit.block.Dispenser
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
 import kotlin.math.roundToInt
@@ -889,18 +890,11 @@ object CustomItems {
 	val PLANET_SELECTOR = register("PLANET_SELECTOR", 5900, text("PLANET_SELECTOR"))
 	// Planets end
 
-	private fun registerStackable(identifier: String, customModelData: Int, displayName: Component): CustomItem {
-		return register(object :
-			CustomItem(identifier) {
-			override fun constructItemStack(): ItemStack {
-				return ItemStack(HEART_OF_THE_SEA).updateMeta {
-					it.setCustomModelData(customModelData)
-					it.displayName(displayName.decoration(ITALIC, false))
-					it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
-				}
-			}
-		})
-	}
+	// Tools begin
+
+	val POWER_DRILL = register(PowerDrill)
+
+	// Tools end
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun register(identifier: String, customModelData: Int, displayName: Component): CustomItem {
@@ -935,9 +929,17 @@ object CustomItems {
 }
 
 abstract class CustomItem(val identifier: String) {
-	open fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {}
+	/** Left Click **/
+	open fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {}
+
+	/** Right Click **/
 	open fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {}
-	open fun handleTertiaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {}
+
+	/** Swap Hands **/
+	open fun handleSwapHands(livingEntity: LivingEntity, itemStack: ItemStack) {}
+
+	/** Dispensed from a dispense **/
 	open fun handleDispense(dispenser: Dispenser, slot: Int) {}
+
 	abstract fun constructItemStack(): ItemStack
 }

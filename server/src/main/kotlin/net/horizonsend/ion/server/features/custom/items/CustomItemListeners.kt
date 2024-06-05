@@ -28,13 +28,13 @@ class CustomItemListeners : SLEventListener() {
 		when (event.action) {
 			Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
 				customItem.handleSecondaryInteract(event.player, event.player.inventory.itemInMainHand)
-				if (customItem !is net.horizonsend.ion.server.features.custom.items.CustomBlockItem) {
+				if (customItem !is CustomBlockItem) {
 					event.isCancelled = true
 				}
 			}
 
 			Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
-				customItem.handlePrimaryInteract(event.player, event.player.inventory.itemInMainHand)
+				customItem.handlePrimaryInteract(event.player, event.player.inventory.itemInMainHand, event)
 				event.isCancelled = true
 			}
 
@@ -70,7 +70,7 @@ class CustomItemListeners : SLEventListener() {
 		val customItem = itemStack.customItem ?: return
 
 		event.isCancelled = true
-		customItem.handleTertiaryInteract(event.player, itemStack)
+		customItem.handleSwapHands(event.player, itemStack)
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
