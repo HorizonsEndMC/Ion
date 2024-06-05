@@ -4,23 +4,30 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
+import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Balancing
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.objects.AmmunitionHoldingItem
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source.PLAYER
 import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.Component.translatable
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Color
 import org.bukkit.Color.RED
 import org.bukkit.Color.fromRGB
 import org.bukkit.Material
+import org.bukkit.Material.matchMaterial
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
@@ -37,9 +44,9 @@ import java.util.function.Supplier
 abstract class Blaster<T : Balancing>(
 	identifier: String,
 
-	material: Material,
-	customModelData: Int,
-	displayName: Component,
+	override val material: Material,
+	override val customModelData: Int,
+	override val displayName: Component,
 	val magazineType: Magazine<*>,
 	val particleSize: Float,
 	val soundRange: Double,
@@ -51,14 +58,43 @@ abstract class Blaster<T : Balancing>(
 	val explosiveShot: Boolean,
 
 	private val balancingSupplier: Supplier<T>
-) : AmmunitionHoldingItem(identifier, material, customModelData, displayName) {
+) : CustomItem(identifier), AmmunitionHoldingItem {
 	val balancing get() = balancingSupplier.get()
+
+	override fun constructItemStack(): ItemStack {
+		val base = getFullItem()
+
+		// Should always have lore
+		val lore = base.itemMeta.lore()!!.toTypedArray()
+
+		val refillTypeComponent = if (getConsumesAmmo()) text()
+				.decoration(ITALIC, false)
+				.append(text("Refill: ", GRAY))
+				.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
+				.build()
+		else null
+
+		val magazineTypeComponent = if (getConsumesAmmo()) text()
+				.decoration(TextDecoration.ITALIC, false)
+				.append(text("Magazine: ", NamedTextColor.GRAY))
+				.append(magazineType.displayName).color(NamedTextColor.AQUA)
+				.build()
+		else null
+
+		return base.updateMeta {
+			it.lore(mutableListOf(
+				*lore,
+				refillTypeComponent,
+				magazineTypeComponent
+			))
+		}
+	}
 
 	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
 		fireWeapon(livingEntity, itemStack)
 	}
 
-	override fun handleTertiaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
+	override fun handleSwapHands(livingEntity: LivingEntity, itemStack: ItemStack) {
 		if (livingEntity !is Player) return // Player Only
 		if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
 
@@ -148,7 +184,7 @@ abstract class Blaster<T : Balancing>(
 		if (livingEntity is Player) {
 			if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
 			if (!checkAndDecrementAmmo(itemStack, livingEntity)) {
-				handleTertiaryInteract(livingEntity, itemStack) // Force a reload
+				handleSwapHands(livingEntity, itemStack) // Force a reload
 				return // No Ammo
 			}
 		}
