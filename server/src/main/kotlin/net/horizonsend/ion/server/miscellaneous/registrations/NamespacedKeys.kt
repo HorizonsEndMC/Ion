@@ -68,5 +68,7 @@ object NamespacedKeys {
 
 	val DATA_VERSION = key("data_version")
 
+	val TOOL_MODIFICATIONS = key("tool_modifications")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 }

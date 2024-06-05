@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.custom.items.minerals.objects
+package net.horizonsend.ion.server.features.custom.items.minerals
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
