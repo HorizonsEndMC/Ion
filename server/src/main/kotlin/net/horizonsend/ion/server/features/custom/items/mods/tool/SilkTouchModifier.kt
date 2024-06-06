@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
 object SilkTouchModifier : ItemModification, DropModifier {
 	override val identifier: String = "SILK_TOUCH"
 	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class)
-	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
+	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchModifier::class)
 	override val shouldDropXP: Boolean = false
 
 	override fun getDrop(block: Block): Collection<ItemStack> {

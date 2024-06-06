@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.mods
 
+import net.horizonsend.ion.server.features.custom.items.mods.general.PowerCapacityIncrease
 import net.horizonsend.ion.server.features.custom.items.mods.tool.FortuneModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.SilkTouchModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.drill.AOEDrillMod
@@ -16,9 +17,13 @@ object ItemModRegistry {
 	val VEIN_MINER_3 = registerMod(VeinMinerMod(depth = 15))
 
 	val SILK_TOUCH = registerMod(SilkTouchModifier)
+
 	val FORTUNE_1 = registerMod(FortuneModifier(0))
 	val FORTUNE_2 = registerMod(FortuneModifier(1))
 	val FORTUNE_3 = registerMod(FortuneModifier(2))
+
+	val POWER_CAPACITY_25 = registerMod(PowerCapacityIncrease(25_000))
+	val POWER_CAPACITY_50 = registerMod(PowerCapacityIncrease(50_000))
 
 	fun <T: ItemModification> registerMod(mod: T): T {
 		mods[mod.identifier] = mod
