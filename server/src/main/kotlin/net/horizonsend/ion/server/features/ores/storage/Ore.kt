@@ -59,6 +59,10 @@ enum class Ore(val blockData: BlockData, private val deepslateVariant: BlockData
 	}
 
 	companion object {
+		operator fun get(blockData: BlockData): Ore? {
+			return entries.firstOrNull { it.blockData == blockData || it.deepslateVariant == blockData }
+		}
+
 		private val deepslateTypes = EnumSet.of(Material.DEEPSLATE, Material.COBBLED_DEEPSLATE, Material.POLISHED_DEEPSLATE)
 	}
 }
