@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.command.admin.ConvertCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.IonCommand
+import net.horizonsend.ion.server.command.admin.ItemDebugCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
 import net.horizonsend.ion.server.command.economy.BazaarCommand
 import net.horizonsend.ion.server.command.economy.CityNpcCommand
@@ -163,5 +164,6 @@ val commands: List<SLCommand> = listOf(
 
 	IonBroadcastCommand,
 	BlockCommand,
-	ShipFactoryCommand
+	ShipFactoryCommand,
+	ItemDebugCommand
 )
