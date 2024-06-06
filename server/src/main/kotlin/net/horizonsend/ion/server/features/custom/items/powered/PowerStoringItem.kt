@@ -29,7 +29,12 @@ interface PowerStoringItem : CustomModeledItem {
 		itemStack.updateMeta {
 			val existing = it.lore() ?: mutableListOf()
 
-			val text = ofChildren(powerPrefix, text(corrected, HEColorScheme.HE_LIGHT_GRAY)).decoration(TextDecoration.ITALIC, false)
+			val text = ofChildren(
+				powerPrefix,
+				text(corrected, HEColorScheme.HE_LIGHT_GRAY),
+				text(" / ", HEColorScheme.HE_MEDIUM_GRAY),
+				text(getPowerCapacity(itemStack), HEColorScheme.HE_LIGHT_GRAY),
+			).decoration(TextDecoration.ITALIC, false)
 
 			if (existing.size > 0) existing[0] = text else existing.add(text)
 
