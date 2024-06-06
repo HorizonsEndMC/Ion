@@ -5,14 +5,15 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.features.custom.items.objects.StoredValues
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
+import kotlin.math.roundToInt
 
 interface PowerStoringItem : CustomModeledItem {
-	val identifier: String
-	val displayName: Component
+	/** Whether the power should be displayed in the durability bar */
+	val displayDurability: Boolean
 
 	fun getPowerCapacity(itemStack: ItemStack): Int
 
@@ -21,7 +22,8 @@ interface PowerStoringItem : CustomModeledItem {
 	}
 
 	fun setPower(itemStack: ItemStack, 	amount: Int) {
-		val corrected = amount.coerceAtMost(getPowerCapacity(itemStack))
+		val capacity = getPowerCapacity(itemStack)
+		val corrected = amount.coerceAtMost(capacity)
 		StoredValues.POWER.setAmount(itemStack, corrected)
 
 		itemStack.updateMeta {
@@ -32,6 +34,10 @@ interface PowerStoringItem : CustomModeledItem {
 			if (existing.size > 0) existing[0] = text else existing.add(text)
 
 			it.lore(existing)
+
+			if (displayDurability && it is Damageable) {
+				it.damage = (itemStack.type.maxDurability - amount.toDouble() / capacity * itemStack.type.maxDurability).roundToInt()
+			}
 		}
 	}
 

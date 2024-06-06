@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.powered
 
-import net.horizonsend.ion.server.features.custom.items.mods.types.PowerCapacityIncrease
+import net.horizonsend.ion.server.features.custom.items.mods.general.PowerCapacityIncrease
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import org.bukkit.inventory.ItemStack
 
