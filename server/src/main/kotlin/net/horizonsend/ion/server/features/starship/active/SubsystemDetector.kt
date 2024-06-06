@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.schema.Cryopod
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.checklist.BargeReactorMultiBlock
@@ -98,7 +99,12 @@ object SubsystemDetector {
 			detectLandingGear(starship, block)
 		}
 		for (block in potentialSignBlocks) {
-			detectSign(starship, block)
+			try {
+				detectSign(starship, block)
+			} catch (e: NumberFormatException) {
+				feedbackDestination.userError("Box shield at ${Vec3i(block.location)} could not be parsed!")
+				continue
+			}
 		}
 
 		filterSubsystems(starship)
