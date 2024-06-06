@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit
 object BlockingBypass {
     private const val MAX_OBJECT_SIZE_TO_EXPLODE = 20
 
-    fun objectIsSmallEnough(blockKey: Long, world: World): Boolean {
+    fun objectIsSmallEnough(starship: ActiveStarship, blockKey: Long, world: World): Boolean {
         // Copied from StarshipDetection.detectNewState()
 
         // blocks that were accepted
@@ -51,8 +52,13 @@ object BlockingBypass {
             val y = blockKeyY(key)
             val z = blockKeyZ(key)
 
-            if (ActiveStarships.findByBlock(Location(world, x.toDouble(), y.toDouble(), z.toDouble())) != null) {
+            val blockPartOfStarship = ActiveStarships.findByBlock(Location(world, x.toDouble(), y.toDouble(), z.toDouble()))
+            if (blockPartOfStarship == starship) {
+                // Skip check only if the checked block is part of the checking starship
                 continue
+            } else if (blockPartOfStarship != null) {
+                // Starship that is not part of the checking starship should always block
+                return false
             }
 
             // Do not allow checking ships larger than render distance.
