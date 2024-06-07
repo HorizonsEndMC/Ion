@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.command.nations.money
 import co.aikar.commands.annotation.Optional
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.MoneyHolder
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.entity.Player
 
 internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion.server.command.SLCommand() {
@@ -35,7 +35,7 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 			else -> resolveParent(parentName)
 		}
 
-		sender msg "&7Balance${parentName?.let { " of $it" } ?: ""}:&6 ${getBalance(parent)}"
+		sender.sendRichMessage("<gray>Balance${parentName?.let { " of $it" } ?: ""}: <gold>${getBalance(parent)}")
 	}
 
 	open fun onDeposit(sender: Player, amount: Int) = asyncCommand(sender) {
@@ -52,7 +52,7 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 		deposit(parent, amount)
 		VAULT_ECO.withdrawPlayer(sender, amount.toDouble())
 
-		sender msg "&aDeposited ${amount.toCreditsString()}"
+		sender.success("Deposited ${amount.toCreditsString()}")
 	}
 
 	open fun onWithdraw(sender: Player, amount: Int) = asyncCommand(sender) {
@@ -68,6 +68,6 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 		withdraw(parent, amount)
 		VAULT_ECO.depositPlayer(sender, amount.toDouble())
 
-		sender msg "&aWithdrew ${amount.toCreditsString()}"
+		sender.success("Withdrew ${amount.toCreditsString()}")
 	}
 }

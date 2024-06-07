@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
+import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryoSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -59,11 +60,11 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		check(newWorld != world1) { "New world can't be the same as the current world" }
 
-		if (starship.type == StarshipType.BATTLECRUISER && !SpaceWorlds.contains(world2)) {
+		if (starship.type == StarshipType.BATTLECRUISER && (!SpaceWorlds.contains(world2) && (!Hyperspace.isHyperspaceWorld(world2)))) {
 			throw StarshipMovementException("Battlecruisers cannot support their weight within strong gravity wells!")
 		}
 
-		if (starship.type == StarshipType.BARGE && !SpaceWorlds.contains(world2)) {
+		if (starship.type == StarshipType.BARGE && (!SpaceWorlds.contains(world2) && (!Hyperspace.isHyperspaceWorld(world2)))) {
 			throw StarshipMovementException("Barges cannot support their weight within strong gravity wells!")
 		}
 

@@ -203,7 +203,9 @@ object PowerArmorListener : SLEventListener() {
 	@EventHandler
 	fun onEntityToggleGlideEvent(event: EntityToggleGlideEvent) {
 		val player = event.entity as? Player ?: return
-		if(player.isGliding && player.isSneaking) event.isCancelled = true
+		if(player.isGliding && player.isSneaking && PowerArmorManager.glideDisabledPlayers[player.uniqueId] == 0L) {
+			event.isCancelled = true
+		}
 	}
 
 	@EventHandler

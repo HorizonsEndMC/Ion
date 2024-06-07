@@ -96,7 +96,7 @@ object CombatNPCs : IonServerComponent(true) {
 			npc.spawn(player.location)
 
 			npc.getOrAddTrait(Gravity::class.java).apply {
-				setEnabled(false)
+				setEnabled(true) // nogravity = true
 			}
 
 			inventories[npc.id] = inventoryCopy
