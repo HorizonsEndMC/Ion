@@ -9,20 +9,12 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
-import net.horizonsend.ion.common.utils.text.GUI_MARGIN
-import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.gui.GuiText
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.pull
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
-import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
 @CommandAlias("achievements")
@@ -73,6 +65,7 @@ object AchievementsCommand : SLCommand() {
 		sender.success("Took achievement ${achievement.name} from $target.")
 	}
 
+	/*
 	@Subcommand("test")
 	fun test(sender: Player) {
 		val gui = Gui.normal()
@@ -138,6 +131,7 @@ object AchievementsCommand : SLCommand() {
 
 		window.open()
 	}
+	 */
 
 	private fun openAchievementWindow(viewer: Player, player: Player = viewer) {
 		val gui = Achievements.createAchievementGui()
