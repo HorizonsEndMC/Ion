@@ -16,7 +16,7 @@ import java.util.Stack
 import java.util.concurrent.TimeUnit
 
 object BlockingBypass {
-    private const val MAX_OBJECT_SIZE_TO_EXPLODE = 20
+    private const val MAX_OBJECT_SIZE_TO_EXPLODE = 10
 
     fun objectIsSmallEnough(starship: ActiveStarship, blockKey: Long, world: World): Boolean {
         // Copied from StarshipDetection.detectNewState()
