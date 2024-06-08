@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblock
@@ -253,6 +254,15 @@ class MiningLaserSubsystem(
 			starship.sendMessage(
 				text(
 					"Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} became obstructed and was disabled!"
+				).color(NamedTextColor.RED)
+			)
+			return setFiring(false)
+		}
+
+		if (AreaShields.getNearbyAreaShields(laserEnd, multiblock.mineRadius.toDouble()).isNotEmpty()) {
+			starship.sendMessage(
+				text(
+					"Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} targeted an area shield and was disabled!"
 				).color(NamedTextColor.RED)
 			)
 			return setFiring(false)
