@@ -551,7 +551,7 @@ data class StarshipTypeBalancing(
 		interdictionRange = 5200,
 		hyperspaceRangeMultiplier = 2.75,
 		cruiseSpeedMultiplier = 0.80,
-		shieldPowerMultiplier = 1.70,
+		shieldPowerMultiplier = 1.75,
 		weapons = StarshipWeapons(
 			quadTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -573,9 +573,9 @@ data class StarshipTypeBalancing(
 				fireCooldownMillis = 2500,
 				aimDistance = 0,
 				inaccuracyRadians = 2.0,
-				maxPerShot = 3,
+				maxPerShot = 5,
 				applyCooldownToAll = true,
-				minBlockCount = 17500
+				minBlockCount = 30000
 			),
 			triTurret = StarshipWeapons.StarshipWeapon(
 				range = 500.0,
@@ -632,7 +632,7 @@ data class StarshipTypeBalancing(
 		interdictionRange = 6000,
 		hyperspaceRangeMultiplier = 3.0,
 		cruiseSpeedMultiplier = 0.70,
-		shieldPowerMultiplier = 1.80,
+		shieldPowerMultiplier = 2.0,
 		weapons = StarshipWeapons(
 			quadTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -654,9 +654,9 @@ data class StarshipTypeBalancing(
 				fireCooldownMillis = 2500,
 				aimDistance = 0,
 				inaccuracyRadians = 2.0,
-				maxPerShot = 3,
+				maxPerShot = 7,
 				applyCooldownToAll = true,
-				minBlockCount = 17500
+				minBlockCount = 45000
 			),
 			triTurret = StarshipWeapons.StarshipWeapon(
 				range = 500.0,
