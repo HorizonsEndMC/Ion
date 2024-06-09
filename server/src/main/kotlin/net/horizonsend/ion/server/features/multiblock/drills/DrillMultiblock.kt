@@ -106,7 +106,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 				}
 
 				val customBlock = CustomBlocks.getByBlock(block)
-				var drops = customBlock?.getDrops() ?: if (block.type == Material.SNOW_BLOCK) listOf() else block.drops
+				var drops = customBlock?.drops?.getDrops(null, false) ?: if (block.type == Material.SNOW_BLOCK) listOf() else block.drops
 
 				if (block.type.isShulkerBox) drops = listOf()
 

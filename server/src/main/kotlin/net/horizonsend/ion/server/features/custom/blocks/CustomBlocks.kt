@@ -1,7 +1,11 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.miscellaneous.utils.getMatchingMaterials
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
@@ -16,13 +20,14 @@ import org.bukkit.block.BlockFace.WEST
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
 import org.bukkit.inventory.ItemStack
+import java.util.function.Supplier
 
 object CustomBlocks {
     val ALL get() = customBlocks.values
     private val customBlocks: MutableMap<String, CustomBlock> = mutableMapOf()
     private val customBlocksData = Object2ObjectOpenHashMap<BlockState, CustomBlock>()
 
-    private fun mushroomBlockData(faces: Set<BlockFace>) : BlockData {
+    fun mushroomBlockData(faces: Set<BlockFace>) : BlockData {
         return Material.BROWN_MUSHROOM_BLOCK.createBlockData { data ->
             for (face in (data as MultipleFacing).allowedFaces) {
                 data.setFace(face, faces.contains(face))
@@ -30,172 +35,181 @@ object CustomBlocks {
         }
     }
 
-    val ALUMINUM_ORE = register(
-        CustomBlock(
+    val ALUMINUM_ORE = register(CustomBlock(
         identifier = "ALUMINUM_ORE",
         blockData = mushroomBlockData(setOf(NORTH, UP)),
-        tool = "pickaxe",
-        drops = customItemDrop("RAW_ALUMINUM")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+        	drops = customItemDrop("RAW_ALUMINUM")
+		)
+    ))
 
-    val ALUMINUM_BLOCK = register(
-        CustomBlock(
+    val ALUMINUM_BLOCK = register(CustomBlock(
         identifier = "ALUMINUM_BLOCK",
         blockData = mushroomBlockData(setOf(SOUTH, UP, WEST)),
-        tool = "pickaxe",
-        drops = customItemDrop("ALUMINUM_BLOCK")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+        	drops = customItemDrop("ALUMINUM_BLOCK")
+		)
+    ))
 
-    val RAW_ALUMINUM_BLOCK = register(
-        CustomBlock(
+    val RAW_ALUMINUM_BLOCK = register(CustomBlock(
         identifier = "RAW_ALUMINUM_BLOCK",
         blockData = mushroomBlockData(setOf(NORTH)),
-        tool = "pickaxe",
-        drops = customItemDrop("RAW_ALUMINUM_BLOCK")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+        	drops = customItemDrop("RAW_ALUMINUM_BLOCK")
+		)
+    ))
 
-    val CHETHERITE_ORE = register(
-        CustomBlock(
+    val CHETHERITE_ORE = register(CustomBlock(
         identifier = "CHETHERITE_ORE",
         blockData = mushroomBlockData(setOf(EAST, NORTH, UP)),
-        tool = "pickaxe",
-        drops = customItemDrop("CHETHERITE")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+        	drops = customItemDrop("CHETHERITE")
+		)
+    ))
 
-	val STEEL_BLOCK = register(
-        CustomBlock(
-			identifier = "STEEL_BLOCK",
-			blockData = mushroomBlockData(setOf(SOUTH, UP, DOWN)),
-			tool = "pickaxe",
+	val STEEL_BLOCK = register(CustomBlock(
+		identifier = "STEEL_BLOCK",
+		blockData = mushroomBlockData(setOf(SOUTH, UP, DOWN)),
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
 			drops = customItemDrop("STEEL_BLOCK")
-	)
-    )
+		)
+	))
 
-    val CHETHERITE_BLOCK = register(
-        CustomBlock(
+    val CHETHERITE_BLOCK = register(CustomBlock(
         identifier = "CHETHERITE_BLOCK",
         blockData = mushroomBlockData(setOf(SOUTH, UP)),
-        tool = "pickaxe",
-        drops = customItemDrop("CHETHERITE_BLOCK")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+        	drops = customItemDrop("CHETHERITE_BLOCK")
+		)
+    ))
 
-    val TITANIUM_ORE = register(
-        CustomBlock(
+    val TITANIUM_ORE = register(CustomBlock(
         identifier = "TITANIUM_ORE",
         blockData = mushroomBlockData(setOf(UP, WEST)),
-        tool = "pickaxe",
-        drops = customItemDrop("RAW_TITANIUM")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+        	drops = customItemDrop("RAW_TITANIUM")
+		)
+    ))
 
-    val TITANIUM_BLOCK = register(
-        CustomBlock(
+    val TITANIUM_BLOCK = register(CustomBlock(
         identifier = "TITANIUM_BLOCK",
         blockData = mushroomBlockData(setOf(EAST, SOUTH, UP)),
-        tool = "pickaxe",
-        drops = customItemDrop("TITANIUM_BLOCK")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+        	drops = customItemDrop("TITANIUM_BLOCK")
+		)
+    ))
 
-    val RAW_TITANIUM_BLOCK = register(
-        CustomBlock(
+    val RAW_TITANIUM_BLOCK = register(CustomBlock(
         identifier = "RAW_TITANIUM_BLOCK",
         blockData = mushroomBlockData(setOf(EAST)),
-        tool = "pickaxe",
-        drops = customItemDrop("RAW_TITANIUM_BLOCK")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+        	drops = customItemDrop("RAW_TITANIUM_BLOCK")
+		)
+    ))
 
-    val URANIUM_ORE = register(
-        CustomBlock(
+    val URANIUM_ORE = register(CustomBlock(
         identifier = "URANIUM_ORE",
         blockData = mushroomBlockData(setOf(UP)),
-        tool = "pickaxe",
-        drops = customItemDrop("RAW_URANIUM")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+        	drops = customItemDrop("RAW_URANIUM")
+		)
+    ))
 
-    val URANIUM_BLOCK = register(
-        CustomBlock(
+    val URANIUM_BLOCK = register(CustomBlock(
         identifier = "URANIUM_BLOCK",
         blockData = mushroomBlockData(setOf(EAST, NORTH, SOUTH, WEST)),
-        tool = "pickaxe",
-        drops = customItemDrop("URANIUM_BLOCK")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+        	drops = customItemDrop("URANIUM_BLOCK")
+		)
+    ))
 
-	val ENRICHED_URANIUM_BLOCK = register(
-        CustomBlock(
+	val ENRICHED_URANIUM_BLOCK = register(CustomBlock(
 		identifier = "ENRICHED_URANIUM_BLOCK",
 		blockData = mushroomBlockData(setOf(EAST, WEST)),
-		tool = "pickaxe",
-		drops = customItemDrop("ENRICHED_URANIUM_BLOCK")
-	)
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+			drops = customItemDrop("ENRICHED_URANIUM_BLOCK")
+		)
+	))
 
-    val NETHERITE_CASING = register(
-        CustomBlock(
+    val NETHERITE_CASING = register(CustomBlock(
         identifier = "NETHERITE_CASING",
         blockData = mushroomBlockData(setOf(WEST,NORTH,DOWN,UP)),
-        tool = "pickaxe",
-        drops = customItemDrop("NETHERITE_CASING")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+       	 drops = customItemDrop("NETHERITE_CASING")
+		)
+    ))
 
-    val RAW_URANIUM_BLOCK = register(
-        CustomBlock(
+    val RAW_URANIUM_BLOCK = register(CustomBlock(
         identifier = "RAW_URANIUM_BLOCK",
         blockData = mushroomBlockData(setOf(SOUTH)),
-        tool = "pickaxe",
-        drops = customItemDrop("RAW_URANIUM_BLOCK")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+			drops = customItemDrop("RAW_URANIUM_BLOCK")
+		)
+    ))
 
-	val SUPERCONDUCTOR_BLOCK = register(
-        CustomBlock(
+	val SUPERCONDUCTOR_BLOCK = register(CustomBlock(
 		identifier = "SUPERCONDUCTOR_BLOCK",
 		blockData = mushroomBlockData(setOf(SOUTH, DOWN)),
-		tool = "pickaxe",
-		drops = customItemDrop("SUPERCONDUCTOR_BLOCK")
-	)
-    )
+		drops = BlockLoot(
+			requiredTool = BlockLoot.Tool.PICKAXE,
+			drops = customItemDrop("SUPERCONDUCTOR_BLOCK")
+		)
+	))
 
-	val BATTLECRUISER_REACTOR_CORE = register(
-        CustomBlock(
+	val BATTLECRUISER_REACTOR_CORE = register(CustomBlock(
 		identifier = "BATTLECRUISER_REACTOR_CORE",
 		blockData = mushroomBlockData(setOf(NORTH, UP, WEST)),
-		tool = "pickaxe",
-		drops = customItemDrop("BATTLECRUISER_REACTOR_CORE")
-	)
-    )
+		drops = BlockLoot(
+			requiredTool = null,
+			drops = customItemDrop("BATTLECRUISER_REACTOR_CORE")
+		)
+	))
 
-    val BARGE_REACTOR_CORE = register(
-        CustomBlock(
+    val BARGE_REACTOR_CORE = register(CustomBlock(
         identifier = "BARGE_REACTOR_CORE",
         blockData = mushroomBlockData(setOf(NORTH, EAST, WEST)),
-        tool = "pickaxe",
-        drops = customItemDrop("BARGE_REACTOR_CORE")
-    )
-    )
+		drops = BlockLoot(
+			requiredTool = null,
+			drops = customItemDrop("BARGE_REACTOR_CORE")
+		)
+    ))
 
-	val CRUISER_REACTOR_CORE = register(
-        CustomBlock(
+	val CRUISER_REACTOR_CORE = register(CustomBlock(
         identifier = "CRUISER_REACTOR_CORE",
         blockData = mushroomBlockData(setOf(NORTH, DOWN, WEST)),
-        tool = "pickaxe",
-        drops = customItemDrop("CRUISER_REACTOR_CORE")
-	)
-    )
+		drops = BlockLoot(
+			requiredTool = null,
+			drops = customItemDrop("CRUISER_REACTOR_CORE")
+		)
+	))
 
-    private fun customItemDrop(identifier: String, amount: Int = 1): List<ItemStack> {
-        val customItem = net.horizonsend.ion.server.features.custom.items.CustomItems.getByIdentifier(identifier)?.constructItemStack() ?: return listOf()
-        customItem.amount = 1
-        return listOf(customItem)
+	val MOD_TABLE = register(ModTable)
+
+    private fun customItemDrop(identifier: String, amount: Int = 1): Supplier<Collection<ItemStack>> {
+        val customItem = CustomItems.getByIdentifier(identifier)?.constructItemStack() ?: return Supplier { listOf() }
+        customItem.amount = amount
+
+        return Supplier { listOf(customItem) }
+    }
+
+    fun customItemDrop(customItem: Supplier<CustomItem>, amount: Int = 1): Supplier<Collection<ItemStack>> {
+        val itemStack = customItem.get().constructItemStack().asQuantity(amount)
+
+        return Supplier { listOf(itemStack) }
     }
 
     fun <T : CustomBlock> register(customBlock: T): T {
@@ -220,21 +234,58 @@ object CustomBlocks {
 open class CustomBlock(
     val identifier: String,
     val blockData: BlockData,
-    private val tool: String,
-    private val drops: List<ItemStack>
+    val drops: BlockLoot
+)
+
+data class BlockLoot(
+	val requiredTool: Tool? = Tool.PICKAXE,
+	val drops: Supplier<Collection<ItemStack>>,
+	val silkTouchDrops: Supplier<Collection<ItemStack>> = drops
 ) {
-    private fun cloneDrops() = drops.map { it.clone() }.toList()
+	fun getDrops(tool: ItemStack?, silkTouch: Boolean): Collection<ItemStack> {
+		if (tool != null && requiredTool != null) {
+			if (!requiredTool.matches(tool)) return listOf()
+		}
 
-    fun getDrops(itemUsed: ItemStack? = null): List<ItemStack> {
-        if (itemUsed == null) {
-            return cloneDrops()
-        }
+		if (silkTouch) return silkTouchDrops.get().map { it.clone() }
 
-        val customItem = itemUsed.customItem
-        val isTool = customItem == null && itemUsed.type.name.contains(tool, ignoreCase = true)
-        val isSpecialItem = customItem != null && customItem.identifier.replace("drill", "pickaxe").contains(tool, ignoreCase = true)
+		return drops.get().map { it.clone() }
+	}
 
-        return if (isTool || isSpecialItem) cloneDrops() else listOf()
-    }
+	companion object ToolPredicate {
+		fun matchMaterial(material: Material): (ItemStack) -> Boolean {
+			return { it.type == material }
+		}
+
+		fun matchAnyMaterial(materials: Iterable<Material>): (ItemStack) -> Boolean {
+			return { materials.contains(it.type) }
+		}
+
+		fun customItem(customItem: CustomItem): (ItemStack) -> Boolean {
+			return { it.customItem == customItem }
+		}
+	}
+
+	enum class Tool(vararg val checks: (ItemStack) -> Boolean) {
+		PICKAXE(
+			customItem(POWER_DRILL),
+			matchAnyMaterial(getMatchingMaterials { it.name.endsWith("PICKAXE") })
+		),
+		SHOVEL(
+			customItem(POWER_DRILL),
+			matchAnyMaterial(getMatchingMaterials { it.name.endsWith("SHOVEL") })
+
+		),
+		AXE(
+			customItem(POWER_DRILL),
+			matchAnyMaterial(getMatchingMaterials { it.name.endsWith("AXE") })
+
+		),
+		SHEARS(
+			customItem(POWER_DRILL),
+			matchMaterial(Material.SHEARS)
+		);
+
+		fun matches(itemStack: ItemStack): Boolean = checks.any { it.invoke(itemStack) }
+	}
 }
-
