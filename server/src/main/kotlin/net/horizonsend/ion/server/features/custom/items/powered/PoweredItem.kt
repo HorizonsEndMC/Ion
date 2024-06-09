@@ -51,6 +51,11 @@ interface PoweredItem : LoreCustomItem {
 		setPower(itemStack, power - amount)
 	}
 
+	fun addPower(itemStack: ItemStack, amount: Int) {
+		val power = getPower(itemStack)
+		setPower(itemStack, power + amount)
+	}
+
 	companion object {
 		private val powerPrefix = text("Power: ", HEColorScheme.HE_MEDIUM_GRAY)
 	}
