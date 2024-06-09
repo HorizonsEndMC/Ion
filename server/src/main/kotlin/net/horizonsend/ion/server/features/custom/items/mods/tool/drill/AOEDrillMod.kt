@@ -6,6 +6,8 @@ import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import kotlin.reflect.KClass
@@ -14,7 +16,13 @@ class AOEDrillMod(
 	val radius: Int,
 	override val identifier: String = "DRILL_AOE_$radius",
 ) : DrillModification(), BlockListModifier {
-	override val displayName: Component = ofChildren(text("Drill AOE Level ", HEColorScheme.HE_LIGHT_ORANGE), text(radius, HEColorScheme.HE_LIGHT_GRAY))
+	override val displayName: Component = ofChildren(
+		text(1 + (2 * radius), HEColorScheme.HE_LIGHT_ORANGE).decoration(TextDecoration.ITALIC, false),
+		text("×", HEColorScheme.HE_MEDIUM_GRAY).decoration(TextDecoration.ITALIC, false),
+		text(1 + (2 * radius), HEColorScheme.HE_LIGHT_ORANGE).decoration(TextDecoration.ITALIC, false),
+		text(" Mining", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+	)
+
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(
 		AOEDrillMod::class,
 		VeinMinerMod::class

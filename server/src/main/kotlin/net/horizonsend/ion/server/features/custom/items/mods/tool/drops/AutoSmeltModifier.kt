@@ -1,0 +1,70 @@
+package net.horizonsend.ion.server.features.custom.items.mods.tool.drops
+
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
+import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
+import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
+import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
+import net.minecraft.world.SimpleContainer
+import net.minecraft.world.item.crafting.RecipeHolder
+import net.minecraft.world.item.crafting.RecipeType
+import net.minecraft.world.item.crafting.SmeltingRecipe
+import org.bukkit.Bukkit
+import org.bukkit.block.Block
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
+import org.bukkit.inventory.ItemStack
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
+import kotlin.reflect.KClass
+
+object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
+	override val displayName: Component = "<gradient:red:yellow>Auto Smelt".miniMessage().decoration(TextDecoration.ITALIC, false)
+	override val identifier: String = "AUTO_SMELT"
+	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class)
+	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchModifier::class, AutoSmeltModifier::class)
+	override val shouldDropXP: Boolean = false
+	override val usageMultiplier: Double = 2.0
+
+	override fun getDrop(block: Block): Collection<ItemStack> {
+		return block.getDrops(usedTool).map {
+			val customItem = it.customItem
+			if (customItem is Smeltable) return@map customItem.smeltingResult.get()
+
+			smeltedItemCache[it].getOrNull() ?: it
+		}
+	}
+
+	override fun getDrop(block: CustomBlock): Collection<ItemStack> {
+		return block.drops.getDrops(usedTool, true).map {
+			val customItem = it.customItem
+			if (customItem is Smeltable) return@map customItem.smeltingResult.get()
+
+			smeltedItemCache[it].getOrNull() ?: it
+		}
+	}
+
+	override val usedTool: ItemStack = DropModifier.PICKAXE
+
+	private val level = Bukkit.getServer().worlds.first().minecraft
+
+	private val smeltedItemCache: LoadingCache<ItemStack, Optional<ItemStack>> = CacheBuilder.newBuilder().build(CacheLoader.from { baseDrop ->
+		val optional: Optional<RecipeHolder<SmeltingRecipe>> = level
+			.recipeManager
+			.getRecipeFor(RecipeType.SMELTING, SimpleContainer(CraftItemStack.asNMSCopy(baseDrop)), level)
+
+		optional.map {
+			val itemStack = optional.get().value().getResultItem(level.registryAccess())
+
+			itemStack.copyWithCount(baseDrop.amount).asBukkitCopy()
+		}
+	})
+}

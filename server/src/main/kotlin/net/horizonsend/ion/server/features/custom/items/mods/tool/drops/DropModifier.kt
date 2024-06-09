@@ -16,7 +16,7 @@ interface DropModifier {
 	fun getDrop(block: CustomBlock): Collection<ItemStack>
 
 	companion object {
-		private val PICKAXE = ItemStack(Material.DIAMOND_PICKAXE, 1)
+		val PICKAXE = ItemStack(Material.DIAMOND_PICKAXE, 1)
 
 		val DEFAULT_DROP_PROVIDER = object : DropModifier {
 			override val shouldDropXP: Boolean = true

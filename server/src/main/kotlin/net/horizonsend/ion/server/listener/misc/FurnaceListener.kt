@@ -71,7 +71,7 @@ object FurnaceListener : SLEventListener() {
 
 		// If customItem has the Smeltable interface, get the smeltable customItem result
 		if (item is Smeltable) {
-			event.result = CustomItems.getByIdentifier(item.smeltResultIdentifier)?.constructItemStack() ?: return
+			event.result = item.smeltingResult.get()
 			return
 		}
 
