@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.objects
 
 import com.manya.pdc.base.array.StringArrayDataType
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.TOO
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
@@ -65,7 +66,7 @@ interface ModdedCustomItem : LoreCustomItem {
 	}
 
 	companion object ModList : PersistentDataType<ByteArray, Array<ItemModification>> {
-		private val modPrefix = text("Mods: ", HEColorScheme.HE_LIGHT_GRAY)
+		private val modPrefix = text("Mods: ", HE_MEDIUM_GRAY).decoration(TextDecoration.ITALIC, false)
 		private val stringArrayType = StringArrayDataType(Charset.defaultCharset())
 
 		override fun getComplexType(): Class<Array<ItemModification>> = Array<ItemModification>::class.java
