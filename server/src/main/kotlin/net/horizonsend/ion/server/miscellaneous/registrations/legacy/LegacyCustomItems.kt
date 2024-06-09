@@ -19,7 +19,6 @@ import org.bukkit.ChatColor.RED
 import org.bukkit.ChatColor.YELLOW
 import org.bukkit.Material
 import org.bukkit.Material.DIAMOND_AXE
-import org.bukkit.Material.DIAMOND_PICKAXE
 import org.bukkit.Material.FLINT_AND_STEEL
 import org.bukkit.Material.LEATHER_BOOTS
 import org.bukkit.Material.LEATHER_CHESTPLATE
@@ -211,12 +210,6 @@ object CustomItems {
 	//region Power Tools
 	private fun registerPowerTool(type: String, name: String, mat: Material, model: Int, maxPower: Int) =
 		makePoweredItem("power_tool_$type", "${GOLD}Power$GRAY $name", mat, model, maxPower)
-
-	val POWER_TOOL_DRILL = registerPowerTool("drill", "Drill", DIAMOND_PICKAXE, 1, 50000)
-
-	init {
-		idMap["power_tool_pickaxe"] = POWER_TOOL_DRILL
-	}
 
 	val POWER_TOOL_CHAINSAW = registerPowerTool("chainsaw", "Chainsaw", DIAMOND_AXE, 1, 100000)
 	//endregion Power Tools
