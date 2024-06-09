@@ -1,18 +1,22 @@
 package net.horizonsend.ion.server.features.multiblock.charger
 
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.powered.PoweredItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.misc.addPower
 import net.horizonsend.ion.server.features.misc.getMaxPower
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.isPowerable
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.inventory.FurnaceInventory
+import org.bukkit.inventory.ItemStack
 
 abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	protected abstract val tierMaterial: Material
@@ -75,9 +79,25 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStor
 		if (power == 0) {
 			return
 		}
-		if (!isPowerable(item)) {
-			return
+		if (isPowerable(item)) {
+			handleLegacy(item, event, furnace, inventory, sign, power)
 		}
+
+		val custom = item.customItem
+
+		if (custom is PoweredItem) {
+			handleModern(item, custom, event, furnace, inventory, sign, power)
+		}
+	}
+
+	fun handleLegacy(
+		item: ItemStack,
+		event: FurnaceBurnEvent,
+		furnace: Furnace,
+		inventory: FurnaceInventory,
+		sign: Sign,
+		power: Int
+	) {
 		if (getMaxPower(item) == getPower(item)) {
 			val result = inventory.result
 			if (result != null && result.type != Material.AIR) return
@@ -93,6 +113,41 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStor
 		furnace.cookTime = 20.toShort()
 		event.isCancelled = false
 		val fuel = checkNotNull(inventory.fuel)
+		event.isBurning = false
+		event.burnTime = 20
+	}
+
+	fun handleModern(
+		item: ItemStack,
+		customItem: PoweredItem,
+		event: FurnaceBurnEvent,
+		furnace: Furnace,
+		inventory: FurnaceInventory,
+		sign: Sign,
+		power: Int
+	) {
+		if (customItem.getPowerCapacity(item) == customItem.getPower(item)) {
+			val result = inventory.result
+			if (result != null && result.type != Material.AIR) return
+			inventory.result = event.fuel
+			inventory.fuel = null
+			return
+		}
+
+		var multiplier = powerPerSecond
+		multiplier /= item.amount
+
+		if (item.amount * multiplier > power) return
+
+		customItem.addPower(item, multiplier)
+
+		PowerMachines.setPower(sign, power - multiplier * item.amount)
+
+		furnace.cookTime = 20.toShort()
+		event.isCancelled = false
+
+		val fuel = checkNotNull(inventory.fuel)
+
 		event.isBurning = false
 		event.burnTime = 20
 	}
