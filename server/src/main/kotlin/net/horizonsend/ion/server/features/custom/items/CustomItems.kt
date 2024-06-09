@@ -50,6 +50,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
+import java.util.function.Supplier
 import kotlin.math.roundToInt
 
 // budget minecraft registry lmao
@@ -254,7 +255,7 @@ object CustomItems {
 		customModelData = 1,
 		displayName = text("Raw Aluminum").decoration(ITALIC, false)
 	), Smeltable {
-		override val smeltResultIdentifier: String = "ALUMINUM_INGOT"
+		override val smeltingResult: Supplier<ItemStack> = Supplier { ALUMINUM_INGOT.constructItemStack() }
 	})
 
 	val ALUMINUM_ORE : CustomBlockItem = register(object : CustomBlockItem(
@@ -264,7 +265,7 @@ object CustomItems {
 		displayName = text("Aluminum Ore").decoration(ITALIC, false),
 		customBlockSupplier = { CustomBlocks.ALUMINUM_ORE }
 	), Smeltable {
-		override val smeltResultIdentifier: String = "ALUMINUM_INGOT"
+		override val smeltingResult: Supplier<ItemStack> = Supplier { ALUMINUM_INGOT.constructItemStack() }
 	})
 
 	val ALUMINUM_BLOCK = register(object : CustomBlockItem(
@@ -297,7 +298,7 @@ object CustomItems {
 		displayName = text("Chetherite Ore").decoration(ITALIC, false),
 		customBlockSupplier = { CustomBlocks.CHETHERITE_ORE }
 	), Smeltable {
-		override val smeltResultIdentifier: String = "CHETHERITE"
+		override val smeltingResult: Supplier<ItemStack> = Supplier { CHETHERITE.constructItemStack() }
 	})
 
 	val CHETHERITE_BLOCK = register(object : CustomBlockItem(
@@ -321,7 +322,7 @@ object CustomItems {
 		customModelData = 3,
 		displayName = text("Raw Titanium").decoration(ITALIC, false)
 	), Smeltable {
-		override val smeltResultIdentifier: String = "TITANIUM_INGOT"
+		override val smeltingResult: Supplier<ItemStack> = Supplier { TITANIUM_INGOT.constructItemStack() }
 	})
 
 	val TITANIUM_ORE : CustomBlockItem = register(object : CustomBlockItem(
@@ -331,7 +332,7 @@ object CustomItems {
 		displayName = text("Titanium Ore").decoration(ITALIC, false),
 		customBlockSupplier = { CustomBlocks.TITANIUM_ORE }
 	), Smeltable {
-		override val smeltResultIdentifier: String = "TITANIUM_INGOT"
+		override val smeltingResult: Supplier<ItemStack> = Supplier { TITANIUM_INGOT.constructItemStack() }
 	})
 
 	val TITANIUM_BLOCK = register(object : CustomBlockItem(
@@ -363,7 +364,7 @@ object CustomItems {
 		customModelData = 4,
 		displayName = text("Raw Uranium").decoration(ITALIC, false)
 	), Smeltable {
-		override val smeltResultIdentifier: String = "URANIUM"
+		override val smeltingResult: Supplier<ItemStack> = Supplier { URANIUM.constructItemStack() }
 	})
 
 	val URANIUM_ORE : CustomBlockItem = register(object : CustomBlockItem(
@@ -373,7 +374,7 @@ object CustomItems {
 		displayName = text("Uranium Ore").decoration(ITALIC, false),
 		customBlockSupplier = { CustomBlocks.URANIUM_ORE }
 	), Smeltable {
-		override val smeltResultIdentifier: String = "URANIUM"
+		override val smeltingResult: Supplier<ItemStack> = Supplier { URANIUM.constructItemStack() }
 	})
 
 	val URANIUM_BLOCK = register(object : CustomBlockItem(
