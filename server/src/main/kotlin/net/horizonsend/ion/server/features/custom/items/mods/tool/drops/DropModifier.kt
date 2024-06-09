@@ -1,5 +1,6 @@
-package net.horizonsend.ion.server.features.custom.items.mods.tool
+package net.horizonsend.ion.server.features.custom.items.mods.tool.drops
 
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.inventory.ItemStack
@@ -12,6 +13,7 @@ interface DropModifier {
 	val usedTool: ItemStack?
 
 	fun getDrop(block: Block): Collection<ItemStack>
+	fun getDrop(block: CustomBlock): Collection<ItemStack>
 
 	companion object {
 		private val PICKAXE = ItemStack(Material.DIAMOND_PICKAXE, 1)
@@ -22,6 +24,10 @@ interface DropModifier {
 
 			override fun getDrop(block: Block): Collection<ItemStack> {
 				return block.getDrops(PICKAXE)
+			}
+
+			override fun getDrop(block: CustomBlock): Collection<ItemStack> {
+				return block.drops.getDrops(PICKAXE, false)
 			}
 		}
 	}

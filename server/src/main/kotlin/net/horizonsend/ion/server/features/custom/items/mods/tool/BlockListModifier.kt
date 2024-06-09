@@ -8,7 +8,7 @@ import org.bukkit.block.BlockFace
  *
  * An execution priority is necessary
  **/
-interface BlockModifier {
+interface BlockListModifier {
 	val priority: Int
 
 	fun modifyBlockList(interactedSide: BlockFace, origin: Block, list: MutableList<Block>)

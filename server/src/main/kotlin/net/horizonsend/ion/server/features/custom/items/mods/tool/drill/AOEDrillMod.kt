@@ -1,7 +1,11 @@
 package net.horizonsend.ion.server.features.custom.items.mods.tool.drill
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockModifier
+import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import kotlin.reflect.KClass
@@ -9,7 +13,8 @@ import kotlin.reflect.KClass
 class AOEDrillMod(
 	val radius: Int,
 	override val identifier: String = "DRILL_AOE_$radius",
-) : DrillModification(), BlockModifier {
+) : DrillModification(), BlockListModifier {
+	override val displayName: Component = ofChildren(text("Drill AOE Level ", HEColorScheme.HE_LIGHT_ORANGE), text(radius, HEColorScheme.HE_LIGHT_GRAY))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(
 		AOEDrillMod::class,
 		VeinMinerMod::class

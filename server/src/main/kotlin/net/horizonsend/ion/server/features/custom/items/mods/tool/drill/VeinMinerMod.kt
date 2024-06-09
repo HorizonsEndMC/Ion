@@ -1,10 +1,14 @@
 package net.horizonsend.ion.server.features.custom.items.mods.tool.drill
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockModifier
+import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.minecraft.core.BlockPos
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -16,7 +20,8 @@ import kotlin.reflect.KClass
 class VeinMinerMod(
 	val depth: Int,
 	override val identifier: String = "DRILL_VEIN_$depth",
-) : DrillModification(), BlockModifier {
+) : DrillModification(), BlockListModifier {
+	override val displayName: Component = ofChildren(text("Vein Miner ", HEColorScheme.HE_LIGHT_ORANGE), Component.text("Modification", HEColorScheme.HE_LIGHT_GRAY))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(
 		AOEDrillMod::class,
 		VeinMinerMod::class

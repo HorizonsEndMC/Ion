@@ -124,7 +124,7 @@ class DecomposeTask(
 				var customOre = false
 				OldOreData.entries.forEach { ore -> if (ore.blockData == (customBlock?.blockData ?: false)) customOre = true }
 
-				if (customBlock != null && !customOre) drops = customBlock.getDrops().toList()
+				if (customBlock != null && !customOre) drops = customBlock.drops.getDrops(null, false).toList()
 
 				block.setType(Material.AIR, false)
 

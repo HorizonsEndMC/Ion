@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.stripColor
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -21,7 +23,7 @@ object BlockListener : SLEventListener() {
 	}
 
 	// Don't allow breaking blocks with custom items
-	/*
+
 	@EventHandler
 	fun onBlockBreakEventA(event: BlockBreakEvent) {
 		val item = event.player.inventory.itemInMainHand
@@ -30,7 +32,15 @@ object BlockListener : SLEventListener() {
 			event.isCancelled = true
 		}
 	}
-	 */
+
+	@EventHandler
+	fun onBlockBreakEventB(event: BlockBreakEvent) {
+		val item = event.player.inventory.itemInMainHand
+		val customItem = item.customItem
+		if (customItem != null && customItem !is PowerDrill) {
+			event.isCancelled = true
+		}
+	}
 
 	// Prevent huge mushroom trees from growing as large mushroom blocks are used as custom ores
 	@EventHandler
