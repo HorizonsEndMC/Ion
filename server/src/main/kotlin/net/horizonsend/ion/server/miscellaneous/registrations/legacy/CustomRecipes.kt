@@ -28,7 +28,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_SHOCK_ABSORBING
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_SPEED_BOOSTING
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_TOOL_CHAINSAW
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_TOOL_DRILL
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -232,16 +231,6 @@ object CustomRecipes : IonServerComponent() {
 	}
 
 	private fun registerPowerToolRecipes() {
-		createRecipe(
-			POWER_TOOL_DRILL, "i  ", " bt", " ts",
-			ingredients = mapOf(
-				'i' to materialChoice(IRON_INGOT),
-				'b' to legacyCustomItemChoice(BATTERY_MEDIUM),
-				't' to customItemChoice(TITANIUM_INGOT),
-				's' to materialChoice(STICK)
-			)
-		)
-
 		createRecipe(
 			POWER_TOOL_CHAINSAW, "ai ", "ibt", " ts",
 			ingredients = mapOf(

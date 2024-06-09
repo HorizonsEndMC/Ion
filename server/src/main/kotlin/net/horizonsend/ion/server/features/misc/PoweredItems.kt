@@ -4,13 +4,15 @@ import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.PoweredCustomItem
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.stripColor
+import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import kotlin.math.max
 import kotlin.math.min
 
 val ITEM_POWER_PREFIX = "&8Power: &7".colorize()
 
-fun isPowerable(itemStack: ItemStack?): Boolean = CustomItems[itemStack] is PoweredCustomItem
+fun isPowerable(itemStack: ItemStack?): Boolean = CustomItems[itemStack] is PoweredCustomItem ||
+	(itemStack?.type == Material.DIAMOND_PICKAXE && itemStack.itemMeta?.hasCustomModelData() == true && itemStack.itemMeta.customModelData == 1)
 
 /**
  * Get the power of the item

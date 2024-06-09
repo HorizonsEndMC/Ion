@@ -7,7 +7,10 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
+import net.horizonsend.ion.server.features.misc.getPower
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -69,6 +72,40 @@ object ConvertCommand : SLCommand() { // I imagine we'll need more than blasters
 
 		sender.inventory.setItemInMainHand(newVersion)
 		sender.updateInventory()
+	}
+
+	@Subcommand("drill")
+	fun onConvertDrill(sender: Player) {
+		val heldItem = sender.inventory.itemInMainHand
+
+		val schrodingerDrill = tryConvertDrill(heldItem)
+
+		if (schrodingerDrill == null) {
+			sender.userError("Not a valid custom item!")
+			return
+		}
+
+		sender.inventory.setItemInMainHand(schrodingerDrill)
+		sender.updateInventory()
+	}
+
+	fun tryConvertDrill(heldItem: ItemStack): ItemStack? {
+		if (heldItem.type != Material.DIAMOND_PICKAXE ||
+			!heldItem.itemMeta.hasCustomModelData() ||
+			heldItem.itemMeta.customModelData != 1
+		) {
+			return null
+		}
+
+		// Already converted
+		if (heldItem.customItem != null) return null
+
+		val oldPower = getPower(heldItem)
+
+		val newDrill = POWER_DRILL.constructItemStack()
+		PowerDrill.setPower(newDrill, oldPower)
+
+		return newDrill
 	}
 
 	@Subcommand("mineral")

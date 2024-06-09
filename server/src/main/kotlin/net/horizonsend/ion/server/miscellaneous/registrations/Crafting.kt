@@ -29,6 +29,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL_RECEIVER
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_TITANIUM
@@ -70,6 +71,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_ROD
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -441,6 +443,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', AIR)
 		}
 
+		// Cannon Crafting
 		itemStackShapeRecipe("cannon", CustomItems.CANNON.constructItemStack()) {
 			shape("xax", "xcb", "pxx")
 
@@ -450,6 +453,17 @@ object Crafting : IonServerComponent() {
 			setIngredient('c', CIRCUITRY.constructItemStack())
 			setIngredient('x', AIR)
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+		}
+
+		// Power Drill Crafting
+		itemStackShapeRecipe("power_drill", POWER_DRILL.constructItemStack()) {
+			shape("ixx", "xbt", "xts")
+
+			setIngredient('i', ExactChoice(ItemStack(Material.IRON_INGOT)))
+			setIngredient('b', ExactChoice(BATTERY_MEDIUM.singleItem()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('s', STICK)
+			setIngredient('x', AIR)
 		}
 
 		// Circuitry Crafting 1
