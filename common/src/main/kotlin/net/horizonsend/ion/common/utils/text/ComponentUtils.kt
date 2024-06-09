@@ -93,6 +93,7 @@ const val TEXT_HEIGHT = 9
 const val DEFAULT_GUI_WIDTH = 169
 const val GUI_MARGIN = 8
 const val GUI_HEADER_MARGIN = 3
+const val SLOT_OVERLAY_WIDTH = 18
 
 const val SHIFT_LEFT_MIN = 1
 const val SHIFT_LEFT_MAX = 256
@@ -111,8 +112,9 @@ const val SHIFT_RIGHT_END = 0xE1FF
 const val SHIFT_LEFT_BEGIN_MIN_1 = 0xDFFF
 const val SHIFT_RIGHT_BEGIN_MIN_1 = 0xE0FF
 
-const val DEFAULT_BACKGROUND_CHAR = '\uF8FF'
+const val DEFAULT_BACKGROUND_CHARACTER = '\uF8FF'
 const val CHETHERITE_CHARACTER = '\uF8FE'
+const val SLOT_OVERLAY_CHARACTER = '\uF8FD'
 
 // Custom characters end
 
@@ -137,6 +139,7 @@ val String.minecraftLength: Int
 				'k', 'f', '<', '>' -> 5
 				'@', '~', '«', '»' -> 7
 				CHETHERITE_CHARACTER -> 10
+				SLOT_OVERLAY_CHARACTER -> 19
 				else -> 6
 			} as Int
 		}
@@ -190,6 +193,7 @@ fun Component.shiftToStartOfComponent(): Component {
  * @param shift number of pixels to shift between 1 and 110
  */
 fun Component.shiftDown(shift: Int): Component = if (shift in SHIFT_DOWN_MIN..SHIFT_DOWN_MAX) {
+	println("shift for ${this.plainText()}: $shift")
 	this.font(yFontKey(shift))
 } else this
 
@@ -199,6 +203,8 @@ fun Component.shiftDown(shift: Int): Component = if (shift in SHIFT_DOWN_MIN..SH
  * @param shift number of additional pixels to shift down
  */
 fun Component.shiftToLine(line: Int, shift: Int = 0): Component = this.shiftDown((line + 1) * TEXT_HEIGHT + shift)
+
+fun slotOverlay(line: Int) = ofChildren(shift(-1), text(SLOT_OVERLAY_CHARACTER, WHITE).shiftToLine(line, GUI_HEADER_MARGIN))
 
 /**
  * Splits the text of the current component so that the text fits within a certain width

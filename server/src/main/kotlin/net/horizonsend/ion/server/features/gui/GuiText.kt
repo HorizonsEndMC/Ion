@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.gui
 
-import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHAR
+import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.GUI_HEADER_MARGIN
 import net.horizonsend.ion.common.utils.text.GUI_MARGIN
@@ -204,7 +204,7 @@ class GuiText(
      * 16, where a margin of 8 pixels is subtracted from the left and right border of the background
      */
     data class GuiBackground(
-        val backgroundChar: Char = DEFAULT_BACKGROUND_CHAR,
+        val backgroundChar: Char = DEFAULT_BACKGROUND_CHARACTER,
         val backgroundWidth: Int = DEFAULT_GUI_WIDTH,
         val horizontalShift: Int = 0
     )
