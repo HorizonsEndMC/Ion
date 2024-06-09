@@ -9,12 +9,22 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.utils.text.CHETHERITE_CHARACTER
+import net.horizonsend.ion.common.utils.text.SLOT_OVERLAY_WIDTH
+import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.shift
+import net.horizonsend.ion.common.utils.text.slotOverlay
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.gui.GuiText
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.pull
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
+import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
 @CommandAlias("achievements")
@@ -63,6 +73,29 @@ object AchievementsCommand : SLCommand() {
 		SLPlayer.updateById(playerData._id, pull(SLPlayer::achievements, achievement.name))
 
 		sender.success("Took achievement ${achievement.name} from $target.")
+	}
+
+	@Subcommand("test2")
+	fun test2(sender: Player) {
+		val gui = Gui.normal()
+			.setStructure(
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .")
+			.build()
+
+		val text = GuiText("some title")
+		text.add(slotOverlay(0), line = 0)
+		text.add(ofChildren(shift(SLOT_OVERLAY_WIDTH * 4), slotOverlay(2)), line = 2)
+		text.add(ofChildren(shift(SLOT_OVERLAY_WIDTH), slotOverlay(4)), line = 4)
+
+		val window = Window.single()
+			.setViewer(sender)
+			.setTitle(AdventureComponentWrapper(text.build()))
+			.setGui(gui)
+			.build()
+
+		window.open()
 	}
 
 	/*
