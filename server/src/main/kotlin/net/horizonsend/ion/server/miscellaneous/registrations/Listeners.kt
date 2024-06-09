@@ -63,7 +63,7 @@ val listeners: List<Listener> = listOf(
 	BlasterListeners(),
 	CancelListeners(),
 	net.horizonsend.ion.server.features.custom.items.CustomItemListeners(),
-	CustomBlockListeners(),
+	CustomBlockListeners,
 	EdenFixer9000(),
 	GameplayTweaksListeners(),
 	HeadListener(),

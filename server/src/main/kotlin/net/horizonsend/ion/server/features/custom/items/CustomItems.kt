@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.minerals.MineralItem
@@ -240,205 +241,168 @@ object CustomItems {
 
 	// Minerals start
 
-	val ALUMINUM_INGOT = register(
-		object : MineralItem(
-			identifier = "ALUMINUM_INGOT",
-			material = IRON_INGOT,
-			customModelData = 1,
-			displayName = text("Aluminum Ingot").decoration(ITALIC, false)
-		) {}
-	)
+	val ALUMINUM_INGOT = register(object : MineralItem(
+		identifier = "ALUMINUM_INGOT",
+		material = IRON_INGOT,
+		customModelData = 1,
+		displayName = text("Aluminum Ingot").decoration(ITALIC, false)
+	) {})
 
-	val RAW_ALUMINUM : MineralItem = register(
-		object : MineralItem(
-			identifier = "RAW_ALUMINUM",
-			material = RAW_IRON,
-			customModelData = 1,
-			displayName = text("Raw Aluminum").decoration(ITALIC, false)
-		), Smeltable {
-			override val smeltResultIdentifier: String = "ALUMINUM_INGOT"
-		}
-	)
+	val RAW_ALUMINUM : MineralItem = register(object : MineralItem(
+		identifier = "RAW_ALUMINUM",
+		material = RAW_IRON,
+		customModelData = 1,
+		displayName = text("Raw Aluminum").decoration(ITALIC, false)
+	), Smeltable {
+		override val smeltResultIdentifier: String = "ALUMINUM_INGOT"
+	})
 
-	val ALUMINUM_ORE : CustomBlockItem = register(
-		object : CustomBlockItem(
-			identifier = "ALUMINUM_ORE",
-			material = IRON_ORE,
-			customModelData = 1,
-			displayName = text("Aluminum Ore").decoration(ITALIC, false),
-			customBlockIdentifier = "ALUMINUM_ORE"
-		), Smeltable {
-			override val smeltResultIdentifier: String = "ALUMINUM_INGOT"
-		}
-	)
+	val ALUMINUM_ORE : CustomBlockItem = register(object : CustomBlockItem(
+		identifier = "ALUMINUM_ORE",
+		material = IRON_ORE,
+		customModelData = 1,
+		displayName = text("Aluminum Ore").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.ALUMINUM_ORE }
+	), Smeltable {
+		override val smeltResultIdentifier: String = "ALUMINUM_INGOT"
+	})
 
-	val ALUMINUM_BLOCK = register(
-		object : CustomBlockItem(
-			identifier = "ALUMINUM_BLOCK",
-			material = IRON_BLOCK,
-			customModelData = 1,
-			displayName = text("Aluminum Block").decoration(ITALIC, false),
-			customBlockIdentifier = "ALUMINUM_BLOCK"
-		) {}
-	)
+	val ALUMINUM_BLOCK = register(object : CustomBlockItem(
+		identifier = "ALUMINUM_BLOCK",
+		material = IRON_BLOCK,
+		customModelData = 1,
+		displayName = text("Aluminum Block").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.ALUMINUM_BLOCK }
+	) {})
 
-	 val RAW_ALUMINUM_BLOCK = register(
-		 object : CustomBlockItem(
-			 identifier = "RAW_ALUMINUM_BLOCK",
-			 material = RAW_IRON_BLOCK,
-			 customModelData = 1,
-			 displayName = text("Raw Aluminum Block").decoration(ITALIC, false),
-			 customBlockIdentifier = "RAW_ALUMINUM_BLOCK"
-		 ) {}
-	 )
+	val RAW_ALUMINUM_BLOCK = register(object : CustomBlockItem(
+		identifier = "RAW_ALUMINUM_BLOCK",
+		material = RAW_IRON_BLOCK,
+		customModelData = 1,
+		displayName = text("Raw Aluminum Block").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.RAW_ALUMINUM_BLOCK }
+	) {})
 
-	val CHETHERITE = register(
-		object : MineralItem(
-			identifier = "CHETHERITE",
-			material = IRON_INGOT,
-			customModelData = 2,
-			displayName = text("Chetherite").decoration(ITALIC, false)
-		) {}
-	)
+	val CHETHERITE = register(object : MineralItem(
+		identifier = "CHETHERITE",
+		material = IRON_INGOT,
+		customModelData = 2,
+		displayName = text("Chetherite").decoration(ITALIC, false)
+	) {})
 
-	val CHETHERITE_ORE : CustomBlockItem = register(
-		object : CustomBlockItem(
-			identifier = "CHETHERITE_ORE",
-			material = IRON_ORE,
-			customModelData = 2,
-			displayName = text("Chetherite Ore").decoration(ITALIC, false),
-			customBlockIdentifier = "CHETHERITE_ORE"
-		), Smeltable {
-			override val smeltResultIdentifier: String = "CHETHERITE"
-		}
-	)
+	val CHETHERITE_ORE : CustomBlockItem = register(object : CustomBlockItem(
+		identifier = "CHETHERITE_ORE",
+		material = IRON_ORE,
+		customModelData = 2,
+		displayName = text("Chetherite Ore").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.CHETHERITE_ORE }
+	), Smeltable {
+		override val smeltResultIdentifier: String = "CHETHERITE"
+	})
 
-	val CHETHERITE_BLOCK = register(
-		object : CustomBlockItem(
-			identifier = "CHETHERITE_BLOCK",
-			material = IRON_BLOCK,
-			customModelData = 2,
-			displayName = text("Chetherite Block").decoration(ITALIC, false),
-			customBlockIdentifier = "CHETHERITE_BLOCK"
-		) {}
-	)
+	val CHETHERITE_BLOCK = register(object : CustomBlockItem(
+		identifier = "CHETHERITE_BLOCK",
+		material = IRON_BLOCK,
+		customModelData = 2,
+		displayName = text("Chetherite Block").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.CHETHERITE_BLOCK }
+	) {})
 
-	val TITANIUM_INGOT = register(
-		object : MineralItem(
-			identifier = "TITANIUM_INGOT",
-			material = IRON_INGOT,
-			customModelData = 3,
-			displayName = text("Titanium Ingot").decoration(ITALIC, false)
-		) {}
-	)
+	val TITANIUM_INGOT = register(object : MineralItem(
+		identifier = "TITANIUM_INGOT",
+		material = IRON_INGOT,
+		customModelData = 3,
+		displayName = text("Titanium Ingot").decoration(ITALIC, false)
+	) {})
 
-	val RAW_TITANIUM : MineralItem = register(
-		object : MineralItem(
-			identifier = "RAW_TITANIUM",
-			material = RAW_IRON,
-			customModelData = 3,
-			displayName = text("Raw Titanium").decoration(ITALIC, false)
-		), Smeltable {
-			override val smeltResultIdentifier: String = "TITANIUM_INGOT"
-		}
-	)
+	val RAW_TITANIUM : MineralItem = register(object : MineralItem(
+		identifier = "RAW_TITANIUM",
+		material = RAW_IRON,
+		customModelData = 3,
+		displayName = text("Raw Titanium").decoration(ITALIC, false)
+	), Smeltable {
+		override val smeltResultIdentifier: String = "TITANIUM_INGOT"
+	})
 
-	val TITANIUM_ORE : CustomBlockItem = register(
-		object : CustomBlockItem(
-			identifier = "TITANIUM_ORE",
-			material = IRON_ORE,
-			customModelData = 3,
-			displayName = text("Titanium Ore").decoration(ITALIC, false),
-			customBlockIdentifier = "TITANIUM_ORE"
-		), Smeltable {
-			override val smeltResultIdentifier: String = "TITANIUM_INGOT"
-		}
-	)
+	val TITANIUM_ORE : CustomBlockItem = register(object : CustomBlockItem(
+		identifier = "TITANIUM_ORE",
+		material = IRON_ORE,
+		customModelData = 3,
+		displayName = text("Titanium Ore").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.TITANIUM_ORE }
+	), Smeltable {
+		override val smeltResultIdentifier: String = "TITANIUM_INGOT"
+	})
 
-	val TITANIUM_BLOCK = register(
-		object : CustomBlockItem(
-			identifier = "TITANIUM_BLOCK",
-			material = IRON_BLOCK,
-			customModelData = 3,
-			displayName = text("Titanium Block").decoration(ITALIC, false),
-			customBlockIdentifier = "TITANIUM_BLOCK"
-		) {}
-	)
+	val TITANIUM_BLOCK = register(object : CustomBlockItem(
+		identifier = "TITANIUM_BLOCK",
+		material = IRON_BLOCK,
+		customModelData = 3,
+		displayName = text("Titanium Block").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.TITANIUM_BLOCK }
+	) {})
 
-	val RAW_TITANIUM_BLOCK = register(
-		object : CustomBlockItem(
-			identifier = "RAW_TITANIUM_BLOCK",
-			material = RAW_IRON_BLOCK,
-			customModelData = 3,
-			displayName = text("Raw Titanium Block").decoration(ITALIC, false),
-			customBlockIdentifier = "RAW_TITANIUM_BLOCK"
-		) {}
-	)
+	val RAW_TITANIUM_BLOCK = register(object : CustomBlockItem(
+		identifier = "RAW_TITANIUM_BLOCK",
+		material = RAW_IRON_BLOCK,
+		customModelData = 3,
+		displayName = text("Raw Titanium Block").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.RAW_TITANIUM_BLOCK }
+	) {})
 
-	val URANIUM = register(
-		object : MineralItem(
-			identifier = "URANIUM",
-			material = IRON_INGOT,
-			customModelData = 4,
-			displayName = text("Uranium").decoration(ITALIC, false),
-		) {}
-	)
+	val URANIUM = register(object : MineralItem(
+		identifier = "URANIUM",
+		material = IRON_INGOT,
+		customModelData = 4,
+		displayName = text("Uranium").decoration(ITALIC, false),
+	) {})
 
-	val RAW_URANIUM : MineralItem = register(
-		object : MineralItem(
-			identifier = "RAW_URANIUM",
-			material = RAW_IRON,
-			customModelData = 4,
-			displayName = text("Raw Uranium").decoration(ITALIC, false)
-		), Smeltable {
-			override val smeltResultIdentifier: String = "URANIUM"
-		}
-	)
+	val RAW_URANIUM : MineralItem = register(object : MineralItem(
+		identifier = "RAW_URANIUM",
+		material = RAW_IRON,
+		customModelData = 4,
+		displayName = text("Raw Uranium").decoration(ITALIC, false)
+	), Smeltable {
+		override val smeltResultIdentifier: String = "URANIUM"
+	})
 
-	val URANIUM_ORE : CustomBlockItem = register(
-		object : CustomBlockItem(
-			identifier = "URANIUM_ORE",
-			material = IRON_ORE,
-			customModelData = 4,
-			displayName = text("Uranium Ore").decoration(ITALIC, false),
-			customBlockIdentifier = "URANIUM_ORE"
-		), Smeltable {
-			override val smeltResultIdentifier: String = "URANIUM"
-		}
-	)
+	val URANIUM_ORE : CustomBlockItem = register(object : CustomBlockItem(
+		identifier = "URANIUM_ORE",
+		material = IRON_ORE,
+		customModelData = 4,
+		displayName = text("Uranium Ore").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.URANIUM_ORE }
+	), Smeltable {
+		override val smeltResultIdentifier: String = "URANIUM"
+	})
 
-	val URANIUM_BLOCK = register(
-		object : CustomBlockItem(
-			identifier = "URANIUM_BLOCK",
-			material = IRON_BLOCK,
-			customModelData = 4,
-			displayName = text("Uranium Block").decoration(ITALIC, false),
-			customBlockIdentifier = "URANIUM_BLOCK"
-		) {}
-	)
+	val URANIUM_BLOCK = register(object : CustomBlockItem(
+		identifier = "URANIUM_BLOCK",
+		material = IRON_BLOCK,
+		customModelData = 4,
+		displayName = text("Uranium Block").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.URANIUM_BLOCK }
+	) {})
 
-	val RAW_URANIUM_BLOCK =
-		register(object : CustomBlockItem(
-			identifier = "RAW_URANIUM_BLOCK",
-			material = RAW_IRON_BLOCK,
-			customModelData = 4,
-			displayName = text("Raw Uranium Block").decoration(ITALIC, false),
-			customBlockIdentifier = "RAW_URANIUM_BLOCK"
-		) {}
-		)
+	val RAW_URANIUM_BLOCK = register(object : CustomBlockItem(
+		identifier = "RAW_URANIUM_BLOCK",
+		material = RAW_IRON_BLOCK,
+		customModelData = 4,
+		displayName = text("Raw Uranium Block").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.RAW_URANIUM_BLOCK }
+	) {})
 
 	// Minerals end
 
 	// Industry start
 
-	val NETHERITE_CASING =
-		register(object : CustomBlockItem(
-			identifier = "NETHERITE_CASING",
-			material = IRON_BLOCK,
-			customModelData = 1400,
-			displayName = text("Netherite Casing").decoration(ITALIC, false),
-			customBlockIdentifier = "NETHERITE_CASING"
-		) {})
+	val NETHERITE_CASING = register(object : CustomBlockItem(
+		identifier = "NETHERITE_CASING",
+		material = IRON_BLOCK,
+		customModelData = 1400,
+		displayName = text("Netherite Casing").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.NETHERITE_CASING }
+	) {})
 
 	// Uranium line
 	val ENRICHED_URANIUM = register(object : MineralItem(
@@ -448,14 +412,13 @@ object CustomItems {
 		displayName = text("Enriched Uranium").decoration(ITALIC, false)
 	) {})
 
-	val ENRICHED_URANIUM_BLOCK =
-		register(object : CustomBlockItem(
-			identifier = "ENRICHED_URANIUM_BLOCK",
-			material = IRON_BLOCK,
-			customModelData = 1000,
-			displayName = text("Enriched Uranium Block").decoration(ITALIC, false),
-			customBlockIdentifier = "ENRICHED_URANIUM_BLOCK"
-		) {})
+	val ENRICHED_URANIUM_BLOCK = register(object : CustomBlockItem(
+		identifier = "ENRICHED_URANIUM_BLOCK",
+		material = IRON_BLOCK,
+		customModelData = 1000,
+		displayName = text("Enriched Uranium Block").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.ENRICHED_URANIUM_BLOCK }
+	) {})
 
 	val URANIUM_CORE = register(
 		identifier = "URANIUM_CORE",
@@ -556,14 +519,13 @@ object CustomItems {
 		displayName = text("Superconductor").decoration(ITALIC, false)
 	)
 
-	val SUPERCONDUCTOR_BLOCK =
-		register(object : CustomBlockItem(
-			identifier = "SUPERCONDUCTOR_BLOCK",
-			material = IRON_BLOCK,
-			customModelData = 1002,
-			displayName = text("Superconductor Block").decoration(ITALIC, false),
-			customBlockIdentifier = "SUPERCONDUCTOR_BLOCK"
-		) {})
+	val SUPERCONDUCTOR_BLOCK = register(object : CustomBlockItem(
+		identifier = "SUPERCONDUCTOR_BLOCK",
+		material = IRON_BLOCK,
+		customModelData = 1002,
+		displayName = text("Superconductor Block").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.SUPERCONDUCTOR_BLOCK }
+	) {})
 
 	val SUPERCONDUCTOR_CORE = register(
 		identifier = "SUPERCONDUCTOR_CORE",
@@ -572,24 +534,20 @@ object CustomItems {
 	)
 
 	// Steel line
-	val STEEL_INGOT = register(
-		object : MineralItem(
-			identifier = "STEEL_INGOT",
-			material = IRON_INGOT,
-			customModelData = 1001,
-			displayName = text("Steel Ingot").decoration(ITALIC, false)
-		) {}
-	)
+	val STEEL_INGOT = register(object : MineralItem(
+		identifier = "STEEL_INGOT",
+		material = IRON_INGOT,
+		customModelData = 1001,
+		displayName = text("Steel Ingot").decoration(ITALIC, false)
+	) {})
 
-	val STEEL_BLOCK = register(
-		object : CustomBlockItem(
-			identifier = "STEEL_BLOCK",
-			material = IRON_BLOCK,
-			customModelData = 1001,
-			displayName = text("Steel Block").decoration(ITALIC, false),
-			customBlockIdentifier = "STEEL_BLOCK"
-		) {}
-	)
+	val STEEL_BLOCK = register(object : CustomBlockItem(
+		identifier = "STEEL_BLOCK",
+		material = IRON_BLOCK,
+		customModelData = 1001,
+		displayName = text("Steel Block").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.STEEL_BLOCK }
+	) {})
 
 	val STEEL_PLATE = register(
 		identifier = "STEEL_PLATE",
@@ -631,32 +589,29 @@ object CustomItems {
 
 	// Starship Components Start
 
-	val BATTLECRUISER_REACTOR_CORE =
-		register(object : CustomBlockItem(
-			identifier = "BATTLECRUISER_REACTOR_CORE",
-			material = IRON_BLOCK,
-			customModelData = 2000,
-			displayName = text("Battlecruiser Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
-			customBlockIdentifier = "BATTLECRUISER_REACTOR_CORE"
-		) {})
+	val BATTLECRUISER_REACTOR_CORE = register(object : CustomBlockItem(
+		identifier = "BATTLECRUISER_REACTOR_CORE",
+		material = IRON_BLOCK,
+		customModelData = 2000,
+		displayName = text("Battlecruiser Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
+		customBlockSupplier = { CustomBlocks.BATTLECRUISER_REACTOR_CORE }
+	) {})
 
-	val BARGE_REACTOR_CORE =
-		register(object : CustomBlockItem(
-			identifier = "BARGE_REACTOR_CORE",
-			material = IRON_BLOCK,
-			customModelData = 2002,
-			displayName = text("Barge Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
-			customBlockIdentifier = "BARGE_REACTOR_CORE"
-		) {})
+	val BARGE_REACTOR_CORE = register(object : CustomBlockItem(
+		identifier = "BARGE_REACTOR_CORE",
+		material = IRON_BLOCK,
+		customModelData = 2002,
+		displayName = text("Barge Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
+		customBlockSupplier = { CustomBlocks.BARGE_REACTOR_CORE }
+	) {})
 
-	val CRUISER_REACTOR_CORE =
-		register(object : CustomBlockItem(
-			identifier = "CRUISER_REACTOR_CORE",
-			material = IRON_BLOCK,
-			customModelData = 2001,
-			displayName = text("Cruiser Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
-			customBlockIdentifier = "CRUISER_REACTOR_CORE"
-		) {})
+	val CRUISER_REACTOR_CORE = register(object : CustomBlockItem(
+		identifier = "CRUISER_REACTOR_CORE",
+		material = IRON_BLOCK,
+		customModelData = 2001,
+		displayName = text("Cruiser Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
+		customBlockSupplier = { CustomBlocks.CRUISER_REACTOR_CORE }
+	) {})
 
 	// Starship Components End
 
@@ -712,7 +667,6 @@ object CustomItems {
 	// Ship Ammunition End
 
 	// Gas Canisters Start
-
 	val GAS_CANISTER_EMPTY = register("GAS_CANISTER_EMPTY", 1000, text("Empty Gas Canister"))
 
 	// Fuels
@@ -891,6 +845,13 @@ object CustomItems {
 	// Planets end
 
 	// Tools begin
+	val MOD_TABLE: CustomBlockItem = register(object : CustomBlockItem(
+		identifier = "MOD_TABLE",
+		material = IRON_BLOCK,
+		customModelData = 1003,
+		displayName = text("Mod Table").decoration(ITALIC, false),
+		customBlockSupplier = { CustomBlocks.MOD_TABLE }
+	) {})
 
 	val POWER_DRILL = register(PowerDrill)
 

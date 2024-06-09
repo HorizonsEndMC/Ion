@@ -1,19 +1,24 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import net.horizonsend.ion.server.command.admin.ConvertCommand
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
+import org.bukkit.event.player.PlayerInteractEvent
+import java.util.concurrent.ConcurrentHashMap
 
-class CustomBlockListeners : SLEventListener() {
-
+object CustomBlockListeners : SLEventListener() {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     @Suppress("Unused")
     fun onCustomBlockPlace(event: BlockPlaceEvent) {
@@ -27,14 +32,17 @@ class CustomBlockListeners : SLEventListener() {
         event.block.location.block.setBlockData(blockData, true)
     }
 
+	val noDropEvents: ConcurrentHashMap.KeySetView<BlockBreakEvent, Boolean> = ConcurrentHashMap.newKeySet()
+
     @EventHandler(priority = EventPriority.HIGHEST)
     @Suppress("Unused")
     fun onCustomBlockBreakEvent(event: BlockBreakEvent) {
         if (event.isCancelled) return
         if (event.player.gameMode == GameMode.CREATIVE) return
+		if (noDropEvents.remove(event)) return
 
         val block = event.block
-        if (CustomBlocks.getByBlock(block) == null) return
+		val customBlock = block.customBlock ?: return
 
         // Prevents brown mushrooms from dropping
         if (event.isDropItems) {
@@ -42,39 +50,49 @@ class CustomBlockListeners : SLEventListener() {
             block.type = Material.AIR
         }
 
-        /*
         val itemUsed = event.player.inventory.itemInMainHand
         val location = block.location.toCenterLocation()
-        if (itemUsed.enchantments.containsKey(Enchantment.SILK_TOUCH)) {
-            Tasks.sync {
-                // Make sure future custom blocks use the same identifier as its custom block identifier
-                val drop = CustomItems.getByIdentifier(customBlock.identifier)?.constructItemStack() ?: ItemStack(Material.AIR)
-                block.world.dropItem(location, drop)
-            }
-        } else {
-            Tasks.sync {
-                for (drop in customBlock.getDrops(itemUsed)) {
-                    block.world.dropItem(location, drop)
-                }
-            }
+
+        if (itemUsed.enchantments.containsKey(Enchantment.SILK_TOUCH)) Tasks.sync {
+			// Make sure future custom blocks use the same identifier as its custom block identifier
+			for (drop in customBlock.drops.getDrops(itemUsed, true)) {
+				block.world.dropItem(location, drop)
+			}
+        } else Tasks.sync {
+			for (drop in customBlock.drops.getDrops(itemUsed, false)) {
+				block.world.dropItem(location, drop)
+			}
         }
-         */
     }
 
     @EventHandler
     @Suppress("Unused")
-    fun onInventoryOpen(event: InventoryOpenEvent)
-    {
+    fun onInventoryOpen(event: InventoryOpenEvent) {
         val inventory = event.inventory
-        for (item in inventory)
-        {
+        for (item in inventory) {
             val newVersion = ConvertCommand.convertCustomMineral(item)
-            if (newVersion != null)
-            {
+
+            if (newVersion != null) {
                 item.type = newVersion.type
                 item.itemMeta = newVersion.itemMeta
                 item.amount = newVersion.amount
             }
         }
     }
+
+	@EventHandler
+	fun onPlayerInteract(event: PlayerInteractEvent) {
+		val clickedBlock = event.clickedBlock ?: return
+		val customBlock = clickedBlock.customBlock ?: return
+
+		if (customBlock !is InteractableCustomBlock) return
+
+		event.isCancelled = true
+
+		when (event.action) {
+			Action.LEFT_CLICK_BLOCK -> customBlock.onLeftClick(event, clickedBlock)
+			Action.RIGHT_CLICK_BLOCK -> customBlock.onRightClick(event, clickedBlock)
+			else -> return
+		}
+	}
 }

@@ -1,11 +1,14 @@
 package net.horizonsend.ion.server.features.custom.items.powered
 
+import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockModifier
-import net.horizonsend.ion.server.features.custom.items.mods.tool.DropModifier
+import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
+import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.DropModifier
+import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
@@ -13,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
@@ -25,6 +29,7 @@ import net.minecraft.world.level.block.LevelEvent
 import net.minecraft.world.level.block.TurtleEggBlock
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Effect
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
@@ -38,9 +43,10 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem {
+object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledItem {
 	val displayName: Component = ofChildren(text("Power ", GOLD), text("Drill", GRAY)).decoration(TextDecoration.ITALIC, false)
 	override val basePowerCapacity: Int = 50_000
+	override val basePowerUsage: Int = 10
 
 	override val material: Material = Material.DIAMOND_PICKAXE
 	override val customModelData: Int = 1
@@ -59,9 +65,22 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem {
 		}
 	}
 
-	fun getPowerUse(itemStack: ItemStack) = 10
+	override fun rebuildLore(itemStack: ItemStack) = Tasks.async {
+		val powerLore = getPowerLore(itemStack)
+		val modLore = getModsLore(itemStack)
+
+		val fullLore = mutableListOf<Component>()
+
+		fullLore.addAll(powerLore)
+		fullLore.add(empty())
+		fullLore.addAll(modLore)
+
+		Tasks.sync { itemStack.updateMeta { it.lore(fullLore) } }
+	}
 
 	override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
+		if (event.player.gameMode == GameMode.CREATIVE) return
+
 		if (livingEntity !is Player) return
 
 		val origin = event.clickedBlock ?: return
@@ -70,7 +89,7 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem {
 
 		val mods = getMods(itemStack)
 
-		mods.filterIsInstance<BlockModifier>().sortedBy { it.priority }.forEach {
+		mods.filterIsInstance<BlockListModifier>().sortedBy { it.priority }.forEach {
 			it.modifyBlockList(event.blockFace, origin, blockList)
 		}
 
@@ -81,9 +100,12 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem {
 		val drops = mutableMapOf<Long, Collection<ItemStack>>()
 
 		for (block in blockList) {
-			if (availablePower < powerUse) break
+			if (availablePower < powerUse) {
+				livingEntity.alertAction("Out of power!")
+				break
+			}
 
-			if (tryBreakBlock(itemStack, livingEntity, block, mods, drops)) {
+			if (tryBreakBlock(livingEntity, block, mods, drops)) {
 				availablePower -= powerUse
 				broken++
 			}
@@ -95,11 +117,15 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem {
 
 		setPower(itemStack, availablePower)
 
+		for ((key, items) in drops) {
+			val location = BlockPos.of(key).toLocation(livingEntity.world)
+			items.forEach { livingEntity.world.dropItemNaturally(location, it) }
+		}
+
 		return
 	}
 
-	fun tryBreakBlock(
-		drill: ItemStack,
+	private fun tryBreakBlock(
 		player: Player,
 		block: Block,
 		mods: Array<ItemModification>,
@@ -112,34 +138,28 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem {
 			return false
 		}
 
-		if (!BlockBreakEvent(block, player).callEvent()) {
+		val event = BlockBreakEvent(block, player)
+		CustomBlockListeners.noDropEvents.add(event)
+
+		if (!event.callEvent()) {
 			return false
 		}
 
 		val dropProvider = mods.filterIsInstance<DropModifier>().firstOrNull() ?: DropModifier.DEFAULT_DROP_PROVIDER
-		drops[BlockPos.asLong(block.x, block.y, block.z)] = dropProvider.getDrop(block)
-
-		block.type = Material.AIR
-		breakNaturally(block, dropProvider.shouldDropXP)
 
 		// customBlock turns to AIR due to BlockBreakEvent; play break sound and drop item
 		if (customBlock != null) {
 			block.world.playSound(block.location.toCenterLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f)
 			block.world.playEffect(block.location, Effect.STEP_SOUND, Material.IRON_ORE)
 
-			Tasks.sync {
-				for (drop in customBlock.getDrops(drill)) {
-					block.world.dropItem(block.location.toCenterLocation(), drop)
-				}
-			}
+			drops[BlockPos.asLong(block.x, block.y, block.z)] = dropProvider.getDrop(customBlock)
 		} else {
+			drops[BlockPos.asLong(block.x, block.y, block.z)] = dropProvider.getDrop(block)
 			block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
 		}
 
-		for ((key, items) in drops) {
-			val location = BlockPos.of(key).toLocation(player.world)
-			items.forEach { player.world.dropItemNaturally(location, it) }
-		}
+		block.type = Material.AIR
+		breakNaturally(block, dropProvider.shouldDropXP)
 
 		if (blockType == Material.END_PORTAL_FRAME) block.world.dropItem(block.location, ItemStack(Material.END_PORTAL_FRAME))
 
