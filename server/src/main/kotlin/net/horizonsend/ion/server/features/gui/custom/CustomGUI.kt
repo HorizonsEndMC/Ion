@@ -161,35 +161,35 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 		println("Current item: ${event.currentItem}")
 		println("slot: ${event.slot}")
 
-		val moveditem = event.currentItem
+		val movedItem = event.currentItem
 
 		when {
 			// Try to find the first slot that it can go into
-			moveditem != null -> {
-				val firstSlot = slots.values.firstOrNull { it.playerCanAdd(moveditem) }?.slot
+			movedItem != null -> {
+				val firstSlot = slots.values.firstOrNull { it.playerCanAdd(movedItem) }?.slot
 
 				if (firstSlot == null) {
 					event.isCancelled = true
 					return
 				}
+				println("Current item: ${event.inventory.getItem(firstSlot)}")
 
 				// Occupied
-				if (getItem(firstSlot) != null) {
+				if (event.inventory.getItem(firstSlot) != null) {
+
 					event.isCancelled = true
 					return
 				}
 
 				// Set it visually
-				setItem(firstSlot, SimpleItem(moveditem))
-				handleAddItem(firstSlot, moveditem, event)
+				setItem(firstSlot, SimpleItem(movedItem))
+				handleAddItem(firstSlot, movedItem, event)
 
 				// Remove it from the inventory
 				event.playerClicker.inventory.setItem(event.slot, ItemStack(Material.AIR))
 				event.isCancelled = true
 			}
 		}
-
-//		super.handleItemShift(event)
 	}
 
 	override fun handleInvDrop(ctrl: Boolean, event: InventoryClickEvent?, inventory: Inventory?, slot: Int, player: Player?, clicked: ItemStack?) {
@@ -240,7 +240,7 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 		println("Running close handler. Items: $occupiedItems")
 
 		for ((_, item) in occupiedItems) {
-			location.world.dropItem(location, item)
+			location.world.dropItem(location.add(0.0, 0.5, 0.0), item)
 		}
 	}
 }
