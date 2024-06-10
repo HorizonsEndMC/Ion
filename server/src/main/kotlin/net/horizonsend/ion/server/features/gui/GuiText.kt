@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.GUI_HEADER_MARGIN
 import net.horizonsend.ion.common.utils.text.GUI_MARGIN
+import net.horizonsend.ion.common.utils.text.SLOT_OVERLAY_WIDTH
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.leftShift
 import net.horizonsend.ion.common.utils.text.minecraftLength
@@ -11,8 +12,8 @@ import net.horizonsend.ion.common.utils.text.shift
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.shiftToStartOfComponent
 import net.horizonsend.ion.common.utils.text.shiftToLine
+import net.horizonsend.ion.common.utils.text.slotOverlay
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 
 class GuiText(
@@ -30,6 +31,11 @@ class GuiText(
      * The backgrounds added to this GuiText
      */
     private val guiBackgrounds = mutableListOf<GuiBackground>()
+
+    /**
+     * List of chars that indicate if a slot should have an overlay. Similar to setStructure in InvUI.
+     */
+    private val slotOverlayStructure = mutableListOf<String>()
 
     /**
      * Adds a GuiComponent to the GuiText
@@ -103,6 +109,23 @@ class GuiText(
     fun removeColumn(alignment: TextAlignment) = guiComponents.removeIf { it.alignment == alignment }
 
     /**
+     * Sets the slot overlays in the GUI
+     *
+     * '.' - empty
+     *
+     * '#' - fully covered slot
+     * @param structureData list of strings indicating what each slot should be covered with
+     */
+    fun setSlotOverlay(vararg structureData: String) {
+        slotOverlayStructure.clear()
+        for (row in structureData) {
+            val sanitizedRow = row.replace(" ", "").replace("\n", "")
+            slotOverlayStructure.add(sanitizedRow)
+
+        }
+    }
+
+    /**
      * Builds the GuiText, returning a Component that can be placed in an Inventory's title
      * @return an Adventure Component for use in an Inventory
      */
@@ -117,6 +140,22 @@ class GuiText(
 
         // add GUI header
         renderedComponents.add(buildGuiHeader(name))
+
+        // parse slot overlay structure and add overlay components
+        for ((index, slotOverlayRow) in slotOverlayStructure.withIndex()) {
+            val slotOverlayComponents = mutableListOf<Component>()
+            val line = index * 2 // slots only on even line
+
+            for (char in slotOverlayRow) {
+                slotOverlayComponents.add(when (char) {
+                    '.' -> shift(SLOT_OVERLAY_WIDTH)
+                    '#' -> slotOverlay(line)
+                    else -> Component.empty()
+                })
+            }
+
+            renderedComponents.add(Component.textOfChildren(*slotOverlayComponents.toTypedArray()).shiftToStartOfComponent())
+        }
 
         // get sorted list of all lines in the builder
         for (line in guiComponents.map { it.line }.toSet().sorted()) {
@@ -216,14 +255,14 @@ class GuiText(
 
     private fun buildGuiBackground(guiBackground: GuiBackground) =
         shift(-GUI_MARGIN + guiBackground.horizontalShift)
-            .append(text(guiBackground.backgroundChar).color(WHITE).font(SPECIAL_FONT_KEY))
+            .append(Component.text(guiBackground.backgroundChar).color(WHITE).font(SPECIAL_FONT_KEY))
             .append(leftShift(guiBackground.backgroundWidth))
 
     /**
      * Set the custom GUI header
      * @param header the title of the GUI to be displayed
      */
-    private fun buildGuiHeader(header: String) = ofChildren(text(header), leftShift(header.minecraftLength))
+    private fun buildGuiHeader(header: String) = ofChildren(Component.text(header), leftShift(header.minecraftLength))
 
     /**
      * Checks if a GuiComponent occupies the line and alignment of another GuiComponent
