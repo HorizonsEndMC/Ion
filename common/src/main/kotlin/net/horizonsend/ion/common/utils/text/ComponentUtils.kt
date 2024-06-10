@@ -193,7 +193,6 @@ fun Component.shiftToStartOfComponent(): Component {
  * @param shift number of pixels to shift between 1 and 110
  */
 fun Component.shiftDown(shift: Int): Component = if (shift in SHIFT_DOWN_MIN..SHIFT_DOWN_MAX) {
-	println("shift for ${this.plainText()}: $shift")
 	this.font(yFontKey(shift))
 } else this
 
@@ -204,6 +203,10 @@ fun Component.shiftDown(shift: Int): Component = if (shift in SHIFT_DOWN_MIN..SH
  */
 fun Component.shiftToLine(line: Int, shift: Int = 0): Component = this.shiftDown((line + 1) * TEXT_HEIGHT + shift)
 
+/**
+ * Creates a slot overlay component, intended for blocking out slots in an Inventory
+ * @param line number of lines to shift down. This must be an even number as each inventory slot is two lines tall
+ */
 fun slotOverlay(line: Int) = ofChildren(shift(-1), text(SLOT_OVERLAY_CHARACTER, WHITE).shiftToLine(line, GUI_HEADER_MARGIN))
 
 /**
