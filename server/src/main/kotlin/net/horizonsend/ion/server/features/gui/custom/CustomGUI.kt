@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.gui.custom
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.gui.custom.slot.GUISlot
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import org.bukkit.Location
@@ -11,9 +12,6 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.AbstractGui
-import xyz.xenondevs.invui.gui.Gui
-import xyz.xenondevs.invui.gui.SlotElement
-import xyz.xenondevs.invui.inventory.Inventory
 import xyz.xenondevs.invui.inventory.event.PlayerUpdateReason
 import xyz.xenondevs.invui.inventory.event.UpdateReason
 import xyz.xenondevs.invui.item.impl.SimpleItem
@@ -30,14 +28,27 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 		if (slot is ChangeListener) changeListeners.add(slot)
 	}
 
+	fun notifyChange() {
+		for (changeListener in changeListeners) {
+			runCatching { changeListener.handleChange() }.onFailure {
+				IonServer.slF4JLogger.error("Error processing change in GUI!")
+				it.printStackTrace()
+			}
+		}
+	}
+
 	private fun setItem(slot: Int, item: ItemStack) {
 		println("Adding $item to slot $slot")
 		occupiedItems[slot] = item.clone()
+		notifyChange()
 	}
 
-	private fun removeItem(slot: Int) {
+	private fun removeItem(slot: Int): Boolean {
 		val item = occupiedItems.remove(slot)
+		notifyChange()
 		println("Removed $item from slot $slot")
+
+		return item != null
 	}
 
 	private fun handleAddItem(index: Int, newItem: ItemStack, event: Cancellable): Boolean {
@@ -69,7 +80,13 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 			return false
 		}
 
-		removeItem(index)
+		// Prevents possible duplication glitches
+		if (!removeItem(index)) {
+			println("Remove failed, item not in map")
+			event.isCancelled = true
+			return false
+		}
+
 		println("Player could remove")
 		return true
 	}
@@ -99,8 +116,6 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 			currentItem != null && cursorItem.type == Material.AIR -> handleRemoveItem(index, event)
 			currentItem != null && cursorItem.type != Material.AIR -> handleSwapItem(index, currentItem, cursorItem, event)
 		}
-
-//		super.handleClick(slotNumber, player, clickType, event)
 	}
 
 	private fun handleNumberKey(slotNumber: Int, player: Player, clickType: ClickType?, event: InventoryClickEvent) {
@@ -149,11 +164,6 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 		}
 	}
 
-	override fun handleInvLeftClick(event: InventoryClickEvent?, inventory: Inventory?, slot: Int, player: Player?, clicked: ItemStack?, cursor: ItemStack?) {
-		println("Got left click")
-		super.handleInvLeftClick(event, inventory, slot, player, clicked, cursor)
-	}
-
 	override fun handleItemShift(event: InventoryClickEvent) {
 		println("Got shift")
 		println("click type: ${event.click}")
@@ -190,50 +200,6 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 				event.isCancelled = true
 			}
 		}
-	}
-
-	override fun handleInvDrop(ctrl: Boolean, event: InventoryClickEvent?, inventory: Inventory?, slot: Int, player: Player?, clicked: ItemStack?) {
-		println("Got inventory drop")
-		super.handleInvDrop(ctrl, event, inventory, slot, player, clicked)
-	}
-
-	override fun handleInvRightClick(event: InventoryClickEvent?, inventory: Inventory?, slot: Int, player: Player?, clicked: ItemStack?, cursor: ItemStack?) {
-		println("Got right click")
-		super.handleInvRightClick(event, inventory, slot, player, clicked, cursor)
-	}
-
-	override fun handleInvDoubleClick(event: InventoryClickEvent?, player: Player?, cursor: ItemStack?) {
-		println("Got double click")
-		super.handleInvDoubleClick(event, player, cursor)
-	}
-
-	override fun handleInvItemShift(event: InventoryClickEvent?, inventory: Inventory?, slot: Int, player: Player?, clicked: ItemStack?) {
-		println("Got inv item shift")
-		super.handleInvItemShift(event, inventory, slot, player, clicked)
-	}
-
-	override fun handleSlotElementUpdate(child: Gui?, slotIndex: Int) {
-		println("Got slot element update")
-		super.handleSlotElementUpdate(child, slotIndex)
-	}
-
-	override fun handleInvOffHandKey(event: InventoryClickEvent?, inventory: Inventory?, slot: Int, player: Player?, clicked: ItemStack?) {
-		println("Got offhand key")
-		super.handleInvOffHandKey(event, inventory, slot, player, clicked)
-	}
-
-	override fun handleInvNumberKey(event: InventoryClickEvent?, inventory: Inventory?, slot: Int, player: Player?, clicked: ItemStack?) {
-		println("Got number key")
-		super.handleInvNumberKey(event, inventory, slot, player, clicked)
-	}
-
-	override fun handleInvSlotElementClick(element: SlotElement.InventorySlotElement?, event: InventoryClickEvent?) {
-		println("Got element slot click")
-		super.handleInvSlotElementClick(element, event)
-	}
-
-	override fun closeForAllViewers() {
-		super.closeForAllViewers()
 	}
 
 	val closeHandler: Runnable = Runnable {
