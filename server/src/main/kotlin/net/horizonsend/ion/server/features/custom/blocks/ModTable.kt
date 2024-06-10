@@ -41,8 +41,8 @@ object ModTable : InteractableCustomBlock(
 		))
 
 		for (slot in 1..initialSlots) {
-			gui.addSlot(10 + initialSlots, NormalSlot(
-				10 + initialSlots,
+			gui.addSlot(11 + slot, NormalSlot(
+				11 + initialSlots,
 				gui,
 				canAdd = { it.customItem is ModificationItem },
 				canRemove = { true }
@@ -51,6 +51,8 @@ object ModTable : InteractableCustomBlock(
 
 		val subtitle = empty()
 		val titleText = GuiText("Modification Table")
+
+
 
 		titleText.add(subtitle, 0)
 		titleText.setSlotOverlay(
@@ -68,4 +70,23 @@ object ModTable : InteractableCustomBlock(
 
 		window.open()
 	}
+
+//	private fun makeModSlot(
+//		slot: Int,
+//		gui: CustomGUI,
+//		canAdd: (ItemStack) -> Boolean,
+//		canRemove: CalculatedSlot.() -> Boolean
+//	) = object : CalculatedSlot(slot, gui) {
+//		override fun calculateItem(): Item {
+//			retur
+//		}
+//
+//		override fun playerCanAdd(itemStack: ItemStack): Boolean {
+//			return canAdd(itemStack)
+//		}
+//
+//		override fun playerCanRemove(): Boolean {
+//			return canRemove(this)
+//		}
+//	}
 }

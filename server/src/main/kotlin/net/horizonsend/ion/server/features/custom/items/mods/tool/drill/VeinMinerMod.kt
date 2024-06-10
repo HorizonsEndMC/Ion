@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.mods.tool.drill
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
@@ -15,11 +16,13 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import java.util.ArrayDeque
 import java.util.concurrent.TimeUnit
+import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 class VeinMinerMod(
 	val depth: Int,
 	override val identifier: String = "DRILL_VEIN_$depth",
+	override val modItem: Supplier<ModificationItem?>
 ) : DrillModification(), BlockListModifier {
 	override val displayName: Component = ofChildren(text("Vein ", HE_LIGHT_ORANGE), text("Mining", GRAY)).decoration(TextDecoration.ITALIC, false)
 

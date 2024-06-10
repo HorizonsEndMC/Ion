@@ -6,9 +6,11 @@ import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -23,6 +25,7 @@ import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
+import java.util.function.Supplier
 import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
@@ -33,6 +36,7 @@ object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchModifier::class, AutoSmeltModifier::class)
 	override val shouldDropXP: Boolean = false
 	override val usageMultiplier: Double = 2.0
+	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.AUTO_SMELT }
 
 	override fun getDrop(block: Block): Collection<ItemStack> {
 		return block.getDrops(usedTool).map {
