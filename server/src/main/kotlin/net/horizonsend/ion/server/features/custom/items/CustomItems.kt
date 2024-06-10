@@ -12,6 +12,8 @@ import net.horizonsend.ion.server.features.custom.items.minerals.MineralItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.misc.ShellItem
+import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
+import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
@@ -846,6 +848,8 @@ object CustomItems {
 	// Planets end
 
 	// Tools begin
+	val POWER_DRILL = register(PowerDrill)
+
 	val MOD_TABLE: CustomBlockItem = register(object : CustomBlockItem(
 		identifier = "MOD_TABLE",
 		material = IRON_BLOCK,
@@ -854,7 +858,65 @@ object CustomItems {
 		customBlockSupplier = { CustomBlocks.MOD_TABLE }
 	) {})
 
-	val POWER_DRILL = register(PowerDrill)
+	val DRILL_AOE_1: ModificationItem = register(ModificationItem(
+		"DRILL_AOE_1",
+		6000,
+		text("Drill AOE 1").decoration(ITALIC, false)
+	) { ItemModRegistry.AOE_1 })
+
+	val DRILL_AOE_2: ModificationItem = register(ModificationItem(
+		"DRILL_AOE_2",
+		6001,
+		text("Drill AOE 2").decoration(ITALIC, false)
+	) { ItemModRegistry.AOE_2 })
+
+	val VEIN_MINER_25: ModificationItem = register(ModificationItem(
+		"VEIN_MINER_25",
+		6002,
+		text("Vein Miner").decoration(ITALIC, false)
+	) { ItemModRegistry.VEIN_MINER_25 })
+
+	val SILK_TOUCH_MOD: ModificationItem = register(ModificationItem(
+		"SILK_TOUCH_MOD",
+		100, //TODO
+		text("Silk Touch Modifier").decoration(ITALIC, false)
+	) { ItemModRegistry.SILK_TOUCH })
+
+	val AUTO_SMELT: ModificationItem = register(ModificationItem(
+		"AUTO_SMELT",
+		6004,
+		text("Auto Smelt Modifier").decoration(ITALIC, false)
+	) { ItemModRegistry.AUTO_SMELT })
+
+	val FORTUNE_1: ModificationItem = register(ModificationItem(
+		"FORTUNE_1",
+		6005,
+		text("Fortune 1").decoration(ITALIC, false)
+	) { ItemModRegistry.FORTUNE_1 })
+
+	val FORTUNE_2: ModificationItem = register(ModificationItem(
+		"FORTUNE_2",
+		6006,
+		text("Fortune 2").decoration(ITALIC, false)
+	) { ItemModRegistry.FORTUNE_2 })
+
+	val FORTUNE_3: ModificationItem = register(ModificationItem(
+		"FORTUNE_3",
+		6007,
+		text("Fortune 3").decoration(ITALIC, false)
+	) { ItemModRegistry.FORTUNE_3 })
+
+	val POWER_CAPACITY_25: ModificationItem = register(ModificationItem(
+		"POWER_CAPACITY_25",
+		6008,
+		text("Power Capacity 25000").decoration(ITALIC, false)
+	) { ItemModRegistry.POWER_CAPACITY_25 })
+
+	val POWER_CAPACITY_50: ModificationItem = register(ModificationItem(
+		"POWER_CAPACITY_50",
+		6009,
+		text("Power Capacity 50000").decoration(ITALIC, false)
+	) { ItemModRegistry.POWER_CAPACITY_50 })
 
 	// Tools end
 

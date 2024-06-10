@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.mods.tool.drill
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -10,11 +11,13 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 class AOEDrillMod(
 	val radius: Int,
 	override val identifier: String = "DRILL_AOE_$radius",
+	override val modItem: Supplier<ModificationItem?>
 ) : DrillModification(), BlockListModifier {
 	override val displayName: Component = ofChildren(
 		text(1 + (2 * radius), HEColorScheme.HE_LIGHT_ORANGE).decoration(TextDecoration.ITALIC, false),

@@ -5,7 +5,9 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -16,6 +18,7 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
+import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 object SilkTouchModifier : ItemModification, DropModifier, PowerUsageIncrease {
@@ -25,6 +28,7 @@ object SilkTouchModifier : ItemModification, DropModifier, PowerUsageIncrease {
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchModifier::class, AutoSmeltModifier::class)
 	override val shouldDropXP: Boolean = false
 	override val usageMultiplier: Double = 2.0
+	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.SILK_TOUCH_MOD }
 
 	override fun getDrop(block: Block): Collection<ItemStack> {
 		return block.getDrops(silkPick)
