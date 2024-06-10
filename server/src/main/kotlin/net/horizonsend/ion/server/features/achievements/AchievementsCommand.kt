@@ -85,9 +85,14 @@ object AchievementsCommand : SLCommand() {
 			.build()
 
 		val text = GuiText("some title")
-		text.add(slotOverlay(0), line = 0)
-		text.add(ofChildren(shift(SLOT_OVERLAY_WIDTH * 4), slotOverlay(2)), line = 2)
-		text.add(ofChildren(shift(SLOT_OVERLAY_WIDTH), slotOverlay(4)), line = 4)
+		text.add(Component.text("Welcome to space. ", NamedTextColor.RED), line = 1)
+		text.add(Component.text("Welcome to space. ", NamedTextColor.RED), line = 3)
+		text.add(Component.text("Welcome to space. ", NamedTextColor.RED), line = 5)
+		text.setSlotOverlay(
+			"# . . # # # . . #",
+			"# . . # . # . . #",
+			"# . . # # # . . #"
+		)
 
 		val window = Window.single()
 			.setViewer(sender)
