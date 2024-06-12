@@ -51,7 +51,10 @@ import net.horizonsend.ion.server.features.multiblock.industry.CompressorMultibl
 import net.horizonsend.ion.server.features.multiblock.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.GasFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.PlatePressMultiblock
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblock
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Bottom
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Side
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Top
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier2Bottom
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier2Top
@@ -258,6 +261,7 @@ object Multiblocks : IonServerComponent() {
 			DisposalMultiblock,
 			MiningLaserMultiblockTier1Top,
 			MiningLaserMultiblockTier1Bottom,
+			MiningLaserMultiblockTier1Side,
 			MiningLaserMultiblockTier2Top,
 			MiningLaserMultiblockTier2Bottom,
 			MiningLaserMultiblockTier3Top,
