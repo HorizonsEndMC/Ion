@@ -187,7 +187,7 @@ object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 }
 
 object MiningLaserMultiblockTier1Side : MiningLaserMultiblockTier1() {
-	override val side = BlockFace.UP
+	override val side = BlockFace.DOWN
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+1, +0, -5)
 
@@ -206,8 +206,8 @@ object MiningLaserMultiblockTier1Side : MiningLaserMultiblockTier1() {
 			}
 
 			y(+1) {
-				x(+0).anyPipedInventory()
-				x(+1).noteBlock()
+				x(+0).noteBlock()
+				x(+1).anyPipedInventory()
 				x(+2).ironBlock()
 			}
 
