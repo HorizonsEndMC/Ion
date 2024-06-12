@@ -194,7 +194,7 @@ object MiningLaserMultiblockTier1Side : MiningLaserMultiblockTier1() {
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
-				x(+0).noteBlock()
+				x(+0).anyStairs()
 				x(+1).ironBlock()
 				x(+2).anyStairs()
 			}
@@ -207,8 +207,8 @@ object MiningLaserMultiblockTier1Side : MiningLaserMultiblockTier1() {
 
 			y(+1) {
 				x(+0).anyPipedInventory()
-				x(+1).ironBlock()
-				x(+2).anyStairs()
+				x(+1).noteBlock()
+				x(+2).ironBlock()
 			}
 
 		}
