@@ -185,3 +185,82 @@ object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 		}
 	}
 }
+
+object MiningLaserMultiblockTier1Side : MiningLaserMultiblockTier1() {
+	override val side = BlockFace.UP
+
+	override fun getFirePointOffset(): Vec3i = Vec3i(+1, +0, -5)
+
+	override fun MultiblockShape.buildStructure() {
+		z(+0) {
+			y(-1) {
+				x(+0).noteBlock()
+				x(+1).ironBlock()
+				x(+2).anyStairs()
+			}
+
+			y(+0) {
+				x(+0).ironBlock()
+				x(+1).emeraldBlock()
+				x(+2).ironBlock()
+			}
+
+			y(+1) {
+				x(+0).anyPipedInventory()
+				x(+1).ironBlock()
+				x(+2).anyStairs()
+			}
+
+		}
+
+		z(+1) {
+			y(-1) {
+				x(+1).titaniumBlock()
+			}
+
+			y(+0) {
+				x(+0).anyGlass()
+				x(+1).emeraldBlock()
+				x(+2).anyGlass()
+			}
+			y(+1) {
+				x(+1).titaniumBlock()
+			}
+		}
+
+		z(+2) {
+			y(-1) {
+				x(+0).anyStairs()
+				x(+1).terracotta()
+				x(+2).anyStairs()
+			}
+
+			y(+0) {
+				x(+0).terracotta()
+				x(+1).emeraldBlock()
+				x(+2).terracotta()
+			}
+
+			y(+1) {
+				x(+0).anyStairs()
+				x(+1).terracotta()
+				x(+2).anyStairs()
+			}
+		}
+		z(+3) {
+			y(-1) {
+				x(+1).anyGlassPane()
+			}
+
+			y(+0) {
+				x(+0).anyGlassPane()
+				x(+1).ironBlock()
+				x(+2).anyGlassPane()
+			}
+
+			y(+1) {
+				x(+1).anyGlassPane()
+			}
+		}
+	}
+}
