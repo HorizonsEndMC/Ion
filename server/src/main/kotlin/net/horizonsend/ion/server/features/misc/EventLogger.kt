@@ -59,7 +59,7 @@ object EventLogger : IonServerComponent() {
 			if (controller !is PlayerController) return@listen
 
 			val starship = event.starship
-			DutyModeMonitor.record(client, controller.player, "**unpiloted starship**: ${starship.type} (${starship.initialBlockCount} blocks)")
+			DutyModeMonitor.record(client, controller.player, "**unpiloted starship**: ${starship.type} (${starship.initialBlockCount} blocks), isLockEnabled: ${event.starship.data.isLockEnabled}")
 		}
 	}
 }
