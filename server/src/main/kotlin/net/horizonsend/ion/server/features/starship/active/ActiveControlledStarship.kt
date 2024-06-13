@@ -223,7 +223,9 @@ class ActiveControlledStarship(
 			val player: Player = (controller as? PlayerController)?.player ?: return
 
 			player.walkSpeed = 0.009f
-			directControlCenter = player.location.toBlockLocation().add(0.5, 0.0, 0.5)
+			val playerLoc = player.location
+			directControlCenter = playerLoc.toBlockLocation().add(0.5, playerLoc.y.rem(1)+0.001, 0.5)
+			player.teleport(directControlCenter!!)
 		} else {
 			sendMessage(
 				text()
