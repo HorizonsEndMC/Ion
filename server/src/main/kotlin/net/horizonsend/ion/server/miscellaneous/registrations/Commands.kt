@@ -59,7 +59,7 @@ import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
 import net.horizonsend.ion.server.command.starship.RainbowProjectileCommand
 import net.horizonsend.ion.server.command.starship.StarshipDebugCommand
 import net.horizonsend.ion.server.command.starship.StarshipInfoCommand
-import net.horizonsend.ion.server.command.starship.Starships
+import net.horizonsend.ion.server.command.starship.StarshipsCommand
 import net.horizonsend.ion.server.command.starship.TutorialStartStopCommand
 import net.horizonsend.ion.server.command.starship.ai.AIDebugCommand
 import net.horizonsend.ion.server.configuration.ConfigurationCommands
@@ -129,7 +129,7 @@ val commands: List<SLCommand> = listOf(
 	TutorialStartStopCommand,
 	StarshipInfoCommand,
 
-	Starships,
+	StarshipsCommand,
 	GracePeriod,
 	NewPlayerProtection,
 	AdminCommands,
