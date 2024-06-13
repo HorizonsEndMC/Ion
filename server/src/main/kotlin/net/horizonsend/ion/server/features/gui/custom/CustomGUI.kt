@@ -176,7 +176,7 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 		when {
 			// Try to find the first slot that it can go into
 			movedItem != null -> {
-				val firstSlot = slots.values.firstOrNull { it.playerCanAdd(movedItem) }?.slot
+				val firstSlot = slots.values.filter { it.playerCanAdd(movedItem) }.minByOrNull { it.slot }?.slot
 
 				if (firstSlot == null) {
 					event.isCancelled = true
@@ -186,7 +186,6 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 
 				// Occupied
 				if (event.inventory.getItem(firstSlot) != null) {
-
 					event.isCancelled = true
 					return
 				}
