@@ -255,36 +255,37 @@ object MiningLaserMultiblockTier2Bottom : MiningLaserMultiblockTier2() {
 }
 
 object MiningLaserMultiblockTier2Side : MiningLaserMultiblockTier2() {
-	override val side = BlockFace.DOWN
+	override val side = BlockFace.UP
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, -7)
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
-				x(-1).ironBlock()
-				x(+0).titaniumBlock()
-				x(+1).anyStairs()
+				x(-1).anyPipedInventory()
+				x(+0).noteBlock()
+				x(+1).ironBlock()
 			}
 
 			y(+0) {
-				x(-1).titaniumBlock()
+				x(-1).anyStairs()
 				x(+0).emeraldBlock()
-				x(+1).titaniumBlock()
+				x(+1).anyStairs()
 			}
 
 			y(+1) {
-				x(-1).anyPipedInventory()
-				x(+0).noteBlock()
-				x(+1).anyStairs()
+				x(-1).titaniumBlock()
+				x(+0).titaniumBlock()
+				x(+1).titaniumBlock()
 			}
 
 		}
 
 		z(+1) {
 			y(-1) {
+				x(-1).anyStairs()
 				x(+0).anyGlass()
-				x(+1).anyWall()
+				x(+1).anyStairs()
 			}
 
 			y(+0) {
@@ -294,8 +295,9 @@ object MiningLaserMultiblockTier2Side : MiningLaserMultiblockTier2() {
 			}
 
 			y(+1) {
+				x(-1).anyStairs()
 				x(+0).anyGlass()
-				x(+1).anyWall()
+				x(+1).anyStairs()
 			}
 		}
 
