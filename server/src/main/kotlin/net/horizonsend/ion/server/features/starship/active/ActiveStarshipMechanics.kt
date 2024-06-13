@@ -82,7 +82,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		val queuedShots = LinkedList<StarshipWeapons.AutoQueuedShot>()
 
 		for ((node, target) in ship.autoTurretTargets) {
-			val targetLocation = target.type.get(target.identifier) ?: continue
+			val targetLocation = target.location(ship) ?: continue
 			if (targetLocation.world != ship.world) continue
 
 			val weapons = ship.weaponSets[node]

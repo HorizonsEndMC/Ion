@@ -65,7 +65,7 @@ class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var fa
 
 	override fun autoFire(target: AutoTurretTargeting.AutoTurretTarget<*>, dir: Vector) {
 		lastFire = System.nanoTime()
-		val world = target.location()?.world ?: return
+		val world = starship.world
 
 		val shooter = (starship as? ActiveControlledStarship)?.controller ?: return
 		val loc = getFirePos().toCenterVector().toLocation(world)

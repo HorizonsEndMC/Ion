@@ -60,7 +60,7 @@ class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var f
 	override fun autoFire(target: AutoTurretTarget<*>, dir: Vector) {
 		lastFire = System.nanoTime()
 
-		val loc = getFirePos().toCenterVector().toLocation(target.location()?.world ?: return)
+		val loc = getFirePos().toCenterVector().toLocation(starship.world)
 		PointDefenseLaserProjectile(starship, loc, dir, range, starship.controller.damager).fire()
 	}
 

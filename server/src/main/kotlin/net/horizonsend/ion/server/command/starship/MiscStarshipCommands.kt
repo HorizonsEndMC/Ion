@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.command.starship
 
+import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
@@ -69,6 +70,8 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Sign
+import org.bukkit.entity.Enemy
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.Locale
@@ -92,6 +95,24 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				.filter { beacon -> beacon.spaceLocation.world == e.player.world.name }
 				.map { it.name.replace(" ", "_") }
 		}
+
+		manager.commandContexts.registerContext(AutoTurretTargeting.AutoTurretTarget::class.java) { context ->
+			val target = context.popFirstArg()
+			val formatted = if (target.contains(":".toRegex())) target.substringAfter(":") else target
+
+			Bukkit.getPlayer(formatted)?.let { AutoTurretTargeting.target(it) } ?:
+				ActiveStarships[formatted]?.let { AutoTurretTargeting.target(it) } ?:
+				runCatching {
+					val type = EntityType.valueOf(formatted)
+					println("type: $type")
+					println("entity class ${type.entityClass}")
+					val instance = type.entityClass?.let { Enemy::class.java.isAssignableFrom(it) }
+					println("instance: $instance")
+					return@runCatching type.takeIf { instance ?: false }
+				}.getOrNull()?.let { AutoTurretTargeting.target(it) } ?:
+				throw InvalidCommandArgument("Target $target could not be found!")
+		}
+
 		manager.commandCompletions.registerAsyncCompletion("autoTurretTargets") { context ->
 			val all = mutableListOf<String>()
 
@@ -100,6 +121,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			all.remove(context.player.name)
 			all
 		}
+
+		manager.commandCompletions.setDefaultCompletion("autoTurretTargets", AutoTurretTargeting.AutoTurretTarget::class.java)
+
 		manager.commandCompletions.registerAsyncCompletion("nodes") { context ->
 			ActiveStarships.findByPilot(context.player)?.weaponSets?.keys()
 		}
@@ -257,7 +281,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		destinationWorld: World,
 		maxRange: Int,
 		sender: Player,
-		tier: Int?
+		tier: Int?,
 	) {
 		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) }
 			?: Hyperspace.findHyperdrive(starship) ?: fail {
@@ -369,8 +393,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("unused")
 	@CommandAlias("settarget|starget|st")
-	@CommandCompletion("@nodes @autoTurretTargets @nothing")
-	fun onSetTarget(sender: Player, set: String, @Optional target: String?) {
+	@CommandCompletion("@nodes  @nothing")
+	fun onSetTarget(sender: Player, set: String, @Optional target: AutoTurretTargeting.AutoTurretTarget<*>?) {
 		val starship = getStarshipRiding(sender)
 		val weaponSet = set.lowercase(Locale.getDefault())
 		failIf(!starship.weaponSets.containsKey(weaponSet)) { "No such weapon set $weaponSet" }
@@ -383,16 +407,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			return
 		}
 
-		val formatted = if (target.contains(":".toRegex())) target.substringAfter(":") else target
+		starship.autoTurretTargets[weaponSet] = target
 
-		val targeted =
-			Bukkit.getPlayer(formatted)?.let { AutoTurretTargeting.target(it) } ?:
-			ActiveStarships[formatted]?.let { AutoTurretTargeting.target(it) } ?:
-			fail { "Target $target could not be found!" }
-
-		starship.autoTurretTargets[weaponSet] = targeted
-
-		sender.information("Set target of <aqua>$weaponSet</aqua> to <white>${target}")
+		sender.information("Set target of <aqua>$weaponSet</aqua> to <white>${target.identifier}")
 	}
 
 	@Suppress("unused")
