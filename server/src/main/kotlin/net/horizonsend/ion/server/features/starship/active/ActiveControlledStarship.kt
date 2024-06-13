@@ -149,6 +149,7 @@ class ActiveControlledStarship(
 			val result = executeMovement(movement, pilot)
 			future.complete(result)
 			controller.onMove(movement)
+			subsystems.forEach { it.onMovement(movement) }
 		}
 
 		return future

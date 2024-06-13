@@ -22,7 +22,10 @@ class HyperspaceMovement(
 	val dest: Location
 	) : BukkitRunnable() {
 	var x = ship.centerOfMass.x.toDouble()
+	val originX = x
 	var z = ship.centerOfMass.z.toDouble()
+	val originZ = z
+
 	private val direction = dest.toVector().subtract(ship.centerOfMass.toVector()).normalize()
 	private val totalDistance = remainingDistance()
 	private var travelled = 0.0

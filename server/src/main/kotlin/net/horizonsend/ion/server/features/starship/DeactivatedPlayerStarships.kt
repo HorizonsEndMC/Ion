@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtectio
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
@@ -312,10 +311,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 			// this needs to be removed sync!
 			ActiveStarships.remove(starship)
 
-			val landingGear = starship.subsystems.filterIsInstance<LandingGearSubsystem>()
-			for (landingGearSubsystem in landingGear) {
-				landingGearSubsystem.setExtended(true)
-			}
+			starship.subsystems.forEach { it.handleRelease() }
 
 			for ((ship: StarshipData, blocks: Set<Long>) in starship.carriedShips) {
 				if (!blocks.isEmpty()) {

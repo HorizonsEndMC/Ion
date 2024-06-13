@@ -31,6 +31,10 @@ class LandingGearSubsystem(starship: ActiveStarship, pos: Vec3i) : StarshipSubsy
 		observer.blockData = observerData
 	}
 
+	override fun handleRelease() {
+		setExtended(true)
+	}
+
 	override fun isIntact(): Boolean {
 		val (x, y, z) = pos
 

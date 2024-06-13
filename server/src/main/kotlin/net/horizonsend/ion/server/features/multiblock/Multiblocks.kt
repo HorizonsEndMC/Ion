@@ -68,6 +68,7 @@ import net.horizonsend.ion.server.features.multiblock.misc.ItemSplitterMultibloc
 import net.horizonsend.ion.server.features.multiblock.misc.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
+import net.horizonsend.ion.server.features.multiblock.misc.OdometerMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
@@ -296,7 +297,8 @@ object Multiblocks : IonServerComponent() {
 
 			BattleCruiserReactorMultiblock,
 			CruiserReactorMultiblock,
-			BargeReactorMultiBlock
+			BargeReactorMultiBlock,
+			OdometerMultiblock
 		)
 	}
 

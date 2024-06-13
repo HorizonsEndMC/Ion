@@ -67,6 +67,8 @@ object NamespacedKeys {
 	val ORE_REPLACED = key("ore_replaced")
 
 	val DATA_VERSION = key("data_version")
+	val BLOCKS_TRAVELED = key("blocks_traveled")
+	val HYPERSPACE_BLOCKS_TRAVELED = key("hyperspace_blocks_traveled")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 }

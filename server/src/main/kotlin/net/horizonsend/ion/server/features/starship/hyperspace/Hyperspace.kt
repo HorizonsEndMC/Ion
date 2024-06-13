@@ -168,6 +168,8 @@ object Hyperspace : IonServerComponent() {
 
 		movement.cancel()
 
+		starship.subsystems.forEach { it.handleJump(movement) }
+
 		starship.playSound(starship.balancing.sounds.exitHyperspace.sound)
 		StarshipTeleportation.teleportStarship(starship, movement.dest) {
 			Tasks.syncDelay(2L) {
