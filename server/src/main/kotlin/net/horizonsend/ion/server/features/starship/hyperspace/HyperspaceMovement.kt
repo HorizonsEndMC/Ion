@@ -11,9 +11,15 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import org.bukkit.Location
+import org.bukkit.Particle
+import org.bukkit.Vibration
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.scheduler.BukkitRunnable
+import kotlin.math.PI
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
+import kotlin.random.Random
 
 class HyperspaceMovement(
 	val ship: ActiveStarship,
@@ -54,6 +60,8 @@ class HyperspaceMovement(
 		z += direction.z * speed
 		travelled += speed
 
+		playEffect()
+
 		// Don't check for mass shadows if jumping to another world
 		if (originWorld == dest.world) {
 			val shadow: MassShadows.MassShadowInfo? = MassShadows.find(dest.world, x, z)
@@ -73,15 +81,42 @@ class HyperspaceMovement(
 		if (travelled < totalDistance) {
 			val percent = (travelled / totalDistance * 100).roundToInt()
 			ship.onlinePassengers.forEach { player ->
-				player.informationAction(
-					"Hyperspace Progress: ${travelled.roundToInt()}/${totalDistance.roundToInt()} ($percent%)"
-				)
+				player.informationAction("Hyperspace Progress: ${travelled.roundToInt()}/${totalDistance.roundToInt()} ($percent%)")
 			}
 			return
 		}
 
 		ship.onlinePassengers.forEach { player -> player.informationAction("Jump complete") }
 		Hyperspace.completeJumpMovement(this)
+	}
+
+	private val count = sqrt(ship.initialBlockCount.toDouble()).roundToInt()
+	private val maxSide = maxOf(ship.max.x - ship.min.x, ship.max.y - ship.min.y, ship.max.z - ship.min.z).toDouble()
+
+	private fun playEffect() {
+		val origin = ship.centerOfMass.toLocation(ship.world)
+		val vector = direction.clone().normalize().multiply(maxSide * 0.75)
+		val forwardCenter = origin.clone().add(vector.clone())
+		val rearCenter = origin.clone().subtract(vector.clone())
+		val orthogonal = direction.clone().normalize().getCrossProduct(BlockFace.UP.direction).multiply(maxSide * 0.5)
+
+		for (i in 0..count) {
+			val radians = Random.nextDouble(0.0, 2.0) * PI
+			val around = orthogonal.clone().rotateAroundAxis(vector, radians)
+
+			val particleOrigin = forwardCenter.add(around)
+			val particleDestination = rearCenter.add(around.clone().multiply(1.5))
+
+			ship.world.spawnParticle(
+				Particle.VIBRATION,
+				particleOrigin,
+				2,
+				Vibration(
+					Vibration.Destination.BlockDestination(particleDestination),
+					75
+				)
+			)
+		}
 	}
 
 	/** If the ship is still active, this will pull it out */
