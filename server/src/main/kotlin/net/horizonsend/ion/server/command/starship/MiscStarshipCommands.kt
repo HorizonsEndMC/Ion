@@ -104,10 +104,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				ActiveStarships[formatted]?.let { AutoTurretTargeting.target(it) } ?:
 				runCatching {
 					val type = EntityType.valueOf(formatted)
-					println("type: $type")
-					println("entity class ${type.entityClass}")
 					val instance = type.entityClass?.let { Enemy::class.java.isAssignableFrom(it) }
-					println("instance: $instance")
 					return@runCatching type.takeIf { instance ?: false }
 				}.getOrNull()?.let { AutoTurretTargeting.target(it) } ?:
 				throw InvalidCommandArgument("Target $target could not be found!")
