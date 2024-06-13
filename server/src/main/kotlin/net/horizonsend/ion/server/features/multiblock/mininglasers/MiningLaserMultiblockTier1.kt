@@ -187,79 +187,83 @@ object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 }
 
 object MiningLaserMultiblockTier1Side : MiningLaserMultiblockTier1() {
-	override val side = BlockFace.DOWN
+	override val side = BlockFace.UP
 
-	override fun getFirePointOffset(): Vec3i = Vec3i(-1, +0, -5)
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, -5)
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
-				x(+0).anyStairs()
-				x(-1).ironBlock()
-				x(-2).anyStairs()
+				x(+1).ironBlock()
+				x(+0).noteBlock()
+				x(-1).anyPipedInventory()
 			}
 
 			y(+0) {
-				x(+0).ironBlock()
-				x(-1).emeraldBlock()
-				x(-2).ironBlock()
+				x(+1).anyStairs()
+				x(+0).emeraldBlock()
+				x(-1).anyStairs()
 			}
 
 			y(+1) {
-				x(+0).noteBlock()
-				x(-1).anyPipedInventory()
-				x(-2).ironBlock()
+				x(+1).ironBlock()
+				x(+0).ironBlock()
+				x(-1).ironBlock()
 			}
 
 		}
 
 		z(+1) {
 			y(-1) {
-				x(-1).titaniumBlock()
+				x(+1).anyStairs()
+				x(+0).titaniumBlock()
+				x(-1).anyStairs()
 			}
 
 			y(+0) {
-				x(+0).anyGlass()
-				x(-1).emeraldBlock()
-				x(-2).anyGlass()
+				x(+1).anyGlass()
+				x(+0).emeraldBlock()
+				x(-1).anyGlass()
 			}
 			y(+1) {
-				x(-1).titaniumBlock()
+				x(+1).anyStairs()
+				x(+0).titaniumBlock()
+				x(-1).anyStairs()
 			}
 		}
 
 		z(+2) {
 			y(-1) {
-				x(+0).anyStairs()
-				x(-1).terracotta()
-				x(-2).anyStairs()
+				x(+1).anyStairs()
+				x(+0).terracotta()
+				x(-1).anyStairs()
 			}
 
 			y(+0) {
-				x(+0).terracotta()
-				x(-1).emeraldBlock()
-				x(-2).terracotta()
+				x(+1).terracotta()
+				x(+0).emeraldBlock()
+				x(-1).terracotta()
 			}
 
 			y(+1) {
-				x(+0).anyStairs()
-				x(-1).terracotta()
-				x(-2).anyStairs()
+				x(+1).anyStairs()
+				x(+0).terracotta()
+				x(-1).anyStairs()
 			}
 		}
 		z(+3) {
 			y(-1) {
-				x(-1).anyGlassPane()
+				x(+0).anyGlassPane()
 			}
 
 			y(+0) {
-				x(+0).anyGlassPane()
-				x(-1).ironBlock()
-				x(-2).anyGlassPane()
+				x(+1).anyGlassPane()
+				x(+0).ironBlock()
+				x(-1).anyGlassPane()
 			}
 
 			y(+1) {
-				x(-1).anyGlassPane()
+				x(+0).anyGlassPane()
 			}
 		}
 	}
