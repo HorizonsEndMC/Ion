@@ -51,16 +51,17 @@ import net.horizonsend.ion.server.features.multiblock.industry.CompressorMultibl
 import net.horizonsend.ion.server.features.multiblock.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.GasFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.industry.PlatePressMultiblock
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblock
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Bottom
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Side
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Top
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier2Bottom
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier2Side
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier2Top
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier3Bottom
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier3Side
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier3Top
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Bottom
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Side
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Top
 import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
@@ -264,10 +265,13 @@ object Multiblocks : IonServerComponent() {
 			MiningLaserMultiblockTier1Side,
 			MiningLaserMultiblockTier2Top,
 			MiningLaserMultiblockTier2Bottom,
+			MiningLaserMultiblockTier2Side,
 			MiningLaserMultiblockTier3Top,
 			MiningLaserMultiblockTier3Bottom,
+			MiningLaserMultiblockTier3Side,
 			MiningLaserMultiblockTier4Top,
 			MiningLaserMultiblockTier4Bottom,
+			MiningLaserMultiblockTier4Side,
 			TopArsenalStarshipWeaponMultiblock,
 			BottomArsenalStarshipWeaponMultiblock,
 
