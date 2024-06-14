@@ -51,6 +51,7 @@ object PlayerCache : AbstractPlayerCache(), Listener {
 	}
 
 	fun getIfOnline(player: ProxiedPlayer): PlayerData? = PLAYER_DATA[player.uniqueId]
+	fun getIfOnline(player: UUID): PlayerData? = PLAYER_DATA[player]
 
 	operator fun get(player: ProxiedPlayer): PlayerData = PLAYER_DATA[player.uniqueId]
 		?: error("Data wasn't cached for ${player.name}")

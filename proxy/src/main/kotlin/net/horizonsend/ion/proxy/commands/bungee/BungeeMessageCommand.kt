@@ -31,7 +31,12 @@ class MessageCommand : BaseCommand() {
 		val wrapped = WrappedPlayer(player)
 
 		val targetPlayer = ProxyServer.getInstance().getPlayer(target) ?: return wrapped.userError("Target not found!")
-		val cached = PlayerCache[targetPlayer.slPlayerId]
+		val cached = PlayerCache.getIfOnline(targetPlayer.uniqueId)
+
+		if (cached == null) {
+			wrapped.userError("Target not found!")
+			return
+		}
 
 		val formatted = message.replace("${targetPlayer.name} ", "")
 
@@ -52,10 +57,10 @@ class MessageCommand : BaseCommand() {
 class ReplyCommand : BaseCommand() {
 	@Default
 	@Suppress("unused")
-	fun command(player: ProxiedPlayer, message: String) {
-		val wrapped = WrappedPlayer(player)
+	fun command(sender: ProxiedPlayer, message: String) {
+		val wrapped = WrappedPlayer(sender)
 
-		val id = conversation[player.slPlayerId]?.uuid ?: return wrapped.userError("Theres no one to reply to.")
+		val id = conversation[sender.slPlayerId]?.uuid ?: return wrapped.userError("Theres no one to reply to.")
 
 		val target = ProxyServer.getInstance().getPlayer(id) ?: run {
 			wrapped.userError("The person you were talking to is no longer online!")
@@ -64,7 +69,7 @@ class ReplyCommand : BaseCommand() {
 		}
 
 		ProxyServer.getInstance().pluginManager.dispatchCommand(
-			player,
+			sender,
 			"msg ${target.name} $message"
 		)
 	}
