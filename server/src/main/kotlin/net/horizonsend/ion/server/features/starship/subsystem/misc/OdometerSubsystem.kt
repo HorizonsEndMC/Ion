@@ -57,7 +57,7 @@ class OdometerSubsystem(
 
 		sign.isWaxed = true
 		pdc.set(NamespacedKeys.BLOCKS_TRAVELED, PersistentDataType.DOUBLE, total)
-		sign.getSide(Side.FRONT).line(1, template(text("Blocks{0} {1}", HE_LIGHT_GRAY), text(':', HE_MEDIUM_GRAY), text(total.roundToInt(), HE_LIGHT_BLUE)))
+		sign.getSide(Side.FRONT).line(1, template(text("Regular{0} {1}", HE_LIGHT_GRAY), text(':', HE_MEDIUM_GRAY), text(total.roundToInt(), HE_LIGHT_BLUE)))
 		sign.getSide(Side.FRONT).line(3, template(text("Total{0} {1}", HE_LIGHT_GRAY), text(':', HE_MEDIUM_GRAY), text((total + oldHyper).roundToInt(), HE_LIGHT_BLUE)))
 		sign.update()
 	}
@@ -76,7 +76,7 @@ class OdometerSubsystem(
 
 		sign.isWaxed = true
 		pdc.set(NamespacedKeys.HYPERSPACE_BLOCKS_TRAVELED, PersistentDataType.DOUBLE, total)
-		sign.getSide(Side.FRONT).line(2, template(text("Hyperspace{0} {1}", HE_LIGHT_GRAY), text(':', HE_MEDIUM_GRAY), text(total.roundToInt(), HE_LIGHT_BLUE)))
+		sign.getSide(Side.FRONT).line(2, template(text("Hyper{0} {1}", HE_LIGHT_GRAY), text(':', HE_MEDIUM_GRAY), text(total.roundToInt(), HE_LIGHT_BLUE)))
 		sign.getSide(Side.FRONT).line(3, template(text("Total{0} {1}", HE_LIGHT_GRAY), text(':', HE_MEDIUM_GRAY), text((total + oldOverworld).roundToInt(), HE_LIGHT_BLUE)))
 		sign.update()
 	}
