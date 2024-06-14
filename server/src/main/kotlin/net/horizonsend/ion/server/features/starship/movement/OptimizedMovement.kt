@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.movement
 
+import net.horizonsend.ion.server.features.starship.BlockingBypass
 import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -61,7 +62,7 @@ object OptimizedMovement {
 					return@syncBlocking
 				}
 
-				checkForCollision(world2, collisionChunkMap, hangars, newPositionArray)
+				checkForCollision(starship, world2, collisionChunkMap, hangars, newPositionArray)
 
 				processOldBlocks(
 					oldChunkMap,
@@ -93,6 +94,7 @@ object OptimizedMovement {
 	}
 
 	private fun checkForCollision(
+		starship: ActiveStarship,
 		world: World,
 		collisionChunkMap: ChunkMap,
 		hangars: LinkedList<Long>,
@@ -119,7 +121,7 @@ object OptimizedMovement {
 					val blockData = section.getBlockState(localX, localY, localZ)
 
 					if (!passThroughBlocks.contains(blockData)) {
-						if (!isHangar(blockData)) {
+						if (!isHangar(blockData) && !BlockingBypass.objectIsSmallEnough(starship, blockKey, world)) {
 							throw StarshipBlockedException(Vec3i(x, y, z), blockData)
 						}
 
