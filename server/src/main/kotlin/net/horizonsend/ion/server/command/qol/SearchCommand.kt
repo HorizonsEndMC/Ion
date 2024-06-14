@@ -4,6 +4,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
@@ -13,6 +16,7 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -20,6 +24,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import org.litote.kmongo.setValue
 
 @CommandAlias("itemsearch")
 @CommandPermission("ion.search")
@@ -70,6 +75,13 @@ object SearchCommand : SLCommand() {
 				)
 			}
 		}
+	}
+
+	@Subcommand("_toggle")
+	fun itemSearchToggle(player: Player) {
+		val showItemDisplay = !PlayerCache[player].showItemSearchItem
+		SLPlayer.updateById(player.slPlayerId, setValue(SLPlayer::showItemSearchItem, showItemDisplay))
+		player.success("Changed showing searched item to $showItemDisplay")
 	}
 
 	/**
