@@ -21,6 +21,7 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.Settlemen
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.common.utils.text.template
@@ -293,6 +294,10 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		val realCost = calculateCost(station.radius, newRadius)
 		requireMoney(sender, realCost, "create a space station")
+
+		if (newRadius < station.radius) {
+			sender.alert("WARNING: Shrinking a station will not refund its initial cost!")
+		}
 
 		failIf(cost != realCost) {
 			"You must acknowledge the cost of resizing a space station to resize one. " +
