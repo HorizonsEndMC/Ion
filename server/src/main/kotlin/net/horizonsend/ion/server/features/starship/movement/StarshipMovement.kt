@@ -72,6 +72,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		if (!ActiveStarships.isActive(starship)) {
 			starship.serverError("Starship not active, movement cancelled.")
+			Throwable().printStackTrace()
 			return
 		}
 
