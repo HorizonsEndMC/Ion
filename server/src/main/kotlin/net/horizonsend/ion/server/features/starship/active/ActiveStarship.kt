@@ -385,7 +385,7 @@ abstract class ActiveStarship (
 
 		is PlayerController -> (controller as PlayerController).player.name
 
-		is AIController -> "${controller.getPilotName().plainText()}:$charIdentifier"
+		is AIController -> "${controller.getPilotName().plainText().replace(' ', '_')}:$charIdentifier"
 
 		is NoOpController -> "${getDisplayNamePlain()}:$charIdentifier"
 

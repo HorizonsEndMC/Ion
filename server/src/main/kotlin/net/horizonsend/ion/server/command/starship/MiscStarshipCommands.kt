@@ -114,7 +114,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val all = mutableListOf<String>()
 
 			ActiveStarships.getInWorld(context.player.world).mapTo(all) { it.identifier }
-			all.addAll(IonServer.server.onlinePlayers.map { it.name })
+			IonServer.server.onlinePlayers.mapTo(all) { it.name }
 			all.remove(context.player.name)
 			all
 		}
