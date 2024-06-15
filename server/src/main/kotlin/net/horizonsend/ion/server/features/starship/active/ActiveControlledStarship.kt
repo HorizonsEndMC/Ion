@@ -5,11 +5,12 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.MessageFactory
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
-import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -35,8 +36,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
@@ -149,7 +153,7 @@ class ActiveControlledStarship(
 			val result = executeMovement(movement, pilot)
 			future.complete(result)
 			controller.onMove(movement)
-			subsystems.forEach { it.onMovement(movement) }
+			subsystems.forEach { runCatching { it.onMovement(movement) } }
 		}
 
 		return future
@@ -170,15 +174,17 @@ class ActiveControlledStarship(
 			lastBlockedTime = System.currentTimeMillis()
 			return false
 		} catch (e: Throwable) {
-			serverError("There was an unhandled exception during movement, releasing to prevent damage")
+			serverError("There was an unhandled exception during movement! Please forward this to staff")
+			val stackTrace = "$e\n" + e.stackTrace.joinToString(separator = "\n")
+
+			val exceptionMessage = ofChildren(text(e.message ?: "No message provided", RED), space(), bracketed(text("Hover for info", HEColorScheme.HE_LIGHT_GRAY)))
+				.hoverEvent(text(stackTrace))
+				.clickEvent(ClickEvent.copyToClipboard(stackTrace))
+
+			sendMessage(exceptionMessage)
 
 			IonServer.slF4JLogger.error(e.message)
 			e.printStackTrace()
-
-			Tasks.sync {
-				PilotedStarships.unpilot(this)
-				DeactivatedPlayerStarships.deactivateAsync(this)
-			}
 
 			return false
 		}
