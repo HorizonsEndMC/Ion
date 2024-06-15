@@ -22,5 +22,7 @@ abstract class GUISlot(val slot: Int, val gui: CustomGUI) {
 	/**
 	 * Get the item in this slot
 	 **/
-	fun getItem() = gui.getItem(slot)
+	fun getGuiItem() = gui.getItem(slot)
+
+	fun getRawItem(): ItemStack? = gui.getAllInventories().first().getUnsafeItem(slot)
 }

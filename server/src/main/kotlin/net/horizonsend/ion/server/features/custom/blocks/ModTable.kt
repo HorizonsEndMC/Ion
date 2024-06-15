@@ -31,14 +31,14 @@ object ModTable : InteractableCustomBlock(
 	}
 
 	fun openGUI(viewer: Player, location: Location, initialSlots: Int) {
-		val gui = ModTableMenu(location, 9, 3)
+		val gui = ModTableMenu(location, initialSlots)
 
 		gui.addSlot(10, NormalSlot(
 			10,
 			gui,
 			canAdd = { it.customItem is ModdedCustomItem },
 			canRemove = { true }
-		))
+		).withListener { gui.rebuildData() })
 
 		for (slot in 1..initialSlots) {
 			gui.addSlot(11 + slot, NormalSlot(
@@ -46,7 +46,7 @@ object ModTable : InteractableCustomBlock(
 				gui,
 				canAdd = { it.customItem is ModificationItem },
 				canRemove = { true }
-			))
+			).withListener { gui.rebuildData() })
 		}
 
 		val subtitle = empty()
@@ -69,9 +69,15 @@ object ModTable : InteractableCustomBlock(
 		window.open()
 	}
 
-	class ModTableMenu(location: Location, width: Int, height: Int) : CustomGUI(location, width, height) {
+	class ModTableMenu(location: Location, var modSlots: Int) : CustomGUI(location, 9, 3) {
 		fun rebuildData() {
+			println("Triggered rebuild")
+			Throwable().printStackTrace()
+
 			val toolSlot = slots[10]!!
+			val item = toolSlot.getGuiItem()
+
+			println("Slot: $toolSlot Item: $item")
 		}
 	}
 }
