@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CHETHERITE
+import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -37,11 +38,11 @@ import xyz.xenondevs.invui.item.impl.SimpleItem
 import kotlin.math.ceil
 import kotlin.math.min
 
-object Achievements {
+object Achievements : AbstractBackgroundPagedGui {
 	private const val ACHIEVEMENTS_PER_PAGE = 5
 	private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
 
-	fun createAchievementGui(): PagedGui<Item> {
+	override fun createGui(): PagedGui<Item> {
 		val gui = PagedGui.items()
 		val achievementIcons = mutableListOf<Item>()
 
@@ -76,7 +77,7 @@ object Achievements {
 		return gui.build()
 	}
 
-	fun createAchievementText(player: Player, currentPage: Int): Component {
+	override fun createText(player: Player, currentPage: Int): Component {
 
 		val obtainedAchievements = SLPlayer[player].achievements.map { Achievement.valueOf(it) }.toList()
 
