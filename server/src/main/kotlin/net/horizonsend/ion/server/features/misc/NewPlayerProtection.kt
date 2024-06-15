@@ -33,6 +33,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	private val lpUserManager = luckPerms.userManager
 
 	private val protectionIndicator = SuffixNode.builder("&6★&r", 0).build()
+	private val alternateProtectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()
 	private val removeProtectionPermission = PermissionNode.builder("ion.core.protection.removed").build()
 
 	override fun onEnable(manager: PaperCommandManager) {
@@ -63,6 +64,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		lpUser.data().run {
 			add(removeProtectionPermission)
 			remove(protectionIndicator)
+			remove(alternateProtectionIndicator)
 		}
 
 		lpUserManager.saveUser(lpUser)
@@ -102,6 +104,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 				add(protectionIndicator)
 			} else {
 				remove(protectionIndicator)
+				remove(alternateProtectionIndicator)
 			}
 		}
 
