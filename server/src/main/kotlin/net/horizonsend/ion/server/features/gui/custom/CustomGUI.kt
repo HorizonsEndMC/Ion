@@ -40,15 +40,18 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 	private fun setItem(slot: Int, item: ItemStack) {
 		println("Adding $item to slot $slot")
 		occupiedItems[slot] = item.clone()
+		setItem(slot, SimpleItem(item))
+
 		notifyChange()
 	}
 
-	private fun removeItem(slot: Int): Boolean {
+	private fun removeItem(slot: Int): ItemStack? {
 		val item = occupiedItems.remove(slot)
+//		remove(slot)
 		notifyChange()
 		println("Removed $item from slot $slot")
 
-		return item != null
+		return item
 	}
 
 	private fun handleAddItem(index: Int, newItem: ItemStack, event: Cancellable): Boolean {
@@ -68,7 +71,7 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 		return true
 	}
 
-	private fun handleRemoveItem(index: Int, event: Cancellable): Boolean {
+	private fun handleRemoveItem(index: Int, event: Cancellable, updateCursor: (ItemStack) -> Unit = {}): Boolean {
 		println("Handle remove")
 		val slot = slots[index] ?: run {
 			event.isCancelled = true
@@ -81,13 +84,15 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 		}
 
 		// Prevents possible duplication glitches
-		if (!removeItem(index)) {
+		val removedItemStack = removeItem(index)
+		if (removedItemStack == null) {
 			println("Remove failed, item not in map")
 			event.isCancelled = true
 			return false
 		}
 
 		println("Player could remove")
+		updateCursor.invoke(removedItemStack)
 		return true
 	}
 
@@ -155,7 +160,7 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 
 		return when {
 			currentItem == null && cursorItem.type != Material.AIR -> handleAddItem(slot, cursorItem, event)
-			currentItem != null && cursorItem.type == Material.AIR -> handleRemoveItem(slot, event)
+			currentItem != null && cursorItem.type == Material.AIR -> handleRemoveItem(slot, event) { event.cursor = it }
 			currentItem != null && cursorItem.type != Material.AIR -> handleSwapItem(slot, currentItem, cursorItem, event)
 			else -> {
 				println("else")
