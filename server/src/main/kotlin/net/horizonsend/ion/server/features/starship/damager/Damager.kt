@@ -90,7 +90,7 @@ fun getDamager(entity: Entity) : Damager {
 }
 
 class EntityDamager(val entity: Entity) : NoOpDamager() {
-	override fun getDisplayName(): Component = entity.name()
+	override fun getDisplayName(): Component = entity.customName() ?: entity.name()
 	override fun getAITarget(): AITarget? = null
 
 	override fun audiences(): MutableIterable<Audience> {
