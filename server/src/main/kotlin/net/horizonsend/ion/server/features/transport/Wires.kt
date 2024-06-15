@@ -134,7 +134,7 @@ object Wires : IonServerComponent() {
 	}
 
 	fun isAnyWire(material: Material) = when (material) {
-		Material.END_ROD, Material.SPONGE, Material.IRON_BLOCK, Material.REDSTONE_BLOCK -> true
+		Material.END_ROD, Material.SPONGE, Material.IRON_BLOCK, Material.REDSTONE_BLOCK, Material.LAPIS_BLOCK -> true
 		else -> false
 	}
 
@@ -162,12 +162,16 @@ object Wires : IonServerComponent() {
 
 		val checkDirections = when (nextType) {
 			Material.END_ROD -> setOf(direction)
-			Material.SPONGE, Material.IRON_BLOCK, Material.REDSTONE_BLOCK -> ADJACENT_BLOCK_FACES
+			Material.SPONGE, Material.IRON_BLOCK, Material.REDSTONE_BLOCK, Material.LAPIS_BLOCK -> ADJACENT_BLOCK_FACES
 			else -> return // if it's not one of the above blocks it's not a wire block, so end the wire chain
 		}
 
 		// directional wires go forward if possible, and don't go into sponges
-		val isDirectional = nextType == Material.IRON_BLOCK || nextType == Material.REDSTONE_BLOCK
+		val isIronBlock = nextType == Material.IRON_BLOCK
+		val isRedstoneBlock = nextType == Material.REDSTONE_BLOCK
+		val isDirectional = isIronBlock || isRedstoneBlock
+		// inverse directional wires go forward if possible, and don't go into end rods
+		val isInverseDirectional = nextType == Material.LAPIS_BLOCK
 
 		val adjacentComputers = mutableSetOf<BlockFace>()
 		val adjacentWires = mutableSetOf<BlockFace>()
@@ -186,7 +190,7 @@ object Wires : IonServerComponent() {
 
 			if (data.material == INPUT_COMPUTER_BLOCK) {
 				adjacentComputers.add(face)
-			} else if (canWiresTransfer(isDirectional, face, data)) {
+			} else if (canWiresTransfer(isRedstoneBlock, isIronBlock, isInverseDirectional, face, data)) {
 				adjacentWires.add(face)
 			}
 		}
@@ -194,7 +198,7 @@ object Wires : IonServerComponent() {
 		// continue if there are no computers requiring main thread checks
 		if (adjacentComputers.isEmpty()) {
 			if (adjacentWires.isNotEmpty()) {
-				val adjacentPipeDirection = pickDirection(isDirectional, adjacentWires, direction)
+				val adjacentPipeDirection = pickDirection(isDirectional, isInverseDirectional, adjacentWires, direction)
 				step(world, nextX, nextY, nextZ, adjacentPipeDirection, computer, distance + 1)
 			}
 			return
@@ -205,25 +209,29 @@ object Wires : IonServerComponent() {
 		// put it on the queue, see the top of the file for how that works.
 		computerCheckQueue.offer {
 			checkComputers(
-				world = world, x = nextX, y = nextY, z = nextZ, isDirectional = isDirectional, direction = direction,
-				computers = adjacentComputers, wires = adjacentWires, originComputer = computer, distance = distance + 1
+				world = world, x = nextX, y = nextY, z = nextZ, isRedstoneBlock = isRedstoneBlock, isIronBlock = isIronBlock, isInverseDirectional = isInverseDirectional,
+				direction = direction, computers = adjacentComputers, wires = adjacentWires, originComputer = computer, distance = distance + 1
 			)
 		}
 	}
 
 	/**
 	 * @param isDirectional If the origin wire is a directional wire
+	 * @param isInverseDirectional If the origin wire is an inverse directional wire
 	 * @param face The direction the origin wire was heading
 	 * @param data The data of the next wire
 	 */
-	private fun canWiresTransfer(isDirectional: Boolean, face: BlockFace, data: BlockData): Boolean {
+	private fun canWiresTransfer(isRedstoneBlock: Boolean, isIronBlock: Boolean, isInverseDirectional: Boolean, face: BlockFace, data: BlockData): Boolean {
 		return when (data.material) {
-			// anything can go into end rod wires, but only if the rotation axis matches
-			Material.END_ROD -> getWireRotation(data).matchesAxis(face)
-			// anything can go into directional connectors
-			Material.IRON_BLOCK, Material.REDSTONE_BLOCK -> true
-			// anything besides directional connectors can go into sponge wires
-			Material.SPONGE -> !isDirectional
+			// anything except inverse directionals can go into end rod wires, but only if the rotation axis matches
+			Material.END_ROD -> getWireRotation(data).matchesAxis(face) && !isInverseDirectional
+			// anything can go into directional connectors except other directional connectors
+			Material.IRON_BLOCK -> !isInverseDirectional && !isRedstoneBlock
+			//Material.IRON_BLOCK -> data.material != Material.REDSTONE_BLOCK && data.material != Material.LAPIS_BLOCK
+			Material.REDSTONE_BLOCK -> !isInverseDirectional && !isIronBlock
+			//sponges, wires, and inverse directionals
+			Material.LAPIS_BLOCK -> !isRedstoneBlock && !isIronBlock
+			Material.SPONGE -> !isRedstoneBlock && !isIronBlock
 			// other stuff is a no
 			else -> return false
 		}
@@ -236,14 +244,18 @@ object Wires : IonServerComponent() {
 	 * @param x The X-coordinate of the current spot in the wire chain
 	 * @param y The Y-coordinate of the current spot in the wire chain
 	 * @param z The Z-coordinate of the current spot in the wire chain
-	 * @param isDirectional Whether the current wire block type is a directional connector
+	 * @param isRedstoneBlock Whether the current wire block type is a directional connector (redstone)
+	 * @param isIronBlock Whether the current wire block type is a directional connector (iron)
+	 * @param isInverseDirectional Whether the current wire block type is an inverse directional connector (lapis)
 	 */
 	private fun checkComputers(
         world: World,
         x: Int,
         y: Int,
         z: Int,
-        isDirectional: Boolean,
+        isRedstoneBlock: Boolean,
+		isIronBlock: Boolean,
+		isInverseDirectional: Boolean,
         direction: BlockFace,
         computers: Set<BlockFace>,
         wires: Set<BlockFace>,
@@ -316,21 +328,21 @@ object Wires : IonServerComponent() {
 			val data = getBlockDataSafe(world, x + it.modX, y + it.modY, z + it.modZ)
 				?: return@filter false
 
-			return@filter canWiresTransfer(isDirectional, direction, data)
+			return@filter canWiresTransfer(isRedstoneBlock, isIronBlock, isInverseDirectional, direction, data)
 		}.toSet()
 
 		if (validWires.isEmpty()) return // end the chain if there's no more valid wires
 
-		val newDirection = pickDirection(isDirectional, validWires, direction)
+		val newDirection = pickDirection( (isRedstoneBlock || isIronBlock), isInverseDirectional, validWires, direction)
 
 		thread.submit {
 			step(world, x, y, z, newDirection, originComputer, distance + 1)
 		}
 	}
 
-	private fun pickDirection(isDirectional: Boolean, adjacentWires: Set<BlockFace>, direction: BlockFace): BlockFace {
+	private fun pickDirection(isDirectional: Boolean, isInverseDirectional: Boolean, adjacentWires: Set<BlockFace>, direction: BlockFace): BlockFace {
 		return when {
-			isDirectional && adjacentWires.contains(direction) -> direction
+			(isDirectional || isInverseDirectional) && adjacentWires.contains(direction) -> direction
 			else -> adjacentWires.randomEntry()
 		}
 	}
