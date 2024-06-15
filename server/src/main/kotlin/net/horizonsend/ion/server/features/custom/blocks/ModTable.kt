@@ -70,6 +70,8 @@ object ModTable : InteractableCustomBlock(
 	}
 
 	class ModTableMenu(location: Location, width: Int, height: Int) : CustomGUI(location, width, height) {
-
+		fun rebuildData() {
+			val toolSlot = slots[10]!!
+		}
 	}
 }
