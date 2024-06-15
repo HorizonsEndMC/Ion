@@ -17,8 +17,8 @@ import xyz.xenondevs.invui.inventory.event.UpdateReason
 import xyz.xenondevs.invui.item.impl.SimpleItem
 
 open class CustomGUI(val location: Location, width: Int, height: Int) : AbstractGui(width, height) {
-	private val occupiedItems: MutableMap<Int, ItemStack> = mutableMapOf()
-	private val slots: MutableMap<Int, GUISlot> = mutableMapOf()
+	protected val occupiedItems: MutableMap<Int, ItemStack> = mutableMapOf()
+	protected val slots: MutableMap<Int, GUISlot> = mutableMapOf()
 
 	private val changeListeners: MutableList<ChangeListener> = mutableListOf()
 
