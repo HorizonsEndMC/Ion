@@ -172,7 +172,15 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val nation: Oid<Nation> = requireNationIn(sender)
 		requireNationPermission(sender, nation, SpaceStationCache.SpaceStationPermission.CREATE_STATION.nation)
 
-		create(sender, name, radius, "nation", cost, nation, NationSpaceStation.Companion)
+		create(sender, name, radius, cost, nation, NationSpaceStation.Companion)
+
+		Notify.chatAndEvents(formatSpaceStationMessage(
+			"{0} established space station {1}, for their nation, {2}, in {3}",
+			text(sender.name, LIGHT_PURPLE),
+			name,
+			getNationName(nation),
+			sender.world.name,
+		))
 	}
 
 	@Subcommand("create settlement")
@@ -181,13 +189,28 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val nation: Oid<Settlement> = requireSettlementIn(sender)
 		requireSettlementPermission(sender, nation, SpaceStationCache.SpaceStationPermission.CREATE_STATION.settlement)
 
-		create(sender, name, radius, "settlement", cost, nation, SettlementSpaceStation.Companion)
+		create(sender, name, radius, cost, nation, SettlementSpaceStation.Companion)
+
+		Notify.chatAndEvents(formatSpaceStationMessage(
+			"{0} established space station {1}, for their settlement, {2}, in {3}",
+			text(sender.name, LIGHT_PURPLE),
+			name,
+			getSettlementName(nation),
+			sender.world.name,
+		))
 	}
 
 	@Subcommand("create personal")
 	@Suppress("unused")
 	fun createPersonal(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
-		create(sender, name, radius, "personal", cost, sender.slPlayerId, PlayerSpaceStation.Companion)
+		create(sender, name, radius, cost, sender.slPlayerId, PlayerSpaceStation.Companion)
+
+		Notify.chatAndEvents(formatSpaceStationMessage(
+			"{0} established the personal space station {1} in {2}",
+			text(sender.name, LIGHT_PURPLE),
+			name,
+			sender.world.name,
+		))
 	}
 
 	// Check settlement / nation permissions in their own version
@@ -195,7 +218,6 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender: Player,
 		name: String,
 		radius: Int,
-		ownershipType: String,
 		@Optional cost: Int?,
 		owner: Id<Owner>,
 		companion: SpaceStationCompanion<Owner, *>)
@@ -237,14 +259,6 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		)
 
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
-
-		Notify.chatAndEvents(formatSpaceStationMessage(
-			"{0} established the {1} space station {2} in {3}",
-			text(sender.name, LIGHT_PURPLE),
-			text(ownershipType, GRAY),
-			name,
-			world.name,
-		))
 	}
 
 	private fun requireStationOwnership(player: SLPlayerId, station: CachedSpaceStation<*, *, *>) {
