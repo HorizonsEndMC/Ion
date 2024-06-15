@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.level.levelgen.Heightmap
 import org.bukkit.Bukkit
-import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.World
 import java.util.LinkedList
@@ -138,6 +137,8 @@ object OptimizedMovement {
 		}
 	}
 
+	private val AIR = Blocks.AIR.defaultBlockState()
+
 	private fun processOldBlocks(
 		oldChunkMap: ChunkMap,
 		world1: World,
@@ -146,7 +147,6 @@ object OptimizedMovement {
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>
 	) {
 		val lightModule = world1.minecraft.lightEngine
-		val air = Blocks.AIR.defaultBlockState()
 
 		for ((chunkKey, sectionMap) in oldChunkMap) {
 			val chunk = world1.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
@@ -168,11 +168,14 @@ object OptimizedMovement {
 					capturedStates[index] = type
 
 					if (type.block is BaseEntityBlock) {
-						processOldTile(blockKey, chunk, capturedTiles, index, world1, world2)
+						processOldTile(blockKey, nmsChunk, capturedTiles, index, world1, world2)
 					}
 
-					nmsChunk.playerChunk?.blockChanged(BlockPos(x, y, z))
-					section.setBlockState(localX, localY, localZ, air, false)
+					val blockPos = BlockPos(x, y, z)
+					nmsChunk.playerChunk?.blockChanged(blockPos)
+					nmsChunk.level.onBlockStateChange(blockPos, type, AIR)
+
+					section.setBlockState(localX, localY, localZ, AIR, false)
 
 					lightModule.checkBlock(BlockPos(x, y, z)) // Lighting is not cringe
 				}
@@ -212,7 +215,11 @@ object OptimizedMovement {
 
 					// TODO: Save hangars
 					val data = blockDataTransform(capturedStates[index])
-					nmsChunk.playerChunk?.blockChanged(BlockPos(x, y, z))
+
+					val blockPos = BlockPos(x, y, z)
+					nmsChunk.playerChunk?.blockChanged(blockPos)
+					nmsChunk.level.onBlockStateChange(blockPos, AIR /*TODO hangars */, data)
+
 					section.setBlockState(localX, localY, localZ, data, false)
 					lightModule.checkBlock(BlockPos(x, y, z))
 				}
@@ -244,7 +251,7 @@ object OptimizedMovement {
 
 	private fun processOldTile(
 		blockKey: Long,
-		chunk: Chunk,
+		chunk: LevelChunk,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 		index: Int,
 		world1: World,
@@ -256,10 +263,10 @@ object OptimizedMovement {
 			blockKeyZ(blockKey)
 		)
 
-		val blockEntity = chunk.minecraft.getBlockEntity(blockPos) ?: return
+		val blockEntity = chunk.getBlockEntity(blockPos) ?: return
 		capturedTiles[index] = Pair(blockEntity.blockState, blockEntity.saveWithFullMetadata())
 
-		chunk.minecraft.removeBlockEntity(blockPos)
+		chunk.removeBlockEntity(blockPos)
 	}
 
 	private fun getChunkMap(positionArray: LongArray): ChunkMap {
