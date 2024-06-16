@@ -578,7 +578,7 @@ enum class StarshipType(
 	PLATFORM(
 		displayName = "Platform",
 		minSize = 25,
-		maxSize = 500000,
+		maxSize = 2000000,
 		minLevel = 1,
 		containerPercent = 100.0,
 		crateLimitMultiplier = 100.0,
