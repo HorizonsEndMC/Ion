@@ -528,3 +528,5 @@ fun Location.getLocationNear(minDistance: Double, maxDistance: Double): Location
 
 	return loc.add(x, 0.0, z)
 }
+
+fun Vec3i.toChunkLocal(): Vec3i = Vec3i(x % 16, y, z % 16)

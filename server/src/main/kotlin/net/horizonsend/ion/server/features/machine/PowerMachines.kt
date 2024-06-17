@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.machine
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor

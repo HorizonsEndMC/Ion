@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
