@@ -223,11 +223,11 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			return
 		}
 
-		if (SpaceWorlds.contains(furnace.world) && !furnace.world.name.contains("plots", ignoreCase = true)) {
+		/*if (SpaceWorlds.contains(furnace.world) && !furnace.world.name.contains("plots", ignoreCase = true)) {
 			player.userError("Starship drills are not optimized for use in outer space! The starship drill was not enabled.")
 			setUser(sign, null)
 			return
-		}
+		}*/
 
 		drillCount[player.uniqueId] = drillCount.getOrDefault(player.uniqueId, 0) + 1
 		val drills = lastDrillCount.getOrDefault(player.uniqueId, 1)
