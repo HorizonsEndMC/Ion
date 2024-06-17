@@ -18,7 +18,7 @@ class NormalSlot(
 		return canRemove(this)
 	}
 
-	fun withListener(changeHandler: () -> Unit): GUISlot = object : GUISlot(slot, gui), ChangeListener {
+	fun withListener(changeHandler: GUISlot.() -> Unit): GUISlot = object : GUISlot(index, gui), ChangeListener {
 		override fun playerCanAdd(itemStack: ItemStack): Boolean {
 			return canAdd(itemStack)
 		}

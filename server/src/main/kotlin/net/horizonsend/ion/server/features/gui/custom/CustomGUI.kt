@@ -28,6 +28,12 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 		if (slot is ChangeListener) changeListeners.add(slot)
 	}
 
+	fun removeSlot(index: Int) {
+		val slot = slots.remove(index)
+
+		if (slot is ChangeListener) changeListeners.remove(slot)
+	}
+
 	fun notifyChange() {
 		for (changeListener in changeListeners) {
 			runCatching { changeListener.handleChange() }.onFailure {
@@ -181,7 +187,7 @@ open class CustomGUI(val location: Location, width: Int, height: Int) : Abstract
 		when {
 			// Try to find the first slot that it can go into
 			movedItem != null -> {
-				val firstSlot = slots.values.filter { it.playerCanAdd(movedItem) }.minByOrNull { it.slot }?.slot
+				val firstSlot = slots.values.filter { it.playerCanAdd(movedItem) }.minByOrNull { it.index }?.index
 
 				if (firstSlot == null) {
 					event.isCancelled = true

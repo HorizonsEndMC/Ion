@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack
  *
  * Designed for
  **/
-abstract class GUISlot(val slot: Int, val gui: CustomGUI) {
+abstract class GUISlot(val index: Int, val gui: CustomGUI) {
 	/**
 	 * Check whether the player can add items from this slot
 	 **/
@@ -22,7 +22,7 @@ abstract class GUISlot(val slot: Int, val gui: CustomGUI) {
 	/**
 	 * Get the item in this slot
 	 **/
-	fun getGuiItem() = gui.getItem(slot)
+	fun getGuiItem() = gui.getItem(index)
 
-	fun getRawItem(): ItemStack? = gui.getAllInventories().first().getUnsafeItem(slot)
+	fun getRawItem(): ItemStack? = gui.getAllInventories().first().getUnsafeItem(index)
 }
