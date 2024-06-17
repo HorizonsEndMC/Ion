@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
+import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -456,9 +457,8 @@ object PilotedStarships : IonServerComponent() {
 				)
 			}
 
-			for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 10_000.0)) {
-				nearbyPlayer.playSound(data.starshipType.actualType.balancingSupplier.get().sounds.pilot.sound)
-			}
+			val pilotSound = data.starshipType.actualType.balancingSupplier.get().sounds.pilot.sound
+			playSoundInRadius(player.location, 10_000.0, pilotSound)
 
 			callback(activePlayerStarship)
 		}
@@ -478,9 +478,11 @@ object PilotedStarships : IonServerComponent() {
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
 
-		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 10_000.0)) {
-			nearbyPlayer.playSound(starship.balancing.sounds.release.sound)
-		}
+		playSoundInRadius(
+			starship.centerOfMass.toLocation(starship.world),
+			10_000.0,
+			starship.balancing.sounds.release.sound
+		)
 
 		controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")
 		return true

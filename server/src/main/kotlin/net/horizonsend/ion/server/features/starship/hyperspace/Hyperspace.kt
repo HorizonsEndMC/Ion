@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
@@ -270,15 +271,12 @@ object Hyperspace : IonServerComponent() {
 	@EventHandler
 	fun onStarshipEnterHyperspace(event: StarshipEnterHyperspaceEvent) {
 		val starship = event.starship
-		val players = starship.world
-			.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 2500.0)
+		val origin = starship.centerOfMass.toLocation(starship.world)
 
-		for (player in players) {
-			player.playSound(event.starship.balancing.sounds.enterHyperspace.sound)
-		}
+		playSoundInRadius(origin, 2500.0, event.starship.balancing.sounds.enterHyperspace.sound)
 
 		Space.getPlanets()
-			.filter { it.location.toLocation(starship.world).distance(starship.centerOfMass.toLocation(starship.world)) < 2500 }
+			.filter { it.location.toLocation(starship.world).distance(origin) < 2500 }
 			.filter { it.spaceWorld == starship.world }
 			.forEach {
 				it.planetWorld?.playSound(event.starship.balancing.sounds.enterHyperspace.sound)
@@ -289,14 +287,10 @@ object Hyperspace : IonServerComponent() {
 	@EventHandler
 	fun onStarshipExitHyperspace(event: StarshipExitHyperspaceEvent) {
 		val movement = event.movement
-		for (player in movement.dest.world.getNearbyPlayers(movement.dest, 2500.0)) {
-			player.playSound(event.starship.balancing.sounds.exitHyperspace.sound)
-		}
+		playSoundInRadius(movement.dest, 2500.0, event.starship.balancing.sounds.exitHyperspace.sound)
 
 		Space.getPlanets()
-			.filter {
-				it.location.toLocation(movement.dest.world).distance(movement.dest) < 2500
-			}
+			.filter { it.location.toLocation(movement.dest.world).distance(movement.dest) < 2500 }
 			.forEach {
 				it.planetWorld?.playSound(event.starship.balancing.sounds.exitHyperspace.sound)
 			}

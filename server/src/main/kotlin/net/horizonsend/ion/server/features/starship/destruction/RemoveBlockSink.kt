@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
+import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import org.bukkit.Material
@@ -20,9 +21,7 @@ class RemoveBlockSink(starship: ActiveStarship, val checkRemove: (Block) -> Bool
 		}
 
 		starship.balancing.sounds.explode?.let {
-			val sound = it.sound
-
-			for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 7_500.0)) nearbyPlayer.playSound(sound)
+			playSoundInRadius(starship.centerOfMass.toLocation(starship.world), 7_500.0, it.sound)
 		}
 
 		super.setup()
