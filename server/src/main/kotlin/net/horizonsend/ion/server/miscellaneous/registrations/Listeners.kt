@@ -3,15 +3,11 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
-import net.horizonsend.ion.server.features.custom.items.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
+import net.horizonsend.ion.server.features.custom.items.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
-import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
-import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListener
-import net.horizonsend.ion.server.features.screens.listeners.InventoryCloseListener
-import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListener
-import net.horizonsend.ion.server.features.screens.listeners.InventoryMoveItemListener
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
