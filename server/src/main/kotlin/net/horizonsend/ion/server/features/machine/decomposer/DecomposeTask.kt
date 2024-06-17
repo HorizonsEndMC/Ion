@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.ores.OldOreData
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded

@@ -3,23 +3,23 @@ package net.horizonsend.ion.server.features.starship.active
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
-import net.horizonsend.ion.server.features.multiblock.checklist.BargeReactorMultiBlock
-import net.horizonsend.ion.server.features.multiblock.checklist.BattleCruiserReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.checklist.CruiserReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
-import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
-import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
-import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
-import net.horizonsend.ion.server.features.multiblock.misc.FuelTankMultiblock
-import net.horizonsend.ion.server.features.multiblock.misc.LandingGearMultiblock
-import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
-import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblock
-import net.horizonsend.ion.server.features.multiblock.particleshield.BoxShieldMultiblock
-import net.horizonsend.ion.server.features.multiblock.particleshield.EventShieldMultiblock
-import net.horizonsend.ion.server.features.multiblock.particleshield.SphereShieldMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.type.checklist.BargeReactorMultiBlock
+import net.horizonsend.ion.server.features.multiblock.type.checklist.BattleCruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.LandingGearMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.NavigationComputerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.particleshield.SphereShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.SignlessStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.SubsystemMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
@@ -110,7 +110,7 @@ object SubsystemDetector {
 	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
 		val sign = block.state as Sign
 
-		if (Multiblocks.getFromPDC(sign) is AreaShield) {
+		if (Multiblocks.getFromPDC(sign) is net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield) {
 			throw ActiveStarshipFactory.StarshipActivationException("Starships cannot fly with area shields!")
 		}
 
