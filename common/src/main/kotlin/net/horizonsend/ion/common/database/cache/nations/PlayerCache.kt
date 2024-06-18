@@ -386,7 +386,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 			rotateCompass = data.rotateCompass,
 			hudPlanetsImage = data.hudPlanetsImage,
 			hudPlanetsSelector = data.hudPlanetsSelector,
-			showItemSearchItem = data.showItemSearchItem
+			showItemSearchItem = data.showItemSearchItem,
+			useAlternateDCCruise = data.useAlternateDCCruise
 		)
 	}
 
