@@ -41,6 +41,23 @@ object PlayerInfoCommand : SLCommand() {
 		sender.sendRichMessage("<gray>Last Seen: ${getInactiveTimeText(slPlayer)}")
 	}
 
+	@Suppress("Unused")
+	@Default
+	@CommandAlias("playerinfo|pinfo|pi")
+	fun onExecute(sender: Player) = asyncCommand(sender) {
+		val slPlayer = SLPlayer[sender]
+
+		sender.sendRichMessage("<yellow>Player <gold>${slPlayer.lastKnownName}")
+
+		sendNationsInfo(sender, slPlayer)
+
+		sendAdvanceInfo(sender, slPlayer)
+
+		sendGracePeriodInfo(sender, slPlayer)
+
+		sender.sendRichMessage("<gray>Last Seen: ${getInactiveTimeText(slPlayer)}")
+	}
+
 	private fun sendNationsInfo(sender: CommandSender, slPlayer: SLPlayer) {
 		val settlementId: Oid<Settlement>? = slPlayer.settlement
 
