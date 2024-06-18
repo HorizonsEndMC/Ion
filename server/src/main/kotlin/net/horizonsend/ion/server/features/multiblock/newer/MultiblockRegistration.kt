@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowe
 import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier3
 
 //TODO store the progress of migrated multiblocks here
-object NewMultiblocks : IonServerComponent() {
+object MultiblockRegistration : IonServerComponent() {
 	private val multiblocks: MutableMap<String, Multiblock> = mutableMapOf()
 	private val multiblockCoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
@@ -38,9 +38,5 @@ object NewMultiblocks : IonServerComponent() {
 		multiblocks[name] = multiblock
 	}
 
-	fun setMultiblock(x: Int, y: Int, z: Int) {
-
-	}
-
-
+	fun getAllMultiblocks() = multiblocks
 }
