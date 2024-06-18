@@ -7,12 +7,14 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.Colors
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStartCruisingEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopCruisingEvent
@@ -196,26 +198,36 @@ object StarshipCruising : IonServerComponent() {
 
 		val info = "<aqua>$dx,$dz <dark_gray>; <yellow>Accel<dark_gray>/<green>Speed<dark_gray>: <yellow>$realAccel<dark_gray>/<yellow>$maxSpeed"
 
-		if (!wasCruising) {
-			updateCruisingShip(starship)
-			starship.informationAction("Cruise started, dir<dark_gray>: $info")
+		val useAlternateMethod = (controller as? PlayerController)?.player?.let { PlayerCache[it].useAlternateDCCruise } ?: false
 
-			if (starship.isDirectControlEnabled) {
-				starship.setDirectControlEnabled(false)
-				starship.onlinePassengers.forEach { passenger ->
-					passenger.information(
-						"Stopping DC. Starting cruise..."
-					)
+		if (useAlternateMethod) {
+			if (!wasCruising) {
+				updateCruisingShip(starship)
+				starship.informationAction("Cruise started, dir<dark_gray>: $info")
+
+				if (starship.isDirectControlEnabled) {
+					starship.setDirectControlEnabled(false)
+					starship.onlinePassengers.forEach { passenger ->
+						passenger.information(
+							"Stopping DC. Starting cruise..."
+						)
+					}
+				} else {
+					starship.onlinePassengers.forEach { passenger ->
+						passenger.information(
+							"Cruise started..."
+						)
+					}
 				}
 			} else {
-				starship.onlinePassengers.forEach { passenger ->
-					passenger.information(
-						"Cruise started..."
-					)
-				}
+				starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
 			}
 		} else {
-			starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
+			if (!isCruising(starship)) {
+				starship.informationAction("Cruise started, dir<dark_gray>: $info")
+			} else {
+				starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
+			}
 		}
 	}
 

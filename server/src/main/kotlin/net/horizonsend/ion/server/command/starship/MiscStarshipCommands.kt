@@ -9,6 +9,7 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
@@ -74,6 +75,7 @@ import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import org.litote.kmongo.setValue
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
@@ -729,6 +731,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			}
 		}
 	}
+
 	@Suppress("unused")
 	@CommandAlias("targetposition")
 	@Description("Targets a currentPosition")
@@ -738,5 +741,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		starship.targetedPosition = Location(starship.world, x, y, z)
 		sender.information("Targeted: $x, $y, $z with the ships Arsenal Missiles")
+	}
+
+	@CommandAlias("enableAlternateDCCruise")
+	@Suppress("unused")
+	fun onUseAlternateDCCruise(sender: Player, newValue: Boolean) = asyncCommand(sender) {
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::useAlternateDCCruise, newValue))
 	}
 }

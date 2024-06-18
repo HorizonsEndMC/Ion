@@ -83,6 +83,7 @@ data class SLPlayer(
 	var hudPlanetsSelector: Boolean = true,
 
 	var showItemSearchItem: Boolean = true,
+	var useAlternateDCCruise: Boolean = false,
 
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 ) : DbObject {

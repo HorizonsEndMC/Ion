@@ -60,6 +60,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 		var showItemSearchItem: Boolean = true,
 
+		var useAlternateDCCruise: Boolean = true,
+
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
 
@@ -303,6 +305,14 @@ abstract class AbstractPlayerCache : ManualCache() {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
 
 					data.blockedPlayerIDs = it.mappedSet { it.slPlayerId() }
+				}
+			}
+
+			change[SLPlayer::useAlternateDCCruise]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					data.useAlternateDCCruise = it.boolean()
 				}
 			}
 		}
