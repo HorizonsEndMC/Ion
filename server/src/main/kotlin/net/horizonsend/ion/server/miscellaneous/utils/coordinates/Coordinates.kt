@@ -567,3 +567,5 @@ fun Location.getLocationNear(minDistance: Double, maxDistance: Double): Location
 }
 
 fun Vec3i.toChunkLocal(): Vec3i = Vec3i(x % 16, y, z % 16)
+
+fun Vec3i.getRelative(direction: BlockFace, distance: Int = 1) = plus(Vec3i(direction.modX * distance, direction.modY * distance, direction.modZ * distance))
