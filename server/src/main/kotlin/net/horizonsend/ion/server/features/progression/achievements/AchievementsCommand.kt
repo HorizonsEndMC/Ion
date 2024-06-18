@@ -9,7 +9,6 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender

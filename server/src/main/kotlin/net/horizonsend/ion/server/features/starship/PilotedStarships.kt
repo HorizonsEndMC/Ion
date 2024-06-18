@@ -16,7 +16,6 @@ import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -34,6 +33,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSu
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
@@ -409,13 +410,13 @@ object PilotedStarships : IonServerComponent() {
 				return@activateAsync
 			}
 
-			if (activePlayerStarship.type == StarshipType.BATTLECRUISER && (!SpaceWorlds.contains(activePlayerStarship.world) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
+			if (activePlayerStarship.type == StarshipType.BATTLECRUISER && !world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 				player.userError("Battlecruisers can only be piloted in space!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
 
-			if (activePlayerStarship.type == StarshipType.BARGE && (!SpaceWorlds.contains(activePlayerStarship.world) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
+			if (activePlayerStarship.type == StarshipType.BARGE && !world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 				player.userError("Barges can only be piloted in space!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync

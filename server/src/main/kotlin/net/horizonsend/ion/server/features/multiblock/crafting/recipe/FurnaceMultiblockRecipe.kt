@@ -1,65 +1,60 @@
-package net.horizonsend.ion.server.features.multiblock.type.crafting.recipe
+package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
-import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ItemConsumable
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.MultiblockRecipeIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.ingredient.ResourceIngredient
 import net.horizonsend.ion.server.features.multiblock.crafting.result.MultiblockRecipeResult
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.ItemConsumable
-import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.MultiblockRecipeIngredient
-import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.ResourceIngredient
-import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.block.data.type.Furnace
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.Inventory
 
 /**
- * A multiblock recipe that takes one ingredient, and produces one result
- * Usually furnace multiblocks with prismarine crystals occupying the bottom slot
+ * Recipes that use both slots of a furnace
  *
- * @param time, in ticks
- * @param smelting, the input resource
- * @param result, the result of the recipe
+ * Do NOT try to use this on a non-furnace inventory
  **/
-class ProcessingMultiblockRecipe<T: Multiblock>(
+class FurnaceMultiblockRecipe<out T: Multiblock>(
 	override val multiblock: T,
 	val smelting: MultiblockRecipeIngredient,
-	override val result: MultiblockRecipeResult,
+	val fuel: MultiblockRecipeIngredient,
 	private val resources: List<ResourceIngredient> = listOf(),
+	override val result: MultiblockRecipeResult
 ) : MultiblockRecipe<T>, FurnaceEventHandler {
-	init {
-	    require(multiblock is FurnaceMultiblock)
-	}
-
 	override fun matches(sign: Sign, inventory: Inventory): Boolean {
 		inventory as FurnaceInventory
-		return smelting.checkRequirement(multiblock, sign, inventory.smelting)
+
+		if (resources.any { !it.checkRequirement(multiblock, sign, null) }) return false
+		if (!smelting.checkRequirement(multiblock, sign, inventory.smelting)) return false
+
+		return fuel.checkRequirement(multiblock, sign, inventory.fuel)
 	}
 
 	override fun execute(sign: Sign, inventory: Inventory) {
 		inventory as FurnaceInventory
 
 		val holder = inventory.holder!!
-		if (!(holder.blockData as org.bukkit.block.data.type.Furnace).isLit) return
+		if (!(holder.blockData as Furnace).isLit) return
 
 		if (!result.canFit(this, inventory, sign)) return
 
 		// Return if enough ingredients are not present
 		if (!smelting.checkRequirement(multiblock, sign, inventory.smelting)) return
+		if (!fuel.checkRequirement(multiblock, sign, inventory.fuel)) return
 
 		if (resources.any { !it.checkRequirement(multiblock, sign, null) }) return
 
 		result.execute(this, inventory, sign)
 
 		if (smelting is ItemConsumable) smelting.consume(multiblock, sign, inventory.smelting!!)
+		if (fuel is ItemConsumable) fuel.consume(multiblock, sign, inventory.fuel!!)
 
 		resources.forEach { it.consume(multiblock, sign) }
 	}
 
-	override fun handleFurnaceEvent(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
+	override fun handleFurnaceEvent(event: FurnaceBurnEvent, furnace: org.bukkit.block.Furnace, sign: Sign) {
 		event.isBurning = false
 		event.burnTime = 200
 		event.isCancelled = false

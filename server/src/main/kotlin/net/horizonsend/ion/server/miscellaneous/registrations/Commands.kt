@@ -144,7 +144,7 @@ val commands: List<SLCommand> = listOf(
 	WorldCommand,
 	IonChunkCommand,
 	ConvertCommand,
-	net.horizonsend.ion.server.features.customitems.commands.CustomItemCommand,
+	CustomItemCommand,
 	IonCommand,
 	SearchCommand,
 	CalcExpCommand,

@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.ai.module.targeting.ClosestTargetingM
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getLocationNear
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandom
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
