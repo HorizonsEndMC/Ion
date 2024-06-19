@@ -18,11 +18,13 @@ import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
+import kotlin.math.ceil
 import kotlin.math.min
 
 object SettingsSidebarRouteGui : AbstractBackgroundPagedGui {
 
     private const val SETTINGS_PER_PAGE = 5
+    private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
 
     private val BUTTONS_LIST = listOf(
         EnableButton(),
@@ -38,7 +40,7 @@ object SettingsSidebarRouteGui : AbstractBackgroundPagedGui {
             "x . . . . . . . .",
             "x . . . . . . . .",
             "x . . . . . . . .",
-            "< . . . v . . . >"
+            "< v . . . . . . >"
         )
 
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
@@ -84,6 +86,16 @@ object SettingsSidebarRouteGui : AbstractBackgroundPagedGui {
                 horizontalShift = 21
             )
         }
+
+        // page number
+        val pageNumberString =
+            "${currentPage + 1} / ${ceil((BUTTONS_LIST.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
+        guiText.add(
+            text(pageNumberString),
+            line = 10,
+            GuiText.TextAlignment.CENTER,
+            verticalShift = PAGE_NUMBER_VERTICAL_SHIFT
+        )
 
         return guiText.build()
     }
