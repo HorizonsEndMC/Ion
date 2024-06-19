@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.entity
 
 import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.newer.MultiblockRegistration
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.ADDITIONAL_MULTIBLOCK_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_SIGN_OFFSET
@@ -57,7 +57,8 @@ class PersistentMultiblockData(val x: Int, val y: Int, val z: Int, val type: Mul
 			val signDirectionString = primitive.get(MULTIBLOCK_SIGN_OFFSET, STRING)!!
 			val signDirection = BlockFace.valueOf(signDirectionString)
 
-			val multiblockType = Multiblocks.all().firstOrNull { it::class.simpleName == primitive.get(MULTIBLOCK, STRING) }!!
+			val rawType = primitive.get(MULTIBLOCK, STRING) ?: throw NullPointerException("Stored multiblock data did not have multiblock type!")
+			val multiblockType = MultiblockRegistration.getByStorageName(rawType) ?: throw SerializationException("Error deserializing multiblock data! Multiblock $rawType does not exist!")
 
 			val additionalData = primitive.get(ADDITIONAL_MULTIBLOCK_DATA, TAG_CONTAINER)!!
 
