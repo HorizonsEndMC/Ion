@@ -9,9 +9,9 @@ import xyz.xenondevs.invui.window.Window
 
 interface AbstractBackgroundPagedGui {
 
-    fun createGui(): PagedGui<Item>
+    fun createGui(): PagedGui<Item> = PagedGui.items().build()
 
-    fun createText(player: Player, currentPage: Int): Component
+    fun createText(player: Player, currentPage: Int): Component = Component.empty()
 
     fun open(player: Player) {
         val gui = createGui()

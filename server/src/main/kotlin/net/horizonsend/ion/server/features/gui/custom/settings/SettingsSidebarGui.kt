@@ -42,7 +42,7 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
             .addIngredient('<', GuiItems.LeftItem())
             .addIngredient('>', GuiItems.RightItem())
-            .addIngredient('v', ReturnToMainMenuButton())
+            .addIngredient('v', SettingsMainMenuGui.ReturnToMainMenuButton())
             .setContent(BUTTONS_LIST)
 
         return gui.build()
@@ -75,27 +75,12 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    class ReturnToMainMenuButton : GuiItems.AbstractButtonItem(
-        text("Return to Main Menu").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-            it.setCustomModelData(UI_DOWN)
-            it.displayName(text("Return to Main Menu").decoration(ITALIC, false))
-        }
-    ) {
-        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsMainMenuGui.open(player)
-        }
-
-        companion object {
-            private const val UI_DOWN = 104
-        }
-    }
-
     class StarshipsSettingsButton : GuiItems.AbstractButtonItem(
         text("Starships Settings").decoration(ITALIC, false),
         CustomItems.CHANDRA.constructItemStack()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SettingsSidebarStarshipsGui.open(player)
         }
     }
 
@@ -104,6 +89,7 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
         CustomItems.CHANDRA.constructItemStack()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SettingsSidebarContactsGui.open(player)
         }
     }
 
@@ -112,6 +98,23 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
         CustomItems.CHANDRA.constructItemStack()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SettingsSidebarRouteGui.open(player)
+        }
+    }
+
+    class ReturnToSidebarButton : GuiItems.AbstractButtonItem(
+        text("Return to Sidebar Settings").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+            it.setCustomModelData(UI_DOWN)
+            it.displayName(text("Return to Sidebar Settings").decoration(ITALIC, false))
+        }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SettingsSidebarGui.open(player)
+        }
+
+        companion object {
+            private const val UI_DOWN = 104
         }
     }
 }
