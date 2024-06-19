@@ -29,6 +29,7 @@ object SidebarWaypointsCommand : SLCommand() {
         sender: Player
     ) {
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::waypointsEnabled, true))
+        PlayerCache[sender].waypointsEnabled = true
         sender.success("Enabled route on sidebar")
     }
 
@@ -38,6 +39,7 @@ object SidebarWaypointsCommand : SLCommand() {
         sender: Player
     ) {
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::waypointsEnabled, false))
+        PlayerCache[sender].waypointsEnabled = false
         sender.success("Disabled route on sidebar")
     }
 
@@ -50,6 +52,7 @@ object SidebarWaypointsCommand : SLCommand() {
     ) {
         val waypointsCompactWaypoints = toggle ?: !PlayerCache[sender].compactWaypoints
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::compactWaypoints, waypointsCompactWaypoints))
+        PlayerCache[sender].compactWaypoints = waypointsCompactWaypoints
         sender.success("Changed compact waypoints visibility to $waypointsCompactWaypoints")
     }
 }

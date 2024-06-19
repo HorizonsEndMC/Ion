@@ -4,13 +4,15 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.custom.settings.SettingsSidebarGui.ReturnToMainMenuButton
+import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
@@ -39,7 +41,7 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
             .addIngredient('<', GuiItems.LeftItem())
             .addIngredient('>', GuiItems.RightItem())
-            .addIngredient('v', ReturnToMainMenuButton())
+            .addIngredient('v', SettingsMainMenuGui.ReturnToMainMenuButton())
             .setContent(BUTTONS_LIST)
 
         return gui.build()
@@ -48,7 +50,7 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
     override fun createText(player: Player, currentPage: Int): Component {
 
         // create a new GuiText builder
-        val header = "Planet Settings"
+        val header = "HUD Settings"
         val guiText = GuiText(header)
         guiText.addBackground()
 
@@ -77,6 +79,22 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
         CustomItems.CHANDRA.constructItemStack()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+        }
+    }
+
+    class ReturnToHudButton : GuiItems.AbstractButtonItem(
+        text("Return to HUD Settings").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+            it.setCustomModelData(UI_DOWN)
+            it.displayName(text("Return to HUD Settings").decoration(ITALIC, false))
+        }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SettingsSidebarGui.open(player)
+        }
+
+        companion object {
+            private const val UI_DOWN = 104
         }
     }
 }

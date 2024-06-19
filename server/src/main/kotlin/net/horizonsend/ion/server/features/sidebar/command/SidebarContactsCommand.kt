@@ -29,6 +29,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player
 	) {
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsEnabled, true))
+		PlayerCache[sender].contactsEnabled = true
 		sender.success("Enabled contacts on sidebar")
 	}
 
@@ -38,6 +39,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player
 	) {
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsEnabled, false))
+		PlayerCache[sender].contactsEnabled = false
 		sender.success("Disabled contacts on sidebar")
 	}
 
@@ -49,6 +51,7 @@ object SidebarContactsCommand : SLCommand() {
 	) {
 		val newDistance = distance?.coerceIn(0, MainSidebar.CONTACTS_RANGE) ?: MainSidebar.CONTACTS_RANGE
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsDistance, newDistance))
+		PlayerCache[sender].contactsDistance = newDistance
 		sender.success(("Changed contacts distance to $newDistance"))
 	}
 
@@ -60,6 +63,7 @@ object SidebarContactsCommand : SLCommand() {
 	) {
 		val contactsStarships = toggle ?: !PlayerCache[sender].contactsStarships
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsStarships, contactsStarships))
+		PlayerCache[sender].contactsStarships = contactsStarships
 		sender.success("Changed starship visibility to $contactsStarships")
 	}
 
@@ -71,6 +75,7 @@ object SidebarContactsCommand : SLCommand() {
 	) {
 		val contactsLastStarship = toggle ?: !PlayerCache[sender].lastStarshipEnabled
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::lastStarshipEnabled, contactsLastStarship))
+		PlayerCache[sender].lastStarshipEnabled = contactsLastStarship
 		sender.success("Changed last starship visibility to $contactsLastStarship")
 	}
 
@@ -82,6 +87,7 @@ object SidebarContactsCommand : SLCommand() {
 	) {
 		val contactsPlanets = toggle ?: !PlayerCache[sender].planetsEnabled
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::planetsEnabled, contactsPlanets))
+		PlayerCache[sender].planetsEnabled = contactsPlanets
 		sender.success("Changed planet visibility to $contactsPlanets")
 	}
 
@@ -93,6 +99,7 @@ object SidebarContactsCommand : SLCommand() {
 	) {
 		val starsEnabled = toggle ?: !PlayerCache[sender].starsEnabled
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::starsEnabled, starsEnabled))
+		PlayerCache[sender].starsEnabled = starsEnabled
 		sender.success("Changed star visibility to $starsEnabled")
 	}
 
@@ -104,6 +111,7 @@ object SidebarContactsCommand : SLCommand() {
 	) {
 		val beaconsEnabled = toggle ?: !PlayerCache[sender].beaconsEnabled
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::beaconsEnabled, beaconsEnabled))
+		PlayerCache[sender].beaconsEnabled = beaconsEnabled
 		sender.success("Changed beacon visibility to $beaconsEnabled")
 	}
 
@@ -115,6 +123,7 @@ object SidebarContactsCommand : SLCommand() {
 	) {
 		val stationsEnabled = toggle ?: !PlayerCache[sender].stationsEnabled
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::stationsEnabled, stationsEnabled))
+		PlayerCache[sender].stationsEnabled = stationsEnabled
 		sender.success("Changed station visibility to $stationsEnabled")
 	}
 
@@ -126,6 +135,7 @@ object SidebarContactsCommand : SLCommand() {
 	) {
 		val bookmarksEnabled = toggle ?: !PlayerCache[sender].bookmarksEnabled
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::bookmarksEnabled, bookmarksEnabled))
+		PlayerCache[sender].bookmarksEnabled = bookmarksEnabled
 		sender.success("Changed bookmark visibility to $bookmarksEnabled")
 	}
 }

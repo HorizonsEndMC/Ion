@@ -28,6 +28,7 @@ object SidebarStarshipsCommand : SLCommand() {
         sender: Player
     ) {
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::starshipsEnabled, true))
+        PlayerCache[sender].starshipsEnabled = true
         sender.success("Enabled starship info on sidebar")
     }
 
@@ -37,6 +38,7 @@ object SidebarStarshipsCommand : SLCommand() {
         sender: Player
     ) {
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::starshipsEnabled, false))
+        PlayerCache[sender].starshipsEnabled = false
         sender.success("Disabled starship info on sidebar")
     }
 
@@ -48,6 +50,7 @@ object SidebarStarshipsCommand : SLCommand() {
     ) {
         val advancedStarshipInfo = toggle ?: !PlayerCache[sender].advancedStarshipInfo
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::advancedStarshipInfo, advancedStarshipInfo))
+        PlayerCache[sender].advancedStarshipInfo = advancedStarshipInfo
         sender.success("Changed advanced starship info to $advancedStarshipInfo")
     }
 
@@ -59,6 +62,7 @@ object SidebarStarshipsCommand : SLCommand() {
     ) {
         val rotateCompass = toggle ?: !PlayerCache[sender].rotateCompass
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::rotateCompass, rotateCompass))
+        PlayerCache[sender].rotateCompass = rotateCompass
         sender.success("Changed rotating compass to $rotateCompass")
     }
 }
