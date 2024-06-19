@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.type.SignMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Material
@@ -12,7 +13,7 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataType
 
-abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>(tierText: String) : Multiblock(), EntityMultiblock<T> {
+abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>(tierText: String) : Multiblock(), EntityMultiblock<T>, SignMultiblock {
 	abstract val tierMaterial: Material
 	override val name = "newpowerbank"
 
