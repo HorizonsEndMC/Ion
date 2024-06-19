@@ -32,6 +32,8 @@ import net.horizonsend.ion.server.features.misc.GameplayTweaks
 import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.newer.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.newer.MultiblockRegistration
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
@@ -110,6 +112,8 @@ val components: List<IonComponent> = listOf(
 	StationSieges,
 
 	Multiblocks,
+	MultiblockRegistration,
+	MultiblockAccess,
 	net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipes,
 	PowerMachines,
 	AreaShields,
