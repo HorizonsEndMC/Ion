@@ -744,6 +744,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@CommandAlias("enableAlternateDCCruise")
+	@CommandCompletion("true|false")
 	@Suppress("unused")
 	fun onUseAlternateDCCruise(sender: Player, newValue: Boolean) = asyncCommand(sender) {
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::useAlternateDCCruise, newValue))
