@@ -150,11 +150,13 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	/**
 	 * Upon the removal of a multiblock sign
 	 **/
-	fun removeMultiblockEntity(x: Int, y: Int, z: Int) {
+	fun removeMultiblockEntity(x: Int, y: Int, z: Int): MultiblockEntity? {
 		val key = toBlockKey(x, y, z)
 
-		multiblockEntities.remove(key)
+		val entity = multiblockEntities.remove(key)
 		tickingMultiblockEntities.remove(key)
+
+		return entity
 	}
 
 	/**

@@ -78,7 +78,7 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 		val room = multi.maxPower - multi.getPower()
 		val power = origin.finishExtraction(step, room)
 
-		println("Finished extraction, returned $power power")
+//		println("Finished extraction, returned $power power")
 
 		multi.addPower(power)
 
