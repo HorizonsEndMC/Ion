@@ -80,7 +80,6 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblo
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.OdometerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ShipFactoryMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.TestMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.NavigationComputerMultiblockBasic
@@ -98,9 +97,6 @@ import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMu
 import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerCellMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier3
@@ -109,7 +105,6 @@ import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonPrinter
 import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
@@ -330,10 +325,6 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(CruiserReactorMultiblock)
 		registerMultiblock(BargeReactorMultiBlock)
 		registerMultiblock(OdometerMultiblock)
-		registerMultiblock(TestMultiblock)
-		registerMultiblock(NewPowerBankMultiblockTier1)
-		registerMultiblock(NewPowerBankMultiblockTier2)
-		registerMultiblock(NewPowerBankMultiblockTier3)
 	}
 
 	private fun registerMultiblock(multiblock: Multiblock) {
@@ -560,18 +551,6 @@ object Multiblocks : IonServerComponent() {
 
 		sign.isWaxed = true
 		sign.update()
-
-		if (multiblock is EntityMultiblock<*>) {
-			// Multiblock entities are stored inside the block that the sign is placed on
-			val (x, _, z) = Multiblock.getOrigin(sign)
-
-			val chunkX = x.shr(4)
-			val chunkZ = z.shr(4)
-
-			val chunk = sign.world.ion.getChunk(chunkX, chunkZ) ?: return@sync
-
-			multiblockCoroutineScope.launch { chunk.multiblockManager.addNewMultiblockEntity(multiblock, sign) }
-		}
 	}
 
 	/** Upon a multiblock being removed */
@@ -582,7 +561,5 @@ object Multiblocks : IonServerComponent() {
 		val chunkZ = z.shr(4)
 
 		val chunk = sign.world.ion.getChunk(chunkX, chunkZ) ?: return@sync
-
-		chunk.multiblockManager.removeMultiblockEntity(x, y, z)
 	}
 }

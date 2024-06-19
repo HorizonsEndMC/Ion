@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -14,11 +14,11 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class MergeNode(override val network: ChunkTransportNetwork) : SingleNode {
+class MergeNode(override val network: ChunkPowerNetwork) : SingleNode {
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 	override var position: BlockKey by Delegates.notNull()
 
-	constructor(network: ChunkTransportNetwork, position: BlockKey) : this(network) {
+	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 	}
 
