@@ -1,32 +1,34 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.client.commands.HudCommand
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.TextDecoration.ITALIC
-import org.bukkit.Material
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
+import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import kotlin.math.ceil
 import kotlin.math.min
 
-object SettingsSidebarGui : AbstractBackgroundPagedGui {
+object SettingsHudPlanetsGui : AbstractBackgroundPagedGui {
+
     private const val SETTINGS_PER_PAGE = 5
     private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
 
     private val BUTTONS_LIST = listOf(
-        StarshipsSettingsButton(),
-        ContactsSettingsButton(),
-        RouteSettingsButton()
+        ImageButton(),
+        SelectorButton()
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -44,16 +46,22 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
             .addIngredient('<', GuiItems.LeftItem())
             .addIngredient('>', GuiItems.RightItem())
-            .addIngredient('v', SettingsMainMenuGui.ReturnToMainMenuButton())
+            .addIngredient('v', SettingsHudGui.ReturnToHudButton())
             .setContent(BUTTONS_LIST)
 
         return gui.build()
+
     }
 
     override fun createText(player: Player, currentPage: Int): Component {
 
+        val enabledSettings = listOf(
+            PlayerCache[player.uniqueId].hudPlanetsImage,
+            PlayerCache[player.uniqueId].hudPlanetsSelector
+        )
+
         // create a new GuiText builder
-        val header = "Sidebar Settings"
+        val header = "HUD Contacts Settings"
         val guiText = GuiText(header)
         guiText.addBackground()
 
@@ -69,8 +77,14 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
             guiText.add(
                 component = title,
                 line = line,
-                horizontalShift = 21,
-                verticalShift = 5
+                horizontalShift = 21
+            )
+
+            // setting description
+            guiText.add(
+                component = if (enabledSettings[buttonIndex]) text("ENABLED", GREEN) else text("DISABLED", RED),
+                line = line + 1,
+                horizontalShift = 21
             )
         }
 
@@ -87,46 +101,25 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    class StarshipsSettingsButton : GuiItems.AbstractButtonItem(
-        text("Starships Settings").decoration(ITALIC, false),
-        CustomItems.CHANDRA.constructItemStack()
+    class ImageButton : GuiItems.AbstractButtonItem(
+        text("Toggle Planet Visibility").decoration(TextDecoration.ITALIC, false),
+        CustomItems.CANNON.constructItemStack()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarStarshipsGui.open(player)
+            HudCommand.onTogglePlanetsImage(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    class ContactsSettingsButton : GuiItems.AbstractButtonItem(
-        text("Contacts Settings").decoration(ITALIC, false),
-        CustomItems.CHANDRA.constructItemStack()
+    class SelectorButton : GuiItems.AbstractButtonItem(
+        text("Toggle Planet Selector").decoration(TextDecoration.ITALIC, false),
+        CustomItems.CANNON.constructItemStack()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarContactsGui.open(player)
-        }
-    }
+            HudCommand.onTogglePlanetsSelector(player, null)
 
-    class RouteSettingsButton : GuiItems.AbstractButtonItem(
-        text("Route Settings").decoration(ITALIC, false),
-        CustomItems.CHANDRA.constructItemStack()
-    ) {
-        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarRouteGui.open(player)
-        }
-    }
-
-    class ReturnToSidebarButton : GuiItems.AbstractButtonItem(
-        text("Return to Sidebar Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-            it.setCustomModelData(UI_DOWN)
-            it.displayName(text("Return to Sidebar Settings").decoration(ITALIC, false))
-        }
-    ) {
-        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarGui.open(player)
-        }
-
-        companion object {
-            private const val UI_DOWN = 104
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 }

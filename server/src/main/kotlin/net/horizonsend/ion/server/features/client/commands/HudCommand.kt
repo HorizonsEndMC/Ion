@@ -21,6 +21,7 @@ object HudCommand : SLCommand() {
     ) {
         val hudPlanetsImage = toggle ?: !PlayerCache[sender].hudPlanetsImage
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::hudPlanetsImage, hudPlanetsImage))
+        PlayerCache[sender].hudPlanetsImage = hudPlanetsImage
         sender.success("Changed planet visibility in HUD to $hudPlanetsImage")
     }
 
@@ -32,6 +33,7 @@ object HudCommand : SLCommand() {
     ) {
         val hudPlanetsSelector = toggle ?: !PlayerCache[sender].hudPlanetsSelector
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::hudPlanetsSelector, hudPlanetsSelector))
+        PlayerCache[sender].hudPlanetsSelector = hudPlanetsSelector
         sender.success("Changed planet selector visibility in HUD to $hudPlanetsSelector")
     }
 }

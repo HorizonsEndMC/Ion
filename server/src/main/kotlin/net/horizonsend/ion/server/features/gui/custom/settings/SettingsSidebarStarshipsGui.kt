@@ -18,11 +18,13 @@ import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
+import kotlin.math.ceil
 import kotlin.math.min
 
 object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
 
     private const val SETTINGS_PER_PAGE = 5
+    private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
 
     private val BUTTONS_LIST = listOf(
         EnableButton(),
@@ -39,7 +41,7 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
             "x . . . . . . . .",
             "x . . . . . . . .",
             "x . . . . . . . .",
-            "< . . . v . . . >"
+            "< v . . . . . . >"
         )
 
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
@@ -87,6 +89,16 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
             )
         }
 
+        // page number
+        val pageNumberString =
+            "${currentPage + 1} / ${ceil((BUTTONS_LIST.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
+        guiText.add(
+            text(pageNumberString),
+            line = 10,
+            GuiText.TextAlignment.CENTER,
+            verticalShift = PAGE_NUMBER_VERTICAL_SHIFT
+        )
+
         return guiText.build()
     }
 
@@ -116,7 +128,7 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
     }
 
     class CompassRotationButton : GuiItems.AbstractButtonItem(
-        text("Fixed Compass").decoration(ITALIC, false),
+        text("Rotating Compass").decoration(ITALIC, false),
         CustomItems.CANNON.constructItemStack()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
