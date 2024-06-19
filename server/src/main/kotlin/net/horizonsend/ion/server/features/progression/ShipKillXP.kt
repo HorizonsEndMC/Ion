@@ -20,7 +20,12 @@ object ShipKillXP : IonServerComponent() {
 	data class ShipDamageData(
 		val points: AtomicInteger = AtomicInteger(),
 		var lastDamaged: Long = System.currentTimeMillis()
-	)
+	) {
+		fun incrementPoints(by: Int): Int {
+			lastDamaged = System.currentTimeMillis()
+			return this.points.addAndGet(by)
+		}
+	}
 
 	val damagerExpiration get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)
 
@@ -45,7 +50,7 @@ object ShipKillXP : IonServerComponent() {
 	private fun onPlayerKilled(killed: UUID, killer: Entity?) {
 		val killedStarship = ActiveStarships.findByPilot(killed) ?: return
 
-		killer?.let { killedStarship.addToDamagers(killer.damager(), 10_000) }
+		killer?.let { killedStarship.addDamager(killer.damager(), 10_000) }
 
 		onShipKill(killedStarship)
 	}

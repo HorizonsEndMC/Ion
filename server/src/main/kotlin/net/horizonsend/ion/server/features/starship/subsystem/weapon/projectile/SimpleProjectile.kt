@@ -24,6 +24,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 import java.util.Locale
+import kotlin.math.roundToInt
 
 abstract class SimpleProjectile(
 	starship: ActiveStarship?,
@@ -169,7 +170,7 @@ abstract class SimpleProjectile(
 			}
 		}
 
-		if (block != null) addToDamagers(world, block, shooter)
+		if (block != null) addToDamagers(world, block, shooter, explosionPower.roundToInt())
 
 		if (entity != null && entity is LivingEntity) when (shooter) {
 			is PlayerDamager -> entity.damage(10.0, shooter.player)
@@ -178,14 +179,18 @@ abstract class SimpleProjectile(
 		}
 	}
 
-	private fun addToDamagers(world: World, block: Block, shooter: Damager) {
+	private fun addToDamagers(world: World, block: Block, shooter: Damager, points: Int = 1) {
 		val x = block.x
 		val y = block.y
 		val z = block.z
+
 		for (otherStarship in ActiveStarships.getInWorld(world)) {
 			if (otherStarship == starship || !otherStarship.contains(x, y, z)) continue
 
-			otherStarship.damagers.getOrPut(shooter) { ShipKillXP.ShipDamageData() }.points.incrementAndGet()
+			otherStarship.damagers.getOrPut(shooter) {
+				ShipKillXP.ShipDamageData()
+			}.incrementPoints(points)
+
 			onImpactStarship(otherStarship, block.location)
 		}
 	}

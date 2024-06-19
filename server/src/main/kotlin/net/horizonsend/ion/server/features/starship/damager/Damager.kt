@@ -138,6 +138,6 @@ fun addToDamagers(world: World, block: Block, shooter: Damager) {
 
 		if (event.isCancelled) return
 
-		otherStarship.addToDamagers(shooter)
+		otherStarship.addDamager(shooter)
 	}
 }
