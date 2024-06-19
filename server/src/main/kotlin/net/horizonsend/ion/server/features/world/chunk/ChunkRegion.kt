@@ -44,6 +44,8 @@ class ChunkRegion(val world: IonWorld) {
 		world.chunkRegions.remove(this)
 	}
 
+	fun launch(block: suspend CoroutineScope.() -> Unit) = scope.launch { block.invoke(this) }
+
 	companion object {
 		val scope = CoroutineScope(ForkJoinPool(64).asCoroutineDispatcher() + SupervisorJob())
 		const val MAX_SIZE: Int = 50
