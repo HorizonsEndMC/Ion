@@ -57,8 +57,8 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 			snapshot.type == Material.OBSERVER -> addFlowMeter(key)
 
 			// Merge node behavior
-			snapshot.type == Material.IRON_BLOCK -> addSourceNode(key)
-			snapshot.type == Material.REDSTONE_BLOCK -> addSourceNode(key)
+			snapshot.type == Material.IRON_BLOCK -> addMergeNode(key)
+			snapshot.type == Material.REDSTONE_BLOCK -> addMergeNode(key)
 
 			// Split power evenly
 //			block.customBlock == CustomBlocks.ALUMINUM_BLOCK -> SplitterNode(this, x, y, z)
@@ -179,7 +179,7 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 		if (handleRelationships) node.rebuildRelations()
 	}
 
-	suspend fun addSourceNode(key: BlockKey) {
+	suspend fun addMergeNode(key: BlockKey) {
 		network.nodes[key] = MergeNode(network, key).apply {
 			onPlace(position)
 		}

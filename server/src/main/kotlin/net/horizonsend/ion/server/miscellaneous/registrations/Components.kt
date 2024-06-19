@@ -35,6 +35,8 @@ import net.horizonsend.ion.server.features.misc.ProxyMessaging
 import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.newer.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.newer.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.type.crafting.MultiblockRecipes
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
@@ -120,6 +122,8 @@ val components: List<IonComponent> = listOf(
 
 	Multiblocks,
 	MultiblockRecipes,
+	MultiblockRegistration,
+	MultiblockAccess,
 	PowerMachines,
 	AreaShields,
 
