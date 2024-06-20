@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -47,7 +48,7 @@ object SettingsSidebarContactsRangeGui {
     class SetContactsDistanceButton : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui?): ItemProvider {
             val builder = ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-                it.setCustomModelData(UI_RIGHT)
+                it.setCustomModelData(GuiItem.RIGHT.customModelData)
                 it.displayName(text("Set Contacts Distance").decoration(ITALIC, false))
             })
             return builder
@@ -62,15 +63,12 @@ object SettingsSidebarContactsRangeGui {
             SidebarContactsCommand.onSetContactsDistance(player, currentInt)
             SettingsSidebarContactsGui.open(player)
         }
-
-        companion object {
-            private const val UI_RIGHT = 103
-        }
     }
 
     class RenameItem : AbstractItem() {
         override fun getItemProvider(): ItemProvider {
-            return ItemBuilder(ItemStack(Material.PAPER).updateMeta {
+            return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+                it.setCustomModelData(GuiItem.LIST.customModelData)
                 it.displayName(text("Enter Range (0-${MainSidebar.CONTACTS_RANGE})").decoration(ITALIC, false))
             })
         }

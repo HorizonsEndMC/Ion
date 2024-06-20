@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
-import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -87,7 +87,7 @@ object SettingsMainMenuGui : AbstractBackgroundPagedGui {
 
     class SidebarSettingsButton : GuiItems.AbstractButtonItem(
         text("Sidebar Settings").decoration(ITALIC, false),
-        CustomItems.CHANDRA.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarGui.open(player)
@@ -96,7 +96,7 @@ object SettingsMainMenuGui : AbstractBackgroundPagedGui {
 
     class HudSettingsButton : GuiItems.AbstractButtonItem(
         text("HUD Settings").decoration(ITALIC, false),
-        CustomItems.CHANDRA.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsHudGui.open(player)
@@ -106,16 +106,12 @@ object SettingsMainMenuGui : AbstractBackgroundPagedGui {
     class ReturnToMainMenuButton : GuiItems.AbstractButtonItem(
         text("Return to Main Menu Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-            it.setCustomModelData(UI_DOWN)
+            it.setCustomModelData(GuiItem.DOWN.customModelData)
             it.displayName(text("Return to Main Menu Settings").decoration(ITALIC, false))
         }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsMainMenuGui.open(player)
-        }
-
-        companion object {
-            private const val UI_DOWN = 104
         }
     }
 }

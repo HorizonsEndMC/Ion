@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
-import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -89,7 +89,7 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
 
     class StarshipsSettingsButton : GuiItems.AbstractButtonItem(
         text("Starships Settings").decoration(ITALIC, false),
-        CustomItems.CHANDRA.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarStarshipsGui.open(player)
@@ -98,7 +98,7 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
 
     class ContactsSettingsButton : GuiItems.AbstractButtonItem(
         text("Contacts Settings").decoration(ITALIC, false),
-        CustomItems.CHANDRA.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarContactsGui.open(player)
@@ -107,7 +107,7 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
 
     class RouteSettingsButton : GuiItems.AbstractButtonItem(
         text("Route Settings").decoration(ITALIC, false),
-        CustomItems.CHANDRA.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.ROUTE_SEGMENT.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarRouteGui.open(player)
@@ -117,16 +117,12 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
     class ReturnToSidebarButton : GuiItems.AbstractButtonItem(
         text("Return to Sidebar Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-            it.setCustomModelData(UI_DOWN)
+            it.setCustomModelData(GuiItem.DOWN.customModelData)
             it.displayName(text("Return to Sidebar Settings").decoration(ITALIC, false))
         }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarGui.open(player)
-        }
-
-        companion object {
-            private const val UI_DOWN = 104
         }
     }
 }

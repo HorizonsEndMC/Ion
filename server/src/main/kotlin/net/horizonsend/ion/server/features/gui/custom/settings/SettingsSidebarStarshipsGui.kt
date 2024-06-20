@@ -1,19 +1,22 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.sidebar.command.SidebarStarshipsCommand
+import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
@@ -104,7 +107,7 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
 
     class EnableButton : GuiItems.AbstractButtonItem(
         text("Enable Starship Info").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val starshipsEnabled = PlayerCache[player.uniqueId].starshipsEnabled
@@ -118,7 +121,7 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
 
     class ShowAdvancedButton : GuiItems.AbstractButtonItem(
         text("Display Advanced Info").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarStarshipsCommand.onToggleAdvancedStarshipInfo(player, null)
@@ -129,7 +132,7 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
 
     class CompassRotationButton : GuiItems.AbstractButtonItem(
         text("Rotating Compass").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarStarshipsCommand.onToggleRotateCompass(player, null)
