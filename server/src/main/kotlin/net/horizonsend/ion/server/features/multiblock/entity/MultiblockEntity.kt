@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.multiblock.entity
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -70,17 +70,18 @@ abstract class MultiblockEntity(
 	/**
 	 * Gets the sign of this multiblock
 	 **/
-	suspend fun getSign(): Sign? {
+	fun getSign(): Sign? {
 		val signLoc = Vec3i(x, y, z) + Vec3i(signDirection.modX, 0, signDirection.modZ)
 
-		return getBukkitBlockState(world.getBlockAt(signLoc.x, signLoc.y, signLoc.z), loadChunks = false) as? Sign
+		return getBlockIfLoaded(world, signLoc.x, signLoc.y, signLoc.z)?.state as? Sign
 	}
 
-	suspend fun isIntact(): Boolean {
-		val sign = getSign() ?: return false
-
-		return multiblock.signMatchesStructureAsync(sign)
-	}
+	fun isIntact(): Boolean = multiblock.blockMatchesStructure(
+		world.getBlockAt(x, y, z),
+		signDirection.oppositeFace,
+		loadChunks = false,
+		particles = false
+	)
 
 	/**
 	 *
