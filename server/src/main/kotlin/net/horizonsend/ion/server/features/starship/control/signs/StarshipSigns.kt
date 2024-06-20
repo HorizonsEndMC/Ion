@@ -126,13 +126,11 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			MiscStarshipCommands.onDirectControl(player)
 		}
-
-		override fun onDetect(player: Player, sign: Sign): Boolean {
-			if (sign.line(0).plainText().equals("[directcontrol]", ignoreCase = true) ||
-				sign.line(0).plainText().equals("[dc]", ignoreCase = true)) {
-				return super.onDetect(player, sign)
-			}
-			return false
+	},
+	// Because I couldn't figure out how to make the original enum accept a [dc]
+	DIRECT_CONTROL_2("[dc]", arrayOf("&2Direct".colorize(), "&8Control".colorize(), null, null)) {
+		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
+			MiscStarshipCommands.onDirectControl(player)
 		}
 	};
 
