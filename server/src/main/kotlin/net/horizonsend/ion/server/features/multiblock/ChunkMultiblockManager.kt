@@ -1,16 +1,17 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.TickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.block.Sign
 import org.bukkit.persistence.PersistentDataAdapterContext
@@ -26,7 +27,8 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	private val multiblockEntities: ConcurrentHashMap<Long, MultiblockEntity> = ConcurrentHashMap()
 
 	/** All the ticked multiblock entities of this chunk */
-	private val tickingMultiblockEntities: ConcurrentHashMap<Long, TickingMultiblockEntity> = ConcurrentHashMap()
+	private val syncTickingMultiblockEntities: ConcurrentHashMap<Long, SyncTickingMultiblockEntity> = ConcurrentHashMap()
+	private val asyncTickingMultiblockEntities: ConcurrentHashMap<Long, AsyncTickingMultiblockEntity> = ConcurrentHashMap()
 
 	/**
 	 * Logic upon the chunk being ticked
@@ -48,19 +50,20 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 
 	fun getAllMultiblockEntities() = multiblockEntities
 
-	private fun tickAllMultiblocks() = tickingMultiblockEntities.forEachValue(tickingMultiblockEntities.size.toLong(), ::handleMultiblockTick)
+	private fun tickAllMultiblocks() {
+		for ((key, syncTicking) in syncTickingMultiblockEntities) runCatching {
+			syncTicking.tick()
+		}.onFailure { e ->
+			log.warn("Exception ticking multiblock ${syncTicking.javaClass.simpleName} at ${toVec3i(key)}: ${e.message}")
+			e.printStackTrace()
+		}
 
-	private fun handleMultiblockTick(multiblock: TickingMultiblockEntity): Boolean = try {
-		if (multiblock.tickAsync) {
-			Multiblocks.multiblockCoroutineScope.launch { multiblock.tick() }
-		} else runBlocking { multiblock.tick() }
-
-		true
-	} catch (e: Throwable) {
-		log.warn("Exception ticking multiblock ${e.message}")
-		e.printStackTrace()
-
-		false
+		for ((key, asyncTicking) in asyncTickingMultiblockEntities) runCatching {
+			Multiblocks.multiblockCoroutineScope.launch { asyncTicking.tickAsync() }
+		}.onFailure { e ->
+			log.warn("Exception ticking async multiblock ${asyncTicking.javaClass.simpleName} at ${toVec3i(key)}: ${e.message}")
+			e.printStackTrace()
+		}
 	}
 
 	/**
@@ -100,8 +103,12 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	fun addMultiblockEntity(entity: MultiblockEntity, save: Boolean = true) {
 		multiblockEntities[entity.locationKey] = entity
 
-		if (entity is TickingMultiblockEntity) {
-			tickingMultiblockEntities[entity.locationKey] = entity
+		if (entity is SyncTickingMultiblockEntity) {
+			syncTickingMultiblockEntities[entity.locationKey] = entity
+		}
+
+		if (entity is AsyncTickingMultiblockEntity) {
+			asyncTickingMultiblockEntities[entity.locationKey] = entity
 		}
 
 		if (save) saveMultiblocks(chunk.inner.persistentDataContainer.adapterContext)
@@ -154,7 +161,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 		val key = toBlockKey(x, y, z)
 
 		val entity = multiblockEntities.remove(key)
-		tickingMultiblockEntities.remove(key)
+		syncTickingMultiblockEntities.remove(key)
 
 		return entity
 	}
