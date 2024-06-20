@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.TickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -57,14 +57,14 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 		z: Int,
 		signOffset: BlockFace,
 		var string: String
-	) : MultiblockEntity(TestMultiblock, x, y, z, world, signOffset), TickingMultiblockEntity {
+	) : MultiblockEntity(TestMultiblock, x, y, z, world, signOffset), SyncTickingMultiblockEntity {
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			store.addAdditionalData(NamespacedKeys.key("test"), PersistentDataType.STRING, string)
 		}
 
 		var ticks = 0;
 
-		override suspend fun tick() {
+		override fun tick() {
 			ticks++
 
 			val sign = getSign()
@@ -79,10 +79,8 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 			Tasks.sync { sign.update() }
 		}
 
-		override val tickAsync: Boolean = true
-
 		override fun toString(): String {
-			return "TestMultiblockEntity[loc = ${Vec3i(x, y, z)}, signOffset = $signDirection, tickAsync = $tickAsync, string = $string]"
+			return "TestMultiblockEntity[loc = ${Vec3i(x, y, z)}, signOffset = $signDirection, string = $string]"
 		}
 	}
 
