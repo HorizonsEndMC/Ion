@@ -14,13 +14,10 @@ import xyz.xenondevs.invui.item.impl.controlitem.PageItem
 
 object GuiItems {
 
-    private const val UI_LEFT = 105
-    private const val UI_RIGHT = 103
-
     class LeftItem : PageItem(false) {
         override fun getItemProvider(gui: PagedGui<*>): ItemProvider {
             val builder = if (gui.hasPreviousPage()) ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-                it.setCustomModelData(UI_LEFT)
+                it.setCustomModelData(GuiItem.LEFT.customModelData)
                 it.displayName(text("Previous Page").decoration(ITALIC, false))
             }) else ItemBuilder(ItemStack(Material.AIR))
             return builder
@@ -30,7 +27,7 @@ object GuiItems {
     class RightItem : PageItem(true) {
         override fun getItemProvider(gui: PagedGui<*>): ItemProvider {
             val builder = if (gui.hasNextPage()) ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-                it.setCustomModelData(UI_RIGHT)
+                it.setCustomModelData(GuiItem.RIGHT.customModelData)
                 it.displayName(text("Next Page").decoration(ITALIC, false))
             }) else ItemBuilder(ItemStack(Material.AIR))
             return builder
@@ -45,4 +42,34 @@ object GuiItems {
             return builder
         }
     }
+}
+
+enum class GuiItem(val customModelData: Int) {
+    EMPTY(101),
+    UP(102),
+    RIGHT(103),
+    DOWN(104),
+    LEFT(105),
+    STARFIGHTER(6000),
+    GUNSHIP(6001),
+    CORVETTE(6002),
+    FRIGATE(6003),
+    DESTROYER(6004),
+    CRUISER(6005),
+    BATTLECRUISER(6006),
+    SHUTTLE(6008),
+    TRANSPORT(6009),
+    LIGHT_FREIGHTER(6010),
+    MEDIUM_FREIGHTER(6011),
+    HEAVY_FREIGHTER(6012),
+    BARGE(6013),
+    PLANET(6016),
+    STAR(6017),
+    BEACON(6018),
+    STATION(6019),
+    GENERIC_STARSHIP(6026),
+    ROUTE_SEGMENT(6030),
+    LIST(6034),
+    COMPASS_NEEDLE(6035),
+    BOOKMARK(6036)
 }

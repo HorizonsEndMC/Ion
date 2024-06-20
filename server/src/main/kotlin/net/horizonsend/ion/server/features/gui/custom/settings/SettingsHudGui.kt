@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
-import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -88,7 +88,7 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
 
     class PlanetSettingsButton : GuiItems.AbstractButtonItem(
         text("Planet Settings").decoration(ITALIC, false),
-        CustomItems.CHANDRA.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsHudPlanetsGui.open(player)
@@ -98,16 +98,12 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
     class ReturnToHudButton : GuiItems.AbstractButtonItem(
         text("Return to HUD Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-            it.setCustomModelData(UI_DOWN)
+            it.setCustomModelData(GuiItem.DOWN.customModelData)
             it.displayName(text("Return to HUD Settings").decoration(ITALIC, false))
         }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarGui.open(player)
-        }
-
-        companion object {
-            private const val UI_DOWN = 104
         }
     }
 }

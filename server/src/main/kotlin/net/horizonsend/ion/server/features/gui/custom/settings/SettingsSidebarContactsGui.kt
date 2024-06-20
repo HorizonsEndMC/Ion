@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
@@ -125,7 +125,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
 
     class EnableButton : GuiItems.AbstractButtonItem(
         text("Enable Contacts Info").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val contactsEnabled = PlayerCache[player.uniqueId].contactsEnabled
@@ -139,7 +139,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
 
     class ContactsDistanceButton : GuiItems.AbstractButtonItem(
         text("Change Contacts Range").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.ROUTE_SEGMENT.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarContactsRangeGui.open(player)
@@ -148,7 +148,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
 
     class StarshipsButton : GuiItems.AbstractButtonItem(
         text("Enable Starships").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleStarship(player, null)
@@ -159,7 +159,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
 
     class LastStarshipsButton : GuiItems.AbstractButtonItem(
         text("Enable Last Starship").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GENERIC_STARSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleLastStarship(player, null)
@@ -170,7 +170,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
 
     class PlanetsButton : GuiItems.AbstractButtonItem(
         text("Enable Planets").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onTogglePlanets(player, null)
@@ -181,7 +181,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
 
     class StarsButton : GuiItems.AbstractButtonItem(
         text("Enable Stars").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STAR.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleStars(player, null)
@@ -192,7 +192,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
 
     class BeaconsButton : GuiItems.AbstractButtonItem(
         text("Enable Beacons").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BEACON.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleBeacons(player, null)
@@ -203,7 +203,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
 
     class StationsButton : GuiItems.AbstractButtonItem(
         text("Enable Stations").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleStations(player, null)
@@ -214,7 +214,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
 
     class BookmarksButton : GuiItems.AbstractButtonItem(
         text("Enable Bookmarks").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BOOKMARK.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleBookmarks(player, null)
@@ -230,14 +230,10 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
 
         override fun getItemProvider(gui: Gui): ItemProvider {
             val builder = ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-                it.setCustomModelData(UI_DOWN)
+                it.setCustomModelData(GuiItem.DOWN.customModelData)
                 it.displayName(text("Return to Sidebar Contacts Settings").decoration(ITALIC, false))
             })
             return builder
-        }
-
-        companion object {
-            private const val UI_DOWN = 104
         }
     }
 }

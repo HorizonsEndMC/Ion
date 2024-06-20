@@ -1,19 +1,22 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.sidebar.command.SidebarWaypointsCommand
+import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
@@ -102,7 +105,7 @@ object SettingsSidebarRouteGui : AbstractBackgroundPagedGui {
 
     class EnableButton : GuiItems.AbstractButtonItem(
         text("Enable Route Info").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val routeEnabled = PlayerCache[player.uniqueId].waypointsEnabled
@@ -116,7 +119,7 @@ object SettingsSidebarRouteGui : AbstractBackgroundPagedGui {
 
     class ExpandedWaypointsButton: GuiItems.AbstractButtonItem(
         text("Route Segments Enabled").decoration(ITALIC, false),
-        CustomItems.CANNON.constructItemStack()
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.ROUTE_SEGMENT.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarWaypointsCommand.onToggleCompactWaypoints(player, null)
