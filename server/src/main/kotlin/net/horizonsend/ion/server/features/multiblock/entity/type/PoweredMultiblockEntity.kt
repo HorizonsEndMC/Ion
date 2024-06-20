@@ -84,10 +84,11 @@ interface PoweredMultiblockEntity {
 	suspend fun updatePowerVisually() {
 		//TODO replace this
 		require(this is MultiblockEntity)
-
-		val sign = getSign() ?: return
-		sign.front().line(2, formatPower())
-		Tasks.sync { sign.update() }
+		Tasks.sync {
+			val sign = getSign() ?: return@sync
+			sign.front().line(2, formatPower())
+			sign.update()
+		}
 	}
 
 	fun formatPower(): Component = ofChildren(prefixComponent, text(powerUnsafe, GREEN))
