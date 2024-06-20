@@ -23,7 +23,7 @@ abstract class ProcessingMultiblockEntity(
 	signOffset: BlockFace,
 	val requiredProgress: Int,
 	var currentProgress: Int = 0
-) : MultiblockEntity(type, x, y, z, world, signOffset), TickingMultiblockEntity {
+) : MultiblockEntity(type, x, y, z, world, signOffset), SyncTickingMultiblockEntity {
 	//TODO
 	// -recipe system
 
@@ -32,7 +32,7 @@ abstract class ProcessingMultiblockEntity(
 	abstract fun startProcessing()
 	abstract fun process()
 
-	override suspend fun tick() {
+	override fun tick() {
 		if (currentProgress >= requiredProgress) {
 			currentProgress = 0
 			finishProcessing()

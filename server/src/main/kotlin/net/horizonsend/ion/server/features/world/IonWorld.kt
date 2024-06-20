@@ -115,9 +115,11 @@ class IonWorld private constructor(
 
 	//TODO
 	// - Terrain Generator
-	// - Area Shields
-	// -
-	// -
+	// - Worldborder injection
+	// - World multiblock tracker
+	//  - Area shields
+	//  - Mob defenders
+	//  - Base shields?
 
 	companion object : SLEventListener() {
 		private val WORLD_CONFIGURATION_DIRECTORY = ConfigurationFiles.configurationFolder.resolve("worlds").apply { mkdirs() }
