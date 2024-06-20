@@ -156,6 +156,9 @@ class IonChunk(
 		fun getZFromKey(key: Long): Int = (key shr 32).toInt()
 	}
 
+	/** Mark this chunk as needing to be saved */
+	fun markUnsaved() { inner.minecraft.isUnsaved = true }
+
 	override fun toString(): String {
 		return "IonChunk[$x, $z]"
 	}
