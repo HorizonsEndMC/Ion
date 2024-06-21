@@ -36,6 +36,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
     private val BUTTONS_LIST = listOf(
         EnableButton(),
         ContactsDistanceButton(),
+        ContactsMaxNameLengthButton(),
         StarshipsButton(),
         LastStarshipsButton(),
         PlanetsButton(),
@@ -78,6 +79,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         val enabledSettings = listOf(
             PlayerCache[player.uniqueId].contactsEnabled,
             PlayerCache[player.uniqueId].contactsDistance,
+            PlayerCache[player.uniqueId].contactsMaxNameLength,
             PlayerCache[player.uniqueId].contactsStarships,
             PlayerCache[player.uniqueId].lastStarshipEnabled,
             PlayerCache[player.uniqueId].planetsEnabled,
@@ -111,7 +113,13 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
             guiText.add(
                 component = if (enabledSettings[buttonIndex] is Boolean) {
                     if (enabledSettings[buttonIndex] as Boolean) text("ENABLED", GREEN) else text("DISABLED", RED)
-                } else text(PlayerCache[player.uniqueId].contactsDistance),
+                } else when (buttonIndex) {
+                    // TODO: Find a better way to handle Boolean settings vs. Int settings
+                    // Index values correlating to the Int setting
+                    1 -> text(PlayerCache[player.uniqueId].contactsDistance)
+                    2 -> text(PlayerCache[player.uniqueId].contactsMaxNameLength)
+                    else -> Component.empty()
+                },
                 line = line + 1,
                 horizontalShift = 21
             )
@@ -130,7 +138,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    class EnableButton : GuiItems.AbstractButtonItem(
+    private class EnableButton : GuiItems.AbstractButtonItem(
         text("Enable Contacts Info").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
@@ -144,7 +152,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class ContactsDistanceButton : GuiItems.AbstractButtonItem(
+    private class ContactsDistanceButton : GuiItems.AbstractButtonItem(
         text("Change Contacts Range").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.ROUTE_SEGMENT.customModelData) }
     ) {
@@ -153,7 +161,16 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class StarshipsButton : GuiItems.AbstractButtonItem(
+    private class ContactsMaxNameLengthButton : GuiItems.AbstractButtonItem(
+        text("Change Max Name Length").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SettingsSidebarContactsMaxNameLengthGui.open(player)
+        }
+    }
+
+    private class StarshipsButton : GuiItems.AbstractButtonItem(
         text("Enable Starships").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
@@ -164,7 +181,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class LastStarshipsButton : GuiItems.AbstractButtonItem(
+    private class LastStarshipsButton : GuiItems.AbstractButtonItem(
         text("Enable Last Starship").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GENERIC_STARSHIP.customModelData) }
     ) {
@@ -175,7 +192,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class PlanetsButton : GuiItems.AbstractButtonItem(
+    private class PlanetsButton : GuiItems.AbstractButtonItem(
         text("Enable Planets").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
     ) {
@@ -186,7 +203,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class StarsButton : GuiItems.AbstractButtonItem(
+    private class StarsButton : GuiItems.AbstractButtonItem(
         text("Enable Stars").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STAR.customModelData) }
     ) {
@@ -197,7 +214,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class BeaconsButton : GuiItems.AbstractButtonItem(
+    private class BeaconsButton : GuiItems.AbstractButtonItem(
         text("Enable Beacons").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BEACON.customModelData) }
     ) {
@@ -208,7 +225,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class StationsButton : GuiItems.AbstractButtonItem(
+    private class StationsButton : GuiItems.AbstractButtonItem(
         text("Enable Stations").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
     ) {
@@ -219,7 +236,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class BookmarksButton : GuiItems.AbstractButtonItem(
+    private class BookmarksButton : GuiItems.AbstractButtonItem(
         text("Enable Bookmarks").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BOOKMARK.customModelData) }
     ) {

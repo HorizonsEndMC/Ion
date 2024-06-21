@@ -199,15 +199,15 @@ object ContactsSidebar {
         }
 
         if (planetsEnabled) {
-            addPlanetContacts(planets, sourceVector, contactsList)
+            addPlanetContacts(planets, sourceVector, contactsList, player)
         }
 
         if (starsEnabled) {
-            addStarContacts(stars, sourceVector, contactsList)
+            addStarContacts(stars, sourceVector, contactsList, player)
         }
 
         if (beaconsEnabled) {
-            addBeaconContacts(beacons, sourceVector, contactsList)
+            addBeaconContacts(beacons, sourceVector, contactsList, player)
         }
 
         if (stationsEnabled) {
@@ -216,7 +216,7 @@ object ContactsSidebar {
         }
 
         if (bookmarksEnabled) {
-            addBookmarkContacts(bookmarks, sourceVector, contactsList)
+            addBookmarkContacts(bookmarks, sourceVector, contactsList, player)
         }
 
         // append spaces
@@ -236,6 +236,7 @@ object ContactsSidebar {
     ) {
         val currentStarship = PilotedStarships[player]
         val interdictionLocation = currentStarship?.centerOfMass?.toVector() ?: playerVector
+        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
 
         for (starship in starships) {
             val otherController = starship.controller
@@ -252,7 +253,7 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text(starship.identifier, color),
+                    name = text(starship.identifier.take(maxLength), color),
                     prefix = constructPrefixTextComponent(starship.type.icon, playerRelationColor(player, otherController)),
                     suffix = constructSuffixTextComponent(
                         if (currentStarship != null) {
@@ -278,6 +279,7 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>
     ) {
         val lastStarship = LastPilotedStarship.map[player.uniqueId]
+        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
 
         if (lastStarship != null &&
             lastStarship.world == player.world &&
@@ -291,7 +293,7 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text("Last Piloted Starship", color),
+                    name = text("Last Piloted Starship".take(maxLength), color),
                     prefix = constructPrefixTextComponent(GENERIC_STARSHIP_ICON.text, YELLOW),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
@@ -307,8 +309,11 @@ object ContactsSidebar {
     private fun addPlanetContacts(
         planets: List<CachedPlanet>,
         sourceVector: Vector,
-        contactsList: MutableList<ContactsData>
+        contactsList: MutableList<ContactsData>,
+        player: Player
     ) {
+        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+
         for (planet in planets) {
             val vector = planet.location.toVector()
             val distance = vector.distance(sourceVector).toInt()
@@ -318,7 +323,7 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text(planet.name, color),
+                    name = text(planet.name.take(maxLength), color),
                     prefix = constructPrefixTextComponent(PLANET_ICON.text, DARK_AQUA),
                     suffix = constructSuffixTextComponent(
                         interdictionTextComponent(
@@ -340,8 +345,11 @@ object ContactsSidebar {
     private fun addStarContacts(
         stars: List<CachedStar>,
         sourceVector: Vector,
-        contactsList: MutableList<ContactsData>
+        contactsList: MutableList<ContactsData>,
+        player: Player
     ) {
+        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+
         for (star in stars) {
             val vector = star.location.toVector()
             val distance = vector.distance(sourceVector).toInt()
@@ -351,7 +359,7 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text(star.name, color),
+                    name = text(star.name.take(maxLength), color),
                     prefix = constructPrefixTextComponent(STAR_ICON.text, YELLOW),
                     suffix = constructSuffixTextComponent(
                         interdictionTextComponent(
@@ -373,8 +381,11 @@ object ContactsSidebar {
     private fun addBeaconContacts(
         beacons: List<ServerConfiguration.HyperspaceBeacon>,
         sourceVector: Vector,
-        contactsList: MutableList<ContactsData>
+        contactsList: MutableList<ContactsData>,
+        player: Player
     ) {
+        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+
         for (beacon in beacons) {
             val vector = beacon.spaceLocation.toVector()
             val distance = vector.distance(sourceVector).toInt()
@@ -384,7 +395,7 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text(beacon.name, color),
+                    name = text(beacon.name.take(maxLength), color),
                     prefix = constructPrefixTextComponent(HYPERSPACE_BEACON_ENTER_ICON.text, BLUE),
                     suffix = constructSuffixTextComponent(beaconTextComponent(beacon.prompt)),
                     heading = constructHeadingTextComponent(direction, color),
@@ -403,6 +414,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
+        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+
         for (station in stations) {
             val vector = Vector(station.x, 192, station.z)
             val distance = vector.distance(sourceVector).toInt()
@@ -412,7 +425,7 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text(station.name, color),
+                    name = text(station.name.take(maxLength), color),
                     prefix = constructPrefixTextComponent(STATION_ICON.text, stationRelationColor(player, station)),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
@@ -431,6 +444,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
+        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+
         for (station in capturableStations) {
             val vector = station.loc.toVector()
             val distance = vector.distance(sourceVector).toInt()
@@ -440,7 +455,7 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text(station.name, color),
+                    name = text(station.name.take(maxLength), color),
                     prefix = constructPrefixTextComponent(
                         SidebarIcon.SIEGE_STATION_ICON.text,
                         capturableStationRelationColor(player, station)),
@@ -458,8 +473,11 @@ object ContactsSidebar {
     private fun addBookmarkContacts(
         bookmarks: List<Bookmark>,
         sourceVector: Vector,
-        contactsList: MutableList<ContactsData>
+        contactsList: MutableList<ContactsData>,
+        player: Player
     ) {
+        val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+
         for (bookmark in bookmarks) {
             val vector = Vector(bookmark.x, bookmark.y, bookmark.z)
             val distance = vector.distance(sourceVector).toInt()
@@ -469,7 +487,7 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text(bookmark.name, color),
+                    name = text(bookmark.name.take(maxLength), color),
                     prefix = constructPrefixTextComponent(BOOKMARK_ICON.text, DARK_PURPLE),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),

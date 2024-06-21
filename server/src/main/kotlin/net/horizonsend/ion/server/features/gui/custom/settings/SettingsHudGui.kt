@@ -93,7 +93,7 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    class PlanetSettingsButton : GuiItems.AbstractButtonItem(
+    private class PlanetSettingsButton : GuiItems.AbstractButtonItem(
         text("Planet Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
     ) {

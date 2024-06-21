@@ -111,7 +111,7 @@ object SettingsHudPlanetsGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    class ImageButton : GuiItems.AbstractButtonItem(
+    private class ImageButton : GuiItems.AbstractButtonItem(
         text("Toggle Planet Visibility").decoration(TextDecoration.ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
     ) {
@@ -122,7 +122,7 @@ object SettingsHudPlanetsGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class SelectorButton : GuiItems.AbstractButtonItem(
+    private class SelectorButton : GuiItems.AbstractButtonItem(
         text("Toggle Planet Selector").decoration(TextDecoration.ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
     ) {

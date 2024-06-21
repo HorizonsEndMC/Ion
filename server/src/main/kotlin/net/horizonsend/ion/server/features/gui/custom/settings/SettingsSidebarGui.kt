@@ -94,7 +94,7 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    class StarshipsSettingsButton : GuiItems.AbstractButtonItem(
+    private class StarshipsSettingsButton : GuiItems.AbstractButtonItem(
         text("Starships Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
@@ -103,7 +103,7 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class ContactsSettingsButton : GuiItems.AbstractButtonItem(
+    private class ContactsSettingsButton : GuiItems.AbstractButtonItem(
         text("Contacts Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
@@ -112,7 +112,7 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class RouteSettingsButton : GuiItems.AbstractButtonItem(
+    private class RouteSettingsButton : GuiItems.AbstractButtonItem(
         text("Route Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.ROUTE_SEGMENT.customModelData) }
     ) {

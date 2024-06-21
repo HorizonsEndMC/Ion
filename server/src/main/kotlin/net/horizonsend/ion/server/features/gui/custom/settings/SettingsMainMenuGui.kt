@@ -92,7 +92,7 @@ object SettingsMainMenuGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    class SidebarSettingsButton : GuiItems.AbstractButtonItem(
+    private class SidebarSettingsButton : GuiItems.AbstractButtonItem(
         text("Sidebar Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
@@ -101,7 +101,7 @@ object SettingsMainMenuGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class HudSettingsButton : GuiItems.AbstractButtonItem(
+    private class HudSettingsButton : GuiItems.AbstractButtonItem(
         text("HUD Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {

@@ -52,7 +52,19 @@ object SidebarContactsCommand : SLCommand() {
 		val newDistance = distance?.coerceIn(0, MainSidebar.CONTACTS_RANGE) ?: MainSidebar.CONTACTS_RANGE
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsDistance, newDistance))
 		PlayerCache[sender].contactsDistance = newDistance
-		sender.success(("Changed contacts distance to $newDistance"))
+		sender.success("Changed contacts distance to $newDistance")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts maxNameLength")
+	fun onSetContactsMaxNameLength(
+		sender: Player,
+		maxLength: Int?
+	) {
+		val newLength = maxLength?.coerceIn(1, MainSidebar.MAX_NAME_LENGTH) ?: MainSidebar.MAX_NAME_LENGTH
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsMaxNameLength, newLength))
+		PlayerCache[sender].contactsMaxNameLength = newLength
+		sender.success("Changed contacts max name length to $newLength")
 	}
 
 	@Suppress("unused")
