@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.CANDLE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.CARPET_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.DOOR_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.FENCE_GATE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.FENCE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.GLAZED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.PRESSURE_PLATE_TYPES
@@ -25,13 +26,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WOOL_TYPES
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
-import org.bukkit.Material.ACACIA_FENCE_GATE
 import org.bukkit.Material.ANVIL
 import org.bukkit.Material.BARREL
 import org.bukkit.Material.BEEHIVE
 import org.bukkit.Material.BEETROOTS
 import org.bukkit.Material.BELL
-import org.bukkit.Material.BIRCH_FENCE_GATE
 import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.BOOKSHELF
 import org.bukkit.Material.BREWING_STAND
@@ -49,9 +48,7 @@ import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.CREEPER_HEAD
 import org.bukkit.Material.CREEPER_WALL_HEAD
-import org.bukkit.Material.CRIMSON_FENCE_GATE
 import org.bukkit.Material.DAMAGED_ANVIL
-import org.bukkit.Material.DARK_OAK_FENCE_GATE
 import org.bukkit.Material.DAYLIGHT_DETECTOR
 import org.bukkit.Material.DECORATED_POT
 import org.bukkit.Material.DIAMOND_BLOCK
@@ -78,7 +75,6 @@ import org.bukkit.Material.HOPPER
 import org.bukkit.Material.IRON_BARS
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.JUKEBOX
-import org.bukkit.Material.JUNGLE_FENCE_GATE
 import org.bukkit.Material.LADDER
 import org.bukkit.Material.LANTERN
 import org.bukkit.Material.LAPIS_BLOCK
@@ -88,12 +84,10 @@ import org.bukkit.Material.LIGHTNING_ROD
 import org.bukkit.Material.LODESTONE
 import org.bukkit.Material.LOOM
 import org.bukkit.Material.MAGMA_BLOCK
-import org.bukkit.Material.MANGROVE_FENCE_GATE
 import org.bukkit.Material.MOVING_PISTON
 import org.bukkit.Material.NETHERITE_BLOCK
 import org.bukkit.Material.NETHER_PORTAL
 import org.bukkit.Material.NOTE_BLOCK
-import org.bukkit.Material.OAK_FENCE_GATE
 import org.bukkit.Material.OBSERVER
 import org.bukkit.Material.OCHRE_FROGLIGHT
 import org.bukkit.Material.OXIDIZED_COPPER
@@ -149,7 +143,6 @@ import org.bukkit.Material.SOUL_CAMPFIRE
 import org.bukkit.Material.SOUL_LANTERN
 import org.bukkit.Material.SOUL_TORCH
 import org.bukkit.Material.SPONGE
-import org.bukkit.Material.SPRUCE_FENCE_GATE
 import org.bukkit.Material.STICKY_PISTON
 import org.bukkit.Material.STONECUTTER
 import org.bukkit.Material.TARGET
@@ -158,7 +151,6 @@ import org.bukkit.Material.TORCH
 import org.bukkit.Material.TRAPPED_CHEST
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WALL_TORCH
-import org.bukkit.Material.WARPED_FENCE_GATE
 import org.bukkit.Material.WAXED_COPPER_BLOCK
 import org.bukkit.Material.WAXED_EXPOSED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
@@ -322,16 +314,6 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	PEARLESCENT_FROGLIGHT,
 	VERDANT_FROGLIGHT,
 
-	OAK_FENCE_GATE,
-	BIRCH_FENCE_GATE,
-	SPRUCE_FENCE_GATE,
-	JUNGLE_FENCE_GATE,
-	ACACIA_FENCE_GATE,
-	DARK_OAK_FENCE_GATE,
-	MANGROVE_FENCE_GATE,
-	CRIMSON_FENCE_GATE,
-	WARPED_FENCE_GATE,
-
 	LIGHTNING_ROD,
 	NETHERITE_BLOCK,
 
@@ -363,6 +345,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	it.addAll(PRESSURE_PLATE_TYPES)
 	it.addAll(BED_TYPES)
 	it.addAll(FENCE_TYPES)
+	it.addAll(FENCE_GATE_TYPES)
 	it.addAll(WALL_TYPES)
 	it.addAll(CANDLE_TYPES)
 	it.addAll(CAKE_TYPES)
