@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.misc
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -14,7 +14,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.MultipleFacing
 import org.bukkit.block.data.Orientable
-import org.bukkit.block.sign.Side
 import org.bukkit.block.sign.Side.FRONT
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent

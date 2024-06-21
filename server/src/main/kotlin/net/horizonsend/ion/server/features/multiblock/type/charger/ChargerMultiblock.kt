@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomComponen
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import org.bukkit.Material

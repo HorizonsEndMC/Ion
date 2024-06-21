@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.misc
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SPLITTER_DIRECTION
