@@ -1,9 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -28,7 +24,7 @@ interface PoweredMultiblockEntity {
 		powerUnsafe = correctedPower
 
 		//TODO better solution
-		powerUpdateScope.launch { updatePowerVisually() }
+		updatePowerVisually()
 	}
 
 	fun getPower(): Int {
@@ -73,7 +69,6 @@ interface PoweredMultiblockEntity {
 
 	companion object {
 		private val prefixComponent = text("E: ", NamedTextColor.YELLOW)
-		private val powerUpdateScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 	}
 
 	/** Store power data */
@@ -81,7 +76,7 @@ interface PoweredMultiblockEntity {
 		store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, powerUnsafe)
 	}
 
-	suspend fun updatePowerVisually() {
+	fun updatePowerVisually() {
 		//TODO replace this
 		require(this is MultiblockEntity)
 		Tasks.sync {

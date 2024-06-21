@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.misc
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Bukkit
