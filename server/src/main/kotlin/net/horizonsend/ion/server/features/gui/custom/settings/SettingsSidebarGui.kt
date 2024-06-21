@@ -33,19 +33,26 @@ object SettingsSidebarGui : AbstractBackgroundPagedGui {
         val gui = PagedGui.items()
 
         gui.setStructure(
-            "x . . . . . . . .",
-            "x . . . . . . . .",
-            "x . . . . . . . .",
-            "x . . . . . . . .",
-            "x . . . . . . . .",
+            "x x x x x x x x x",
+            "x x x x x x x x x",
+            "x x x x x x x x x",
+            "x x x x x x x x x",
+            "x x x x x x x x x",
             "< v . . . . . . >"
         )
 
-        gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
+        gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addIngredient('<', GuiItems.LeftItem())
             .addIngredient('>', GuiItems.RightItem())
             .addIngredient('v', SettingsMainMenuGui.ReturnToMainMenuButton())
-            .setContent(BUTTONS_LIST)
+
+        for (button in BUTTONS_LIST) {
+            gui.addContent(button)
+
+            for (i in 1..8) {
+                gui.addContent(GuiItems.BlankItem(button))
+            }
+        }
 
         return gui.build()
     }

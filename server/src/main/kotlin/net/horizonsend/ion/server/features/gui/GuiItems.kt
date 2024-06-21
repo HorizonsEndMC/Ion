@@ -5,8 +5,13 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
+import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.gui.PagedGui
+import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
@@ -41,6 +46,17 @@ object GuiItems {
             })
             return builder
         }
+    }
+
+    class BlankItem(val item: Item) : ControlItem<Gui>() {
+        override fun getItemProvider(gui: Gui): ItemProvider {
+            return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+                it.setCustomModelData(GuiItem.EMPTY.customModelData)
+                it.displayName(item.itemProvider.get().displayName().decoration(ITALIC, false))
+            })
+        }
+
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) = item.handleClick(clickType, player, event)
     }
 }
 
