@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.navigationcomputer
 
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 
 object NavigationComputerMultiblockBasic : NavigationComputerMultiblock() {
 	override val signText = createSignText(
