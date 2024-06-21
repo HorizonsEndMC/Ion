@@ -2,14 +2,15 @@ package net.horizonsend.ion.server.features.multiblock.util
 
 import net.minecraft.world.level.block.state.BlockState as NMSBlockState
 import org.bukkit.block.BlockState as BukkitBlockState
-import kotlinx.coroutines.CompletableDeferred
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.future.asDeferred
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot.Companion.getBlockSnapshot
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.loadChunkAsync
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
@@ -74,7 +75,7 @@ suspend fun getBlockSnapshotAsync(world: World, key: Long, loadChunks: Boolean =
 
 suspend fun <K, V> Map<K, Deferred<V>>.awaitAllValues(): Map<K, V> = if (isEmpty()) mapOf() else mapValues { (_, v) -> v.await() }
 
-suspend fun getNMSTileEntity(block: Block, loadChunks: Boolean): BlockEntity? {
+fun getNMSTileEntity(block: Block, loadChunks: Boolean): BlockEntity? {
 	val serverLevel: ServerLevel = block.world.minecraft
 	val blockPos = (block as CraftBlock).position
 
@@ -89,23 +90,16 @@ suspend fun getNMSTileEntity(block: Block, loadChunks: Boolean): BlockEntity? {
 		return serverLevel.getChunk(chunkX, chunkZ).getBlockEntity(blockPos, LevelChunk.EntityCreationType.IMMEDIATE)
 	}
 
-	if (!loadChunks) {
-		return null
-	}
+	if (!loadChunks) return null
 
-	val entity = CompletableDeferred<BlockEntity?>()
-
-	loadChunkAsync(block.world, chunkX, chunkZ) {
-		entity.complete(it.minecraft.getBlockEntity(blockPos))
-	}
-
-	return entity.await()
+	val chunk = block.world.getChunkAt(chunkX, chunkZ).minecraft
+	return chunk.getBlockEntity(blockPos)
 }
 
 @Suppress("UNCHECKED_CAST")
-suspend fun <T: BlockEntity> getAndCastNMSTileEntity(block: Block, loadChunks: Boolean): T? = getNMSTileEntity(block, loadChunks) as? T
+fun <T: BlockEntity> getAndCastNMSTileEntity(block: Block, loadChunks: Boolean): T? = getNMSTileEntity(block, loadChunks) as? T
 
-suspend fun getBukkitBlockState(block: Block, loadChunks: Boolean) : BukkitBlockState? {
+fun getBukkitBlockState(block: Block, loadChunks: Boolean) : BukkitBlockState? {
 	// If this is the main thread, we don't need to do laggy reflection
 	if (Bukkit.isPrimaryThread()) {
 		return block.state
@@ -113,7 +107,7 @@ suspend fun getBukkitBlockState(block: Block, loadChunks: Boolean) : BukkitBlock
 
 	val world = block.world
 	val blockPos = (block as CraftBlock).position
-	val data = getBlockSnapshotAsync(world, blockPos.x, blockPos.y, blockPos.z, loadChunks)?.data ?: return null
+	val data = getBlockDataSafe(world, blockPos.x, blockPos.y, blockPos.z, loadChunks) ?: return null
 
 	val tileEntity = getNMSTileEntity(block, loadChunks)
 
@@ -127,18 +121,24 @@ val getFactoryForMaterial: Method = CraftBlockStates::class.java.getDeclaredMeth
 	isAccessible = true
 }
 
+private val blockStateFactory: LoadingCache<Material, Pair<Any, Method>> = CacheBuilder.newBuilder()
+	.weakValues()
+	.build(CacheLoader.from { material ->
+		val factory = getFactoryForMaterial.invoke(null, material)
+
+		factory to factory::class.java.getDeclaredMethod(
+			"createBlockState",
+			World::class.javaObjectType,
+			BlockPos::class.javaObjectType,
+			NMSBlockState::class.javaObjectType,
+			BlockEntity::class.javaObjectType
+		)
+	})
+
 fun createBlockState(world: World, blockPos: BlockPos, data: BlockData, tileEntity: BlockEntity?): CraftBlockState {
 	val material = CraftMagicNumbers.getMaterial((data as CraftBlockData).state.block)
 
-	val factory = getFactoryForMaterial.invoke(null, material)
-
-	val blockStateFactory = factory::class.java.getDeclaredMethod(
-		"createBlockState",
-		World::class.javaObjectType,
-		BlockPos::class.javaObjectType,
-		NMSBlockState::class.javaObjectType,
-		BlockEntity::class.javaObjectType
-	)
+	val (factory, blockStateFactory) = blockStateFactory[material]
 
 	blockStateFactory.isAccessible = true
 
