@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.mininglasers
 
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.mininglasers.MiningLaserMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
