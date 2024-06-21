@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.gravitywell
 
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import org.bukkit.Material
 
 object AmplifiedGravityWellMultiblock : GravityWellMultiblock() {
