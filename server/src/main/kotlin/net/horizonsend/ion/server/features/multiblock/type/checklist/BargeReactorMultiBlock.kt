@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.checklist
 
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.block.sign.Side
