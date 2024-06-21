@@ -746,7 +746,15 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("enableAlternateDCCruise")
 	@CommandCompletion("true|false")
 	@Suppress("unused")
-	fun onUseAlternateDCCruise(sender: Player, newValue: Boolean) = asyncCommand(sender) {
-		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::useAlternateDCCruise, newValue))
+	fun onUseAlternateDCCruise(sender: Player, @Optional toggle: Boolean?) {
+		val useAlternateDcCruise = toggle ?: !PlayerCache[sender].useAlternateDCCruise
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::useAlternateDCCruise, useAlternateDcCruise))
+		PlayerCache[sender.uniqueId].useAlternateDCCruise = useAlternateDcCruise
+		sender.success("Changed alternate DC cruise to $useAlternateDcCruise")
+		if (useAlternateDcCruise) {
+			sender.success("Activating cruise while in direct control will override DC")
+		} else {
+			sender.success("Direct control will not be overriden by cruise")
+		}
 	}
 }

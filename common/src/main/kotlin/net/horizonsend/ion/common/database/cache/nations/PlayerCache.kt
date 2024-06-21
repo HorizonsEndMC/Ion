@@ -322,7 +322,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
 
-					data.useAlternateDCCruise = it.boolean()
+					val useAlternateDcCruise = it.boolean()
+					data.useAlternateDCCruise = useAlternateDcCruise
 				}
 			}
 		}

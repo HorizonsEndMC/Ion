@@ -4,6 +4,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.success
@@ -78,9 +79,10 @@ object SearchCommand : SLCommand() {
 	}
 
 	@Subcommand("_toggle")
-	fun itemSearchToggle(player: Player) {
-		val showItemDisplay = !PlayerCache[player].showItemSearchItem
+	fun itemSearchToggle(player: Player, @Optional toggle: Boolean?) {
+		val showItemDisplay = toggle ?: !PlayerCache[player].showItemSearchItem
 		SLPlayer.updateById(player.slPlayerId, setValue(SLPlayer::showItemSearchItem, showItemDisplay))
+		PlayerCache[player.uniqueId].showItemSearchItem = showItemDisplay
 		player.success("Changed showing searched item to $showItemDisplay")
 	}
 
