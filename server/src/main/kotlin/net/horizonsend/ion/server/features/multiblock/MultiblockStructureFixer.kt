@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock
 
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.world.data.DataFixer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.block.Sign
