@@ -73,7 +73,7 @@ object DiscordNationCommand : DiscordCommand("nation", "Commands relating to nat
 
 		val playersField = MessageEmbed.Field(
 			"Players (${members.size})",
-			members.joinToString { it.first },
+			members.joinToString { it.first }.take(1024),
 			false
 		)
 
