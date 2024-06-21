@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.misc
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories

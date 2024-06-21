@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.areashield
 
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 
 object AreaShield20 : net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield(radius = 20) {
 	override fun MultiblockShape.buildStructure() {

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.gravitywell
 
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 
 object StandardGravityWellMultiblock : GravityWellMultiblock() {
 	override val name = "gravitywell"

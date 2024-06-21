@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.printer
 
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedTerracotta
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack

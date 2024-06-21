@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.particleshield
 
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.kyori.adventure.text.Component
 
 object ShieldMultiblockClass20 : SphereShieldMultiblock() {

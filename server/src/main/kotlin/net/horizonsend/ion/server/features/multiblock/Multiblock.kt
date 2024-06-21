@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock
 
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
