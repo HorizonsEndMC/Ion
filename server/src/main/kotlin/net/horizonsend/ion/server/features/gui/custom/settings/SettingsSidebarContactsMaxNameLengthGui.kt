@@ -19,14 +19,14 @@ import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.window.AnvilWindow
 
-object SettingsSidebarContactsRangeGui {
+object SettingsSidebarContactsMaxNameLengthGui {
 
     private fun createGui(): Gui {
         val gui = Gui.normal()
 
         gui.setStructure(". v x")
 
-        gui.addIngredient('x', SetContactsDistanceButton())
+        gui.addIngredient('x', SetContactsMaxNameLengthButton())
             .addIngredient('.', RenameItem())
             .addIngredient('v', SettingsSidebarContactsGui.ReturnToSidebarContactsButton())
 
@@ -38,18 +38,18 @@ object SettingsSidebarContactsRangeGui {
 
         val window = AnvilWindow.single()
             .setViewer(player)
-            .setTitle(AdventureComponentWrapper(text("Set Contacts Distance")))
+            .setTitle(AdventureComponentWrapper(text("Set Max Name Length")))
             .setGui(gui)
             .build()
 
         window.open()
     }
 
-    private class SetContactsDistanceButton : ControlItem<Gui>() {
+    private class SetContactsMaxNameLengthButton : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui?): ItemProvider {
             val builder = ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
                 it.setCustomModelData(GuiItem.RIGHT.customModelData)
-                it.displayName(text("Set Contacts Distance").decoration(ITALIC, false))
+                it.displayName(text("Set Contacts Max Name Length").decoration(ITALIC, false))
             })
             return builder
         }
@@ -60,7 +60,7 @@ object SettingsSidebarContactsRangeGui {
             val currentText = anvilWindow.renameText ?: return
             val currentInt = currentText.toIntOrNull() ?: return
 
-            SidebarContactsCommand.onSetContactsDistance(player, currentInt)
+            SidebarContactsCommand.onSetContactsMaxNameLength(player, currentInt)
             SettingsSidebarContactsGui.open(player)
         }
     }
@@ -69,7 +69,7 @@ object SettingsSidebarContactsRangeGui {
         override fun getItemProvider(): ItemProvider {
             return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
                 it.setCustomModelData(GuiItem.LIST.customModelData)
-                it.displayName(text("Enter Range (0-${MainSidebar.CONTACTS_RANGE})").decoration(ITALIC, false))
+                it.displayName(text("Enter Range (1-${MainSidebar.MAX_NAME_LENGTH})").decoration(ITALIC, false))
             })
         }
 

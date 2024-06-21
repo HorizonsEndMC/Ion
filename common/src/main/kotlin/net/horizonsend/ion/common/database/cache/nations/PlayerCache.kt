@@ -39,6 +39,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var bounty: Double,
 
 		var contactsDistance: Int = 6000,
+		var contactsMaxNameLength: Int = 64,
 		var contactsEnabled: Boolean = true,
 		var contactsStarships: Boolean = true,
 		var lastStarshipEnabled: Boolean = true,
@@ -146,6 +147,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val contactsDistance = it.int()
 					data.contactsDistance = contactsDistance
+				}
+			}
+
+			change[SLPlayer::contactsMaxNameLength]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val contactsMaxNameLength = it.int()
+					data.contactsMaxNameLength = contactsMaxNameLength
 				}
 			}
 
@@ -371,6 +381,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			bounty = data.bounty,
 			blockedPlayerIDs = data.blockedPlayerIDs,
 			contactsDistance = data.contactsDistance,
+			contactsMaxNameLength = data.contactsMaxNameLength,
 			contactsEnabled = data.contactsEnabled,
 			contactsStarships = data.contactsStarships,
 			lastStarshipEnabled = data.lastStarshipEnabled,

@@ -110,7 +110,7 @@ object SettingsSidebarRouteGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    class EnableButton : GuiItems.AbstractButtonItem(
+    private class EnableButton : GuiItems.AbstractButtonItem(
         text("Enable Route Info").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
@@ -124,7 +124,7 @@ object SettingsSidebarRouteGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class ExpandedWaypointsButton: GuiItems.AbstractButtonItem(
+    private class ExpandedWaypointsButton: GuiItems.AbstractButtonItem(
         text("Route Segments Enabled").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.ROUTE_SEGMENT.customModelData) }
     ) {

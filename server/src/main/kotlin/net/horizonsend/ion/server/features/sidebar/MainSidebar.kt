@@ -31,6 +31,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 		const val MIN_LENGTH = 0
 		const val WAYPOINT_MAX_LENGTH = 30
 		const val CONTACTS_RANGE = 6000
+		const val MAX_NAME_LENGTH = 64
 		//const val CONTACTS_SQRANGE = CONTACTS_RANGE * CONTACTS_RANGE
 	}
 

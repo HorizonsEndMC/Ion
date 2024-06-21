@@ -65,6 +65,7 @@ data class SLPlayer(
 	var bounty: Double = 0.0,
 
 	var contactsDistance: Int = 6000,
+	var contactsMaxNameLength: Int = 64,
 	var contactsEnabled: Boolean = true,
 	var contactsStarships: Boolean = true,
 	var lastStarshipEnabled: Boolean = true,

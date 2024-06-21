@@ -112,7 +112,7 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    class EnableButton : GuiItems.AbstractButtonItem(
+    private class EnableButton : GuiItems.AbstractButtonItem(
         text("Enable Starship Info").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
@@ -126,7 +126,7 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class ShowAdvancedButton : GuiItems.AbstractButtonItem(
+    private class ShowAdvancedButton : GuiItems.AbstractButtonItem(
         text("Display Advanced Info").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
@@ -137,7 +137,7 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
         }
     }
 
-    class CompassRotationButton : GuiItems.AbstractButtonItem(
+    private class CompassRotationButton : GuiItems.AbstractButtonItem(
         text("Rotating Compass").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
     ) {
