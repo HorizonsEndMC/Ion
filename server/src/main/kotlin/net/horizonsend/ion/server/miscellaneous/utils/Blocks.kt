@@ -29,6 +29,18 @@ fun getBlockDataSafe(world: World, x: Int, y: Int, z: Int): BlockData? {
 }
 
 /**
+ * Get block data, with an option to handle chunk loading to get the data
+ */
+fun getBlockDataSafe(world: World, x: Int, y: Int, z: Int, loadChunks: Boolean = false): BlockData? {
+	val data = getBlockDataSafe(world, x, y, z)
+
+	if (data != null) return data
+	if (!loadChunks) return null
+
+	return world.getBlockData(x, y, z)
+}
+
+/**
  * Gets the block state at the given location if loaded. Sync only.
  */
 fun getBlockIfLoaded(world: World, x: Int, y: Int, z: Int): Block? {
