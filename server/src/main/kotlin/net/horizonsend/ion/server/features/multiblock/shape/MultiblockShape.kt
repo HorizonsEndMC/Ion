@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock
+package net.horizonsend.ion.server.features.multiblock.shape
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
@@ -268,7 +268,7 @@ class MultiblockShape {
 		fun type(type: Material) {
 			val requirement = BlockRequirement(
 				example = type.createBlockData(),
-				check = { block, _, loadChunks -> if (loadChunks) block.type == type else block.getTypeSafe() == type },
+				syncCheck = { block, _, loadChunks -> if (loadChunks) block.type == type else block.getTypeSafe() == type },
 				asyncCheck = { block, _, loadChunks -> getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.type == type }
 			)
 
@@ -280,7 +280,7 @@ class MultiblockShape {
 
 			val requirement = BlockRequirement(
 				example = types.first().createBlockData(),
-				check = { block, _, loadChunks ->
+				syncCheck = { block, _, loadChunks ->
 					typeSet.contains(if (loadChunks) block.type else block.getTypeSafe())
 				},
 				asyncCheck = { block, _, loadChunks ->
@@ -298,7 +298,7 @@ class MultiblockShape {
 		fun customBlock(customBlock: CustomBlock) {
 			val requirement = BlockRequirement(
 				example = customBlock.blockData,
-				check = { block, _, loadChunks ->
+				syncCheck = { block, _, loadChunks ->
 					if (loadChunks) CustomBlocks.getByBlock(block) else {
 						getBlockDataSafe(block.world, block.x, block.y, block.z)?.let { CustomBlocks.getByBlockData(it) }
 					} === customBlock
@@ -347,7 +347,7 @@ class MultiblockShape {
 					this as Slab
 					this.type = Slab.Type.DOUBLE
 				},
-				check = { block, _, loadChunks ->
+				syncCheck = { block, _, loadChunks ->
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 					blockData is Slab && blockData.type == Slab.Type.DOUBLE
 				},
@@ -361,7 +361,7 @@ class MultiblockShape {
 		fun terracottaOrDoubleslab() {
 			BlockRequirement(
 				example = Material.TERRACOTTA.createBlockData(),
-				check = { block, _, loadChunks ->
+				syncCheck = { block, _, loadChunks ->
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 					val blockType = if (loadChunks) block.type else block.getTypeSafe()
 
@@ -457,7 +457,7 @@ class MultiblockShape {
 
 		fun machineFurnace() = complete(BlockRequirement(
 			example = Material.FURNACE.createBlockData(),
-			check = check@{ block, inward, loadChunks ->
+			syncCheck = check@{ block, inward, loadChunks ->
 				val blockData = if (loadChunks) block.getNMSBlockData() else getNMSBlockSateSafe(block.world, block.x, block.y, block.z) ?: return@check false
 
 				if (blockData.bukkitMaterial != Material.FURNACE) return@check false
