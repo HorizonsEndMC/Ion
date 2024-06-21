@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.particleshield
 
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 
 object ShieldMultiblockClass30 : SphereShieldMultiblock() {
 	override val maxRange = 22
