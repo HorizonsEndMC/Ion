@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.sidebar.tasks
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServer
@@ -76,6 +77,19 @@ object ContactsSidebar {
         }
     }
 
+    private fun playerRelationType(player: Player, otherController: Controller): ContactsRelation {
+        when (otherController) {
+            is NoOpController -> return ContactsRelation.NONE
+            is AIController -> return ContactsRelation.AI
+            is PlayerController -> {
+                val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return ContactsRelation.NONE
+                val otherNation = PlayerCache.getIfOnline(otherController.player)?.nationOid ?: return ContactsRelation.NONE
+                return convertRelationType(RelationCache[viewerNation, otherNation])
+            }
+            else -> return ContactsRelation.NONE
+        }
+    }
+
     private fun playerRelationColor(player: Player, otherController: Controller): NamedTextColor {
         when (otherController) {
             is NoOpController -> return GRAY
@@ -86,6 +100,19 @@ object ContactsSidebar {
                 return RelationCache[viewerNation, otherNation].color
             }
             else -> return GRAY
+        }
+    }
+
+    private fun stationRelationType(player: Player, station: CachedSpaceStation<*, *, *>): ContactsRelation {
+        when (station) {
+            is CachedPlayerSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId)) ContactsRelation.NATION else ContactsRelation.NONE
+            is CachedSettlementSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId)) ContactsRelation.NATION else ContactsRelation.NONE
+            is CachedNationSpaceStation -> {
+                val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return ContactsRelation.NONE
+                val otherNation = station.owner
+                return convertRelationType(RelationCache[viewerNation, otherNation])
+            }
+            else -> return ContactsRelation.NONE
         }
     }
 
@@ -100,6 +127,12 @@ object ContactsSidebar {
             }
             else -> return GRAY
         }
+    }
+
+    private fun capturableStationRelationType(player: Player, station: CachedCapturableStation): ContactsRelation {
+        val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return ContactsRelation.NONE
+        val otherNation = station.nation ?: return ContactsRelation.NONE
+        return convertRelationType(RelationCache[viewerNation, otherNation])
     }
 
     private fun capturableStationRelationColor(player: Player, station: CachedCapturableStation): NamedTextColor {
@@ -224,7 +257,7 @@ object ContactsSidebar {
             contact.padding = text(repeatString(" ", 1))
         }
 
-        contactsList.sortBy { it.distanceInt }
+        sortContacts(contactsList, player)
         return contactsList
     }
 
@@ -254,6 +287,8 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(starship.identifier.take(maxLength), color),
+                    type = ContactsType.STARSHIP,
+                    relation = playerRelationType(player, otherController),
                     prefix = constructPrefixTextComponent(starship.type.icon, playerRelationColor(player, otherController)),
                     suffix = constructSuffixTextComponent(
                         if (currentStarship != null) {
@@ -294,6 +329,8 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text("Last Piloted Starship".take(maxLength), color),
+                    type = ContactsType.LAST_STARSHIP,
+                    relation = null,
                     prefix = constructPrefixTextComponent(GENERIC_STARSHIP_ICON.text, YELLOW),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
@@ -324,6 +361,8 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(planet.name.take(maxLength), color),
+                    type = ContactsType.PLANET,
+                    relation = null,
                     prefix = constructPrefixTextComponent(PLANET_ICON.text, DARK_AQUA),
                     suffix = constructSuffixTextComponent(
                         interdictionTextComponent(
@@ -360,6 +399,8 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(star.name.take(maxLength), color),
+                    type = ContactsType.STAR,
+                    relation = null,
                     prefix = constructPrefixTextComponent(STAR_ICON.text, YELLOW),
                     suffix = constructSuffixTextComponent(
                         interdictionTextComponent(
@@ -396,6 +437,8 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(beacon.name.take(maxLength), color),
+                    type = ContactsType.BEACON,
+                    relation = null,
                     prefix = constructPrefixTextComponent(HYPERSPACE_BEACON_ENTER_ICON.text, BLUE),
                     suffix = constructSuffixTextComponent(beaconTextComponent(beacon.prompt)),
                     heading = constructHeadingTextComponent(direction, color),
@@ -426,6 +469,8 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(station.name.take(maxLength), color),
+                    type = ContactsType.STATION,
+                    relation = stationRelationType(player, station),
                     prefix = constructPrefixTextComponent(STATION_ICON.text, stationRelationColor(player, station)),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
@@ -456,6 +501,8 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(station.name.take(maxLength), color),
+                    type = ContactsType.STATION,
+                    relation = capturableStationRelationType(player, station),
                     prefix = constructPrefixTextComponent(
                         SidebarIcon.SIEGE_STATION_ICON.text,
                         capturableStationRelationColor(player, station)),
@@ -488,6 +535,8 @@ object ContactsSidebar {
             contactsList.add(
                 ContactsData(
                     name = text(bookmark.name.take(maxLength), color),
+                    type = ContactsType.BOOKMARK,
+                    relation = null,
                     prefix = constructPrefixTextComponent(BOOKMARK_ICON.text, DARK_PURPLE),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
@@ -566,8 +615,76 @@ object ContactsSidebar {
         return textComponent.build()
     }
 
+    private fun convertRelationType(relation: NationRelation.Level): ContactsRelation {
+        return when (relation) {
+            NationRelation.Level.ENEMY -> ContactsRelation.ENEMY
+            NationRelation.Level.UNFRIENDLY -> ContactsRelation.UNFRIENDLY
+            NationRelation.Level.NEUTRAL -> ContactsRelation.NEUTRAL
+            NationRelation.Level.FRIENDLY -> ContactsRelation.FRIENDLY
+            NationRelation.Level.ALLY -> ContactsRelation.ALLY
+            NationRelation.Level.NATION -> ContactsRelation.NATION
+            NationRelation.Level.NONE -> ContactsRelation.NONE
+            else -> ContactsRelation.AI
+        }
+    }
+
+    private fun sortContacts(contactsList: MutableList<ContactsData>, player: Player) {
+        val sortOrder = ContactsSorting.entries[PlayerCache[player.uniqueId].contactsSort]
+
+        when (sortOrder) {
+            ContactsSorting.DISTANCE_ASCENDING -> contactsList.sortBy { it.distanceInt }
+
+            ContactsSorting.DISTANCE_DESCENDING -> contactsList.sortByDescending { it.distanceInt }
+
+            ContactsSorting.RELATION_ASCENDING -> contactsList.sortWith(Comparator<ContactsData> { o1, o2 ->
+                // if both object relations are null, maintain order
+                // if only object 1's relations are null, object 1 should appear after object 2
+                if (o1.relation == null) if (o2.relation == null) return@Comparator 0 else return@Comparator 1
+
+                // if only object 2's relations are null, object 1 should appear before object 2
+                if (o2.relation == null) return@Comparator -1
+
+                // then sort by relation
+                return@Comparator o1.relation.compareTo(o2.relation)
+            }
+                // sort by distance as secondary sorting criteria (if negative, o1 appears before o2; vice versa)
+                .thenComparing(Comparator<ContactsData> { o1, o2 -> return@Comparator o1.distanceInt.compareTo(o2.distanceInt) })
+            )
+
+            ContactsSorting.RELATION_DESCENDING -> contactsList.sortWith(Comparator<ContactsData> { o1, o2 ->
+                // continue to move null relations to the end of the list
+                if (o1.relation == null) {
+                    if (o2.relation == null) return@Comparator 0 else return@Comparator 1
+                }
+                if (o2.relation == null) {
+                    return@Comparator -1
+                }
+                return@Comparator o2.relation.compareTo(o1.relation)
+            }
+                // sort by distance
+                .thenComparing(Comparator<ContactsData> { o1, o2 -> return@Comparator o1.distanceInt.compareTo(o2.distanceInt) })
+            )
+
+            ContactsSorting.TYPE_ASCENDING -> contactsList.sortWith(Comparator<ContactsData> { o1, o2 ->
+                return@Comparator o1.type.compareTo(o2.type)
+            }
+                // sort by distance
+                .thenComparing(Comparator<ContactsData> { o1, o2 -> return@Comparator o1.distanceInt.compareTo(o2.distanceInt) })
+            )
+
+            ContactsSorting.TYPE_DESCENDING -> contactsList.sortWith(Comparator<ContactsData> { o1, o2 ->
+                return@Comparator o2.type.compareTo(o1.type)
+            }
+                // sort by distance
+                .thenComparing(Comparator<ContactsData> { o1, o2 -> return@Comparator o1.distanceInt.compareTo(o2.distanceInt) })
+            )
+        }
+    }
+
     data class ContactsData(
         val name: Component,
+        val type: ContactsType,
+        val relation: ContactsRelation?,
         val prefix: TextComponent,
         val suffix: TextComponent,
         val heading: TextComponent,
@@ -576,4 +693,34 @@ object ContactsSidebar {
         val distanceInt: Int,
         var padding: TextComponent
     )
+
+    enum class ContactsType {
+        STARSHIP,
+        LAST_STARSHIP,
+        PLANET,
+        STAR,
+        BEACON,
+        STATION,
+        BOOKMARK
+    }
+
+    enum class ContactsRelation {
+        AI,
+        NONE,
+        ENEMY,
+        UNFRIENDLY,
+        NEUTRAL,
+        FRIENDLY,
+        ALLY,
+        NATION
+    }
+
+    enum class ContactsSorting {
+        DISTANCE_ASCENDING,
+        DISTANCE_DESCENDING,
+        TYPE_ASCENDING,
+        TYPE_DESCENDING,
+        RELATION_ASCENDING,
+        RELATION_DESCENDING
+    }
 }

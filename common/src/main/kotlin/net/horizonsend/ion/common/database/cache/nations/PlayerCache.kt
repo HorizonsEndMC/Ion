@@ -40,6 +40,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 		var contactsDistance: Int = 6000,
 		var contactsMaxNameLength: Int = 64,
+		var contactsSort: Int = 0,
 		var contactsEnabled: Boolean = true,
 		var contactsStarships: Boolean = true,
 		var lastStarshipEnabled: Boolean = true,
@@ -156,6 +157,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val contactsMaxNameLength = it.int()
 					data.contactsMaxNameLength = contactsMaxNameLength
+				}
+			}
+
+			change[SLPlayer::contactsSort]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val contactsSort = it.int()
+					data.contactsSort = contactsSort
 				}
 			}
 
@@ -383,6 +393,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			blockedPlayerIDs = data.blockedPlayerIDs,
 			contactsDistance = data.contactsDistance,
 			contactsMaxNameLength = data.contactsMaxNameLength,
+			contactsSort = data.contactsSort,
 			contactsEnabled = data.contactsEnabled,
 			contactsStarships = data.contactsStarships,
 			lastStarshipEnabled = data.lastStarshipEnabled,

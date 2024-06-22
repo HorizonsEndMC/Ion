@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
+import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import org.bukkit.entity.Player
 import org.litote.kmongo.setValue
 
@@ -65,6 +66,18 @@ object SidebarContactsCommand : SLCommand() {
 		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsMaxNameLength, newLength))
 		PlayerCache[sender].contactsMaxNameLength = newLength
 		sender.success("Changed contacts max name length to $newLength")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts sortOrder")
+	fun onChangeContactsSortOrder(sender: Player) {
+		val currentSetting = PlayerCache[sender.uniqueId].contactsSort
+
+		// Keep newSetting in the range of the number of sort options
+		val newSetting = if (currentSetting < ContactsSidebar.ContactsSorting.entries.size - 1) currentSetting + 1 else 0
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsSort, newSetting))
+		PlayerCache[sender].contactsSort = newSetting
+		sender.success("Changed contacts sorting method to ${ContactsSidebar.ContactsSorting.entries[newSetting]}")
 	}
 
 	@Suppress("unused")
