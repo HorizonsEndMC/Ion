@@ -161,7 +161,10 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 		val key = toBlockKey(x, y, z)
 
 		val entity = multiblockEntities.remove(key)
+		entity?.removed = true
+
 		syncTickingMultiblockEntities.remove(key)
+		asyncTickingMultiblockEntities.remove(key)
 
 		return entity
 	}
