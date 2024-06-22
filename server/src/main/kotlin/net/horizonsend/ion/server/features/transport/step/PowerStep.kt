@@ -13,7 +13,7 @@ data class PowerExtractorOriginStep(
 	val extractable: List<PoweredMultiblockEntity>,
 	override val traversedNodes: MutableSet<TransportNode> = mutableSetOf(),
 ) : OriginStep {
-	override fun finishExtraction(final: TransportStep, amount: Int): Int {
+	override fun finishExtraction(final: TransportStep, remainingSpace: Int): Int {
 		if (extractable.isEmpty()) return 0
 
 		// Store multis that still have power
@@ -24,7 +24,7 @@ data class PowerExtractorOriginStep(
 
 		// The maximum that should be extracted
 		// If limited, pick the lower
-		val maxPower = min(amount, share)
+		val maxPower = min(remainingSpace, share)
 
 		// Remaining power to take
 		var remaining = maxPower
@@ -68,7 +68,7 @@ data class SolarPowerOriginStep(
 	override val traversedNodes: MutableSet<TransportNode> = mutableSetOf(),
 ) : OriginStep {
 	// Solar panels do not have any additional logic needed upon extraction
-	override fun finishExtraction(final: TransportStep, amount: Int): Int = amount
+	override fun finishExtraction(final: TransportStep, remainingSpace: Int): Int = power
 }
 
 data class PowerTransportStep(
