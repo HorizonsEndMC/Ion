@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
@@ -26,11 +27,6 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 
 	override var position by Delegates.notNull<Long>()
 
-	/**
-	 * Multiblocks that share this power input
-	 **/
-	val multis: MutableSet<PoweredMultiblockEntity> = ObjectOpenHashSet()
-
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		return node is PowerExtractorNode
@@ -46,12 +42,9 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 
 	override suspend fun buildRelations(position: BlockKey) {
 		super.buildRelations(position)
-
-		multis.clear()
-		multis.addAll(getPoweredMultiblocks(network))
 	}
 
-	private fun getPoweredMultiblocks(network: ChunkPowerNetwork): Iterable<PoweredMultiblockEntity> {
+	fun getPoweredMultiblocks(): Iterable<PoweredMultiblockEntity> {
 		val x = getX(position)
 		val y = getY(position)
 		val z = getZ(position)
@@ -62,7 +55,7 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 			val newZ = z + offset.z
 
 			val newKey = toBlockKey(newX, newY, newZ)
-			network.poweredMultiblockEntities[newKey]
+			network.manager.chunk.multiblockManager[newKey] as? PoweredMultiblockEntity
 		}
 	}
 
@@ -73,28 +66,32 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 		step as PowerTransportStep
 
 		val origin = step.origin
-		val multi = multis.randomOrNull() ?: return
+		val multis = getPoweredMultiblocks()
+//		println("Multis before: $multis")
+		val destinationMultiblock = multis
+			.filter { it as MultiblockEntity; !it.removed }
+			.randomOrNull() ?: return // println("No multis! origin: $origin")
 
-		val room = multi.maxPower - multi.getPower()
+		val room = destinationMultiblock.maxPower - destinationMultiblock.getPower()
 		val power = origin.finishExtraction(step, room)
 
 //		println("Finished extraction, returned $power power")
 
-		multi.addPower(power)
+		destinationMultiblock.addPower(power)
 
 //		println("Traversed nodes: ${step.traversedNodes}")
 		step.traversedNodes.forEach {
 			it.onCompleteChain(step, this, power)
 		}
 
-//		if (step.origin.currentNode is SolarPanelNode) return
-//
+		if (step.origin.currentNode is SolarPanelNode) return
+
 //		println("""
 //			Reached multiblock input
 //			Origin: $origin
 //
-//			Selected $multi
-//			Added $power to $multi
+//			Selected $destinationMultiblock
+//			Added $power to $destinationMultiblock
 //		""".trimIndent())
 	}
 
@@ -113,5 +110,5 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 		)
 	}
 
-	override fun toString(): String = "POWER INPUT NODE: ${multis.size} powered multiblocks, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
+	override fun toString(): String = "POWER INPUT NODE: ${getPoweredMultiblocks().toList().size} powered multiblocks, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
 }
