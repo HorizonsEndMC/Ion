@@ -123,6 +123,17 @@ object MultiblockAccess : IonServerComponent() {
 		return computeMultiblockAtLocation(world, x, y, z, face, true)
 	}
 
+	fun getMultiblock(sign: Sign, checkStructure: Boolean, loadChunks: Boolean): Multiblock? {
+		if (!checkStructure) {
+			return sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)?.let {
+				MultiblockRegistration.getByStorageName(it)
+			}
+		}
+
+		val origin = sign.getMultiblockOrigin()
+		return getMultiblock(sign.world, origin.x, origin.y, origin.z, sign.getFacing().oppositeFace, checkStructure, loadChunks)
+	}
+
 	/**
 	 * Handle the setup and creation of the multiblock. Assumes structure has already been checked.
 	 *
@@ -142,8 +153,6 @@ object MultiblockAccess : IonServerComponent() {
 				)
 
 				sign.isWaxed = true
-
-				println("Setting up")
 
 				multiblock.setupSign(detector, sign)
 
@@ -201,6 +210,8 @@ object MultiblockAccess : IonServerComponent() {
 
 		// Possible multiblocks from the sign
 		val possible = MultiblockRegistration.getBySignName(name)
+
+		if (possible.isEmpty()) return null
 
 		val found = computeMultiblockAtLocation(
 			world,
