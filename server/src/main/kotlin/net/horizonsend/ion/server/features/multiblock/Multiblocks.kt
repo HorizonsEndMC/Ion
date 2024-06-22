@@ -93,9 +93,6 @@ import net.horizonsend.ion.server.features.multiblock.type.particleshield.Shield
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass30
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass65
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass85
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerCellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier2
@@ -187,9 +184,9 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(PowerFurnaceMultiblockTier2)
 		registerMultiblock(PowerFurnaceMultiblockTier3)
 
-		registerMultiblock(PowerBankMultiblockTier1)
-		registerMultiblock(PowerBankMultiblockTier2)
-		registerMultiblock(PowerBankMultiblockTier3)
+//		registerMultiblock(PowerBankMultiblockTier1)
+//		registerMultiblock(PowerBankMultiblockTier2)
+//		registerMultiblock(PowerBankMultiblockTier3)
 
 		registerMultiblock(PowerCellMultiblock)
 		registerMultiblock(ChargerMultiblockTier1)
