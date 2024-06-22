@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.newer.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.block.Sign
@@ -32,7 +33,7 @@ interface InteractableMultiblock {
 				sign.z,
 				checkStructure = true,
 				loadChunks = false
-			)
+			) ?: MultiblockAccess.getMultiblock(sign, checkStructure = true, loadChunks = false)
 
 			if (multiblock !is InteractableMultiblock) return@launch
 

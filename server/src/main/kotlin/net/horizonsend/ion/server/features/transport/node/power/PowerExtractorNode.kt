@@ -87,7 +87,7 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 
 		val limit = getTransferPower()
 
-		val extractablePowerPool = extractableNodes.flatMap { it.multis }
+		val extractablePowerPool = extractableNodes.flatMap { it.getPoweredMultiblocks() }
 		val sum = extractablePowerPool.sumOf { it.getPower() }
 
 		if (sum == 0) return null
