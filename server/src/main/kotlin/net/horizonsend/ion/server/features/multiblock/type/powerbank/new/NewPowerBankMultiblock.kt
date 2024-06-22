@@ -1,19 +1,24 @@
 package net.horizonsend.ion.server.features.multiblock.type.powerbank.new
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.SignMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
+import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataType
 
-abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>(tierText: String) : Multiblock(), EntityMultiblock<T>, SignMultiblock {
+abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>(tierText: String) : Multiblock(), EntityMultiblock<T>, SignMultiblock, InteractableMultiblock {
 	abstract val tierMaterial: Material
 	override val name = "newpowerbank"
 
@@ -76,6 +81,18 @@ abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>
 		}
 	}
 
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		val world = sign.world
+		val origin = getOrigin(sign)
+
+		val entity = getMultiblockEntity(world, origin.x, origin.y, origin.z) as PowerBankEntity
+
+		player.information("Entity: $entity")
+		player.information("Removed: ${entity.removed}")
+		player.information("Power: ${entity.getPower()}")
+		player.information("Unsafe Power: ${entity.powerUnsafe}")
+	}
+
 	abstract class PowerBankEntity(
 		multiblock: NewPowerBankMultiblock<*>,
 		x: Int,
@@ -92,7 +109,7 @@ abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>
 		}
 
 		override fun toString(): String {
-			return "POWER BANK TIER: $multiblock! Power: $powerUnsafe!!!"
+			return "POWER BANK TIER: $multiblock! ${world.name} $x $y $z Power: ${getPower()}!!!"
 		}
 	}
 }
