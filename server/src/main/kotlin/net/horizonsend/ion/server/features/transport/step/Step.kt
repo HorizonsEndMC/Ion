@@ -36,9 +36,9 @@ interface OriginStep : Step {
 	 * Removes the appropriate amount of power. Returns the amount that was removed (and is available)
 	 *
 	 * @param final The final step of the chain
-	 * @param amount The limit of extraction (will use either this value or the maximum amount defined in this config, whichever is lower)
+	 * @param remainingSpace The limit of extraction (will use either this value or the maximum amount defined in this config, whichever is lower)
 	 **/
-	fun finishExtraction(final: TransportStep, amount: Int): Int
+	fun finishExtraction(final: TransportStep, remainingSpace: Int): Int
 }
 
 interface TransportStep : Step {

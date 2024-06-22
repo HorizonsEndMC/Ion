@@ -4,34 +4,24 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.node.NetworkType
-import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerNodeFactory
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.filterValuesIsInstance
 import org.bukkit.NamespacedKey
 import org.bukkit.block.BlockFace
-import java.util.concurrent.ConcurrentHashMap
 
 class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(manager) {
 	override val type: NetworkType = NetworkType.POWER
 	override val namespacedKey: NamespacedKey = NamespacedKeys.POWER_TRANSPORT
 	override val nodeFactory: PowerNodeFactory = PowerNodeFactory(this)
-
-	/**
-	 * A list of all the powered multiblock entities within the chunk
-	 **/
-	val poweredMultiblockEntities = ConcurrentHashMap<Long, PoweredMultiblockEntity>()
 
 	/** Store solar panels for ticking */
 	val solarPanels: ObjectOpenHashSet<SolarPanelNode> = ObjectOpenHashSet()
@@ -39,7 +29,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 	override val dataVersion: Int = 0 //TODO 1
 
 	override fun setup() {
-		collectPowerMultiblockEntities()
+
 	}
 
 	override fun processBlockRemoval(key: Long) { manager.scope.launch {
@@ -55,7 +45,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 	}}
 
 	private suspend fun tickSolars() {
-		for (solarPanel in nodes.filterValuesIsInstance<SolarPanelNode, BlockKey, TransportNode>().values.distinct()) {
+		for (solarPanel in solarPanels) {
 			runCatching { solarPanel.startStep()?.invoke() }.onFailure {
 				IonServer.slF4JLogger.error("Exception ticking solar panel! $it")
 				it.printStackTrace()
@@ -91,14 +81,6 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 
 		neighboring.forEach {
 			it.value.buildRelations(getRelative(new.locationKey, it.key))
-		}
-	}
-
-	private fun collectPowerMultiblockEntities() {
-		manager.chunk.multiblockManager.getAllMultiblockEntities().forEach { (key, entity) ->
-			if (entity !is PoweredMultiblockEntity) return@forEach
-
-			poweredMultiblockEntities[key] = entity
 		}
 	}
 
