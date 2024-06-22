@@ -33,6 +33,9 @@ abstract class MultiblockEntity(
 	var world: World,
 	var signDirection: BlockFace
 ): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion> {
+	/** Mark this entity as having been removed */
+	var removed: Boolean = false
+
 	override val persistentDataType: PersistentMultiblockData.Companion = PersistentMultiblockData.Companion
 	val position: BlockKey get() = toBlockKey(x, y, z)
 
