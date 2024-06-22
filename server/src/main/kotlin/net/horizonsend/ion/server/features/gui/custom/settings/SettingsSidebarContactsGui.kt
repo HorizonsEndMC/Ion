@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
+import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -37,6 +38,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         EnableButton(),
         ContactsDistanceButton(),
         ContactsMaxNameLengthButton(),
+        ContactsSortOrderButton(),
         StarshipsButton(),
         LastStarshipsButton(),
         PlanetsButton(),
@@ -80,6 +82,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
             PlayerCache[player.uniqueId].contactsEnabled,
             PlayerCache[player.uniqueId].contactsDistance,
             PlayerCache[player.uniqueId].contactsMaxNameLength,
+            PlayerCache[player.uniqueId].contactsSort,
             PlayerCache[player.uniqueId].contactsStarships,
             PlayerCache[player.uniqueId].lastStarshipEnabled,
             PlayerCache[player.uniqueId].planetsEnabled,
@@ -118,6 +121,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
                     // Index values correlating to the Int setting
                     1 -> text(PlayerCache[player.uniqueId].contactsDistance)
                     2 -> text(PlayerCache[player.uniqueId].contactsMaxNameLength)
+                    3 -> text(ContactsSidebar.ContactsSorting.entries[PlayerCache[player.uniqueId].contactsSort].toString())
                     else -> Component.empty()
                 },
                 line = line + 1,
@@ -167,6 +171,17 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarContactsMaxNameLengthGui.open(player)
+        }
+    }
+
+    private class ContactsSortOrderButton : GuiItems.AbstractButtonItem(
+        text("Change Sort Order").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onChangeContactsSortOrder(player)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
