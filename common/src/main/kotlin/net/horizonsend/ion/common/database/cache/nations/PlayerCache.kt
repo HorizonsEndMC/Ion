@@ -41,6 +41,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var contactsDistance: Int = 6000,
 		var contactsMaxNameLength: Int = 64,
 		var contactsSort: Int = 0,
+		var contactsColoring: Int = 0,
 		var contactsEnabled: Boolean = true,
 		var contactsStarships: Boolean = true,
 		var lastStarshipEnabled: Boolean = true,
@@ -166,6 +167,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val contactsSort = it.int()
 					data.contactsSort = contactsSort
+				}
+			}
+
+			change[SLPlayer::contactsColoring]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val contactsColoring = it.int()
+					data.contactsColoring = contactsColoring
 				}
 			}
 
@@ -394,6 +404,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			contactsDistance = data.contactsDistance,
 			contactsMaxNameLength = data.contactsMaxNameLength,
 			contactsSort = data.contactsSort,
+			contactsColoring = data.contactsColoring,
 			contactsEnabled = data.contactsEnabled,
 			contactsStarships = data.contactsStarships,
 			lastStarshipEnabled = data.lastStarshipEnabled,

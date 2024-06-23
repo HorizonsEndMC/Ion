@@ -81,6 +81,18 @@ object SidebarContactsCommand : SLCommand() {
 	}
 
 	@Suppress("unused")
+	@Subcommand("contacts coloring")
+	fun onChangeContactsColoring(sender: Player) {
+		val currentSetting = PlayerCache[sender.uniqueId].contactsColoring
+
+		// Keep newSetting in the range of the number of sort options
+		val newSetting = if (currentSetting < ContactsSidebar.ContactsColoring.entries.size - 1) currentSetting + 1 else 0
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::contactsColoring, newSetting))
+		PlayerCache[sender].contactsColoring = newSetting
+		sender.success("Changed contacts coloring to ${ContactsSidebar.ContactsColoring.entries[newSetting]}")
+	}
+
+	@Suppress("unused")
 	@Subcommand("contacts starship")
 	fun onToggleStarship(
 		sender: Player,

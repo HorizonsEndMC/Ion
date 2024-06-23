@@ -12,13 +12,13 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
-import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GENERIC_STARSHIP_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.INTERDICTION_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.PLANET_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.SIEGE_STATION_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STAR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STATION_ICON
 import net.horizonsend.ion.server.features.space.CachedPlanet
@@ -270,6 +270,7 @@ object ContactsSidebar {
         val currentStarship = PilotedStarships[player]
         val interdictionLocation = currentStarship?.centerOfMass?.toVector() ?: playerVector
         val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
 
         for (starship in starships) {
             val otherController = starship.controller
@@ -282,14 +283,24 @@ object ContactsSidebar {
             val interdictionDistance = starship.centerOfMass.toVector().distance(interdictionLocation).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
             val height = vector.y.toInt()
-            val color = distanceColor(distance)
+
+            val color = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
+                ContactsColoring.BY_RELATION.ordinal -> playerRelationColor(player, otherController)
+                else -> distanceColor(distance)
+            }
+            val prefixColor = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> playerRelationColor(player, otherController)
+                ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
+                else -> playerRelationColor(player, otherController)
+            }
 
             contactsList.add(
                 ContactsData(
                     name = text(starship.identifier.take(maxLength), color),
                     type = ContactsType.STARSHIP,
                     relation = playerRelationType(player, otherController),
-                    prefix = constructPrefixTextComponent(starship.type.icon, playerRelationColor(player, otherController)),
+                    prefix = constructPrefixTextComponent(starship.type.icon, prefixColor),
                     suffix = constructSuffixTextComponent(
                         if (currentStarship != null) {
                             autoTurretTextComponent(currentStarship, starship)
@@ -315,6 +326,7 @@ object ContactsSidebar {
     ) {
         val lastStarship = LastPilotedStarship.map[player.uniqueId]
         val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
 
         if (lastStarship != null &&
             lastStarship.world == player.world &&
@@ -324,14 +336,24 @@ object ContactsSidebar {
             val distance = vector.distance(sourceVector).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
-            val color = distanceColor(distance)
+
+            val color = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
+                ContactsColoring.BY_RELATION.ordinal -> GRAY
+                else -> distanceColor(distance)
+            }
+            val prefixColor = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> YELLOW
+                ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
+                else -> YELLOW
+            }
 
             contactsList.add(
                 ContactsData(
                     name = text("Last Piloted Starship".take(maxLength), color),
                     type = ContactsType.LAST_STARSHIP,
                     relation = null,
-                    prefix = constructPrefixTextComponent(GENERIC_STARSHIP_ICON.text, YELLOW),
+                    prefix = constructPrefixTextComponent(GENERIC_STARSHIP_ICON.text, prefixColor),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
@@ -350,20 +372,31 @@ object ContactsSidebar {
         player: Player
     ) {
         val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
 
         for (planet in planets) {
             val vector = planet.location.toVector()
             val distance = vector.distance(sourceVector).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
-            val color = distanceColor(distance)
+
+            val color = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
+                ContactsColoring.BY_RELATION.ordinal -> GRAY
+                else -> distanceColor(distance)
+            }
+            val prefixColor = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> DARK_AQUA
+                ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
+                else -> DARK_AQUA
+            }
 
             contactsList.add(
                 ContactsData(
                     name = text(planet.name.take(maxLength), color),
                     type = ContactsType.PLANET,
                     relation = null,
-                    prefix = constructPrefixTextComponent(PLANET_ICON.text, DARK_AQUA),
+                    prefix = constructPrefixTextComponent(PLANET_ICON.text, prefixColor),
                     suffix = constructSuffixTextComponent(
                         interdictionTextComponent(
                             distance,
@@ -388,20 +421,31 @@ object ContactsSidebar {
         player: Player
     ) {
         val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
 
         for (star in stars) {
             val vector = star.location.toVector()
             val distance = vector.distance(sourceVector).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
-            val color = distanceColor(distance)
+
+            val color = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
+                ContactsColoring.BY_RELATION.ordinal -> GRAY
+                else -> distanceColor(distance)
+            }
+            val prefixColor = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> YELLOW
+                ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
+                else -> YELLOW
+            }
 
             contactsList.add(
                 ContactsData(
                     name = text(star.name.take(maxLength), color),
                     type = ContactsType.STAR,
                     relation = null,
-                    prefix = constructPrefixTextComponent(STAR_ICON.text, YELLOW),
+                    prefix = constructPrefixTextComponent(STAR_ICON.text, prefixColor),
                     suffix = constructSuffixTextComponent(
                         interdictionTextComponent(
                             distance,
@@ -426,20 +470,31 @@ object ContactsSidebar {
         player: Player
     ) {
         val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
 
         for (beacon in beacons) {
             val vector = beacon.spaceLocation.toVector()
             val distance = vector.distance(sourceVector).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
-            val color = distanceColor(distance)
+
+            val color = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
+                ContactsColoring.BY_RELATION.ordinal -> GRAY
+                else -> distanceColor(distance)
+            }
+            val prefixColor = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> BLUE
+                ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
+                else -> BLUE
+            }
 
             contactsList.add(
                 ContactsData(
                     name = text(beacon.name.take(maxLength), color),
                     type = ContactsType.BEACON,
                     relation = null,
-                    prefix = constructPrefixTextComponent(HYPERSPACE_BEACON_ENTER_ICON.text, BLUE),
+                    prefix = constructPrefixTextComponent(HYPERSPACE_BEACON_ENTER_ICON.text, prefixColor),
                     suffix = constructSuffixTextComponent(beaconTextComponent(beacon.prompt)),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
@@ -458,20 +513,31 @@ object ContactsSidebar {
         player: Player
     ) {
         val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
 
         for (station in stations) {
             val vector = Vector(station.x, 192, station.z)
             val distance = vector.distance(sourceVector).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
-            val color = distanceColor(distance)
+
+            val color = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
+                ContactsColoring.BY_RELATION.ordinal -> stationRelationColor(player, station)
+                else -> distanceColor(distance)
+            }
+            val prefixColor = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> stationRelationColor(player, station)
+                ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
+                else -> stationRelationColor(player, station)
+            }
 
             contactsList.add(
                 ContactsData(
                     name = text(station.name.take(maxLength), color),
                     type = ContactsType.STATION,
                     relation = stationRelationType(player, station),
-                    prefix = constructPrefixTextComponent(STATION_ICON.text, stationRelationColor(player, station)),
+                    prefix = constructPrefixTextComponent(STATION_ICON.text, prefixColor),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
@@ -490,22 +556,31 @@ object ContactsSidebar {
         player: Player
     ) {
         val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
 
         for (station in capturableStations) {
             val vector = station.loc.toVector()
             val distance = vector.distance(sourceVector).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
-            val color = distanceColor(distance)
+
+            val color = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
+                ContactsColoring.BY_RELATION.ordinal -> capturableStationRelationColor(player, station)
+                else -> distanceColor(distance)
+            }
+            val prefixColor = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> capturableStationRelationColor(player, station)
+                ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
+                else -> capturableStationRelationColor(player, station)
+            }
 
             contactsList.add(
                 ContactsData(
                     name = text(station.name.take(maxLength), color),
                     type = ContactsType.STATION,
                     relation = capturableStationRelationType(player, station),
-                    prefix = constructPrefixTextComponent(
-                        SidebarIcon.SIEGE_STATION_ICON.text,
-                        capturableStationRelationColor(player, station)),
+                    prefix = constructPrefixTextComponent(SIEGE_STATION_ICON.text, prefixColor),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
@@ -524,20 +599,31 @@ object ContactsSidebar {
         player: Player
     ) {
         val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
+        val colorSetting = PlayerCache[player.uniqueId].contactsColoring
 
         for (bookmark in bookmarks) {
             val vector = Vector(bookmark.x, bookmark.y, bookmark.z)
             val distance = vector.distance(sourceVector).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
-            val color = distanceColor(distance)
+
+            val color = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
+                ContactsColoring.BY_RELATION.ordinal -> GRAY
+                else -> distanceColor(distance)
+            }
+            val prefixColor = when (colorSetting) {
+                ContactsColoring.BY_DISTANCE.ordinal -> DARK_PURPLE
+                ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
+                else -> DARK_PURPLE
+            }
 
             contactsList.add(
                 ContactsData(
                     name = text(bookmark.name.take(maxLength), color),
                     type = ContactsType.BOOKMARK,
                     relation = null,
-                    prefix = constructPrefixTextComponent(BOOKMARK_ICON.text, DARK_PURPLE),
+                    prefix = constructPrefixTextComponent(BOOKMARK_ICON.text, prefixColor),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
@@ -722,5 +808,10 @@ object ContactsSidebar {
         TYPE_DESCENDING,
         RELATION_ASCENDING,
         RELATION_DESCENDING
+    }
+
+    enum class ContactsColoring {
+        BY_DISTANCE,
+        BY_RELATION
     }
 }

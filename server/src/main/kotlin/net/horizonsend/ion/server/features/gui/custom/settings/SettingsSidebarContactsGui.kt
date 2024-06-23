@@ -39,6 +39,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         ContactsDistanceButton(),
         ContactsMaxNameLengthButton(),
         ContactsSortOrderButton(),
+        ContactsColoringButton(),
         StarshipsButton(),
         LastStarshipsButton(),
         PlanetsButton(),
@@ -83,6 +84,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
             PlayerCache[player.uniqueId].contactsDistance,
             PlayerCache[player.uniqueId].contactsMaxNameLength,
             PlayerCache[player.uniqueId].contactsSort,
+            PlayerCache[player.uniqueId].contactsColoring,
             PlayerCache[player.uniqueId].contactsStarships,
             PlayerCache[player.uniqueId].lastStarshipEnabled,
             PlayerCache[player.uniqueId].planetsEnabled,
@@ -122,6 +124,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
                     1 -> text(PlayerCache[player.uniqueId].contactsDistance)
                     2 -> text(PlayerCache[player.uniqueId].contactsMaxNameLength)
                     3 -> text(ContactsSidebar.ContactsSorting.entries[PlayerCache[player.uniqueId].contactsSort].toString())
+                    4 -> text(ContactsSidebar.ContactsColoring.entries[PlayerCache[player.uniqueId].contactsColoring].toString())
                     else -> Component.empty()
                 },
                 line = line + 1,
@@ -180,6 +183,17 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onChangeContactsSortOrder(player)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class ContactsColoringButton : GuiItems.AbstractButtonItem(
+        text("Change Coloring").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onChangeContactsColoring(player)
 
             windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
