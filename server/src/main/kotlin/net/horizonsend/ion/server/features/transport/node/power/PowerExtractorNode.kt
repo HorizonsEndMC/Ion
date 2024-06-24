@@ -7,21 +7,20 @@ import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
-import net.horizonsend.ion.server.features.transport.step.PowerExtractorOriginStep
-import net.horizonsend.ion.server.features.transport.step.PowerTransportStep
-import net.horizonsend.ion.server.features.transport.step.Step
+import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
+import net.horizonsend.ion.server.features.transport.step.new.NewStep
+import net.horizonsend.ion.server.features.transport.step.origin.ExtractorPowerOrigin
+import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
-import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
-class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, SourceNode {
+class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, SourceNode<ChunkPowerNetwork> {
 	override var position by Delegates.notNull<Long>()
 
 	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
@@ -34,7 +33,7 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		if (node is PowerInputNode) return false
-		return node !is SourceNode
+		return node !is SourceNode<*>
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
@@ -71,32 +70,31 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 		}
 	}
 
-	override suspend fun handleStep(step: Step) {
-		// Nothing can transfer to extractors
-		step as PowerExtractorOriginStep
-
-		val next = getTransferableNodes().randomOrNull() ?: return
-
-		// Simply move on to the next node
-		PowerTransportStep(step, step.steps, next, step, step.traversedNodes).invoke()
+	private var lastTicked: Long = System.currentTimeMillis()
+	fun markTicked() {
+		lastTicked = System.currentTimeMillis()
 	}
 
-	var lastTicked: Long = System.currentTimeMillis()
-
-	override suspend fun startStep(): PowerExtractorOriginStep? {
+	override suspend fun startStep(): NewStep<ChunkPowerNetwork>? {
+		lastTicked = System.currentTimeMillis()
 		if (extractableNodes.isEmpty()) return null
 
-		val limit = getTransferPower()
-
 		val extractablePowerPool = extractableNodes.flatMap { it.getPoweredMultiblocks() }
-		val sum = extractablePowerPool.sumOf { it.getPower() }
+		if (extractablePowerPool.all { it.isEmpty() }) return null
 
-		if (sum == 0) return null
-
-		val extractablePower = min(sum, limit)
-
-		return PowerExtractorOriginStep(AtomicInteger(), this, extractablePower, extractablePowerPool)
+		return NewStep(
+			network = this.network,
+			origin = getOriginData()
+		) {
+			SinglePowerBranchHead(
+				holder = this,
+				currentNode = this@PowerExtractorNode,
+				share = 1.0,
+			)
+		}
 	}
+
+	override suspend fun getOriginData(): StepOrigin<ChunkPowerNetwork> = ExtractorPowerOrigin(this)
 
 	fun getTransferPower(): Int {
 		val interval = IonServer.transportSettings.extractorTickIntervalMS.toDouble()

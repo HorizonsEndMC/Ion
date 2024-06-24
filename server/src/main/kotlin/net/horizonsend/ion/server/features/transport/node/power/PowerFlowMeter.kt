@@ -4,10 +4,12 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.type.IntermediateNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
-import net.horizonsend.ion.server.features.transport.step.PowerTransportStep
-import net.horizonsend.ion.server.features.transport.step.Step
+import net.horizonsend.ion.server.features.transport.step.head.BranchHead
+import net.horizonsend.ion.server.features.transport.step.result.MoveForward
+import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.kyori.adventure.text.Component
@@ -15,7 +17,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode {
+class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, IntermediateNode<ChunkPowerNetwork> {
 	// The position will always be set
 	override var position by Delegates.notNull<Long>()
 
@@ -26,7 +28,7 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode {
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
-		return node !is SourceNode
+		return node !is SourceNode<*>
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
@@ -37,33 +39,21 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode {
 		position = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
 	}
 
-	override suspend fun handleStep(step: Step) {
-		// This is not an origin node, so we can assume that it is not an origin step
-		step as PowerTransportStep
-
-		val next = getTransferableNodes()
-			.filterNot { step.traversedNodes.contains(it) }
-			.filterNot { step.previous.currentNode == it }
-			.randomOrNull() ?: return
-
+	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
 		// Simply move on to the next node
-		PowerTransportStep(
-			step.origin,
-			step.steps,
-			next,
-			step,
-			step.traversedNodes
-		).invoke()
+		return MoveForward()
 	}
+
+	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? = getTransferableNodes()
+		.filterNot { head.previousNodes.contains(it) }
+		.randomOrNull()
 
 	private var lastStepped: Long = System.currentTimeMillis()
 
 	private val STORED_AVERAGES = 20
 	private val averages = mutableListOf<TransferredPower>()
 
-	override suspend fun onCompleteChain(final: Step, destination: PowerInputNode, transferred: Int) {
-		final as PowerTransportStep
-
+	override suspend fun onCompleteChain(final: BranchHead<*>, destination: PowerInputNode, transferred: Int) {
 		addAverage(TransferredPower(transferred, System.currentTimeMillis()))
 
 		network.world.sendMessage(Component.text("Running average transferred is ${calculateAverage()}"))
