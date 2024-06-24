@@ -27,6 +27,9 @@ interface PoweredMultiblockEntity {
 		updatePowerVisually()
 	}
 
+	fun isEmpty() = getPower() <= 0
+	fun isFull() = getPower() >= maxPower
+
 	fun getPower(): Int {
 		return powerUnsafe
 	}
