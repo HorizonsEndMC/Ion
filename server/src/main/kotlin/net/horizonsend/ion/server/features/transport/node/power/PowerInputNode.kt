@@ -6,9 +6,12 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultibl
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.type.DestinationNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
-import net.horizonsend.ion.server.features.transport.step.PowerTransportStep
-import net.horizonsend.ion.server.features.transport.step.Step
+import net.horizonsend.ion.server.features.transport.step.head.BranchHead
+import net.horizonsend.ion.server.features.transport.step.new.NewStep
+import net.horizonsend.ion.server.features.transport.step.origin.ExtractorPowerOrigin
+import net.horizonsend.ion.server.features.transport.step.origin.PowerOrigin
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -20,7 +23,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
+class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode, DestinationNode<ChunkPowerNetwork> {
 	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 	}
@@ -59,42 +62,6 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 		}
 	}
 
-	override suspend fun handleStep(step: Step) {
-		step.traversedNodes.add(this)
-
-		// This is not an origin node, so we can assume that it is not an origin step
-		step as PowerTransportStep
-
-		val origin = step.origin
-		val multis = getPoweredMultiblocks()
-//		println("Multis before: $multis")
-		val destinationMultiblock = multis
-			.filter { it as MultiblockEntity; !it.removed }
-			.randomOrNull() ?: return // println("No multis! origin: $origin")
-
-		val room = destinationMultiblock.maxPower - destinationMultiblock.getPower()
-		val power = origin.finishExtraction(step, room)
-
-//		println("Finished extraction, returned $power power")
-
-		destinationMultiblock.addPower(power)
-
-//		println("Traversed nodes: ${step.traversedNodes}")
-		step.traversedNodes.forEach {
-			it.onCompleteChain(step, this, power)
-		}
-
-		if (step.origin.currentNode is SolarPanelNode) return
-
-//		println("""
-//			Reached multiblock input
-//			Origin: $origin
-//
-//			Selected $destinationMultiblock
-//			Added $power to $destinationMultiblock
-//		""".trimIndent())
-	}
-
 	companion object {
 		private val offsets = setOf(
 			// most multiblocks have the sign a block up and out of the computer
@@ -108,6 +75,32 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode {
 			// up and down
 			Vec3i(0, 1, 0), Vec3i(0, -1, 0)
 		)
+	}
+
+	override suspend fun finishChain(head: BranchHead<ChunkPowerNetwork>) {
+		head.setDead()
+		val origin = (head.holder as NewStep<ChunkPowerNetwork>).origin
+
+		val multis = getPoweredMultiblocks()
+
+		val destinationMultiblock = multis
+			.filter { it as MultiblockEntity; !it.removed }
+			.randomOrNull() ?: return // println("No multis! origin: $origin")
+
+		val power: Int = when (origin) {
+			is PowerOrigin -> origin.getTransferPower(destinationMultiblock)
+			else -> throw NotImplementedError("Unknown power origin $origin")
+		}
+
+//		println("Finished extraction, returned $power power")
+
+		val remainder = if (origin is ExtractorPowerOrigin) origin.removeOrigin(power) else 0
+		destinationMultiblock.addPower(power - remainder)
+
+//		println("Traversed nodes: ${step.traversedNodes}")
+		head.previousNodes.forEach {
+			it.onCompleteChain(head, this, power)
+		}
 	}
 
 	override fun toString(): String = "POWER INPUT NODE: ${getPoweredMultiblocks().toList().size} powered multiblocks, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"

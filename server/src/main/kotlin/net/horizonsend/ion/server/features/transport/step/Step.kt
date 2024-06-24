@@ -12,7 +12,6 @@ interface Step {
 		if (steps.incrementAndGet() > MAX_DEPTH) return
 
 		traversedNodes.add(currentNode)
-		currentNode.handleStep(this)
 
 //		println("""
 //			Step has been invoked
