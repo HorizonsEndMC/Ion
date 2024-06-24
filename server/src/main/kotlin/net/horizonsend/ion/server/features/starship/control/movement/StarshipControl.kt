@@ -66,6 +66,8 @@ object StarshipControl : IonServerComponent() {
 	private fun processDirectControl(starship: ActiveControlledStarship) {
 		val controller = starship.controller
 
+		if (starship.isTeleporting) return
+
 		if (starship.type == PLATFORM) return controller.userErrorAction("This ship type is not capable of moving.")
 
 		if (Hyperspace.isWarmingUp(starship) || Hyperspace.isMoving(starship)) {
