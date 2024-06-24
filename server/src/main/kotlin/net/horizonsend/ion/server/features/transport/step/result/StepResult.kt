@@ -4,6 +4,6 @@ import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwo
 import net.horizonsend.ion.server.features.transport.step.head.HeadHolder
 
 interface StepResult<T: ChunkTransportNetwork> {
-	fun apply(head: HeadHolder<T>)
+	suspend fun apply(headHolder: HeadHolder<T>)
 }
 

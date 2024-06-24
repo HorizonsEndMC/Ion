@@ -6,27 +6,24 @@ import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwo
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.DestinationNode
 import net.horizonsend.ion.server.features.transport.node.type.IntermediateNode
+import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.head.HeadHolder
-import net.horizonsend.ion.server.features.transport.step.head.SingleHead
-import net.horizonsend.ion.server.features.transport.step.head.StepHead
-import net.horizonsend.ion.server.features.transport.step.new.NewStep
+import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
 
 /**
  * Transferred power down a single path.
  *
  *
  **/
-class SinglePowerHead(
+class SinglePowerBranchHead(
 	override val holder: HeadHolder<ChunkPowerNetwork>,
-	override var head: TransportNode,
-	override val parent: NewStep<ChunkPowerNetwork>,
+	override var currentNode: TransportNode,
 	override val share: Double,
-	override val coveredNodes: MutableSet<TransportNode> = mutableSetOf(),
-	override var currentNode: TransportNode
-) : SingleHead<ChunkPowerNetwork>, PowerStepHead {
+	override val previousNodes: MutableSet<TransportNode> = mutableSetOf()
+) : SingleBranchHead<ChunkPowerNetwork>, PowerBranchHead {
 	private var isDead = false
 
-	private fun setDead() {
+	override fun setDead() {
 		isDead = true
 	}
 
@@ -35,11 +32,11 @@ class SinglePowerHead(
 	override suspend fun stepForward() {
 		val node = currentNode
 
-		if (tryCast<DestinationNode<ChunkPowerNetwork>>(node) { finishChain(this@SinglePowerHead) }) return
+		if (tryCast<DestinationNode<ChunkPowerNetwork>>(node) { finishChain(this@SinglePowerBranchHead) }) return
 
 		node as IntermediateNode<ChunkTransportNetwork1>
 
-		val result = node.handleHeadStep(this as StepHead<ChunkTransportNetwork>)
+		val result = node.handleHeadStep(this as BranchHead<ChunkTransportNetwork>)
 		result.apply(holder as HeadHolder<ChunkTransportNetwork>)
 	}
 
