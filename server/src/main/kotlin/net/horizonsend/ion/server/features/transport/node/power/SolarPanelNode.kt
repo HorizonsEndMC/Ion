@@ -6,11 +6,15 @@ import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.type.IntermediateNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
-import net.horizonsend.ion.server.features.transport.step.PowerTransportStep
-import net.horizonsend.ion.server.features.transport.step.SolarPowerOriginStep
-import net.horizonsend.ion.server.features.transport.step.Step
+import net.horizonsend.ion.server.features.transport.step.head.BranchHead
+import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
+import net.horizonsend.ion.server.features.transport.step.new.NewStep
+import net.horizonsend.ion.server.features.transport.step.origin.SolarPowerOrigin
+import net.horizonsend.ion.server.features.transport.step.result.MoveForward
+import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_EXTRACTORS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -21,7 +25,6 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
 import kotlin.math.PI
 import kotlin.math.max
@@ -30,7 +33,11 @@ import kotlin.math.sin
 /**
  * Represents a solar panel, or multiple
  **/
-class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarPanelNode, SolarPanelNode>, SourceNode {
+class SolarPanelNode(
+	override val network: ChunkPowerNetwork
+) : MultiNode<SolarPanelNode, SolarPanelNode>,
+	SourceNode<ChunkPowerNetwork>,
+	IntermediateNode<ChunkPowerNetwork> {
 	override val positions: MutableSet<BlockKey> = LongOpenHashSet()
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
@@ -215,34 +222,36 @@ class SolarPanelNode(override val network: ChunkPowerNetwork) : MultiNode<SolarP
 		new.extractorPositions.addAll(extractorPositions)
 	}
 
-	private fun findClosestOrExit(): TransportNode? {
-		val neighbors = getTransferableNodes()
-		return neighbors.shuffled().firstOrNull { it !is SolarPanelNode } ?:
-			neighbors
-				.filterIsInstance<SolarPanelNode>()
-				.shuffled() // Make sure the lowest priority, if multiple is random every time
-				.minByOrNull { it.exitDistance }
-	}
+	override suspend fun getOriginData(): SolarPowerOrigin = SolarPowerOrigin(this)
 
-	// Solar panel pathfinding logic:
-	// Find the closest exit from the solar fiend and transfer to it
-	override suspend fun handleStep(step: Step) {
-		val next = findClosestOrExit() ?: return
-
-		when (step) {
-			is PowerTransportStep -> PowerTransportStep(step.origin, step.steps, next, step, step.traversedNodes)
-			is SolarPowerOriginStep -> PowerTransportStep(step, step.steps, next, step, step.traversedNodes)
-			else -> throw NotImplementedError("Unrecognized step type $step")
-		}.invoke()
-	}
-
-	override suspend fun startStep(): SolarPowerOriginStep? {
-		val power = tickAndGetPower()
+	override suspend fun startStep(): NewStep<ChunkPowerNetwork>? {
+		val power = getPower()
 		if (power <= 0) return null
 
-//		println("Starting solar step")
+		return NewStep(
+			network = this.network,
+			origin = getOriginData()
+		) {
+			SinglePowerBranchHead(
+				holder = this,
+				currentNode = this@SolarPanelNode,
+				share = 1.0,
+			)
+		}
+	}
 
-		return SolarPowerOriginStep(AtomicInteger(), this, power)
+	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+		// Simply move on to the next node
+		return MoveForward()
+	}
+
+	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? {
+		val neighbors = getTransferableNodes()
+		return neighbors.shuffled().firstOrNull { it !is SolarPanelNode } ?:
+		neighbors
+			.filterIsInstance<SolarPanelNode>()
+			.shuffled() // Make sure the lowest priority, if multiple is random every time
+			.minByOrNull { it.exitDistance }
 	}
 
 	override fun loadIntoNetwork() {
