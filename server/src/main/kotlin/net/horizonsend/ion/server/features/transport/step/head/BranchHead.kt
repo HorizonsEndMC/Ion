@@ -2,15 +2,12 @@ package net.horizonsend.ion.server.features.transport.step.head
 
 import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.step.new.NewStep
 
-interface StepHead<T: ChunkTransportNetwork> {
+interface BranchHead<T: ChunkTransportNetwork> {
 	val holder: HeadHolder<T>
-	val parent: NewStep<T>
-	var currentNode: TransportNode
 
 	/** Nodes that this head has covered */
-	val coveredNodes: MutableSet<TransportNode>
+	val previousNodes: MutableSet<TransportNode>
 
 	/**
 	 * Moves this step forward
@@ -20,4 +17,7 @@ interface StepHead<T: ChunkTransportNetwork> {
 
 	/** Returns whether this head is dead */
 	fun isDead(): Boolean
+
+	/** Sets this branch to be dead */
+	fun setDead()
 }
