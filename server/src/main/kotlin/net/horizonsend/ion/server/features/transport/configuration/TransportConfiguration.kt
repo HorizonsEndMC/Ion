@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TransportConfiguration(
-	val extractorTickIntervalMS: Long,
-	val maxPowerRemovedPerExtractorTick: Int
+	val extractorTickIntervalMS: Long = 2000,
+	val maxPowerRemovedPerExtractorTick: Int = 1000
 ) {
 
 }
