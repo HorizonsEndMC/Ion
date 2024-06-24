@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
@@ -98,7 +99,9 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 	}
 
 	fun getTransferPower(): Int {
-		return (ChunkPowerNetwork.POWER_EXTRACTOR_STEP * ((System.currentTimeMillis() - lastTicked) / 2000.0)).roundToInt()
+		val interval = IonServer.transportSettings.extractorTickIntervalMS.toDouble()
+
+		return (IonServer.transportSettings.maxPowerRemovedPerExtractorTick * ((System.currentTimeMillis() - lastTicked) / interval)).roundToInt()
 	}
 
 	override fun toString(): String = "POWER Extractor NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
