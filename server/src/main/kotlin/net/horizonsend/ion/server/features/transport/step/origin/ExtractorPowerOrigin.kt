@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.features.transport.step.origin
 
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 
 class ExtractorPowerOrigin(
 	val origin: PowerExtractorNode
-) : StepOrigin<ChunkPowerNetwork> {
+) : StepOrigin<ChunkPowerNetwork>, PowerOrigin {
 	/**
 	 * Remove power from the origin extractor's multiblocks.
 	 *
@@ -54,5 +55,20 @@ class ExtractorPowerOrigin(
 		}
 
 		return removeRemaining
+	}
+
+	private fun getAvailablePower(): Int = origin.extractableNodes
+		.flatMap { it.getPoweredMultiblocks() }
+		.distinct()
+		.filterNot { (it as MultiblockEntity).removed }
+		.sumOf { it.getPower() }
+
+	fun finish() {
+		origin.markTicked()
+	}
+
+	override fun getTransferPower(destination: PoweredMultiblockEntity): Int {
+		val room = destination.maxPower - destination.getPower()
+		return minOf(room, origin.getTransferPower(), getAvailablePower())
 	}
 }
