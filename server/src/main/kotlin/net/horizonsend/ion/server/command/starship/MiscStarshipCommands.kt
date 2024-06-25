@@ -33,7 +33,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.client.display.PlanetSpaceRendering
+import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
@@ -180,7 +180,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("jump")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
 	fun onJump(sender: Player) {
-		val selectedPlanetData = PlanetSpaceRendering.planetSelectorDataMap[sender.uniqueId]
+		val selectedPlanetData = HudIcons.selectorDataMap[sender.uniqueId]
 		if (selectedPlanetData != null) {
 			// player is looking at a planet in their HUD
 			onJump(sender, selectedPlanetData.name, null)
