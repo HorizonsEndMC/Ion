@@ -24,14 +24,18 @@ import xyz.xenondevs.invui.item.Item
 import kotlin.math.ceil
 import kotlin.math.min
 
-object SettingsHudPlanetsGui : AbstractBackgroundPagedGui {
+object SettingsHudIconsGui : AbstractBackgroundPagedGui {
 
     private const val SETTINGS_PER_PAGE = 5
     private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
 
     private val BUTTONS_LIST = listOf(
-        ImageButton(),
-        SelectorButton()
+        SelectorButton(),
+        PlanetsButton(),
+        StarsButton(),
+        BeaconsButton(),
+        StationsButton(),
+        BookmarksButton()
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -66,12 +70,16 @@ object SettingsHudPlanetsGui : AbstractBackgroundPagedGui {
     override fun createText(player: Player, currentPage: Int): Component {
 
         val enabledSettings = listOf(
+            PlayerCache[player.uniqueId].hudPlanetsSelector,
             PlayerCache[player.uniqueId].hudPlanetsImage,
-            PlayerCache[player.uniqueId].hudPlanetsSelector
+            PlayerCache[player.uniqueId].hudIconStars,
+            PlayerCache[player.uniqueId].hudIconBeacons,
+            PlayerCache[player.uniqueId].hudIconStations,
+            PlayerCache[player.uniqueId].hudIconBookmarks
         )
 
         // create a new GuiText builder
-        val header = "HUD Contacts Settings"
+        val header = "HUD Icon Settings"
         val guiText = GuiText(header)
         guiText.addBackground()
 
@@ -111,23 +119,67 @@ object SettingsHudPlanetsGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    private class ImageButton : GuiItems.AbstractButtonItem(
-        text("Toggle Planet Visibility").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
+    private class SelectorButton : GuiItems.AbstractButtonItem(
+        text("Toggle Planet Selector").decoration(TextDecoration.ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            HudCommand.onTogglePlanetsImage(player, null)
+            HudCommand.onToggleHudSelector(player, null)
 
             windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class SelectorButton : GuiItems.AbstractButtonItem(
-        text("Toggle Planet Selector").decoration(TextDecoration.ITALIC, false),
+    private class PlanetsButton : GuiItems.AbstractButtonItem(
+        text("Toggle Planet Visibility").decoration(TextDecoration.ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            HudCommand.onTogglePlanetsSelector(player, null)
+            HudCommand.onToggleHudPlanets(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class StarsButton : GuiItems.AbstractButtonItem(
+        text("Toggle Star Visibility").decoration(TextDecoration.ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STAR.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            HudCommand.onToggleHudStars(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class BeaconsButton : GuiItems.AbstractButtonItem(
+        text("Toggle Beacon Visibility").decoration(TextDecoration.ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BEACON.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            HudCommand.onToggleHudBeacons(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class StationsButton : GuiItems.AbstractButtonItem(
+        text("Toggle Station Visibility").decoration(TextDecoration.ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            HudCommand.onToggleHudStations(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class BookmarksButton : GuiItems.AbstractButtonItem(
+        text("Toggle Bookmark Visibility").decoration(TextDecoration.ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BOOKMARK.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            HudCommand.onToggleHudBookmarks(player, null)
 
             windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
