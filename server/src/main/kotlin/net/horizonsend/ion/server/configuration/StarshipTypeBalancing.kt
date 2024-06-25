@@ -274,14 +274,14 @@ data class StarshipTypeBalancing(
 		interdictionRange = 3500,
 		hyperspaceRangeMultiplier = 1.9,
 		cruiseSpeedMultiplier = 0.98,
-		shieldPowerMultiplier = 1.0,
+		shieldPowerMultiplier = 1.10,
 		weapons = StarshipWeapons(
 			ionTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
-				range = 380.0,
+				range = 400.0,
 				speed = 95.0,
 				areaShieldDamageMultiplier = 30.0,
-				starshipShieldDamageMultiplier = 3.4,
+				starshipShieldDamageMultiplier = 3.7,
 				particleThickness = 0.6,
 				explosionPower = 3.0f,
 				volume = 0,
