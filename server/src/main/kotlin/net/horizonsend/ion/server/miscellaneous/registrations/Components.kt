@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
-import net.horizonsend.ion.server.features.client.display.PlanetSpaceRendering
+import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateRestrictions
@@ -203,5 +203,5 @@ val components: List<IonComponent> = listOf(
 	CapturableStationCache,
 	UnusedSoldShipPurge,
 	ClientDisplayEntities,
-	PlanetSpaceRendering,
+	HudIcons,
 )
