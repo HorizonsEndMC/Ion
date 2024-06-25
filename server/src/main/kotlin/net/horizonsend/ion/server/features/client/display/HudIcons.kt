@@ -46,7 +46,7 @@ object HudIcons : IonServerComponent() {
     // The reduced rate at which stars should decrease in scale as the player moves away
     private const val STAR_SCALE_FACTOR = 0.25
 
-    private const val ICON_SCALE_FACTOR = 2.0
+    private const val ICON_SCALE_FACTOR = 1.25
 
     private const val SELECTOR_ID = "hud-selector"
     private const val SELECTOR_TEXT_ID = "hud-selector-text"
@@ -303,7 +303,7 @@ object HudIcons : IonServerComponent() {
 
         val entity = ClientDisplayEntityFactory.createTextDisplay(player)
 
-        entity.text(ofChildren(Component.text(data.name), Component.text(" /jump", NamedTextColor.GREEN)))
+        entity.text(ofChildren(Component.text(sanitizePrefixes(data.name)), Component.text(" /jump", NamedTextColor.GREEN)))
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
         //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
@@ -356,7 +356,7 @@ object HudIcons : IonServerComponent() {
         } else {
             nmsEntity.text = PaperAdventure.asVanilla(
                 ofChildren(
-                    Component.text(data.name),
+                    Component.text(sanitizePrefixes(data.name)),
                     Component.text(" /jump", NamedTextColor.GREEN)
                 )
             )
@@ -484,6 +484,19 @@ object HudIcons : IonServerComponent() {
         else return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GENERIC_STARSHIP.customModelData) }
     }
 
+    /**
+     * Removes prefixes of entity names to make them more user-friendly.
+     * @param name the name to sanitize
+     */
+    private fun sanitizePrefixes(name: String): String {
+        return if (name.contains(PLANET_PREFIX)) name.removePrefix(PLANET_PREFIX)
+        else if (name.contains(STAR_PREFIX)) name.removePrefix(STAR_PREFIX)
+        else if (name.contains(BEACON_PREFIX)) name.removePrefix(BEACON_PREFIX)
+        else if (name.contains(STATION_PREFIX)) name.removePrefix(STATION_PREFIX)
+        else if (name.contains(SIEGE_STATION_PREFIX)) name.removePrefix(SIEGE_STATION_PREFIX)
+        else if (name.contains(BOOKMARK_PREFIX)) name.removePrefix(BOOKMARK_PREFIX)
+        else name
+    }
 
     /**
      * Renders client-side ItemEntity planets for each player.
@@ -499,14 +512,18 @@ object HudIcons : IonServerComponent() {
         // Reset planet selector information
         lowestAngleMap[player.uniqueId] = Float.MAX_VALUE
 
-        val hudPlanetsImageEnabled = PlayerCache[player].hudPlanetsImage
-        val hudPlanetsSelectorEnabled = PlayerCache[player].hudPlanetsSelector
+        val hudSelectorEnabled = PlayerCache[player].hudPlanetsSelector
+        val hudPlanetsEnabled = PlayerCache[player].hudPlanetsImage
+        val hudStarsEnabled = PlayerCache[player].hudIconStars
+        val hudBeaconsEnabled = PlayerCache[player].hudIconBeacons
+        val hudStationsEnabled = PlayerCache[player].hudIconStations
+        val hudBookmarksEnabled = PlayerCache[player].hudIconBookmarks
 
         // Rendering planets
         for (planet in planetList) {
             val hudName = PLANET_PREFIX + planet.name
 
-            if (hudPlanetsImageEnabled) {
+            if (hudPlanetsEnabled) {
                 val distance = player.location.toVector().distance(planet.location.toVector())
                 val direction = planet.location.toVector().subtract(player.location.toVector()).normalize()
 
@@ -528,7 +545,7 @@ object HudIcons : IonServerComponent() {
         for (star in starList) {
             val hudName = STAR_PREFIX + star.name
 
-            if (hudPlanetsImageEnabled) {
+            if (hudStarsEnabled) {
                 val distance = player.location.toVector().distance(star.location.toVector())
                 val direction = star.location.toVector().subtract(player.location.toVector()).normalize()
 
@@ -545,69 +562,138 @@ object HudIcons : IonServerComponent() {
             }
         }
 
+        // Rendering beacon
         val beaconList = IonServer.configuration.beacons.filter { it.spaceLocation.bukkitWorld() == player.world }
         for (beacon in beaconList) {
             val hudName = BEACON_PREFIX + beacon.name
 
-            val distance = player.location.toVector().distance(beacon.spaceLocation.toVector())
-            val direction = beacon.spaceLocation.toVector().subtract(player.location.toVector()).normalize()
+            if (hudBeaconsEnabled) {
+                val distance = player.location.toVector().distance(beacon.spaceLocation.toVector())
+                val direction = beacon.spaceLocation.toVector().subtract(player.location.toVector()).normalize()
 
-            if (playerDisplayEntities[hudName] == null) {
-                // multiply distance by 2 as a fix to make these icons smaller by default
-                createHudEntity(player, hudName, distance * 2, direction, scaleFactor = ICON_SCALE_FACTOR) ?: continue
-            } else {
-                updateHudEntity(player, hudName, distance * 2, direction, scaleFactor = ICON_SCALE_FACTOR)
+                if (playerDisplayEntities[hudName] == null) {
+                    // multiply distance by 2 as a fix to make these icons smaller by default
+                    createHudEntity(
+                        player,
+                        hudName,
+                        distance * ICON_SCALE_FACTOR,
+                        direction,
+                        scaleFactor = ICON_SCALE_FACTOR
+                    ) ?: continue
+                } else {
+                    updateHudEntity(
+                        player,
+                        hudName,
+                        distance * ICON_SCALE_FACTOR,
+                        direction,
+                        scaleFactor = ICON_SCALE_FACTOR
+                    )
+                }
+            } else if (playerDisplayEntities[hudName] != null) {
+                deleteHudEntity(player, hudName)
             }
         }
 
+        // Rendering station
         val stationList = SpaceStationCache.all().filter { it.world == player.world.name }
         for (station in stationList) {
             val hudName = STATION_PREFIX + station.name
             val stationLocation = Vector(station.x, 192, station.z)
 
-            val distance = player.location.toVector().distance(stationLocation)
-            val direction = stationLocation.clone().subtract(player.location.toVector())
+            if (hudStationsEnabled) {
 
-            if (playerDisplayEntities[hudName] == null) {
-                createHudEntity(player, hudName, distance * 2, direction, scaleFactor = ICON_SCALE_FACTOR) ?: continue
-            } else {
-                updateHudEntity(player, hudName, distance * 2, direction, scaleFactor = ICON_SCALE_FACTOR)
+                val distance = player.location.toVector().distance(stationLocation)
+                val direction = stationLocation.clone().subtract(player.location.toVector())
+
+                if (playerDisplayEntities[hudName] == null) {
+                    createHudEntity(
+                        player,
+                        hudName,
+                        distance * ICON_SCALE_FACTOR,
+                        direction,
+                        scaleFactor = ICON_SCALE_FACTOR
+                    ) ?: continue
+                } else {
+                    updateHudEntity(
+                        player,
+                        hudName,
+                        distance * ICON_SCALE_FACTOR,
+                        direction,
+                        scaleFactor = ICON_SCALE_FACTOR
+                    )
+                }
+            } else if (playerDisplayEntities[hudName] != null) {
+                deleteHudEntity(player, hudName)
             }
         }
 
+        // Rendering siege station
         val capturableStationList = CapturableStationCache.stations.filter {
             it.loc.world != null && it.loc.world.name == player.world.name
         }
         for (siegeStation in capturableStationList) {
             val hudName = SIEGE_STATION_PREFIX + siegeStation.name
 
-            val distance = player.location.toVector().distance(siegeStation.loc.toVector())
-            val direction = siegeStation.loc.toVector().subtract(player.location.toVector())
+            if (hudStationsEnabled) {
+                val distance = player.location.toVector().distance(siegeStation.loc.toVector())
+                val direction = siegeStation.loc.toVector().subtract(player.location.toVector())
 
-            if (playerDisplayEntities[hudName] == null) {
-                createHudEntity(player, hudName, distance * 2, direction, scaleFactor = ICON_SCALE_FACTOR) ?: continue
-            } else {
-                updateHudEntity(player, hudName, distance * 2, direction, scaleFactor = ICON_SCALE_FACTOR)
+                if (playerDisplayEntities[hudName] == null) {
+                    createHudEntity(
+                        player,
+                        hudName,
+                        distance * ICON_SCALE_FACTOR,
+                        direction,
+                        scaleFactor = ICON_SCALE_FACTOR
+                    ) ?: continue
+                } else {
+                    updateHudEntity(
+                        player,
+                        hudName,
+                        distance * ICON_SCALE_FACTOR,
+                        direction,
+                        scaleFactor = ICON_SCALE_FACTOR
+                    )
+                }
+            } else if (playerDisplayEntities[hudName] != null) {
+                deleteHudEntity(player, hudName)
             }
         }
 
+        // Rendering bookmark
         val bookmarkList = BookmarkCache.getAll().filter { it.owner == player.slPlayerId && it.worldName == player.world.name }
         for (bookmark in bookmarkList) {
             val hudName = BOOKMARK_PREFIX + bookmark.name
             val bookmarkLocation = Vector(bookmark.x, bookmark.y, bookmark.z)
 
-            val distance = player.location.toVector().distance(bookmarkLocation)
-            val direction = bookmarkLocation.clone().subtract(player.location.toVector())
+            if (hudBookmarksEnabled) {
+                val distance = player.location.toVector().distance(bookmarkLocation)
+                val direction = bookmarkLocation.clone().subtract(player.location.toVector())
 
-            if (playerDisplayEntities[hudName] == null) {
-                createHudEntity(player, hudName, distance * 2, direction, scaleFactor = ICON_SCALE_FACTOR) ?: continue
-            } else {
-                updateHudEntity(player, hudName, distance * 2, direction, scaleFactor = ICON_SCALE_FACTOR)
+                if (playerDisplayEntities[hudName] == null) {
+                    createHudEntity(
+                        player,
+                        hudName,
+                        distance * ICON_SCALE_FACTOR,
+                        direction,
+                        scaleFactor = ICON_SCALE_FACTOR
+                    ) ?: continue
+                } else {
+                    updateHudEntity(
+                        player,
+                        hudName,
+                        distance * ICON_SCALE_FACTOR,
+                        direction,
+                        scaleFactor = ICON_SCALE_FACTOR
+                    )
+                }
+            } else if (playerDisplayEntities[hudName] != null) {
+                deleteHudEntity(player, hudName)
             }
         }
 
         // Rendering planet selector
-        if (hudPlanetsSelectorEnabled) {
+        if (hudSelectorEnabled) {
             if (PilotedStarships[player] != null && lowestAngleMap[player.uniqueId] != null &&
                 lowestAngleMap[player.uniqueId]!! < Float.MAX_VALUE
             ) {

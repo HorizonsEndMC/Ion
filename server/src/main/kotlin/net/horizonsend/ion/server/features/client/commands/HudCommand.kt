@@ -13,9 +13,9 @@ import org.litote.kmongo.setValue
 
 @CommandAlias("hud")
 object HudCommand : SLCommand() {
-    @Subcommand("planets image")
+    @Subcommand("planets")
     @Suppress("unused")
-    fun onTogglePlanetsImage(
+    fun onToggleHudPlanets(
         sender: Player,
         @Optional toggle: Boolean?
     ) {
@@ -25,9 +25,9 @@ object HudCommand : SLCommand() {
         sender.success("Changed planet visibility in HUD to $hudPlanetsImage")
     }
 
-    @Subcommand("planets selector")
+    @Subcommand("selector")
     @Suppress("unused")
-    fun onTogglePlanetsSelector(
+    fun onToggleHudSelector(
         sender: Player,
         @Optional toggle: Boolean?
     ) {
@@ -35,5 +35,53 @@ object HudCommand : SLCommand() {
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::hudPlanetsSelector, hudPlanetsSelector))
         PlayerCache[sender].hudPlanetsSelector = hudPlanetsSelector
         sender.success("Changed planet selector visibility in HUD to $hudPlanetsSelector")
+    }
+
+    @Subcommand("stars")
+    @Suppress("unused")
+    fun onToggleHudStars(
+        sender: Player,
+        @Optional toggle: Boolean?
+    ) {
+        val hudIconStars = toggle ?: !PlayerCache[sender].hudIconStars
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::hudIconStars, hudIconStars))
+        PlayerCache[sender].hudIconStars = hudIconStars
+        sender.success("Changed star visibility in HUD to $hudIconStars")
+    }
+
+    @Subcommand("beacons")
+    @Suppress("unused")
+    fun onToggleHudBeacons(
+        sender: Player,
+        @Optional toggle: Boolean?
+    ) {
+        val hudIconBeacons = toggle ?: !PlayerCache[sender].hudIconBeacons
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::hudIconBeacons, hudIconBeacons))
+        PlayerCache[sender].hudIconBeacons = hudIconBeacons
+        sender.success("Changed beacon visibility in HUD to $hudIconBeacons")
+    }
+
+    @Subcommand("stations")
+    @Suppress("unused")
+    fun onToggleHudStations(
+        sender: Player,
+        @Optional toggle: Boolean?
+    ) {
+        val hudIconStations = toggle ?: !PlayerCache[sender].hudIconStations
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::hudIconStations, hudIconStations))
+        PlayerCache[sender].hudIconStations = hudIconStations
+        sender.success("Changed station visibility in HUD to $hudIconStations")
+    }
+
+    @Subcommand("bookmarks")
+    @Suppress("unused")
+    fun onToggleHudBookmarks(
+        sender: Player,
+        @Optional toggle: Boolean?
+    ) {
+        val hudIconBookmarks = toggle ?: !PlayerCache[sender].hudIconBookmarks
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::hudIconBookmarks, hudIconBookmarks))
+        PlayerCache[sender].hudIconBookmarks = hudIconBookmarks
+        sender.success("Changed bookmark visibility in HUD to $hudIconBookmarks")
     }
 }

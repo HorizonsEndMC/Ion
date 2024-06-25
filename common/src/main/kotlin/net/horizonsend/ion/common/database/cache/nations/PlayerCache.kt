@@ -60,6 +60,10 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 		var hudPlanetsImage: Boolean = true,
 		var hudPlanetsSelector: Boolean = true,
+		var hudIconStars: Boolean = true,
+		var hudIconBeacons: Boolean = true,
+		var hudIconStations: Boolean = false,
+		var hudIconBookmarks: Boolean = false,
 
 		var showItemSearchItem: Boolean = true,
 
@@ -314,6 +318,42 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::hudIconStars]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val hudIconStars = it.boolean()
+					data.hudIconStars = hudIconStars
+				}
+			}
+
+			change[SLPlayer::hudIconBeacons]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val hudIconBeacons = it.boolean()
+					data.hudIconBeacons = hudIconBeacons
+				}
+			}
+
+			change[SLPlayer::hudIconStations]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val hudIconStations = it.boolean()
+					data.hudIconStations = hudIconStations
+				}
+			}
+
+			change[SLPlayer::hudIconBookmarks]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val hudIconBookmarks = it.boolean()
+					data.hudIconBookmarks = hudIconBookmarks
+				}
+			}
+
 			change[SLPlayer::showItemSearchItem]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -420,6 +460,10 @@ abstract class AbstractPlayerCache : ManualCache() {
 			rotateCompass = data.rotateCompass,
 			hudPlanetsImage = data.hudPlanetsImage,
 			hudPlanetsSelector = data.hudPlanetsSelector,
+			hudIconStars = data.hudIconStars,
+			hudIconBeacons = data.hudIconBeacons,
+			hudIconStations = data.hudIconStations,
+			hudIconBookmarks = data.hudIconBookmarks,
 			showItemSearchItem = data.showItemSearchItem,
 			useAlternateDCCruise = data.useAlternateDCCruise
 		)

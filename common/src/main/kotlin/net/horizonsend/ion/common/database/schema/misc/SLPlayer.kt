@@ -84,6 +84,10 @@ data class SLPlayer(
 
 	var hudPlanetsImage: Boolean = true,
 	var hudPlanetsSelector: Boolean = true,
+	var hudIconStars: Boolean = true,
+	var hudIconBeacons: Boolean = true,
+	var hudIconStations: Boolean = false,
+	var hudIconBookmarks: Boolean = false,
 
 	var showItemSearchItem: Boolean = true,
 	var useAlternateDCCruise: Boolean = false,

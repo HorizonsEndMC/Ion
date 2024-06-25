@@ -25,7 +25,7 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
     private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
 
     private val BUTTONS_LIST = listOf(
-        PlanetSettingsButton()
+        IconSettingsButton()
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -93,12 +93,12 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    private class PlanetSettingsButton : GuiItems.AbstractButtonItem(
-        text("Planet Settings").decoration(ITALIC, false),
+    private class IconSettingsButton : GuiItems.AbstractButtonItem(
+        text("HUD Icon Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsHudPlanetsGui.open(player)
+            SettingsHudIconsGui.open(player)
         }
     }
 
@@ -110,7 +110,7 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
         }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarGui.open(player)
+            SettingsHudGui.open(player)
         }
     }
 }
