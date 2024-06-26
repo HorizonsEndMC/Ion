@@ -29,16 +29,7 @@ object PlayerInfoCommand : SLCommand() {
 	@CommandCompletion("@players")
 	fun onExecute(sender: CommandSender, player: String) = asyncCommand(sender) {
 		val slPlayer = SLPlayer[player] ?: throw InvalidCommandArgument("Player $player not found!")
-
-		sender.sendRichMessage("<yellow>Player <gold>${slPlayer.lastKnownName}")
-
-		sendNationsInfo(sender, slPlayer)
-
-		sendAdvanceInfo(sender, slPlayer)
-
-		sendGracePeriodInfo(sender, slPlayer)
-
-		sender.sendRichMessage("<gray>Last Seen: ${getInactiveTimeText(slPlayer)}")
+		sendInfo(sender, slPlayer)
 	}
 
 	@Suppress("Unused")
@@ -46,16 +37,21 @@ object PlayerInfoCommand : SLCommand() {
 	@CommandAlias("playerinfo|pinfo|pi")
 	fun onExecute(sender: Player) = asyncCommand(sender) {
 		val slPlayer = SLPlayer[sender]
+		sendInfo(sender, slPlayer)
+	}
 
-		sender.sendRichMessage("<yellow>Player <gold>${slPlayer.lastKnownName}")
+	private fun sendInfo(sender: CommandSender, target: SLPlayer) {
+		sender.sendRichMessage("<yellow>Player <gold>${target.lastKnownName}")
 
-		sendNationsInfo(sender, slPlayer)
+		sendNationsInfo(sender, target)
 
-		sendAdvanceInfo(sender, slPlayer)
+		sendAdvanceInfo(sender, target)
 
-		sendGracePeriodInfo(sender, slPlayer)
+		sendGracePeriodInfo(sender, target)
 
-		sender.sendRichMessage("<gray>Last Seen: ${getInactiveTimeText(slPlayer)}")
+		sendBountyInfo(sender, target)
+
+		sender.sendRichMessage("<gray>Last Seen: ${getInactiveTimeText(target)}")
 	}
 
 	private fun sendNationsInfo(sender: CommandSender, slPlayer: SLPlayer) {
@@ -102,7 +98,13 @@ object PlayerInfoCommand : SLCommand() {
 
 	private fun sendGracePeriodInfo(sender: CommandSender, slPlayer: SLPlayer) {
 		if (Bukkit.getPlayer(slPlayer._id.uuid)?.hasProtection() != false) {
-			sender.sendRichMessage("<yellow>GracePeriod: <gold>True")
+			sender.sendRichMessage("<yellow>Grace Period: <gold>True")
+		}
+	}
+
+	private fun sendBountyInfo(sender: CommandSender, player: SLPlayer) {
+		if (player.bounty > 0.0) {
+			sender.sendRichMessage("<gold>Bounty: <red>${player.bounty}")
 		}
 	}
 
