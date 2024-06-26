@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
@@ -287,6 +288,9 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			.add(direction.x * distance, 0.0, direction.z * distance)
 
 		StarshipTeleportation.teleportStarship(starship, exitPoint)
+
+		IonServer.slF4JLogger.info("Attempting to exit planet")
+
 		return true
 	}
 

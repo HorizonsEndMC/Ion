@@ -57,7 +57,12 @@ object StarshipTeleportation {
 		var adjustX = previousAdjustX ?: randomOffset()
 		var adjustZ = previousAdjustZ ?: randomOffset()
 
+		var wbAttempts = 0
+
 		while (wouldBeOutOfWorldBorder(starship, world, previousDX + adjustX, previousDZ + adjustZ)) {
+			wbAttempts++
+
+			if (wbAttempts >= 50) break
 			adjustX = previousAdjustX ?: randomOffset()
 			adjustZ = previousAdjustZ ?: randomOffset()
 		}
@@ -74,8 +79,8 @@ object StarshipTeleportation {
 
 				starship.information("Adjusting position...")
 
-
 				val tries = previousTries + 1
+				println(14)
 				return@thenComposeAsync tryTeleport(starship, dx, dy, dz, newWorld, tries, adjustX, adjustZ)
 			}
 	}

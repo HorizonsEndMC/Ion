@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
@@ -33,9 +34,9 @@ import org.bukkit.util.Vector
 object StarshipDebugCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("teleport")
-	fun onTeleport(sender: Player, x: Int, y: Int, z: Int) {
+	fun onTeleport(sender: Player, world: World, x: Int, y: Int, z: Int) {
 		val riding = getStarshipRiding(sender)
-		StarshipTeleportation.teleportStarship(riding, Location(sender.world, x.toDouble(), y.toDouble(), z.toDouble()))
+		StarshipTeleportation.teleportStarship(riding, Location(world, x.toDouble(), y.toDouble(), z.toDouble()))
 	}
 
 	@Suppress("Unused")
@@ -47,9 +48,18 @@ object StarshipDebugCommand : SLCommand() {
 		}
 	}
 
+	@Subcommand("query map")
+	fun onQueryMap(sender: CommandSender) {
+		sender.information("All world ships:")
+
+		for (world in IonServer.server.worlds) {
+			sender.information("${world.name}: ${ActiveStarships.getInWorld(world).joinToString { it.identifier }}")
+		}
+	}
+
 	@Suppress("Unused")
 	@Subcommand("releaseall")
-	fun onReleaseAll(sender: Player) {
+	fun onReleaseAll(sender: CommandSender) {
 		var released = 0
 		ActiveStarships.allControlledStarships().forEach {
 			DeactivatedPlayerStarships.deactivateNow(it)
@@ -62,7 +72,7 @@ object StarshipDebugCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("release")
 	@CommandCompletion("@autoTurretTargets")
-	fun release(sender: Player, identifier: String) {
+	fun release(sender: CommandSender, identifier: String) {
 		val formatted = if (identifier.contains(":".toRegex())) identifier.substringAfter(":") else identifier
 		val starship = ActiveStarships[formatted] ?: fail { "Could not find target $identifier" }
 
