@@ -26,15 +26,21 @@ object PlayerStarshipControl : IonServerComponent() {
 		if (event.itemDrop.itemStack.type != StarshipControl.CONTROLLER_TYPE) return
 
 		event.isCancelled = true
+
+		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
+
 		starship.tryRotate(false)
 	}
 
 	@EventHandler
 	fun onPlayerSwapItem(event: PlayerSwapHandItemsEvent) {
 		val starship = PilotedStarships[event.player] ?: return
-		if (event.offHandItem?.type != StarshipControl.CONTROLLER_TYPE) return
+		if (event.offHandItem.type != StarshipControl.CONTROLLER_TYPE) return
 
 		event.isCancelled = true
+
+		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
+
 		starship.tryRotate(true)
 	}
 
