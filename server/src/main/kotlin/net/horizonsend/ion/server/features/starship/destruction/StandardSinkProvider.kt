@@ -56,9 +56,9 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		if (SpaceWorlds.contains(world)) {
 			val random = Random(blocks.hashCode())
 
-			velocity.setX(random.nextDouble(-2.0, 2.0))
-			velocity.setY(random.nextDouble(-2.0, 2.0))
-			velocity.setZ(random.nextDouble(-2.0, 2.0))
+			velocity.setX(random.nextDouble(-1.0, 1.0))
+			velocity.setY(random.nextDouble(-1.0, 1.0))
+			velocity.setZ(random.nextDouble(-1.0, 1.0))
 		} else {
 			velocity.setY(-1.0)
 		}
