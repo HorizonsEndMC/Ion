@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.misc.ShellItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
+import net.horizonsend.ion.server.features.custom.items.powered.CratePlacer
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
@@ -849,6 +850,7 @@ object CustomItems {
 
 	// Tools begin
 	val POWER_DRILL = register(PowerDrill)
+	val CRATE_PLACER = register(CratePlacer)
 
 	val MOD_TABLE: CustomBlockItem = register(object : CustomBlockItem(
 		identifier = "MOD_TABLE",
