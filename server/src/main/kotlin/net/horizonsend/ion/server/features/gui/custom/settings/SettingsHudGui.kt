@@ -16,15 +16,20 @@ import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
+import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-object SettingsHudGui : AbstractBackgroundPagedGui {
+class SettingsHudGui(val player: Player) : AbstractBackgroundPagedGui {
 
-    private const val SETTINGS_PER_PAGE = 5
-    private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
+    companion object {
+        private const val SETTINGS_PER_PAGE = 5
+        private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
+    }
 
-    private val BUTTONS_LIST = listOf(
+    override var currentWindow: Window? = null
+
+    private val buttonsList = listOf(
         IconSettingsButton()
     )
 
@@ -43,9 +48,9 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addIngredient('<', GuiItems.LeftItem())
             .addIngredient('>', GuiItems.RightItem())
-            .addIngredient('v', SettingsMainMenuGui.ReturnToMainMenuButton())
+            .addIngredient('v', SettingsMainMenuGui(player).ReturnToMainMenuButton())
 
-        for (button in BUTTONS_LIST) {
+        for (button in buttonsList) {
             gui.addContent(button)
 
             for (i in 1..8) {
@@ -66,9 +71,9 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
         // get the index of the first setting to display for this page
         val startIndex = currentPage * SETTINGS_PER_PAGE
 
-        for (buttonIndex in startIndex until min(startIndex + SETTINGS_PER_PAGE, BUTTONS_LIST.size)) {
+        for (buttonIndex in startIndex until min(startIndex + SETTINGS_PER_PAGE, buttonsList.size)) {
 
-            val title = BUTTONS_LIST[buttonIndex].text
+            val title = buttonsList[buttonIndex].text
             val line = (buttonIndex - startIndex) * 2
 
             // setting title
@@ -82,7 +87,7 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
 
         // page number
         val pageNumberString =
-            "${currentPage + 1} / ${ceil((BUTTONS_LIST.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
+            "${currentPage + 1} / ${ceil((buttonsList.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
         guiText.add(
             text(pageNumberString),
             line = 10,
@@ -93,16 +98,20 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    private class IconSettingsButton : GuiItems.AbstractButtonItem(
+    fun openMainWindow() {
+        currentWindow = open(player).apply { open() }
+    }
+
+    private inner class IconSettingsButton : GuiItems.AbstractButtonItem(
         text("HUD Icon Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsHudIconsGui.open(player)
+            SettingsHudIconsGui(player).openMainWindow()
         }
     }
 
-    class ReturnToHudButton : GuiItems.AbstractButtonItem(
+    inner class ReturnToHudButton : GuiItems.AbstractButtonItem(
         text("Return to HUD Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
             it.setCustomModelData(GuiItem.DOWN.customModelData)
@@ -110,7 +119,7 @@ object SettingsHudGui : AbstractBackgroundPagedGui {
         }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsHudGui.open(player)
+            openMainWindow()
         }
     }
 }

@@ -18,8 +18,11 @@ import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.window.AnvilWindow
+import xyz.xenondevs.invui.window.Window
 
-object SettingsSidebarContactsRangeGui {
+class SettingsSidebarContactsRangeGui(val player: Player) {
+
+    private var currentWindow: Window? = null
 
     private fun createGui(): Gui {
         val gui = Gui.normal()
@@ -28,12 +31,12 @@ object SettingsSidebarContactsRangeGui {
 
         gui.addIngredient('x', SetContactsDistanceButton())
             .addIngredient('.', RenameItem())
-            .addIngredient('v', SettingsSidebarContactsGui.ReturnToSidebarContactsButton())
+            .addIngredient('v', SettingsSidebarContactsGui(player).ReturnToSidebarContactsButton())
 
         return gui.build()
     }
 
-    fun open(player: Player) {
+    fun open(player: Player): Window {
         val gui = createGui()
 
         val window = AnvilWindow.single()
@@ -42,7 +45,11 @@ object SettingsSidebarContactsRangeGui {
             .setGui(gui)
             .build()
 
-        window.open()
+        return window
+    }
+
+    fun openMainWindow() {
+        currentWindow = open(player).apply { open() }
     }
 
     private class SetContactsDistanceButton : ControlItem<Gui>() {
@@ -61,7 +68,7 @@ object SettingsSidebarContactsRangeGui {
             val currentInt = currentText.toIntOrNull() ?: return
 
             SidebarContactsCommand.onSetContactsDistance(player, currentInt)
-            SettingsSidebarContactsGui.open(player)
+            SettingsSidebarContactsGui(player).openMainWindow()
         }
     }
 

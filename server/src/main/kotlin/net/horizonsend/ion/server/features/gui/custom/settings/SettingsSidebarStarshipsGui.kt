@@ -21,15 +21,20 @@ import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
+import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
+class SettingsSidebarStarshipsGui(val player: Player) : AbstractBackgroundPagedGui {
 
-    private const val SETTINGS_PER_PAGE = 5
-    private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
+    companion object {
+        private const val SETTINGS_PER_PAGE = 5
+        private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
+    }
 
-    private val BUTTONS_LIST = listOf(
+    override var currentWindow: Window? = null
+
+    private val buttonsList = listOf(
         EnableButton(),
         ShowAdvancedButton(),
         CompassRotationButton()
@@ -50,9 +55,9 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addIngredient('<', GuiItems.LeftItem())
             .addIngredient('>', GuiItems.RightItem())
-            .addIngredient('v', SettingsSidebarGui.ReturnToSidebarButton())
+            .addIngredient('v', SettingsSidebarGui(player).ReturnToSidebarButton())
 
-        for (button in BUTTONS_LIST) {
+        for (button in buttonsList) {
             gui.addContent(button)
 
             for (i in 1..8) {
@@ -79,9 +84,9 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
         // get the index of the first setting to display for this page
         val startIndex = currentPage * SETTINGS_PER_PAGE
 
-        for (buttonIndex in startIndex until min(startIndex + SETTINGS_PER_PAGE, BUTTONS_LIST.size)) {
+        for (buttonIndex in startIndex until min(startIndex + SETTINGS_PER_PAGE, buttonsList.size)) {
 
-            val title = BUTTONS_LIST[buttonIndex].text
+            val title = buttonsList[buttonIndex].text
             val line = (buttonIndex - startIndex) * 2
 
             // setting title
@@ -101,7 +106,7 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
 
         // page number
         val pageNumberString =
-            "${currentPage + 1} / ${ceil((BUTTONS_LIST.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
+            "${currentPage + 1} / ${ceil((buttonsList.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
         guiText.add(
             text(pageNumberString),
             line = 10,
@@ -112,7 +117,11 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    private class EnableButton : GuiItems.AbstractButtonItem(
+    fun openMainWindow() {
+        currentWindow = open(player).apply { open() }
+    }
+
+    private inner class EnableButton : GuiItems.AbstractButtonItem(
         text("Enable Starship Info").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
@@ -122,29 +131,29 @@ object SettingsSidebarStarshipsGui : AbstractBackgroundPagedGui {
             if (starshipsEnabled) SidebarStarshipsCommand.onDisableStarships(player)
             else SidebarStarshipsCommand.onEnableStarships(player)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class ShowAdvancedButton : GuiItems.AbstractButtonItem(
+    private inner class ShowAdvancedButton : GuiItems.AbstractButtonItem(
         text("Display Advanced Info").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarStarshipsCommand.onToggleAdvancedStarshipInfo(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class CompassRotationButton : GuiItems.AbstractButtonItem(
+    private inner class CompassRotationButton : GuiItems.AbstractButtonItem(
         text("Rotating Compass").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarStarshipsCommand.onToggleRotateCompass(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 }

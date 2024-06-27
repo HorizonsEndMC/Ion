@@ -26,15 +26,20 @@ import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
+import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
+class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGui {
 
-    private const val SETTINGS_PER_PAGE = 5
-    private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
+    companion object {
+        private const val SETTINGS_PER_PAGE = 5
+        private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
+    }
 
-    private val BUTTONS_LIST = listOf(
+    override var currentWindow: Window? = null
+
+    private val buttonsList = listOf(
         EnableButton(),
         ContactsDistanceButton(),
         ContactsMaxNameLengthButton(),
@@ -80,9 +85,9 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addIngredient('<', GuiItems.LeftItem())
             .addIngredient('>', GuiItems.RightItem())
-            .addIngredient('v', SettingsSidebarGui.ReturnToSidebarButton())
+            .addIngredient('v', SettingsSidebarGui(player).ReturnToSidebarButton())
 
-        for (button in BUTTONS_LIST) {
+        for (button in buttonsList) {
             gui.addContent(button)
 
             for (i in 1..8) {
@@ -94,7 +99,6 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
     }
 
     override fun createText(player: Player, currentPage: Int): Component {
-
         val enabledSettings = listOf(
             PlayerCache[player.uniqueId].contactsEnabled,
             PlayerCache[player.uniqueId].contactsDistance,
@@ -134,9 +138,9 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         // get the index of the first setting to display for this page
         val startIndex = currentPage * SETTINGS_PER_PAGE
 
-        for (buttonIndex in startIndex until min(startIndex + SETTINGS_PER_PAGE, BUTTONS_LIST.size)) {
+        for (buttonIndex in startIndex until min(startIndex + SETTINGS_PER_PAGE, buttonsList.size)) {
 
-            val title = BUTTONS_LIST[buttonIndex].text
+            val title = buttonsList[buttonIndex].text
             val line = (buttonIndex - startIndex) * 2
 
             // setting title
@@ -166,7 +170,7 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
 
         // page number
         val pageNumberString =
-            "${currentPage + 1} / ${ceil((BUTTONS_LIST.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
+            "${currentPage + 1} / ${ceil((buttonsList.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
         guiText.add(
             text(pageNumberString),
             line = 10,
@@ -177,7 +181,11 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    private class EnableButton : GuiItems.AbstractButtonItem(
+    fun openMainWindow() {
+        currentWindow = open(player).apply { open() }
+    }
+
+    private inner class EnableButton : GuiItems.AbstractButtonItem(
         text("Enable Contacts Info").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
@@ -187,306 +195,306 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
             if (contactsEnabled) SidebarContactsCommand.onDisableContacts(player)
             else SidebarContactsCommand.onEnableContacts(player)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class ContactsDistanceButton : GuiItems.AbstractButtonItem(
+    private inner class ContactsDistanceButton : GuiItems.AbstractButtonItem(
         text("Change Contacts Range").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.ROUTE_SEGMENT.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarContactsRangeGui.open(player)
+            SettingsSidebarContactsRangeGui(player).openMainWindow()
         }
     }
 
-    private class ContactsMaxNameLengthButton : GuiItems.AbstractButtonItem(
+    private inner class ContactsMaxNameLengthButton : GuiItems.AbstractButtonItem(
         text("Change Max Name Length").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarContactsMaxNameLengthGui.open(player)
+            SettingsSidebarContactsMaxNameLengthGui(player).openMainWindow()
         }
     }
 
-    private class ContactsSortOrderButton : GuiItems.AbstractButtonItem(
+    private inner class ContactsSortOrderButton : GuiItems.AbstractButtonItem(
         text("Change Sort Order").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onChangeContactsSortOrder(player)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class ContactsColoringButton : GuiItems.AbstractButtonItem(
+    private inner class ContactsColoringButton : GuiItems.AbstractButtonItem(
         text("Change Coloring").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onChangeContactsColoring(player)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class StarshipsButton : GuiItems.AbstractButtonItem(
+    private inner class StarshipsButton : GuiItems.AbstractButtonItem(
         text("Enable Starships").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleStarship(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class LastStarshipsButton : GuiItems.AbstractButtonItem(
+    private inner class LastStarshipsButton : GuiItems.AbstractButtonItem(
         text("Enable Last Starship").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GENERIC_STARSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleLastStarship(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class PlanetsButton : GuiItems.AbstractButtonItem(
+    private inner class PlanetsButton : GuiItems.AbstractButtonItem(
         text("Enable Planets").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onTogglePlanets(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class StarsButton : GuiItems.AbstractButtonItem(
+    private inner class StarsButton : GuiItems.AbstractButtonItem(
         text("Enable Stars").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STAR.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleStars(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class BeaconsButton : GuiItems.AbstractButtonItem(
+    private inner class BeaconsButton : GuiItems.AbstractButtonItem(
         text("Enable Beacons").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BEACON.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleBeacons(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class StationsButton : GuiItems.AbstractButtonItem(
+    private inner class StationsButton : GuiItems.AbstractButtonItem(
         text("Enable Stations").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleStations(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class BookmarksButton : GuiItems.AbstractButtonItem(
+    private inner class BookmarksButton : GuiItems.AbstractButtonItem(
         text("Enable Bookmarks").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BOOKMARK.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleBookmarks(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationAiButton : GuiItems.AbstractButtonItem(
+    private inner class RelationAiButton : GuiItems.AbstractButtonItem(
         text("Enable AI Starships").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleAi(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationNoneButton : GuiItems.AbstractButtonItem(
+    private inner class RelationNoneButton : GuiItems.AbstractButtonItem(
         text("Enable No Relation Starships").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNone(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationEnemyButton : GuiItems.AbstractButtonItem(
+    private inner class RelationEnemyButton : GuiItems.AbstractButtonItem(
         text("Enable Enemy Starships").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleEnemy(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationUnfriendlyButton : GuiItems.AbstractButtonItem(
+    private inner class RelationUnfriendlyButton : GuiItems.AbstractButtonItem(
         text("Enable Unfriendly Starships").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleUnfriendly(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationNeutralButton : GuiItems.AbstractButtonItem(
+    private inner class RelationNeutralButton : GuiItems.AbstractButtonItem(
         text("Enable Neutral Starships").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNeutral(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationFriendlyButton : GuiItems.AbstractButtonItem(
+    private inner class RelationFriendlyButton : GuiItems.AbstractButtonItem(
         text("Enable Friendly Starships").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleFriendly(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationAllyButton : GuiItems.AbstractButtonItem(
+    private inner class RelationAllyButton : GuiItems.AbstractButtonItem(
         text("Enable Ally Starships").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleAlly(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationNationButton : GuiItems.AbstractButtonItem(
+    private inner class RelationNationButton : GuiItems.AbstractButtonItem(
         text("Enable Nation Starships").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNation(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationAiStationButton : GuiItems.AbstractButtonItem(
+    private inner class RelationAiStationButton : GuiItems.AbstractButtonItem(
         text("Enable AI Stations").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleAiStation(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationNoneStationButton : GuiItems.AbstractButtonItem(
+    private inner class RelationNoneStationButton : GuiItems.AbstractButtonItem(
         text("Enable No Relation Stations").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNoneStation(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationEnemyStationButton : GuiItems.AbstractButtonItem(
+    private inner class RelationEnemyStationButton : GuiItems.AbstractButtonItem(
         text("Enable Enemy Stations").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleEnemyStation(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationUnfriendlyStationButton : GuiItems.AbstractButtonItem(
+    private inner class RelationUnfriendlyStationButton : GuiItems.AbstractButtonItem(
         text("Enable Unfriendly Stations").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleUnfriendlyStation(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationNeutralStationButton : GuiItems.AbstractButtonItem(
+    private inner class RelationNeutralStationButton : GuiItems.AbstractButtonItem(
         text("Enable Neutral Stations").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNeutralStation(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationFriendlyStationButton : GuiItems.AbstractButtonItem(
+    private inner class RelationFriendlyStationButton : GuiItems.AbstractButtonItem(
         text("Enable Friendly Stations").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleFriendlyStation(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationAllyStationButton : GuiItems.AbstractButtonItem(
+    private inner class RelationAllyStationButton : GuiItems.AbstractButtonItem(
         text("Enable Ally Stations").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleAllyStation(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class RelationNationStationButton : GuiItems.AbstractButtonItem(
+    private inner class RelationNationStationButton : GuiItems.AbstractButtonItem(
         text("Enable Nation Stations").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNationStation(player, null)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    class ReturnToSidebarContactsButton : ControlItem<Gui>() {
+    inner class ReturnToSidebarContactsButton : ControlItem<Gui>() {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarContactsGui.open(player)
+            openMainWindow()
         }
 
         override fun getItemProvider(gui: Gui): ItemProvider {
