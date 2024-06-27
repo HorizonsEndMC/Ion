@@ -49,7 +49,6 @@ object CrateRestrictions : IonServerComponent() {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	fun onPlace(event: BlockPlaceEvent) {
 		if (!event.canBuild()) return
-
 		val block: Block = event.block
 		val state: ShulkerBox = block.state as? ShulkerBox ?: return
 
@@ -58,7 +57,6 @@ object CrateRestrictions : IonServerComponent() {
 		event.isCancelled = true
 
 		CargoCrates[state] ?: return // don't need to store it, just check if is a crate
-
 		val against = event.blockAgainst
 		val direction = against.getFace(block)
 

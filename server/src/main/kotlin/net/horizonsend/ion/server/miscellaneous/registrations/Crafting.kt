@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.ALUMINUM_BLOCK
+import net.horizonsend.ion.server.features.custom.items.CustomItems.ADHESIVE_TANK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.ALUMINUM_INGOT
 import net.horizonsend.ion.server.features.custom.items.CustomItems.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.BATTLECRUISER_REACTOR_CORE
@@ -84,6 +85,7 @@ import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.CYAN_WOOL
 import org.bukkit.Material.DARK_PRISMARINE
+import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.GILDED_BLACKSTONE
@@ -451,6 +453,16 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', AIR)
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 		}
+		//crate placer
+		itemStackShapeRecipe("crate_placer", CustomItems.CRATE_PLACER.constructItemStack()) {
+			shape("xsx", "xcd", "txx")
+
+			setIngredient('s', ExactChoice(STEEL_INGOT.constructItemStack()))
+			setIngredient('t', ADHESIVE_TANK.constructItemStack())
+			setIngredient('d', DIAMOND)
+			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('x', AIR)
+		}
 
 		// Circuitry Crafting 1
 		itemStackShapeRecipe("circuitry_1", CIRCUITRY.constructItemStack()) {
@@ -492,6 +504,17 @@ object Crafting : IonServerComponent() {
 
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('e', EMERALD_BLOCK)
+			setIngredient('r', REDSTONE)
+			setIngredient('x', AIR)
+		}
+
+		// Adhesive tank Crafting
+		itemStackShapeRecipe("adhesive_tank", ADHESIVE_TANK.constructItemStack()) {
+			shape("xpx", "tgt", "trt")
+
+			setIngredient('g', ExactChoice(GAS_CANISTER_EMPTY.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('p', GLASS_PANE)
 			setIngredient('r', REDSTONE)
 			setIngredient('x', AIR)
 		}
