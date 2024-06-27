@@ -22,14 +22,20 @@ import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
+import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-object SettingsOtherGui : AbstractBackgroundPagedGui {
-    private const val SETTINGS_PER_PAGE = 5
-    private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
+class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
 
-    private val BUTTONS_LIST = listOf(
+    companion object {
+        private const val SETTINGS_PER_PAGE = 5
+        private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
+    }
+
+    override var currentWindow: Window? = null
+
+    private val buttonsList = listOf(
         DcOverrideButton(),
         ShowItemSearchItems()
     )
@@ -49,9 +55,9 @@ object SettingsOtherGui : AbstractBackgroundPagedGui {
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addIngredient('<', GuiItems.LeftItem())
             .addIngredient('>', GuiItems.RightItem())
-            .addIngredient('v', SettingsMainMenuGui.ReturnToMainMenuButton())
+            .addIngredient('v', SettingsMainMenuGui(player).ReturnToMainMenuButton())
 
-        for (button in BUTTONS_LIST) {
+        for (button in buttonsList) {
             gui.addContent(button)
 
             for (i in 1..8) {
@@ -77,9 +83,9 @@ object SettingsOtherGui : AbstractBackgroundPagedGui {
         // get the index of the first setting to display for this page
         val startIndex = currentPage * SETTINGS_PER_PAGE
 
-        for (buttonIndex in startIndex until min(startIndex + SETTINGS_PER_PAGE, BUTTONS_LIST.size)) {
+        for (buttonIndex in startIndex until min(startIndex + SETTINGS_PER_PAGE, buttonsList.size)) {
 
-            val title = BUTTONS_LIST[buttonIndex].text
+            val title = buttonsList[buttonIndex].text
             val line = (buttonIndex - startIndex) * 2
 
             // setting title
@@ -99,7 +105,7 @@ object SettingsOtherGui : AbstractBackgroundPagedGui {
 
         // page number
         val pageNumberString =
-            "${currentPage + 1} / ${ceil((BUTTONS_LIST.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
+            "${currentPage + 1} / ${ceil((buttonsList.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
         guiText.add(
             text(pageNumberString),
             line = 10,
@@ -110,7 +116,11 @@ object SettingsOtherGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    private class DcOverrideButton : GuiItems.AbstractButtonItem(
+    fun openMainWindow() {
+        currentWindow = open(player).apply { open() }
+    }
+
+    private inner class DcOverrideButton : GuiItems.AbstractButtonItem(
         text("DC Overrides Cruise").decoration(TextDecoration.ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
@@ -118,11 +128,11 @@ object SettingsOtherGui : AbstractBackgroundPagedGui {
             val alternateDcCruise = PlayerCache[player.uniqueId].useAlternateDCCruise
             MiscStarshipCommands.onUseAlternateDCCruise(player, !alternateDcCruise)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private class ShowItemSearchItems : GuiItems.AbstractButtonItem(
+    private inner class ShowItemSearchItems : GuiItems.AbstractButtonItem(
         text("Show /itemsearch Items").decoration(TextDecoration.ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
     ) {
@@ -130,7 +140,7 @@ object SettingsOtherGui : AbstractBackgroundPagedGui {
             val itemSearch = PlayerCache[player.uniqueId].showItemSearchItem
             SearchCommand.itemSearchToggle(player, !itemSearch)
 
-            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 }

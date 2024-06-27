@@ -18,8 +18,11 @@ import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.window.AnvilWindow
+import xyz.xenondevs.invui.window.Window
 
-object SettingsSidebarContactsMaxNameLengthGui {
+class SettingsSidebarContactsMaxNameLengthGui(val player: Player) {
+
+    private var currentWindow: Window? = null
 
     private fun createGui(): Gui {
         val gui = Gui.normal()
@@ -28,12 +31,12 @@ object SettingsSidebarContactsMaxNameLengthGui {
 
         gui.addIngredient('x', SetContactsMaxNameLengthButton())
             .addIngredient('.', RenameItem())
-            .addIngredient('v', SettingsSidebarContactsGui.ReturnToSidebarContactsButton())
+            .addIngredient('v', SettingsSidebarContactsGui(player).ReturnToSidebarContactsButton())
 
         return gui.build()
     }
 
-    fun open(player: Player) {
+    fun open(player: Player): Window {
         val gui = createGui()
 
         val window = AnvilWindow.single()
@@ -42,10 +45,14 @@ object SettingsSidebarContactsMaxNameLengthGui {
             .setGui(gui)
             .build()
 
-        window.open()
+        return window
     }
 
-    private class SetContactsMaxNameLengthButton : ControlItem<Gui>() {
+    fun openMainWindow() {
+        currentWindow = open(player).apply { open() }
+    }
+
+    private inner class SetContactsMaxNameLengthButton : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui?): ItemProvider {
             val builder = ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
                 it.setCustomModelData(GuiItem.RIGHT.customModelData)
@@ -61,11 +68,11 @@ object SettingsSidebarContactsMaxNameLengthGui {
             val currentInt = currentText.toIntOrNull() ?: return
 
             SidebarContactsCommand.onSetContactsMaxNameLength(player, currentInt)
-            SettingsSidebarContactsGui.open(player)
+            SettingsSidebarContactsGui(player).openMainWindow()
         }
     }
 
-    private class RenameItem : AbstractItem() {
+    private inner class RenameItem : AbstractItem() {
         override fun getItemProvider(): ItemProvider {
             return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
                 it.setCustomModelData(GuiItem.LIST.customModelData)

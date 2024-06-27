@@ -16,14 +16,20 @@ import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
+import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-object SettingsMainMenuGui : AbstractBackgroundPagedGui {
-    private const val SETTINGS_PER_PAGE = 5
-    private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
+class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
-    private val BUTTONS_LIST = listOf(
+    companion object {
+        private const val SETTINGS_PER_PAGE = 5
+        private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
+    }
+
+    override var currentWindow: Window? = null
+
+    private val buttonsList = listOf(
         SidebarSettingsButton(),
         HudSettingsButton(),
         OtherSettingsButton()
@@ -45,7 +51,7 @@ object SettingsMainMenuGui : AbstractBackgroundPagedGui {
             .addIngredient('<', GuiItems.LeftItem())
             .addIngredient('>', GuiItems.RightItem())
 
-        for (button in BUTTONS_LIST) {
+        for (button in buttonsList) {
             gui.addContent(button)
 
             for (i in 1..8) {
@@ -57,7 +63,6 @@ object SettingsMainMenuGui : AbstractBackgroundPagedGui {
     }
 
     override fun createText(player: Player, currentPage: Int): Component {
-
         // create a new GuiText builder
         val header = "Settings"
         val guiText = GuiText(header)
@@ -66,9 +71,9 @@ object SettingsMainMenuGui : AbstractBackgroundPagedGui {
         // get the index of the first setting to display for this page
         val startIndex = currentPage * SETTINGS_PER_PAGE
 
-        for (buttonIndex in startIndex until min(startIndex + SETTINGS_PER_PAGE, BUTTONS_LIST.size)) {
+        for (buttonIndex in startIndex until min(startIndex + SETTINGS_PER_PAGE, buttonsList.size)) {
 
-            val title = BUTTONS_LIST[buttonIndex].text
+            val title = buttonsList[buttonIndex].text
             val line = (buttonIndex - startIndex) * 2
 
             // setting title
@@ -82,7 +87,7 @@ object SettingsMainMenuGui : AbstractBackgroundPagedGui {
 
         // page number
         val pageNumberString =
-            "${currentPage + 1} / ${ceil((BUTTONS_LIST.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
+            "${currentPage + 1} / ${ceil((buttonsList.size.toDouble() / SETTINGS_PER_PAGE)).toInt()}"
         guiText.add(
             text(pageNumberString),
             line = 10,
@@ -93,34 +98,38 @@ object SettingsMainMenuGui : AbstractBackgroundPagedGui {
         return guiText.build()
     }
 
-    private class SidebarSettingsButton : GuiItems.AbstractButtonItem(
+    fun openMainWindow() {
+        currentWindow = open(player).apply { open() }
+    }
+
+    private inner class SidebarSettingsButton : GuiItems.AbstractButtonItem(
         text("Sidebar Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarGui.open(player)
+            SettingsSidebarGui(player).openMainWindow()
         }
     }
 
-    private class HudSettingsButton : GuiItems.AbstractButtonItem(
+    private inner class HudSettingsButton : GuiItems.AbstractButtonItem(
         text("HUD Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsHudGui.open(player)
+            SettingsHudGui(player).openMainWindow()
         }
     }
 
-    private class OtherSettingsButton : GuiItems.AbstractButtonItem(
+    private inner class OtherSettingsButton : GuiItems.AbstractButtonItem(
         text("Other Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsOtherGui.open(player)
+            SettingsOtherGui(player).openMainWindow()
         }
     }
 
-    class ReturnToMainMenuButton : GuiItems.AbstractButtonItem(
+    inner class ReturnToMainMenuButton : GuiItems.AbstractButtonItem(
         text("Return to Main Menu Settings").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
             it.setCustomModelData(GuiItem.DOWN.customModelData)
@@ -128,7 +137,7 @@ object SettingsMainMenuGui : AbstractBackgroundPagedGui {
         }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsMainMenuGui.open(player)
+            openMainWindow()
         }
     }
 }

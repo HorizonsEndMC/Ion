@@ -9,11 +9,13 @@ import xyz.xenondevs.invui.window.Window
 
 interface AbstractBackgroundPagedGui {
 
+    var currentWindow: Window?
+
     fun createGui(): PagedGui<Item> = PagedGui.items().build()
 
     fun createText(player: Player, currentPage: Int): Component = Component.empty()
 
-    fun open(player: Player) {
+    fun open(player: Player): Window {
         val gui = createGui()
 
         val window = Window.single()
@@ -30,6 +32,6 @@ interface AbstractBackgroundPagedGui {
 
         gui.addPageChangeHandler(updateTitle())
 
-        window.open()
+        return window
     }
 }

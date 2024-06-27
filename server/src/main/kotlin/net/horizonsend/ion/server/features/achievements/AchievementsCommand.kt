@@ -134,17 +134,18 @@ object AchievementsCommand : SLCommand() {
 	 */
 
 	private fun openAchievementWindow(viewer: Player, player: Player = viewer) {
-		val gui = Achievements.createGui()
+		val achievementObject = Achievements(viewer)
+		val gui = achievementObject.createGui()
 
 		val window = Window.single()
 			.setViewer(viewer)
-			.setTitle(AdventureComponentWrapper(Achievements.createText(player, 0)))
+			.setTitle(AdventureComponentWrapper(achievementObject.createText(player, 0)))
 			.setGui(gui)
 			.build()
 
 		fun updateTitle(): (Int, Int) -> Unit {
 			return { _, currentPage ->
-				window.changeTitle(AdventureComponentWrapper(Achievements.createText(player, currentPage)))
+				window.changeTitle(AdventureComponentWrapper(achievementObject.createText(player, currentPage)))
 			}
 		}
 
