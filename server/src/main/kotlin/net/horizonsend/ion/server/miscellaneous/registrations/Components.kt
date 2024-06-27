@@ -188,7 +188,6 @@ val components: List<IonComponent> = listOf(
 	DutyModeMonitor,
 	EventLogger,
 	Sidebar,
-	PacketHandler,
 
 	SpaceMap,
 	NationsMap,
