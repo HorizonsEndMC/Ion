@@ -77,6 +77,36 @@ object ContactsSidebar {
         }
     }
 
+    private fun isRelationEnabled(player: Player, otherController: Controller): Boolean {
+        val relationAiEnabled = PlayerCache[player].relationAiEnabled
+        val relationNoneEnabled = PlayerCache[player].relationNoneEnabled
+        val relationEnemyEnabled = PlayerCache[player].relationEnemyEnabled
+        val relationUnfriendlyEnabled = PlayerCache[player].relationUnfriendlyEnabled
+        val relationNeutralEnabled = PlayerCache[player].relationNeutralEnabled
+        val relationFriendlyEnabled = PlayerCache[player].relationFriendlyEnabled
+        val relationAllyEnabled = PlayerCache[player].relationAllyEnabled
+        val relationNationEnabled = PlayerCache[player].relationNationEnabled
+
+        when (otherController) {
+            is NoOpController -> return relationNoneEnabled
+            is AIController -> return relationAiEnabled
+            is PlayerController -> {
+                val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return relationNoneEnabled
+                val otherNation = PlayerCache.getIfOnline(otherController.player)?.nationOid ?: return relationNoneEnabled
+                return when (RelationCache[viewerNation, otherNation]) {
+                    NationRelation.Level.NONE -> relationNoneEnabled
+                    NationRelation.Level.ENEMY -> relationEnemyEnabled
+                    NationRelation.Level.UNFRIENDLY -> relationUnfriendlyEnabled
+                    NationRelation.Level.NEUTRAL -> relationNeutralEnabled
+                    NationRelation.Level.FRIENDLY -> relationFriendlyEnabled
+                    NationRelation.Level.ALLY -> relationAllyEnabled
+                    NationRelation.Level.NATION -> relationNationEnabled
+                }
+            }
+            else -> return relationNoneEnabled
+        }
+    }
+
     private fun playerRelationType(player: Player, otherController: Controller): ContactsRelation {
         when (otherController) {
             is NoOpController -> return ContactsRelation.NONE
@@ -103,6 +133,38 @@ object ContactsSidebar {
         }
     }
 
+    private fun isStationRelationEnabled(player: Player, station: CachedSpaceStation<*, *, *>): Boolean {
+        // val relationAiStationEnabled = PlayerCache[player].relationAiStationEnabled
+        val relationNoneStationEnabled = PlayerCache[player].relationNoneStationEnabled
+        val relationEnemyStationEnabled = PlayerCache[player].relationEnemyStationEnabled
+        val relationUnfriendlyStationEnabled = PlayerCache[player].relationUnfriendlyStationEnabled
+        val relationNeutralStationEnabled = PlayerCache[player].relationNeutralStationEnabled
+        val relationFriendlyStationEnabled = PlayerCache[player].relationFriendlyStationEnabled
+        val relationAllyStationEnabled = PlayerCache[player].relationAllyStationEnabled
+        val relationNationStationEnabled = PlayerCache[player].relationNationStationEnabled
+
+        when (station) {
+            is CachedPlayerSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId))
+                relationNationStationEnabled else relationNoneStationEnabled
+            is CachedSettlementSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId))
+                relationNationStationEnabled else relationNoneStationEnabled
+            is CachedNationSpaceStation -> {
+                val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return relationNoneStationEnabled
+                val otherNation = station.owner
+                return when (RelationCache[viewerNation, otherNation]) {
+                    NationRelation.Level.NONE -> relationNoneStationEnabled
+                    NationRelation.Level.ENEMY -> relationEnemyStationEnabled
+                    NationRelation.Level.UNFRIENDLY -> relationUnfriendlyStationEnabled
+                    NationRelation.Level.NEUTRAL -> relationNeutralStationEnabled
+                    NationRelation.Level.FRIENDLY -> relationFriendlyStationEnabled
+                    NationRelation.Level.ALLY -> relationAllyStationEnabled
+                    NationRelation.Level.NATION -> relationNationStationEnabled
+                }
+            }
+            else -> return relationNoneStationEnabled
+        }
+    }
+
     private fun stationRelationType(player: Player, station: CachedSpaceStation<*, *, *>): ContactsRelation {
         when (station) {
             is CachedPlayerSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId)) ContactsRelation.NATION else ContactsRelation.NONE
@@ -126,6 +188,29 @@ object ContactsSidebar {
                 return RelationCache[viewerNation, otherNation].color
             }
             else -> return GRAY
+        }
+    }
+
+    private fun isCapturableStationRelationEnabled(player: Player, station: CachedCapturableStation): Boolean {
+        // val relationAiStationEnabled = PlayerCache[player].relationAiStationEnabled
+        val relationNoneStationEnabled = PlayerCache[player].relationNoneStationEnabled
+        val relationEnemyStationEnabled = PlayerCache[player].relationEnemyStationEnabled
+        val relationUnfriendlyStationEnabled = PlayerCache[player].relationUnfriendlyStationEnabled
+        val relationNeutralStationEnabled = PlayerCache[player].relationNeutralStationEnabled
+        val relationFriendlyStationEnabled = PlayerCache[player].relationFriendlyStationEnabled
+        val relationAllyStationEnabled = PlayerCache[player].relationAllyStationEnabled
+        val relationNationStationEnabled = PlayerCache[player].relationNationStationEnabled
+
+        val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return relationNoneStationEnabled
+        val otherNation = station.nation ?: return relationNoneStationEnabled
+        return when (RelationCache[viewerNation, otherNation]) {
+            NationRelation.Level.NONE -> relationNoneStationEnabled
+            NationRelation.Level.ENEMY -> relationEnemyStationEnabled
+            NationRelation.Level.UNFRIENDLY -> relationUnfriendlyStationEnabled
+            NationRelation.Level.NEUTRAL -> relationNeutralStationEnabled
+            NationRelation.Level.FRIENDLY -> relationFriendlyStationEnabled
+            NationRelation.Level.ALLY -> relationAllyStationEnabled
+            NationRelation.Level.NATION -> relationNationStationEnabled
         }
     }
 
@@ -174,6 +259,7 @@ object ContactsSidebar {
                 it.world == player.world &&
                         it.centerOfMass.toVector().distanceSquared(sourceVector) <= getContactsDistanceSq(player) &&
                         it.controller !== ActiveStarships.findByPilot(player)?.controller &&
+                        isRelationEnabled(player, it.controller) &&
                         (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
             }
         } else listOf()
@@ -203,14 +289,16 @@ object ContactsSidebar {
         val stations: List<CachedSpaceStation<*, *, *>> = if (stationsEnabled) {
             SpaceStationCache.all().filter {
                 it.world == player.world.name && Vector(it.x, 192, it.z)
-                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
+                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player) &&
+                        isStationRelationEnabled(player, it)
             }
         } else listOf()
 
         val capturableStations: List<CachedCapturableStation> = if (stationsEnabled) {
             CapturableStationCache.stations.filter {
                 it.loc.world != null && it.loc.world.name == player.world.name && it.loc.toVector()
-                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
+                    .distanceSquared(sourceVector) <= getContactsDistanceSq(player) &&
+                        isCapturableStationRelationEnabled(player, it)
             }
         } else listOf()
 

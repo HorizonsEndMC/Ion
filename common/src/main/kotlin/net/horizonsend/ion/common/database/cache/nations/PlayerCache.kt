@@ -50,6 +50,22 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var beaconsEnabled: Boolean = true,
 		var stationsEnabled: Boolean = false,
 		var bookmarksEnabled: Boolean = true,
+		var relationAiEnabled: Boolean = true,
+		var relationNoneEnabled: Boolean = true,
+		var relationEnemyEnabled: Boolean = true,
+		var relationUnfriendlyEnabled: Boolean = true,
+		var relationNeutralEnabled: Boolean = true,
+		var relationFriendlyEnabled: Boolean = true,
+		var relationAllyEnabled: Boolean = true,
+		var relationNationEnabled: Boolean = true,
+		var relationAiStationEnabled: Boolean = true,
+		var relationNoneStationEnabled: Boolean = true,
+		var relationEnemyStationEnabled: Boolean = true,
+		var relationUnfriendlyStationEnabled: Boolean = true,
+		var relationNeutralStationEnabled: Boolean = true,
+		var relationFriendlyStationEnabled: Boolean = true,
+		var relationAllyStationEnabled: Boolean = true,
+		var relationNationStationEnabled: Boolean = true,
 
 		var waypointsEnabled: Boolean = true,
 		var compactWaypoints: Boolean = true,
@@ -255,6 +271,150 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::relationAiEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationAiEnabled = it.boolean()
+					data.relationAiEnabled = relationAiEnabled
+				}
+			}
+
+			change[SLPlayer::relationNoneEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationNoneEnabled = it.boolean()
+					data.relationNoneEnabled = relationNoneEnabled
+				}
+			}
+
+			change[SLPlayer::relationEnemyEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationEnemyEnabled = it.boolean()
+					data.relationEnemyEnabled = relationEnemyEnabled
+				}
+			}
+
+			change[SLPlayer::relationUnfriendlyEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationUnfriendlyEnabled = it.boolean()
+					data.relationUnfriendlyEnabled = relationUnfriendlyEnabled
+				}
+			}
+
+			change[SLPlayer::relationNeutralEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationNeutralEnabled = it.boolean()
+					data.relationNeutralEnabled = relationNeutralEnabled
+				}
+			}
+
+			change[SLPlayer::relationFriendlyEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationFriendlyEnabled = it.boolean()
+					data.relationFriendlyEnabled = relationFriendlyEnabled
+				}
+			}
+
+			change[SLPlayer::relationAllyEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationAllyEnabled = it.boolean()
+					data.relationAllyEnabled = relationAllyEnabled
+				}
+			}
+
+			change[SLPlayer::relationNationEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationNationEnabled = it.boolean()
+					data.relationNationEnabled = relationNationEnabled
+				}
+			}
+
+			change[SLPlayer::relationAiStationEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationAiEnabled = it.boolean()
+					data.relationAiEnabled = relationAiEnabled
+				}
+			}
+
+			change[SLPlayer::relationNoneStationEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationNoneEnabled = it.boolean()
+					data.relationNoneEnabled = relationNoneEnabled
+				}
+			}
+
+			change[SLPlayer::relationEnemyStationEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationEnemyEnabled = it.boolean()
+					data.relationEnemyEnabled = relationEnemyEnabled
+				}
+			}
+
+			change[SLPlayer::relationUnfriendlyStationEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationUnfriendlyEnabled = it.boolean()
+					data.relationUnfriendlyEnabled = relationUnfriendlyEnabled
+				}
+			}
+
+			change[SLPlayer::relationNeutralStationEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationNeutralEnabled = it.boolean()
+					data.relationNeutralEnabled = relationNeutralEnabled
+				}
+			}
+
+			change[SLPlayer::relationFriendlyStationEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationFriendlyEnabled = it.boolean()
+					data.relationFriendlyEnabled = relationFriendlyEnabled
+				}
+			}
+
+			change[SLPlayer::relationAllyStationEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationAllyEnabled = it.boolean()
+					data.relationAllyEnabled = relationAllyEnabled
+				}
+			}
+
+			change[SLPlayer::relationNationStationEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val relationNationEnabled = it.boolean()
+					data.relationNationEnabled = relationNationEnabled
+				}
+			}
+
 			change[SLPlayer::waypointsEnabled]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -453,6 +613,22 @@ abstract class AbstractPlayerCache : ManualCache() {
 			beaconsEnabled = data.beaconsEnabled,
 			stationsEnabled = data.stationsEnabled,
 			bookmarksEnabled = data.bookmarksEnabled,
+			relationAiEnabled = data.relationAiEnabled,
+			relationNoneEnabled = data.relationNoneEnabled,
+			relationEnemyEnabled = data.relationEnemyEnabled,
+			relationUnfriendlyEnabled = data.relationUnfriendlyEnabled,
+			relationNeutralEnabled = data.relationNeutralEnabled,
+			relationFriendlyEnabled = data.relationFriendlyEnabled,
+			relationAllyEnabled = data.relationAllyEnabled,
+			relationNationEnabled = data.relationNationEnabled,
+			relationAiStationEnabled = data.relationAiEnabled,
+			relationNoneStationEnabled = data.relationNoneEnabled,
+			relationEnemyStationEnabled = data.relationEnemyEnabled,
+			relationUnfriendlyStationEnabled = data.relationUnfriendlyEnabled,
+			relationNeutralStationEnabled = data.relationNeutralEnabled,
+			relationFriendlyStationEnabled = data.relationFriendlyEnabled,
+			relationAllyStationEnabled = data.relationAllyEnabled,
+			relationNationStationEnabled = data.relationNationEnabled,
 			waypointsEnabled = data.waypointsEnabled,
 			compactWaypoints = data.compactWaypoints,
 			starshipsEnabled = data.starshipsEnabled,

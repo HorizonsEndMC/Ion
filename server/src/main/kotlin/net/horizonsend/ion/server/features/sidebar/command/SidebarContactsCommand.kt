@@ -175,4 +175,196 @@ object SidebarContactsCommand : SLCommand() {
 		PlayerCache[sender].bookmarksEnabled = bookmarksEnabled
 		sender.success("Changed bookmark visibility to $bookmarksEnabled")
 	}
+
+	@Suppress("unused")
+	@Subcommand("contacts ai")
+	fun onToggleAi(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val aiEnabled = toggle ?: !PlayerCache[sender].relationAiEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationAiEnabled, aiEnabled))
+		PlayerCache[sender].relationAiEnabled = aiEnabled
+		sender.success("Changed AI starship visibility to $aiEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts none")
+	fun onToggleNone(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val noneEnabled = toggle ?: !PlayerCache[sender].relationNoneEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationNoneEnabled, noneEnabled))
+		PlayerCache[sender].relationNoneEnabled = noneEnabled
+		sender.success("Changed no relation starship visibility to $noneEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts enemy")
+	fun onToggleEnemy(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val enemyEnabled = toggle ?: !PlayerCache[sender].relationEnemyEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationEnemyEnabled, enemyEnabled))
+		PlayerCache[sender].relationEnemyEnabled = enemyEnabled
+		sender.success("Changed enemy starship visibility to $enemyEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts unfriendly")
+	fun onToggleUnfriendly(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val unfriendlyEnabled = toggle ?: !PlayerCache[sender].relationUnfriendlyEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationUnfriendlyEnabled, unfriendlyEnabled))
+		PlayerCache[sender].relationUnfriendlyEnabled = unfriendlyEnabled
+		sender.success("Changed unfriendly starship visibility to $unfriendlyEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts neutral")
+	fun onToggleNeutral(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val neutralEnabled = toggle ?: !PlayerCache[sender].relationNeutralEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationNeutralEnabled, neutralEnabled))
+		PlayerCache[sender].relationNeutralEnabled = neutralEnabled
+		sender.success("Changed neutral starship visibility to $neutralEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts friendly")
+	fun onToggleFriendly(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val friendlyEnabled = toggle ?: !PlayerCache[sender].relationFriendlyEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationFriendlyEnabled, friendlyEnabled))
+		PlayerCache[sender].relationFriendlyEnabled = friendlyEnabled
+		sender.success("Changed friendly starship visibility to $friendlyEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts ally")
+	fun onToggleAlly(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val allyEnabled = toggle ?: !PlayerCache[sender].relationAllyEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationAllyEnabled, allyEnabled))
+		PlayerCache[sender].relationAllyEnabled = allyEnabled
+		sender.success("Changed ally starship visibility to $allyEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts nation")
+	fun onToggleNation(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val nationEnabled = toggle ?: !PlayerCache[sender].relationNationEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationNationEnabled, nationEnabled))
+		PlayerCache[sender].relationNationEnabled = nationEnabled
+		sender.success("Changed nation starship visibility to $nationEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts aiStation")
+	fun onToggleAiStation(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val aiStationEnabled = toggle ?: !PlayerCache[sender].relationAiEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationAiStationEnabled, aiStationEnabled))
+		PlayerCache[sender].relationAiStationEnabled = aiStationEnabled
+		sender.success("Changed AI station visibility to $aiStationEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts noneStation")
+	fun onToggleNoneStation(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val noneStationEnabled = toggle ?: !PlayerCache[sender].relationNoneEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationNoneStationEnabled, noneStationEnabled))
+		PlayerCache[sender].relationNoneStationEnabled = noneStationEnabled
+		sender.success("Changed no relation station visibility to $noneStationEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts enemyStation")
+	fun onToggleEnemyStation(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val enemyStationEnabled = toggle ?: !PlayerCache[sender].relationEnemyEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationEnemyStationEnabled, enemyStationEnabled))
+		PlayerCache[sender].relationEnemyStationEnabled = enemyStationEnabled
+		sender.success("Changed enemy station visibility to $enemyStationEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts unfriendlyStation")
+	fun onToggleUnfriendlyStation(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val unfriendlyStationEnabled = toggle ?: !PlayerCache[sender].relationUnfriendlyEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationUnfriendlyStationEnabled, unfriendlyStationEnabled))
+		PlayerCache[sender].relationUnfriendlyStationEnabled = unfriendlyStationEnabled
+		sender.success("Changed unfriendly station visibility to $unfriendlyStationEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts neutralStation")
+	fun onToggleNeutralStation(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val neutralStationEnabled = toggle ?: !PlayerCache[sender].relationNeutralEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationNeutralStationEnabled, neutralStationEnabled))
+		PlayerCache[sender].relationNeutralStationEnabled = neutralStationEnabled
+		sender.success("Changed neutral station visibility to $neutralStationEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts friendlyStation")
+	fun onToggleFriendlyStation(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val friendlyStationEnabled = toggle ?: !PlayerCache[sender].relationFriendlyEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationFriendlyStationEnabled, friendlyStationEnabled))
+		PlayerCache[sender].relationFriendlyStationEnabled = friendlyStationEnabled
+		sender.success("Changed friendly station visibility to $friendlyStationEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts allyStation")
+	fun onToggleAllyStation(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val allyStationEnabled = toggle ?: !PlayerCache[sender].relationAllyEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationAllyStationEnabled, allyStationEnabled))
+		PlayerCache[sender].relationAllyStationEnabled = allyStationEnabled
+		sender.success("Changed ally station visibility to $allyStationEnabled")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts nationStation")
+	fun onToggleNationStation(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val nationStationEnabled = toggle ?: !PlayerCache[sender].relationNationEnabled
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::relationNationStationEnabled, nationStationEnabled))
+		PlayerCache[sender].relationNationStationEnabled = nationStationEnabled
+		sender.success("Changed nation station visibility to $nationStationEnabled")
+	}
 }

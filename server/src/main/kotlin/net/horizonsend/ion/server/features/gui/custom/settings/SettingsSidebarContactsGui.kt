@@ -46,7 +46,23 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
         StarsButton(),
         BeaconsButton(),
         StationsButton(),
-        BookmarksButton()
+        BookmarksButton(),
+        RelationAiButton(),
+        RelationNoneButton(),
+        RelationEnemyButton(),
+        RelationUnfriendlyButton(),
+        RelationNeutralButton(),
+        RelationFriendlyButton(),
+        RelationAllyButton(),
+        RelationNationButton(),
+        RelationAiStationButton(),
+        RelationNoneStationButton(),
+        RelationEnemyStationButton(),
+        RelationUnfriendlyStationButton(),
+        RelationNeutralStationButton(),
+        RelationFriendlyStationButton(),
+        RelationAllyStationButton(),
+        RelationNationStationButton(),
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -91,7 +107,23 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
             PlayerCache[player.uniqueId].starsEnabled,
             PlayerCache[player.uniqueId].beaconsEnabled,
             PlayerCache[player.uniqueId].stationsEnabled,
-            PlayerCache[player.uniqueId].bookmarksEnabled
+            PlayerCache[player.uniqueId].bookmarksEnabled,
+            PlayerCache[player.uniqueId].relationAiEnabled,
+            PlayerCache[player.uniqueId].relationNoneEnabled,
+            PlayerCache[player.uniqueId].relationEnemyEnabled,
+            PlayerCache[player.uniqueId].relationUnfriendlyEnabled,
+            PlayerCache[player.uniqueId].relationNeutralEnabled,
+            PlayerCache[player.uniqueId].relationFriendlyEnabled,
+            PlayerCache[player.uniqueId].relationAllyEnabled,
+            PlayerCache[player.uniqueId].relationNationEnabled,
+            PlayerCache[player.uniqueId].relationAiStationEnabled,
+            PlayerCache[player.uniqueId].relationNoneStationEnabled,
+            PlayerCache[player.uniqueId].relationEnemyStationEnabled,
+            PlayerCache[player.uniqueId].relationUnfriendlyStationEnabled,
+            PlayerCache[player.uniqueId].relationNeutralStationEnabled,
+            PlayerCache[player.uniqueId].relationFriendlyStationEnabled,
+            PlayerCache[player.uniqueId].relationAllyStationEnabled,
+            PlayerCache[player.uniqueId].relationNationStationEnabled,
         )
 
         // create a new GuiText builder
@@ -271,6 +303,182 @@ object SettingsSidebarContactsGui : AbstractBackgroundPagedGui {
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleBookmarks(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationAiButton : GuiItems.AbstractButtonItem(
+        text("Enable AI Starships").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleAi(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationNoneButton : GuiItems.AbstractButtonItem(
+        text("Enable No Relation Starships").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleNone(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationEnemyButton : GuiItems.AbstractButtonItem(
+        text("Enable Enemy Starships").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleEnemy(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationUnfriendlyButton : GuiItems.AbstractButtonItem(
+        text("Enable Unfriendly Starships").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleUnfriendly(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationNeutralButton : GuiItems.AbstractButtonItem(
+        text("Enable Neutral Starships").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleNeutral(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationFriendlyButton : GuiItems.AbstractButtonItem(
+        text("Enable Friendly Starships").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleFriendly(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationAllyButton : GuiItems.AbstractButtonItem(
+        text("Enable Ally Starships").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleAlly(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationNationButton : GuiItems.AbstractButtonItem(
+        text("Enable Nation Starships").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleNation(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationAiStationButton : GuiItems.AbstractButtonItem(
+        text("Enable AI Stations").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleAiStation(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationNoneStationButton : GuiItems.AbstractButtonItem(
+        text("Enable No Relation Stations").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleNoneStation(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationEnemyStationButton : GuiItems.AbstractButtonItem(
+        text("Enable Enemy Stations").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleEnemyStation(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationUnfriendlyStationButton : GuiItems.AbstractButtonItem(
+        text("Enable Unfriendly Stations").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleUnfriendlyStation(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationNeutralStationButton : GuiItems.AbstractButtonItem(
+        text("Enable Neutral Stations").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleNeutralStation(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationFriendlyStationButton : GuiItems.AbstractButtonItem(
+        text("Enable Friendly Stations").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleFriendlyStation(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationAllyStationButton : GuiItems.AbstractButtonItem(
+        text("Enable Ally Stations").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleAllyStation(player, null)
+
+            windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private class RelationNationStationButton : GuiItems.AbstractButtonItem(
+        text("Enable Nation Stations").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SidebarContactsCommand.onToggleNationStation(player, null)
 
             windows.find { it.viewer == player }?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
