@@ -19,6 +19,12 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_EXTRACTORS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.minecraft.core.BlockPos
+import net.minecraft.world.level.LightLayer
 import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.World
@@ -59,6 +65,13 @@ class SolarPanelNode(
 	 * Returns the amount of power between ticks
 	 **/
 	fun getPower(): Int {
+		// Sample position
+		val sample = positions.first()
+		val pos = BlockPos(getX(sample), getY(sample), getZ(sample))
+		val lightLevel = network.world.minecraft.getBrightness(LightLayer.SKY, pos)
+
+		if (lightLevel == 0) return 0
+
 		val daylightMultiplier: Double = if (
 			network.world.environment == World.Environment.NORMAL &&
 			network.world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE) == true
