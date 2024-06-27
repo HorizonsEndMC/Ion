@@ -23,7 +23,12 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
+import net.horizonsend.ion.common.utils.text.lineBreak
+import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
@@ -38,13 +43,17 @@ import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStatio
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation.Companion.calculateCost
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import org.bukkit.World
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.Id
+import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.setValue
 import java.util.*
 
 @CommandAlias("spacestation|nspacestation|nstation|sstation|station|nationspacestation")
@@ -68,6 +77,8 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 			SpaceStationCache.all().filter { it.hasOwnershipContext(player.slPlayerId) }.map { it.name }
 		}
+
+		manager.commandCompletions.setDefaultCompletion("spacestations", CachedSpaceStation::class.java)
 	}
 
 	private fun validateName(name: String) {
@@ -275,7 +286,6 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("abandon")
 	@Description("Delete a space station")
-	@CommandCompletion("@spaceStations")
 	@Suppress("unused")
 	fun onAbandon(sender: Player, station: CachedSpaceStation<*, *, *>) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
@@ -293,7 +303,6 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("resize")
 	@Description("Resize the station")
-	@CommandCompletion("@spaceStations")
 	@Suppress("unused")
 	fun onResize(sender: Player, station: CachedSpaceStation<*, *, *>, newRadius: Int, @Optional cost: Int?) {
 		requireStationOwnership(sender.slPlayerId, station)
@@ -331,7 +340,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Subcommand("set trustlevel")
-	@CommandCompletion("@spaceStations MANUAL|NATION|ALLY")
+	@CommandCompletion("MANUAL|NATION|ALLY")
 	@Description("Change the setting for can build in the station")
 	@Suppress("unused")
 	fun onSetTrustLevel(sender: Player, station: CachedSpaceStation<*, *, *>, trustLevel: SpaceStationCompanion.TrustLevel) {
@@ -349,7 +358,6 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Subcommand("trusted list")
-	@CommandCompletion("@spaceStations")
 	@Suppress("unused")
 	fun onTrustedList(sender: Player, station: CachedSpaceStation<*, *, *>) {
 		requireStationOwnership(sender.slPlayerId, station)
@@ -367,7 +375,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("trusted add player")
 	@Description("Give a player build access to the station")
-	@CommandCompletion("@spaceStations @players")
+	@CommandCompletion("@players")
 	@Suppress("unused")
 	fun onTrustedAddPlayer(sender: Player, station: CachedSpaceStation<*, *, *>, player: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
@@ -394,7 +402,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("trusted add settlement")
 	@Description("Give a settlement build access to the station")
-	@CommandCompletion("@spaceStations @settlements")
+	@CommandCompletion("@settlements")
 	@Suppress("unused")
 	fun onTrustedAddSettlement(sender: Player, station: CachedSpaceStation<*, *, *>, settlement: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
@@ -422,7 +430,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("trusted add nation")
 	@Description("Give a nation build access to the station")
-	@CommandCompletion("@spaceStations @nations")
+	@CommandCompletion("@nations")
 	@Suppress("unused")
 	fun onTrustedAddNation(sender: Player, station: CachedSpaceStation<*, *, *>, nation: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
@@ -450,7 +458,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("trusted remove player")
 	@Description("Revoke a player's build access to the station")
-	@CommandCompletion("@spaceStations @players")
+	@CommandCompletion("@players")
 	@Suppress("unused")
 	fun onTrustedRemovePlayer(sender: Player, station: CachedSpaceStation<*, *, *>, player: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
@@ -478,7 +486,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("trusted remove settlement")
 	@Description("Give a settlement build access to the station")
-	@CommandCompletion("@spaceStations @settlements")
+	@CommandCompletion("@settlements")
 	@Suppress("unused")
 	fun onTrustedRemoveSettlement(sender: Player, station: CachedSpaceStation<*, *, *>, settlement: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
@@ -506,7 +514,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("trusted remove nation")
 	@Description("Give a nation build access to the station")
-	@CommandCompletion("@spaceStations @nations")
+	@CommandCompletion("@nations")
 	@Suppress("unused")
 	fun onTrustedRemoveNation(sender: Player, station: CachedSpaceStation<*, *, *>, nation: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
@@ -534,7 +542,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("set name")
 	@Description("Rename the station")
-	@CommandCompletion("@spaceStations @nothing")
+	@CommandCompletion("@nothing")
 	@Suppress("unused")
 	fun onRename(sender: Player, station: CachedSpaceStation<*, *, *>, newName: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
@@ -544,6 +552,172 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		sender.sendMessage(formatSpaceStationMessage("Renamed {0} to {1}", station.name, newName,))
 		Notify.chatAndGlobal(formatSpaceStationMessage("Space station {0}  has been renamed to  {1} by {2}", station.name, newName, sender.name))
+	}
+
+	@Subcommand("info")
+	fun onInfo(sender: CommandSender, station: CachedSpaceStation<*, *, *>) {
+		val colon = text(": ", HE_DARK_GRAY)
+
+		sender.sendMessage(ofChildren(
+			lineBreakWithCenterText(text(station.name, AQUA)), newline(),
+			text("Owner", HE_MEDIUM_GRAY), colon, text(station.ownerName, AQUA), newline(),
+			text("Radius", HE_MEDIUM_GRAY), colon, text(station.radius, AQUA), newline(),
+			text("World", HE_MEDIUM_GRAY), colon, text(station.world, AQUA), newline(),
+			text("Location", HE_MEDIUM_GRAY), colon, text(station.x, AQUA), text(", ", HE_MEDIUM_GRAY), text(station.z, AQUA), newline(),
+			lineBreak(36)
+		))
+	}
+
+	@Subcommand("transfer")
+	@CommandCompletion("@spacestations personal|settlement|nation @nothing")
+	fun onTransfer(sender: Player, station: CachedSpaceStation<*, *, *>, destination: String, @Optional confirm: String?) {
+		requireStationOwnership(sender.slPlayerId, station)
+		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.DELETE_STATION)
+
+		failIf(confirm != "confirm") {
+			"To transfer the station, confirm this choice. Use /spacestation transfer ${station.name} $destination confirm."
+		}
+
+		when (destination.lowercase()) {
+			"personal" -> transferPersonal(sender, station)
+			"settlement" -> transferSettlement(sender, station)
+			"nation" -> transferNation(sender, station)
+			else -> fail { "The destination must be personal, settlement, or nation!" }
+		}
+	}
+
+	private fun transferPersonal(sender: Player, station: CachedSpaceStation<*, *, *>) {
+		if (station.companion == PlayerSpaceStation.Companion) fail { "${station.name} is already a personal space station!" }
+
+		station.companion.col.deleteOneById(station.databaseId)
+
+		val id = PlayerSpaceStation.create(
+			sender.slPlayerId,
+			station.name,
+			station.world,
+			station.x,
+			station.z,
+			station.radius,
+			SpaceStationCompanion.TrustLevel.MANUAL
+		)
+
+		PlayerSpaceStation.updateById(id, setValue(PlayerSpaceStation::trustedPlayers, station.trustedPlayers))
+		PlayerSpaceStation.updateById(id, setValue(PlayerSpaceStation::trustedSettlements, station.trustedSettlements))
+		PlayerSpaceStation.updateById(id, setValue(PlayerSpaceStation::trustedNations, station.trustedNations))
+		PlayerSpaceStation.updateById(id, setValue(PlayerSpaceStation::trustLevel, station.trustLevel))
+
+		@Suppress("UNCHECKED_CAST")
+		Notify.chatAndEvents(when (station.companion) {
+			NationSpaceStation.Companion -> formatSpaceStationMessage(
+				"{0} of {1} transferred the nation space station {2} in {3} to themself",
+				text(sender.name, LIGHT_PURPLE),
+				getNationName(station.owner as Oid<Nation>),
+				station.name,
+				station.world,
+			)
+
+			SettlementSpaceStation.Companion -> formatSpaceStationMessage(
+				"{0} of {1} transferred the settlement space station {2} in {3} to themself",
+				text(sender.name, LIGHT_PURPLE),
+				getSettlementName(station.owner as Oid<Settlement>),
+				station.name,
+				station.world,
+			)
+
+			else -> throw NotImplementedError()
+		})
+	}
+
+	private fun transferSettlement(sender: Player, station: CachedSpaceStation<*, *, *>) {
+		if (station.companion == SettlementSpaceStation.Companion) fail { "${station.name} is already a settlement space station!" }
+
+		val settlement = requireSettlementIn(sender)
+		requireSettlementPermission(sender, settlement, SpaceStationCache.SpaceStationPermission.CREATE_STATION.settlement)
+
+		station.companion.col.deleteOneById(station.databaseId)
+
+		val id = SettlementSpaceStation.create(
+			settlement,
+			station.name,
+			station.world,
+			station.x,
+			station.z,
+			station.radius,
+			SpaceStationCompanion.TrustLevel.MANUAL
+		)
+
+		SettlementSpaceStation.updateById(id, setValue(SettlementSpaceStation::trustedPlayers, station.trustedPlayers))
+		SettlementSpaceStation.updateById(id, setValue(SettlementSpaceStation::trustedSettlements, station.trustedSettlements))
+		SettlementSpaceStation.updateById(id, setValue(SettlementSpaceStation::trustedNations, station.trustedNations))
+		SettlementSpaceStation.updateById(id, setValue(SettlementSpaceStation::trustLevel, station.trustLevel))
+
+		@Suppress("UNCHECKED_CAST")
+		Notify.chatAndEvents(when (station.companion) {
+			NationSpaceStation.Companion -> formatSpaceStationMessage(
+				"{0} of {1} transferred the nation space station {2} in {3} to the settlement {4}",
+				text(sender.name, LIGHT_PURPLE),
+				getNationName(station.owner as Oid<Nation>),
+				station.name,
+				station.world,
+				getSettlementName(settlement)
+			)
+
+			PlayerSpaceStation.Companion -> formatSpaceStationMessage(
+				"{0} transferred their personal space station {1} in {2} to the settlement {3}",
+				text(sender.name, LIGHT_PURPLE),
+				station.name,
+				station.world,
+				getSettlementName(settlement)
+			)
+
+			else -> throw NotImplementedError()
+		})
+	}
+
+	private fun transferNation(sender: Player, station: CachedSpaceStation<*, *, *>) {
+		if (station.companion == NationSpaceStation.Companion) fail { "${station.name} is already a nation space station!" }
+
+		val nation = requireNationIn(sender)
+		requireNationPermission(sender, nation, SpaceStationCache.SpaceStationPermission.CREATE_STATION.nation)
+
+		station.companion.col.deleteOneById(station.databaseId)
+
+		val id = NationSpaceStation.create(
+			nation,
+			station.name,
+			station.world,
+			station.x,
+			station.z,
+			station.radius,
+			SpaceStationCompanion.TrustLevel.MANUAL
+		)
+
+		NationSpaceStation.updateById(id, setValue(NationSpaceStation::trustedPlayers, station.trustedPlayers))
+		NationSpaceStation.updateById(id, setValue(NationSpaceStation::trustedSettlements, station.trustedSettlements))
+		NationSpaceStation.updateById(id, setValue(NationSpaceStation::trustedNations, station.trustedNations))
+		NationSpaceStation.updateById(id, setValue(NationSpaceStation::trustLevel, station.trustLevel))
+
+		@Suppress("UNCHECKED_CAST")
+		Notify.chatAndEvents(when (station.companion) {
+			SettlementSpaceStation.Companion -> formatSpaceStationMessage(
+				"{0} of {1} transferred the settlement space station {2} in {3} to the nation {4}",
+				text(sender.name, LIGHT_PURPLE),
+				getSettlementName(station.owner as Oid<Settlement>),
+				station.name,
+				station.world,
+				getNationName(nation)
+			)
+
+			PlayerSpaceStation.Companion -> formatSpaceStationMessage(
+				"{0} transferred their personal space station {1} in {2} to the nation {3}",
+				text(sender.name, LIGHT_PURPLE),
+				station.name,
+				station.world,
+				getNationName(nation)
+			)
+
+			else -> throw NotImplementedError()
+		})
 	}
 }
 
