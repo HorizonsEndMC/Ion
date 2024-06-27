@@ -49,6 +49,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.luckperms.api.node.NodeEqualityPredicate
 import org.bukkit.Bukkit
+import org.bukkit.World
 import org.bukkit.entity.Player
 
 @Suppress("UNUSED") // They're used
@@ -120,9 +121,47 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return player.userError("You're not on a planet! To go back to global chat, use /global")
 			}
 
-			val component = formatChatMessage(text("Planet", GREEN, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
+			val component = formatChatMessage(text("Planet", BLUE, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
 
 			for (other in player.world.players) {
+				if (PlayerCache[other].blockedPlayerIDs.contains(player.slPlayerId)) continue
+				other.sendMessage(component)
+			}
+		}
+	},
+
+	SYSTEM(text("System", TextColor.fromHexString("#FF8234")!!), listOf("systemchat", "system", "sy"), TextColor.fromHexString("#FF8234")!!) {
+		override fun onChat(player: Player, event: AsyncChatEvent) {
+			val world = player.world
+
+			val worlds = mutableSetOf<World>()
+
+			val planet = Space.getPlanet(world)
+
+			if (planet != null) {
+				worlds.add(world)
+
+				val spaceWorld = planet.spaceWorld
+				spaceWorld?.let { worlds.add(it) }
+
+				val star = planet.sun
+				Space.getPlanets().filter { it.sun == star }.mapNotNullTo(worlds) { it.planetWorld }
+			}
+
+			// this might become a problem if we ever put more than 1 star in a system
+			val star = Space.getStars().firstOrNull { it.spaceWorld == world }
+			if (star != null) {
+				worlds.add(world)
+				Space.getPlanets().filter { it.sun == star }.mapNotNullTo(worlds) { it.planetWorld }
+			}
+
+			if (worlds.isEmpty()) {
+				return player.userError("You're not in a system! To go back to global chat, use /global")
+			}
+
+			val component = formatChatMessage(text("System", TextColor.fromHexString("#FF8234")!!, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
+
+			for (other in worlds.flatMap { it.players }) {
 				if (PlayerCache[other].blockedPlayerIDs.contains(player.slPlayerId)) continue
 				other.sendMessage(component)
 			}
