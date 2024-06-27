@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items
 
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
@@ -10,16 +11,18 @@ import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
 import net.horizonsend.ion.server.features.custom.items.minerals.objects.MineralItem
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.misc.ShellItem
-import net.horizonsend.ion.server.features.custom.items.throwables.ThrownDetonator
+import net.horizonsend.ion.server.features.custom.items.throwables.ThrowableCustomItem
+import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownPumpkinGrenade
-import net.horizonsend.ion.server.features.custom.items.throwables.objects.ThrowableCustomItem
-import net.horizonsend.ion.server.features.custom.items.throwables.objects.ThrownCustomItem
+import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownDetonator
+import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownSmokeGrenade
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -800,6 +803,19 @@ object CustomItems {
 		) {
 			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem {
 				return ThrownDetonator(item, maxTicks, damageSource, IonServer.pvpBalancing.throwables::detonator)
+			}
+		}
+	)
+
+	val SMOKE_GRENADE = register(
+		object : ThrowableCustomItem(
+			identifier = "SMOKE_GRENADE",
+			customModelData = 1102,
+			ofChildren(text("Smoke ", DARK_GREEN), text("Grenade", GRAY)).decoration(ITALIC, false),
+			IonServer.pvpBalancing.throwables::smokeGrenade
+		) {
+			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem {
+				return ThrownSmokeGrenade(item, maxTicks, damageSource)
 			}
 		}
 	)

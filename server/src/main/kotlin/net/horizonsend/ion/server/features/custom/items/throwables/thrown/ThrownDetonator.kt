@@ -1,8 +1,8 @@
-package net.horizonsend.ion.server.features.custom.items.throwables
+package net.horizonsend.ion.server.features.custom.items.throwables.thrown
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Throwables.ThrowableBalancing
-import net.horizonsend.ion.server.features.custom.items.throwables.objects.ThrownCustomItem
+import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.damager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks

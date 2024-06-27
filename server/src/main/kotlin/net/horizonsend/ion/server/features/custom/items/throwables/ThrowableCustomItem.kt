@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.custom.items.throwables.objects
+package net.horizonsend.ion.server.features.custom.items.throwables
 
 import org.bukkit.block.Dispenser as DispenserState
 import org.bukkit.block.data.type.Dispenser as DispenserData

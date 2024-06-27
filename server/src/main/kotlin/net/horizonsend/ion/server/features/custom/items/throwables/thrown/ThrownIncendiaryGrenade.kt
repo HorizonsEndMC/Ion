@@ -1,8 +1,8 @@
-package net.horizonsend.ion.server.features.custom.items.throwables
+package net.horizonsend.ion.server.features.custom.items.throwables.thrown
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
-import net.horizonsend.ion.server.features.custom.items.throwables.objects.ThrownCustomItem
+import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Particle
 import org.bukkit.block.Block

@@ -17,6 +17,16 @@ data class PVPBalancingConfiguration(
 			30,
 			1,
 			25,
+		),
+
+		val smokeGrenade: ThrowableBalancing = ThrowableBalancing(
+			damage = 1.0,
+			damageRadius = 4.0,
+			throwVelocityMultiplier = 1.15,
+			maxHealth = 5,
+			maxTicks = 50,
+			tickInterval = 1,
+			throwCooldownTicks = 25
 		)
 	) {
 		@Serializable

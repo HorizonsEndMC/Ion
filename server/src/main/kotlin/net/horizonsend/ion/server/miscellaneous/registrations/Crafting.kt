@@ -48,6 +48,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.RIFLE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RIFLE_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SHOTGUN_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SMB_RECEIVER
+import net.horizonsend.ion.server.features.custom.items.CustomItems.SMOKE_GRENADE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SNIPER_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.STANDARD_MAGAZINE
@@ -80,6 +81,7 @@ import org.bukkit.Material.BLACKSTONE
 import org.bukkit.Material.BLACK_WOOL
 import org.bukkit.Material.BLUE_WOOL
 import org.bukkit.Material.BROWN_WOOL
+import org.bukkit.Material.COAL
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.CYAN_WOOL
@@ -97,6 +99,7 @@ import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.GREEN_WOOL
 import org.bukkit.Material.HONEYCOMB
 import org.bukkit.Material.IRON_BLOCK
+import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.LAPIS_LAZULI
@@ -521,6 +524,14 @@ object Crafting : IonServerComponent() {
 			setIngredient('r', REDSTONE)
 			setIngredient('t', TITANIUM_INGOT.constructItemStack())
 			setIngredient('u', URANIUM.constructItemStack())
+		}
+
+		itemStackShapeRecipe("smokeGrenade", SMOKE_GRENADE.constructItemStack()) {
+			shape(" i ", "tct", " t ",)
+
+			setIngredient('i', IRON_INGOT)
+			setIngredient('t', TITANIUM_INGOT.constructItemStack())
+			setIngredient('c', COAL)
 		}
 
 		// Aluminum Block Crafting
