@@ -4,6 +4,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.extensions.userError
@@ -18,11 +20,13 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 
@@ -96,7 +100,22 @@ internal object NationRelationCommand : SLCommand() {
 	fun onRelations(sender: Player, @Optional page: Int?) = asyncCommand(sender) {
 		val nation = requireNationIn(sender)
 
+		handleRelations(sender, nation, page)
+	}
+
+	@Subcommand("relations")
+	@CommandCompletion("@nations")
+	fun onRelations(sender: CommandSender, nationName: String, @Optional page: Int?) = asyncCommand(sender) {
+		val nation: Oid<Nation> = resolveNation(nationName)
+
+		handleRelations(sender, nation, page)
+	}
+
+	private fun handleRelations(sender: Audience, nation: Oid<Nation>, page: Int?) {
 		val relations = NationRelation.find(NationRelation::nation eq nation).toList()
+		val name = getNationName(nation)
+
+		sender.sendMessage(ofChildren(lineBreakWithCenterText(text("$name's Relations", YELLOW)), newline()))
 
 		val body = formatPaginatedMenu(
 			entries = relations.count(),
@@ -113,9 +132,6 @@ internal object NationRelationCommand : SLCommand() {
 			ofChildren(text(otherName, YELLOW), text(": ", DARK_GRAY), relation.actual.component, text(" "), relationText)
 		}
 
-		sender.sendMessage(ofChildren(
-			lineBreakWithCenterText(text("Relations", YELLOW)), newline(),
-			body
-		))
+		sender.sendMessage(body)
 	}
 }
