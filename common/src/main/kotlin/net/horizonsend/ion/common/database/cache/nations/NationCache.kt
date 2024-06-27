@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
+import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -15,7 +16,8 @@ object NationCache : ManualCache() {
 		val id: Oid<Nation>,
 		var name: String,
 		var capital: Oid<Settlement>,
-		var color: Int
+		var color: Int,
+		var invites: Set<Oid<Settlement>>
 	) {
 		val leader get() = SettlementCache[capital].leader
 	}
@@ -28,7 +30,7 @@ object NationCache : ManualCache() {
 
 		fun cache(nation: Nation) {
 			val id: Oid<Nation> = nation._id
-			val data = NationData(id, nation.name, nation.capital, nation.color)
+			val data = NationData(id, nation.name, nation.capital, nation.color, nation.invites)
 			NATION_DATA[id] = data
 			nameCache[data.name] = id
 		}
@@ -58,6 +60,10 @@ object NationCache : ManualCache() {
 
 			change[Nation::color]?.let {
 				data.color = it.int()
+			}
+
+			change[Nation::invites]?.let {
+				data.invites = it.mappedSet { id -> id.oid() }
 			}
 		}
 

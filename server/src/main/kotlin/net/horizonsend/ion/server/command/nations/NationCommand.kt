@@ -241,12 +241,27 @@ internal object NationCommand : SLCommand() {
 
 	@Suppress("unused")
 	@Subcommand("invites")
-	fun onInvites(sender: Player) = asyncCommand(sender) {
+	fun onInvites(sender: Player, @Optional page: Int?) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.SETTLEMENT_INVITE)
 
-		val invitedSettlements = Nation.findPropById(nationId, Nation::invites)
-		sender.sendMessage(nationMessageFormat("Invited Settlements: {0}", invitedSettlements?.joinToString { SettlementCache[it].name }))
+		val invitedSettlements = NationCache[nationId].invites.toList()
+
+		val body = formatPaginatedMenu(
+			entries = invitedSettlements.count(),
+			command = "/nation invites",
+			currentPage = page ?: 1,
+		) {
+			val settlementId = invitedSettlements[it]
+			val settlement = getSettlementName(settlementId)
+
+			text(settlement, YELLOW)
+		}
+
+		sender.sendMessage(ofChildren(
+			lineBreakWithCenterText(text("Invites", YELLOW)), newline(),
+			body
+		))
 	}
 
 	@Suppress("unused")
