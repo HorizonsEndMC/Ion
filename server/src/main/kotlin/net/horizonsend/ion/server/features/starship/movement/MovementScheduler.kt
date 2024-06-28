@@ -76,23 +76,23 @@ object MovementScheduler : IonServerComponent(false) {
 		return true
 	}
 
-	fun handleMovements() {
-		while (handlingMovements) {
-			for (starship in ActiveStarships.allControlledStarships()) runCatching {
+	private fun handleMovements() {
+		while (handlingMovements) runCatching {
+			for (starship in ActiveStarships.allControlledStarships()) runCatching shipLoop@{
 				val rotationQueue = starship.rotationQueue
 				val translateQueue = starship.translationQueue
 
 				// Prioritize rotations
 				if (rotationQueue.isNotEmpty()) {
-					val movement = rotationQueue.poll() ?: return@runCatching // Just in case
+					val movement = rotationQueue.poll() ?: return@shipLoop // Just in case
 
-					executeMovement(starship, movement)
+					movement.future.complete(executeMovement(starship, movement))
 
-					return@runCatching
+					return@shipLoop
 				}
 
-				val translation = translateQueue.poll() ?: return@runCatching
-				executeMovement(starship, translation)
+				val translation = translateQueue.poll() ?: return@shipLoop
+				translation.future.complete(executeMovement(starship, translation))
 			}
 		}
 	}
