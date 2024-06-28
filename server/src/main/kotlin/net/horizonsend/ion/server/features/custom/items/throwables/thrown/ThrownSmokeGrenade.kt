@@ -24,6 +24,8 @@ class ThrownSmokeGrenade(
 		if (isExploding) return
 		isExploding = true
 
+		item.remove()
+
 		world.spawnParticle(
 			Particle.CAMPFIRE_SIGNAL_SMOKE,
 			location.x,
