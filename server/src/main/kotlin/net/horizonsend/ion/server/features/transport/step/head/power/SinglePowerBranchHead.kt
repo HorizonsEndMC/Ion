@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.DestinationNode
-import net.horizonsend.ion.server.features.transport.node.type.IntermediateNode
+import net.horizonsend.ion.server.features.transport.node.type.StepHandler
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.head.HeadHolder
 import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
@@ -23,21 +23,29 @@ class SinglePowerBranchHead(
 ) : SingleBranchHead<ChunkPowerNetwork>, PowerBranchHead {
 	private var isDead = false
 
-	override fun setDead() {
+	override fun markDead() {
 		isDead = true
 	}
 
 	override fun isDead(): Boolean = isDead
 
+	@Suppress("UNCHECKED_CAST")
 	override suspend fun stepForward() {
 		val node = currentNode
 
 		if (tryCast<DestinationNode<ChunkPowerNetwork>>(node) { finishChain(this@SinglePowerBranchHead) }) return
 
-		node as IntermediateNode<ChunkTransportNetwork1>
+		// All other nodes handle steps transferring in / out
+		node as StepHandler<ChunkTransportNetwork1>
 
 		val result = node.handleHeadStep(this as BranchHead<ChunkTransportNetwork>)
+
+		println("Result was: $result")
+		println("before result")
+		println("current node : $currentNode")
 		result.apply(holder as HeadHolder<ChunkTransportNetwork>)
+		println("after result")
+		println("current node : $currentNode")
 	}
 
 	// Get around runtime type erasure

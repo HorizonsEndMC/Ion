@@ -9,8 +9,8 @@ import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
  *
  * Nodes may not transfer into a source node
  **/
-interface SourceNode<T: ChunkTransportNetwork> {
-	suspend fun getOriginData(): StepOrigin<T>
+interface SourceNode<T: ChunkTransportNetwork> : StepHandler<T> {
+	suspend fun getOriginData(): StepOrigin<T>?
 
 	suspend fun startStep(): NewStep<T>?
 }

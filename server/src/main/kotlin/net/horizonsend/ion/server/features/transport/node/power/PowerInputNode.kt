@@ -78,7 +78,7 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode, Dest
 	}
 
 	override suspend fun finishChain(head: BranchHead<ChunkPowerNetwork>) {
-		head.setDead()
+		head.markDead()
 		val origin = (head.holder as NewStep<ChunkPowerNetwork>).origin
 
 		val multis = getPoweredMultiblocks()
