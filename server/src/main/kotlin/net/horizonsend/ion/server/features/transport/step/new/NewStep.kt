@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.step.new
 import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.head.HeadHolder
+import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
 import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
 
 class NewStep<T: ChunkTransportNetwork>(
@@ -21,6 +22,9 @@ class NewStep<T: ChunkTransportNetwork>(
 
 	suspend operator fun invoke() {
 		while (!head.isDead()) {
+			println("Stepping forward. Head: $head")
+			println("Current head position: ${(head as? SinglePowerBranchHead)?.currentNode}")
+			println("Previous nodes: ${head.previousNodes}")
 			head.stepForward()
 		}
 	}
