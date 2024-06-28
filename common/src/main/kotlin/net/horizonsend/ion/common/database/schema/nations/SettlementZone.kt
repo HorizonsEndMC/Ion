@@ -1,8 +1,5 @@
 package net.horizonsend.ion.common.database.schema.nations
 
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.reflect.KMutableProperty1
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
@@ -20,6 +17,9 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.ne
 import org.litote.kmongo.path
 import org.litote.kmongo.pull
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.reflect.KMutableProperty1
 
 class SettlementZone(
     override val _id: Oid<SettlementZone> = objId(),
@@ -35,7 +35,8 @@ class SettlementZone(
     var trustedPlayers: Set<SLPlayerId>? = null,
     var trustedNations: Set<Oid<Nation>>? = null,
     var trustedSettlements: Set<Oid<Settlement>>? = null,
-    var minBuildAccess: Settlement.ForeignRelation? = null
+    var minBuildAccess: Settlement.ForeignRelation? = null,
+	var allowFriendlyFire: Boolean? = null
 ) : DbObject {
 	companion object : OidDbObjectCompanion<SettlementZone>(SettlementZone::class, setup = {
 		ensureIndex(SettlementZone::settlement)
@@ -108,7 +109,8 @@ class SettlementZone(
 					org.litote.kmongo.setValue(SettlementZone::trustedPlayers, null),
 					org.litote.kmongo.setValue(SettlementZone::trustedNations, null),
 					org.litote.kmongo.setValue(SettlementZone::trustedSettlements, null),
-					org.litote.kmongo.setValue(SettlementZone::minBuildAccess, null)
+					org.litote.kmongo.setValue(SettlementZone::minBuildAccess, null),
+					org.litote.kmongo.setValue(SettlementZone::allowFriendlyFire, null)
 				)
 			} else {
 				// someone bought it -> set owner, unset price (not rent, as the rent must stay for them to be charged)
@@ -160,6 +162,11 @@ class SettlementZone(
 
 		fun removeTrustedSettlement(zoneId: Oid<SettlementZone>, settlementId: Oid<Settlement>) =
 			removeTrusted(zoneId, settlementId, SettlementZone::trustedSettlements)
+
+		fun setAllowFriendlyFire(zoneId: Oid<SettlementZone>, value: Boolean) = trx { sess ->
+			require(matches(sess, zoneId, SettlementZone::owner ne null)) { "Zone $zoneId has no owner" }
+			updateById(sess, zoneId, org.litote.kmongo.setValue(SettlementZone::allowFriendlyFire, value))
+		}
 
 		fun setMinBuildAccess(zoneId: Oid<SettlementZone>, level: Settlement.ForeignRelation): Unit = trx { sess ->
 			require(matches(sess, zoneId, SettlementZone::owner ne null)) { "Zone $zoneId has no owner" }

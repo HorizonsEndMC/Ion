@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.boolean
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.document
@@ -42,6 +43,7 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 	var trustedNations: Set<Oid<Nation>>? = zone.trustedNations; private set
 	var trustedSettlements: Set<Oid<Settlement>>? = zone.trustedSettlements; private set
 	var minBuildAccess: Settlement.ForeignRelation? = zone.minBuildAccess; private set
+	var allowFriendlyFire: Boolean? = zone.allowFriendlyFire; private set
 	override val world: String get() = Regions.get<RegionTerritory>(territory).world
 
 	private fun getRegionTerritory(): RegionTerritory {
@@ -84,6 +86,9 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 		}
 		delta[SettlementZone::minBuildAccess]?.let { bson ->
 			minBuildAccess = bson.nullable()?.enumValue<Settlement.ForeignRelation>()
+		}
+		delta[SettlementZone::allowFriendlyFire]?.let { bson ->
+			allowFriendlyFire = bson.nullable()?.boolean()
 		}
 	}
 

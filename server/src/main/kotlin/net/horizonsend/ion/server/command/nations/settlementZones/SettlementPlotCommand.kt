@@ -210,6 +210,14 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 		sender msg "&aRemoved settlement $name from plot ${zone.name}"
 	}
 
+	@Subcommand("allowFriendlyFire")
+	@Description("Allow members of the same nation or allies to damage each other")
+	fun onSetFriendlyFire(sender: Player, zone: RegionSettlementZone, state: Boolean) = asyncCommand(sender) {
+		requireOwnsZone(sender, zone)
+		SettlementZone.setAllowFriendlyFire(zone.id, state)
+		sender msg "&aChanged ${zone.name} to ${if (state) "allow" else "disallow"} friendly fire"
+	}
+
 	@Subcommand("minbuildaccess")
 	@Description("Allow certain types of players to build in the plot, e.g. allies (strict for exceptions only, default)")
 	fun onMinBuildAccess(
