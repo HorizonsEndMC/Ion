@@ -6,9 +6,9 @@ import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.type.IntermediateNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
+import net.horizonsend.ion.server.features.transport.node.type.StepHandler
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.result.MoveForward
 import net.horizonsend.ion.server.features.transport.step.result.StepResult
@@ -18,7 +18,7 @@ import org.bukkit.block.data.Directional
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode, EndRodNode>, IntermediateNode<ChunkPowerNetwork> {
+class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode, EndRodNode>, StepHandler<ChunkPowerNetwork> {
 	constructor(network: ChunkPowerNetwork, origin: Long) : this(network) {
 		positions.add(origin)
 	}

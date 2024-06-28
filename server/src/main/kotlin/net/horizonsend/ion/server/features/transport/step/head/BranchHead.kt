@@ -19,5 +19,5 @@ interface BranchHead<T: ChunkTransportNetwork> {
 	fun isDead(): Boolean
 
 	/** Sets this branch to be dead */
-	fun setDead()
+	fun markDead()
 }
