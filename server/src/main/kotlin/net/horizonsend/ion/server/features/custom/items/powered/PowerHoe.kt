@@ -32,6 +32,7 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
 import java.util.EnumSet
+import kotlin.math.roundToInt
 
 class PowerHoe(
 	identifier: String,
@@ -118,8 +119,10 @@ class PowerHoe(
 				break
 			}
 
-			if (handleHarvest(player, mods, block, drops)) {
-				availablePower -= powerUse
+			val usage = UsageReference()
+
+			if (handleHarvest(player, mods, block, drops, usage)) {
+				availablePower -= (powerUse * usage.multiplier).roundToInt()
 				broken++
 			}
 		}
@@ -134,11 +137,14 @@ class PowerHoe(
 		setPower(itemStack, availablePower)
 	}
 
+	data class UsageReference(var multiplier: Double = 1.0)
+
 	private fun handleHarvest(
 		player: Player,
 		mods: Array<ItemModification>,
 		block: Block,
-		drops: MutableMap<Long, Collection<ItemStack>>
+		drops: MutableMap<Long, Collection<ItemStack>>,
+		usage: UsageReference
 	): Boolean {
 		val data = block.blockData
 
@@ -165,7 +171,7 @@ class PowerHoe(
 			.filterIsInstance<DropModifier>()
 			.sortedByDescending { it.priority }
 
-		PowerDrill.handleModifiers(dropList, dropModifiers)
+		usage.multiplier = PowerDrill.handleModifiers(dropList, dropModifiers)
 		drops[BlockPos.asLong(block.x, block.y, block.z)] = dropList
 
 		var replacement = Material.AIR.createBlockData()

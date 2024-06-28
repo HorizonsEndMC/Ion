@@ -169,7 +169,6 @@ object Crafting : IonServerComponent() {
 			addIngredient(STEEL_BLOCK.constructItemStack().asQuantity(1))
 		}
 
-
 		// Prismarine Bricks
 		Bukkit.addRecipe(
 			FurnaceRecipe(

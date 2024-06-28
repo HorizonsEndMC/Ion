@@ -29,7 +29,7 @@ class FortuneModifier(
 	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class)
 	override val shouldDropXP: Boolean = true
-	override val usageMultiplier: Double = 2.0 + level
+	override val usageMultiplier: Double = 0.25 + level
 
 	override val displayName: Component = text("Fortune ${level + 1}", TextColor.fromHexString(color)!!, BOLD).decoration(TextDecoration.ITALIC, false)
 

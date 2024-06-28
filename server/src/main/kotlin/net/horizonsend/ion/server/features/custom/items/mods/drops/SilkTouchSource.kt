@@ -28,7 +28,7 @@ object SilkTouchSource : ItemModification, DropSource, PowerUsageIncrease {
 	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class)
 	override val shouldDropXP: Boolean = false
-	override val usageMultiplier: Double = 2.0
+	override val usageMultiplier: Double = 1.25
 	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.SILK_TOUCH_MOD }
 
 	override fun getDrop(block: Block): Collection<ItemStack> {
