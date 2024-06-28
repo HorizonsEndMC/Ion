@@ -51,7 +51,7 @@ object SearchCommand : SLCommand() {
 				for (block in containerBlocks.withIndex()) {
 					val loc = Location( player.world, block.value.x.toDouble(), block.value.y.toDouble(), block.value.z.toDouble() )
 
-					if(!containers.elementAt(block.index).inventory.contains(item)) continue //necessary check for multi-item searches to prevent false positives
+					if(!containsItem(containers.elementAt(block.index).inventory, item)) continue //necessary check for multi-item searches to prevent false positives
 
 					if (twoOrMoreMatches(containers.elementAt(block.index), strList) || // if container has 2+ of the searched items
 						(item.type.isBlock && item.type.isSolid) || // Billboarding blocks looks so messed up, so this mostly prevents that
@@ -105,7 +105,7 @@ object SearchCommand : SLCommand() {
 					val block = world.getBlockAt(x, y, z)
 					val inv = block.state as? InventoryHolder ?: continue
 					//added second conditional cause there are no "AIR" item stacks
-					if(inv.inventory.contains(item) || (itemStr == "AIR" && containsAir(inv.inventory))) {
+					if( containsItem(inv.inventory, item) || (itemStr == "AIR" && containsAir(inv.inventory))) {
 						blockSet.add(inv)
 					}
 				}
