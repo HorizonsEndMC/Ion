@@ -19,7 +19,7 @@ interface MultiBranchHead<N: ChunkTransportNetwork> : BranchHead<N> {
 		return heads.all { it.head.isDead() }
 	}
 
-	override fun setDead() {
-		heads.forEach { it.head.setDead() }
+	override fun markDead() {
+		heads.forEach { it.head.markDead() }
 	}
 }
