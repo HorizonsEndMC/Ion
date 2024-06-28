@@ -27,6 +27,8 @@ object PlayerStarshipControl : IonServerComponent() {
 
 		event.isCancelled = true
 
+		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
+
 		starship.tryRotate(false)
 	}
 
@@ -36,6 +38,8 @@ object PlayerStarshipControl : IonServerComponent() {
 		if (event.offHandItem.type != StarshipControl.CONTROLLER_TYPE) return
 
 		event.isCancelled = true
+
+		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
 
 		starship.tryRotate(true)
 	}

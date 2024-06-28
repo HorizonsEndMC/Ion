@@ -12,7 +12,7 @@ import org.bukkit.World
 import java.util.concurrent.CompletableFuture
 
 object StarshipTeleportation {
-	fun teleportStarship(starship: ActiveStarship, destination: Location, callback: (Boolean, Throwable?) -> Unit = { _, _ -> }): CompletableFuture<Boolean> {
+	fun teleportStarship(starship: ActiveStarship, destination: Location, callback: () -> Unit = {}): CompletableFuture<Boolean> {
 		val origin = starship.centerOfMass
 		val (x, y, z) = Vec3i(destination)
 		val dx = x - origin.x
@@ -30,7 +30,7 @@ object StarshipTeleportation {
 
 		return tryTeleport(starship, dx, dy, dz, newWorld).whenComplete { ok, ex ->
 			starship.isTeleporting = false
-			callback(ok, ex)
+			callback()
 		}
 	}
 
@@ -80,6 +80,7 @@ object StarshipTeleportation {
 				starship.information("Adjusting position...")
 
 				val tries = previousTries + 1
+				println(14)
 				return@thenComposeAsync tryTeleport(starship, dx, dy, dz, newWorld, tries, adjustX, adjustZ)
 			}
 	}

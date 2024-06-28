@@ -53,6 +53,7 @@ class HyperspaceMovement(
 	override fun run() {
 		if (!isPiloted(ship as ActiveControlledStarship)) {
 			cancel()
+			return
 		}
 
 		x += direction.x * speed
@@ -73,6 +74,7 @@ class HyperspaceMovement(
 				}
 
 				cancel()
+				return
 			}
 		}
 

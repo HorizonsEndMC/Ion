@@ -3,11 +3,17 @@ package net.horizonsend.ion.server.features.starship.active
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.MessageFactory
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -19,7 +25,9 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipTrans
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
 import net.horizonsend.ion.server.features.starship.modules.SinkMessageFactory
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
+import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -28,8 +36,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
@@ -40,7 +51,6 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.lang.Math.cbrt
 import java.util.LinkedList
-import java.util.Queue
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
@@ -79,7 +89,7 @@ class ActiveControlledStarship(
 	data class PendingRotation(val clockwise: Boolean)
 
 	val pendingRotations = LinkedBlockingQueue<PendingRotation>()
-	private val rotationTime get() = TimeUnit.MILLISECONDS.toNanos(250L + initialBlockCount / 40L)
+	private val rotationTime get() = TimeUnit.MILLISECONDS.toNanos(50L + initialBlockCount / 30L)
 
 	fun getTargetForward(): BlockFace {
 		val rotation = pendingRotations.peek()
@@ -101,17 +111,11 @@ class ActiveControlledStarship(
 		scheduleRotation()
 	}
 
-	private var scheduledRotations: Int = 0
-
 	private fun scheduleRotation() {
-		if (scheduledRotations >= 3) return
-
 		val rotationTimeTicks = TimeUnit.NANOSECONDS.toMillis(rotationTime) / 50L
 		Tasks.sync {
 			(controller as? ActivePlayerController)?.player?.setCooldown(StarshipControl.CONTROLLER_TYPE, rotationTimeTicks.toInt())
 		}
-
-		scheduledRotations++
 		Tasks.syncDelay(rotationTimeTicks) {
 			if (pendingRotations.none()) {
 				return@syncDelay
@@ -123,12 +127,11 @@ class ActiveControlledStarship(
 				scheduleRotation()
 			}
 
-			moveAsync(RotationMovement(this, rotation.clockwise), rotationQueue)
-			scheduledRotations--
+			moveAsync(RotationMovement(this, rotation.clockwise))
 		}
 	}
 
-	override fun <T: StarshipMovement> moveAsync(movement: T, queue: Queue<T>): CompletableFuture<Boolean> {
+	override fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean> {
 		if (!ActiveStarships.isActive(this)) {
 			return CompletableFuture.completedFuture(false)
 		}
@@ -145,14 +148,49 @@ class ActiveControlledStarship(
 			return CompletableFuture.completedFuture(false)
 		}
 
-		if (!queue.offer(movement)) {
-			return CompletableFuture.completedFuture(false)
+		val future = CompletableFuture<Boolean>()
+		Tasks.async {
+			val result = executeMovement(movement, pilot)
+			future.complete(result)
+			controller.onMove(movement)
+			subsystems.forEach { runCatching { it.onMovement(movement) } }
 		}
 
-		return movement.future
+		return future
 	}
 
 	var lastBlockedTime: Long = 0
+
+	@Synchronized
+	private fun executeMovement(movement: StarshipMovement, controller: Controller): Boolean {
+		try {
+			movement.execute()
+		} catch (e: StarshipMovementException) {
+			val location = if (e is StarshipBlockedException) e.location else null
+			controller.onBlocked(movement, e, location)
+			controller.sendMessage(e.formatMessage())
+
+			sneakMovements = 0
+			lastBlockedTime = System.currentTimeMillis()
+			return false
+		} catch (e: Throwable) {
+			serverError("There was an unhandled exception during movement! Please forward this to staff")
+			val stackTrace = "$e\n" + e.stackTrace.joinToString(separator = "\n")
+
+			val exceptionMessage = ofChildren(text(e.message ?: "No message provided", RED), space(), bracketed(text("Hover for info", HEColorScheme.HE_LIGHT_GRAY)))
+				.hoverEvent(text(stackTrace))
+				.clickEvent(ClickEvent.copyToClipboard(stackTrace))
+
+			sendMessage(exceptionMessage)
+
+			IonServer.slF4JLogger.error(e.message)
+			e.printStackTrace()
+
+			return false
+		}
+
+		return true
+	}
 
 	val dataId: Oid<out StarshipData> = data._id
 

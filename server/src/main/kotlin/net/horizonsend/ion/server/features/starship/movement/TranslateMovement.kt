@@ -33,7 +33,7 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 
 			return CompletableFuture.allOf(*toLoad.toTypedArray()).thenCompose {
 				Tasks.checkMainThread()
-				return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld), starship.translationQueue)
+				return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld))
 			}
 		}
 
