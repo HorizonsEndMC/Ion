@@ -36,12 +36,14 @@ import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.setValue
+import java.util.concurrent.CompletableFuture
 import kotlin.collections.set
 import kotlin.math.sqrt
 
 abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: World? = null) {
 	// null if the ship is not a player ship
 	private val playerShip: ActiveControlledStarship? = starship as? ActiveControlledStarship
+	val future = CompletableFuture<Boolean>()
 
 	abstract fun displaceX(oldX: Int, oldZ: Int): Int
 	abstract fun displaceY(oldY: Int): Int

@@ -27,7 +27,9 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
+import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
@@ -65,7 +67,9 @@ import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
 import java.util.LinkedList
+import java.util.Queue
 import java.util.UUID
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CompletableFuture
 import kotlin.collections.set
 import kotlin.math.ln
@@ -334,7 +338,10 @@ abstract class ActiveStarship (
 		passengers.clear()
 	}
 
-	abstract fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean>
+	val translationQueue: Queue<TranslateMovement> = LinkedList()
+	val rotationQueue: Queue<RotationMovement> = ArrayBlockingQueue(4)
+
+	abstract fun <T: StarshipMovement> moveAsync(movement: T, queue: Queue<T>): CompletableFuture<Boolean>
 
 	/** get the thruster data for this direction. if it's diagonal, it returns the faster side's speed. */
 	fun getThrustData(dx: Int, dz: Int): ThrustData {
