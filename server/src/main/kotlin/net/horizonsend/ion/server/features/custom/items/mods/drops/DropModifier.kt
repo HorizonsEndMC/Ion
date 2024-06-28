@@ -5,5 +5,5 @@ import org.bukkit.inventory.ItemStack
 interface DropModifier {
 	val priority: Int
 
-	fun modifyDrop(itemStack: ItemStack)
+	fun modifyDrop(itemStack: ItemStack): Boolean
 }

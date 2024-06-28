@@ -30,15 +30,17 @@ object AutoCompostModifier : ItemModification, DropModifier {
 
 	override val priority: Int = 1
 
-	override fun modifyDrop(itemStack: ItemStack) {
+	override fun modifyDrop(itemStack: ItemStack): Boolean {
 		val nms = CraftItemStack.asNMSCopy(itemStack)
 		val percentage = ComposterBlock.COMPOSTABLES.getFloat(nms.item)
 
-		if (percentage == -1.0f) return
+		if (percentage == -1.0f) return false
 
-		if (testRandom(percentage / 8.0f)) return
+		if (testRandom(percentage / 8.0f)) return false
 
 		itemStack.type = Material.BONE_MEAL
 		itemStack.itemMeta = null
+
+		return true
 	}
 }

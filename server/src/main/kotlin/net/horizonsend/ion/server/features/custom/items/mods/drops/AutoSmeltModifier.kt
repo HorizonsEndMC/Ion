@@ -42,15 +42,17 @@ object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
 
 	override val priority: Int = 1
 
-	override fun modifyDrop(itemStack: ItemStack) {
+	override fun modifyDrop(itemStack: ItemStack): Boolean {
 		val customItem = itemStack.customItem
-		if (customItem is Smeltable) return
+		if (customItem is Smeltable) return false
 
 		// Replace with modified version
 		smeltedItemCache[itemStack].getOrNull()?.let {
 			itemStack.type = it.type
 			itemStack.itemMeta = it.itemMeta
 		}
+
+		return true
 	}
 
 	private val level = Bukkit.getServer().worlds.first().minecraft

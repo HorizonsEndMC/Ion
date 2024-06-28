@@ -35,6 +35,7 @@ import org.bukkit.persistence.PersistentDataType.STRING
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.ArrayDeque
 import java.util.EnumSet
+import kotlin.math.roundToInt
 
 class PowerChainsaw(
 	identifier: String,
@@ -157,8 +158,10 @@ class PowerChainsaw(
 
 			val drops = mutableMapOf<Long, Collection<ItemStack>>()
 
-			if (PowerDrill.tryBreakBlock(player, block, mods, drops)) {
-				chainsaw.removePower(chainsawItem, powerUse)
+			val usage = PowerHoe.UsageReference()
+
+			if (PowerDrill.tryBreakBlock(player, block, mods, drops, usage)) {
+				chainsaw.removePower(chainsawItem, (powerUse * usage.multiplier).roundToInt())
 			}
 
 			for ((dropLocation, items) in drops) {

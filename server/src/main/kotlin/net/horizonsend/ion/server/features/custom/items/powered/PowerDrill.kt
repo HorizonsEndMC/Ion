@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.mods.drops.DropSource
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
+import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
@@ -38,6 +39,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import kotlin.math.roundToInt
 
 class PowerDrill(
 	identifier: String,
@@ -100,8 +102,10 @@ class PowerDrill(
 				break
 			}
 
-			if (tryBreakBlock(livingEntity, block, mods, drops)) {
-				availablePower -= powerUse
+			val usage = PowerHoe.UsageReference()
+
+			if (tryBreakBlock(livingEntity, block, mods, drops, usage)) {
+				availablePower -= (powerUse * usage.multiplier).roundToInt()
 				broken++
 			}
 		}
@@ -130,6 +134,7 @@ class PowerDrill(
 			block: Block,
 			mods: Array<ItemModification>,
 			drops: MutableMap<Long, Collection<ItemStack>>,
+			usage: PowerHoe.UsageReference
 		): Boolean {
 			val blockType = block.type
 			val customBlock = CustomBlocks.getByBlock(block)
@@ -160,12 +165,12 @@ class PowerDrill(
 				block.world.playEffect(block.location, Effect.STEP_SOUND, Material.IRON_ORE)
 
 				val baseDrops = dropSource.getDrop(customBlock)
-				handleModifiers(baseDrops, dropModifiers)
+				usage.multiplier = handleModifiers(baseDrops, dropModifiers)
 
 				drops[BlockPos.asLong(block.x, block.y, block.z)] = baseDrops
 			} else {
 				val baseDrops = dropSource.getDrop(block)
-				handleModifiers(baseDrops, dropModifiers)
+				usage.multiplier = handleModifiers(baseDrops, dropModifiers)
 
 				drops[BlockPos.asLong(block.x, block.y, block.z)] = baseDrops
 				block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
@@ -179,10 +184,18 @@ class PowerDrill(
 			return true
 		}
 
-		fun handleModifiers(drops: Collection<ItemStack>, dropModifiers: Collection<DropModifier>) {
+		fun handleModifiers(drops: Collection<ItemStack>, dropModifiers: Collection<DropModifier>): Double {
+			var multiplier = 1.0
+
 			for (drop in drops) {
-				dropModifiers.forEach { it.modifyDrop(drop) }
+				dropModifiers.forEach {
+					if (it.modifyDrop(drop) && it is PowerUsageIncrease) {
+						multiplier *= it.usageMultiplier
+					}
+				}
 			}
+
+			return multiplier
 		}
 
 		private val defaultPickaxe = ItemStack(Material.DIAMOND_PICKAXE)
