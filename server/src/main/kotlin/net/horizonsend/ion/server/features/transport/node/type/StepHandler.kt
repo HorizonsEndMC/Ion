@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.result.StepResult
 
-interface IntermediateNode<T: ChunkTransportNetwork> {
+interface StepHandler<T: ChunkTransportNetwork> {
 	/**
 	 * Handle the stepping of power through this node
 	 *
