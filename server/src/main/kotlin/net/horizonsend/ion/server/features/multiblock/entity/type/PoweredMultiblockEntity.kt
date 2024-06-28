@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -83,7 +84,7 @@ interface PoweredMultiblockEntity {
 		//TODO replace this
 		require(this is MultiblockEntity)
 		Tasks.sync {
-			val sign = getSign() ?: return@sync println("Tried to update visual on a multiblock without an intact sign")
+			val sign = getSign() ?: return@sync println("Tried to update visual on a multiblock without an intact sign : ${world.name} ${toVec3i(position)}")
 			sign.front().line(2, formatPower())
 			sign.update()
 		}

@@ -6,9 +6,9 @@ import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.type.IntermediateNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
+import net.horizonsend.ion.server.features.transport.node.type.StepHandler
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
 import net.horizonsend.ion.server.features.transport.step.new.NewStep
@@ -43,7 +43,7 @@ class SolarPanelNode(
 	override val network: ChunkPowerNetwork
 ) : MultiNode<SolarPanelNode, SolarPanelNode>,
 	SourceNode<ChunkPowerNetwork>,
-	IntermediateNode<ChunkPowerNetwork> {
+	StepHandler<ChunkPowerNetwork> {
 	override val positions: MutableSet<BlockKey> = LongOpenHashSet()
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
@@ -65,17 +65,18 @@ class SolarPanelNode(
 	 * Returns the amount of power between ticks
 	 **/
 	fun getPower(): Int {
-		// Sample position
-		val sample = positions.first()
-		val pos = BlockPos(getX(sample), getY(sample), getZ(sample))
-		val lightLevel = network.world.minecraft.getBrightness(LightLayer.SKY, pos)
-
-		if (lightLevel == 0) return 0
-
 		val daylightMultiplier: Double = if (
 			network.world.environment == World.Environment.NORMAL &&
 			network.world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE) == true
 		) {
+			// Sample position
+			val sample = positions.first()
+			val pos = BlockPos(getX(sample), getY(sample), getZ(sample))
+			val lightLevel = network.world.minecraft.getBrightness(LightLayer.SKY, pos)
+
+			if (lightLevel == 0) return 0
+
+			// Calculate via sine curve otherwise
 			val daylight = sin((network.world.time / (12000.0 / PI)) - (PI / 2))
 			max(0.0, daylight) * 1.5 // 1.5 to bring area under curve to around equal with night
 		} else 0.5
@@ -239,6 +240,7 @@ class SolarPanelNode(
 
 	override suspend fun startStep(): NewStep<ChunkPowerNetwork>? {
 		val power = getPower()
+		println("Solar power was $power")
 		if (power <= 0) return null
 
 		return NewStep(
@@ -263,6 +265,7 @@ class SolarPanelNode(
 		return neighbors.shuffled().firstOrNull { it !is SolarPanelNode } ?:
 		neighbors
 			.filterIsInstance<SolarPanelNode>()
+			.filter { it.exitDistance < this.exitDistance } // Make sure it can't move further from an exit
 			.shuffled() // Make sure the lowest priority, if multiple is random every time
 			.minByOrNull { it.exitDistance }
 	}
