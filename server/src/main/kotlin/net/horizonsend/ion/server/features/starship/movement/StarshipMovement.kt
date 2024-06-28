@@ -55,6 +55,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 	/* should only be called by the ship itself */
 	fun execute() {
+		if (future.isDone) return
+
 		val world1: World = starship.world
 		val world2 = newWorld ?: world1
 
@@ -302,5 +304,9 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		for (passenger: Entity in passengers) {
 			movePassenger(passenger)
 		}
+	}
+
+	fun cancelMovement() {
+		future.complete(false)
 	}
 }

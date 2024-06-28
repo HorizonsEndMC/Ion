@@ -93,6 +93,12 @@ abstract class ActiveStarship (
 	var world: World = world
 		set(value) {
 			ActiveStarships.updateWorld(this, field, value)
+
+			translationQueue.forEach { it.cancelMovement() }
+			translationQueue.clear()
+			rotationQueue.forEach { it.cancelMovement() }
+			rotationQueue.clear()
+
 			field = value
 		}
 
