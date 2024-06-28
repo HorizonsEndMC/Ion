@@ -268,6 +268,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	}
 
 	private fun exitPlanet(world: World, starship: ActiveControlledStarship): Boolean {
+		if (starship.isTeleporting) return false
+
 		val planet: CachedPlanet = Space.getPlanet(world) ?: return false
 		val pilot: Player = starship.playerPilot ?: return false
 		val direction: Vector = pilot.location.direction
