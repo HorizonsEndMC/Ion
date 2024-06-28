@@ -89,6 +89,7 @@ object IonChunkCommand : SLCommand() {
 		when (grid) {
 			is ChunkPowerNetwork -> {
 				sender.information("${grid.solarPanels.size} solar panels")
+				sender.information("${grid.extractors.size} extractors")
 				sender.information("Node list: ${grid.nodes.values.groupBy { it.javaClass.simpleName }.mapValues { it.value.size }.entries.joinToString { it.toString() + "\n" }}")
 			}
 		}
