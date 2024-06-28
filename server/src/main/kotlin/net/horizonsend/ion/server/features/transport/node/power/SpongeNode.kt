@@ -5,9 +5,9 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.type.IntermediateNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
+import net.horizonsend.ion.server.features.transport.node.type.StepHandler
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.result.MoveForward
 import net.horizonsend.ion.server.features.transport.step.result.StepResult
@@ -21,7 +21,7 @@ import org.bukkit.persistence.PersistentDataType
  *
  * Since there is no use in keeping the individual steps, all touching sponges are consolidated into a single node with multiple inputs / outputs, weighted evenly
  **/
-class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode, SpongeNode>, IntermediateNode<ChunkPowerNetwork> {
+class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode, SpongeNode>, StepHandler<ChunkPowerNetwork> {
 	constructor(network: ChunkPowerNetwork, origin: BlockKey) : this(network) {
 		positions.add(origin)
 	}
