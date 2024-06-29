@@ -38,10 +38,11 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 *
 	 * If neither side can transfer, a relation will not be created
 	 **/
-	fun addRelationship(other: TransportNode) {
+	suspend fun addRelationship(other: TransportNode) {
 		// Do not add duplicates
 		if (relationships.any { it.sideTwo.node == other }) return
 
+		other.neighborChanged(this)
 		NodeRelationship.create(this, other)
 	}
 
@@ -89,6 +90,11 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 * Builds relations between this node and transferrable nodes
 	 **/
 	suspend fun buildRelations(position: BlockKey)
+
+	/**
+	 * Notify a node if a neighbor changed
+	 **/
+	suspend fun neighborChanged(neighbor: TransportNode) {}
 
 	/**
 	 * Additional logic to be run once the node is placed

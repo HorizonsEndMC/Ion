@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
@@ -18,6 +19,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
@@ -71,7 +73,15 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode, Dest
 		}
 
 		val remainder = if (origin is ExtractorPowerOrigin) origin.removeOrigin(power) else 0
-		destinationMultiblock.addPower(power - remainder)
+		val toAdd = power - remainder
+		destinationMultiblock.addPower(toAdd)
+
+		debugAudience.debug("""
+			Power endpoint reached!
+			Origin $origin
+			$remainder could not be removed
+			Added $toAdd to $destinationMultiblock
+		""".trimIndent())
 
 		head.previousNodes.forEach {
 			it.onCompleteChain(head, this, power)
