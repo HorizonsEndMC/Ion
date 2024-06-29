@@ -13,18 +13,19 @@ class ChunkTransportManager(
 	val chunk: IonChunk,
 ) {
 	val scope = ChunkRegion.scope
-	val powerNetwork = ChunkPowerNetwork(this).apply {  build() }
+	val powerNetwork = ChunkPowerNetwork(this)
 //	val pipeGrid = ChunkPowerNetwork(this) // TODO
 //	val gasGrid = ChunkPowerNetwork(this) // TODO
 
 	fun setup() {
-		powerNetwork.setup()
+		powerNetwork.build()
+		powerNetwork.finalizeNetwork()
 		// TODO
 		// TODO
 	}
 
 	suspend fun tick() {
-		powerNetwork.tick()
+		powerNetwork.tickIfReady()
 		// TODO
 		// TODO
 	}

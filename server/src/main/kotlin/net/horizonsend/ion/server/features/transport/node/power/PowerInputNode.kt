@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.DestinationNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
-import net.horizonsend.ion.server.features.transport.step.new.NewStep
 import net.horizonsend.ion.server.features.transport.step.origin.ExtractorPowerOrigin
 import net.horizonsend.ion.server.features.transport.step.origin.PowerOrigin
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
@@ -19,6 +18,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
@@ -78,8 +78,16 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode, Dest
 	}
 
 	override suspend fun finishChain(head: BranchHead<ChunkPowerNetwork>) {
+		val origin = head.holder.origin
+		println("""
+			FINISHING CHAIN!!!!
+			covered: ${head.previousNodes}
+			origin ${head.holder.origin}
+			origin loc = ${if (origin is ExtractorPowerOrigin) toVec3i(origin.extractorNode.position).toString() else ""}
+			end loc = ${toVec3i(position)}
+		""".trimIndent())
+
 		head.markDead()
-		val origin = (head.holder as NewStep<ChunkPowerNetwork>).origin
 
 		val multis = getPoweredMultiblocks()
 
@@ -95,6 +103,8 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode, Dest
 //		println("Finished extraction, returned $power power")
 
 		val remainder = if (origin is ExtractorPowerOrigin) origin.removeOrigin(power) else 0
+		println("Remainder power was $remainder")
+		println("Adding ${power - remainder} to $destinationMultiblock")
 		destinationMultiblock.addPower(power - remainder)
 
 //		println("Traversed nodes: ${step.traversedNodes}")
