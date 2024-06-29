@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
-import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
@@ -95,14 +94,14 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 		val axis = data.facing.axis
 
 		// The neighbors in the direction of the wire's facing, that are also facing that direction
-		val neighbors = getNeighborNodes(position, network.nodes, axis.faces.toList()).filterKeys {
-			val relative = getRelative(position, it)
-			(getBlockSnapshotAsync(network.world, relative, false)?.data as? Directional)?.facing?.axis == axis
-		}.values.filterIsInstanceTo<EndRodNode, MutableList<EndRodNode>>(mutableListOf())
+		val neighbors = getNeighborNodes(position, network.nodes, axis.faces.toList())
+			.values
+			.filterIsInstance<EndRodNode>()
+			.filterTo(mutableListOf()) { it.axis == axis }
 
 		val finalNode = when (neighbors.size) {
 			// Disconnected
-			0 ->  EndRodNode(network, position).apply { loadIntoNetwork() }
+			0 ->  EndRodNode(network, position, data.facing.axis).apply { loadIntoNetwork() }
 
 			// Consolidate into neighbor
 			1 -> neighbors.firstOrNull()?.addPosition(position) ?: throw ConcurrentModificationException("Node removed during processing")

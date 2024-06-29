@@ -194,6 +194,13 @@ class SolarPanelNode(
 		super.buildRelations(position)
 	}
 
+	/*
+	 * When the neighbor changes, re-calculate the exit distances
+	 */
+	override suspend fun neighborChanged(neighbor: TransportNode) {
+		traverseField { it.calculateExitDistance() }
+	}
+
 	override suspend fun handleRemoval(position: BlockKey) {
 		isDead = true
 

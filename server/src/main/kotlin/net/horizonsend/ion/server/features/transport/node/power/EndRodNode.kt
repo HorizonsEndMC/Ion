@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
+import com.manya.pdc.base.EnumDataType
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
@@ -14,18 +15,24 @@ import net.horizonsend.ion.server.features.transport.step.result.MoveForward
 import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.faces
+import org.bukkit.Axis
 import org.bukkit.block.data.Directional
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import kotlin.properties.Delegates
 
 class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode, EndRodNode>, StepHandler<ChunkPowerNetwork> {
-	constructor(network: ChunkPowerNetwork, origin: Long) : this(network) {
+	constructor(network: ChunkPowerNetwork, origin: Long, axis: Axis) : this(network) {
 		positions.add(origin)
+		this.axis = axis
 	}
 
 	override var isDead: Boolean = false
 	override val positions: MutableSet<Long> = LongOpenHashSet()
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
+	var axis by Delegates.notNull<Axis>()
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		return node !is SourceNode<*>
@@ -52,14 +59,28 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 		}
 	}
 
+	override suspend fun buildRelations(position: BlockKey) {
+		for (offset in axis.faces.toList()) {
+			val offsetKey = getRelative(position, offset, 1)
+			val neighborNode = network.getNode(offsetKey) ?: continue
+
+			if (this == neighborNode) continue
+
+			addRelationship(neighborNode)
+		}
+	}
+
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
 		val coveredPositions = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY)
 		coveredPositions?.let { positions.addAll(it.asIterable()) }
+
+		axis = persistentDataContainer.getOrDefault(NamespacedKeys.AXIS, EnumDataType(Axis::class.java), Axis.Y)
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
 		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY, positions.toLongArray())
+		persistentDataContainer.set(NamespacedKeys.AXIS, EnumDataType(Axis::class.java), axis)
 	}
 
-	override fun toString(): String = "(END ROD NODE: ${positions.size} positions, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
+	override fun toString(): String = "(END ROD NODE: Axis: $axis; ${positions.size} positions; Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
 }
