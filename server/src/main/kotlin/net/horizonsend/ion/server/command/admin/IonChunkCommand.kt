@@ -84,7 +84,6 @@ object IonChunkCommand : SLCommand() {
 
 		sender.information("${grid.nodes.size} covered position(s).")
 		sender.information("${grid.nodes.values.distinct().size} unique node(s).")
-		sender.information("${grid.extractors.size} extractor node(s).")
 
 		when (grid) {
 			is ChunkPowerNetwork -> {
@@ -111,7 +110,13 @@ object IonChunkCommand : SLCommand() {
 		val grid = network.get(ionChunk)
 
 		grid.nodes.clear()
-		grid.extractors.clear()
+
+		when (grid) {
+			is ChunkPowerNetwork -> {
+				grid.extractors.clear()
+				grid.solarPanels.clear()
+			}
+		}
 
 		for (x in ionChunk.originX ..ionChunk.originX + 15) {
 			for (z in ionChunk.originZ..ionChunk.originZ + 15) {

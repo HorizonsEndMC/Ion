@@ -79,13 +79,12 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 	}
 
 	override suspend fun startStep(): NewStep<ChunkPowerNetwork>? {
-		lastTicked = System.currentTimeMillis()
 		if (extractableNodes.isEmpty()) return null
 
 		val extractablePowerPool = extractableNodes.flatMap { it.getPoweredMultiblocks() }
 		if (extractablePowerPool.all { it.isEmpty() }) return null
 
-		return NewStep(
+		val step =  NewStep(
 			network = this.network,
 			origin = getOriginData() ?: return null
 		) {
@@ -95,6 +94,10 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 				share = 1.0,
 			)
 		}
+
+		markTicked()
+
+		return step
 	}
 
 	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? {
@@ -112,6 +115,9 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 
 	fun getTransferPower(): Int {
 		val interval = IonServer.transportSettings.extractorTickIntervalMS.toDouble()
+		println("Tick Interval: $interval")
+		println("MaxPerExtractorTick: ${IonServer.transportSettings.maxPowerRemovedPerExtractorTick}")
+		println("Delta MS: ${System.currentTimeMillis() - lastTicked}")
 
 		return (IonServer.transportSettings.maxPowerRemovedPerExtractorTick * ((System.currentTimeMillis() - lastTicked) / interval)).roundToInt()
 	}
