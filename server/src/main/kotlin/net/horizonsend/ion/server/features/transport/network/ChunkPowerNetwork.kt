@@ -1,10 +1,8 @@
 package net.horizonsend.ion.server.features.transport.network
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
@@ -17,32 +15,19 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.NamespacedKey
 import org.bukkit.block.BlockFace
+import java.util.concurrent.ConcurrentHashMap
 
 class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(manager) {
 	override val type: NetworkType = NetworkType.POWER
 	override val namespacedKey: NamespacedKey = NamespacedKeys.POWER_TRANSPORT
 	override val nodeFactory: PowerNodeFactory = PowerNodeFactory(this)
 
+	val extractors: ConcurrentHashMap<Long, PowerExtractorNode> = ConcurrentHashMap()
+
 	/** Store solar panels for ticking */
 	val solarPanels: ObjectOpenHashSet<SolarPanelNode> = ObjectOpenHashSet()
 
 	override val dataVersion: Int = 0 //TODO 1
-
-	override fun setup() {
-
-	}
-
-	override fun processBlockRemoval(key: Long) { manager.scope.launch {
-		val previousNode = nodes[key] ?: return@launch
-
-		extractors.remove(key)
-
-		previousNode.handleRemoval(key)
-	}}
-
-	override fun processBlockAddition(key: Long, new: BlockSnapshot) { manager.scope.launch {
-		createNodeFromBlock(new)
-	}}
 
 	private suspend fun tickSolars() {
 		for (solarPanel in solarPanels) {
