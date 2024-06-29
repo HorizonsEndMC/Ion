@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.seconds
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataAdapterContext
@@ -67,7 +68,10 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	 * @return Whether the data was intact, or up to date
 	 **/
 	fun loadData(): Boolean {
-		val existing = pdc.get(namespacedKey, PersistentDataType.TAG_CONTAINER) ?: return false
+		val existing = pdc.get(namespacedKey, PersistentDataType.TAG_CONTAINER) ?: return run {
+			IonServer.slF4JLogger.warn("chunk ${manager.chunk.x}, ${manager.chunk.z} ${manager.chunk.world.name} didn't have transport information!")
+			false
+		}
 		val version	= pdc.getOrDefault(DATA_VERSION, PersistentDataType.INTEGER, 0)
 
 		if (version < dataVersion) {
@@ -83,10 +87,12 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 			}.getOrElse { return false }
 		}
 
+		IonServer.slF4JLogger.warn("chunk ${manager.chunk.x}, ${manager.chunk.z} ${manager.chunk.world.name} loaded ${nodeData.size} nodes")
+
 		nodeData.forEach { runCatching { it.loadIntoNetwork() }.onFailure {
 			IonServer.slF4JLogger.error("${manager.chunk}'s ${javaClass.simpleName} loading node into network!")
 			it.printStackTrace()
-		}.onFailure { return false } }
+		} }
 
 		return true
 	}
@@ -98,6 +104,11 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 
 		nodes.forEach { (_, node) ->
 			serializedNodes[node] = nodes.values.indexOf(node) to node.serialize(adapterContext, node)
+		}
+
+		if (nodes.isNotEmpty()) {
+			manager.chunk.inner.minecraft.isUnsaved = true
+			println("Saved ${nodes.size} nodes!")
 		}
 
 		container.set(NODES, PersistentDataType.TAG_CONTAINER_ARRAY, serializedNodes.values.seconds().toTypedArray())
