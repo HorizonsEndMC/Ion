@@ -6,10 +6,10 @@ import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwo
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.DestinationNode
 import net.horizonsend.ion.server.features.transport.node.type.StepHandler
+import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.head.HeadHolder
 import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
-import net.horizonsend.ion.server.features.transport.step.new.NewStep
 
 /**
  * Transferred power down a single path.
@@ -17,7 +17,7 @@ import net.horizonsend.ion.server.features.transport.step.new.NewStep
  *
  **/
 class SinglePowerBranchHead(
-	override val holder: NewStep<ChunkPowerNetwork>,
+	override val holder: Step<ChunkPowerNetwork>,
 	override var currentNode: TransportNode,
 	override val share: Double,
 	override val previousNodes: MutableSet<TransportNode> = mutableSetOf()
