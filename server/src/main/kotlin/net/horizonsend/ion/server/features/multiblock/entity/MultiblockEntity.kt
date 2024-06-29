@@ -22,7 +22,7 @@ import org.bukkit.block.Sign
  *
  * @param multiblock The type of multiblock this entity represents
  *
- * @param signDirection The direction to find the sign from the origin block (the block the sign is placed on)
+ * @param facing The direction this multiblock is oriented [from the origin]
  **/
 abstract class MultiblockEntity(
 	val multiblock: Multiblock,
@@ -31,7 +31,7 @@ abstract class MultiblockEntity(
 	var y: Int,
 	var z: Int,
 	var world: World,
-	var signDirection: BlockFace
+	var facing: BlockFace
 ): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion> {
 	/** Mark this entity as having been removed */
 	var removed: Boolean = false
@@ -64,7 +64,7 @@ abstract class MultiblockEntity(
 	 * This data is serialized and stored on the chunk when not loaded.
 	 **/
 	fun store(): PersistentMultiblockData {
-		val store = PersistentMultiblockData(x, y, z, multiblock, signDirection)
+		val store = PersistentMultiblockData(x, y, z, multiblock, facing)
 		storeAdditionalData(store)
 
 		return store
@@ -74,6 +74,7 @@ abstract class MultiblockEntity(
 	 * Gets the sign of this multiblock
 	 **/
 	fun getSign(): Sign? {
+		val signDirection = facing.oppositeFace
 		val signLoc = Vec3i(x, y, z) + Vec3i(signDirection.modX, 0, signDirection.modZ)
 
 		return getBlockIfLoaded(world, signLoc.x, signLoc.y, signLoc.z)?.state as? Sign
@@ -81,7 +82,7 @@ abstract class MultiblockEntity(
 
 	fun isIntact(): Boolean = multiblock.blockMatchesStructure(
 		world.getBlockAt(x, y, z),
-		signDirection.oppositeFace,
+		facing.oppositeFace,
 		loadChunks = false,
 		particles = false
 	)
@@ -90,7 +91,7 @@ abstract class MultiblockEntity(
 	 *
 	 **/
 	fun getBlockRelative(backFourth: Int, leftRight: Int, upDown: Int): Block {
-		val (x, y, z) = getRelative(vec3i, signDirection.oppositeFace, backFourth, leftRight, upDown)
+		val (x, y, z) = getRelative(vec3i, facing.oppositeFace, backFourth, leftRight, upDown)
 
 		return world.getBlockAt(x, y, z)
 	}
