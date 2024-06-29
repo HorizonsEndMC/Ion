@@ -41,12 +41,7 @@ class SinglePowerBranchHead(
 
 		val result = node.handleHeadStep(this as BranchHead<ChunkTransportNetwork>)
 
-		println("Result was: $result")
-		println("before result")
-		println("current node : $currentNode")
 		result.apply(holder as HeadHolder<ChunkTransportNetwork>)
-		println("after result")
-		println("current node : $currentNode")
 	}
 
 	// Get around runtime type erasure

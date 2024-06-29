@@ -15,6 +15,7 @@ import org.bukkit.persistence.PersistentDataType
  * Represents a single node, or step, in transport transportNetwork
  **/
 interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion> {
+	var isDead: Boolean
 	val network: ChunkTransportNetwork
 	override val persistentDataType: Companion get() = Companion
 
@@ -59,7 +60,7 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	/** Gets the nodes this can transfer to **/
 	fun getTransferableNodes(): Collection<TransportNode> = relationships.filter {
 		// That this node can transfer to the other
-		it.sideOne.transferAllowed
+		it.sideOne.transferAllowed && !it.sideTwo.node.isDead
 	}.map { it.sideTwo.node }
 
 	/**

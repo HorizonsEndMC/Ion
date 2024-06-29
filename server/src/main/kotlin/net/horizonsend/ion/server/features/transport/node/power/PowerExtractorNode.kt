@@ -24,21 +24,82 @@ import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
 class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, SourceNode<ChunkPowerNetwork> {
-	override var position by Delegates.notNull<Long>()
-
 	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 		network.extractors[position] = this
 	}
 
+	override var isDead: Boolean = false
+	override var position by Delegates.notNull<Long>()
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
+
 	val extractableNodes: MutableSet<PowerInputNode> get() = relationships.mapNotNullTo(mutableSetOf()) { it.sideTwo.node as? PowerInputNode }
 
+
+	// Region transfer
+	/*
+	 * The extractor node should be allowed to transfer into any regular node.
+	 *
+	 * Since it does only takes from inputs, it cannot transfer into them.
+	 *
+	 * And it cannot transfer into any other power source
+	 */
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		if (node is PowerInputNode) return false
 		return node !is SourceNode<*>
 	}
 
+	/*
+	 * Nothing unique with how pathfinding is done, simply move onto a random transferable neighbor
+	 */
+	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? {
+		return getTransferableNodes().randomOrNull()
+	}
+
+	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+		return MoveForward()
+	}
+
+	override suspend fun startStep(): Step<ChunkPowerNetwork>? {
+		if (extractableNodes.isEmpty()) return null
+
+		val extractablePowerPool = extractableNodes.flatMap { it.getPoweredMultiblocks() }
+		if (extractablePowerPool.all { it.isEmpty() }) return null
+
+		val step =  Step(
+			network = this.network,
+			origin = getOriginData() ?: return null
+		) {
+			SinglePowerBranchHead(
+				holder = this,
+				currentNode = this@PowerExtractorNode,
+				share = 1.0,
+			)
+		}
+
+		markTicked()
+
+		return step
+	}
+
+	private var lastTicked: Long = System.currentTimeMillis()
+	fun markTicked() {
+		lastTicked = System.currentTimeMillis()
+	}
+
+	override suspend fun getOriginData(): StepOrigin<ChunkPowerNetwork>? {
+		if (getTransferableNodes().isEmpty()) return null
+		return ExtractorPowerOrigin(this)
+	}
+
+	fun getTransferPower(): Int {
+		val interval = IonServer.transportSettings.extractorTickIntervalMS.toDouble()
+
+		return (IonServer.transportSettings.maxPowerRemovedPerExtractorTick * ((System.currentTimeMillis() - lastTicked) / interval)).roundToInt()
+	}
+	// End region
+
+	// Start region loading
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
 		persistentDataContainer.set(NODE_COVERED_POSITIONS, PersistentDataType.LONG, position)
 	}
@@ -71,55 +132,6 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 			// Add a relationship, if one should be added
 			addRelationship(neighborNode)
 		}
-	}
-
-	private var lastTicked: Long = System.currentTimeMillis()
-	fun markTicked() {
-		lastTicked = System.currentTimeMillis()
-	}
-
-	override suspend fun startStep(): Step<ChunkPowerNetwork>? {
-		if (extractableNodes.isEmpty()) return null
-
-		val extractablePowerPool = extractableNodes.flatMap { it.getPoweredMultiblocks() }
-		if (extractablePowerPool.all { it.isEmpty() }) return null
-
-		val step =  Step(
-			network = this.network,
-			origin = getOriginData() ?: return null
-		) {
-			SinglePowerBranchHead(
-				holder = this,
-				currentNode = this@PowerExtractorNode,
-				share = 1.0,
-			)
-		}
-
-		markTicked()
-
-		return step
-	}
-
-	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? {
-		return getTransferableNodes().randomOrNull()
-	}
-
-	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
-		return MoveForward()
-	}
-
-	override suspend fun getOriginData(): StepOrigin<ChunkPowerNetwork>? {
-		if (getTransferableNodes().isEmpty()) return null
-		return ExtractorPowerOrigin(this)
-	}
-
-	fun getTransferPower(): Int {
-		val interval = IonServer.transportSettings.extractorTickIntervalMS.toDouble()
-		println("Tick Interval: $interval")
-		println("MaxPerExtractorTick: ${IonServer.transportSettings.maxPowerRemovedPerExtractorTick}")
-		println("Delta MS: ${System.currentTimeMillis() - lastTicked}")
-
-		return (IonServer.transportSettings.maxPowerRemovedPerExtractorTick * ((System.currentTimeMillis() - lastTicked) / interval)).roundToInt()
 	}
 
 	override fun toString(): String = "POWER Extractor NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"

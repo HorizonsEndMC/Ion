@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
@@ -29,8 +27,11 @@ import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.BlockFace.DOWN
+import org.bukkit.block.BlockFace.UP
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
+import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
 import kotlin.math.PI
 import kotlin.math.max
@@ -44,14 +45,43 @@ class SolarPanelNode(
 ) : MultiNode<SolarPanelNode, SolarPanelNode>,
 	SourceNode<ChunkPowerNetwork>,
 	StepHandler<ChunkPowerNetwork> {
-	override val positions: MutableSet<BlockKey> = LongOpenHashSet()
-	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
+	override var isDead: Boolean = false
+	override val positions: MutableSet<BlockKey> = ConcurrentHashMap.newKeySet()
+	override val relationships: MutableSet<NodeRelationship> = ConcurrentHashMap.newKeySet()
 
 	/** The positions of extractors in this solar panel */
-	private val extractorPositions = LongOpenHashSet()
+	private val extractorPositions = ConcurrentHashMap.newKeySet<BlockKey>()
 
 	/** The number of solar cells contained in this node */
 	private val cellNumber: Int get() = extractorPositions.size
+
+	override fun isTransferableTo(node: TransportNode): Boolean {
+		// Solar panels should be able to transfer through extractors and other solar panels
+		return node !is PowerExtractorNode
+	}
+
+	override suspend fun startStep(): Step<ChunkPowerNetwork>? {
+		val power = getPower()
+		if (power <= 0) return null
+
+		return Step(
+			network = this.network,
+			origin = getOriginData()
+		) {
+			SinglePowerBranchHead(
+				holder = this,
+				currentNode = this@SolarPanelNode,
+				share = 1.0,
+			)
+		}
+	}
+
+	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+		// Simply move on to the next node
+		return MoveForward()
+	}
+
+	override suspend fun getOriginData(): SolarPowerOrigin = SolarPowerOrigin(this)
 
 	/**
 	 * The distance this solar node is from the nearest exit of the solar field
@@ -59,7 +89,55 @@ class SolarPanelNode(
 	 **/
 	private var exitDistance: Int = 0
 
+	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? {
+		val neighbors = getTransferableNodes()
+		return neighbors.shuffled().firstOrNull { it !is SolarPanelNode } ?:
+		neighbors
+			.filterIsInstance<SolarPanelNode>()
+			.filter { it.exitDistance < this.exitDistance } // Make sure it can't move further from an exit
+			.shuffled() // Make sure the lowest priority, if multiple is random every time
+			.minByOrNull { it.exitDistance }
+	}
+
+	/**
+	 * Calculate the distance to an exit of a solar field
+	 * This method is run upon neighbor unloads
+	 **/
+	private fun calculateExitDistance() {
+		val neighbors = getTransferableNodes()
+
+		// Borders an exit
+		if (neighbors.any { it !is SolarPanelNode }) {
+			exitDistance = 0
+			return
+		}
+
+		val solars = neighbors.filterIsInstance<SolarPanelNode>()
+		if (solars.isEmpty()) {
+			exitDistance = -1
+			return
+		}
+
+		exitDistance = solars.minOf { it.exitDistance } + 1
+	}
+
+	/**
+	 * Store the last time this node successfully transferred power, so that a difference can be gained.
+	 *
+	 * This will be used to calculate the amount of power generated, so it remains consistent, even in laggy conditions.
+	 **/
 	private var lastTicked: Long = System.currentTimeMillis()
+
+	/**
+	 * Get the power and reset the last ticked time
+	 **/
+	fun tickAndGetPower(): Int {
+		val power = getPower()
+
+		lastTicked = System.currentTimeMillis()
+
+		return power
+	}
 
 	/**
 	 * Returns the amount of power between ticks
@@ -88,39 +166,6 @@ class SolarPanelNode(
 	}
 
 	/**
-	 * Get the power and reset the last ticked time
-	 **/
-	fun tickAndGetPower(): Int {
-		val power = getPower()
-
-		lastTicked = System.currentTimeMillis()
-
-		return power
-	}
-
-	/**
-	 * Calculate the distance to an exit of a solar field
-	 * This method is run upon neighbor unloads
-	 **/
-	private fun calculateExitDistance() {
-		val neighbors = getTransferableNodes()
-
-		// Borders an exit
-		if (neighbors.any { it !is SolarPanelNode }) {
-			exitDistance = 0
-			return
-		}
-
-		val solars = neighbors.filterIsInstance<SolarPanelNode>()
-		if (solars.isEmpty()) {
-			exitDistance = -1
-			return
-		}
-
-		exitDistance = solars.minOf { it.exitDistance } + 1
-	}
-
-	/**
 	 * Execute the provided consumer across every interconnected solar node
 	 *
 	 * WARNING: use this carefully
@@ -129,6 +174,8 @@ class SolarPanelNode(
 		if (visited.contains(this)) return
 
 		consumer.accept(this)
+
+		visited.add(this)
 
 		getTransferableNodes().filterIsInstance<SolarPanelNode>().filterNot { visited.contains(it) }.forEach(consumer)
 	}
@@ -147,46 +194,20 @@ class SolarPanelNode(
 		super.buildRelations(position)
 	}
 
-	override fun isTransferableTo(node: TransportNode): Boolean {
-		// Solar panels should be able to transfer through extractors and other solar panels
-		return node !is PowerExtractorNode
-	}
-
-	override fun storeData(persistentDataContainer: PersistentDataContainer) {
-		persistentDataContainer.set(NODE_COVERED_POSITIONS, LONG_ARRAY, positions.toLongArray())
-		persistentDataContainer.set(SOLAR_CELL_EXTRACTORS, LONG_ARRAY, extractorPositions.toLongArray())
-	}
-
-	override fun loadData(persistentDataContainer: PersistentDataContainer) {
-		val coveredPositions = persistentDataContainer.get(NODE_COVERED_POSITIONS, LONG_ARRAY)
-		coveredPositions?.let { positions.addAll(it.asIterable()) }
-
-		val extractors = persistentDataContainer.get(SOLAR_CELL_EXTRACTORS, LONG_ARRAY)
-		extractors?.let { extractorPositions.addAll(it.asIterable()) }
-	}
-
 	override suspend fun handleRemoval(position: BlockKey) {
-		// Need to handle the extractor positions manually
-		when {
-			// Removed extractor, easier to find
-			extractorPositions.contains(position) -> removePosition(
-				position,
-				listOf(getRelative(position, BlockFace.UP, 1), getRelative(position, BlockFace.UP, 2))
-			)
+		isDead = true
 
-			// Need to find extractor, search downward form position
-			else -> {
-				val extractorPosition: BlockKey = (0..2).firstNotNullOf { y ->
-					getRelative(position, BlockFace.DOWN, y).takeIf { extractorPositions.contains(it) }
-				}
+		removePosition(position)
 
-				removePosition(
-					extractorPosition,
-					listOf(getRelative(extractorPosition, BlockFace.UP, 1), getRelative(extractorPosition, BlockFace.UP, 2))
-				)
-			}
+		// Remove all positions
+		positions.forEach {
+			network.nodes.remove(it)
 		}
 
+		// Rebuild relations after cleared
+		clearRelations()
+
+		// Rebuild the node without the lost position
 		rebuildNode(position)
 	}
 
@@ -196,23 +217,32 @@ class SolarPanelNode(
 		// Make sure there isn't still an extractor
 		network.extractors.remove(extractorKey)
 		addPosition(extractorKey)
+		buildRelations(extractorKey)
 
 		positions += others
+
 		for (position: BlockKey in positions) {
 			network.nodes[position] = this
+			buildRelations(position)
 		}
 
 		return this
 	}
 
-	private fun removePosition(extractorKey: BlockKey, others: Iterable<BlockKey>) {
-		extractorPositions -= extractorKey
-		positions.remove(extractorKey)
-		network.nodes.remove(extractorKey)
-		positions.removeAll(others.toSet())
+	private fun removePosition(axisPosition: BlockKey) {
+		val extractorPos = if (extractorPositions.contains(axisPosition)) axisPosition else (1..2).firstNotNullOf { offset ->
+			getRelative(axisPosition, DOWN, offset).takeIf { extractorPositions.contains(it) }
+		}
 
-		for (position: BlockKey in others) {
-			network.nodes.remove(position)
+		val otherPositions = (1..2).map { getRelative(extractorPos, UP, it) }
+
+		positions.remove(extractorPos)
+		extractorPositions.remove(extractorPos)
+		network.nodes.remove(extractorPos)
+
+		for (otherPos: BlockKey in otherPositions) {
+			positions.remove(otherPos)
+			network.nodes.remove(otherPos)
 		}
 	}
 
@@ -220,7 +250,7 @@ class SolarPanelNode(
 		network.solarPanels.remove(this)
 
 		// Create new nodes, automatically merging together
-		positions.forEach {
+		extractorPositions.forEach {
 			network.nodeFactory.addSolarPanel(it, handleRelationships = false)
 		}
 
@@ -236,43 +266,22 @@ class SolarPanelNode(
 		new.extractorPositions.addAll(extractorPositions)
 	}
 
-	override suspend fun getOriginData(): SolarPowerOrigin = SolarPowerOrigin(this)
-
-	override suspend fun startStep(): Step<ChunkPowerNetwork>? {
-		val power = getPower()
-		println("Solar power was $power")
-		if (power <= 0) return null
-
-		return Step(
-			network = this.network,
-			origin = getOriginData()
-		) {
-			SinglePowerBranchHead(
-				holder = this,
-				currentNode = this@SolarPanelNode,
-				share = 1.0,
-			)
-		}
-	}
-
-	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
-		// Simply move on to the next node
-		return MoveForward()
-	}
-
-	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? {
-		val neighbors = getTransferableNodes()
-		return neighbors.shuffled().firstOrNull { it !is SolarPanelNode } ?:
-		neighbors
-			.filterIsInstance<SolarPanelNode>()
-			.filter { it.exitDistance < this.exitDistance } // Make sure it can't move further from an exit
-			.shuffled() // Make sure the lowest priority, if multiple is random every time
-			.minByOrNull { it.exitDistance }
-	}
-
 	override fun loadIntoNetwork() {
 		super.loadIntoNetwork()
 		network.solarPanels += this
+	}
+
+	override fun storeData(persistentDataContainer: PersistentDataContainer) {
+		persistentDataContainer.set(NODE_COVERED_POSITIONS, LONG_ARRAY, positions.toLongArray())
+		persistentDataContainer.set(SOLAR_CELL_EXTRACTORS, LONG_ARRAY, extractorPositions.toLongArray())
+	}
+
+	override fun loadData(persistentDataContainer: PersistentDataContainer) {
+		val coveredPositions = persistentDataContainer.get(NODE_COVERED_POSITIONS, LONG_ARRAY)
+		coveredPositions?.let { positions.addAll(it.asIterable()) }
+
+		val extractors = persistentDataContainer.get(SOLAR_CELL_EXTRACTORS, LONG_ARRAY)
+		extractors?.let { extractorPositions.addAll(it.asIterable()) }
 	}
 
 	companion object {

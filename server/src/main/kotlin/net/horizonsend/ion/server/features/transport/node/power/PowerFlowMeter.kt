@@ -13,38 +13,26 @@ import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.kyori.adventure.text.Component
-import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
 class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, StepHandler<ChunkPowerNetwork> {
-	constructor(network: ChunkPowerNetwork, direction: BlockFace) : this(network) {
-		this.direction = direction
-	}
-
-	// The direction that the text will be displayed on
-	private var direction: BlockFace = BlockFace.NORTH
-
-	// The position will always be set
-	override var position by Delegates.notNull<Long>()
-
 	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 	}
 
+	override var position by Delegates.notNull<Long>()
+	override var isDead: Boolean = false
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
+	/*
+	 * Should transfer power like any normal node.
+	 *
+	 * And it cannot transfer into a source
+	 */
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		return node !is SourceNode<*>
-	}
-
-	override fun storeData(persistentDataContainer: PersistentDataContainer) {
-		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG, position)
-	}
-
-	override fun loadData(persistentDataContainer: PersistentDataContainer) {
-		position = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
 	}
 
 	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
@@ -56,14 +44,11 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 		.filterNot { head.previousNodes.contains(it) }
 		.randomOrNull()
 
-	private var lastStepped: Long = System.currentTimeMillis()
-
 	private val STORED_AVERAGES = 20
 	private val averages = mutableListOf<TransferredPower>()
 
 	override suspend fun onCompleteChain(final: BranchHead<*>, destination: PowerInputNode, transferred: Int) {
 		addAverage(TransferredPower(transferred, System.currentTimeMillis()))
-
 		network.world.sendMessage(Component.text("Running average transferred is ${calculateAverage()}"))
 	}
 
@@ -89,6 +74,14 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 		val timeDiff = (System.currentTimeMillis() - averages.minOf { it.time }) / 1000.0
 
 		return sum / timeDiff
+	}
+
+	override fun storeData(persistentDataContainer: PersistentDataContainer) {
+		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG, position)
+	}
+
+	override fun loadData(persistentDataContainer: PersistentDataContainer) {
+		position = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
 	}
 
 	private data class TransferredPower(val transferred: Int, val time: Long)
