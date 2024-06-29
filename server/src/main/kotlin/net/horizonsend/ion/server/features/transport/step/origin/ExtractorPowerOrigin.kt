@@ -23,8 +23,6 @@ class ExtractorPowerOrigin(
 
 		val minRemove = minOf(amount, availableEntities.minOfOrNull { it.getPower() } ?: return amount)
 
-		println("to remove $amount")
-
 		val share = minRemove / availableEntities.size
 
 		var removeRemaining = minRemove
@@ -36,9 +34,7 @@ class ExtractorPowerOrigin(
 
 			// Should never be more than 0, but handle the possibility
 			val notRemoved = entity.removePower(share)
-			println("Didn't remove $notRemoved")
 			removeRemaining -= (share - notRemoved)
-			println("removeRemaining: $removeRemaining")
 		}
 
 		availableEntities.firstOrNull { it.canRemovePower(removeRemaining) }?.run {
@@ -57,9 +53,6 @@ class ExtractorPowerOrigin(
 
 	override fun getTransferPower(destination: PoweredMultiblockEntity): Int {
 		val destinationCapacity = destination.maxPower - destination.getPower()
-		println("Room: $destinationCapacity")
-		println("Available: ${getAvailablePower()}")
-		println("Transfer limit: ${extractorNode.getTransferPower()}")
 
 		return minOf(destinationCapacity, transferLimit, getAvailablePower())
 	}
