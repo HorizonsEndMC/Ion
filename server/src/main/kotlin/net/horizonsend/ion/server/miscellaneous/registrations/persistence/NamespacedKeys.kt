@@ -83,6 +83,7 @@ object NamespacedKeys {
 	val FORBIDDEN_BLOCKS = key("forbidden_blocks")
 
 	val STORED_MULTIBLOCK_ENTITIES = key("stored_multiblock_entities")
+	val STORED_MULTIBLOCK_ENTITIES_OLD = key("stored_multiblock_entities_old")
 	val EXTRACTOR_DATA = key("extractor_data")
 
 	val RESOURCE_CAPACITY_MAX = key("resource_capacity_max")
