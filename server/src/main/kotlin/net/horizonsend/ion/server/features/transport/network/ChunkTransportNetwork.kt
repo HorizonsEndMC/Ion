@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DATA_VERSION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODES
@@ -26,8 +25,9 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
+	protected var ready: Boolean = false
+
 	val nodes: ConcurrentHashMap<Long, TransportNode> = ConcurrentHashMap()
-	val extractors: ConcurrentHashMap<Long, PowerExtractorNode> = ConcurrentHashMap()
 
 	val world get() = manager.chunk.world
 
@@ -38,7 +38,19 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	abstract val nodeFactory: NodeFactory<*>
 	abstract val dataVersion: Int
 
-	open fun setup() {}
+	fun finalizeNetwork() {
+		ready = true
+	}
+
+	open fun processBlockRemoval(key: Long) { manager.scope.launch { withTransportDisabled {
+		val previousNode = nodes[key] ?: return@withTransportDisabled
+
+		previousNode.handleRemoval(key)
+	}}}
+
+	open fun processBlockAddition(key: Long, new: BlockSnapshot) { manager.scope.launch {
+		withTransportDisabled { createNodeFromBlock(new) }
+	}}
 
 	/**
 	 * Handle the creation / loading of the node into memory
@@ -46,11 +58,8 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	open suspend fun createNodeFromBlock(block: BlockSnapshot) {
 		val key = toBlockKey(block.x, block.y, block.z)
 
-		nodeFactory.create(key, block)
+		withTransportDisabled { nodeFactory.create(key, block) }
 	}
-
-	abstract fun processBlockRemoval(key: Long)
-	abstract fun processBlockAddition(key: Long, new: BlockSnapshot)
 
 	/**
 	 * Load stored node data from the chunk
@@ -94,11 +103,14 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 		container.set(NODES, PersistentDataType.TAG_CONTAINER_ARRAY, serializedNodes.values.seconds().toTypedArray())
 
 		pdc.set(namespacedKey, PersistentDataType.TAG_CONTAINER, container)
+		pdc.set(DATA_VERSION, PersistentDataType.INTEGER, dataVersion)
 
 		saveAdditional(pdc)
 	}
 
 	open fun saveAdditional(pdc: PersistentDataContainer) {}
+
+	suspend fun tickIfReady() { if (ready) tick() }
 
 	/**
 	 *
@@ -133,6 +145,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 
 		buildRelations()
 		finalizeNodes()
+		finalizeNetwork()
 	}
 
 	/**
@@ -218,5 +231,11 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 
 		val chunk = IonChunk[world, chunkX, chunkZ] ?: return null
 		return type.get(chunk).nodes[key]
+	}
+
+	protected suspend inline fun withTransportDisabled(crossinline block: suspend () -> Unit) {
+		ready = false
+		block.invoke()
+		ready = true
 	}
 }
