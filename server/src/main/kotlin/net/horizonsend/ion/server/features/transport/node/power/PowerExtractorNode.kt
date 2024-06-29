@@ -7,9 +7,9 @@ import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
+import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
-import net.horizonsend.ion.server.features.transport.step.new.NewStep
 import net.horizonsend.ion.server.features.transport.step.origin.ExtractorPowerOrigin
 import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
 import net.horizonsend.ion.server.features.transport.step.result.MoveForward
@@ -78,13 +78,13 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 		lastTicked = System.currentTimeMillis()
 	}
 
-	override suspend fun startStep(): NewStep<ChunkPowerNetwork>? {
+	override suspend fun startStep(): Step<ChunkPowerNetwork>? {
 		if (extractableNodes.isEmpty()) return null
 
 		val extractablePowerPool = extractableNodes.flatMap { it.getPoweredMultiblocks() }
 		if (extractablePowerPool.all { it.isEmpty() }) return null
 
-		val step =  NewStep(
+		val step =  Step(
 			network = this.network,
 			origin = getOriginData() ?: return null
 		) {
