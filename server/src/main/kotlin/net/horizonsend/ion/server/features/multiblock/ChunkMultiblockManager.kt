@@ -8,14 +8,14 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultibl
 import net.horizonsend.ion.server.features.multiblock.entity.type.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORED_MULTIBLOCK_ENTITIES
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORED_MULTIBLOCK_ENTITIES_OLD
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.block.Sign
 import org.bukkit.persistence.PersistentDataAdapterContext
-import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentHashMap
@@ -118,11 +118,16 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	 * Save the multiblock data back into the chunk
 	 **/
 	private fun saveMultiblocks(adapterContext: PersistentDataAdapterContext) = Multiblocks.multiblockCoroutineScope.launch {
+		val old = chunk.inner.persistentDataContainer.get(STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY)
+		old?.let {
+			chunk.inner.persistentDataContainer.set(STORED_MULTIBLOCK_ENTITIES_OLD, PersistentDataType.TAG_CONTAINER_ARRAY, it)
+		}
+
 		val array = multiblockEntities.map { (_, entity) ->
 			entity.serialize(adapterContext, entity.store())
 		}.toTypedArray()
 
-		chunk.inner.persistentDataContainer.set(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY, array)
+		chunk.inner.persistentDataContainer.set(STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY, array)
 	}
 
 	/**
@@ -130,16 +135,22 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	 **/
 	private fun loadMultiblocks() {
 		val serialized = try {
-			chunk.inner.persistentDataContainer.get(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY) ?: return
+			chunk.inner.persistentDataContainer.get(STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY) ?: return
 		} catch (e: IllegalArgumentException) {
 			log.warn("Could not load chunks multiblocks for $chunk")
 			if (e.message == "The found tag instance (NBTTagList) cannot store List") {
 				log.info("Found outdated list tag, removing")
 
-				chunk.inner.persistentDataContainer.remove(NamespacedKeys.STORED_MULTIBLOCK_ENTITIES)
+				chunk.inner.persistentDataContainer.remove(STORED_MULTIBLOCK_ENTITIES)
 			}
 
-			arrayOf<PersistentDataContainer>()
+			arrayOf()
+		} catch (e: Throwable) {
+			// Try to load backup
+			chunk.inner.persistentDataContainer.get(STORED_MULTIBLOCK_ENTITIES_OLD, PersistentDataType.TAG_CONTAINER_ARRAY) ?: return
+		} catch (e: Throwable) {
+			// Give up
+			return
 		}
 
 		for (serializedMultiblockData in serialized) {
