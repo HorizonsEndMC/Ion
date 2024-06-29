@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractTractorB
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
-import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.listener.fixers.BiomeFixer9001
@@ -73,7 +72,6 @@ val listeners: List<Listener> = listOf(
 	GameplayTweaksListeners(),
 	HeadListener(),
 	HyperspaceBeaconManager,
-	IonWorld,
 	IonChunk,
 	MiscListeners(),
 	WorldGenerationManager,
