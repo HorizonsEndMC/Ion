@@ -26,8 +26,8 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 		positions.add(origin)
 	}
 
-	override val positions: MutableSet<BlockKey> = LongOpenHashSet()
-
+	override var isDead: Boolean = false
+	override val positions: MutableSet<Long> = LongOpenHashSet()
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
