@@ -17,24 +17,25 @@ import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
 class MergeNode(override val network: ChunkPowerNetwork) : SingleNode, StepHandler<ChunkPowerNetwork> {
-	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
+	override var isDead: Boolean = false
 	override var position: BlockKey by Delegates.notNull()
+	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
 	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 	}
 
-	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
-		// Simply move on to the next node
-		return MoveForward()
+	override fun isTransferableTo(node: TransportNode): Boolean {
+		return node !is SourceNode<*>
 	}
 
 	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? = getTransferableNodes()
 		.filterNot { head.previousNodes.contains(it) }
 		.randomOrNull()
 
-	override fun isTransferableTo(node: TransportNode): Boolean {
-		return node !is SourceNode<*>
+	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+		// Simply move on to the next node
+		return MoveForward()
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {

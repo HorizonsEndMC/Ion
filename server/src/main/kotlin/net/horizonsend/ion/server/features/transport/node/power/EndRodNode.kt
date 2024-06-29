@@ -23,6 +23,7 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 		positions.add(origin)
 	}
 
+	override var isDead: Boolean = false
 	override val positions: MutableSet<Long> = LongOpenHashSet()
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
@@ -30,14 +31,14 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 		return node !is SourceNode<*>
 	}
 
-	override fun loadData(persistentDataContainer: PersistentDataContainer) {
-		val coveredPositions = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY)
-		coveredPositions?.let { positions.addAll(it.asIterable()) }
+	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+		// Simply move on to the next node
+		return MoveForward()
 	}
 
-	override fun storeData(persistentDataContainer: PersistentDataContainer) {
-		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY, positions.toLongArray())
-	}
+	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? = getTransferableNodes()
+		.filterNot { head.previousNodes.contains(it) }
+		.firstOrNull()
 
 	override suspend fun rebuildNode(position: BlockKey) {
 		// Create new nodes, automatically merging together
@@ -51,14 +52,14 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 		}
 	}
 
-	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
-		// Simply move on to the next node
-		return MoveForward()
+	override fun loadData(persistentDataContainer: PersistentDataContainer) {
+		val coveredPositions = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY)
+		coveredPositions?.let { positions.addAll(it.asIterable()) }
 	}
 
-	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? = getTransferableNodes()
-		.filterNot { head.previousNodes.contains(it) }
-		.firstOrNull()
+	override fun storeData(persistentDataContainer: PersistentDataContainer) {
+		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG_ARRAY, positions.toLongArray())
+	}
 
 	override fun toString(): String = "(END ROD NODE: ${positions.size} positions, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
 }
