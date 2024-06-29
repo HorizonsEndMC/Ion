@@ -4,4 +4,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultibl
 
 interface PowerOrigin {
 	fun getTransferPower(destination: PoweredMultiblockEntity): Int
+
+	val transferLimit: Int
 }
