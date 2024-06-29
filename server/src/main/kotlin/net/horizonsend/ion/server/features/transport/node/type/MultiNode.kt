@@ -76,6 +76,8 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 	}
 
 	override suspend fun handleRemoval(position: BlockKey) {
+		isDead = true
+
 		// Remove the position from the network
 		network.nodes.remove(position)
 		// Remove the position from this node

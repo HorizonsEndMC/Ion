@@ -12,23 +12,19 @@ import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
 class MoveForward<T: ChunkTransportNetwork> : StepResult<T> {
 	override suspend fun apply(headHolder: HeadHolder<T>) {
 		val branchHead = headHolder.head
-		println("Trying to move forward")
 
 		if (branchHead is MultiBranchHead<*>) throw IllegalArgumentException("Multi branches can't be modified!")
 
 		val currentNode = (branchHead as SingleBranchHead<T>).currentNode
 
 		tryCast<StepHandler<T>>(currentNode) {
-			println("was step handler")
 			val next = getNextNode(headHolder.head) ?: return EndBranch<T>().apply(headHolder)
-			println("next node was $next")
 
 			branchHead.previousNodes.add(branchHead.currentNode)
 			branchHead.currentNode = next
 		}
 
 		tryCast<DestinationNode<T>>(currentNode) {
-			println("was destination")
 			finishChain(headHolder.head)
 		}
 
