@@ -13,11 +13,19 @@ import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.kyori.adventure.text.Component
+import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
 class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, StepHandler<ChunkPowerNetwork> {
+	constructor(network: ChunkPowerNetwork, direction: BlockFace) : this(network) {
+		this.direction = direction
+	}
+
+	// The direction that the text will be displayed on
+	private var direction: BlockFace = BlockFace.NORTH
+
 	// The position will always be set
 	override var position by Delegates.notNull<Long>()
 
@@ -75,20 +83,10 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 		averages[0] = average
 	}
 
-	fun calculateAverage(): Double {
-//		println("Averages: $averages")
-
-		val last = averages.first()
-
-//		println("Last: $last")
-
+	private fun calculateAverage(): Double {
 		val sum = averages.sumOf { it.transferred }
 
-//		println("Transferred sum: $sum")
-
 		val timeDiff = (System.currentTimeMillis() - averages.minOf { it.time }) / 1000.0
-
-//		println("Seconds diff $timeDiff")
 
 		return sum / timeDiff
 	}

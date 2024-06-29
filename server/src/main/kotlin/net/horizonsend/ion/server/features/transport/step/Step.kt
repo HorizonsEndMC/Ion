@@ -1,45 +1,31 @@
 package net.horizonsend.ion.server.features.transport.step
 
-import net.horizonsend.ion.server.features.transport.node.TransportNode
-import java.util.concurrent.atomic.AtomicInteger
+import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.step.head.BranchHead
+import net.horizonsend.ion.server.features.transport.step.head.HeadHolder
+import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
+import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
 
-interface Step {
-	val steps: AtomicInteger
-	val currentNode: TransportNode
-	val traversedNodes: MutableSet<TransportNode>
+class Step<T: ChunkTransportNetwork>(
+	val network: T,
+	val origin: StepOrigin<T>,
+) : HeadHolder<T> {
+	override lateinit var head: BranchHead<T>
+
+	constructor(network: T, origin: StepOrigin<T>, getHead: Step<T>.() -> BranchHead<T>) : this(network, origin) {
+		this.head = getHead()
+	}
+
+	constructor(network: T, origin: StepOrigin<T>, head: BranchHead<T>) : this(network, origin) {
+		this.head = head
+	}
 
 	suspend operator fun invoke() {
-		if (steps.incrementAndGet() > MAX_DEPTH) return
-
-		traversedNodes.add(currentNode)
-
-//		println("""
-//			Step has been invoked
-//			$steps steps taken
-//			currently on $currentNode
-//			has $share share
-//			traversed through $traversedNodes
-//		""".trimIndent())
+		while (!head.isDead()) {
+			println("Stepping forward. Head: $head")
+			println("Current head position: ${(head as? SinglePowerBranchHead)?.currentNode}")
+			println("Previous nodes: ${head.previousNodes}")
+			head.stepForward()
+		}
 	}
-
-	companion object {
-		const val MAX_DEPTH = 200
-	}
-}
-
-/**
- * A step that is the first in a chain
- **/
-interface OriginStep : Step {
-	/**
-	 * Removes the appropriate amount of power. Returns the amount that was removed (and is available)
-	 *
-	 * @param final The final step of the chain
-	 * @param remainingSpace The limit of extraction (will use either this value or the maximum amount defined in this config, whichever is lower)
-	 **/
-	fun finishExtraction(final: TransportStep, remainingSpace: Int): Int
-}
-
-interface TransportStep : Step {
-	val share: Float
 }

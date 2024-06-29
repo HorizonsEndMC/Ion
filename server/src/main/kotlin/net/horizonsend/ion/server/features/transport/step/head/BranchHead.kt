@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.features.transport.step.head
 
 import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.step.new.NewStep
+import net.horizonsend.ion.server.features.transport.step.Step
 
 interface BranchHead<T: ChunkTransportNetwork> {
-	val holder: NewStep<T>
+	val holder: Step<T>
 
 	/** Nodes that this head has covered */
 	val previousNodes: MutableSet<TransportNode>

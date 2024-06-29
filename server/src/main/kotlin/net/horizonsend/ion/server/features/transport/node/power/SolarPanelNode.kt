@@ -9,9 +9,9 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
 import net.horizonsend.ion.server.features.transport.node.type.StepHandler
+import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
-import net.horizonsend.ion.server.features.transport.step.new.NewStep
 import net.horizonsend.ion.server.features.transport.step.origin.SolarPowerOrigin
 import net.horizonsend.ion.server.features.transport.step.result.MoveForward
 import net.horizonsend.ion.server.features.transport.step.result.StepResult
@@ -238,12 +238,12 @@ class SolarPanelNode(
 
 	override suspend fun getOriginData(): SolarPowerOrigin = SolarPowerOrigin(this)
 
-	override suspend fun startStep(): NewStep<ChunkPowerNetwork>? {
+	override suspend fun startStep(): Step<ChunkPowerNetwork>? {
 		val power = getPower()
 		println("Solar power was $power")
 		if (power <= 0) return null
 
-		return NewStep(
+		return Step(
 			network = this.network,
 			origin = getOriginData()
 		) {

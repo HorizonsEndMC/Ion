@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.type
 
 import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
-import net.horizonsend.ion.server.features.transport.step.new.NewStep
+import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
 
 /**
@@ -12,5 +12,5 @@ import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
 interface SourceNode<T: ChunkTransportNetwork> : StepHandler<T> {
 	suspend fun getOriginData(): StepOrigin<T>?
 
-	suspend fun startStep(): NewStep<T>?
+	suspend fun startStep(): Step<T>?
 }
