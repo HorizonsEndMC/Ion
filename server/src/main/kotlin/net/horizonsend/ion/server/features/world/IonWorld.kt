@@ -4,13 +4,13 @@ import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
 import net.horizonsend.ion.server.features.world.environment.Environment
-import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import org.bukkit.Chunk
@@ -112,7 +112,7 @@ class IonWorld private constructor(
 	//  - Mob defenders
 	//  - Base shields?
 
-	companion object : SLEventListener() {
+	companion object : IonServerComponent() {
 		private val WORLD_CONFIGURATION_DIRECTORY = IonServer.configurationFolder.resolve("worlds").apply { mkdirs() }
 
 		private val ionWorlds = mutableMapOf<World, IonWorld>()
@@ -177,10 +177,16 @@ class IonWorld private constructor(
 
 		@EventHandler
 		fun onWorldSave(event: WorldSaveEvent) {
-			for (ionWorld in ionWorlds.values) {
-				for ((_, chunk) in ionWorld.chunks) {
-					chunk.save()
-				}
+			saveAllChunks(event.world)
+		}
+
+		override fun onDisable() {
+			for (world in ionWorlds.keys) saveAllChunks(world)
+		}
+
+		private fun saveAllChunks(world: World) {
+			for ((_, chunk) in world.ion.chunks) {
+				chunk.save()
 			}
 		}
 
