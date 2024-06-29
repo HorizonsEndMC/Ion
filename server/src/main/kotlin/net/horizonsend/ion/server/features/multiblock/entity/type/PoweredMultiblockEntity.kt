@@ -84,7 +84,7 @@ interface PoweredMultiblockEntity {
 		//TODO replace this
 		require(this is MultiblockEntity)
 		Tasks.sync {
-			val sign = getSign() ?: return@sync println("Tried to update visual on a multiblock without an intact sign : ${world.name} ${toVec3i(position)}")
+			val sign = getSign() ?: throw NullPointerException("Tried to update visual on a multiblock without an intact sign : ${world.name} ${toVec3i(position)}")
 			sign.front().line(2, formatPower())
 			sign.update()
 		}
