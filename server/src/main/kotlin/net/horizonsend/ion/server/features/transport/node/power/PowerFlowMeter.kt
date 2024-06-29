@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.transport.step.result.MoveForward
 import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -49,7 +50,7 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 
 	override suspend fun onCompleteChain(final: BranchHead<*>, destination: PowerInputNode, transferred: Int) {
 		addAverage(TransferredPower(transferred, System.currentTimeMillis()))
-		network.world.sendMessage(Component.text("Running average transferred is ${calculateAverage()}"))
+		network.world.sendMessage(Component.text("${toVec3i(position)} ${network.world.name} Running average transferred is ${calculateAverage()}"))
 	}
 
 	private fun addAverage(average: TransferredPower) {
