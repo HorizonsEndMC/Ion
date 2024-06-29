@@ -35,7 +35,6 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 
 	val extractableNodes: MutableSet<PowerInputNode> get() = relationships.mapNotNullTo(mutableSetOf()) { it.sideTwo.node as? PowerInputNode }
 
-
 	// Region transfer
 	/*
 	 * The extractor node should be allowed to transfer into any regular node.
@@ -50,10 +49,12 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 	}
 
 	/*
-	 * Nothing unique with how pathfinding is done, simply move onto a random transferable neighbor
+	 * Nothing unique with how pathfinding is done, simply move onto a random transferable neighbor that isn't a dead end
 	 */
 	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? {
-		return getTransferableNodes().randomOrNull()
+		return getTransferableNodes()
+			.filter { it.getTransferableNodes().isNotEmpty() }
+			.randomOrNull()
 	}
 
 	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
