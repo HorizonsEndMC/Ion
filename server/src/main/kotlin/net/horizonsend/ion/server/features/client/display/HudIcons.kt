@@ -46,7 +46,7 @@ object HudIcons : IonServerComponent() {
     // The reduced rate at which stars should decrease in scale as the player moves away
     private const val STAR_SCALE_FACTOR = 0.25
 
-    private const val ICON_SCALE_FACTOR = 1.25
+    private const val ICON_SCALE = 20000.0
 
     private const val SELECTOR_ID = "hud-selector"
     private const val SELECTOR_TEXT_ID = "hud-selector-text"
@@ -85,7 +85,7 @@ object HudIcons : IonServerComponent() {
         identifier: String,
         distance: Double,
         direction: Vector,
-        scaleFactor: Double = 1.0
+        scaleFactor: Double? = 1.0
     ): net.minecraft.world.entity.Display.ItemDisplay? {
 
         /* Start with the Bukkit entity first as the NMS entity has private values that are easier to set by working off
@@ -137,7 +137,7 @@ object HudIcons : IonServerComponent() {
         identifier: String,
         distance: Double,
         direction: Vector,
-        scaleFactor: Double = 1.0,
+        scaleFactor: Double? = 1.0,
         selectable: Boolean = true
     ) {
 
@@ -396,8 +396,9 @@ object HudIcons : IonServerComponent() {
      * @param distance the distance at which the player is from the planet
      * @param scaleReductionFactor adjust the rate at which the curve is reduced
      */
-    private fun scale(distance: Double, scaleReductionFactor: Double) = ((500000000 /
-            ((0.0625 * distance * distance * scaleReductionFactor) + 5250000)) + 5).toFloat()
+    private fun scale(distance: Double, scaleReductionFactor: Double?) = if (scaleReductionFactor != null)
+            ((500000000 / ((0.0625 * distance * distance * scaleReductionFactor) + 5250000)) + 5).toFloat()
+    else ((500000000 / ((0.0625 * distance * distance) + 5250000)) + 5).toFloat()
 
     /**
      * Equation for modifying the distance offset of a planet display entity. When added to the offset, decreases the
@@ -568,25 +569,23 @@ object HudIcons : IonServerComponent() {
             val hudName = BEACON_PREFIX + beacon.name
 
             if (hudBeaconsEnabled) {
-                val distance = player.location.toVector().distance(beacon.spaceLocation.toVector())
                 val direction = beacon.spaceLocation.toVector().subtract(player.location.toVector()).normalize()
 
                 if (playerDisplayEntities[hudName] == null) {
-                    // multiply distance by 2 as a fix to make these icons smaller by default
                     createHudEntity(
                         player,
                         hudName,
-                        distance * ICON_SCALE_FACTOR,
+                        ICON_SCALE,
                         direction,
-                        scaleFactor = ICON_SCALE_FACTOR
+                        scaleFactor = null
                     ) ?: continue
                 } else {
                     updateHudEntity(
                         player,
                         hudName,
-                        distance * ICON_SCALE_FACTOR,
+                        ICON_SCALE,
                         direction,
-                        scaleFactor = ICON_SCALE_FACTOR
+                        scaleFactor = null
                     )
                 }
             } else if (playerDisplayEntities[hudName] != null) {
@@ -601,25 +600,23 @@ object HudIcons : IonServerComponent() {
             val stationLocation = Vector(station.x, 192, station.z)
 
             if (hudStationsEnabled) {
-
-                val distance = player.location.toVector().distance(stationLocation)
                 val direction = stationLocation.clone().subtract(player.location.toVector())
 
                 if (playerDisplayEntities[hudName] == null) {
                     createHudEntity(
                         player,
                         hudName,
-                        distance * ICON_SCALE_FACTOR,
+                        ICON_SCALE,
                         direction,
-                        scaleFactor = ICON_SCALE_FACTOR
+                        scaleFactor = null
                     ) ?: continue
                 } else {
                     updateHudEntity(
                         player,
                         hudName,
-                        distance * ICON_SCALE_FACTOR,
+                        ICON_SCALE,
                         direction,
-                        scaleFactor = ICON_SCALE_FACTOR
+                        scaleFactor = null
                     )
                 }
             } else if (playerDisplayEntities[hudName] != null) {
@@ -635,24 +632,23 @@ object HudIcons : IonServerComponent() {
             val hudName = SIEGE_STATION_PREFIX + siegeStation.name
 
             if (hudStationsEnabled) {
-                val distance = player.location.toVector().distance(siegeStation.loc.toVector())
                 val direction = siegeStation.loc.toVector().subtract(player.location.toVector())
 
                 if (playerDisplayEntities[hudName] == null) {
                     createHudEntity(
                         player,
                         hudName,
-                        distance * ICON_SCALE_FACTOR,
+                        ICON_SCALE,
                         direction,
-                        scaleFactor = ICON_SCALE_FACTOR
+                        scaleFactor = null
                     ) ?: continue
                 } else {
                     updateHudEntity(
                         player,
                         hudName,
-                        distance * ICON_SCALE_FACTOR,
+                        ICON_SCALE,
                         direction,
-                        scaleFactor = ICON_SCALE_FACTOR
+                        scaleFactor = null
                     )
                 }
             } else if (playerDisplayEntities[hudName] != null) {
@@ -667,24 +663,23 @@ object HudIcons : IonServerComponent() {
             val bookmarkLocation = Vector(bookmark.x, bookmark.y, bookmark.z)
 
             if (hudBookmarksEnabled) {
-                val distance = player.location.toVector().distance(bookmarkLocation)
                 val direction = bookmarkLocation.clone().subtract(player.location.toVector())
 
                 if (playerDisplayEntities[hudName] == null) {
                     createHudEntity(
                         player,
                         hudName,
-                        distance * ICON_SCALE_FACTOR,
+                        ICON_SCALE,
                         direction,
-                        scaleFactor = ICON_SCALE_FACTOR
+                        scaleFactor = null
                     ) ?: continue
                 } else {
                     updateHudEntity(
                         player,
                         hudName,
-                        distance * ICON_SCALE_FACTOR,
+                        ICON_SCALE,
                         direction,
-                        scaleFactor = ICON_SCALE_FACTOR
+                        scaleFactor = null
                     )
                 }
             } else if (playerDisplayEntities[hudName] != null) {
