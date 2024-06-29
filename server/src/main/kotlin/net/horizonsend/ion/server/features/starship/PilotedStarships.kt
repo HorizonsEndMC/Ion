@@ -1,9 +1,12 @@
 package net.horizonsend.ion.server.features.starship
 
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.alertSubtitle
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -15,7 +18,9 @@ import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
+import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -24,6 +29,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.NoOpCont
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
+import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
@@ -475,7 +481,18 @@ object PilotedStarships : IonServerComponent() {
 			return false
 		}
 
+		// Keep pilot for info even after unpilot
+		val playerPilot = starship.playerPilot
+
 		unpilot(starship)
+
+		// Combat tag check
+		if (checkDamagers(starship) || checkSurroundingPlayers(starship)) {
+			playerPilot?.alert("Your starship is in combat! It will be unpiloted instead!")
+
+			return false
+		}
+
 		DeactivatedPlayerStarships.deactivateAsync(starship)
 
 		playSoundInRadius(
@@ -486,6 +503,48 @@ object PilotedStarships : IonServerComponent() {
 
 		controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")
 		return true
+	}
+
+	/**
+	 * Checks the damager list for recent non-allied player damagers.
+	 *
+	 * Returns true if any are found
+	 **/
+	private fun checkDamagers(starship: ActiveControlledStarship): Boolean {
+		val playerPilot = (starship.controller as? PlayerController)?.player ?: return false
+		val pilotNation = PlayerCache[playerPilot].nationOid ?: return false
+
+		return starship.damagers
+			.any { (damager, data) ->
+				if (damager !is PlayerDamager) return@any false
+				if (data.lastDamaged < ShipKillXP.damagerExpiration) return@any false
+
+				val otherPlayer = damager.player
+
+				val otherData = PlayerCache[otherPlayer]
+				val otherNation = otherData.nationOid ?: return@any false
+
+				return@any RelationCache[pilotNation, otherNation] < NationRelation.Level.FRIENDLY
+			}
+	}
+
+	/**
+	 * Checks for enemied players within 500 blocks
+	 **/
+	private fun checkSurroundingPlayers(starship: ActiveControlledStarship): Boolean {
+		val playerPilot = (starship.controller as? PlayerController)?.player ?: return false
+		val pilotNation = PlayerCache[playerPilot].nationOid ?: return false
+
+		val allPlayers = starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 500.0)
+
+		return allPlayers.any { otherPlayer ->
+			if (!isPiloting(otherPlayer)) return@any false
+
+			val otherData = PlayerCache[otherPlayer]
+			val otherNation = otherData.nationOid ?: return@any false
+
+			return@any RelationCache[pilotNation, otherNation] <= NationRelation.Level.UNFRIENDLY
+		}
 	}
 
 	fun getDisplayName(data: StarshipData): Component = data.name?.let { MiniMessage.miniMessage().deserialize(it) } ?: data.starshipType.actualType.displayNameComponent
