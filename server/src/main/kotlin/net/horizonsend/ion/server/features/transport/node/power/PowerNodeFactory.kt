@@ -53,7 +53,7 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 
 			// Add power to storage
 			snapshot.type == Material.NOTE_BLOCK -> addInput(key)
-			snapshot.type == Material.OBSERVER -> addFlowMeter(key)
+			snapshot.type == Material.OBSERVER -> addFlowMeter(snapshot.data as Directional, key)
 
 			// Merge node behavior
 			snapshot.type == Material.IRON_BLOCK -> addMergeNode(key)
@@ -127,8 +127,8 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 		}
 	}
 
-	suspend fun addFlowMeter(position: BlockKey) {
-		network.nodes[position] = PowerFlowMeter(network, position).apply {
+	suspend fun addFlowMeter(data: Directional, position: BlockKey) {
+		network.nodes[position] = PowerFlowMeter(network, position, data.facing).apply {
 			onPlace(position)
 		}
 	}
