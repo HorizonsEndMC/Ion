@@ -73,6 +73,7 @@ import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsComman
 import net.horizonsend.ion.server.features.sidebar.command.SidebarStarshipsCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarWaypointsCommand
 import net.horizonsend.ion.server.features.space.generation.SpaceGenCommand
+import net.horizonsend.ion.server.features.starship.fleet.FleetCommand
 import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 
 val commands: List<SLCommand> = listOf(
@@ -163,5 +164,6 @@ val commands: List<SLCommand> = listOf(
 	IonBroadcastCommand,
 	BlockCommand,
 	ShipFactoryCommand,
-	SettingsCommand
+	SettingsCommand,
+	FleetCommand
 )
