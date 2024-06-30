@@ -9,7 +9,7 @@ object Fleets : IonServerComponent() {
 
     private val fleetList = mutableListOf<Fleet>()
 
-    fun Player.fleet() = fleetList.find { it.get(this) }
+    fun findByMember(player: Player) = fleetList.find { it.get(player) }
 
     fun create(player: Player) = fleetList.add(Fleet(player.uniqueId))
 
@@ -25,6 +25,6 @@ object Fleets : IonServerComponent() {
     fun onPlayerLeave(event: PlayerQuitEvent) {
         val player = event.player
 
-        player.fleet()?.remove(player) ?: return
+        findByMember(player)?.remove(player) ?: return
     }
 }
