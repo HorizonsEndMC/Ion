@@ -62,7 +62,12 @@ object ClientDisplayEntities : IonServerComponent() {
      */
     fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Entity) {
         val player = bukkitPlayer.minecraft
-        val conn = player.connection
+
+		sendEntityPacket(player, entity)
+    }
+
+	fun sendEntityPacket(player: ServerPlayer, entity: net.minecraft.world.entity.Entity) {
+		val conn = player.connection
 
         conn.send(getAddEntityPacket(entity))
         entity.refreshEntityData(player)
