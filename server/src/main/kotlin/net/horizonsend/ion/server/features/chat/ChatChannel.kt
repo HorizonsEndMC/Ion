@@ -27,9 +27,11 @@ import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.PlayerWrapper.Companion.common
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -39,6 +41,7 @@ import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -250,6 +253,21 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 			}
 
 			starship.sendMessage(formatChatMessage(prefix, player, event, messageColor).buildChatComponent())
+		}
+	},
+
+	FLEET(text("Fleet", HEColorScheme.HE_DARK_ORANGE, TextDecoration.BOLD), listOf("fleetchat", "fc", "fchat"), HEColorScheme.HE_LIGHT_ORANGE) {
+		override fun onChat(player: Player, event: AsyncChatEvent) {
+			val fleet = Fleets.findByMember(player)
+				?: return player.userError("You're not in a fleet! <italic>(Hint: To get back to global, use /global)")
+
+			val prefix = ofChildren(
+				displayName,
+				Component.space(),
+				if (fleet.leaderId == player.uniqueId) text("[CMDR]", GOLD, TextDecoration.BOLD) else empty()
+			)
+
+			fleet.sendMessage(formatChatMessage(prefix, player, event, messageColor).buildChatComponent())
 		}
 	},
 

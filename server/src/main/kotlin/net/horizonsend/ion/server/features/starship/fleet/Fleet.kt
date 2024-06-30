@@ -1,7 +1,10 @@
 package net.horizonsend.ion.server.features.starship.fleet
 
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -14,6 +17,7 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.Locale
@@ -30,6 +34,8 @@ class Fleet(var leaderId: UUID) : ForwardingAudience {
 
     private fun remove(playerId: UUID) {
         memberIds.remove(playerId)
+
+        // removed player is the leader
         if (leaderId == playerId && memberIds.isNotEmpty()) {
             // if the first player id is not valid, delete the fleet (there is likely an error)
             if (!switchLeader(memberIds.first())) {
@@ -45,19 +51,33 @@ class Fleet(var leaderId: UUID) : ForwardingAudience {
     fun get(player: Player) = get(player.uniqueId)
 
     fun delete() {
+        this.userError("Your Fleet Commander has disbanded your fleet!")
         for (memberId in memberIds) {
             remove(memberId)
         }
     }
 
     private fun switchLeader(newLeaderId: UUID): Boolean {
-        if (Bukkit.getPlayer(newLeaderId) == null) return false
+        val player = Bukkit.getPlayer(newLeaderId) ?: return false
 
         leaderId = newLeaderId
+        this.information("${player.name} is now the Fleet Commander of your fleet")
+
         return true
     }
 
     fun switchLeader(player: Player): Boolean = switchLeader(player.uniqueId)
+
+    fun changeBroadcast(broadcast: String) {
+        lastBroadcast = broadcast
+    }
+
+    fun broadcast() {
+        for (memberId in memberIds) {
+            val player = Bukkit.getPlayer(memberId) ?: continue
+            player.showTitle(Title.title(text("Fleet Broadcast", HE_DARK_ORANGE), text(lastBroadcast), Title.DEFAULT_TIMES))
+        }
+    }
 
     fun jumpFleet() {
         for (memberId in memberIds) {
