@@ -58,11 +58,16 @@ object ClientDisplayEntities : IonServerComponent() {
      */
     fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Entity) {
         val player = bukkitPlayer.minecraft
-        val conn = player.connection
 
-        conn.send(ClientboundAddEntityPacket(entity))
-        entity.entityData.refresh(player)
+		sendEntityPacket(player, entity)
     }
+
+	fun sendEntityPacket(player: ServerPlayer, entity: net.minecraft.world.entity.Entity) {
+		val conn = player.connection
+
+		conn.send(ClientboundAddEntityPacket(entity))
+		entity.entityData.refresh(player)
+	}
 
     /**
      * Sends a client-side entity to a client that lasts for a set duration.
