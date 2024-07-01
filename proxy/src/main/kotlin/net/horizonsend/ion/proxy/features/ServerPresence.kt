@@ -1,11 +1,11 @@
 package net.horizonsend.ion.proxy.features
 
+import com.velocitypowered.api.event.proxy.ProxyPingEvent
+import com.velocitypowered.api.proxy.server.ServerPing
+import com.velocitypowered.api.util.Favicon
 import net.horizonsend.ion.proxy.IonProxyComponent
 import net.horizonsend.ion.proxy.PLUGIN
-import net.md_5.bungee.api.Favicon
-import net.md_5.bungee.api.ServerPing
 import net.md_5.bungee.api.chat.TextComponent
-import net.md_5.bungee.api.event.ProxyPingEvent
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 import java.net.URL
