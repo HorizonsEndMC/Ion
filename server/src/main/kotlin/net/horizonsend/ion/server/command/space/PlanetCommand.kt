@@ -333,8 +333,8 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 				"  <gray>Atmosphere Radius: <aqua>${planet.atmosphereRadius}\n" +
 				"  <gray>Atmosphere Materials: <aqua>${planet.cloudMaterials}\n" +
 				"  <gray>Crust Radius: <aqua>${planet.crustRadius}\n" +
-				"  <gray>Crust Materials: <aqua>${planet.crustMaterials}" +
-				"  <gray>Description: <aqua>${planet.description}"
+				"  <gray>Crust Materials: <aqua>${planet.crustMaterials.map { it.material }.joinToString { it.toString() }}" +
+				"  <gray>Description: <click:copy_to_clipboard:${planet.description}><aqua>${planet.description}</click>"
 		)
 	}
 
