@@ -173,6 +173,7 @@ fun formatPageFooter(
 		val value = range.next()
 
 		val entry = text(value, paramColor)
+			.decoration(TextDecoration.UNDERLINED, value == currentPage)
 			.hoverEvent(text("$command $value"))
 			.clickEvent(ClickEvent.runCommand("$command $value"))
 
