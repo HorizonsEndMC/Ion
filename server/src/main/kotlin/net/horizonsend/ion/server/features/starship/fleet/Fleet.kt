@@ -68,14 +68,12 @@ class Fleet(var leaderId: UUID) : ForwardingAudience {
 
     fun switchLeader(player: Player): Boolean = switchLeader(player.uniqueId)
 
-    fun changeBroadcast(broadcast: String) {
+    fun broadcast(broadcast: String) {
         lastBroadcast = broadcast
-    }
 
-    fun broadcast() {
         for (memberId in memberIds) {
             val player = Bukkit.getPlayer(memberId) ?: continue
-            player.showTitle(Title.title(text("Fleet Broadcast", HE_DARK_ORANGE), text(lastBroadcast), Title.DEFAULT_TIMES))
+            player.showTitle(Title.title(text("Fleet Broadcast", HE_DARK_ORANGE), text(broadcast), Title.DEFAULT_TIMES))
         }
     }
 
@@ -102,8 +100,6 @@ class Fleet(var leaderId: UUID) : ForwardingAudience {
             MiscStarshipCommands.onJump(player, destination, null)
         }
     }
-
-    fun getBroadcastIdentifier() = lastBroadcast.split(' ', limit = 1).firstOrNull()
 
     fun list(player: Player) {
         player.sendMessage(lineBreakWithCenterText(text("Fleet Members", HE_LIGHT_ORANGE)))

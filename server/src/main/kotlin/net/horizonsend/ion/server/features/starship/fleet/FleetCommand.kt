@@ -119,6 +119,21 @@ object FleetCommand : SLCommand() {
         sender.success("Switched fleet command to ${player.name}")
     }
 
+    @Subcommand("clearbroadcast|clearbc")
+    @Suppress("unused")
+    @CommandCompletion("@players")
+    fun onFleetClearBroadcast(sender: Player) {
+        val fleet = getFleet(sender) ?: return
+
+        if (!(isFleetCommand(sender) ?: return)) {
+            sender.userError("You are not the commander of this fleet")
+            return
+        }
+
+        fleet.lastBroadcast = ""
+        sender.success("Cleared broadcast message")
+    }
+
     @Subcommand("broadcast|bc")
     @Suppress("unused")
     @CommandCompletion("@players")
@@ -130,8 +145,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        fleet.changeBroadcast(broadcast)
-        fleet.broadcast()
+        fleet.broadcast(broadcast)
         sender.success("Broadcast message \"$broadcast\"")
     }
 
