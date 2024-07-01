@@ -26,9 +26,12 @@ import java.util.UUID
 class Fleet(var leaderId: UUID) : ForwardingAudience {
 
     private val memberIds = mutableSetOf(leaderId)
+    private val invitedIds = mutableSetOf<UUID>()
     var lastBroadcast = ""
 
-    private fun add(playerId: UUID) = memberIds.add(playerId)
+    private fun add(playerId: UUID) {
+        memberIds.add(playerId)
+    }
 
     fun add(player: Player) = add(player.uniqueId)
 
@@ -50,10 +53,29 @@ class Fleet(var leaderId: UUID) : ForwardingAudience {
 
     fun get(player: Player) = get(player.uniqueId)
 
+    private fun invite(playerId: UUID) {
+        invitedIds.add(playerId)
+    }
+
+    fun invite(player: Player) = invite(player.uniqueId)
+
+    private fun removeInvite(playerId: UUID) {
+        if (invitedIds.contains(playerId)) invitedIds.remove(playerId)
+    }
+
+    fun removeInvite(player: Player) = removeInvite(player.uniqueId)
+
+    private fun getInvite(playerId: UUID) = invitedIds.contains(playerId)
+
+    fun getInvite(player: Player) = getInvite(player.uniqueId)
+
     fun delete() {
         this.userError("Your Fleet Commander has disbanded your fleet!")
         for (memberId in memberIds) {
             remove(memberId)
+        }
+        for (inviteId in invitedIds) {
+            removeInvite(inviteId)
         }
     }
 

@@ -2,7 +2,9 @@ package net.horizonsend.ion.server.features.starship.fleet
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
+import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
@@ -119,9 +121,97 @@ object FleetCommand : SLCommand() {
         sender.success("Switched fleet command to ${player.name}")
     }
 
-    @Subcommand("clearbroadcast|clearbc")
+    @Subcommand("invite")
     @Suppress("unused")
     @CommandCompletion("@players")
+    fun onFleetInvite(sender: Player, inviteName: String) {
+        val fleet = getFleet(sender) ?: return
+
+        if (!(isFleetCommand(sender) ?: return)) {
+            sender.userError("You are not the commander of this fleet")
+            return
+        }
+
+        val player = Bukkit.getPlayer(inviteName)
+        if (player == null) {
+            sender.userError("Player $inviteName is not found or not online")
+            return
+        }
+
+        if (fleet.get(player)) {
+            sender.userError("Player ${player.name} is already in this fleet")
+            return
+        }
+
+        fleet.invite(player)
+        player.information("You have been invited to join ${sender.name}'s fleet. Enter \"/fleet join ${sender.name}\" " +
+                "to join their fleet.")
+        sender.success("Invited ${player.name} to your fleet")
+    }
+
+    @Subcommand("removeInvite")
+    @Suppress("unused")
+    @CommandCompletion("@players")
+    fun onFleetRemoveInvite(sender: Player, inviteName: String) {
+        val fleet = getFleet(sender) ?: return
+
+        if (!(isFleetCommand(sender) ?: return)) {
+            sender.userError("You are not the commander of this fleet")
+            return
+        }
+
+        val player = Bukkit.getPlayer(inviteName)
+        if (player == null) {
+            sender.userError("Player $inviteName is not found or not online")
+            return
+        }
+
+        if (fleet.get(player)) {
+            sender.userError("Player ${player.name} is already in this fleet")
+            return
+        }
+
+        if (!fleet.getInvite(player)) {
+            sender.userError("Player ${player.name} has not been invited")
+        }
+
+        fleet.removeInvite(player)
+        player.userError("Your invite to ${sender.name}'s fleet has been removed.")
+        sender.success("Removed fleet invite from ${player.name}")
+    }
+
+    @Subcommand("join")
+    @Suppress("unused")
+    @CommandCompletion("@players")
+    fun onFleetJoin(sender: Player, inviterName: String) {
+        if (Fleets.findByMember(sender) != null) {
+            sender.userError("You are already in a fleet")
+            return
+        }
+
+        val fleetInvites = Fleets.findInvitesByMember(sender)
+        if (fleetInvites.isEmpty()) {
+            sender.userError("You have no pending fleet invites")
+            return
+        }
+
+        for (fleet in fleetInvites) {
+            val inviter = Bukkit.getPlayer(inviterName) ?: continue
+
+            if (fleet.leaderId == inviter.uniqueId) {
+                fleet.add(sender)
+                fleet.removeInvite(sender)
+                sender.success("Joined ${inviter.name}'s fleet")
+                return
+            }
+        }
+
+        // player failed to join a fleet they are invited to
+        sender.userError("You have no invites from $inviterName, or the Fleet Commander is not found")
+    }
+
+    @Subcommand("clearbroadcast|clearbc")
+    @Suppress("unused")
     fun onFleetClearBroadcast(sender: Player) {
         val fleet = getFleet(sender) ?: return
 
@@ -147,6 +237,56 @@ object FleetCommand : SLCommand() {
 
         fleet.broadcast(broadcast)
         sender.success("Broadcast message \"$broadcast\"")
+    }
+
+    @Subcommand("jump")
+    @Suppress("unused")
+    @Description("Jump fleet to a set of coordinates, a hyperspace beacon, or a planet")
+    fun onFleetJump(sender: Player) {
+        val fleet = getFleet(sender) ?: return
+
+        if (!(isFleetCommand(sender) ?: return)) {
+            sender.userError("You are not the commander of this fleet")
+            return
+        }
+
+        fleet.information("Fleet Commander issuing fleet jump command")
+        fleet.jumpFleet()
+        sender.success("Jumping fleet")
+    }
+
+    @Subcommand("jump")
+    @Suppress("unused")
+    @CommandCompletion("x|z")
+    @Description("Jump fleet to a set of coordinates, a hyperspace beacon, or a planet")
+    fun onFleetJump(sender: Player, xCoordinate: String, zCoordinate: String) {
+        val fleet = getFleet(sender) ?: return
+
+        if (!(isFleetCommand(sender) ?: return)) {
+            sender.userError("You are not the commander of this fleet")
+            return
+        }
+
+        fleet.information("Fleet Commander issuing fleet jump command")
+        fleet.jumpFleet(xCoordinate.toInt(), zCoordinate.toInt())
+        sender.success("Jumping fleet")
+    }
+
+    @Subcommand("jump")
+    @Suppress("unused")
+    @CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld")
+    @Description("Jump fleet to a set of coordinates, a hyperspace beacon, or a planet")
+    fun onFleetJump(sender: Player, destination: String) {
+        val fleet = getFleet(sender) ?: return
+
+        if (!(isFleetCommand(sender) ?: return)) {
+            sender.userError("You are not the commander of this fleet")
+            return
+        }
+
+        fleet.information("Fleet Commander issuing fleet jump command")
+        fleet.jumpFleet(destination)
+        sender.success("Jumping fleet")
     }
 
     private fun getFleet(sender: Player): Fleet? {
