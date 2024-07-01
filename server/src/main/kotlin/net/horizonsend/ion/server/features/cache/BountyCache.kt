@@ -84,7 +84,9 @@ object BountyCache: ManualCache(), Cache {
 	}
 
 	operator fun get(hunter: SLPlayerId, target: SLPlayerId): ClaimedBounty? {
-		return claimedBounties[hunter].firstOrNull { it.target == target && !it.completed }
+		return claimedBounties[hunter]
+			.filter { it.target == target && !it.completed }
+			.maxByOrNull { it.claimTime }
 	}
 
 	operator fun get(bounty: Oid<ClaimedBounty>): ClaimedBounty? {

@@ -77,9 +77,17 @@ object Bounties : IonServerComponent() {
 
 	/** Checks if the hunter has an active bounty on the target **/
 	fun hasActive(hunter: SLPlayerId, target: SLPlayerId): Boolean {
-		val mostRecent = BountyCache[hunter, target] ?: return false
+		val mostRecent = BountyCache[hunter, target] ?: run {
+			log.info("${PlayerCache[hunter]} did not have a cached bounty")
+			return false
+		}
 
-		if (mostRecent.claimTime < lastActive) return false
+		if (mostRecent.claimTime < lastActive) {
+			log.info("${PlayerCache[hunter]}'s last bounty was expired")
+			return false
+		}
+
+		log.info("Bounty: $mostRecent")
 
 		return !mostRecent.completed
 	}
