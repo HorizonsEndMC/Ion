@@ -11,6 +11,8 @@ object Fleets : IonServerComponent() {
 
     fun findByMember(player: Player) = fleetList.find { it.get(player) }
 
+    fun findInvitesByMember(player: Player) = fleetList.filter { it.getInvite(player) }
+
     fun create(player: Player) = fleetList.add(Fleet(player.uniqueId))
 
     fun delete(fleet: Fleet) {
@@ -26,5 +28,8 @@ object Fleets : IonServerComponent() {
         val player = event.player
 
         findByMember(player)?.remove(player) ?: return
+        for (fleet in findInvitesByMember(player)) {
+            fleet.removeInvite(player)
+        }
     }
 }
