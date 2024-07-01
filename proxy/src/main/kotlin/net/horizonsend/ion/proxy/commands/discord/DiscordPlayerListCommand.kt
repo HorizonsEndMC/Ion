@@ -1,5 +1,6 @@
 package net.horizonsend.ion.proxy.commands.discord
 
+import com.velocitypowered.api.proxy.ProxyServer
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.proxy.PLUGIN
@@ -7,7 +8,6 @@ import net.horizonsend.ion.proxy.features.discord.DiscordCommand
 import net.horizonsend.ion.proxy.features.discord.DiscordSubcommand
 import net.horizonsend.ion.proxy.features.discord.SlashCommandManager
 import net.horizonsend.ion.proxy.messageEmbed
-import net.md_5.bungee.api.ProxyServer
 
 object DiscordPlayerListCommand : DiscordCommand("playerlist", "List all players") {
 	val proxy: ProxyServer = PLUGIN.getProxy()

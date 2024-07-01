@@ -18,17 +18,13 @@ dependencies {
 	implementation(project(":common"))
 
 	// Platform
-	compileOnly("io.github.waterfallmc:waterfall-api:1.19-R0.1-SNAPSHOT")
+	compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
 	compileOnly("net.luckperms:api:5.4")
 
 	// Included Dependencies
-	implementation("co.aikar:acf-bungee:0.5.1-SNAPSHOT")
+	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT")
 	implementation("net.dv8tion:JDA:5.0.2")
-	implementation("net.kyori:adventure-platform-bungeecord:4.3.3")
 	implementation("net.kyori:adventure-text-logger-slf4j:4.17.0")
-
-	implementation("net.kyori:adventure-text-minimessage:4.17.0")
-	implementation("net.kyori:adventure-text-serializer-plain:4.17.0")
 
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 }
