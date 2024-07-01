@@ -26,7 +26,6 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 
@@ -105,7 +104,14 @@ internal object NationRelationCommand : SLCommand() {
 
 	@Subcommand("relations")
 	@CommandCompletion("@nations")
-	fun onRelations(sender: CommandSender, nationName: String, @Optional page: Int?) = asyncCommand(sender) {
+	fun onRelations(sender: Player, nationName: String, @Optional page: Int?) = asyncCommand(sender) {
+		if (nationName.length < 3 && nationName.all { it.isDigit() }) {
+			val nation = requireNationIn(sender)
+
+			handleRelations(sender, nation, page)
+			return@asyncCommand
+		}
+
 		val nation: Oid<Nation> = resolveNation(nationName)
 
 		handleRelations(sender, nation, page)
@@ -119,7 +125,7 @@ internal object NationRelationCommand : SLCommand() {
 
 		val body = formatPaginatedMenu(
 			entries = relations.count(),
-			command = "/nation relations",
+			command = "/nation relations $name",
 			currentPage = page ?: 1,
 		) {
 			val relation = relations[it]
