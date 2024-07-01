@@ -39,6 +39,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.NoOpCont
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
@@ -55,7 +56,9 @@ import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
@@ -64,6 +67,10 @@ import kotlin.math.abs
 object ContactsSidebar {
     private fun getContactsDistanceSq(player: Player): Int {
         return PlayerCache.getIfOnline(player)?.contactsDistance?.squared() ?: 0
+    }
+
+    private fun priorityColorChange(): Boolean {
+        return (Bukkit.getCurrentTick() / 2) % 2 == 0
     }
 
     private fun distanceColor(distance: Int): NamedTextColor {
@@ -372,7 +379,9 @@ object ContactsSidebar {
             val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
             val height = vector.y.toInt()
 
-            val color = when (colorSetting) {
+            val nameString = starship.identifier.take(maxLength)
+            val priority = getPriority(player, nameString)
+            val color = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
                 ContactsColoring.BY_RELATION.ordinal -> playerRelationColor(player, otherController)
                 else -> distanceColor(distance)
@@ -382,12 +391,14 @@ object ContactsSidebar {
                 ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
                 else -> playerRelationColor(player, otherController)
             }
+            val name = text(nameString, color)
 
             contactsList.add(
                 ContactsData(
-                    name = text(starship.identifier.take(maxLength), color),
+                    name = name,
                     type = ContactsType.STARSHIP,
                     relation = playerRelationType(player, otherController),
+                    priority = priority,
                     prefix = constructPrefixTextComponent(starship.type.icon, prefixColor),
                     suffix = constructSuffixTextComponent(
                         if (currentStarship != null) {
@@ -425,7 +436,9 @@ object ContactsSidebar {
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
 
-            val color = when (colorSetting) {
+            val nameString = "Last Piloted Starship".take(maxLength)
+            val priority = getPriority(player, nameString)
+            val color = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
                 ContactsColoring.BY_RELATION.ordinal -> GRAY
                 else -> distanceColor(distance)
@@ -435,12 +448,14 @@ object ContactsSidebar {
                 ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
                 else -> YELLOW
             }
+            val name = text(nameString, color)
 
             contactsList.add(
                 ContactsData(
-                    name = text("Last Piloted Starship".take(maxLength), color),
+                    name = name,
                     type = ContactsType.LAST_STARSHIP,
                     relation = null,
+                    priority = priority,
                     prefix = constructPrefixTextComponent(GENERIC_STARSHIP_ICON.text, prefixColor),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
@@ -468,7 +483,9 @@ object ContactsSidebar {
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
 
-            val color = when (colorSetting) {
+            val nameString = planet.name.take(maxLength)
+            val priority = getPriority(player, nameString)
+            val color = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
                 ContactsColoring.BY_RELATION.ordinal -> GRAY
                 else -> distanceColor(distance)
@@ -478,12 +495,14 @@ object ContactsSidebar {
                 ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
                 else -> DARK_AQUA
             }
+            val name = text(nameString, color)
 
             contactsList.add(
                 ContactsData(
-                    name = text(planet.name.take(maxLength), color),
+                    name = name,
                     type = ContactsType.PLANET,
                     relation = null,
+                    priority = priority,
                     prefix = constructPrefixTextComponent(PLANET_ICON.text, prefixColor),
                     suffix = constructSuffixTextComponent(
                         interdictionTextComponent(
@@ -517,7 +536,9 @@ object ContactsSidebar {
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
 
-            val color = when (colorSetting) {
+            val nameString = star.name.take(maxLength)
+            val priority = getPriority(player, nameString)
+            val color = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
                 ContactsColoring.BY_RELATION.ordinal -> GRAY
                 else -> distanceColor(distance)
@@ -527,12 +548,14 @@ object ContactsSidebar {
                 ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
                 else -> YELLOW
             }
+            val name = text(nameString, color)
 
             contactsList.add(
                 ContactsData(
-                    name = text(star.name.take(maxLength), color),
+                    name = name,
                     type = ContactsType.STAR,
                     relation = null,
+                    priority = priority,
                     prefix = constructPrefixTextComponent(STAR_ICON.text, prefixColor),
                     suffix = constructSuffixTextComponent(
                         interdictionTextComponent(
@@ -566,7 +589,9 @@ object ContactsSidebar {
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
 
-            val color = when (colorSetting) {
+            val nameString = beacon.name.take(maxLength)
+            val priority = getPriority(player, nameString)
+            val color = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
                 ContactsColoring.BY_RELATION.ordinal -> GRAY
                 else -> distanceColor(distance)
@@ -576,12 +601,14 @@ object ContactsSidebar {
                 ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
                 else -> BLUE
             }
+            val name = text(nameString, color)
 
             contactsList.add(
                 ContactsData(
-                    name = text(beacon.name.take(maxLength), color),
+                    name = name,
                     type = ContactsType.BEACON,
                     relation = null,
+                    priority = priority,
                     prefix = constructPrefixTextComponent(HYPERSPACE_BEACON_ENTER_ICON.text, prefixColor),
                     suffix = constructSuffixTextComponent(beaconTextComponent(beacon.prompt)),
                     heading = constructHeadingTextComponent(direction, color),
@@ -609,7 +636,9 @@ object ContactsSidebar {
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
 
-            val color = when (colorSetting) {
+            val nameString = station.name.take(maxLength)
+            val priority = getPriority(player, nameString)
+            val color = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
                 ContactsColoring.BY_RELATION.ordinal -> stationRelationColor(player, station)
                 else -> distanceColor(distance)
@@ -619,12 +648,14 @@ object ContactsSidebar {
                 ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
                 else -> stationRelationColor(player, station)
             }
+            val name = text(nameString, color)
 
             contactsList.add(
                 ContactsData(
-                    name = text(station.name.take(maxLength), color),
+                    name = name,
                     type = ContactsType.STATION,
                     relation = stationRelationType(player, station),
+                    priority = priority,
                     prefix = constructPrefixTextComponent(STATION_ICON.text, prefixColor),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
@@ -652,7 +683,9 @@ object ContactsSidebar {
             val direction = getDirectionToObject(vector.clone().subtract(sourceVector).normalize())
             val height = vector.y.toInt()
 
-            val color = when (colorSetting) {
+            val nameString = station.name.take(maxLength)
+            val priority = getPriority(player, nameString)
+            val color = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
                 ContactsColoring.BY_RELATION.ordinal -> capturableStationRelationColor(player, station)
                 else -> distanceColor(distance)
@@ -662,12 +695,14 @@ object ContactsSidebar {
                 ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
                 else -> capturableStationRelationColor(player, station)
             }
+            val name = text(nameString, color)
 
             contactsList.add(
                 ContactsData(
-                    name = text(station.name.take(maxLength), color),
+                    name = name,
                     type = ContactsType.STATION,
                     relation = capturableStationRelationType(player, station),
+                    priority = priority,
                     prefix = constructPrefixTextComponent(SIEGE_STATION_ICON.text, prefixColor),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
@@ -711,6 +746,7 @@ object ContactsSidebar {
                     name = text(bookmark.name.take(maxLength), color),
                     type = ContactsType.BOOKMARK,
                     relation = null,
+                    priority = false,
                     prefix = constructPrefixTextComponent(BOOKMARK_ICON.text, prefixColor),
                     suffix = Component.empty(),
                     heading = constructHeadingTextComponent(direction, color),
@@ -802,15 +838,32 @@ object ContactsSidebar {
         }
     }
 
+    private fun getPriority(player: Player, contactName: String): Boolean {
+        val fleet = Fleets.findByMember(player) ?: return false
+        return fleet.lastBroadcast.contains(contactName)
+    }
+
+
     private fun sortContacts(contactsList: MutableList<ContactsData>, player: Player) {
         val sortOrder = ContactsSorting.entries[PlayerCache[player.uniqueId].contactsSort]
 
         when (sortOrder) {
-            ContactsSorting.DISTANCE_ASCENDING -> contactsList.sortBy { it.distanceInt }
+            // Sort by distance ascending
+            ContactsSorting.DISTANCE_ASCENDING -> contactsList.sortWith(Comparator<ContactsData> { o1, o2 ->
+                return@Comparator o1.priority.compareTo(o2.priority) * -1
+            }.thenComparing(Comparator<ContactsData> { o1, o2 -> return@Comparator o1.distanceInt.compareTo(o2.distanceInt) })
+            )
 
-            ContactsSorting.DISTANCE_DESCENDING -> contactsList.sortByDescending { it.distanceInt }
+            // Sort by distance descending
+            ContactsSorting.DISTANCE_DESCENDING -> contactsList.sortWith(Comparator<ContactsData> { o1, o2 ->
+                return@Comparator o1.priority.compareTo(o2.priority) * -1
+            }.thenComparing(Comparator<ContactsData> { o1, o2 -> return@Comparator o2.distanceInt.compareTo(o1.distanceInt) })
+            )
 
+            // Sort by relation ascending
             ContactsSorting.RELATION_ASCENDING -> contactsList.sortWith(Comparator<ContactsData> { o1, o2 ->
+                return@Comparator o1.priority.compareTo(o2.priority) * -1
+            }.thenComparing(Comparator<ContactsData> { o1, o2 ->
                 // if both object relations are null, maintain order
                 // if only object 1's relations are null, object 1 should appear after object 2
                 if (o1.relation == null) if (o2.relation == null) return@Comparator 0 else return@Comparator 1
@@ -820,12 +873,15 @@ object ContactsSidebar {
 
                 // then sort by relation
                 return@Comparator o1.relation.compareTo(o2.relation)
-            }
+            })
                 // sort by distance as secondary sorting criteria (if negative, o1 appears before o2; vice versa)
                 .thenComparing(Comparator<ContactsData> { o1, o2 -> return@Comparator o1.distanceInt.compareTo(o2.distanceInt) })
             )
 
+            // Sort by relation descending
             ContactsSorting.RELATION_DESCENDING -> contactsList.sortWith(Comparator<ContactsData> { o1, o2 ->
+                return@Comparator o1.priority.compareTo(o2.priority) * -1
+            }.thenComparing(Comparator<ContactsData> { o1, o2 ->
                 // continue to move null relations to the end of the list
                 if (o1.relation == null) {
                     if (o2.relation == null) return@Comparator 0 else return@Comparator 1
@@ -834,21 +890,27 @@ object ContactsSidebar {
                     return@Comparator -1
                 }
                 return@Comparator o2.relation.compareTo(o1.relation)
-            }
+            })
                 // sort by distance
                 .thenComparing(Comparator<ContactsData> { o1, o2 -> return@Comparator o1.distanceInt.compareTo(o2.distanceInt) })
             )
 
+            // Sort by type ascending
             ContactsSorting.TYPE_ASCENDING -> contactsList.sortWith(Comparator<ContactsData> { o1, o2 ->
+                return@Comparator o1.priority.compareTo(o2.priority) * -1
+            }.thenComparing(Comparator<ContactsData> { o1, o2 ->
                 return@Comparator o1.type.compareTo(o2.type)
-            }
+            })
                 // sort by distance
                 .thenComparing(Comparator<ContactsData> { o1, o2 -> return@Comparator o1.distanceInt.compareTo(o2.distanceInt) })
             )
 
+            // Sort by type descending
             ContactsSorting.TYPE_DESCENDING -> contactsList.sortWith(Comparator<ContactsData> { o1, o2 ->
+                return@Comparator o1.priority.compareTo(o2.priority) * -1
+            }.thenComparing(Comparator<ContactsData> { o1, o2 ->
                 return@Comparator o2.type.compareTo(o1.type)
-            }
+            })
                 // sort by distance
                 .thenComparing(Comparator<ContactsData> { o1, o2 -> return@Comparator o1.distanceInt.compareTo(o2.distanceInt) })
             )
@@ -859,6 +921,7 @@ object ContactsSidebar {
         val name: Component,
         val type: ContactsType,
         val relation: ContactsRelation?,
+        val priority: Boolean,
         val prefix: TextComponent,
         val suffix: TextComponent,
         val heading: TextComponent,
