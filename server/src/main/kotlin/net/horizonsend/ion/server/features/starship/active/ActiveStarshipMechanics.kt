@@ -19,6 +19,8 @@ import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.HeavyDestroyerReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.HeavyFrigateReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -125,14 +127,13 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	private fun handleSupercapitalMechanics() {
 		// Consume fuel
 		ActiveStarships.all()
-			.filter { it.type == StarshipType.BATTLECRUISER || it.type == StarshipType.CRUISER || it.type == StarshipType.BARGE }
+			.filter { it.type == StarshipType.BATTLECRUISER || it.type == StarshipType.CRUISER || it.type == StarshipType.BARGE || it.type == StarshipType.HEAVY_DESTROYER || it.type == StarshipType.HEAVY_FRIGATE }
 			//TODO replace this system with something better
 			.filter { it.controller is ActivePlayerController }
 			.forEach { superCapital: ActiveStarship ->
 
-			var remaining = SUPERCAPITAL_FUEL_CONSUMPTION
-
-			for (fuelTank in superCapital.fuelTanks) {
+				var remaining = SUPERCAPITAL_FUEL_CONSUMPTION
+				for (fuelTank in superCapital.fuelTanks) {
 				remaining -= fuelTank.tryConsumeFuel(remaining)
 
 				if (remaining <= 0) break
@@ -161,7 +162,21 @@ object ActiveStarshipMechanics : IonServerComponent() {
 				StarshipDestruction.destroy(ship)
 			}
 		}
-
+		// Destroy Heavy Frigates without intact reactors
+		ActiveStarships.all().filter { it.type == StarshipType.HEAVY_FRIGATE }.forEach { ship ->
+			if (ship.subsystems.filterIsInstance<HeavyFrigateReactorSubsystem>().none { it.isIntact() }) {
+				ship.alert("All reactors are down, ship explosion imminent!")
+				StarshipDestruction.destroy(ship)
+			}
+		}
+		// Destroy Heavy Destroyers without intact reactors
+		ActiveStarships.all().filter { it.type == StarshipType.HEAVY_DESTROYER }.forEach { ship ->
+			if (ship.subsystems.filterIsInstance<HeavyDestroyerReactorSubsystem>().none { it.isIntact() }) {
+				ship.alert("All reactors are down, ship explosion imminent!")
+				StarshipDestruction.destroy(ship)
+			}
+		}
+		// Destroy Barges without intact reactors
 		ActiveStarships.all().filter { it.type == StarshipType.BARGE }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<BargeReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")

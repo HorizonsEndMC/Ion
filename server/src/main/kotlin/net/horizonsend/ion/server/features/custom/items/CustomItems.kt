@@ -656,6 +656,22 @@ object CustomItems {
 			displayName = text("Cruiser Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
 			customBlockIdentifier = "CRUISER_REACTOR_CORE"
 		) {})
+	val HEAVY_FRIGATE_REACTOR_CORE =
+			register(object : CustomBlockItem(
+					identifier = "HEAVY_FRIGATE_REACTOR_CORE",
+					material = IRON_BLOCK,
+					customModelData = 1999,
+					displayName = text("Heavy Frigate Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
+					customBlockIdentifier = "HEAVY_FRIGATE_REACTOR_CORE"
+			) {})
+	val HEAVY_DESTROYER_REACTOR_CORE =
+			register(object : CustomBlockItem(
+					identifier = "HEAVY_DESTROYER_REACTOR_CORE",
+					material = IRON_BLOCK,
+					customModelData = 1998,
+					displayName = text("Heavy Destroyer Reactor Core").decoration(ITALIC, false).decoration(BOLD, true),
+					customBlockIdentifier = "HEAVY_DESTROYER_REACTOR_CORE"
+			) {})
 
 	// Starship Components End
 
@@ -673,6 +689,18 @@ object CustomItems {
 		material = IRON_INGOT,
 		customModelData = 2001,
 		displayName = text("Loaded Shell").decoration(ITALIC, false)
+	) {})
+	val UNLOADED_ASSAULT_SHELL = register(object : ShellItem(
+			identifier = "UNLOADED_ASSAULT_SHELL",
+			material = WARPED_FUNGUS_ON_A_STICK,
+			customModelData = 699,
+			displayName = text("Unloaded Assault Shell").decoration(ITALIC, false)
+	) {})
+	val LOADED_ASSAULT_SHELL = register(object : ShellItem(
+			identifier = "ASSAULT_SHELL",
+			material = WARPED_FUNGUS_ON_A_STICK,
+			customModelData = 698,
+			displayName = text("Assault Shell").decoration(ITALIC, false)
 	) {})
 
 	val UNCHARGED_SHELL = register(object : ShellItem(

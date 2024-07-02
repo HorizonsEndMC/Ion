@@ -25,6 +25,8 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GUN_BARREL
+import net.horizonsend.ion.server.features.custom.items.CustomItems.HEAVY_DESTROYER_REACTOR_CORE
+import net.horizonsend.ion.server.features.custom.items.CustomItems.HEAVY_FRIGATE_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL
@@ -66,6 +68,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.TITANIUM_BLO
 import net.horizonsend.ion.server.features.custom.items.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.custom.items.CustomItems.UNCHARGED_SHELL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.UNLOADED_ARSENAL_MISSILE
+import net.horizonsend.ion.server.features.custom.items.CustomItems.UNLOADED_ASSAULT_SHELL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.UNLOADED_SHELL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_BLOCK
@@ -289,12 +292,19 @@ object Crafting : IonServerComponent() {
 		shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
 
 		//Unloaded Turret Shell Crafting
-		itemStackShapeRecipe("Unloaded__Shell", UNLOADED_SHELL.constructItemStack()) {
+		itemStackShapeRecipe("Unloaded_Shell", UNLOADED_SHELL.constructItemStack()) {
 			shape("xyx", "xzx", "xxx")
 
 			setIngredient('x', AIR)
 			setIngredient('y', LAPIS_LAZULI)
 			setIngredient('z', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+		}
+		itemStackShapeRecipe("Unloaded_Assault_Shell", UNLOADED_ASSAULT_SHELL.constructItemStack()) {
+			shape("xyx", "xzx", "xzx")
+
+			setIngredient('x', AIR)
+			setIngredient('y', PRISMARINE_CRYSTALS)
+			setIngredient('z', GOLD_NUGGET)
 		}
 
 		itemStackShapeRecipe("Uncharged_Shell", UNCHARGED_SHELL.constructItemStack()) {
@@ -748,6 +758,26 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', REACTOR_CONTROL.constructItemStack())
 			setIngredient('y', SUPERCONDUCTOR_CORE.constructItemStack())
 			setIngredient('z', FUEL_CONTROL.constructItemStack())
+		}
+
+		itemStackShapeRecipe("heavydestroyerreactorCore", HEAVY_DESTROYER_REACTOR_CORE.constructItemStack()) {
+			shape("wvw", "xyx", "wzw")
+
+			setIngredient('v', REACTIVE_ASSEMBLY.constructItemStack())
+			setIngredient('W', STEEL_MODULE.constructItemStack())
+			setIngredient('x', STEEL_ASSEMBLY.constructItemStack())
+			setIngredient('y', SUPERCONDUCTOR_BLOCK.constructItemStack())
+			setIngredient('z', FUEL_ROD_CORE.constructItemStack())
+		}
+
+		itemStackShapeRecipe("heavyfrigatereactorCore", HEAVY_FRIGATE_REACTOR_CORE.constructItemStack()) {
+			shape("vwv", "xyx", "vzv")
+
+			setIngredient('v', SUPERCONDUCTOR.constructItemStack())
+			setIngredient('w', REACTIVE_MEMBRANE.constructItemStack())
+			setIngredient('x', STEEL_ASSEMBLY.constructItemStack())
+			setIngredient('y', CIRCUIT_BOARD.constructItemStack())
+			setIngredient('z', URANIUM_CORE.constructItemStack())
 		}
 	}
 

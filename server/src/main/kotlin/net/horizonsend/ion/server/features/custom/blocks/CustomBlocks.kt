@@ -191,6 +191,22 @@ object CustomBlocks {
         drops = listOf()
 	)
     )
+	val HEAVY_FRIGATE_REACTOR_CORE = register(
+			CustomBlock(
+					identifier = "HEAVY_FRIGATE_REACTOR_CORE",
+					blockData = mushroomBlockData(setOf(SOUTH, DOWN, WEST)),
+					tool = "pickaxe",
+					drops = listOf()
+			)
+	)
+	val HEAVY_DESTROYER_REACTOR_CORE = register(
+			CustomBlock(
+					identifier = "HEAVY_DESTROYER_REACTOR_CORE",
+					blockData = mushroomBlockData(setOf(NORTH, DOWN, EAST)),
+					tool = "pickaxe",
+					drops = listOf()
+			)
+	)
 
     private fun customItemDrop(identifier: String, amount: Int = 1): List<ItemStack> {
         val customItem = net.horizonsend.ion.server.features.custom.items.CustomItems.getByIdentifier(identifier)?.constructItemStack() ?: return listOf()
