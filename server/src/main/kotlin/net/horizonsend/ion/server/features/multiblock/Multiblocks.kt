@@ -109,7 +109,6 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.MiniP
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.AIHeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.BottomArsenalStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.DoomsdayDeviceWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.DownwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.HeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.HorizontalRocketStarshipWeaponMultiblock
@@ -120,12 +119,14 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.Upwar
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockTop
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomAssaultTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomCycleTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomHeavyTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomIonTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomQuadTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomTriTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopAssaultTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.DisintegratorBeamWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.DisintegratorBeamWeaponMultiblockTop
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopCycleTurretMultiblock
@@ -251,6 +252,8 @@ object Multiblocks : IonServerComponent() {
 			BottomLightTurretMultiblock,
 			TopHeavyTurretMultiblock,
 			BottomHeavyTurretMultiblock,
+			TopAssaultTurretMultiblock,
+			BottomAssaultTurretMultiblock,
 			TopTriTurretMultiblock,
 			BottomTriTurretMultiblock,
 			TopIonTurretMultiblock,

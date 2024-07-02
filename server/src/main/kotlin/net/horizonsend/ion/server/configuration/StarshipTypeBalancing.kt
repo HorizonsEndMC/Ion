@@ -261,12 +261,28 @@ data class StarshipTypeBalancing(
 		)
 
 	),
+	val heavyFrigate: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 6,
+		maxSneakFlyAccel = 2,
+		interdictionRange = 2400,
+		hyperspaceRangeMultiplier = 1.8,
+		shieldPowerMultiplier = 1.1,
+		cruiseSpeedMultiplier = 0.895
+	),
 	val destroyer: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 5,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 3000,
 		hyperspaceRangeMultiplier = 1.9,
 		shieldPowerMultiplier = 1.0
+	),
+	val heavyDestroyer: StarshipBalancing = StarshipBalancing(
+			sneakFlyAccelDistance = 5,
+			maxSneakFlyAccel = 3,
+			interdictionRange = 3000,
+			hyperspaceRangeMultiplier = 1.9,
+			shieldPowerMultiplier = 1.15,
+			cruiseSpeedMultiplier = 0.89
 	),
 	val cruiser: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 5,
@@ -1101,6 +1117,29 @@ class StarshipWeapons(
 				applyCooldownToAll = true,
 				aimDistance = 0,
 				maxBlockCount = 12000,
+				minBlockCount = 6500
+		),
+		val assaultTurret: StarshipWeapon = StarshipWeapon(
+				range = 500.0,
+				speed = 130.0,
+				areaShieldDamageMultiplier = 1.0,
+				starshipShieldDamageMultiplier = 1.5,
+				particleThickness = 0.45,
+				explosionPower = 4.0f,
+				volume = 0,
+				pitch = 1.0f,
+				soundName = "horizonsend:starship.weapon.turbolaser.heavy.shoot",
+				powerUsage = 2300,
+				length = 0,
+				angleRadiansHorizontal = 0.0,
+				angleRadiansVertical = 0.0,
+				convergeDistance = 0.0,
+				extraDistance = 0,
+				fireCooldownMillis = 1000,
+				boostChargeSeconds = 0,
+				applyCooldownToAll = true,
+				aimDistance = 0,
+				maxBlockCount = 12500,
 				minBlockCount = 6500
 		),
 
