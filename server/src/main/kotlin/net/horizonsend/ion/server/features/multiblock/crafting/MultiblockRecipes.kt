@@ -110,6 +110,12 @@ object MultiblockRecipes : IonServerComponent() {
 		resources = listOf(power(100)),
 		result = MultiRecipeResult(ProgressItemResult(CustomItems.LOADED_SHELL, 90L * 20L, SoundResult("horizonsend:industry.load", SoundCategory.BLOCKS, 1.0f, 1.0f)))
 	))
+	val ASSAULT_SHELL_LOADING = registerRecipe(ProcessingMultiblockRecipe(
+			multiblock = AmmoLoaderMultiblock,
+			smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNLOADED_ASSAULT_SHELL, 1), progressHolderResult = CustomItems.LOADED_ASSAULT_SHELL),
+			resources = listOf(power(100)),
+			result = MultiRecipeResult(ProgressItemResult(CustomItems.LOADED_ASSAULT_SHELL, 90L * 20L, SoundResult("horizonsend:industry.load", SoundCategory.BLOCKS, 1.0f, 1.0f)))
+	))
 
 	val UNCHARGED_SHELL_CHARGING = registerRecipe(ProcessingMultiblockRecipe(
 		multiblock = AmmoLoaderMultiblock,

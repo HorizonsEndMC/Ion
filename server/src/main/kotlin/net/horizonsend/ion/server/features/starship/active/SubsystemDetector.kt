@@ -7,6 +7,8 @@ import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.checklist.BargeReactorMultiBlock
 import net.horizonsend.ion.server.features.multiblock.checklist.BattleCruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.checklist.HeavyDestroyerReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.checklist.HeavyFrigateReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
@@ -26,6 +28,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.HeavyDestroyerReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.HeavyFrigateReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryoSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
@@ -158,6 +162,14 @@ object SubsystemDetector {
 
 			is BargeReactorMultiBlock -> {
 				starship.subsystems += BargeReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is HeavyFrigateReactorMultiblock -> {
+				starship.subsystems += HeavyFrigateReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is HeavyDestroyerReactorMultiblock -> {
+				starship.subsystems += HeavyDestroyerReactorSubsystem(starship, sign, multiblock)
 			}
 
 			is FuelTankMultiblock -> {

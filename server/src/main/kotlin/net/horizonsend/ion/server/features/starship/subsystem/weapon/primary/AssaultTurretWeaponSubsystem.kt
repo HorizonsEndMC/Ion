@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.AssaultTurretMultiblock
@@ -24,7 +23,7 @@ class AssaultTurretWeaponSubsystem(
 	override val powerUsage: Int get() = balancing.powerUsage
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 	override fun getRequiredAmmo(): ItemStack {
-		return CustomItems.LOADED_SHELL.constructItemStack()
+		return CustomItems.LOADED_ASSAULT_SHELL.constructItemStack()
 	}
 
 }

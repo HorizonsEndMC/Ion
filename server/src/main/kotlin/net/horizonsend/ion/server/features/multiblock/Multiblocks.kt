@@ -21,6 +21,8 @@ import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockT
 import net.horizonsend.ion.server.features.multiblock.checklist.BargeReactorMultiBlock
 import net.horizonsend.ion.server.features.multiblock.checklist.BattleCruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.checklist.HeavyDestroyerReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.checklist.HeavyFrigateReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.defense.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.dockingtube.ConnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.dockingtube.DisconnectedDockingTubeMultiblock
@@ -319,6 +321,8 @@ object Multiblocks : IonServerComponent() {
 			BattleCruiserReactorMultiblock,
 			CruiserReactorMultiblock,
 			BargeReactorMultiBlock,
+			HeavyFrigateReactorMultiblock,
+			HeavyDestroyerReactorMultiblock,
 			OdometerMultiblock
 		)
 	}

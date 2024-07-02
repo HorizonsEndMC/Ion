@@ -10,6 +10,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.HeavyDestroyerReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.HeavyFrigateReactorSubsystem
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import java.util.LinkedList
@@ -267,7 +269,45 @@ data class StarshipTypeBalancing(
 		interdictionRange = 2400,
 		hyperspaceRangeMultiplier = 1.8,
 		shieldPowerMultiplier = 1.1,
-		cruiseSpeedMultiplier = 0.895
+		cruiseSpeedMultiplier = 0.895,
+		weapons = StarshipWeapons(
+			assaultTurret = StarshipWeapons.StarshipWeapon(
+				canFire = false,
+				range = 500.0,
+				speed = 130.0,
+				areaShieldDamageMultiplier = 1.0,
+				starshipShieldDamageMultiplier = 1.5,
+				particleThickness = 0.45,
+				explosionPower = 4.0f,
+				volume = 0,
+				pitch = 1.0f,
+				soundName = "horizonsend:starship.weapon.turbolaser.heavy.shoot",
+				powerUsage = 2300,
+				length = 0,
+				angleRadiansHorizontal = 0.0,
+				angleRadiansVertical = 0.0,
+				convergeDistance = 0.0,
+				extraDistance = 0,
+				fireCooldownMillis = 1000,
+				boostChargeSeconds = 0,
+				applyCooldownToAll = true,
+				aimDistance = 0,
+				maxBlockCount = 12500,
+				minBlockCount = 6500
+					)
+				),
+			requiredMultiblocks = listOf(
+					RequiredSubsystemInfo(
+							FuelTankSubsystem::class.java,
+							1,
+							"Heavy Frigates require a fuel tank to pilot!"
+					),
+					RequiredSubsystemInfo(
+							HeavyFrigateReactorSubsystem::class.java,
+							1,
+							"Heavy Frigates require a reactor to pilot!"
+					)
+			),
 	),
 	val destroyer: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 5,
@@ -282,7 +322,45 @@ data class StarshipTypeBalancing(
 			interdictionRange = 3000,
 			hyperspaceRangeMultiplier = 1.9,
 			shieldPowerMultiplier = 1.15,
-			cruiseSpeedMultiplier = 0.89
+			cruiseSpeedMultiplier = 0.89,
+			weapons = StarshipWeapons(
+				assaultTurret = StarshipWeapons.StarshipWeapon(
+					canFire = false,
+					range = 500.0,
+					speed = 130.0,
+					areaShieldDamageMultiplier = 1.0,
+					starshipShieldDamageMultiplier = 1.5,
+					particleThickness = 0.45,
+					explosionPower = 4.0f,
+					volume = 0,
+					pitch = 1.0f,
+					soundName = "horizonsend:starship.weapon.turbolaser.heavy.shoot",
+					powerUsage = 2300,
+					length = 0,
+					angleRadiansHorizontal = 0.0,
+					angleRadiansVertical = 0.0,
+					convergeDistance = 0.0,
+					extraDistance = 0,
+					fireCooldownMillis = 1000,
+					boostChargeSeconds = 0,
+					applyCooldownToAll = true,
+					aimDistance = 0,
+					maxBlockCount = 12500,
+					minBlockCount = 6500
+				)
+			),
+			requiredMultiblocks = listOf(
+					RequiredSubsystemInfo(
+							FuelTankSubsystem::class.java,
+							1,
+							"Heavy Destroyers require a fuel tank to pilot!"
+					),
+					RequiredSubsystemInfo(
+							HeavyDestroyerReactorSubsystem::class.java,
+							1,
+							"Heavy Destroyers require a reactor to pilot!"
+					)
+			),
 	),
 	val cruiser: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 5,
@@ -1120,6 +1198,7 @@ class StarshipWeapons(
 				minBlockCount = 6500
 		),
 		val assaultTurret: StarshipWeapon = StarshipWeapon(
+				canFire = false,
 				range = 500.0,
 				speed = 130.0,
 				areaShieldDamageMultiplier = 1.0,
