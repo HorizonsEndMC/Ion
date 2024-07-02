@@ -187,6 +187,23 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		balancingSupplier = IonServer.starshipBalancing::frigate
 	),
+	HEAVY_FRIGATE(
+			displayName = "Heavy Frigate",
+			icon = SidebarIcon.FRIGATE_ICON.text,
+			minSize = 6500,
+			maxSize = 8500,
+			minLevel = 45,
+			containerPercent = 0.025,
+			crateLimitMultiplier = 0.5,
+			menuItemMaterial = Material.LAPIS_BLOCK,
+			isWarship = true,
+			color = "#c00000",
+			overridePermission = "ion.ships.override.45",
+			dynmapIcon = "frigate",
+			maxMiningLasers = 1,
+			miningLaserTier = 1,
+			balancingSupplier = IonServer.starshipBalancing::heavyFrigate
+	),
 	AI_FRIGATE(
 		displayName = "Frigate",
 		icon = SidebarIcon.AI_FRIGATE_ICON.text,
@@ -221,6 +238,23 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		balancingSupplier = IonServer.starshipBalancing::destroyer
+	),
+	HEAVY_DESTROYER(
+			displayName = "Heavy Destroyer",
+			icon = SidebarIcon.DESTROYER_ICON.text,
+			minSize = 10500,
+			maxSize = 12500,
+			minLevel = 65,
+			containerPercent = 0.025,
+			crateLimitMultiplier = 0.5,
+			menuItemMaterial = Material.GOLD_BLOCK,
+			isWarship = true,
+			color = "#800000",
+			overridePermission = "ion.ships.override.65",
+			dynmapIcon = "destroyer",
+			maxMiningLasers = 1,
+			miningLaserTier = 1,
+			balancingSupplier = IonServer.starshipBalancing::heavyDestroyer
 	),
 	AI_DESTROYER(
 		displayName = "Destroyer",
