@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-@CommandAlias("fleet")
+@CommandAlias("fleet|f")
 object FleetCommand : SLCommand() {
     @Subcommand("create")
     @Suppress("unused")
@@ -34,6 +34,7 @@ object FleetCommand : SLCommand() {
             sender.userError("You are not the commander of this fleet")
         }
 
+        fleet.userError("Your Fleet Commander has disbanded your fleet!")
         Fleets.delete(fleet)
         sender.success("Disbanded fleet")
     }
@@ -57,6 +58,7 @@ object FleetCommand : SLCommand() {
         }
 
         fleet.remove(sender)
+        fleet.information("${sender.name} has left your fleet")
     }
 
     @Subcommand("kick")
@@ -87,6 +89,7 @@ object FleetCommand : SLCommand() {
         }
 
         fleet.remove(player)
+        player.userError("You were kicked from ${sender.name}'s fleet!")
         sender.success("Removed ${player.name} from fleet")
     }
 
@@ -199,6 +202,7 @@ object FleetCommand : SLCommand() {
             val inviter = Bukkit.getPlayer(inviterName) ?: continue
 
             if (fleet.leaderId == inviter.uniqueId) {
+                fleet.information(("${sender.name} has joined your fleet"))
                 fleet.add(sender)
                 fleet.removeInvite(sender)
                 sender.success("Joined ${inviter.name}'s fleet")
