@@ -14,6 +14,8 @@ import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.FLEET_COMMANDER_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.FLEET_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GENERIC_STARSHIP_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.HYPERSPACE_BEACON_ENTER_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.INTERDICTION_ICON
@@ -393,6 +395,10 @@ object ContactsSidebar {
             }
             val name = text(nameString, color)
 
+            val fleet = Fleets.findByMember(player)
+            val otherPlayer = if (otherController is ActivePlayerController) otherController.player else null
+            val inFleet = otherPlayer?.let { fleet?.get(it) } ?: false
+
             contactsList.add(
                 ContactsData(
                     name = name,
@@ -406,6 +412,11 @@ object ContactsSidebar {
                         } else Component.empty(),
                         if (starship.isInterdicting) {
                             interdictionTextComponent(interdictionDistance, starship.balancing.interdictionRange, true)
+                        } else Component.empty(),
+                        if (inFleet) {
+                            if (fleet != null && otherPlayer != null && fleet.leaderId == otherPlayer.uniqueId) {
+                                fleetCommanderTextComponent()
+                            } else fleetTextComponent()
                         } else Component.empty()
                     ),
                     heading = constructHeadingTextComponent(direction, color),
@@ -796,6 +807,10 @@ object ContactsSidebar {
         } else if (visibleOutOfRange) {
             text(INTERDICTION_ICON.text, GOLD).font(fontKey)
         } else Component.empty()
+
+    private fun fleetTextComponent() = text(FLEET_ICON.text, AQUA).font(fontKey)
+
+    private fun fleetCommanderTextComponent() = text(FLEET_COMMANDER_ICON.text, GOLD).font(fontKey)
 
     private fun beaconTextComponent(text: String?) =
         if (text?.contains("⚠") == true) text("⚠", RED)

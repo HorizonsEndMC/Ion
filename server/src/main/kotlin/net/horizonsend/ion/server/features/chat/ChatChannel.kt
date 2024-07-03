@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.features.chat.messages.NationsChatMessage
 import net.horizonsend.ion.server.features.chat.messages.NormalChatMessage
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.SLXP
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -264,7 +265,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 			val prefix = ofChildren(
 				displayName,
 				Component.space(),
-				if (fleet.leaderId == player.uniqueId) text("[CMDR]", GOLD, TextDecoration.BOLD) else empty()
+				if (fleet.leaderId == player.uniqueId) text(SidebarIcon.FLEET_COMMANDER_ICON.text, GOLD, TextDecoration.BOLD) else empty()
 			)
 
 			fleet.sendMessage(formatChatMessage(prefix, player, event, messageColor).buildChatComponent())
