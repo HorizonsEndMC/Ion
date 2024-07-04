@@ -764,7 +764,7 @@ object Crafting : IonServerComponent() {
 			shape("wvw", "xyx", "wzw")
 
 			setIngredient('v', REACTIVE_ASSEMBLY.constructItemStack())
-			setIngredient('W', STEEL_MODULE.constructItemStack())
+			setIngredient('w', STEEL_MODULE.constructItemStack())
 			setIngredient('x', STEEL_ASSEMBLY.constructItemStack())
 			setIngredient('y', SUPERCONDUCTOR_BLOCK.constructItemStack())
 			setIngredient('z', FUEL_ROD_CORE.constructItemStack())
