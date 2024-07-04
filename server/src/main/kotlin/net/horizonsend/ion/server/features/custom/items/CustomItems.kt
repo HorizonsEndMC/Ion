@@ -698,7 +698,7 @@ object CustomItems {
 	) {})
 	val LOADED_ASSAULT_SHELL = register(object : ShellItem(
 			identifier = "ASSAULT_SHELL",
-			material = WARPED_FUNGUS_ON_A_STICK,
+			material = IRON_INGOT,
 			customModelData = 698,
 			displayName = text("Assault Shell").decoration(ITALIC, false)
 	) {})
