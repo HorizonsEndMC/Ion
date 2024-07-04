@@ -272,7 +272,7 @@ data class StarshipTypeBalancing(
 		cruiseSpeedMultiplier = 0.895,
 		weapons = StarshipWeapons(
 			assaultTurret = StarshipWeapons.StarshipWeapon(
-				canFire = false,
+				canFire = true,
 				range = 500.0,
 				speed = 130.0,
 				areaShieldDamageMultiplier = 1.0,
@@ -294,7 +294,31 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				maxBlockCount = 12500,
 				minBlockCount = 6500
-					)
+					),
+			heavyTurret = StarshipWeapons.StarshipWeapon(
+				canFire = false,
+				range = 500.0,
+				speed = 200.0,
+				areaShieldDamageMultiplier = 1.0,
+				starshipShieldDamageMultiplier = 1.0,
+				particleThickness = 0.3,
+				explosionPower = 3.0f,
+				volume = 0,
+				pitch = 2.0f,
+				soundName = "horizonsend:starship.weapon.turbolaser.heavy.shoot",
+				powerUsage = 10000,
+				length = 0,
+				angleRadiansHorizontal = 0.0,
+				angleRadiansVertical = 0.0,
+				convergeDistance = 0.0,
+				extraDistance = 0,
+				fireCooldownMillis = 250,
+				boostChargeSeconds = 0,
+				applyCooldownToAll = true,
+				aimDistance = 0,
+				maxBlockCount = 20000,
+				minBlockCount = 16500
+					),
 				),
 			requiredMultiblocks = listOf(
 					RequiredSubsystemInfo(
@@ -325,7 +349,7 @@ data class StarshipTypeBalancing(
 			cruiseSpeedMultiplier = 0.89,
 			weapons = StarshipWeapons(
 				assaultTurret = StarshipWeapons.StarshipWeapon(
-					canFire = false,
+					canFire = true,
 					range = 500.0,
 					speed = 130.0,
 					areaShieldDamageMultiplier = 1.0,
@@ -347,7 +371,31 @@ data class StarshipTypeBalancing(
 					aimDistance = 0,
 					maxBlockCount = 12500,
 					minBlockCount = 6500
-				)
+				),
+				heavyTurret = StarshipWeapons.StarshipWeapon(
+					canFire = false,
+					range = 500.0,
+					speed = 200.0,
+					areaShieldDamageMultiplier = 1.0,
+					starshipShieldDamageMultiplier = 1.0,
+					particleThickness = 0.3,
+					explosionPower = 3.0f,
+					volume = 0,
+					pitch = 2.0f,
+					soundName = "horizonsend:starship.weapon.turbolaser.heavy.shoot",
+					powerUsage = 10000,
+					length = 0,
+					angleRadiansHorizontal = 0.0,
+					angleRadiansVertical = 0.0,
+					convergeDistance = 0.0,
+					extraDistance = 0,
+					fireCooldownMillis = 250,
+					boostChargeSeconds = 0,
+					applyCooldownToAll = true,
+					aimDistance = 0,
+					maxBlockCount = 20000,
+					minBlockCount = 16500
+				),
 			),
 			requiredMultiblocks = listOf(
 					RequiredSubsystemInfo(
