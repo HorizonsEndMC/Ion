@@ -100,12 +100,12 @@ sealed class AssaultTurretMultiblock : TurretMultiblock() {
 	}
 }
 
-object TopAssaultTurretMultiblock : HeavyTurretMultiblock() {
+object TopAssaultTurretMultiblock : AssaultTurretMultiblock() {
 	override fun getSign(): Int = 1
 	override fun getPilotOffset(): Vec3i = Vec3i(+0, +3, +1)
 }
 
-object BottomAssaultTurretMultiblock : HeavyTurretMultiblock() {
+object BottomAssaultTurretMultiblock : AssaultTurretMultiblock() {
 	override fun getSign(): Int = -1
 	override fun getPilotOffset(): Vec3i = Vec3i(+0, -4, +1)
 }
