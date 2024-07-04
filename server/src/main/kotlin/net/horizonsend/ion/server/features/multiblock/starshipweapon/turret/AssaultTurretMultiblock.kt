@@ -20,7 +20,7 @@ sealed class AssaultTurretMultiblock : TurretMultiblock() {
 	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.assaultTurret
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
-			listOf(Vec3i(0, getSign() * 4, +2))
+			listOf(Vec3i(0, getSign() * 4, +3))
 
 	override fun MultiblockShape.buildStructure() {
 		z(-2) {
@@ -56,11 +56,11 @@ sealed class AssaultTurretMultiblock : TurretMultiblock() {
 				x(+1).sponge()
 			}
 			y(getSign() * 3) {
-				x(-2).ironBlock()
+				x(-2).terracottaOrDoubleslab()
 				x(-1).carbyne()
 				x(+0).terracottaOrDoubleslab()
 				x(+1).carbyne()
-				x(+2).ironBlock()
+				x(+2).terracottaOrDoubleslab()
 			}
 			y(getSign() * 4) {
 				x(-2).type(IRON_TRAPDOOR)

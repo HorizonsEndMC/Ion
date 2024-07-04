@@ -38,7 +38,7 @@ object HeavyFrigateReactorMultiblock : Multiblock() {
 				x(+1).anyStairs()
 			}
 		}
-		z(-1) {
+		z(+1) {
 			y(+0) {
 				x(-1).redstoneBlock()
 				x(+0).anyGlass()
@@ -55,7 +55,7 @@ object HeavyFrigateReactorMultiblock : Multiblock() {
 				x(+1).titaniumBlock()
 			}
 		}
-		z(-2) {
+		z(+2) {
 			y(+0) {
 				x(-1).anyStairs()
 				x(+0).ironBlock()
