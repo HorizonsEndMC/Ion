@@ -489,7 +489,7 @@ object HudIcons : IonServerComponent() {
      * Removes prefixes of entity names to make them more user-friendly.
      * @param name the name to sanitize
      */
-    private fun sanitizePrefixes(name: String): String {
+    fun sanitizePrefixes(name: String): String {
         return if (name.contains(PLANET_PREFIX)) name.removePrefix(PLANET_PREFIX)
         else if (name.contains(STAR_PREFIX)) name.removePrefix(STAR_PREFIX)
         else if (name.contains(BEACON_PREFIX)) name.removePrefix(BEACON_PREFIX)
