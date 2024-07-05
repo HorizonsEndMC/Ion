@@ -81,7 +81,7 @@ object DiscordPlayerCommand : DiscordCommand("player", "Commands relating to pla
 
 		val time: Long = System.currentTimeMillis() - slPlayer.lastSeen.time
 		val prefix: String = when {
-			PLUGIN.getProxy().getPlayer(slPlayer._id.uuid) != null -> "Online"
+			PLUGIN.server.getPlayer(slPlayer._id.uuid).isPresent -> "Online"
 			else -> "Offline"
 		}
 		val onlineField = MessageEmbed.Field(

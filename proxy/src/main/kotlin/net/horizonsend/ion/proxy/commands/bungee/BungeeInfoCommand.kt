@@ -3,74 +3,28 @@ package net.horizonsend.ion.proxy.commands.bungee
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.ClickEvent
-import net.md_5.bungee.api.chat.ClickEvent.Action
-import net.md_5.bungee.api.chat.ComponentBuilder
-import net.md_5.bungee.api.connection.ProxiedPlayer
+import com.velocitypowered.api.proxy.Player
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent.openUrl
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.TextColor.fromHexString
+import net.kyori.adventure.text.format.TextDecoration.UNDERLINED
 
 @CommandAlias("info|map|wiki|patreon|rules")
 class BungeeInfoCommand : BaseCommand() {
 	@Default
 	@Suppress("Unused")
-	fun onInfoCommand(sender: ProxiedPlayer) {
-		sender.sendMessage(
-			*ComponentBuilder()
-				.append(
-					ComponentBuilder("Here are a few links of potential use:\n")
-						.color(ChatColor.of("#8888ff"))
-						.create()
-				)
-				.append(
-					ComponentBuilder("Survival Web Map\n")
-						.event(ClickEvent(Action.OPEN_URL, "https://survival.horizonsend.net"))
-						.color(ChatColor.WHITE)
-						.underlined(true)
-						.create()
-				)
-				.append(
-					ComponentBuilder("Creative Web Map\n")
-						.event(ClickEvent(Action.OPEN_URL, "https://creative.horizonsend.net"))
-						.color(ChatColor.WHITE)
-						.underlined(true)
-						.create()
-				)
-				.append(
-					ComponentBuilder("Discord Server\n")
-						.event(ClickEvent(Action.OPEN_URL, "https://discord.gg/RPvgQsGzKM"))
-						.color(ChatColor.WHITE)
-						.underlined(true)
-						.create()
-				)
-				.append(
-					ComponentBuilder("Resource Pack\n")
-						.event(ClickEvent(Action.OPEN_URL, "https://github.com/HorizonsEndMC/ResourcePack/releases/latest"))
-						.color(ChatColor.WHITE)
-						.underlined(true)
-						.create()
-				)
-				.append(
-					ComponentBuilder("Wiki\n")
-						.event(ClickEvent(Action.OPEN_URL, "https://wiki.horizonsend.net"))
-						.color(ChatColor.WHITE)
-						.underlined(true)
-						.create()
-				)
-				.append(
-					ComponentBuilder("Patreon\n")
-						.event(ClickEvent(Action.OPEN_URL, "https://www.patreon.com/horizonsendmc"))
-						.color(ChatColor.WHITE)
-						.underlined(true)
-						.create()
-				)
-				.append(
-					ComponentBuilder("Server Rules")
-						.event(ClickEvent(Action.OPEN_URL, "https://wiki.horizonsend.net/rules"))
-						.color(ChatColor.WHITE)
-						.underlined(true)
-						.create()
-				)
-				.create()
-		)
+	fun onInfoCommand(sender: Player) {
+		val text = text()
+			.append(text("Here are a few links of potential use:\n", fromHexString("#8888ff")))
+			.append(text("Survival Web Map\n", WHITE, UNDERLINED).clickEvent(openUrl("https://survival.horizonsend.net")))
+			.append(text("Creative Web Map\n", WHITE, UNDERLINED).clickEvent(openUrl("https://creative.horizonsend.net")))
+			.append(text("Discord Server\n", WHITE, UNDERLINED).clickEvent(openUrl("https://discord.gg/RPvgQsGzKM")))
+			.append(text("Resource Pack\n", WHITE, UNDERLINED).clickEvent(openUrl("https://github.com/HorizonsEndMC/ResourcePack/releases/latest")))
+			.append(text("Wiki\n", WHITE, UNDERLINED).clickEvent(openUrl("https://wiki.horizonsend.net")))
+			.append(text("Patreon\n", WHITE, UNDERLINED).clickEvent(openUrl("https://www.patreon.com/horizonsendmc")))
+			.append(text("Server Rules\n", WHITE, UNDERLINED).clickEvent(openUrl("Server Rules")))
+
+		sender.sendMessage(text.build())
 	}
 }

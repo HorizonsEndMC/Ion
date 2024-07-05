@@ -1,44 +1,59 @@
 package net.horizonsend.ion.proxy.features
 
+import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyPingEvent
+import com.velocitypowered.api.network.ProtocolVersion
 import com.velocitypowered.api.proxy.server.ServerPing
+import com.velocitypowered.api.proxy.server.ServerPing.SamplePlayer
 import com.velocitypowered.api.util.Favicon
 import net.horizonsend.ion.proxy.IonProxyComponent
 import net.horizonsend.ion.proxy.PLUGIN
-import net.md_5.bungee.api.chat.TextComponent
-import net.md_5.bungee.event.EventHandler
-import net.md_5.bungee.event.EventPriority
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import java.net.URL
+import java.util.EnumSet
 import javax.imageio.ImageIO
 
-/**
- * @see com.comphenix.protocol.utility.MinecraftProtocolVersion
- **/
 object ServerPresence : IonProxyComponent() {
-	private const val primaryVersion = 765
-	private const val primaryVersionName = "1.20.4"
-	private val allowedVersions = intArrayOf(759, 760, 761, 762, 763, 764, 765, 765)
+	private val primaryVersion = ProtocolVersion.MINECRAFT_1_20_3
+	private val supportedProtocol = EnumSet.of(
+		ProtocolVersion.MINECRAFT_1_19,
+		ProtocolVersion.MINECRAFT_1_19_1,
+		ProtocolVersion.MINECRAFT_1_19_3,
+		ProtocolVersion.MINECRAFT_1_19_4,
+		ProtocolVersion.MINECRAFT_1_20,
+		ProtocolVersion.MINECRAFT_1_20_2,
+		ProtocolVersion.MINECRAFT_1_20_3,
+		ProtocolVersion.MINECRAFT_1_20_5,
+		ProtocolVersion.MINECRAFT_1_21,
+	)
 
-	private val messages =
-		URL("https://raw.githubusercontent.com/HorizonsEndMC/MOTDs/main/MOTD")
-			.readText()
-			.split('\n')
-			.filterNot { it.isEmpty() }
+	private val messages = URL("https://raw.githubusercontent.com/HorizonsEndMC/MOTDs/main/MOTD")
+		.readText()
+		.split('\n')
+		.filterNot { it.isEmpty() }
 
 	private val icon = Favicon.create(ImageIO.read(URL("https://github.com/HorizonsEndMC/ResourcePack/raw/main/pack.png")))
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	fun onProxyPingEvent(event: ProxyPingEvent) = event.response.run {
-		val clientVersion = event.connection.version
-		version = ServerPing.Protocol(primaryVersionName, if (allowedVersions.contains(clientVersion)) clientVersion else primaryVersion)
-		players = ServerPing.Players(
-			PLUGIN.proxy.onlineCount + 1,
-			PLUGIN.proxy.onlineCount,
-			PLUGIN.proxy.players.map { ServerPing.PlayerInfo(it.name, it.uniqueId) }.toTypedArray()
+	@Subscribe
+	fun onProxyPingEvent(event: ProxyPingEvent) {
+		val response = event.ping.asBuilder()
+		val clientVersion = event.connection.protocolVersion
+
+		if (clientVersion.isSupported) {
+			response.version(ServerPing.Version(clientVersion.protocol, clientVersion.name))
+		} else {
+			response.version(ServerPing.Version(primaryVersion.protocol, primaryVersion.name))
+		}
+
+		response.description(LegacyComponentSerializer.legacyAmpersand().deserialize("${PLUGIN.configuration.motdFirstLine}\n${messages.random()}"))
+		response.favicon(icon)
+
+		response.onlinePlayers(PLUGIN.proxy.onlineCount)
+		response.maximumPlayers(PLUGIN.proxy.onlineCount + 1)
+		response.samplePlayers(
+			*PLUGIN.proxy.players.map { SamplePlayer(it.name, it.uniqueId) }.take(10).toTypedArray()
 		)
-		descriptionComponent = TextComponent(
-			*TextComponent.fromLegacyText("${PLUGIN.configuration.motdFirstLine}\n${messages.random()}")
-		)
-		setFavicon(icon)
+
+		event.ping = response.build()
 	}
 }

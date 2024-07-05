@@ -5,21 +5,22 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
+import com.velocitypowered.api.proxy.Player
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.proxy.PLUGIN
 import net.horizonsend.ion.proxy.features.cache.PlayerCache
 import net.horizonsend.ion.proxy.sendRichMessage
 import net.horizonsend.ion.proxy.utils.slPlayerId
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
-import net.md_5.bungee.api.ProxyServer
-import net.md_5.bungee.api.connection.ProxiedPlayer
+import kotlin.jvm.optionals.getOrNull
 
 private val conversation = mutableMapOf<SLPlayerId, SLPlayerId>()
 
 @CommandAlias("msg|message|tell")
 @CommandPermission("ion.message")
-class MessageCommand : BaseCommand() {
+object MessageCommand : BaseCommand() {
 	private val format = { sender: String, receiver: String, msg: String ->
 		"<#7f7fff>[<#b8e0d4>$sender <#7f7fff>-> <#b8e0d4>$receiver<#7f7fff>] <white>$msg"
 	}
@@ -27,28 +28,37 @@ class MessageCommand : BaseCommand() {
 	@Default
 	@CommandCompletion("@players")
 	@Suppress("unused")
-	fun command(player: ProxiedPlayer, target: String, message: String) {
+	fun command(player: Player, target: String, message: String) {
 		val wrapped = WrappedPlayer(player)
 
-		val targetPlayer = ProxyServer.getInstance().getPlayer(target) ?: return wrapped.userError("Target not found!")
-		val cached = PlayerCache.getIfOnline(targetPlayer.uniqueId)
+		val targetPlayer = PLUGIN.server.getPlayer(target).getOrNull() ?: return wrapped.userError("Target not found!")
 
-		if (cached == null) {
-			wrapped.userError("Target not found!")
+		sendMessage(
+			WrappedPlayer(player),
+			WrappedPlayer(targetPlayer),
+			message
+		)
+	}
+
+	fun sendMessage(sender: WrappedPlayer, recipient: WrappedPlayer, message: String) {
+		val cachedRecipient = PlayerCache.getIfOnline(recipient.uniqueId)
+
+		if (cachedRecipient == null) {
+			sender.userError("Target not found!")
 			return
 		}
 
-		val formatted = message.replace("${targetPlayer.name} ", "")
+		val formatted = message.replace("${recipient.name} ", "")
 
-		player.sendRichMessage(format.invoke("me", targetPlayer.name, formatted))
+		sender.sendRichMessage(format.invoke("me", recipient.name, formatted))
 
 		// Let the sender see that the message has been sent, but don't send it to the recipient, or set the convo
-		if (cached.blockedPlayerIDs.contains(player.slPlayerId)) return
+		if (cachedRecipient.blockedPlayerIDs.contains(sender.slPlayerId)) return
 
-		targetPlayer.sendRichMessage(format.invoke(player.name, "me", formatted))
+		recipient.sendRichMessage(format.invoke(sender.name, "me", formatted))
 
-		conversation[player.slPlayerId] = targetPlayer.slPlayerId
-		conversation[targetPlayer.slPlayerId] = player.slPlayerId
+		conversation[sender.slPlayerId] = recipient.slPlayerId
+		conversation[recipient.slPlayerId] = sender.slPlayerId
 	}
 }
 
@@ -57,20 +67,21 @@ class MessageCommand : BaseCommand() {
 class ReplyCommand : BaseCommand() {
 	@Default
 	@Suppress("unused")
-	fun command(sender: ProxiedPlayer, message: String) {
+	fun command(sender: Player, message: String) {
 		val wrapped = WrappedPlayer(sender)
 
 		val id = conversation[sender.slPlayerId]?.uuid ?: return wrapped.userError("Theres no one to reply to.")
 
-		val target = ProxyServer.getInstance().getPlayer(id) ?: run {
+		val target = PLUGIN.server.getPlayer(id).getOrNull() ?: run {
 			wrapped.userError("The person you were talking to is no longer online!")
 
 			return
 		}
 
-		ProxyServer.getInstance().pluginManager.dispatchCommand(
-			sender,
-			"msg ${target.name} $message"
+		MessageCommand.sendMessage(
+			WrappedPlayer(sender),
+			WrappedPlayer(target),
+			message
 		)
 	}
 }

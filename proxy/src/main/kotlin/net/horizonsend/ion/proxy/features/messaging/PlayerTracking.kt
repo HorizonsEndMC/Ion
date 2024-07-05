@@ -1,39 +1,32 @@
 package net.horizonsend.ion.proxy.features.messaging
 
-import net.md_5.bungee.api.event.ServerConnectEvent.Reason.PLUGIN as PLUGIN_CONNECTION
+import com.velocitypowered.api.event.PostOrder
+import com.velocitypowered.api.event.Subscribe
+import com.velocitypowered.api.event.connection.DisconnectEvent
+import com.velocitypowered.api.event.player.ServerConnectedEvent
+import com.velocitypowered.api.proxy.server.ServerInfo
 import net.horizonsend.ion.proxy.IonProxyComponent
 import net.horizonsend.ion.proxy.features.ConnectionMessages
-import net.md_5.bungee.api.config.ServerInfo
-import net.md_5.bungee.api.event.PlayerDisconnectEvent
-import net.md_5.bungee.api.event.ServerConnectEvent
-import net.md_5.bungee.api.event.ServerConnectEvent.Reason.COMMAND
-import net.md_5.bungee.api.event.ServerConnectEvent.Reason.JOIN_PROXY
-import net.md_5.bungee.api.event.ServerConnectEvent.Reason.PLUGIN_MESSAGE
-import net.md_5.bungee.event.EventHandler
-import net.md_5.bungee.event.EventPriority
-import java.util.EnumSet
 import java.util.UUID
 
 object PlayerTracking : IonProxyComponent() {
 	val playerServerMap = mutableMapOf<UUID, ServerInfo>()
-	val normalConnections = EnumSet.of(JOIN_PROXY, PLUGIN_CONNECTION, PLUGIN_MESSAGE, COMMAND)
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	fun onServerConnectEvent(event: ServerConnectEvent) {
-		if (event.isCancelled) return
-		val alreadyConnected = playerServerMap[event.player.uniqueId]
+	@Subscribe(order = PostOrder.LAST)
+	fun onServerConnectEvent(event: ServerConnectedEvent) {
+		playerServerMap[event.player.uniqueId] = event.server.serverInfo
 
-		playerServerMap[event.player.uniqueId] = event.target
+		val previousServer = event.previousServer
 
-		if (alreadyConnected == null) {
-			ConnectionMessages.onLogin(event.player, event.target)
+		if (previousServer.isEmpty) {
+			ConnectionMessages.onLogin(event.player, event.server.serverInfo)
 		} else {
-			ConnectionMessages.onSwitchServer(event.player, event.target)
+			ConnectionMessages.onSwitchServer(event.player, event.server.serverInfo)
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	fun onServerDisconnectEvent(event: PlayerDisconnectEvent) {
+	@Subscribe(order = PostOrder.LAST)
+	fun onServerDisconnectEvent(event: DisconnectEvent) {
 		val serverInfo = playerServerMap.remove(event.player.uniqueId) ?: return
 
 		ConnectionMessages.onPlayerDisconnect(event.player, serverInfo)
