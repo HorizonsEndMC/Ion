@@ -110,23 +110,25 @@ class SlashCommandManager(private val jda: JDA, private val configuration: Disco
 		executor.execute(event)
 	}
 
-	override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) = PLUGIN.proxy.scheduler.async {
-		val executor = getCommand(event)
+	override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent): Unit {
+		PLUGIN.proxy.scheduler.async {
+			val executor = getCommand(event)
 
-		if (executor == null) {
-			log.error("NO EXECUTOR FOR COMPLETION! ${event.fullCommandName}")
+			if (executor == null) {
+				log.error("NO EXECUTOR FOR COMPLETION! ${event.fullCommandName}")
 
-			event.replyChoiceStrings().queue()
-			return@async
+				event.replyChoiceStrings().queue()
+				return@async
+			}
+
+			val focusedField = event.focusedOption.name
+
+			val commandField = executor.getField(focusedField)
+
+			val results = commandField.getAutoCompletion(this, event.focusedOption.value) ?: listOf()
+
+			event.replyChoiceStrings(results).queue()
 		}
-
-		val focusedField = event.focusedOption.name
-
-		val commandField = executor.getField(focusedField)
-
-		val results = commandField.getAutoCompletion(this, event.focusedOption.value) ?: listOf()
-
-		event.replyChoiceStrings(results).queue()
 	}
 
 	fun getCommand(payload: CommandInteractionPayload): ExecutableCommand? {

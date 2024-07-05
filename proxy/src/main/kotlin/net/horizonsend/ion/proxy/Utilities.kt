@@ -9,16 +9,11 @@ import net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo
 import net.dv8tion.jda.api.entities.MessageEmbed.Provider
 import net.dv8tion.jda.api.entities.MessageEmbed.Thumbnail
 import net.dv8tion.jda.api.entities.MessageEmbed.VideoInfo
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
-import net.md_5.bungee.api.CommandSender
+import net.horizonsend.ion.common.utils.text.miniMessage
+import net.kyori.adventure.audience.Audience
 import java.time.OffsetDateTime
 
-fun CommandSender.sendRichMessage(s: String) = sendMessage(
-	*BungeeComponentSerializer.get().serialize(
-		MiniMessage.miniMessage().deserialize(s)
-	)
-)
+fun Audience.sendRichMessage(s: String) = sendMessage(s.miniMessage())
 
 /**
  * Utility function for creating JDA MessageEmbed's without specifying null a bunch of time.

@@ -1,6 +1,7 @@
 plugins {
 	id("com.github.johnrengelman.shadow")
 
+	kotlin("kapt")
 	kotlin("plugin.serialization")
 	kotlin("jvm")
 }
@@ -19,6 +20,8 @@ dependencies {
 
 	// Platform
 	compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
+	kapt("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
+
 	compileOnly("net.luckperms:api:5.4")
 
 	// Included Dependencies

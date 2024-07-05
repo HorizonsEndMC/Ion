@@ -6,7 +6,6 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.proxy.PLUGIN
-import net.md_5.bungee.api.plugin.Listener
 
 object Caches : IonComponent() {
 	private val caches: List<Cache> = listOf(
@@ -19,6 +18,6 @@ object Caches : IonComponent() {
 	override fun onEnable() = caches.forEach {
 		it.load()
 
-		if (it is Listener) PLUGIN.proxy.pluginManager.registerListener(PLUGIN, it)
+		if (it is Listener) PLUGIN.server.eventManager.register(PLUGIN, it)
 	}
 }

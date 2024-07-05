@@ -1,28 +1,25 @@
 package net.horizonsend.ion.proxy.wrappers
 
+import com.velocitypowered.api.scheduler.Scheduler
 import net.horizonsend.ion.proxy.IonProxy
-import net.md_5.bungee.api.scheduler.TaskScheduler
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 
-class WrappedScheduler(private val proxy: IonProxy, private val inner: TaskScheduler) {
-	fun delay(delay: Long, timeUnit: TimeUnit, block: () -> Unit) = inner.schedule(proxy, block, delay, timeUnit)
+class WrappedScheduler(private val proxy: IonProxy, private val inner: Scheduler) {
+	fun delay(delay: Long, timeUnit: TimeUnit, block: () -> Unit) = inner
+		.buildTask(proxy, block)
+		.delay(delay, timeUnit)
+		.schedule()
 
-	fun repeat(delay: Long, repeat: Long, timeUnit: TimeUnit, block: () -> Unit) {
-		inner.schedule(proxy, block, delay, repeat, timeUnit)
-	}
+	fun repeat(delay: Long, repeat: Long, timeUnit: TimeUnit, block: () -> Unit) = inner
+		.buildTask(proxy, block)
+		.delay(delay, timeUnit)
+		.repeat(repeat, timeUnit)
+		.schedule()
 
-	fun repeat(delay: Long, repeat: Long, timeUnit: TimeUnit, runnable: Runnable) {
-		inner.schedule(proxy, runnable, delay, repeat, timeUnit)
-	}
-
-	fun async(runnable: Runnable) {
-		inner.runAsync(proxy, runnable)
-	}
-
-	fun async(block: () -> Unit) {
-		inner.runAsync(proxy, block)
-	}
+	fun async(block: () -> Unit) = inner
+		.buildTask(proxy, block)
+		.schedule()
 
 	companion object {
 		fun namedThreadFactory(prefix: String) = object : ThreadFactory {

@@ -40,8 +40,8 @@ object Discord : IonProxyComponent() {
 	private var JDA: JDA? = null
 	var commandManager: SlashCommandManager? = null; private set
 
-	override fun onEnable() = PLUGIN.proxy.scheduler.async {
-		try {
+	override fun onEnable() {
+		PLUGIN.proxy.scheduler.async { try {
 			val jda = JDABuilder.createLight(configuration.token)
 				.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
@@ -71,7 +71,7 @@ object Discord : IonProxyComponent() {
 			log.error("Failed to start JDA! $e")
 
 			e.printStackTrace()
-		}
+		}}
 	}
 
 	private val channelMap: MutableMap<Long, TextChannel?> = mutableMapOf()

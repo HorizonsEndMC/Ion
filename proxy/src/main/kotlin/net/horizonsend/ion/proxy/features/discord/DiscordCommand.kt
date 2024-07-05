@@ -20,6 +20,7 @@ import org.slf4j.Logger
 import java.util.UUID
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.jvm.optionals.getOrNull
 
 abstract class DiscordCommand(
 	val name: String,
@@ -101,7 +102,7 @@ abstract class DiscordCommand(
 		?: fail { "Settlement $name not found" }
 
 	protected fun getPlayerName(id: SLPlayerId): String {
-		return PLUGIN.getProxy().getPlayer(id.uuid)?.name ?: SLPlayer.getName(id) ?: error("No such player $id")
+		return PLUGIN.server.getPlayer(id.uuid).getOrNull()?.username ?: SLPlayer.getName(id) ?: error("No such player $id")
 	}
 
 	/**

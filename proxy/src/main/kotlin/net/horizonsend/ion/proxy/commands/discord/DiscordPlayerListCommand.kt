@@ -10,7 +10,7 @@ import net.horizonsend.ion.proxy.features.discord.SlashCommandManager
 import net.horizonsend.ion.proxy.messageEmbed
 
 object DiscordPlayerListCommand : DiscordCommand("playerlist", "List all players") {
-	val proxy: ProxyServer = PLUGIN.getProxy()
+	val proxy: ProxyServer = PLUGIN.server
 
 	override fun setup(commandManager: SlashCommandManager) {
 		registerDefaultReceiver(defaultReceiver)
@@ -20,20 +20,20 @@ object DiscordPlayerListCommand : DiscordCommand("playerlist", "List all players
 		override fun execute(event: SlashCommandInteractionEvent) = asyncDiscordCommand(event) {
 			event.replyEmbeds(messageEmbed(
 				title = "Horizon's End Players",
-				fields = proxy.serversCopy.values
-					.filter { it.players.isNotEmpty() }
+				fields = proxy.allServers
+					.filter { it.playersConnected.isNotEmpty() }
 					.map { server ->
-						val serverName = server.name.replaceFirstChar { it.uppercase() }
+						val serverName = server.serverInfo.name.replaceFirstChar { it.uppercase() }
 
 						MessageEmbed.Field(
-							"$serverName *(${server.players.size} online)*",
-							server.players.joinToString("\n", "", "") {
-								it.name.replace("_", "\\_") },
+							"$serverName *(${server.playersConnected.size} online)*",
+							server.playersConnected.joinToString("\n", "", "") {
+								it.username.replace("_", "\\_") },
 							true
 						)
 					}
 					.ifEmpty { null },
-				description = if (proxy.onlineCount == 0) "*No players online*" else "${proxy.onlineCount} total players."
+				description = if (proxy.playerCount == 0) "*No players online*" else "${proxy.playerCount} total players."
 			)).setEphemeral(true).queue()
 		}
 	}

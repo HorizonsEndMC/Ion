@@ -11,7 +11,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.lega
 import net.luckperms.api.model.user.User
 import java.util.UUID
 
-class WrappedPlayer(private val inner: Player) : CommonPlayer, ForwardingAudience.Single{
+class WrappedPlayer(private val inner: Player) : CommonPlayer, ForwardingAudience.Single {
 	override fun audience(): Audience = inner
 
 	override val name: String get() = inner.username

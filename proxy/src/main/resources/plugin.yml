@@ -1,5 +1,0 @@
-main: net.horizonsend.ion.proxy.IonProxy
-
-version: unspecified
-
-name: Ion
