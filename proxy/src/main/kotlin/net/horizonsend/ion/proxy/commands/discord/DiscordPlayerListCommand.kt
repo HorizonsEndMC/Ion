@@ -7,7 +7,7 @@ import net.horizonsend.ion.proxy.PLUGIN
 import net.horizonsend.ion.proxy.features.discord.DiscordCommand
 import net.horizonsend.ion.proxy.features.discord.DiscordSubcommand
 import net.horizonsend.ion.proxy.features.discord.SlashCommandManager
-import net.horizonsend.ion.proxy.messageEmbed
+import net.horizonsend.ion.proxy.utils.messageEmbed
 
 object DiscordPlayerListCommand : DiscordCommand("playerlist", "List all players") {
 	val proxy: ProxyServer = PLUGIN.server

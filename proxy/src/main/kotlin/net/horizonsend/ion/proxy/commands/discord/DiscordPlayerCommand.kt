@@ -1,4 +1,5 @@
 package net.horizonsend.ion.proxy.commands.discord
+
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
@@ -17,7 +18,7 @@ import net.horizonsend.ion.proxy.features.discord.DiscordCommand
 import net.horizonsend.ion.proxy.features.discord.DiscordSubcommand.Companion.subcommand
 import net.horizonsend.ion.proxy.features.discord.ExecutableCommand
 import net.horizonsend.ion.proxy.features.discord.SlashCommandManager
-import net.horizonsend.ion.proxy.messageEmbed
+import net.horizonsend.ion.proxy.utils.messageEmbed
 
 @CommandAlias("playerinfo")
 @Description("Get information about a player.")

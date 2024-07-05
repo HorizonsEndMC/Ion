@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.managers
+package net.horizonsend.ion.proxy.features
 
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.utils.text.bracketed
@@ -55,7 +55,7 @@ object ReminderManager : IonComponent() {
 	private const val INTERVAL = 10L * 60L
 
 	override fun onEnable() {
-		PLUGIN.proxy.scheduler.repeat(INTERVAL, INTERVAL, TimeUnit.SECONDS, ::sendBroadcast)
+		PLUGIN.proxy.scheduler.repeat(INTERVAL, INTERVAL, TimeUnit.SECONDS, ReminderManager::sendBroadcast)
 	}
 
 	private var index = 0

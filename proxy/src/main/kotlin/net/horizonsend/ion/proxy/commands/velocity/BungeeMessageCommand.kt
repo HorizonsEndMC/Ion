@@ -1,6 +1,5 @@
-package net.horizonsend.ion.proxy.commands.bungee
+package net.horizonsend.ion.proxy.commands.velocity
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -10,8 +9,9 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.proxy.PLUGIN
+import net.horizonsend.ion.proxy.commands.ProxyCommand
 import net.horizonsend.ion.proxy.features.cache.PlayerCache
-import net.horizonsend.ion.proxy.sendRichMessage
+import net.horizonsend.ion.proxy.utils.sendRichMessage
 import net.horizonsend.ion.proxy.utils.slPlayerId
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import kotlin.jvm.optionals.getOrNull
@@ -20,7 +20,7 @@ private val conversation = mutableMapOf<SLPlayerId, SLPlayerId>()
 
 @CommandAlias("msg|message|tell")
 @CommandPermission("ion.message")
-object MessageCommand : BaseCommand() {
+object MessageCommand : ProxyCommand() {
 	private val format = { sender: String, receiver: String, msg: String ->
 		"<#7f7fff>[<#b8e0d4>$sender <#7f7fff>-> <#b8e0d4>$receiver<#7f7fff>] <white>$msg"
 	}
@@ -28,7 +28,7 @@ object MessageCommand : BaseCommand() {
 	@Default
 	@CommandCompletion("@players")
 	@Suppress("unused")
-	fun command(player: Player, target: String, message: String) {
+	fun onMessage(player: Player, target: String, message: String) {
 		val wrapped = WrappedPlayer(player)
 
 		val targetPlayer = PLUGIN.server.getPlayer(target).getOrNull() ?: return wrapped.userError("Target not found!")
@@ -64,7 +64,7 @@ object MessageCommand : BaseCommand() {
 
 @CommandAlias("r|reply")
 @CommandPermission("ion.message.reply")
-class ReplyCommand : BaseCommand() {
+object ReplyCommand : ProxyCommand() {
 	@Default
 	@Suppress("unused")
 	fun command(sender: Player, message: String) {

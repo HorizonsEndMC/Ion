@@ -12,7 +12,7 @@ import net.horizonsend.ion.proxy.features.discord.DiscordCommand
 import net.horizonsend.ion.proxy.features.discord.DiscordSubcommand.Companion.subcommand
 import net.horizonsend.ion.proxy.features.discord.ExecutableCommand
 import net.horizonsend.ion.proxy.features.discord.SlashCommandManager
-import net.horizonsend.ion.proxy.messageEmbed
+import net.horizonsend.ion.proxy.utils.messageEmbed
 import org.litote.kmongo.eq
 import java.util.Date
 

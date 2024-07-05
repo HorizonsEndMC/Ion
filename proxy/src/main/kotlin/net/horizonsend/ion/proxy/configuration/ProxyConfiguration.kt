@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy
+package net.horizonsend.ion.proxy.configuration
 
 import kotlinx.serialization.Serializable
 
