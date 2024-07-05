@@ -349,6 +349,7 @@ class MultiblockShape {
 
 		fun sponge() = anyType(Material.SPONGE, Material.WET_SPONGE)
 		fun endRod() = type(Material.END_ROD)
+		fun grindstone() = type(Material.GRINDSTONE)
 
 		fun hopper() = type(Material.HOPPER)
 

@@ -1177,6 +1177,31 @@ class StarshipWeapons(
 				minBlockCount = 18500
 		),
 
+		val cycleTurret: StarshipWeapon = StarshipWeapon(
+			canFire = true,
+			range = 350.0,
+			speed = 400.0,
+			areaShieldDamageMultiplier = 1.0,
+			starshipShieldDamageMultiplier = 1.0,
+			particleThickness = 0.25,
+			explosionPower = 1f,
+			volume = 0,
+			pitch = 1.0f,
+			soundName = "horizonsend:starship.weapon.turbolaser.light.shoot",
+			powerUsage = 100,
+			length = 0,
+			angleRadiansHorizontal = 0.0,
+			angleRadiansVertical = 0.0,
+			convergeDistance = 0.0,
+			extraDistance = 1,
+			fireCooldownMillis = 100,
+			aimDistance = 0,
+			inaccuracyRadians = 0.5,
+			maxPerShot = 10,
+			applyCooldownToAll = true,
+			minBlockCount = 0
+		),
+
 		val pointDefence: StarshipWeapon = StarshipWeapon(
 				range = 120.0,
 				speed = 150.0,
