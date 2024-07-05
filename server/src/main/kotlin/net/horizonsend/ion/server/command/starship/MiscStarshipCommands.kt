@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
+import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
@@ -183,7 +184,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val selectedPlanetData = HudIcons.selectorDataMap[sender.uniqueId]
 		if (selectedPlanetData != null) {
 			// player is looking at a planet in their HUD
-			onJump(sender, selectedPlanetData.name, null)
+			onJump(sender, HudIcons.sanitizePrefixes(selectedPlanetData.name).replace(' ', '_'), null)
 		} else {
 			sender.userError("Invalid destination. Type /jump while looking at a planet, or /jump <planet>, /jump <hyperspace gate> or /jump <x> <z>")
 		}
@@ -252,6 +253,14 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		} ?: IonServer.configuration.beacons.firstOrNull {
 			it.name.replace(" ", "_") == destination
 		}?.spaceLocation
+		?: BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
+			Pos(
+				it.worldName,
+				it.x,
+				it.y,
+				it.z
+			)
+		}
 
 		if (destinationPos == null) {
 			sender.userError("Unknown destination $destination.")
