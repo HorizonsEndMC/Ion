@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.managers
+package net.horizonsend.ion.proxy.features
 
 import java.util.UUID
 

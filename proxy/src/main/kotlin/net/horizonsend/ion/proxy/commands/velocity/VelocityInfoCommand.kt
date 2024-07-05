@@ -1,9 +1,9 @@
-package net.horizonsend.ion.proxy.commands.bungee
+package net.horizonsend.ion.proxy.commands.velocity
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import com.velocitypowered.api.proxy.Player
+import net.horizonsend.ion.proxy.commands.ProxyCommand
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent.openUrl
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
@@ -11,7 +11,7 @@ import net.kyori.adventure.text.format.TextColor.fromHexString
 import net.kyori.adventure.text.format.TextDecoration.UNDERLINED
 
 @CommandAlias("info|map|wiki|patreon|rules")
-class BungeeInfoCommand : BaseCommand() {
+object VelocityInfoCommand : ProxyCommand() {
 	@Default
 	@Suppress("Unused")
 	fun onInfoCommand(sender: Player) {
@@ -23,7 +23,7 @@ class BungeeInfoCommand : BaseCommand() {
 			.append(text("Resource Pack\n", WHITE, UNDERLINED).clickEvent(openUrl("https://github.com/HorizonsEndMC/ResourcePack/releases/latest")))
 			.append(text("Wiki\n", WHITE, UNDERLINED).clickEvent(openUrl("https://wiki.horizonsend.net")))
 			.append(text("Patreon\n", WHITE, UNDERLINED).clickEvent(openUrl("https://www.patreon.com/horizonsendmc")))
-			.append(text("Server Rules\n", WHITE, UNDERLINED).clickEvent(openUrl("Server Rules")))
+			.append(text("Server Rules", WHITE, UNDERLINED).clickEvent(openUrl("Server Rules")))
 
 		sender.sendMessage(text.build())
 	}

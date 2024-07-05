@@ -13,11 +13,12 @@ import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
-import net.horizonsend.ion.proxy.commands.bungee.BungeeInfoCommand
-import net.horizonsend.ion.proxy.commands.bungee.MessageCommand
-import net.horizonsend.ion.proxy.commands.bungee.ReplyCommand
+import net.horizonsend.ion.proxy.configuration.ProxyConfiguration
+import net.horizonsend.ion.proxy.registration.commands
+import net.horizonsend.ion.proxy.registration.components
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import net.horizonsend.ion.proxy.wrappers.WrappedProxy
+import java.io.File
 import java.nio.file.Path
 import java.util.logging.Logger
 
@@ -27,6 +28,8 @@ lateinit var PLUGIN: IonProxy private set
 @Plugin(
 	id = "ion",
 	name = "IonProxy",
+	url = "https://github.com/HorizonsEndMC/Ion",
+	description = "Proxy plugin for the Horizon's End server."
 )
 class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, @DataDirectory val dataDirectory: Path) {
 	private val startTime = System.currentTimeMillis()
@@ -36,7 +39,7 @@ class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, 
 	val configuration: ProxyConfiguration = Configuration.load(dataFolder, "proxy.json")
 	val discordConfiguration: DiscordConfiguration = Configuration.load(dataFolder, "discord.json")
 
-	val dataFolder get() = dataDirectory.toFile()
+	val dataFolder: File get() = dataDirectory.toFile()
 
 	val proxy = WrappedProxy(server)
 	lateinit var commandManager: VelocityCommandManager
@@ -63,10 +66,14 @@ class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, 
 			component.onEnable()
 		}
 
-		commandManager = VelocityCommandManager(this.server, this).apply {
-			registerCommand(BungeeInfoCommand())
-			registerCommand(MessageCommand)
-			registerCommand(ReplyCommand())
+		commandManager = VelocityCommandManager(this.server, this)
+
+		for (command in commands) {
+			command.onEnable(commandManager)
+		}
+
+		for (command in commands) {
+			commandManager.registerCommand(command, true)
 		}
 
 		DBManager.INITIALIZATION_COMPLETE = true
