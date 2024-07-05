@@ -788,7 +788,8 @@ data class AntiAirCannonBalancing(
 		override var soundName: String = "horizonsend:starship.weapon.turbolaser.tri.shoot",
 		override var maxDegrees: Double = 360.0,
 		override var displayEntityCustomModelData: Int? = null,
-		override var displayEntitySize: Double? = null
+		override var displayEntitySize: Double? = null,
+		override var delayMillis: Int? = null
 ) : StarshipWeapons.ProjectileBalancing
 
 @Serializable
@@ -1199,7 +1200,8 @@ class StarshipWeapons(
 			inaccuracyRadians = 0.5,
 			maxPerShot = 10,
 			applyCooldownToAll = true,
-			minBlockCount = 0
+			minBlockCount = 0,
+			delayMillis = 250
 		),
 
 		val pointDefence: StarshipWeapon = StarshipWeapon(
@@ -1468,7 +1470,9 @@ class StarshipWeapons(
 			override var inaccuracyRadians: Double = 2.0,
 			override var maxDegrees: Double = 0.0,
 			override var displayEntityCustomModelData: Int? = null,
-			override var displayEntitySize: Double? = null
+			override var displayEntitySize: Double? = null,
+
+			override var delayMillis: Int? = null
 	) : ProjectileBalancing, SubSystem
 
 	@Serializable
@@ -1488,6 +1492,8 @@ class StarshipWeapons(
 
 		var displayEntityCustomModelData: Int?
 		var displayEntitySize: Double?
+
+		var delayMillis: Int?
 	}
 
 	@Serializable
