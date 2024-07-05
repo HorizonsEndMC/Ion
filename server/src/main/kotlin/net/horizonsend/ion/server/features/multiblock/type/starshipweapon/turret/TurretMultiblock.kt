@@ -179,7 +179,9 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 			val z = z0 + sign.z
 			val block = world.getBlockAt(x, y, z)
 			val data = block.blockData
-			val newData = data.nms.rotate(nmsRotation).createCraftBlockData()
+			val newData = if (data.material != Material.BROWN_MUSHROOM_BLOCK) {
+				data.nms.rotate(nmsRotation).createCraftBlockData()
+			} else data.nms.createCraftBlockData()
 			val nx0 = (x0.toDouble() * cosFactor - z0.toDouble() * sinFactor).roundToInt()
 			val nz0 = (x0.toDouble() * sinFactor + z0.toDouble() * cosFactor).roundToInt()
 			val nx = nx0 + sign.x
@@ -240,7 +242,7 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 	}
 
 	/** gets the points relative to the sign pos */
-	private fun getAdjustedFirePoints(pos: Vec3i, face: BlockFace) = getFirePoints(face)
+	protected fun getAdjustedFirePoints(pos: Vec3i, face: BlockFace) = getFirePoints(face)
 		.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
 
 	open fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, isAuto: Boolean = true) {
