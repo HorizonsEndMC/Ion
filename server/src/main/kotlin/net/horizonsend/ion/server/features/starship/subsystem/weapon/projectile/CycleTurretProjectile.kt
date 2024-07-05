@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 class CycleTurretProjectile(
     ship: ActiveStarship?,
@@ -22,7 +23,7 @@ class CycleTurretProjectile(
     override val soundName: String,
     override val balancing: StarshipWeapons.ProjectileBalancing = ship?.balancing?.weapons?.cycleTurret ?: IonServer.starshipBalancing.nonStarshipFired.cycleTurret,
     shooter: Damager,
-    private val delayMillis: Long
+    private val shotIndex: Int,
 ) : LaserProjectile(ship, loc, dir, shooter) {
 
     override val volume: Int = (range / 16).toInt()
@@ -30,7 +31,7 @@ class CycleTurretProjectile(
     override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
         super.moveVisually(oldLocation, newLocation, travel)
 
-        if (System.nanoTime() - this.firedAtNanos > delayMillis) {
+        if (System.nanoTime() - this.firedAtNanos > shotIndex * TimeUnit.MILLISECONDS.toNanos(balancing.delayMillis!!.toLong())) {
             this.speed = balancing.speed
         }
     }

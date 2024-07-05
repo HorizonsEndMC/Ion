@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
-import java.util.concurrent.TimeUnit
 
 sealed class CycleTurretMultiblock : TurretMultiblock() {
 
@@ -161,7 +160,7 @@ sealed class CycleTurretMultiblock : TurretMultiblock() {
                 getSound(starship),
                 starship.balancing.weapons.cycleTurret, // Not used by anything
                 shooter,
-                TimeUnit.MILLISECONDS.toNanos(index * 250L)
+                index
             ).fire()
         }
     }
