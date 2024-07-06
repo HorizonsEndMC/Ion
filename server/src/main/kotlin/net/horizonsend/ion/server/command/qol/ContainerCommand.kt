@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.command.AnyItem
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.command.SLCommand
@@ -17,7 +16,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryHolder
-import org.bukkit.inventory.ItemStack
 
 @CommandAlias("container")
 @CommandPermission("ion.containercommand")
