@@ -125,6 +125,8 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.Bott
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomQuadTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomTriTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.DisintegratorBeamWeaponMultiblockBottom
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.DisintegratorBeamWeaponMultiblockTop
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopCycleTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopHeavyTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopIonTurretMultiblock
@@ -278,6 +280,8 @@ object Multiblocks : IonServerComponent() {
 			MiningLaserMultiblockTier4Side,
 			TopArsenalStarshipWeaponMultiblock,
 			BottomArsenalStarshipWeaponMultiblock,
+			DisintegratorBeamWeaponMultiblockTop,
+			DisintegratorBeamWeaponMultiblockBottom,
 
 			ItemSplitterMultiblock,
 			GasCollectorMultiblock,
