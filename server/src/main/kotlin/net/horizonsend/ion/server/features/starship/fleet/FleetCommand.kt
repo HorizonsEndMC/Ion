@@ -32,6 +32,7 @@ object FleetCommand : SLCommand() {
 
         if (!(isFleetCommand(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
+            return
         }
 
         fleet.userError("Your Fleet Commander has disbanded your fleet!")
