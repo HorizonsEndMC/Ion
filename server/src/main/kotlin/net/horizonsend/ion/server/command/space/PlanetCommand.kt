@@ -12,12 +12,19 @@ import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Orbits
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceMap
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
+import net.kyori.adventure.text.Component.newline
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -321,21 +328,23 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("info")
 	@CommandCompletion("@planets")
 	fun onInfo(sender: CommandSender, planet: CachedPlanet) {
-		sender.sendRichMessage(
-			"<dark_green>${planet.name}\n" +
-				"  <gray>Sun: <aqua>${planet.sun.name}\n" +
-				"  <gray>Space World: <aqua>${planet.spaceWorldName}\n" +
-				"  <gray>Planet World: <aqua>${planet.planetWorldName}\n" +
-				"  <gray>Rogue: <aqua>${planet.rogue}\n" +
-				"  <gray>Fixed location: <aqua>${planet.x}, ${planet.z}\n" +
-				"  <gray>Size: <aqua>${planet.size}\n" +
-				"  <gray>Atmosphere Density: <aqua>${planet.cloudDensity}\n" +
-				"  <gray>Atmosphere Radius: <aqua>${planet.atmosphereRadius}\n" +
-				"  <gray>Atmosphere Materials: <aqua>${planet.cloudMaterials}\n" +
-				"  <gray>Crust Radius: <aqua>${planet.crustRadius}\n" +
-				"  <gray>Crust Materials: <aqua>${planet.crustMaterials.map { it.material }.joinToString { it.toString() }}" +
-				"  <gray>Description: <click:copy_to_clipboard:${planet.description}><aqua>${planet.description}</click>"
-		)
+		sender.sendMessage(ofChildren(
+			text(planet.name, DARK_GREEN), newline(),
+			text("  Sun: ", GRAY), text(planet.sun.name, AQUA), newline(),
+			text("  Space World: ", GRAY), text(planet.spaceWorldName, AQUA), newline(),
+			text("  Planet World: ", GRAY), text(planet.planetWorldName, AQUA), newline(),
+			text("  Rogue: ", GRAY), text(planet.rogue, AQUA), newline(),
+			text("  Fixed location: ", GRAY), text("${planet.x}, ${planet.z}", AQUA), newline(),
+			text("  Size: ", GRAY), text(planet.size, AQUA), newline(),
+			text("  Atmosphere Density: ", GRAY), text(planet.cloudDensity, AQUA), newline(),
+			text("  Atmosphere Radius: ", GRAY), text(planet.atmosphereRadius, AQUA), newline(),
+			text("  Atmosphere Materials: ", GRAY), text(planet.cloudMaterials.map { it.material }.joinToString { it.toString() }, AQUA), newline(),
+			text("  Crust Radius: ", GRAY), text(planet.crustRadius, AQUA), newline(),
+			text("  Crust Materials: ", GRAY), text(planet.crustMaterials.map { it.material }.joinToString { it.toString() }, AQUA), newline(),
+			text("  Description: ", GRAY), text(planet.description, AQUA)
+				.hoverEvent(text(planet.description))
+				.clickEvent(ClickEvent.copyToClipboard(planet.description))
+		))
 	}
 
 	@Suppress("Unused")
