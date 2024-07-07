@@ -185,6 +185,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		if (selectedPlanetData != null) {
 			// player is looking at a planet in their HUD
 			onJump(sender, HudIcons.sanitizePrefixes(selectedPlanetData.name).replace(' ', '_'), null)
+		} else if (getStarshipPiloting(sender).beacon != null) {
+			onUseBeacon(sender)
 		} else {
 			sender.userError("Invalid destination. Type /jump while looking at a planet, or /jump <planet>, /jump <hyperspace gate> or /jump <x> <z>")
 		}
