@@ -1,15 +1,25 @@
 package net.horizonsend.ion.server.command.nations.admin
 
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.NationsBalancing
@@ -24,7 +34,9 @@ import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStatio
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.World
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.litote.kmongo.and
+import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 import org.litote.kmongo.ne
@@ -153,13 +165,94 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	@CommandPermission("nations.admin.movestation")
 	@Subcommand("spacestation set location")
 	@Suppress("unused")
-	fun onStationSetLocaiton(sender: CommandSender, station: CachedSpaceStation<*, *, *>, world: World, x: Int, z: Int) =
-		asyncCommand(sender) {
+	fun onStationSetLocaiton(sender: CommandSender, station: CachedSpaceStation<*, *, *>, world: World, x: Int, z: Int) = asyncCommand(sender) {
+		station.setLocation(x, z, world.name)
 
-			station.setLocation(x, z, world.name)
+		sender.success("Set position of ${station.name} to $x, $z")
+	}
 
-			sender.success("Set position of ${station.name} to $x, $z")
+	@CommandPermission("nations.admin.movestation")
+	@Subcommand("spacestation set owner")
+	@Suppress("unused")
+	fun onStationSetOwner(sender: CommandSender, station: CachedSpaceStation<*, *, *>, newOwner: String) = asyncCommand(sender) {
+		when (station.companion) {
+			is PlayerSpaceStation.Companion -> {
+				val player = resolveOfflinePlayer(name).slPlayerId
+				transferPersonal(station, player)
+			}
+
+			is SettlementSpaceStation.Companion -> {
+				val settlement = resolveSettlement(newOwner)
+				transferSettlement(station, settlement)
+			}
+
+			is NationSpaceStation.Companion -> {
+				val nation = resolveNation(newOwner)
+				transferNation(station, nation)
+			}
+
+			else -> throw NotImplementedError()
 		}
+
+		sender.success("Transferred ${station.ownershipType} station ${station.name} to ${station.ownershipType} $newOwner")
+	}
+
+	private fun transferPersonal(station: CachedSpaceStation<*, *, *>, newOwner: SLPlayerId) {
+		station.companion.col.deleteOneById(station.databaseId)
+
+		val id = PlayerSpaceStation.create(
+			newOwner,
+			station.name,
+			station.world,
+			station.x,
+			station.z,
+			station.radius,
+			SpaceStationCompanion.TrustLevel.MANUAL
+		)
+
+		PlayerSpaceStation.updateById(id, setValue(PlayerSpaceStation::trustedPlayers, station.trustedPlayers))
+		PlayerSpaceStation.updateById(id, setValue(PlayerSpaceStation::trustedSettlements, station.trustedSettlements))
+		PlayerSpaceStation.updateById(id, setValue(PlayerSpaceStation::trustedNations, station.trustedNations))
+		PlayerSpaceStation.updateById(id, setValue(PlayerSpaceStation::trustLevel, station.trustLevel))
+	}
+
+	private fun transferSettlement(station: CachedSpaceStation<*, *, *>, newOwner: Oid<Settlement>) {
+		station.companion.col.deleteOneById(station.databaseId)
+
+		val id = SettlementSpaceStation.create(
+			newOwner,
+			station.name,
+			station.world,
+			station.x,
+			station.z,
+			station.radius,
+			SpaceStationCompanion.TrustLevel.MANUAL
+		)
+
+		SettlementSpaceStation.updateById(id, setValue(SettlementSpaceStation::trustedPlayers, station.trustedPlayers))
+		SettlementSpaceStation.updateById(id, setValue(SettlementSpaceStation::trustedSettlements, station.trustedSettlements))
+		SettlementSpaceStation.updateById(id, setValue(SettlementSpaceStation::trustedNations, station.trustedNations))
+		SettlementSpaceStation.updateById(id, setValue(SettlementSpaceStation::trustLevel, station.trustLevel))
+	}
+
+	private fun transferNation(station: CachedSpaceStation<*, *, *>, newOwner: Oid<Nation>) {
+		station.companion.col.deleteOneById(station.databaseId)
+
+		val id = NationSpaceStation.create(
+			newOwner,
+			station.name,
+			station.world,
+			station.x,
+			station.z,
+			station.radius,
+			SpaceStationCompanion.TrustLevel.MANUAL
+		)
+
+		NationSpaceStation.updateById(id, setValue(NationSpaceStation::trustedPlayers, station.trustedPlayers))
+		NationSpaceStation.updateById(id, setValue(NationSpaceStation::trustedSettlements, station.trustedSettlements))
+		NationSpaceStation.updateById(id, setValue(NationSpaceStation::trustedNations, station.trustedNations))
+		NationSpaceStation.updateById(id, setValue(NationSpaceStation::trustLevel, station.trustLevel))
+	}
 
 	@CommandPermission("nations.admin.movestation")
 	@Subcommand("spacestation set radius")
@@ -204,9 +297,27 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 		sender msg "Deleted $deleted siege(s)"
 	}
 
-	@Subcommand("territoryimport")
+	@Subcommand("territory import")
 	@Suppress("unused")
 	fun onTerritoryImport(sender: CommandSender) {
 		TerritoryImporter.importOldTerritories(sender)
+	}
+
+	@Subcommand("territory setOwner")
+	@CommandCompletion("@nations")
+	fun onTerritoryOwn(sender: Player, newOwner: String, @Optional confirm: String?) {
+		val currentTerritory = requireTerritoryIn(sender)
+		val nation = resolveNation(newOwner)
+
+		failIf(currentTerritory.settlement != null) {
+			"This territory is claimed by a settlement!"
+		}
+
+		if (confirm != "confirm") {
+			val ownerName = currentTerritory.nation?.let { getNationName(it) }
+			sender.userError("You are about to change the owner of this territory from $ownerName to ${getNationName(nation)}. You must confirm.")
+		}
+
+		Territory.setNation(currentTerritory.id, nation)
 	}
 }
