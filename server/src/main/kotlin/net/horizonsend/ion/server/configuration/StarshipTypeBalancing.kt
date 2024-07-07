@@ -274,15 +274,15 @@ data class StarshipTypeBalancing(
 			assaultTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
 				range = 500.0,
-				speed = 130.0,
+				speed = 125.0,
 				areaShieldDamageMultiplier = 1.0,
-				starshipShieldDamageMultiplier = 1.5,
-				particleThickness = 0.45,
+				starshipShieldDamageMultiplier = 4.6,
+				particleThickness = 0.75,
 				explosionPower = 4.0f,
 				volume = 0,
 				pitch = 1.0f,
 				soundName = "horizonsend:starship.weapon.turbolaser.heavy.shoot",
-				powerUsage = 2000,
+				powerUsage = 2600,
 				length = 0,
 				angleRadiansHorizontal = 0.0,
 				angleRadiansVertical = 0.0,
@@ -293,7 +293,8 @@ data class StarshipTypeBalancing(
 				applyCooldownToAll = true,
 				aimDistance = 0,
 				maxBlockCount = 12500,
-				minBlockCount = 6500
+				minBlockCount = 6500,
+				maxPerShot = 3
 					),
 			heavyTurret = StarshipWeapons.StarshipWeapon(
 				canFire = false,
@@ -351,15 +352,15 @@ data class StarshipTypeBalancing(
 				assaultTurret = StarshipWeapons.StarshipWeapon(
 					canFire = true,
 					range = 500.0,
-					speed = 130.0,
+					speed = 125.0,
 					areaShieldDamageMultiplier = 1.0,
-					starshipShieldDamageMultiplier = 1.5,
-					particleThickness = 0.45,
+					starshipShieldDamageMultiplier = 4.6,
+					particleThickness = 0.75,
 					explosionPower = 4.0f,
 					volume = 0,
 					pitch = 1.0f,
 					soundName = "horizonsend:starship.weapon.turbolaser.heavy.shoot",
-					powerUsage = 2000,
+					powerUsage = 2500,
 					length = 0,
 					angleRadiansHorizontal = 0.0,
 					angleRadiansVertical = 0.0,
@@ -370,7 +371,8 @@ data class StarshipTypeBalancing(
 					applyCooldownToAll = true,
 					aimDistance = 0,
 					maxBlockCount = 12500,
-					minBlockCount = 6500
+					minBlockCount = 6500,
+					maxPerShot = 4
 				),
 				heavyTurret = StarshipWeapons.StarshipWeapon(
 					canFire = false,
@@ -1124,7 +1126,7 @@ class StarshipWeapons(
 				boostChargeSeconds = 3,
 				aimDistance = 0,
 				applyCooldownToAll = false,
-				maxBlockCount = 12000
+				maxBlockCount = 12500
 		),
 
 		val protonTorpedo: StarshipWeapon = StarshipWeapon(
