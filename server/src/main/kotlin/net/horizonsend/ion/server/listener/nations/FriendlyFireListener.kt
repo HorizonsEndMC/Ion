@@ -40,9 +40,9 @@ object FriendlyFireListener : SLEventListener() {
 
 			val zone = territory?.children?.firstOrNull { region ->
 				region is RegionSettlementZone && region.contains(location.blockX, location.blockY, location.blockZ)
-			} as? RegionSettlementZone ?: return
+			} as? RegionSettlementZone
 
-			if (zone.allowFriendlyFire == true) return
+			if (zone != null && zone.allowFriendlyFire == true) return
 
 			event.isCancelled = true
 		}
