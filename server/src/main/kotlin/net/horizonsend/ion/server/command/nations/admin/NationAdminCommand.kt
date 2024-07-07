@@ -177,7 +177,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	fun onStationSetOwner(sender: CommandSender, station: CachedSpaceStation<*, *, *>, newOwner: String) = asyncCommand(sender) {
 		when (station.companion) {
 			is PlayerSpaceStation.Companion -> {
-				val player = resolveOfflinePlayer(name).slPlayerId
+				val player = resolveOfflinePlayer(newOwner).slPlayerId
 				transferPersonal(station, player)
 			}
 
