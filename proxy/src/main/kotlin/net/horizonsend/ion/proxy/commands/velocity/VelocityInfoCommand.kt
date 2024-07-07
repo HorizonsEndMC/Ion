@@ -23,7 +23,7 @@ object VelocityInfoCommand : ProxyCommand() {
 			.append(text("Resource Pack\n", WHITE, UNDERLINED).clickEvent(openUrl("https://github.com/HorizonsEndMC/ResourcePack/releases/latest")))
 			.append(text("Wiki\n", WHITE, UNDERLINED).clickEvent(openUrl("https://wiki.horizonsend.net")))
 			.append(text("Patreon\n", WHITE, UNDERLINED).clickEvent(openUrl("https://www.patreon.com/horizonsendmc")))
-			.append(text("Server Rules", WHITE, UNDERLINED).clickEvent(openUrl("Server Rules")))
+			.append(text("Server Rules", WHITE, UNDERLINED).clickEvent(openUrl("https://wiki.horizonsend.net/en/Rules")))
 
 		sender.sendMessage(text.build())
 	}
