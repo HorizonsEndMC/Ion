@@ -146,6 +146,12 @@ object StarshipDealers : IonServerComponent() {
 				val x = blockVector3.x + dx
 				val y = blockVector3.y + dy
 				val z = blockVector3.z + dz
+
+				if (!world.worldBorder.isInside(Location(world, x.toDouble(), y.toDouble(), z.toDouble()))) {
+					obstructed = true
+					break
+				}
+
 				if (!world.getBlockAt(x, y, z).type.isAir) {
 					obstructed = true
 					break
