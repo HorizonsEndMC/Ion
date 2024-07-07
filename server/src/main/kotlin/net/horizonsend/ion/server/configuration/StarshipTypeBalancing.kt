@@ -1231,6 +1231,32 @@ class StarshipWeapons(
 			minBlockCount = 0
 		),
 
+		val doomsdayDevice: StarshipWeapon = StarshipWeapon(
+			canFire = true,
+			range = 500.0,
+			speed = 400.0,
+			areaShieldDamageMultiplier = 1.0,
+			starshipShieldDamageMultiplier = 20.0,
+			particleThickness = 5.0,
+			explosionPower = 20f,
+			volume = 0,
+			pitch = 1.0f,
+			soundName = "horizonsend:starship.weapon.turbolaser.light.shoot",
+			powerUsage = 100,
+			length = 7,
+			angleRadiansHorizontal = 70.0,
+			angleRadiansVertical = 70.0,
+			convergeDistance = 0.0,
+			extraDistance = 1,
+			fireCooldownMillis = 100,
+			aimDistance = 0,
+			inaccuracyRadians = 0.01,
+			boostChargeSeconds = 7,
+			maxPerShot = 10,
+			applyCooldownToAll = true,
+			minBlockCount = 0
+		),
+
 		val pointDefence: StarshipWeapon = StarshipWeapon(
 				range = 120.0,
 				speed = 150.0,

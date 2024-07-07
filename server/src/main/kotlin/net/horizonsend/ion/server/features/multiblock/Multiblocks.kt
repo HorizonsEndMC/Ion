@@ -109,6 +109,7 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.MiniP
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.AIHeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.BottomArsenalStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.DoomsdayDeviceWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.DownwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.HeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.HorizontalRocketStarshipWeaponMultiblock
@@ -282,6 +283,7 @@ object Multiblocks : IonServerComponent() {
 			BottomArsenalStarshipWeaponMultiblock,
 			DisintegratorBeamWeaponMultiblockTop,
 			DisintegratorBeamWeaponMultiblockBottom,
+			DoomsdayDeviceWeaponMultiblock,
 
 			ItemSplitterMultiblock,
 			GasCollectorMultiblock,
