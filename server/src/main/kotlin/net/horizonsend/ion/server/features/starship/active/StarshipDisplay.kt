@@ -38,7 +38,7 @@ object StarshipDisplay : IonServerComponent(true) {
 	}
 
 	private fun registerIcons() {
-		val icons = StarshipType.values().map { it.dynmapIcon }
+		val icons = StarshipType.entries.map { it.dynmapIcon }
 
 		for (iconName in icons) {
 			registerIcon(iconName)

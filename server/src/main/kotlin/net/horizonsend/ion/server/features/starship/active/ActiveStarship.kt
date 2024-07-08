@@ -9,7 +9,6 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.MessageFactory
-import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.randomString
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.StarshipBalancing
@@ -385,7 +384,7 @@ abstract class ActiveStarship (
 
 		is PlayerController -> (controller as PlayerController).player.name
 
-		is AIController -> "${controller.getPilotName().plainText().replace(' ', '_')}:$charIdentifier"
+		is AIController -> "${getDisplayNamePlain().replace(' ', '_')}:$charIdentifier"
 
 		is NoOpController -> "${getDisplayNamePlain()}:$charIdentifier"
 
