@@ -16,6 +16,7 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 class DoomsdayDeviceWeaponSubsystem(
     starship: ActiveStarship,
@@ -34,7 +35,7 @@ class DoomsdayDeviceWeaponSubsystem(
     override val angleRadiansHorizontal: Double = balancing.angleRadiansHorizontal
     override val angleRadiansVertical: Double = balancing.angleRadiansVertical
     override val powerUsage: Int = balancing.powerUsage
-    override val boostChargeNanos: Long = balancing.boostChargeSeconds
+    override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
 
     override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
         var tick = 0
@@ -50,8 +51,8 @@ class DoomsdayDeviceWeaponSubsystem(
                 balancing.particleThickness.toFloat()
             )
 
-            // min radius: 1; max radius: 4
-            newFirePos.toLocation(loc.world).spherePoints(((3.0 / WARM_UP_TIME_SECONDS.toDouble() * (tick / 5)) + 1), 20).forEach {
+            // min radius: 1; max radius: 6
+            newFirePos.toLocation(loc.world).spherePoints(((5.0 / WARM_UP_TIME_SECONDS.toDouble() * (tick / 5)) + 1), 20).forEach {
                 it.world.spawnParticle(
                     Particle.DUST_COLOR_TRANSITION,
                     it.x,
