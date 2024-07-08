@@ -147,6 +147,7 @@ abstract class ActiveStarship (
 	// used to identify the ship to auto turrets
 	val identifier get() = getAutoTurretIdentifier()
 
+	var isMoving: Boolean = false
 	var isTeleporting: Boolean = false
 
 	val initialBlockCount: Int = blocks.size
@@ -343,8 +344,8 @@ abstract class ActiveStarship (
 		passengers.clear()
 	}
 
-	val translationQueue: Queue<TranslateMovement> = LinkedList()
-	val rotationQueue: Queue<RotationMovement> = ArrayBlockingQueue(4)
+	val translationQueue: Queue<TranslateMovement> = ArrayBlockingQueue(20)
+	val rotationQueue: Queue<RotationMovement> = ArrayBlockingQueue(3)
 
 	abstract fun <T: StarshipMovement> moveAsync(movement: T, queue: Queue<T>): CompletableFuture<Boolean>
 

@@ -14,35 +14,60 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.ForkJoinPool
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadFactory
 
 object MovementScheduler : IonServerComponent(false) {
-	lateinit var thread: ExecutorService
-	var handlingMovements: Boolean = false
+	private lateinit var dispatcherThread: ExecutorService
+	private lateinit var movementWorker: ExecutorService
+	private var handlingMovements: Boolean = false
 
 	override fun onEnable() {
-		thread = ForkJoinPool(64)
-		thread.execute(::handleMovements)
+		movementWorker = Executors.newCachedThreadPool(
+			object : ThreadFactory {
+				private var counter: Int = 0
+
+				override fun newThread(r: Runnable): Thread {
+					return Thread(r, "ion-ship-movement-worker-${counter++}")
+				}
+			}
+		)
+
+		dispatcherThread = Executors.newSingleThreadScheduledExecutor()
+		dispatcherThread.execute(::handleMovements)
 
 		handlingMovements = true
 	}
 
 	override fun onDisable() {
-		if (::thread.isInitialized) {
-			thread.shutdownNow()
-		}
 		handlingMovements = false
+
+		if (::movementWorker.isInitialized) {
+			movementWorker.shutdownNow()
+		}
+
+		if (::dispatcherThread.isInitialized) {
+			movementWorker.shutdownNow()
+		}
 	}
 
 	private fun completeMovement(starship: ActiveStarship, movement: StarshipMovement) {
+		movement.future.complete(true)
+		starship.isMoving = false
+
 		starship.controller.onMove(movement)
 		starship.subsystems.forEach { runCatching { it.onMovement(movement) } }
 	}
 
 	@Synchronized
-	private fun executeMovement(starship: ActiveControlledStarship, movement: StarshipMovement): Boolean {
+	private fun executeMovement(starship: ActiveControlledStarship, movement: StarshipMovement) = movementWorker.execute {
+		// Double check
+		if (starship.isMoving) return@execute
+
 		try {
+			starship.isMoving = true
 			movement.execute()
+
 			completeMovement(starship, movement)
 		} catch (e: StarshipMovementException) {
 			val location = if (e is StarshipBlockedException) e.location else null
@@ -51,7 +76,9 @@ object MovementScheduler : IonServerComponent(false) {
 
 			starship.sneakMovements = 0
 			starship.lastBlockedTime = System.currentTimeMillis()
-			return false
+
+			starship.isMoving = false
+			movement.future.complete(false)
 		} catch (e: Throwable) {
 			starship.serverError("There was an unhandled exception during movement! Please forward this to staff")
 			val stackTrace = "$e\n" + e.stackTrace.joinToString(separator = "\n")
@@ -70,15 +97,16 @@ object MovementScheduler : IonServerComponent(false) {
 			IonServer.slF4JLogger.error(e.message)
 			e.printStackTrace()
 
-			return false
+			starship.isMoving = false
+			movement.future.complete(false)
 		}
-
-		return true
 	}
 
 	private fun handleMovements() {
 		while (handlingMovements) runCatching {
 			for (starship in ActiveStarships.allControlledStarships()) runCatching shipLoop@{
+				if (starship.isMoving) return@shipLoop
+
 				val rotationQueue = starship.rotationQueue
 				val translateQueue = starship.translationQueue
 
@@ -86,13 +114,13 @@ object MovementScheduler : IonServerComponent(false) {
 				if (rotationQueue.isNotEmpty()) {
 					val movement = rotationQueue.poll() ?: return@shipLoop // Just in case
 
-					movement.future.complete(executeMovement(starship, movement))
+					executeMovement(starship, movement)
 
 					return@shipLoop
 				}
 
 				val translation = translateQueue.poll() ?: return@shipLoop
-				translation.future.complete(executeMovement(starship, translation))
+				executeMovement(starship, translation)
 			}
 		}
 	}
