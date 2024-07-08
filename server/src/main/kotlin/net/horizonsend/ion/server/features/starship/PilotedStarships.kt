@@ -16,6 +16,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -472,7 +473,7 @@ object PilotedStarships : IonServerComponent() {
 		return true
 	}
 
-	fun tryRelease(starship: ActiveControlledStarship): Boolean {
+	fun tryRelease(starship: ActiveControlledStarship, bypassCombatTag: Boolean = false): Boolean {
 		val controller = starship.controller
 
 		if (!StarshipUnpilotEvent(starship, controller).callEvent()) return false
@@ -482,13 +483,13 @@ object PilotedStarships : IonServerComponent() {
 		}
 
 		// Keep pilot for info even after unpilot
-		val playerPilot = starship.playerPilot
+		val oldController = starship.controller
 
 		unpilot(starship)
 
 		// Combat tag check
-		if (checkDamagers(starship) || checkSurroundingPlayers(starship)) {
-			playerPilot?.alert("Your starship is in combat! It will be unpiloted instead!")
+		if (!bypassCombatTag && IonServer.configuration.serverName == "Survival" && (checkDamagers(starship) || checkSurroundingPlayers(starship))) {
+			oldController.alert("Your starship is in combat! It will be unpiloted instead!")
 
 			return false
 		}
