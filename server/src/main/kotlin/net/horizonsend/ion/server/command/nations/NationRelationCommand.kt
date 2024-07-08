@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
@@ -130,12 +131,17 @@ internal object NationRelationCommand : SLCommand() {
 		) {
 			val relation = relations[it]
 			val other = relation.other
+
 			val otherName = getNationName(other)
+			val otherNameFormatted = text((otherName), YELLOW)
+				.hoverEvent(text("/nation info $otherName"))
+				.clickEvent(ClickEvent.runCommand("/nation info $otherName"))
+
 			val otherWish = NationRelation.getRelationWish(other, nation)
 
 			val relationText = bracketed(template(text("Your wish: {0}, their wish: {1}", GRAY), relation.wish.component, otherWish.component))
 
-			ofChildren(text(otherName, YELLOW), text(": ", DARK_GRAY), relation.actual.component, text(" "), relationText)
+			ofChildren(otherNameFormatted, text(": ", DARK_GRAY), relation.actual.component, text(" "), relationText)
 		}
 
 		sender.sendMessage(body)
