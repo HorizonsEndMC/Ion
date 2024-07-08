@@ -35,19 +35,19 @@ sealed class DisintegratorBeamWeaponMultiblock : Multiblock(), SubsystemMultiblo
         y(getYFactor() * 3) {
             z(-2) {
                 x(-1).redstoneBlock()
-                x(+0).glassPane()
+                x(+0).anyGlassPane()
                 x(+1).redstoneBlock()
             }
 
             z(-1) {
-                x(-1).glassPane()
+                x(-1).anyGlassPane()
                 x(+0).enrichedUraniumBlock()
-                x(+1).glassPane()
+                x(+1).anyGlassPane()
             }
 
             z(+0) {
                 x(-1).redstoneBlock()
-                x(+0).glassPane()
+                x(+0).anyGlassPane()
                 x(+1).redstoneBlock()
             }
         }

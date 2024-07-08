@@ -25,7 +25,7 @@ class DisintegratorBeamProjectile(
 ) : LaserProjectile(starship, loc, dir, shooter) {
 
     companion object {
-        private const val RESET_STACK_TIME_MILLIS = 5000L
+        private const val RESET_STACK_TIME_MILLIS = 4000L
     }
 
     override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.disintegratorBeam ?: IonServer.starshipBalancing.nonStarshipFired.disintegratorBeam
@@ -43,14 +43,12 @@ class DisintegratorBeamProjectile(
         super.onImpactStarship(starship, impactLocation)
 
         val currentTime = System.nanoTime()
-        if (currentTime - subsystem.lastImpact > TimeUnit.MILLISECONDS.toNanos(RESET_STACK_TIME_MILLIS) ) {
+        // notify weapon subsystem to increment stacks
+        if (currentTime - subsystem.lastImpact > TimeUnit.MILLISECONDS.toNanos(RESET_STACK_TIME_MILLIS)) {
             subsystem.beamStacks = 1
         } else {
             subsystem.beamStacks += 1
         }
-
-        CrystalLaser(subsystem.getFirePos().toLocation(starship.world), impactLocation, 5, -1)
-            .durationInTicks().apply { start(IonServer) }
 
         subsystem.lastImpact = currentTime
     }
@@ -89,5 +87,14 @@ class DisintegratorBeamProjectile(
             null,
             true
         )
+
+        CrystalLaser(subsystem.getFirePos().toLocation(newLoc.world), newLoc, 5, -1)
+            .durationInTicks().apply { start(IonServer) }
+
+        val currentTime = System.nanoTime()
+        // do not build stacks if hitting non-starship objects
+        if (currentTime - subsystem.lastImpact > TimeUnit.MILLISECONDS.toNanos(RESET_STACK_TIME_MILLIS)) {
+            subsystem.beamStacks = 1
+        }
     }
 }

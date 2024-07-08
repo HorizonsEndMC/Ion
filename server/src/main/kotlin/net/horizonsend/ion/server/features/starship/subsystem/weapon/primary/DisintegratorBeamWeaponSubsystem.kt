@@ -33,6 +33,7 @@ class DisintegratorBeamWeaponSubsystem(
 
     // amount of "stacks" that the weapon has; more stacks = more damage
     var lastImpact: Long = System.nanoTime()
+    // beam stacks always between MIN_STACKS and MAX_STACKS
     var beamStacks: Int = 1
         set(value) { field = value.coerceIn(MIN_STACKS, MAX_STACKS) }
 
@@ -71,6 +72,9 @@ class DisintegratorBeamWeaponSubsystem(
         DisintegratorBeamProjectile(starship, loc, dir, range, starship.controller.damager, this, damageCalculation()).fire()
     }
 
+    override fun getMaxPerShot(): Int = balancing.maxPerShot
+
+    // increase damage based on current stacks
     private fun damageCalculation(): Double {
         return when (beamStacks) {
             in 1 .. 5 -> 0.5
