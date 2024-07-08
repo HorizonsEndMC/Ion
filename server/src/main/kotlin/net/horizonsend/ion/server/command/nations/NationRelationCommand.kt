@@ -108,7 +108,7 @@ internal object NationRelationCommand : SLCommand() {
 		if (nationName.length < 3 && nationName.all { it.isDigit() }) {
 			val nation = requireNationIn(sender)
 
-			handleRelations(sender, nation, page)
+			handleRelations(sender, nation, nationName.toInt())
 			return@asyncCommand
 		}
 
