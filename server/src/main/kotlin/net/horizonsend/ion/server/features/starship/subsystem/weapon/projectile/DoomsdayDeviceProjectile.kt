@@ -10,6 +10,8 @@ import org.bukkit.Color
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.block.Block
+import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
@@ -43,7 +45,7 @@ class DoomsdayDeviceProjectile(
             balancing.particleThickness.toFloat()
         )
 
-        Location(loc.world, x, y, z).spherePoints(2.0, 20).forEach {
+        Location(loc.world, x, y, z).spherePoints(3.0, 20).forEach {
             it.world.spawnParticle(
                 Particle.DUST_COLOR_TRANSITION,
                 it.x,
@@ -60,7 +62,7 @@ class DoomsdayDeviceProjectile(
         }
 
         Tasks.syncDelay(5) {
-            Location(loc.world, x, y, z).spherePoints(1.0, 5).forEach {
+            Location(loc.world, x, y, z).spherePoints(1.5, 5).forEach {
                 it.world.spawnParticle(
                     Particle.DUST_COLOR_TRANSITION,
                     it.x,
@@ -86,7 +88,7 @@ class DoomsdayDeviceProjectile(
         if (!predictedNewLoc.isChunkLoaded) {
             return
         }
-        val result: RayTraceResult? = loc.world.rayTrace(loc, dir, delta * speed, FluidCollisionMode.NEVER, true, 0.3) { it.type != EntityType.ITEM_DISPLAY }
+        val result: RayTraceResult? = loc.world.rayTrace(loc, dir, delta * speed, FluidCollisionMode.NEVER, true, 0.5) { it.type != EntityType.ITEM_DISPLAY }
         val newLoc = result?.hitPosition?.toLocation(loc.world) ?: predictedNewLoc
         val travel = loc.distance(newLoc)
 
@@ -113,5 +115,51 @@ class DoomsdayDeviceProjectile(
         lastTick = System.nanoTime()
         reschedule()
 
+    }
+
+    override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
+        super.impact(newLoc, block, entity)
+
+        newLoc.world.spawnParticle(
+            Particle.LAVA,
+            newLoc.x,
+            newLoc.y,
+            newLoc.z,
+            300,
+            3.0,
+            3.0,
+            3.0,
+            0.0,
+            null,
+            true
+        )
+
+        newLoc.world.spawnParticle(
+            Particle.WHITE_ASH,
+            newLoc.x,
+            newLoc.y,
+            newLoc.z,
+            350,
+            5.0,
+            5.0,
+            5.0,
+            0.0,
+            null,
+            true
+        )
+
+        newLoc.world.spawnParticle(
+            Particle.ASH,
+            newLoc.x,
+            newLoc.y,
+            newLoc.z,
+            300,
+            5.0,
+            5.0,
+            5.0,
+            0.0,
+            null,
+            true
+        )
     }
 }
