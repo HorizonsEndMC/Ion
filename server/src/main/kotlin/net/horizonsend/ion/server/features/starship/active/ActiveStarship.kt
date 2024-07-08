@@ -94,10 +94,13 @@ abstract class ActiveStarship (
 		set(value) {
 			ActiveStarships.updateWorld(this, field, value)
 
-			translationQueue.forEach { it.cancelMovement() }
-			translationQueue.clear()
-			rotationQueue.forEach { it.cancelMovement() }
-			rotationQueue.clear()
+			if (field != value) {
+				translationQueue.forEach { it.cancelMovement() }
+				translationQueue.clear()
+
+				rotationQueue.forEach { it.cancelMovement() }
+				rotationQueue.clear()
+			}
 
 			field = value
 		}
@@ -345,7 +348,7 @@ abstract class ActiveStarship (
 	}
 
 	val translationQueue: Queue<TranslateMovement> = ArrayBlockingQueue(20)
-	val rotationQueue: Queue<RotationMovement> = ArrayBlockingQueue(3)
+	val rotationQueue: Queue<RotationMovement> = ArrayBlockingQueue(4)
 
 	abstract fun <T: StarshipMovement> moveAsync(movement: T, queue: Queue<T>): CompletableFuture<Boolean>
 

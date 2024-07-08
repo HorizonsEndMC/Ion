@@ -101,11 +101,17 @@ class ActiveControlledStarship(
 		scheduleRotation()
 	}
 
+	private var scheduledRotations: Int = 0
+
 	private fun scheduleRotation() {
+		if (scheduledRotations >= 3) return
+
 		val rotationTimeTicks = TimeUnit.NANOSECONDS.toMillis(rotationTime) / 50L
 		Tasks.sync {
 			(controller as? ActivePlayerController)?.player?.setCooldown(StarshipControl.CONTROLLER_TYPE, rotationTimeTicks.toInt())
 		}
+
+		scheduledRotations++
 		Tasks.syncDelay(rotationTimeTicks) {
 			if (pendingRotations.none()) {
 				return@syncDelay
@@ -118,6 +124,7 @@ class ActiveControlledStarship(
 			}
 
 			moveAsync(RotationMovement(this, rotation.clockwise), rotationQueue)
+			scheduledRotations--
 		}
 	}
 

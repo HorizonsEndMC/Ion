@@ -51,9 +51,11 @@ object MovementScheduler : IonServerComponent(false) {
 		}
 	}
 
-	private fun completeMovement(starship: ActiveStarship, movement: StarshipMovement) {
-		movement.future.complete(true)
+	private fun completeMovement(starship: ActiveStarship, movement: StarshipMovement, success: Boolean) {
+		movement.future.complete(success)
 		starship.isMoving = false
+
+		if (!success) return
 
 		starship.controller.onMove(movement)
 		starship.subsystems.forEach { runCatching { it.onMovement(movement) } }
@@ -61,14 +63,12 @@ object MovementScheduler : IonServerComponent(false) {
 
 	@Synchronized
 	private fun executeMovement(starship: ActiveControlledStarship, movement: StarshipMovement) = movementWorker.execute {
-		// Double check
-		if (starship.isMoving) return@execute
-
 		try {
 			starship.isMoving = true
+
 			movement.execute()
 
-			completeMovement(starship, movement)
+			completeMovement(starship, movement, true)
 		} catch (e: StarshipMovementException) {
 			val location = if (e is StarshipBlockedException) e.location else null
 			starship.controller.onBlocked(movement, e, location)
@@ -77,8 +77,7 @@ object MovementScheduler : IonServerComponent(false) {
 			starship.sneakMovements = 0
 			starship.lastBlockedTime = System.currentTimeMillis()
 
-			starship.isMoving = false
-			movement.future.complete(false)
+			completeMovement(starship, movement, false)
 		} catch (e: Throwable) {
 			starship.serverError("There was an unhandled exception during movement! Please forward this to staff")
 			val stackTrace = "$e\n" + e.stackTrace.joinToString(separator = "\n")
@@ -97,8 +96,7 @@ object MovementScheduler : IonServerComponent(false) {
 			IonServer.slF4JLogger.error(e.message)
 			e.printStackTrace()
 
-			starship.isMoving = false
-			movement.future.complete(false)
+			completeMovement(starship, movement, false)
 		}
 	}
 
@@ -111,10 +109,9 @@ object MovementScheduler : IonServerComponent(false) {
 				val translateQueue = starship.translationQueue
 
 				// Prioritize rotations
-				if (rotationQueue.isNotEmpty()) {
-					val movement = rotationQueue.poll() ?: return@shipLoop // Just in case
-
-					executeMovement(starship, movement)
+				val rotation = rotationQueue.poll()
+				if (rotation != null) {
+					executeMovement(starship, rotation)
 
 					return@shipLoop
 				}
