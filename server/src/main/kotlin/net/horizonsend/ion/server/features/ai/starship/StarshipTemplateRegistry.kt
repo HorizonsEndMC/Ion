@@ -377,7 +377,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val TENETA = registerTemplate(StarshipTemplate(
 		schematicName = "Teneta",
 		type = AI_STARFIGHTER,
-		miniMessageName = "<PRIVATEER_LIGHT_TEAL>Teneta",
+		miniMessageName = "<$PRIVATEER_LIGHT_TEAL>Teneta",
 	))
 
 	val FURIOUS = registerTemplate(StarshipTemplate(
