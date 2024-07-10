@@ -59,6 +59,7 @@ import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
+import net.horizonsend.ion.server.command.space.SpaceGenCommand
 import net.horizonsend.ion.server.command.space.StarCommand
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
@@ -77,7 +78,6 @@ import net.horizonsend.ion.server.features.sidebar.command.SidebarCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarStarshipsCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarWaypointsCommand
-import net.horizonsend.ion.server.features.space.generation.SpaceGenCommand
 import net.horizonsend.ion.server.features.starship.fleet.FleetCommand
 import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 

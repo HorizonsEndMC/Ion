@@ -14,8 +14,8 @@ import net.horizonsend.ion.server.features.custom.items.misc.ShellItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownPumpkinGrenade
-import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrowableCustomItem
-import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownCustomItem
+import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownDetonator
+import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownSmokeGrenade
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
