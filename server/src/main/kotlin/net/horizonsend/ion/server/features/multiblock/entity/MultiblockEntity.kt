@@ -51,6 +51,9 @@ abstract class MultiblockEntity(
 
 	val locationKey = toBlockKey(x, y, z)
 
+	/** Logic to be run upon the removal of this entity */
+	open fun handleRemoval() {}
+
 	/**
 	 * Stores any additional data for this multiblock (e.g. power, owner, etc)
 	 **/
