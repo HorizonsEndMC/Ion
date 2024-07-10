@@ -1,13 +1,9 @@
-package net.horizonsend.ion.server.features.multiblock.entity.type
+package net.horizonsend.ion.server.features.multiblock.entity.type.power
 
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -24,7 +20,6 @@ interface PoweredMultiblockEntity {
 
 		powerUnsafe = correctedPower
 
-		//TODO better solution
 		updatePowerVisually()
 	}
 
@@ -80,15 +75,7 @@ interface PoweredMultiblockEntity {
 		store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, powerUnsafe)
 	}
 
-	fun updatePowerVisually() {
-		//TODO replace this
-		require(this is MultiblockEntity)
-		Tasks.sync {
-			val sign = getSign() ?: throw NullPointerException("Tried to update visual on a multiblock without an intact sign : ${world.name} ${toVec3i(position)}")
-			sign.front().line(2, formatPower())
-			sign.update()
-		}
-	}
+	fun updatePowerVisually()
 
 	fun formatPower(): Component = ofChildren(prefixComponent, text(powerUnsafe, GREEN))
 }

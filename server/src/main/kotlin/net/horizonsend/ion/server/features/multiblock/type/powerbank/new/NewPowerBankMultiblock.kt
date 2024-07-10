@@ -1,10 +1,11 @@
 package net.horizonsend.ion.server.features.multiblock.type.powerbank.new
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.SignMultiblock
@@ -102,14 +103,19 @@ abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>
 		signDirection: BlockFace,
 		override val maxPower: Int,
 		override var powerUnsafe: Int = 0
-	) : MultiblockEntity(multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity {
+	) : MultiblockEntity(multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
+		override val powerDisplay: TextDisplayHandler = createTextDisplayHandler()
+
+		override fun handleRemoval() {
+			powerDisplay.remove()
+		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
 		}
 
 		override fun toString(): String {
-			return "POWER BANK TIER: $multiblock! ${world.name} $x $y $z Power: ${getPower()}!!!"
+			return "POWER BANK TIER: $multiblock! Power: ${getPower()}, Facing: $facing"
 		}
 	}
 }
