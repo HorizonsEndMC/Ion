@@ -30,6 +30,7 @@ class TextDisplayHandler(
 	var x: Double,
 	var y: Double,
 	var z: Double,
+	val scale: Float,
 	var facing: BlockFace
 ) {
 	private val shownPlayers = mutableListOf<UUID>()
@@ -47,8 +48,8 @@ class TextDisplayHandler(
 
 			transformation = Transformation(
 				Vector3f(0f),
-				ClientDisplayEntities.rotateToFaceVector2d(facing.direction.toVector3f()),
-				Vector3f(1.0f),
+				ClientDisplayEntities.rotateToFaceVector2d(this@TextDisplayHandler.facing.direction.toVector3f()),
+				Vector3f(scale),
 				Quaternionf()
 			)
 		}.getNMSData(x, y, z)
