@@ -60,17 +60,17 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 	private val averages = mutableListOf<TransferredPower>()
 
 	override suspend fun onCompleteChain(final: BranchHead<*>, destination: PowerInputNode, transferred: Int) {
-		addAverage(TransferredPower(transferred, System.currentTimeMillis()))
+		addTransferred(TransferredPower(transferred, System.currentTimeMillis()))
 
 		val avg = runCatching { calculateAverage().roundToHundredth() }.getOrDefault(0.0)
 		displayHandler.setText(text(avg, GREEN))
 	}
 
-	private fun addAverage(average: TransferredPower) {
+	private fun addTransferred(transferredSnapshot: TransferredPower) {
 		val currentSize = averages.size
 
 		if (currentSize < STORED_AVERAGES) {
-			averages.add(average)
+			averages.add(transferredSnapshot)
 			return
 		}
 
@@ -79,7 +79,7 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 			averages[index + 1] = averages[index]
 		}
 
-		averages[0] = average
+		averages[0] = transferredSnapshot
 	}
 
 	private fun calculateAverage(): Double {
@@ -107,6 +107,7 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 			x,
 			y,
 			z,
+			1.0f,
 			direction
 		)
 	}
