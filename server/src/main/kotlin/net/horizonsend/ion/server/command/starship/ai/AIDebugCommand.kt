@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
+import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.ai.spawning.spawner.StandardFactionSpawner
 import net.kyori.adventure.text.Component.text
 import org.bukkit.command.CommandSender
@@ -31,11 +32,11 @@ object AIDebugCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandContexts.registerContext(AISpawner::class.java) { context ->
 			val arg = context.popFirstArg()
-			AISpawningManager.spawners.firstOrNull { it.identifier == arg } ?: throw InvalidCommandArgument("No such spawner: $arg")
+			AISpawners.getAllSpawners().firstOrNull { it.identifier == arg } ?: throw InvalidCommandArgument("No such spawner: $arg")
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("aiSpawners") { _ ->
-			AISpawningManager.spawners.map { it.identifier }
+			AISpawners.getAllSpawners().map { it.identifier }
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("controllerFactories") { _ ->
@@ -92,7 +93,7 @@ object AIDebugCommand : SLCommand() {
 	fun onQuery(sender: CommandSender) {
 		sender.sendMessage(lineBreakWithCenterText(text("AI Spawners", HEColorScheme.HE_LIGHT_ORANGE)))
 
-		for (spawner in AISpawningManager.spawners) {
+		for (spawner in AISpawners.getAllSpawners()) {
 			val line = template(
 				message = text("{0}: {1} points, {2} threshold", HEColorScheme.HE_MEDIUM_GRAY),
 				paramColor = HEColorScheme.HE_LIGHT_GRAY,
@@ -125,18 +126,18 @@ object AIDebugCommand : SLCommand() {
 	@Serializable
 	data class WeaponSetsCollection(val sets: MutableSet<AIStarshipTemplate.WeaponSet> = mutableSetOf())
 
-	@Subcommand("spawn")
-	@Suppress("unused")
-	@CommandCompletion("@aiSpawners @spawnerTemplates")
-	fun spawn(sender: Player, spawner: AISpawner, identifier: String) {
-		require(spawner is StandardFactionSpawner)
-
-		val templates = spawner.worlds.flatMapTo(mutableSetOf()) { world -> world.templates.map { it.template } }
-		val template = templates.first { it.identifier == identifier }
-
-		@Suppress("DeferredResultUnused")
-		spawner.spawnAIStarship(log, template, sender.location, spawner.createController(template, text("Player Created AI Ship")))
-
-		sender.success("Spawned ship")
-	}
+//	@Subcommand("spawn")
+//	@Suppress("unused")
+//	@CommandCompletion("@aiSpawners @spawnerTemplates")
+//	fun spawn(sender: Player, spawner: AISpawner, identifier: String) {
+//		require(spawner is StandardFactionSpawner)
+//
+//		val templates = spawner.worlds.flatMapTo(mutableSetOf()) { world -> world.templates.map { it.template } }
+//		val template = templates.first { it.identifier == identifier }
+//
+//		@Suppress("DeferredResultUnused")
+//		spawner.spawnAIStarship(log, template, sender.location, spawner.createController(template, text("Player Created AI Ship")))
+//
+//		sender.success("Spawned ship")
+//	}
 }

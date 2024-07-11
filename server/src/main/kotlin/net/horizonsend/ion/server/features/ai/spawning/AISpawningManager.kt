@@ -10,7 +10,7 @@ import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
-import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
+import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -42,11 +42,6 @@ object AISpawningManager : IonServerComponent(true) {
 		}
 	}
 
-	/**
-	 * For variety, the spawners are defined in the code, but they get their ship configuration and spawn rates, etc. from configuration files.
-	 **/
-	val spawners = mutableListOf<AISpawner>()
-
 	// The templates, matched to their identifiers
 	val templates: MutableMap<String, AIStarshipTemplate> = mutableMapOf()
 
@@ -58,8 +53,8 @@ object AISpawningManager : IonServerComponent(true) {
 		)
 
 	/** Ticks all the spawners, increasing points and maybe triggering an execution */
-	private fun tickSpawners() = spawners.forEach {
-		it.tickPoints(log)
+	private fun tickSpawners() = AISpawners.getAllSpawners().forEach {
+		it.tickPoints()
 	}
 
 	private fun despawnOldAIShips() {
