@@ -14,6 +14,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Color
 
 /**
  * Responsible for providing ships, colors, and managing names of AI ships
@@ -40,6 +41,11 @@ class AIFaction private constructor(
 
 	fun processTemplate(template: AITemplateRegistry.Builder) {
 		templateProcess(template)
+	}
+
+	val controllerModifier: (AIController) -> Unit = { controller ->
+		controller.setColor(Color.fromRGB(color))
+		controller.modules["faction"] = FactionManagerModule(controller, this)
 	}
 
 	class Builder(private val identifier: String, val color: Int) {

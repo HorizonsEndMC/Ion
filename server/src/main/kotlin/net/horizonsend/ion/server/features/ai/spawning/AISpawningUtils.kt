@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
+import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
@@ -28,6 +29,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.slf4j.Logger
+import java.util.function.Supplier
 
 /** Handle any exceptions with spawning */
 fun handleException(logger: Logger, exception: SpawningException) {
@@ -160,4 +162,33 @@ fun isSystemOccupied(world: World): Boolean {
 	planets.flatMapTo(players) { it.planetWorld?.players ?: listOf() }
 
 	return players.isNotEmpty()
+}
+
+fun formatLocationSupplier(world: World, minDistance: Double, maxDistance: Double, playerFilter: (Player) -> Boolean = { true }): Supplier<Location?> = Supplier {
+	val player = world.players
+		.filter { player -> PilotedStarships.isPiloting(player) }
+		.filter(playerFilter)
+		.randomOrNull() ?: return@Supplier null
+
+	var iterations = 0
+
+	val border = world.worldBorder
+
+	val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+
+	// max 10 iterations
+	while (iterations <= 15) {
+		iterations++
+
+		val loc = player.location.getLocationNear(minDistance, maxDistance)
+
+		if (!border.isInside(loc)) continue
+		if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) continue
+
+		loc.y = 192.0
+
+		return@Supplier loc
+	}
+
+	return@Supplier null
 }

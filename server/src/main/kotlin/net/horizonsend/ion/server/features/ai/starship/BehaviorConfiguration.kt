@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.ai.starship
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.misc.RadiusMessageModule
@@ -74,7 +75,7 @@ class BehaviorConfiguration(
 		override val name: String = "reinforcement"
 
 		override fun createModule(controller: AIController): ReinforcementSpawnerModule {
-			val spawner = ReinforcementSpawner(controller, reinforcementShips)
+			val spawner = ReinforcementSpawner(IonServer.slF4JLogger, controller, reinforcementShips)
 
 			return ReinforcementSpawnerModule(
 				controller,
