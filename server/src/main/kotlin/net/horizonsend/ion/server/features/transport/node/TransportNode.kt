@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -38,11 +39,11 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 *
 	 * If neither side can transfer, a relation will not be created
 	 **/
-	suspend fun addRelationship(other: TransportNode) {
+	suspend fun addRelationship(other: TransportNode, offset: BlockFace) {
 		// Do not add duplicates
 		if (relationships.any { it.sideTwo.node == other }) return
 
-		NodeRelationship.create(this, other)
+		NodeRelationship.create(this, other, offset)
 		other.neighborChanged(this)
 	}
 

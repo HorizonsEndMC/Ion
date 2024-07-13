@@ -23,7 +23,7 @@ interface SingleNode : TransportNode {
 			if (this == neighborNode) return
 
 			// Add a relationship, if one should be added
-			addRelationship(neighborNode)
+			addRelationship(neighborNode, offset)
 		}
 	}
 
