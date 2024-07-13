@@ -128,14 +128,15 @@ object HudIcons : IonServerComponent() {
      * Updates a client-side ItemDisplay for rendering planet icons in space
      * @param player the player that the entity should be visible to
      * @param identifier the string used to retrieve the entity later
-     * @param distance the distance that the planet is to the player
+     * @param visualDistance the distance that the planet is to the player
      * @param direction the direction that the entity will render from with respect to the player
      * @param selectable if this entity should be selectable by the player
      */
     private fun updateHudEntity(
         player: Player,
         identifier: String,
-        distance: Double,
+        visualDistance: Double,
+        actualDistance: Double,
         direction: Vector,
         scaleFactor: Double? = 1.0,
         selectable: Boolean = true
@@ -148,7 +149,7 @@ object HudIcons : IonServerComponent() {
         // also do not render if the planet is closer than the entity render distance
         if (!nmsEntity.isChunkLoaded ||
             nmsEntity.level().world.name != player.world.name ||
-            distance < entityRenderDistance * 2
+            visualDistance < entityRenderDistance * 2
         ) {
             ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
             ClientDisplayEntities[player.uniqueId]?.remove(identifier)
@@ -156,7 +157,7 @@ object HudIcons : IonServerComponent() {
         } else {
             // calculate position and offset
             val position = player.eyeLocation.toVector()
-            val scale = scale(distance, scaleFactor)
+            val scale = scale(visualDistance, scaleFactor)
             val offset = direction.clone().normalize().multiply(entityRenderDistance + offsetMod(scale))
 
             // apply transformation
@@ -177,7 +178,7 @@ object HudIcons : IonServerComponent() {
                 if (angle < SELECTOR_ANGLE_THRESHOLD && lowestAngleMap[player.uniqueId] != null && lowestAngleMap[player.uniqueId]!! > angle) {
                     lowestAngleMap[player.uniqueId] = angle
                     selectorDataMap[player.uniqueId] =
-                        PlanetSelectorData(identifier, entityRenderDistance, direction, scale)
+                        PlanetSelectorData(identifier, entityRenderDistance, visualDistance.toInt(), actualDistance.toInt(), direction, scale)
                 }
             }
         }
@@ -219,13 +220,13 @@ object HudIcons : IonServerComponent() {
         // calculate position and offset
         val position = player.eyeLocation.toVector()
         // subtract 1 to ensure it is rendered before the planet
-        val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 1)
+        val offset = data.direction.clone().normalize().multiply(data.entityDistance - offsetMod(data.scale) - 1)
 
         // apply transformation
         entity.transformation = Transformation(
             offset.toVector3f(),
             ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
-            Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
+            Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.entityDistance)),
             Quaternionf()
         )
 
@@ -261,13 +262,13 @@ object HudIcons : IonServerComponent() {
             // calculate position and offset
             val position = player.eyeLocation.toVector()
             // subtract 1 to ensure it is rendered before the planet
-            val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 1)
+            val offset = data.direction.clone().normalize().multiply(data.entityDistance - offsetMod(data.scale) - 1)
 
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
                 ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
-                Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
+                Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.entityDistance)),
                 Quaternionf()
             )
 
@@ -303,7 +304,13 @@ object HudIcons : IonServerComponent() {
 
         val entity = ClientDisplayEntityFactory.createTextDisplay(player)
 
-        entity.text(ofChildren(Component.text(sanitizePrefixes(data.name)), Component.text(" /jump", NamedTextColor.GREEN)))
+        entity.text(ofChildren(
+            Component.text(sanitizePrefixes(data.name)),
+            Component.space(),
+            Component.text(data.actualDistance.toString() + "m", NamedTextColor.AQUA),
+            Component.space(),
+            Component.text("/jump", NamedTextColor.GREEN))
+        )
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
         //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
@@ -313,14 +320,14 @@ object HudIcons : IonServerComponent() {
 
         // calculate position and offset
         val position = player.eyeLocation.toVector()
-        val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 2)
+        val offset = data.direction.clone().normalize().multiply(data.entityDistance - offsetMod(data.scale) - 2)
             .apply { this.y -= getTextOffset(data.scale, player) }
 
         // apply transformation
         entity.transformation = Transformation(
             offset.toVector3f(),
             ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f().mul(-1f)),
-            Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
+            Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.entityDistance)),
             Quaternionf()
         )
 
@@ -357,19 +364,22 @@ object HudIcons : IonServerComponent() {
             nmsEntity.text = PaperAdventure.asVanilla(
                 ofChildren(
                     Component.text(sanitizePrefixes(data.name)),
-                    Component.text(" /jump", NamedTextColor.GREEN)
+                    Component.space(),
+                    Component.text(data.actualDistance.toString() + "m", NamedTextColor.AQUA),
+                    Component.space(),
+                    Component.text("/jump", NamedTextColor.GREEN)
                 )
             )
             // calculate position and offset
             val position = player.eyeLocation.toVector()
-            val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 2)
+            val offset = data.direction.clone().normalize().multiply(data.entityDistance - offsetMod(data.scale) - 2)
                 .apply { this.y -= getTextOffset(data.scale, player) }
 
             // apply transformation
             val transformation = com.mojang.math.Transformation(
                 offset.toVector3f(),
                 ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f().mul(-1f)),
-                Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
+                Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.entityDistance)),
                 Quaternionf()
             )
 
@@ -534,7 +544,7 @@ object HudIcons : IonServerComponent() {
                     createHudEntity(player, hudName, distance, direction) ?: continue
                 } else {
                     // entity exists; update position
-                    updateHudEntity(player, hudName, distance, direction)
+                    updateHudEntity(player, hudName, distance, distance, direction)
                 }
             } else if (playerDisplayEntities[hudName] != null) {
                 deleteHudEntity(player, hudName)
@@ -556,7 +566,7 @@ object HudIcons : IonServerComponent() {
                     createHudEntity(player, hudName, distance, direction, scaleFactor = STAR_SCALE_FACTOR) ?: continue
                 } else {
                     // entity exists; update position
-                    updateHudEntity(player, hudName, distance, direction, scaleFactor = STAR_SCALE_FACTOR, selectable = false)
+                    updateHudEntity(player, hudName, distance, distance, direction, scaleFactor = STAR_SCALE_FACTOR, selectable = false)
                 }
             } else if (playerDisplayEntities[hudName] != null) {
                 deleteHudEntity(player, hudName)
@@ -569,6 +579,7 @@ object HudIcons : IonServerComponent() {
             val hudName = BEACON_PREFIX + beacon.name
 
             if (hudBeaconsEnabled) {
+                val distance = player.location.toVector().distance(beacon.spaceLocation.toVector())
                 val direction = beacon.spaceLocation.toVector().subtract(player.location.toVector()).normalize()
 
                 if (playerDisplayEntities[hudName] == null) {
@@ -584,6 +595,7 @@ object HudIcons : IonServerComponent() {
                         player,
                         hudName,
                         ICON_SCALE,
+                        distance,
                         direction,
                         scaleFactor = null
                     )
@@ -600,6 +612,7 @@ object HudIcons : IonServerComponent() {
             val stationLocation = Vector(station.x, 192, station.z)
 
             if (hudStationsEnabled) {
+                val distance = player.location.toVector().distance(stationLocation)
                 val direction = stationLocation.clone().subtract(player.location.toVector())
 
                 if (playerDisplayEntities[hudName] == null) {
@@ -615,6 +628,7 @@ object HudIcons : IonServerComponent() {
                         player,
                         hudName,
                         ICON_SCALE,
+                        distance,
                         direction,
                         scaleFactor = null
                     )
@@ -632,6 +646,7 @@ object HudIcons : IonServerComponent() {
             val hudName = SIEGE_STATION_PREFIX + siegeStation.name
 
             if (hudStationsEnabled) {
+                val distance = player.location.toVector().distance(siegeStation.loc.toVector())
                 val direction = siegeStation.loc.toVector().subtract(player.location.toVector())
 
                 if (playerDisplayEntities[hudName] == null) {
@@ -647,6 +662,7 @@ object HudIcons : IonServerComponent() {
                         player,
                         hudName,
                         ICON_SCALE,
+                        distance,
                         direction,
                         scaleFactor = null
                     )
@@ -663,6 +679,7 @@ object HudIcons : IonServerComponent() {
             val bookmarkLocation = Vector(bookmark.x, bookmark.y, bookmark.z)
 
             if (hudBookmarksEnabled) {
+                val distance = player.location.toVector().distance(bookmarkLocation)
                 val direction = bookmarkLocation.clone().subtract(player.location.toVector())
 
                 if (playerDisplayEntities[hudName] == null) {
@@ -678,6 +695,7 @@ object HudIcons : IonServerComponent() {
                         player,
                         hudName,
                         ICON_SCALE,
+                        distance,
                         direction,
                         scaleFactor = null
                     )
@@ -726,7 +744,9 @@ object HudIcons : IonServerComponent() {
 
     data class PlanetSelectorData(
         val name: String,
-        val distance: Int,
+        val entityDistance: Int,    // the distance that the physical entity is from the player
+        val visualDistance: Int,    // the apparent visual distance that the object is from the player
+        val actualDistance: Int,    // the actual distance from the player (used for data)
         val direction: Vector,
         val scale: Float
     )
