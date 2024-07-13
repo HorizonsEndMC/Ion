@@ -93,15 +93,13 @@ object NamespacedKeys {
 
 	val PROCESSING_PROGRESS = key("processing_progress")
 
-	val TRANSFERABLE_NEIGHBORS = key("transferable_neighbors")
 	val NODE_COVERED_POSITIONS = key("node_covered_positions")
 	val AXIS = key("axis")
-	val SOLAR_CELL_COUNT = key("solar_cell_count")
 	val SOLAR_CELL_EXTRACTORS = key("solar_cell_extractors")
-	val MULTIBLOCK_DESTINATIONS = key("multiblock_destinations")
 
 	val NODE_TYPE = key("node_type")
-	val NODE_ORIGIN = key("node_origin")
+
+	val NODE_VARIANT = key("node_variant")
 
 	val NODES = key("chunk_nodes")
 
