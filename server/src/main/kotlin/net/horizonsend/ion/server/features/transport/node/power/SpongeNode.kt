@@ -65,5 +65,13 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 		.filterNot { head.previousNodes.contains(it) }
 		.firstOrNull()
 
-	override fun toString(): String = "(SPONGE NODE: ${positions.size} positions, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
+//	override fun toString(): String = "(SPONGE NODE: ${positions.size} positions, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
+
+	override fun toString(): String {
+		return """
+			[Sponge Node]
+			${positions.size} positions
+			Relationships: ${relationships.joinToString { it.sideTwo.toString() }}
+		""".trimIndent()
+	}
 }
