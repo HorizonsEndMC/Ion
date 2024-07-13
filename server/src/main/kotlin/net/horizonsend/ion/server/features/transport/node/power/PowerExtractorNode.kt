@@ -131,7 +131,7 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 			}
 
 			// Add a relationship, if one should be added
-			addRelationship(neighborNode)
+			addRelationship(neighborNode, offset)
 		}
 	}
 
