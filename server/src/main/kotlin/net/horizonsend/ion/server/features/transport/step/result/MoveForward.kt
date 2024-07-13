@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.transport.step.head.MultiBranchHead
 import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
 
 /** A result which moves the head of the branch forward, using the current node's pathfinding */
-class MoveForward<T: ChunkTransportNetwork> : StepResult<T> {
+class MoveForward<T: ChunkTransportNetwork>() : StepResult<T> {
 	override suspend fun apply(headHolder: HeadHolder<T>) {
 		val branchHead = headHolder.head
 
@@ -17,11 +17,13 @@ class MoveForward<T: ChunkTransportNetwork> : StepResult<T> {
 
 		val currentNode = (branchHead as SingleBranchHead<T>).currentNode
 
+		// If the next node is a step handler,
 		tryCast<StepHandler<T>>(currentNode) {
-			val next = getNextNode(headHolder.head) ?: return EndBranch<T>().apply(headHolder)
+			val (next, offset) = this.getNextNode(branchHead, branchHead.lastDirection) ?: return EndBranch<T>().apply(headHolder)
 
 			branchHead.previousNodes.add(branchHead.currentNode)
 			branchHead.currentNode = next
+			branchHead.lastDirection = offset
 		}
 
 		tryCast<DestinationNode<T>>(currentNode) {
