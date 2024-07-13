@@ -151,6 +151,7 @@ object IonServer : JavaPlugin() {
 
 		for (component in components.asReversed()) try {
 			component.onDisable()
+			slF4JLogger.info("Disabled ${component.javaClass.simpleName}")
 		} catch (e: Exception) {
 			slF4JLogger.error("There was an error shutting down ${component.javaClass.simpleName}! ${e.message}")
 			e.printStackTrace()
