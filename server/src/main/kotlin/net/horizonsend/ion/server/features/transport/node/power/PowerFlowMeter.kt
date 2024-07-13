@@ -126,6 +126,8 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 
 	override suspend fun handleRemoval(position: BlockKey) {
 		if (::displayHandler.isInitialized) displayHandler.remove()
+
+		super.handleRemoval(position)
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
