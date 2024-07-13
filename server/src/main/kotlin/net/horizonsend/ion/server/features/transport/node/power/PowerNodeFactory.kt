@@ -28,44 +28,48 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 			snapshot.type == Material.SPONGE -> addSponge(key)
 
 			// Extract power from storage
-			snapshot.type == Material.CRAFTING_TABLE -> if (matchesSolarPanelStructure(network.world, key)) {
-				addSolarPanel(key)
-			} else {
-				addExtractor(key)
+			snapshot.type == Material.CRAFTING_TABLE -> {
+				if (matchesSolarPanelStructure(network.world, key)) {
+					addSolarPanel(key)
+				} else {
+					addExtractor(key)
+				}
 			}
 
 			// Check for extractor beneath
 			snapshot.type == Material.DIAMOND_BLOCK -> {
 				val extractorKey = getRelative(key, DOWN, 1)
-				network.nodes.remove(extractorKey)
+
 				if (matchesSolarPanelStructure(network.world, extractorKey)) {
+					network.nodes.remove(extractorKey)
 					addSolarPanel(extractorKey)
 				}
 			}
 
 			snapshot.type == Material.DAYLIGHT_DETECTOR -> {
 				val extractorKey = getRelative(key, DOWN, 2)
-				network.nodes.remove(extractorKey)
+
 				if (matchesSolarPanelStructure(network.world, extractorKey)) {
+					network.nodes.remove(extractorKey)
 					addSolarPanel(extractorKey)
 				}
 			}
 
 			// Add power to storage
 			snapshot.type == Material.NOTE_BLOCK -> addInput(key)
+
+			// Power flow meter
 			snapshot.type == Material.OBSERVER -> addFlowMeter(snapshot.data as Directional, key)
 
 			// Merge node behavior
-			snapshot.type == Material.IRON_BLOCK -> addMergeNode(key)
-			snapshot.type == Material.REDSTONE_BLOCK -> addMergeNode(key)
+			snapshot.type == Material.IRON_BLOCK -> addMergeNode(key, Material.IRON_BLOCK)
+			snapshot.type == Material.REDSTONE_BLOCK -> addMergeNode(key, Material.REDSTONE_BLOCK)
 
 			// Split power evenly
 //			block.customBlock == CustomBlocks.ALUMINUM_BLOCK -> SplitterNode(this, x, y, z)
 
 			// Redstone controlled gate
 //			block.type.isRedstoneLamp -> GateNode(this, x, y, z)
-
-			// Power flow meter
 
 			else -> return
 		}
@@ -178,9 +182,15 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 		if (handleRelationships) node.rebuildRelations()
 	}
 
-	suspend fun addMergeNode(key: BlockKey) {
-		network.nodes[key] = MergeNode(network, key).apply {
+	suspend fun addMergeNode(key: BlockKey, variant: Material) {
+		network.nodes[key] = DirectionalNode(network, key, variant).apply {
 			onPlace(position)
 		}
+	}
+
+	suspend fun addInvertedMergeNode(key: BlockKey) {
+//		network.nodes[key] = InvertedDirectionalNode(network, key).apply {
+//			onPlace(position)
+//		}
 	}
 }
