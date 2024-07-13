@@ -105,19 +105,15 @@ class SolarPanelNode(
 	private fun calculateExitDistance() {
 		val neighbors = getTransferableNodes()
 
-		println("Solar $this calculating exit distance")
-
 		// Transferable node provides an exit
 		if (neighbors.any { it !is SolarPanelNode }) {
 			exitDistance = 0
-			println("Exit available")
 			return
 		}
 
 		val solars = neighbors.filterIsInstance<SolarPanelNode>()
 		if (solars.isEmpty()) {
 			exitDistance = -1
-			println("No exit available")
 			return
 		}
 
