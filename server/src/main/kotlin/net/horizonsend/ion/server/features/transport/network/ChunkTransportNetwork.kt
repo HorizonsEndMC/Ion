@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.network
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
@@ -220,7 +221,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	open fun finalizeNodes() {}
 
 	fun breakAllRelations() {
-		nodes.values.forEach { it.clearRelations() }
+		runBlocking { nodes.values.forEach { it.clearRelations() } }
 	}
 
 	fun getNode(x: Int, y: Int, z: Int): TransportNode? {
