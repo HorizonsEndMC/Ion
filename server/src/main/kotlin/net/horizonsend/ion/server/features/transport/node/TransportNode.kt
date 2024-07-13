@@ -61,10 +61,10 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	fun isTransferableTo(node: TransportNode): Boolean
 
 	/** Gets the nodes this can transfer to **/
-	fun getTransferableNodes(): Collection<TransportNode> = relationships.filter {
+	fun getTransferableNodes(): Collection<Pair<TransportNode, BlockFace>> = relationships.filter {
 		// That this node can transfer to the other
 		it.sideOne.transferAllowed && !it.sideTwo.node.isDead
-	}.map { it.sideTwo.node }
+	}.map { it.sideTwo.node to it.sideOne.offset }
 
 	/**
 	 * Store additional required data in the serialized container
