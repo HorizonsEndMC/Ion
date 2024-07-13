@@ -66,7 +66,7 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 
 			if (this == neighborNode) continue
 
-			addRelationship(neighborNode)
+			addRelationship(neighborNode, offset)
 		}
 	}
 
