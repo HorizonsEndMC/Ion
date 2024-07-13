@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
 import net.horizonsend.ion.server.features.transport.node.type.StepHandler
 import net.horizonsend.ion.server.features.transport.step.Step
-import net.horizonsend.ion.server.features.transport.step.head.BranchHead
+import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
 import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
 import net.horizonsend.ion.server.features.transport.step.origin.SolarPowerOrigin
 import net.horizonsend.ion.server.features.transport.step.result.MoveForward
@@ -26,7 +26,9 @@ import net.minecraft.world.level.LightLayer
 import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.DOWN
+import org.bukkit.block.BlockFace.SELF
 import org.bukkit.block.BlockFace.UP
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
@@ -69,13 +71,14 @@ class SolarPanelNode(
 		) {
 			SinglePowerBranchHead(
 				holder = this,
+				lastDirection = SELF,
 				currentNode = this@SolarPanelNode,
 				share = 1.0,
 			)
 		}
 	}
 
-	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+	override suspend fun handleHeadStep(head: SingleBranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
 		// Simply move on to the next node
 		return MoveForward()
 	}
@@ -88,14 +91,16 @@ class SolarPanelNode(
 	 **/
 	private var exitDistance: Int = 0
 
-	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? {
+	override suspend fun getNextNode(head: SingleBranchHead<ChunkPowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? {
 		val neighbors = getTransferableNodes()
-		return neighbors.shuffled().firstOrNull { it !is SolarPanelNode } ?:
+		return neighbors.shuffled().firstOrNull { it.first !is SolarPanelNode } ?:
 		neighbors
-			.filterIsInstance<SolarPanelNode>()
-			.filter { it.exitDistance < this.exitDistance } // Make sure it can't move further from an exit
+			.filter {
+				val node = it.first
+				node is SolarPanelNode && node.exitDistance < this.exitDistance
+			} // Make sure it can't move further from an exit
 			.shuffled() // Make sure the lowest priority, if multiple is random every time
-			.minByOrNull { it.exitDistance }
+			.minByOrNull { (it.first as SolarPanelNode).exitDistance }
 	}
 
 	/**
@@ -106,7 +111,7 @@ class SolarPanelNode(
 		val neighbors = getTransferableNodes()
 
 		// Transferable node provides an exit
-		if (neighbors.any { it !is SolarPanelNode }) {
+		if (neighbors.any { it.first !is SolarPanelNode }) {
 			exitDistance = 0
 			return
 		}
