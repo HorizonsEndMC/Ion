@@ -294,9 +294,9 @@ class SolarPanelNode(
 	companion object {
 		const val POWER_PER_SECOND = 5
 
-		suspend fun matchesSolarPanelStructure(world: World, key: BlockKey): Boolean {
-			if (getBlockSnapshotAsync(world, key)?.type != Material.CRAFTING_TABLE) return false
-			val diamond = getRelative(key, UP)
+		suspend fun matchesSolarPanelStructure(world: World, extractorPosition: BlockKey): Boolean {
+			if (getBlockSnapshotAsync(world, extractorPosition)?.type != Material.CRAFTING_TABLE) return false
+			val diamond = getRelative(extractorPosition, UP)
 
 			if (getBlockSnapshotAsync(world, diamond)?.type != Material.DIAMOND_BLOCK) return false
 			val cell = getRelative(diamond, UP)
