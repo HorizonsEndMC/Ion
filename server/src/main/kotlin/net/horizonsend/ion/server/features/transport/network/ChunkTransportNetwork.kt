@@ -18,11 +18,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.seconds
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
@@ -32,16 +32,20 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 
 	val world get() = manager.chunk.world
 
-	val pdc get() = manager.chunk.inner.persistentDataContainer
+	protected val chunkPDC get() = manager.chunk.inner.persistentDataContainer
+	protected val networkPDC get() = chunkPDC.get(
+		namespacedKey,
+		TAG_CONTAINER
+	) ?: run {
+		IonServer.slF4JLogger.warn("chunk ${manager.chunk.x}, ${manager.chunk.z} ${manager.chunk.world.name} didn't have transport information!")
+
+		chunkPDC.adapterContext.newPersistentDataContainer()
+	}
 
 	protected abstract val namespacedKey: NamespacedKey
 	protected abstract val type: NetworkType
 	abstract val nodeFactory: NodeFactory<*>
 	abstract val dataVersion: Int
-
-	fun finalizeNetwork() {
-		ready = true
-	}
 
 	open fun processBlockRemoval(key: Long) { manager.scope.launch { withTransportDisabled {
 		val previousNode = nodes[key] ?: return@withTransportDisabled
@@ -63,72 +67,15 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	}
 
 	/**
-	 * Load stored node data from the chunk
-	 *
-	 * @return Whether the data was intact, or up to date
+	 * Save additional metadata into the network PDC
 	 **/
-	fun loadData(): Boolean {
-		val existing = pdc.get(namespacedKey, PersistentDataType.TAG_CONTAINER) ?: return run {
-			IonServer.slF4JLogger.warn("chunk ${manager.chunk.x}, ${manager.chunk.z} ${manager.chunk.world.name} didn't have transport information!")
-			false
-		}
-		val version	= pdc.getOrDefault(DATA_VERSION, PersistentDataType.INTEGER, 0)
-
-		if (version < dataVersion) {
-			IonServer.slF4JLogger.error("${manager.chunk}'s ${javaClass.simpleName} contained outdated data! It will be rebuilt")
-			return false
-		}
-
-		// Deserialize once
-		val nodeData = existing.getOrDefault(NODES, PersistentDataType.TAG_CONTAINER_ARRAY, arrayOf()).mapNotNull {
-			runCatching { TransportNode.load(it, this) }.onFailure {
-				IonServer.slF4JLogger.error("${manager.chunk}'s ${javaClass.simpleName} contained corrupted data! It will be rebuilt")
-				it.printStackTrace()
-			}.getOrElse { return false }
-		}
-
-		IonServer.slF4JLogger.warn("chunk ${manager.chunk.x}, ${manager.chunk.z} ${manager.chunk.world.name} loaded ${nodeData.size} nodes")
-
-		nodeData.forEach { runCatching { it.loadIntoNetwork() }.onFailure {
-			IonServer.slF4JLogger.error("${manager.chunk}'s ${javaClass.simpleName} loading node into network!")
-			it.printStackTrace()
-		} }
-
-		return true
-	}
-
-	fun save(adapterContext: PersistentDataAdapterContext) {
-		val container = adapterContext.newPersistentDataContainer()
-
-		val serializedNodes: MutableMap<TransportNode, Pair<Int, PersistentDataContainer>> = mutableMapOf()
-
-		nodes.forEach { (_, node) ->
-			serializedNodes[node] = nodes.values.indexOf(node) to node.serialize(adapterContext, node)
-		}
-
-		if (nodes.isNotEmpty()) {
-			manager.chunk.inner.minecraft.isUnsaved = true
-			println("Saved ${nodes.size} nodes!")
-		}
-
-		container.set(NODES, PersistentDataType.TAG_CONTAINER_ARRAY, serializedNodes.values.seconds().toTypedArray())
-
-		pdc.set(namespacedKey, PersistentDataType.TAG_CONTAINER, container)
-		pdc.set(DATA_VERSION, PersistentDataType.INTEGER, dataVersion)
-
-		saveAdditional(pdc)
-	}
-
 	open fun saveAdditional(pdc: PersistentDataContainer) {}
 
 	suspend fun tickIfReady() { if (ready) tick() }
 
-	/**
-	 *
-	 **/
 	abstract suspend fun tick()
 
-	abstract suspend fun clearData()
+	abstract fun clearData()
 
 	/**
 	 * Logic for when the holding chunk is unloaded
@@ -145,18 +92,80 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	 *
 	 * Existing data will be loaded from the chunk's persistent data container, relations between nodes will be built, and any finalization will be performed
 	 **/
-	fun build() = manager.scope.launch {
-		if (!loadData()) {
-			clearData()
-			collectAllNodes().join()
+	fun loadNetwork() {
+		val adapterContext = chunkPDC.adapterContext
+
+		// Load data sync
+		val good = loadData()
+
+		manager.scope.launch {
+			// Handle cases of data corruption
+			if (!good) {
+				clearData()
+				collectAllNodes().join()
+
+				// Save rebuilt data
+				save(adapterContext)
+			}
+
+			buildRelations()
+			finalizeNodes()
+
+			ready = true
+		}
+	}
+
+	/**
+	 * Load stored node data from the chunk
+	 *
+	 * @return Whether the data was intact, or up to date
+	 **/
+	fun loadData(): Boolean {
+		val version	= networkPDC.getOrDefault(DATA_VERSION, PersistentDataType.INTEGER, 0)
+
+		if (version < dataVersion) {
+			IonServer.slF4JLogger.error("${manager.chunk}'s ${javaClass.simpleName} contained outdated data! It will be rebuilt")
+			return false
 		}
 
-		// Save rebuilt data
-		save(manager.chunk.inner.persistentDataContainer.adapterContext)
+		// Deserialize once
+		val nodeData = networkPDC.getOrDefault(NODES, PersistentDataType.TAG_CONTAINER_ARRAY, arrayOf()).map {
+			runCatching { TransportNode.load(it, this) }.onFailure {
+				IonServer.slF4JLogger.error("${manager.chunk}'s ${javaClass.simpleName} contained corrupted data! It will be rebuilt")
+				it.printStackTrace()
+			}.getOrElse {
+				return false
+			}
+		}
 
-		buildRelations()
-		finalizeNodes()
-		finalizeNetwork()
+		nodeData.forEach { runCatching { it.loadIntoNetwork() }.onFailure {
+			IonServer.slF4JLogger.error("${manager.chunk}'s ${javaClass.simpleName} loading node into network!")
+			it.printStackTrace()
+			return false
+		} }
+
+		return true
+	}
+
+	fun save(adapterContext: PersistentDataAdapterContext) {
+		val container = adapterContext.newPersistentDataContainer()
+
+		val serializedNodes: MutableMap<TransportNode, PersistentDataContainer> = mutableMapOf()
+
+		nodes.values.distinct().forEach { node ->
+			serializedNodes[node] = node.serialize(adapterContext, node)
+		}
+
+		if (serializedNodes.isNotEmpty()) {
+			manager.chunk.inner.minecraft.isUnsaved = true
+		}
+
+		container.set(NODES, PersistentDataType.TAG_CONTAINER_ARRAY, serializedNodes.values.toTypedArray())
+		container.set(DATA_VERSION, PersistentDataType.INTEGER, dataVersion)
+		saveAdditional(container)
+
+		// Save the network PDC
+		chunkPDC.set(namespacedKey, TAG_CONTAINER, container)
 	}
 
 	/**
@@ -174,7 +183,7 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	 *
 	 * Iterate the section for possible nodes, handle creation
 	 **/
-	suspend fun collectSectionNodes(sectionY: Int) {
+	private suspend fun collectSectionNodes(sectionY: Int) {
 		val originX = manager.chunk.originX
 		val originY = sectionY.shl(4) - manager.chunk.inner.world.minHeight
 		val originZ = manager.chunk.originZ
