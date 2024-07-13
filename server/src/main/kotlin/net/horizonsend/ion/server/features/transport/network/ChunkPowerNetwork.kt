@@ -50,7 +50,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		tickExtractors()
 	}
 
-	override suspend fun clearData() {
+	override fun clearData() {
 		nodes.clear()
 		solarPanels.clear()
 		extractors.clear()
@@ -67,9 +67,5 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		neighboring.forEach {
 			it.value.buildRelations(getRelative(new.locationKey, it.key))
 		}
-	}
-
-	companion object {
-		const val POWER_EXTRACTOR_STEP = 1000
 	}
 }
