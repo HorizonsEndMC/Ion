@@ -7,9 +7,9 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.DestinationNode
 import net.horizonsend.ion.server.features.transport.node.type.StepHandler
 import net.horizonsend.ion.server.features.transport.step.Step
-import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.head.HeadHolder
 import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
+import org.bukkit.block.BlockFace
 
 /**
  * Transferred power down a single path.
@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
  **/
 class SinglePowerBranchHead(
 	override val holder: Step<ChunkPowerNetwork>,
+	override var lastDirection: BlockFace,
 	override var currentNode: TransportNode,
 	override val share: Double,
 	override val previousNodes: MutableSet<TransportNode> = mutableSetOf()
@@ -39,7 +40,7 @@ class SinglePowerBranchHead(
 		// All other nodes handle steps transferring in / out
 		node as StepHandler<ChunkTransportNetwork1>
 
-		val result = node.handleHeadStep(this as BranchHead<ChunkTransportNetwork>)
+		val result = node.handleHeadStep(this as SingleBranchHead<ChunkTransportNetwork>)
 
 		result.apply(holder as HeadHolder<ChunkTransportNetwork>)
 	}
