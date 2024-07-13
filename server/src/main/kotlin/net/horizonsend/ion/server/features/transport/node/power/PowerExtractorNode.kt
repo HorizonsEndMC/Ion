@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
 import net.horizonsend.ion.server.features.transport.step.Step
-import net.horizonsend.ion.server.features.transport.step.head.BranchHead
+import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
 import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
 import net.horizonsend.ion.server.features.transport.step.origin.ExtractorPowerOrigin
 import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
@@ -51,13 +52,13 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 	/*
 	 * Nothing unique with how pathfinding is done, simply move onto a random transferable neighbor that isn't a dead end
 	 */
-	override suspend fun getNextNode(head: BranchHead<ChunkPowerNetwork>): TransportNode? {
+	override suspend fun getNextNode(head: SingleBranchHead<ChunkPowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? {
 		return getTransferableNodes()
-			.filter { it.getTransferableNodes().isNotEmpty() }
+			.filter { it.first.getTransferableNodes().isNotEmpty() }
 			.randomOrNull()
 	}
 
-	override suspend fun handleHeadStep(head: BranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+	override suspend fun handleHeadStep(head: SingleBranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
 		return MoveForward()
 	}
 
@@ -73,6 +74,7 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 		) {
 			SinglePowerBranchHead(
 				holder = this,
+				lastDirection = BlockFace.SELF,
 				currentNode = this@PowerExtractorNode,
 				share = 1.0,
 			)
