@@ -18,8 +18,7 @@ class ChunkTransportManager(
 //	val gasGrid = ChunkPowerNetwork(this) // TODO
 
 	fun setup() {
-		powerNetwork.build()
-		powerNetwork.finalizeNetwork()
+		powerNetwork.loadNetwork()
 		// TODO
 		// TODO
 	}
