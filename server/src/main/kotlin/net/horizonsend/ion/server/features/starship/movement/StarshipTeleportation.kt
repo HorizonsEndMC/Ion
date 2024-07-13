@@ -80,7 +80,6 @@ object StarshipTeleportation {
 				starship.information("Adjusting position...")
 
 				val tries = previousTries + 1
-				println(14)
 				return@thenComposeAsync tryTeleport(starship, dx, dy, dz, newWorld, tries, adjustX, adjustZ)
 			}
 	}
