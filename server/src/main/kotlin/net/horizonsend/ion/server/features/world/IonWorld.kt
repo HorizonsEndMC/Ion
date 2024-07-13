@@ -33,7 +33,7 @@ class IonWorld private constructor(
 	 **/
 	private val chunks: ConcurrentHashMap<Long, IonChunk> = ConcurrentHashMap()
 	val regionPositions: ConcurrentHashMap<Long, ChunkRegion> = ConcurrentHashMap()
-	val chunkRegions: MutableSet<ChunkRegion> = ObjectOpenHashSet<ChunkRegion>()
+	val chunkRegions: MutableSet<ChunkRegion> = ObjectOpenHashSet()
 
 	/**
 	 * Gets the IonChunk at the specified coordinates if it is loaded
@@ -135,7 +135,14 @@ class IonWorld private constructor(
 		fun unregisterAll() {
 			mainThreadCheck()
 
-			ionWorlds.clear()
+			val iterator = ionWorlds.iterator()
+
+			while (iterator.hasNext()) {
+				val (_, ionWorld) = iterator.next()
+
+				saveAllChunks(ionWorld)
+				iterator.remove()
+			}
 		}
 
 		@Deprecated("Event Listener", level = ERROR)
@@ -151,7 +158,11 @@ class IonWorld private constructor(
 		fun onWorldUnloadEvent(event: WorldUnloadEvent) {
 			mainThreadCheck()
 
-			ionWorlds.remove(event.world)
+			val bukkitWorld = event.world
+			val ionWorld = ionWorlds[bukkitWorld]!!
+
+			saveAllChunks(ionWorld)
+			ionWorlds.remove(bukkitWorld)
 		}
 
 		@Deprecated("Event Listener", level = ERROR)
@@ -174,15 +185,15 @@ class IonWorld private constructor(
 
 		@EventHandler
 		fun onWorldSave(event: WorldSaveEvent) {
-			saveAllChunks(event.world)
+			saveAllChunks(event.world.ion)
 		}
 
 		override fun onDisable() {
-			for (world in ionWorlds.keys) saveAllChunks(world)
+			for (world in ionWorlds.values) saveAllChunks(world)
 		}
 
-		private fun saveAllChunks(world: World) {
-			for ((_, chunk) in world.ion.chunks) {
+		private fun saveAllChunks(world: IonWorld) {
+			for ((_, chunk) in world.chunks) {
 				chunk.save()
 			}
 		}
