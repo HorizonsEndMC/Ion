@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.world.chunk
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -18,6 +19,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.ChunkUnloadEvent
 import org.bukkit.persistence.PersistentDataType.INTEGER
+import java.util.concurrent.ConcurrentHashMap
 
 class IonChunk(
 	val inner: Chunk,
@@ -88,9 +90,21 @@ class IonChunk(
 	}
 
 	companion object : SLEventListener() {
+		private val loadingTasks = ConcurrentHashMap.newKeySet<Long>()
+
 		@EventHandler
 		fun onChunkLoad(event: ChunkLoadEvent) {
+			val key = event.chunk.chunkKey
+
+			if (loadingTasks.contains(key)) {
+				IonServer.slF4JLogger.warn("Detected double chuck load for ${event.chunk.x} ${event.chunk.z} in ${event.chunk.world.name}")
+				return
+			}
+
+			loadingTasks.add(key)
+
 			ChunkRegion.loadChunk(event.chunk)
+			loadingTasks.remove(key)
 		}
 
 		@EventHandler
@@ -160,6 +174,6 @@ class IonChunk(
 	fun markUnsaved() { inner.minecraft.isUnsaved = true }
 
 	override fun toString(): String {
-		return "IonChunk[$x, $z]"
+		return "IonChunk[$x, $z @ ${world.name}]"
 	}
 }
