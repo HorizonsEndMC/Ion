@@ -26,7 +26,6 @@ import net.minecraft.world.level.LightLayer
 import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.World
-import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.BlockFace.UP
 import org.bukkit.persistence.PersistentDataContainer
@@ -106,15 +105,19 @@ class SolarPanelNode(
 	private fun calculateExitDistance() {
 		val neighbors = getTransferableNodes()
 
-		// Borders an exit
+		println("Solar $this calculating exit distance")
+
+		// Transferable node provides an exit
 		if (neighbors.any { it !is SolarPanelNode }) {
 			exitDistance = 0
+			println("Exit available")
 			return
 		}
 
 		val solars = neighbors.filterIsInstance<SolarPanelNode>()
 		if (solars.isEmpty()) {
 			exitDistance = -1
+			println("No exit available")
 			return
 		}
 
@@ -189,9 +192,10 @@ class SolarPanelNode(
 
 	// If relations have changed, update the exit distances of the whole field
 	override suspend fun buildRelations(position: BlockKey) {
-		traverseField { it.calculateExitDistance() }
-
 		super.buildRelations(position)
+
+		// Calculate exit distance after relations have been built
+		traverseField { it.calculateExitDistance() }
 	}
 
 	/*
@@ -296,10 +300,10 @@ class SolarPanelNode(
 
 		suspend fun matchesSolarPanelStructure(world: World, key: BlockKey): Boolean {
 			if (getBlockSnapshotAsync(world, key)?.type != Material.CRAFTING_TABLE) return false
-			val diamond = getRelative(key, BlockFace.UP)
+			val diamond = getRelative(key, UP)
 
 			if (getBlockSnapshotAsync(world, diamond)?.type != Material.DIAMOND_BLOCK) return false
-			val cell = getRelative(diamond, BlockFace.UP)
+			val cell = getRelative(diamond, UP)
 
 			return getBlockSnapshotAsync(world, cell)?.type == Material.DAYLIGHT_DETECTOR
 		}
