@@ -86,7 +86,6 @@ object NamespacedKeys {
 
 	val STORED_MULTIBLOCK_ENTITIES = key("stored_multiblock_entities")
 	val STORED_MULTIBLOCK_ENTITIES_OLD = key("stored_multiblock_entities_old")
-	val EXTRACTOR_DATA = key("extractor_data")
 
 	val RESOURCE_CAPACITY_MAX = key("resource_capacity_max")
 	val RESOURCE_CAPACITY_MIN = key("resource_capacity_min")
@@ -100,10 +99,11 @@ object NamespacedKeys {
 	val SOLAR_CELL_COUNT = key("solar_cell_count")
 	val SOLAR_CELL_EXTRACTORS = key("solar_cell_extractors")
 	val MULTIBLOCK_DESTINATIONS = key("multiblock_destinations")
+
 	val NODE_TYPE = key("node_type")
 	val NODE_ORIGIN = key("node_origin")
 
-	val NODES = key("chunk_power_nodes")
+	val NODES = key("chunk_nodes")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
