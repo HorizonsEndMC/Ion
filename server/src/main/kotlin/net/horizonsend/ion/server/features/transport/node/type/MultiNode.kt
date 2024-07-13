@@ -63,7 +63,7 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 
 			if (this == neighborNode) continue
 
-			addRelationship(neighborNode)
+			addRelationship(neighborNode, offset)
 		}
 	}
 
