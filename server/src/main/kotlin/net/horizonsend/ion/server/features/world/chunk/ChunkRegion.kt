@@ -19,7 +19,6 @@ class ChunkRegion(val world: IonWorld) {
 	val size get() = chunks.values.size
 
 	val tickChunkTransport = IntervalExecutor(4) {
-
 		scope.launch {
 			for ((_, chunk) in chunks) {
 				chunk.transportNetwork.tick()
@@ -63,6 +62,8 @@ class ChunkRegion(val world: IonWorld) {
 
 			region.chunks[key] = ionChunk
 			chunk.world.ion.regionPositions[key] = region
+
+			region.world.chunkRegions.add(region)
 		}
 
 		fun unloadChunk(chunk: IonChunk) {
