@@ -29,7 +29,7 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 
 	override val dataVersion: Int = 0 //TODO 1
 
-	private suspend fun tickSolars() {
+	private suspend fun tickSolarPanels() {
 		for (solarPanel in solarPanels) {
 			runCatching { solarPanel.startStep()?.invoke() }.onFailure {
 				IonServer.slF4JLogger.error("Exception ticking solar panel! $it")
@@ -38,15 +38,17 @@ class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(
 		}
 	}
 
-	private suspend fun tickExtractors() = extractors.forEach { (key, extractor) ->
-		runCatching { extractor.startStep()?.invoke() }.onFailure {
-			IonServer.slF4JLogger.error("Exception ticking extractor at ${toVec3i(key)}! $it")
-			it.printStackTrace()
+	private suspend fun tickExtractors() {
+		extractors.forEach { (key, extractor) ->
+			runCatching { extractor.startStep()?.invoke() }.onFailure {
+				IonServer.slF4JLogger.error("Exception ticking extractor at ${toVec3i(key)}! $it")
+				it.printStackTrace()
+			}
 		}
 	}
 
 	override suspend fun tick() {
-		tickSolars()
+		tickSolarPanels()
 		tickExtractors()
 	}
 

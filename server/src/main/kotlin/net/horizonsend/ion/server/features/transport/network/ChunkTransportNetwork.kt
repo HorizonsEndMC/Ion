@@ -72,7 +72,9 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	 **/
 	open fun saveAdditional(pdc: PersistentDataContainer) {}
 
-	suspend fun tickIfReady() { if (ready) tick() }
+	suspend fun tickIfReady() {
+		if (ready) tick()
+	}
 
 	abstract suspend fun tick()
 
