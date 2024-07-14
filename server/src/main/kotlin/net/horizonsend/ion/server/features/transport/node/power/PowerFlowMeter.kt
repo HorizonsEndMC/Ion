@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.transport.node.power
 import com.manya.pdc.base.EnumDataType
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
@@ -20,8 +22,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.NORTH
 import org.bukkit.persistence.PersistentDataContainer
@@ -63,8 +68,17 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 	override suspend fun onCompleteChain(final: BranchHead<*>, destination: PowerInputNode, transferred: Int) {
 		addTransferred(TransferredPower(transferred, System.currentTimeMillis()))
 
+		displayHandler.setText(formatPower())
+	}
+
+	companion object {
+		val firstLine = text("E: ", YELLOW)
+		val secondLine = ofChildren(newline(), text("E ", YELLOW), text("/ ", HE_MEDIUM_GRAY), text("Second", GREEN))
+	}
+
+	private fun formatPower(): Component {
 		val avg = runCatching { calculateAverage().roundToHundredth() }.getOrDefault(0.0)
-		displayHandler.setText(text(avg, GREEN))
+		return ofChildren(firstLine, text(avg, GREEN), secondLine)
 	}
 
 	private fun addTransferred(transferredSnapshot: TransferredPower) {
@@ -100,7 +114,7 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 		val facingBlock = getRelative(position, direction)
 
 		val x = getX(facingBlock).toDouble() + 0.5 - offset.x
-		val y = getY(facingBlock).toDouble() + 0.5
+		val y = getY(facingBlock).toDouble() + 0.35
 		val z = getZ(facingBlock).toDouble() + 0.5 - offset.z
 
 		displayHandler = TextDisplayHandler(
@@ -108,7 +122,7 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 			x,
 			y,
 			z,
-			1.0f,
+			0.7f,
 			direction
 		)
 	}
