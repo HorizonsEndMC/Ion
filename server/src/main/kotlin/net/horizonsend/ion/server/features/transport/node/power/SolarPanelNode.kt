@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.firsts
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.LightLayer
@@ -116,7 +117,7 @@ class SolarPanelNode(
 			return
 		}
 
-		val solars = neighbors.filterIsInstance<SolarPanelNode>()
+		val solars = neighbors.firsts().filterIsInstance<SolarPanelNode>()
 		if (solars.isEmpty()) {
 			exitDistance = -1
 			return
@@ -310,5 +311,5 @@ class SolarPanelNode(
 		}
 	}
 
-	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes, distance = $exitDistance"
+	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().firsts().joinToString { it.javaClass.simpleName }} nodes, distance = $exitDistance"
 }
