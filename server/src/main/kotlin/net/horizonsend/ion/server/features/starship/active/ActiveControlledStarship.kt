@@ -196,7 +196,9 @@ class ActiveControlledStarship(
 
 	// manual move is sneak/direct control
 	val manualMoveCooldownMillis: Long = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
-	val directControlCooldown get() = 300L + (initialBlockCount / 700) * 30
+	val initialDirectControlCooldown = 300L + (initialBlockCount / 700) * 30
+	var directControlCooldown = initialDirectControlCooldown
+
 	var lastManualMove = System.nanoTime() / 1_000_000
 	var sneakMovements = 0
 	val shieldBars = mutableMapOf<String, BossBar>()

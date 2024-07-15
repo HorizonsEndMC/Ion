@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.starshipweapon.turret
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -13,6 +14,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 sealed class CycleTurretMultiblock : TurretMultiblock() {
+
+    val slowedStarships = mutableMapOf<ActiveControlledStarship, Long>()
 
     override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
         return CycleTurretWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
@@ -160,7 +163,8 @@ sealed class CycleTurretMultiblock : TurretMultiblock() {
                 getSound(starship),
                 starship.balancing.weapons.cycleTurret, // Not used by anything
                 shooter,
-                index
+                index,
+                this
             ).fire()
         }
     }
