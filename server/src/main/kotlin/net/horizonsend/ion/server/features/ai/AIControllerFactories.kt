@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.ai.module.movement.CruiseModule
 import net.horizonsend.ion.server.features.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.module.positioning.BasicPositioningModule
-import net.horizonsend.ion.server.features.ai.module.positioning.CirclingPositionModule
 import net.horizonsend.ion.server.features.ai.module.positioning.StandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.HighestDamagerTargetingModule
@@ -104,7 +103,7 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestTargetingModule(it, 1500.0, null).apply { sticky = true })
 			builder.addModule("combat", FrigateCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-			val positioning = builder.addModule("positioning", CirclingPositionModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
+			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
 			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
 			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 

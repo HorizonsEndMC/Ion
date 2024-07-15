@@ -15,6 +15,7 @@ import java.util.function.Supplier
 class FrigateCombatModule(controller: AIController, targetingSupplier: Supplier<AITarget?>) : CombatModule(controller, targetingSupplier) {
 	var leftFace: Boolean = false
 	var ticks = 0
+	private var aimAtRandom = false
 
 	override fun tick() {
 		ticks++
@@ -30,9 +31,13 @@ class FrigateCombatModule(controller: AIController, targetingSupplier: Supplier<
 		handleAutoWeapons(starship.centerOfMass, target)
 		fireAllWeapons(
 			origin = starship.centerOfMass,
-			target = target.getVec3i(true).toVector(),
+			target = target.getVec3i(aimAtRandom).toVector(),
 			direction = direction
 		)
+
+		if (ticks % 40 == 0) {
+			aimAtRandom = !aimAtRandom
+		}
 	}
 
 	private fun handleRotation(target: AITarget) {
