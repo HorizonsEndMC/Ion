@@ -48,15 +48,35 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 	abstract val nodeFactory: NodeFactory<*>
 	abstract val dataVersion: Int
 
-	open fun processBlockRemoval(key: Long) { manager.scope.launch { withTransportDisabled {
+	open fun processBlockRemoval(key: BlockKey) { manager.scope.launch { withTransportDisabled {
 		val previousNode = nodes[key] ?: return@withTransportDisabled
 
 		previousNode.handleRemoval(key)
 	}}}
 
-	open fun processBlockAddition(key: Long, new: BlockSnapshot) { manager.scope.launch {
+	open fun processBlockRemovals(keys: Iterable<BlockKey>) { manager.scope.launch { withTransportDisabled {
+		for (key in keys) {
+			val previousNode = nodes[key] ?: return@withTransportDisabled
+
+			previousNode.handleRemoval(key)
+		}
+	}}}
+
+	open fun processBlockAddition(new: BlockSnapshot) { manager.scope.launch {
+		if (new.type.isAir) {
+			processBlockRemoval(toBlockKey(new.x, new.y, new.z))
+
+			return@launch
+		}
+
 		withTransportDisabled { createNodeFromBlock(new) }
 	}}
+
+	open fun processBlockAdditions(changes: Iterable<BlockSnapshot>) { manager.scope.launch { withTransportDisabled {
+		for (new in changes) {
+			createNodeFromBlock(new)
+		}
+	}}}
 
 	/**
 	 * Handle the creation / loading of the node into memory
@@ -258,7 +278,11 @@ abstract class ChunkTransportNetwork(val manager: ChunkTransportManager) {
 
 	protected suspend inline fun withTransportDisabled(crossinline block: suspend () -> Unit) {
 		ready = false
-		block.invoke()
-		ready = true
+
+		try {
+			block.invoke()
+		} finally {
+			ready = true
+		}
 	}
 }
