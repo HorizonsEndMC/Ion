@@ -1,13 +1,10 @@
 package net.horizonsend.ion.server.features.transport
 
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
-import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot.Companion.snapshot
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.block.BlockPlaceEvent
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 
 class ChunkTransportManager(
 	val chunk: IonChunk,
@@ -41,23 +38,7 @@ class ChunkTransportManager(
 		// TODO
 	}
 
-	fun processBlockRemoval(event: BlockBreakEvent) {
-		val block = event.block
-		val key = toBlockKey(block.x, block.y, block.z)
-
-		processBlockRemoval(key)
-	}
-
-	fun processBlockAddition(event: BlockPlaceEvent) {
-		val block = event.block
-
-		val key = toBlockKey(block.x, block.y, block.z)
-		val snapshot = block.snapshot()
-
-		processBlockAddition(key, snapshot)
-	}
-
-	fun processBlockRemoval(key: Long) {
+	fun processBlockRemoval(key: BlockKey) {
 		powerNetwork.processBlockRemoval(key)
 		// TODO
 		// TODO
@@ -65,11 +46,19 @@ class ChunkTransportManager(
 //		gasGrid.processBlockRemoval(key)
 	}
 
-	fun processBlockAddition(key: Long, new: BlockSnapshot) {
-		powerNetwork.processBlockAddition(key, new)
+	fun processBlockRemovals(keys: Iterable<BlockKey>) {
+		powerNetwork.processBlockRemovals(keys)
+	}
+
+	fun processBlockAddition(new: BlockSnapshot) {
+		powerNetwork.processBlockAddition(new)
 		// TODO
 		// TODO
 //		pipeGrid.processBlockAddition(key, new)
 //		gasGrid.processBlockAddition(key, new)
+	}
+
+	fun processBlockAddition(changes: Iterable<BlockSnapshot>) {
+		powerNetwork.processBlockAdditions(changes)
 	}
 }

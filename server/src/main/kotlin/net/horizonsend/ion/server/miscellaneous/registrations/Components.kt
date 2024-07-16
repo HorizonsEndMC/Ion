@@ -89,6 +89,7 @@ import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCoold
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.TransportConfig
+import net.horizonsend.ion.server.features.transport.TransportManager
 import net.horizonsend.ion.server.features.transport.Wires
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
@@ -96,6 +97,7 @@ import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawning
+import net.horizonsend.ion.server.listener.misc.WorldEditListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 
@@ -224,6 +226,8 @@ val components: List<IonComponent> = listOf(
 	Fleets,
 	ContactsJammingSidebar,
 	CombatTimer,
+	WorldEditListener,
+	TransportManager,
 	PlanetTeleportCooldown,
 	MultiBlockDisplay,
 )

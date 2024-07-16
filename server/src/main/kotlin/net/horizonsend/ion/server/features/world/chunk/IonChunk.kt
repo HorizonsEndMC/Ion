@@ -14,8 +14,6 @@ import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
-import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.ChunkUnloadEvent
 import org.bukkit.persistence.PersistentDataType.INTEGER
@@ -110,18 +108,6 @@ class IonChunk(
 		@EventHandler
 		fun onChunkUnload(event: ChunkUnloadEvent) {
 			unregisterChunk(event.chunk)
-		}
-
-		@EventHandler
-		fun onBlockBreak(event: BlockBreakEvent) {
-			val ionChunk = event.block.chunk.ion()
-			ionChunk.transportNetwork.processBlockRemoval(event)
-		}
-
-		@EventHandler
-		fun onBlockBreak(event: BlockPlaceEvent) {
-			val ionChunk = event.block.chunk.ion()
-			ionChunk.transportNetwork.processBlockAddition(event)
 		}
 
 		/**
