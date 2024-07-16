@@ -170,7 +170,7 @@ object CustomBlocks {
 		identifier = "BATTLECRUISER_REACTOR_CORE",
 		blockData = mushroomBlockData(setOf(NORTH, UP, WEST)),
 		tool = "pickaxe",
-		drops = listOf()
+		drops = customItemDrop("BATTLECRUISER_REACTOR_CORE")
 	)
     )
 
@@ -179,7 +179,7 @@ object CustomBlocks {
         identifier = "BARGE_REACTOR_CORE",
         blockData = mushroomBlockData(setOf(NORTH, EAST, WEST)),
         tool = "pickaxe",
-        drops = listOf()
+        drops = customItemDrop("BARGE_REACTOR_CORE")
     )
     )
 
@@ -188,7 +188,7 @@ object CustomBlocks {
         identifier = "CRUISER_REACTOR_CORE",
         blockData = mushroomBlockData(setOf(NORTH, DOWN, WEST)),
         tool = "pickaxe",
-        drops = listOf()
+        drops = customItemDrop("CRUISER_REACTOR_CORE")
 	)
     )
 
