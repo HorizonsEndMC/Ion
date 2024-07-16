@@ -172,7 +172,13 @@ abstract class SimpleProjectile(
 
 		if (block != null) addToDamagers(world, block, shooter, explosionPower.roundToInt())
 
-		if (entity != null && entity is LivingEntity) when (shooter) {
+		if (entity != null && entity is LivingEntity) {
+			onHitEntity(entity)
+		}
+	}
+
+	protected open fun onHitEntity(entity: LivingEntity) {
+		when (shooter) {
 			is PlayerDamager -> entity.damage(10.0, shooter.player)
 			is EntityDamager -> entity.damage(10.0, shooter.entity)
 			else -> entity.damage(10.0)
