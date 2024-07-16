@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.ai.module.pathfinding.SteeringPathfin
 import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.module.positioning.BasicPositioningModule
 import net.horizonsend.ion.server.features.ai.module.positioning.StandoffPositioningModule
+import net.horizonsend.ion.server.features.ai.module.targeting.ClosestSmallStarshipTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.HighestDamagerTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
@@ -101,7 +102,7 @@ object AIControllerFactories : IonServerComponent() {
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
 			builder.addModule("targeting", ClosestTargetingModule(it, 1500.0, null).apply { sticky = true })
-			builder.addModule("combat", FrigateCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
 			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
 			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
@@ -112,6 +113,82 @@ object AIControllerFactories : IonServerComponent() {
 
         build()
     }
+
+	val advancedFrigate = registerFactory("ADVANCED_FRIGATE") {
+        setControllerTypeName("Advanced Frigate")
+
+        setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			builder.addModule("targeting", ClosestSmallStarshipTargetingModule(it, 700.0, null).apply { sticky = true })
+			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+
+			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
+			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
+			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+
+			builder
+        }
+
+        build()
+	}
+
+	val destroyer = registerFactory("DESTROYER") {
+		setControllerTypeName("Destroyer")
+
+		setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = true })
+			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+
+			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
+			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
+			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+
+			builder
+		}
+
+		build()
+	}
+
+	val advancedDestroyer = registerFactory("ADVANCED_DESTROYER") {
+		setControllerTypeName("Advanced Destroyer")
+
+		setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = true })
+			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = false) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+
+			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
+			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
+			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+
+			builder
+		}
+
+		build()
+	}
+
+	val battlecruiser = registerFactory("BATTLECRUISER") {
+		setControllerTypeName("Battlecruiser")
+
+		setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = true })
+			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+
+			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
+			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
+			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+
+			builder
+		}
+
+		build()
+	}
 
 	val passive_cruise = registerFactory("EXPLORER_CRUISE") {
 		setControllerTypeName("Starfighter")

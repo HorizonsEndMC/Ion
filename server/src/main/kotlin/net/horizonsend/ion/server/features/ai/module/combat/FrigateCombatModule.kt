@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import java.util.function.Supplier
 
-class FrigateCombatModule(controller: AIController, targetingSupplier: Supplier<AITarget?>) : CombatModule(controller, targetingSupplier) {
+class FrigateCombatModule(controller: AIController, private val toggleRandomTargeting: Boolean = true, targetingSupplier: Supplier<AITarget?>) : CombatModule(controller, targetingSupplier) {
 	var leftFace: Boolean = false
 	var ticks = 0
 	private var aimAtRandom = false
@@ -35,7 +35,7 @@ class FrigateCombatModule(controller: AIController, targetingSupplier: Supplier<
 			direction = direction
 		)
 
-		if (ticks % 40 == 0) {
+		if (toggleRandomTargeting && ticks % 40 == 0) {
 			aimAtRandom = !aimAtRandom
 		}
 	}
