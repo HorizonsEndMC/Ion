@@ -57,7 +57,7 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode, Dest
 	}
 
 	override suspend fun finishChain(head: BranchHead<ChunkPowerNetwork>) {
-		val origin = head.holder.origin
+		val origin = head.holder.getOrigin()
 
 		head.markDead()
 
