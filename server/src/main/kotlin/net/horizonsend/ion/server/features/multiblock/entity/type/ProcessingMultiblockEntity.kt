@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type
 
+import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -15,6 +16,7 @@ import org.bukkit.persistence.PersistentDataType
  * @param currentProgress The current progress of the process
  **/
 abstract class ProcessingMultiblockEntity(
+	manager: ChunkMultiblockManager,
 	type: Multiblock,
 	x: Int,
 	y: Int,
@@ -23,7 +25,7 @@ abstract class ProcessingMultiblockEntity(
 	signOffset: BlockFace,
 	val requiredProgress: Int,
 	var currentProgress: Int = 0
-) : MultiblockEntity(type, x, y, z, world, signOffset), SyncTickingMultiblockEntity {
+) : MultiblockEntity(manager, type, x, y, z, world, signOffset), SyncTickingMultiblockEntity {
 	//TODO
 	// -recipe system
 
