@@ -37,11 +37,12 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionCapturable
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation.Companion.calculateCost
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -58,8 +59,6 @@ import java.util.*
 
 @CommandAlias("spacestation|nspacestation|nstation|sstation|station|nationspacestation")
 object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
-	val disallowedWorlds = listOf("horizon", "trench", "au0821")
-
 	private fun formatSpaceStationMessage(message: String, vararg params: Any) = template(
 		text(message, GRAY),
 		paramColor = AQUA,
@@ -239,10 +238,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			"You can't create space stations here!"
 		}
 
-		failIf(!SpaceWorlds.contains(sender.world)) { "You can only create a space station in space" }
-		failIf(
-			disallowedWorlds.contains(sender.world.name.lowercase())
-		) { "Space stations cannot be created in systems with no security" }
+		failIf(!sender.world.ion.hasFlag(WorldFlag.ALLOW_SPACE_STATIONS)) { "You can't create space stations in this world!" }
 
 		validateName(name)
 
