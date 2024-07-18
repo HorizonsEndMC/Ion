@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATE_DARK_RED
+import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -14,6 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.Entity
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
@@ -39,8 +41,9 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 		at(0, 0,0 ).type(Material.BEDROCK)
 	}
 
-	override fun createEntity(data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): TestMultiblockEntity {
+	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): TestMultiblockEntity {
 		return TestMultiblockEntity(
+			manager,
 			world,
 			x,
 			y,
@@ -51,13 +54,14 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 	}
 
 	class TestMultiblockEntity(
+		manager: ChunkMultiblockManager,
 		world: World,
 		x: Int,
 		y: Int,
 		z: Int,
 		signOffset: BlockFace,
 		var string: String
-	) : MultiblockEntity(TestMultiblock, x, y, z, world, signOffset), SyncTickingMultiblockEntity {
+	) : MultiblockEntity(manager, TestMultiblock, x, y, z, world, signOffset), SyncTickingMultiblockEntity {
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			store.addAdditionalData(NamespacedKeys.key("test"), PersistentDataType.STRING, string)
 		}
@@ -69,14 +73,19 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 
 			val sign = getSign()
 
-			if (sign == null) {
+			if (isSignLoaded() && sign == null) {
 				IonServer.slF4JLogger.warn("No sign at ticking multiblock! [$x, $y, $z] $facing")
+
+
+
 				return
 			}
 
-			sign.line(2, GsonComponentSerializer.gson().deserializeOrNull(string) ?: Component.text("fallback component", PIRATE_DARK_RED))
-
-			Tasks.sync { sign.update() }
+			// If null, its just not loaded
+			sign?.let {
+				sign.front().line(2, GsonComponentSerializer.gson().deserializeOrNull(string) ?: Component.text("fallback component", PIRATE_DARK_RED))
+				Tasks.sync { sign.update() }
+			}
 		}
 
 		override fun toString(): String {
