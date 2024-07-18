@@ -12,9 +12,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
-import org.slf4j.Logger
 import java.util.function.Supplier
 
 /**
@@ -23,14 +21,11 @@ import java.util.function.Supplier
  * This spawner is constructed on the fly for each ship that would implement reinforcement mechanics.
  **/
 class ReinforcementSpawner(
-	logger: Logger,
 	private val reinforced: AIController,
 	reinforcementPool: List<AITemplate.SpawningInformationHolder>
 ) : AISpawner(
 	"NULL",
-	logger,
 	SingleSpawn(
-		logger,
 		WeightedShipSupplier(*reinforcementPool.toTypedArray()),
 		Supplier {
 			return@Supplier formatLocationSupplier(
@@ -38,9 +33,7 @@ class ReinforcementSpawner(
 				250.0,
 				500.0
 			).get()
-		},
-		{},
-		Supplier { text("Responding Vessel") }
+		}
 	)
 ) {
 	override val pointChance: Double = 0.0

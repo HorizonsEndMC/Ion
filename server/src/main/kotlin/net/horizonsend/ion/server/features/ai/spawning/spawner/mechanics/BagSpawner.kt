@@ -1,21 +1,20 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
 import net.horizonsend.ion.server.configuration.IntegerAmount
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import org.bukkit.Location
-import org.slf4j.Logger
 import java.util.function.Supplier
 
 class BagSpawner(
-	logger: Logger,
 	locationProvider: Supplier<Location?>,
 	private val budget: IntegerAmount,
-	private val bagSpawnedShips: List<BagSpawnShip>,
-	callback: (ActiveControlledStarship) -> Unit = {},
-) : MultiSpawner(logger, locationProvider, callback) {
-	override fun getShips(): List<GroupSpawnedShip> {
+	vararg bagSpawnedShips: BagSpawnShip
+) : MultiSpawner(locationProvider) {
+	private val bagSpawnedShips: List<BagSpawnShip> = listOf(*bagSpawnedShips)
+
+	override fun getShips(): List<SpawnedShip> {
 		var points = budget.get()
-		val ships = mutableListOf<GroupSpawnedShip>()
+		val ships = mutableListOf<SpawnedShip>()
 
 		while (points > 0) {
 			val remainingAvailable = bagSpawnedShips.filter { it.cost <= points }
@@ -31,7 +30,11 @@ class BagSpawner(
 	}
 
 	data class BagSpawnShip(
-		val ship: GroupSpawnedShip,
+		val ship: SpawnedShip,
 		val cost: Int,
 	)
+
+	companion object {
+		fun asBagSpawned(ship: SpawnedShip, cost: Int) = BagSpawnShip(ship, cost)
+	}
 }
