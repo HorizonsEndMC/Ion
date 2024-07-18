@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.powerbank.new
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
+import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -95,6 +96,7 @@ abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>
 	}
 
 	abstract class PowerBankEntity(
+		manager: ChunkMultiblockManager,
 		multiblock: NewPowerBankMultiblock<*>,
 		x: Int,
 		y: Int,
@@ -103,7 +105,7 @@ abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>
 		signDirection: BlockFace,
 		override val maxPower: Int,
 		override var powerUnsafe: Int = 0
-	) : MultiblockEntity(multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
 		override val powerDisplay: TextDisplayHandler = createTextDisplayHandler()
 
 		override fun handleRemoval() {
