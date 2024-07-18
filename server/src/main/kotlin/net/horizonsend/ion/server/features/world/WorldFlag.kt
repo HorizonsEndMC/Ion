@@ -8,4 +8,5 @@ enum class WorldFlag {
     ALLOW_SPACE_STATIONS,
     ALLOW_AI_SPAWNS,
 	ARENA,
+	NO_SHIP_LOCKS
 }
