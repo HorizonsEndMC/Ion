@@ -31,6 +31,7 @@ class DirectionalNode(override val network: ChunkPowerNetwork) : SingleNode, Ste
 	}
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
+		if (node is SpongeNode) return false
 		return node !is SourceNode<*>
 	}
 

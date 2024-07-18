@@ -190,9 +190,9 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 	}
 
 	suspend fun addInvertedMergeNode(key: BlockKey) {
-//		network.nodes[key] = InvertedDirectionalNode(network, key).apply {
-//			onPlace(position)
-//		}
+		network.nodes[key] = InvertedDirectionalNode(network, key).apply {
+			onPlace(position)
+		}
 	}
 
 	suspend fun addEqualSplitterNode(position: BlockKey) {
