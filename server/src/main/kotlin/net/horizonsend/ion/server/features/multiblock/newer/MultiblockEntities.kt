@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.newer
 
+import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -18,11 +19,13 @@ object MultiblockEntities {
 	/**
 	 * Add a new multiblock entity to the chunk
 	 **/
-	fun setMultiblockEntity(world: World, x: Int, y: Int, z: Int, entity: MultiblockEntity): Boolean {
+	fun setMultiblockEntity(world: World, x: Int, y: Int, z: Int, entity: (ChunkMultiblockManager) -> MultiblockEntity): Boolean {
 		val ionChunk = getIonChunk(world, x, y, z) ?: return false
 
 		ionChunk.region.launch {
-			ionChunk.multiblockManager.addMultiblockEntity(entity, save = true)
+			val manager = ionChunk.multiblockManager
+
+			manager.addMultiblockEntity(entity(manager), save = true)
 		}
 
 		return true
