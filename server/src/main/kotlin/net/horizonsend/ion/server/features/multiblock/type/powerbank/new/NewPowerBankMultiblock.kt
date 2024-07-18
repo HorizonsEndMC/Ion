@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity.Companion.createTextDisplayHandler
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.SignMultiblock
@@ -20,7 +21,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataType
 
-abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>(tierText: String) : Multiblock(), EntityMultiblock<T>, SignMultiblock, InteractableMultiblock {
+abstract class NewPowerBankMultiblock(tierText: String) : Multiblock(), EntityMultiblock<NewPowerBankMultiblock.PowerBankEntity>, SignMultiblock, InteractableMultiblock {
 	abstract val tierMaterial: Material
 	override val name = "newpowerbank"
 
@@ -95,9 +96,9 @@ abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>
 		player.information("Unsafe Power: ${entity.powerUnsafe}")
 	}
 
-	abstract class PowerBankEntity(
+	class PowerBankEntity(
 		manager: ChunkMultiblockManager,
-		multiblock: NewPowerBankMultiblock<*>,
+		multiblock: NewPowerBankMultiblock,
 		x: Int,
 		y: Int,
 		z: Int,
@@ -106,7 +107,7 @@ abstract class NewPowerBankMultiblock<T: NewPowerBankMultiblock.PowerBankEntity>
 		override val maxPower: Int,
 		override var powerUnsafe: Int = 0
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
-		override val powerDisplay: TextDisplayHandler = createTextDisplayHandler()
+		override val powerDisplay: TextDisplayHandler = createTextDisplayHandler(this)
 
 		override fun handleRemoval() {
 			powerDisplay.remove()
