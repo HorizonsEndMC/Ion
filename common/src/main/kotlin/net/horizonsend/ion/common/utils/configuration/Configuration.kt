@@ -1,6 +1,7 @@
 package net.horizonsend.ion.common.utils.configuration
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
@@ -56,5 +57,10 @@ object Configuration {
 		val file = directory.resolve(fileName)
 
 		json.encodeToStream(clazz, file.outputStream())
+	}
+
+	inline fun <reified T> write(clazz: T): String {
+
+		return json.encodeToString(clazz)
 	}
 }
