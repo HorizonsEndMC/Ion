@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.ai.starship
 
-import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
@@ -9,9 +8,13 @@ import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.faction.AIFaction
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHER_STANDARD
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人_STANDARD
+import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 
 /**
  * Fully realized, spawnable, AI templates
@@ -61,7 +64,7 @@ object AITemplateRegistry {
 			activationThreshold = 0.85,
 			delay = 100L,
 			broadcastMessage = "<italic><$WATCHER_STANDARD>You cannot decipher the transmission from the incoming alien ship",
-			reinforcementShips = listOf(spawnChance(VERDOLITH_REINFORCEMENT, 1.0))
+			reinforcementShips = listOf(spawnChance(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 1.0))
 		))
 		.build()
 	)
@@ -84,13 +87,13 @@ object AITemplateRegistry {
 			activationThreshold = 0.75,
 			delay = 100L,
 			broadcastMessage = "<italic><$WATCHER_STANDARD>You cannot decipher the transmission from the incoming alien ship",
-			reinforcementShips = listOf(spawnChance(VERDOLITH_REINFORCEMENT, 1.0))
+			reinforcementShips = listOf(spawnChance(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 1.0))
 		))
 		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
 			activationThreshold = 0.25,
 			delay = 100L,
 			broadcastMessage = "<italic><$WATCHER_STANDARD>You cannot decipher the transmission from the incoming alien ship",
-			reinforcementShips = listOf(spawnChance(VERDOLITH_REINFORCEMENT, 1.0))
+			reinforcementShips = listOf(spawnChance(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 1.0))
 		))
 		.build()
 	)
@@ -102,7 +105,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.frigate,
 		engagementRange = 2500.0
 	)
-		.addFactionConfiguration(AIFaction.吃饭人)
+		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
@@ -119,7 +122,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.frigate,
 		engagementRange = 2500.0
 	)
-		.addFactionConfiguration(AIFaction.吃饭人)
+		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
@@ -136,14 +139,14 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.frigate,
 		engagementRange = 2500.0
 	)
-		.addFactionConfiguration(AIFaction.WATCHERS)
+		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
 		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
 			broadcastMessage = "<italic><$吃饭人_STANDARD>You cannot decipher the transmission from the incoming alien ship",
-			reinforcementShips = listOf(spawnChance(MIANBAO_REINFORCEMENT, 1.0))
+			reinforcementShips = listOf(spawnChance(吃饭人.asSpawnedShip(MIANBAO_REINFORCEMENT), 1.0))
 		))
 		.build()
 	)
@@ -154,14 +157,14 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.frigate,
 		engagementRange = 2500.0
 	)
-		.addFactionConfiguration(AIFaction.WATCHERS)
+		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
 		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
 			broadcastMessage = "<italic><$吃饭人_STANDARD>You cannot decipher the transmission from the incoming alien ship",
-			reinforcementShips = listOf(spawnChance(MALINGSHU_REINFORCEMENT, 1.0))
+			reinforcementShips = listOf(spawnChance(吃饭人.asSpawnedShip(MALINGSHU_REINFORCEMENT), 1.0))
 		))
 		.build()
 	)
@@ -350,7 +353,7 @@ object AITemplateRegistry {
 			delay = 100L,
 			broadcastMessage = "<italic><red>Did you really think we would risk this ship without an escort fleet? We'll enjoy looting your corpse!",
 			reinforcementShips = listOf(
-				spawnChance(CORMORANT, 1.0)
+				spawnChance(PIRATES.asSpawnedShip(CORMORANT), 1.0)
 			)
 		))
 		.build()
@@ -630,7 +633,7 @@ object AITemplateRegistry {
 			activationThreshold = 0.75,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
-			reinforcementShips = listOf(spawnChance(BULWARK, 1.0))
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
 		))
 		.build()
 	)
@@ -648,7 +651,7 @@ object AITemplateRegistry {
 			activationThreshold = 0.65,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
-			reinforcementShips = listOf(spawnChance(DAGGER, 1.0))
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 1.0))
 		))
 		.build()
 	)
@@ -666,7 +669,7 @@ object AITemplateRegistry {
 			activationThreshold = 0.5,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
-			reinforcementShips = listOf(spawnChance(DAGGER, 1.0))
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 1.0))
 		))
 		.build()
 	)
@@ -684,7 +687,7 @@ object AITemplateRegistry {
 			activationThreshold = 0.75,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
-			reinforcementShips = listOf(spawnChance(BULWARK, 1.0))
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
 		))
 		.build()
 	)
@@ -702,7 +705,7 @@ object AITemplateRegistry {
 			activationThreshold = 0.55,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
-			reinforcementShips = listOf(spawnChance(DAGGER, 1.0))
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 1.0))
 		))
 		.build()
 	)
@@ -720,7 +723,7 @@ object AITemplateRegistry {
 			activationThreshold = 0.55,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
-			reinforcementShips = listOf(spawnChance(DAGGER, 1.0))
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 1.0))
 		))
 		.build()
 	)
@@ -738,7 +741,7 @@ object AITemplateRegistry {
 			activationThreshold = 0.55,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
-			reinforcementShips = listOf(spawnChance(DAGGER, 1.0))
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 1.0))
 		))
 		.build()
 	)
@@ -795,17 +798,13 @@ object AITemplateRegistry {
 			activationThreshold = 0.85,
 			delay = 100L,
 			broadcastMessage = "<italic><red>Did you really think we would risk this ship without an escort fleet? We'll enjoy looting your corpse!",
-			reinforcementShips = listOf(spawnChance(RAIDER, 1.0))
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RAIDER), 1.0))
 		))
 		.build()
 	)
 
 	// END_TSAII
-	fun registerTemplate(
-		default: AITemplate
-	): AITemplate {
-		val template =  Configuration.loadOrDefault(TEMPLATE_DIRECTORY, "${default.identifier}.json", default)
-
+	fun registerTemplate(template: AITemplate): AITemplate {
 		templates[template.identifier] = template
 
 		return template
@@ -850,5 +849,5 @@ object AITemplateRegistry {
 	/**
 	 * Formats a SpawningInformationHolder for the specified template and probability
 	 **/
-	fun spawnChance(template: AITemplate, probability: Double): AITemplate.SpawningInformationHolder = AITemplate.SpawningInformationHolder(template, probability)
+	fun spawnChance(template: SpawnedShip, probability: Double): AITemplate.SpawningInformationHolder = AITemplate.SpawningInformationHolder(template, probability)
 }

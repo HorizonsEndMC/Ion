@@ -25,8 +25,7 @@ import kotlin.random.Random
 
 abstract class AISpawner(
 	val identifier: String,
-	val logger: Logger,
-	val mechanic: SpawnerMechanic,
+	private val mechanic: SpawnerMechanic,
 ) {
 	abstract val pointChance: Double
 	abstract val pointThreshold: Int
@@ -35,7 +34,7 @@ abstract class AISpawner(
 	var lastTriggered: Long = 0
 
 	/** Tick points, possibly trigger a spawn */
-	open fun tickPoints() {
+	open fun tickPoints(logger: Logger) {
 		handleSuccess(logger)
 
 		if (Random.nextDouble() >= pointChance) return
@@ -56,7 +55,7 @@ abstract class AISpawner(
 
 	/** Entry point for the spawning mechanics, spawns the ship and handles any exceptions */
 	fun trigger(logger: Logger, scope: CoroutineScope) = scope.launch {
-		try { mechanic.trigger() }
+		try { mechanic.trigger(logger) }
 		catch (e: SpawningException) { handleException(logger, e) }
 		catch (e: Throwable) {
 			logger.error("An error occurred when attempting to execute spawner: ${e.message}")
