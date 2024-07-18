@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.starshipweapon
 
+import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -15,7 +16,15 @@ interface EntityMultiblock<T : MultiblockEntity> {
 	/**
 	 * Create the multiblock entity using the stored data
 	 **/
-	fun createEntity(data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): T
+	fun createEntity(
+		manager: ChunkMultiblockManager,
+		data: PersistentMultiblockData,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		signOffset: BlockFace
+	): T
 
 	fun getMultiblockEntity(world: World, x: Int, y: Int, z: Int): T? {
 		val chunkX = x.shr(4)
