@@ -168,14 +168,17 @@ object MultiblockAccess : IonServerComponent() {
 			}
 
 			// Create blank multiblock entity
-			setMultiblockEntity(world, x, y, z, multiblock.createEntity(
-				PersistentMultiblockData(x, y, z, multiblock, face),
-				world,
-				x,
-				y,
-				z,
-				face
-			))
+			setMultiblockEntity(world, x, y, z) {
+				multiblock.createEntity(
+					it,
+					PersistentMultiblockData(x, y, z, multiblock, face),
+					world,
+					x,
+					y,
+					z,
+					face
+				)
+			}
 		}
 
 		return true
