@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.proxy.IonProxyComponent
 import net.horizonsend.ion.proxy.PLUGIN
+import net.horizonsend.ion.proxy.features.misc.GameModeTracking.gameMode
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.newline
@@ -134,10 +135,15 @@ object TabList : IonProxyComponent() {
 	}
 
 	private fun rebuildTabLists() {
-		PLUGIN.server.allPlayers.forEach { rebuildTabList(it.tabList) }
+		PLUGIN.server.allPlayers.forEach { rebuildTabList(it, it.tabList) }
 	}
 
-	private fun rebuildTabList(tabList: TabList) {
+	private fun rebuildTabList(owner: Player, tabList: TabList) {
+		println(owner.gameMode)
+		if (owner.gameMode == 3) {
+			return
+		}
+
 		val serverHeights = PLUGIN.server.allServers.associateWith { getSectionHeight(it) }
 		val columns = PLUGIN.tabListConfiguration.columns
 		val totalHeight = getTotalHeight(serverHeights)
@@ -252,4 +258,6 @@ object TabList : IonProxyComponent() {
 			.displayName(displayName)
 			.build()
 	}
+
+
 }

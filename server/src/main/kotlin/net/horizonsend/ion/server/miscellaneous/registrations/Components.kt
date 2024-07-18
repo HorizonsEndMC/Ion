@@ -34,8 +34,8 @@ import net.horizonsend.ion.server.features.misc.DutyModeMonitor
 import net.horizonsend.ion.server.features.misc.EventLogger
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
 import net.horizonsend.ion.server.features.misc.PacketHandler
+import net.horizonsend.ion.server.features.misc.ProxyMessaging
 import net.horizonsend.ion.server.features.misc.Shuttles
-import net.horizonsend.ion.server.features.misc.TPSMonitor
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipes
@@ -96,7 +96,7 @@ val components: List<IonComponent> = listOf(
 	Discord,
 	Notify,
 	Shuttles,
-	TPSMonitor,
+	ProxyMessaging,
 
 	PlayerXPLevelCache,
 	Levels,
