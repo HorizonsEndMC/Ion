@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
-import com.manya.pdc.base.EnumDataType
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
@@ -16,7 +15,6 @@ import net.horizonsend.ion.server.features.transport.step.result.ChangeHead
 import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -38,7 +36,6 @@ class PowerEqualSplitterNode(override val network: ChunkPowerNetwork) : SingleNo
 	override suspend fun getNextNode(head: SingleBranchHead<ChunkPowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? = getTransferableNodes()
 		.filterNot { head.previousNodes.contains(it.first) }
 		.randomOrNull()
-
 
 	override suspend fun handleHeadStep(head: SingleBranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
 		val transferable = getTransferableNodes()
@@ -68,9 +65,5 @@ class PowerEqualSplitterNode(override val network: ChunkPowerNetwork) : SingleNo
 
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
 		position = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
-	}
-
-	companion object {
-		val materialDataType = EnumDataType(Material::class.java)
 	}
 }
