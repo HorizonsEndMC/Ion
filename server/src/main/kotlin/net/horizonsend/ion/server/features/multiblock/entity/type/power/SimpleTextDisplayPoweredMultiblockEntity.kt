@@ -14,22 +14,24 @@ interface SimpleTextDisplayPoweredMultiblockEntity : PoweredMultiblockEntity {
 		powerDisplay.setText(formatPower())
 	}
 
-	fun createTextDisplayHandler(): TextDisplayHandler {
-		require(this is MultiblockEntity)
+	companion object {
+		fun createTextDisplayHandler(entity: SimpleTextDisplayPoweredMultiblockEntity): TextDisplayHandler {
+			require(entity is MultiblockEntity)
 
-		val signDirection = facing.oppositeFace
-		val signLoc = Vec3i(x, y, z) + Vec3i(signDirection.modX, 0, signDirection.modZ)
+			val signDirection = entity.facing.oppositeFace
+			val signLoc = Vec3i(entity.x, entity.y, entity.z) + Vec3i(signDirection.modX, 0, signDirection.modZ)
 
-		// 70% of the way through the block
-		val offset = signDirection.direction.multiply(0.39)
+			// 70% of the way through the block
+			val offset = signDirection.direction.multiply(0.39)
 
-		return TextDisplayHandler(
-			world,
-			signLoc.x.toDouble() + 0.5 - offset.x,
-			signLoc.y.toDouble() + 0.4,
-			signLoc.z.toDouble() + 0.5 - offset.z,
-			0.5f,
-			signDirection
-		)
+			return TextDisplayHandler(
+				entity.world,
+				signLoc.x.toDouble() + 0.5 - offset.x,
+				signLoc.y.toDouble() + 0.4,
+				signLoc.z.toDouble() + 0.5 - offset.z,
+				0.5f,
+				signDirection
+			)
+		}
 	}
 }
