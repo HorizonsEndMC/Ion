@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.entity
 
+import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -7,6 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -25,6 +27,7 @@ import org.bukkit.block.Sign
  * @param facing The direction this multiblock is oriented [from the origin]
  **/
 abstract class MultiblockEntity(
+	val manager: ChunkMultiblockManager,
 	val multiblock: Multiblock,
 
 	var x: Int,
@@ -54,6 +57,11 @@ abstract class MultiblockEntity(
 	/** Logic to be run upon the removal of this entity */
 	open fun handleRemoval() {}
 
+	/** Removes this multiblock entity */
+	fun remove() {
+		manager.removeMultiblockEntity(x, y, z)
+	}
+
 	/**
 	 * Stores any additional data for this multiblock (e.g. power, owner, etc)
 	 **/
@@ -71,6 +79,13 @@ abstract class MultiblockEntity(
 		storeAdditionalData(store)
 
 		return store
+	}
+
+	fun isSignLoaded(): Boolean {
+		val signDirection = facing.oppositeFace
+		val signLoc = Vec3i(x, y, z) + Vec3i(signDirection.modX, 0, signDirection.modZ)
+
+		return isBlockLoaded(world, signLoc.x, signLoc.y, signLoc.z)
 	}
 
 	/**
