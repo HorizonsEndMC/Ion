@@ -8,11 +8,19 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataType
 
-data object NewPowerBankMultiblockTier1 : NewPowerBankMultiblock<NewPowerBankMultiblockTier1.NewPowerBankMultiblockTier1Entity>("&7Tier 1") {
+data object NewPowerBankMultiblockTier1 : NewPowerBankMultiblock("&7Tier 1") {
 	override val tierMaterial = Material.IRON_BLOCK
 
-	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): NewPowerBankMultiblockTier1Entity {
-		return NewPowerBankMultiblockTier1Entity(
+	override fun createEntity(
+		manager: ChunkMultiblockManager,
+		data: PersistentMultiblockData,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		signOffset: BlockFace
+	): PowerBankEntity {
+		return PowerBankEntity(
 			manager,
 			this,
 			x,
@@ -20,18 +28,8 @@ data object NewPowerBankMultiblockTier1 : NewPowerBankMultiblock<NewPowerBankMul
 			z,
 			world,
 			signOffset,
+			100_000,
 			data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0)
 		)
 	}
-
-	class NewPowerBankMultiblockTier1Entity(
-		manager: ChunkMultiblockManager,
-		multiblock: NewPowerBankMultiblock<NewPowerBankMultiblockTier1Entity>,
-		x: Int,
-		y: Int,
-		z: Int,
-		world: World,
-		signDirection: BlockFace,
-		powerUnsafe: Int
-	) : PowerBankEntity(manager, multiblock, x, y, z, world, signDirection, 300_000, powerUnsafe)
 }
