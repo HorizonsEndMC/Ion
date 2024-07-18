@@ -83,6 +83,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 
 		// Create new empty data
 		val entity = multiblock.createEntity(
+			this,
 			PersistentMultiblockData(x, y, z, multiblock, signOffset),
 			chunk.inner.world,
 			x, y, z,
@@ -158,7 +159,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 
 			val multiblock = stored.type as EntityMultiblock<*>
 
-			val entity = multiblock.createEntity(stored, chunk.inner.world, stored.x, stored.y, stored.z, stored.signOffset)
+			val entity = multiblock.createEntity(this, stored, chunk.inner.world, stored.x, stored.y, stored.z, stored.signOffset)
 
 			// No need to save a load
 			addMultiblockEntity(entity, save = false)
