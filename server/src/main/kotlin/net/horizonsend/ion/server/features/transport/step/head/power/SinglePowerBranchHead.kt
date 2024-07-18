@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwo
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.DestinationNode
 import net.horizonsend.ion.server.features.transport.node.type.StepHandler
-import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.features.transport.step.head.HeadHolder
 import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
 import org.bukkit.block.BlockFace
@@ -17,7 +16,7 @@ import org.bukkit.block.BlockFace
  *
  **/
 class SinglePowerBranchHead(
-	override val holder: Step<ChunkPowerNetwork>,
+	override val holder: HeadHolder<ChunkPowerNetwork>,
 	override var lastDirection: BlockFace,
 	override var currentNode: TransportNode,
 	override val share: Double,

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
@@ -66,7 +67,7 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 			snapshot.type == Material.REDSTONE_BLOCK -> addMergeNode(key, Material.REDSTONE_BLOCK)
 
 			// Split power evenly
-//			block.customBlock == CustomBlocks.ALUMINUM_BLOCK -> SplitterNode(this, x, y, z)
+			CustomBlocks.getByBlockData(snapshot.data) == CustomBlocks.ALUMINUM_BLOCK -> addEqualSplitterNode(key)
 
 			// Redstone controlled gate
 //			block.type.isRedstoneLamp -> GateNode(this, x, y, z)
@@ -192,5 +193,11 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 //		network.nodes[key] = InvertedDirectionalNode(network, key).apply {
 //			onPlace(position)
 //		}
+	}
+
+	suspend fun addEqualSplitterNode(position: BlockKey) {
+		network.nodes[position] = PowerEqualSplitterNode(network, position).apply {
+			onPlace(position)
+		}
 	}
 }
