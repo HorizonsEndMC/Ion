@@ -9,13 +9,12 @@ class SingleWorldSpawner(
 	val world: World,
 	override val pointChance: Double,
 	override val pointThreshold: Int,
-	logger: Logger,
 	mechanic: SpawnerMechanic
-) : AISpawner(identifier, logger, mechanic) {
-	override fun tickPoints() {
+) : AISpawner(identifier, mechanic) {
+	override fun tickPoints(logger: Logger) {
 		if (world.players.isEmpty()) return
 
-		super.tickPoints()
+		super.tickPoints(logger)
 	}
 }
 

@@ -1,17 +1,17 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import org.bukkit.Location
-import org.slf4j.Logger
 import java.util.function.Supplier
 
+/**
+ * Will always spawn the list of provided ships
+ **/
 class GroupSpawner(
-	logger: Logger,
 	locationProvider: Supplier<Location?>,
-	callback: (ActiveControlledStarship) -> Unit,
-	private val ships: MutableList<GroupSpawnedShip>
-) : MultiSpawner(logger, locationProvider, callback) {
-	override fun getShips(): List<GroupSpawnedShip> {
+	private val ships: MutableList<SpawnedShip>
+) : MultiSpawner(locationProvider) {
+	override fun getShips(): List<SpawnedShip> {
 		return ships
 	}
 }

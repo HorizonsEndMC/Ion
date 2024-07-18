@@ -21,7 +21,6 @@ import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPos
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
-import net.horizonsend.ion.server.features.ai.spawning.spawner.StandardFactionSpawner
 import net.kyori.adventure.text.Component.text
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -43,13 +42,13 @@ object AIDebugCommand : SLCommand() {
 			AIControllerFactories.presetControllers.keys
 		}
 
-		manager.commandCompletions.registerAsyncCompletion("spawnerTemplates") { c ->
-			val spawner = c.getContextValue(AISpawner::class.java)
-			if (spawner !is StandardFactionSpawner) return@registerAsyncCompletion listOf()
-			spawner.worlds.flatMapTo(mutableListOf()) {  world ->
-				world.templates.map { it.template }
-			}.mapTo(mutableSetOf()) { it.identifier }
-		}
+//		manager.commandCompletions.registerAsyncCompletion("spawnerTemplates") { c ->
+//			val spawner = c.getContextValue(AISpawner::class.java)
+//			if (spawner !is StandardFactionSpawner) return@registerAsyncCompletion listOf()
+//			spawner.worlds.flatMapTo(mutableListOf()) {  world ->
+//				world.templates.map { it.template }
+//			}.mapTo(mutableSetOf()) { it.identifier }
+//		}
 
 		manager.commandContexts.registerContext(AIControllerFactory::class.java) { AIControllerFactories[it.popFirstArg()] }
 	}

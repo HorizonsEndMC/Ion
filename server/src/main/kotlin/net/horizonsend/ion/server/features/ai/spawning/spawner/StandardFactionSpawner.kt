@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
-import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
 import net.horizonsend.ion.server.features.ai.faction.AIFaction
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
@@ -12,11 +11,9 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
-import net.horizonsend.ion.server.miscellaneous.utils.weightedRandom
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandomOrNull
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
-import org.slf4j.Logger
 import java.util.function.Supplier
 
 /**
@@ -24,7 +21,6 @@ import java.util.function.Supplier
  **/
 class StandardFactionSpawner(
 	identifier: String,
-	logger: Logger,
 	val faction: AIFaction,
 
 	/** 0: x, 1: y, 2: z, 3: world name, */
@@ -36,9 +32,7 @@ class StandardFactionSpawner(
 	val worlds: List<WorldSettings>,
 ) : AISpawner(
 	identifier,
-	logger,
 	SingleSpawn(
-		logger,
 		WeightedShipSupplier(*worlds.flatMap { it.templates }.toTypedArray()),
 		Supplier {
 			val occupiedWorlds = worlds.filter { isSystemOccupied(it.getWorld()) }
@@ -46,12 +40,9 @@ class StandardFactionSpawner(
 			val bukkitWorld = worldConfig.getWorld()
 
 			return@Supplier formatLocationSupplier(bukkitWorld, worldConfig.minDistanceFromPlayer, worldConfig.maxDistanceFromPlayer).get()
-		},
-		faction.controllerModifier,
-		faction::getAvailableName
+		}
 	)
 ) {
-
 //	override suspend fun triggerSpawn() {
 //		val (worldSettings, loc) = findSpawnLocationNearPlayer() ?: return logger.warn("Could not find spawn location!")
 //		val (x, y, z) = Vec3i(loc)
@@ -82,15 +73,6 @@ class StandardFactionSpawner(
 //			loc.world.name
 //		))
 //	}
-
-	/** Selects a starship template off of the configuration, picks, and serializes a name */
-	fun getStarshipTemplateForWorld(worldConfig: WorldSettings): Pair<AITemplate, Component> {
-		// If the value is null, it is trying to spawn a ship in a world that it is not configured for.
-		val template = worldConfig.templates.weightedRandom { it.probability }.template
-		val name = faction.getAvailableName()
-
-		return template to name
-	}
 
 	fun findSpawnLocationNearPlayer(): Pair<WorldSettings, Location>?  {
 		// Get a random world based on the weight in the config
