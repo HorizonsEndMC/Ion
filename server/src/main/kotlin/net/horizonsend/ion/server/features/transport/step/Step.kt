@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
 
 class Step<T: ChunkTransportNetwork> private constructor(
 	val network: T,
-	val origin: StepOrigin<T>,
+	private val stepOrigin: StepOrigin<T>,
 ) : HeadHolder<T> {
 	override lateinit var head: BranchHead<T>
 
@@ -23,5 +23,9 @@ class Step<T: ChunkTransportNetwork> private constructor(
 		while (!head.isDead()) {
 			head.stepForward()
 		}
+	}
+
+	override fun getOrigin(): StepOrigin<T> {
+		return stepOrigin
 	}
 }
