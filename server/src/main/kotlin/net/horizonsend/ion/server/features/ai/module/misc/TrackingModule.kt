@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getDirection
 import org.apache.commons.collections4.queue.CircularFifoQueue
 import org.bukkit.util.Vector
+import java.util.concurrent.ThreadLocalRandom
 import java.util.function.Supplier
 import kotlin.math.cos
 import kotlin.math.sqrt
@@ -15,6 +16,7 @@ class TrackingModule(
     controller: AIController,
     private val trackDuration: Int,
     private val projectileVelocity: Double,
+    private val inaccuracyDegrees: Double,
     private val targetingSupplier: Supplier<AITarget?>
 ) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
     private val lastMovements = CircularFifoQueue<Vec3i>(trackDuration)
@@ -47,7 +49,11 @@ class TrackingModule(
             val delta = sqrt(b.squared() - (4 * a * c))
             val t = if (a != 0.0) -(b + delta) / (2 * a) else 0.0
 
+            val inaccuracyRadians = Math.toRadians(inaccuracyDegrees)
             offsetVector = averageVelocity.clone().multiply(t)
+                .rotateAroundX(ThreadLocalRandom.current().nextDouble(-inaccuracyRadians, inaccuracyRadians))
+                .rotateAroundY(ThreadLocalRandom.current().nextDouble(-inaccuracyRadians, inaccuracyRadians))
+                .rotateAroundZ(ThreadLocalRandom.current().nextDouble(-inaccuracyRadians, inaccuracyRadians))
         }
     }
 
