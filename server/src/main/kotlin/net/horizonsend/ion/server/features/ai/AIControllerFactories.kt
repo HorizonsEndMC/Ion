@@ -122,7 +122,7 @@ object AIControllerFactories : IonServerComponent() {
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
 			builder.addModule("targeting", ClosestSmallStarshipTargetingModule(it, 700.0, null).apply { sticky = true })
-			builder.addModule("tracking", TrackingModule(it, 5, 1800.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			builder.addModule("tracking", TrackingModule(it, 5, 1800.0, 15.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TrackingModule>("tracking").get().findTarget() })
 
 			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
@@ -180,7 +180,7 @@ object AIControllerFactories : IonServerComponent() {
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
 			builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = true })
-			builder.addModule("tracking", TrackingModule(it, 5, 87.5) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			builder.addModule("tracking", TrackingModule(it, 5, 87.5, 15.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TrackingModule>("tracking").get().findTarget() })
 
 			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
