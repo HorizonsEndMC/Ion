@@ -92,7 +92,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 		addMultiblockEntity(entity)
 
 		if (entity is PoweredMultiblockEntity) {
-			chunk.transportNetwork.powerNetwork.handleNewPoweredMultiblock(entity)
+			chunk.transportNetwork.powerNetwork.network.handleNewPoweredMultiblock(entity)
 		}
 	}
 

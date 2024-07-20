@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
@@ -22,8 +22,8 @@ import org.bukkit.persistence.PersistentDataType
  *
  * Since there is no use in keeping the individual steps, all touching sponges are consolidated into a single node with multiple inputs / outputs, weighted evenly
  **/
-class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode, SpongeNode>, StepHandler<ChunkPowerNetwork> {
-	constructor(network: ChunkPowerNetwork, origin: BlockKey) : this(network) {
+class SpongeNode(override val network: PowerNetwork) : MultiNode<SpongeNode, SpongeNode>, StepHandler<PowerNetwork> {
+	constructor(network: PowerNetwork, origin: BlockKey) : this(network) {
 		positions.add(origin)
 	}
 
@@ -57,12 +57,12 @@ class SpongeNode(override val network: ChunkPowerNetwork) : MultiNode<SpongeNode
 		}
 	}
 
-	override suspend fun handleHeadStep(head: SingleBranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+	override suspend fun handleHeadStep(head: SingleBranchHead<PowerNetwork>): StepResult<PowerNetwork> {
 		// Simply move on to the next node
 		return MoveForward()
 	}
 
-	override suspend fun getNextNode(head: SingleBranchHead<ChunkPowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? = getTransferableNodes()
+	override suspend fun getNextNode(head: SingleBranchHead<PowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? = getTransferableNodes()
 		.filterNot { head.previousNodes.contains(it.first) }
 		.firstOrNull()
 
