@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node
 
-import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -59,18 +60,27 @@ fun getNode(world: World, key: BlockKey, networkType: NetworkType): TransportNod
 
 enum class NetworkType {
 	POWER {
-		override fun get(chunk: IonChunk): ChunkTransportNetwork {
-			return chunk.transportNetwork.powerNetwork
+		override fun get(chunk: IonChunk): TransportNetwork {
+			return chunk.transportNetwork.powerNetwork.network
+		}
+
+		override fun get(ship: ActiveStarship): TransportNetwork {
+			TODO("Not yet implemented")
 		}
 	},
 	GAS {
-		override fun get(chunk: IonChunk): ChunkTransportNetwork {
-			return chunk.transportNetwork.powerNetwork
+		override fun get(chunk: IonChunk): TransportNetwork {
+			return chunk.transportNetwork.powerNetwork.network
+		}
+
+		override fun get(ship: ActiveStarship): TransportNetwork {
+			TODO("Not yet implemented")
 		}
 	},
 
 
 	;
 
-	abstract fun get(chunk: IonChunk): ChunkTransportNetwork
+	abstract fun get(chunk: IonChunk): TransportNetwork
+	abstract fun get(ship: ActiveStarship): TransportNetwork
 }

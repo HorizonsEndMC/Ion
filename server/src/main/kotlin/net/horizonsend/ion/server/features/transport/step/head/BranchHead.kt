@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.transport.step.head
 
-import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 
-interface BranchHead<T: ChunkTransportNetwork> {
+interface BranchHead<T: TransportNetwork> {
 	val holder: HeadHolder<T>
 
 	/** Nodes that this head has covered */
