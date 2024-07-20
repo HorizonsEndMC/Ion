@@ -197,8 +197,6 @@ object CustomBlocks {
 		)
 	))
 
-	val MOD_TABLE = register(ModTable)
-
     private fun customItemDrop(identifier: String, amount: Int = 1): Supplier<Collection<ItemStack>> {
         val customItem = CustomItems.getByIdentifier(identifier)?.constructItemStack() ?: return Supplier { listOf() }
         customItem.amount = amount

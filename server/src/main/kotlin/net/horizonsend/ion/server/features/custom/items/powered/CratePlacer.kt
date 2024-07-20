@@ -5,10 +5,10 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
+import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager.getShipmentItemId
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -47,8 +47,8 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 	override fun getPowerCapacity(itemStack: ItemStack): Int = 50_000
 	override fun getPowerUse(itemStack: ItemStack): Int = 10
 
-	override fun rebuildLore(itemStack: ItemStack) {
-		Tasks.sync { itemStack.updateMeta { it.lore(getPowerLore(itemStack)) } }
+	override fun getLoreManagers(): List<LoreCustomItem.CustomItemLoreManager> {
+		return listOf(PoweredItem.PowerLoreManager)
 	}
 
 	override fun constructItemStack(): ItemStack {

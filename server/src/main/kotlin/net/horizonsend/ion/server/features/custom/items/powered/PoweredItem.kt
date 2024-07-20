@@ -35,16 +35,8 @@ interface PoweredItem : LoreCustomItem {
 			}
 		}
 
-		rebuildLore(itemStack)
+		lineChanged(0, itemStack)
 	}
-
-	/** Format the lore of the power description **/
-	fun getPowerLore(item: ItemStack): List<Component> = listOf(ofChildren(
-		powerPrefix,
-		text(getPower(item), HEColorScheme.HE_LIGHT_GRAY),
-		text(" / ", HEColorScheme.HE_MEDIUM_GRAY),
-		text(getPowerCapacity(item), HEColorScheme.HE_LIGHT_GRAY)
-	).decoration(TextDecoration.ITALIC, false))
 
 	fun removePower(itemStack: ItemStack, amount: Int) {
 		val power = getPower(itemStack)
@@ -56,7 +48,23 @@ interface PoweredItem : LoreCustomItem {
 		setPower(itemStack, power + amount)
 	}
 
-	companion object {
+	companion object PowerLoreManager : LoreCustomItem.CustomItemLoreManager() {
 		private val powerPrefix = text("Power: ", HEColorScheme.HE_MEDIUM_GRAY)
+
+		override fun getLineAllotment(itemStack: ItemStack): Int {
+			return 1
+		}
+
+		override fun rebuildLine(itemStack: ItemStack, line: Int): Component {
+			return getPowerLore(itemStack)
+		}
+
+		/** Format the lore of the power description **/
+		fun getPowerLore(item: ItemStack): Component = ofChildren(
+			powerPrefix,
+			text(PowerDrill.getPower(item), HEColorScheme.HE_LIGHT_GRAY),
+			text(" / ", HEColorScheme.HE_MEDIUM_GRAY),
+			text(PowerDrill.getPowerCapacity(item), HEColorScheme.HE_LIGHT_GRAY)
+		).decoration(TextDecoration.ITALIC, false)
 	}
 }
