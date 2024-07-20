@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.network
 
-import net.horizonsend.ion.server.features.transport.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.network.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.transport.node.gas.GasExtractorNode
 import net.horizonsend.ion.server.features.transport.node.gas.GasNodeFactory
@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.NamespacedKey
 import java.util.concurrent.ConcurrentHashMap
 
-class ChunkGasNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(manager) {
+class GasNetwork(holder: NetworkHolder<GasNetwork>) : TransportNetwork(holder) {
 	override val namespacedKey: NamespacedKey = GAS_TRANSPORT
 	override val type: NetworkType = NetworkType.GAS
 	override val nodeFactory = GasNodeFactory(this)

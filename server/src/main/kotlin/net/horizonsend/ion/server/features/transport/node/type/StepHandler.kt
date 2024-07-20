@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.transport.node.type
 
-import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
 import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import org.bukkit.block.BlockFace
 
-interface StepHandler<T: ChunkTransportNetwork> {
+interface StepHandler<T: TransportNetwork> {
 	/**
 	 * Handle the stepping of power through this node
 	 *

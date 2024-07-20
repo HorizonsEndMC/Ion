@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node
 
 import kotlinx.serialization.SerializationException
-import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
@@ -11,13 +11,14 @@ import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import java.util.concurrent.ThreadLocalRandom
 
 /**
  * Represents a single node, or step, in transport transportNetwork
  **/
 interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion> {
 	var isDead: Boolean
-	val network: ChunkTransportNetwork
+	val network: TransportNetwork
 	override val persistentDataType: Companion get() = Companion
 
 	/**
@@ -64,7 +65,7 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	fun getTransferableNodes(): Collection<Pair<TransportNode, BlockFace>> = relationships.filter {
 		// That this node can transfer to the other
 		it.sideOne.transferAllowed && !it.sideTwo.node.isDead
-	}.map { it.sideTwo.node to it.sideOne.offset }
+	}.map { it.sideTwo.node to it.sideOne.offset }.shuffled(ThreadLocalRandom.current())
 
 	/**
 	 * Store additional required data in the serialized container
@@ -133,7 +134,7 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 			throw SerializationException("Error deserializing multiblock data!", e)
 		}
 
-		fun load(primitive: PersistentDataContainer, network: ChunkTransportNetwork): TransportNode = try {
+		fun load(primitive: PersistentDataContainer, network: TransportNetwork): TransportNode = try {
 			val type = primitive.get(NODE_TYPE, NodeType.type)!!
 
 			val instance = type.newInstance(network)
