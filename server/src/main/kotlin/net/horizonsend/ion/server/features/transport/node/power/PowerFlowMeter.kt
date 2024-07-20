@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
-import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -33,8 +33,8 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, StepHandler<ChunkPowerNetwork> {
-	constructor(network: ChunkPowerNetwork, position: BlockKey, direction: BlockFace) : this(network) {
+class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandler<PowerNetwork> {
+	constructor(network: PowerNetwork, position: BlockKey, direction: BlockFace) : this(network) {
 		this.position = position
 		this.direction = direction
 	}
@@ -53,12 +53,12 @@ class PowerFlowMeter(override val network: ChunkPowerNetwork) : SingleNode, Step
 		return node !is SourceNode<*>
 	}
 
-	override suspend fun handleHeadStep(head: SingleBranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+	override suspend fun handleHeadStep(head: SingleBranchHead<PowerNetwork>): StepResult<PowerNetwork> {
 		// Simply move on to the next node
 		return MoveForward()
 	}
 
-	override suspend fun getNextNode(head: SingleBranchHead<ChunkPowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? = getTransferableNodes()
+	override suspend fun getNextNode(head: SingleBranchHead<PowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? = getTransferableNodes()
 		.filterNot { head.previousNodes.contains(it.first) }
 		.randomOrNull()
 

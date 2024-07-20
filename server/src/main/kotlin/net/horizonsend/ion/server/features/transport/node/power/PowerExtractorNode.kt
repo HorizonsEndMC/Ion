@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -24,8 +24,8 @@ import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
-class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, SourceNode<ChunkPowerNetwork> {
-	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
+class PowerExtractorNode(override val network: PowerNetwork) : SingleNode, SourceNode<PowerNetwork> {
+	constructor(network: PowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 		network.extractors[position] = this
 	}
@@ -52,17 +52,17 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 	/*
 	 * Nothing unique with how pathfinding is done, simply move onto a random transferable neighbor that isn't a dead end
 	 */
-	override suspend fun getNextNode(head: SingleBranchHead<ChunkPowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? {
+	override suspend fun getNextNode(head: SingleBranchHead<PowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? {
 		return getTransferableNodes()
 			.filter { it.first.getTransferableNodes().isNotEmpty() }
 			.randomOrNull()
 	}
 
-	override suspend fun handleHeadStep(head: SingleBranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+	override suspend fun handleHeadStep(head: SingleBranchHead<PowerNetwork>): StepResult<PowerNetwork> {
 		return MoveForward()
 	}
 
-	override suspend fun startStep(): Step<ChunkPowerNetwork>? {
+	override suspend fun startStep(): Step<PowerNetwork>? {
 		if (extractableNodes.isEmpty()) return null
 
 		val extractablePowerPool = extractableNodes.flatMap { it.getPoweredMultiblocks() }
@@ -90,7 +90,7 @@ class PowerExtractorNode(override val network: ChunkPowerNetwork) : SingleNode, 
 		lastTicked = System.currentTimeMillis()
 	}
 
-	override suspend fun getOriginData(): StepOrigin<ChunkPowerNetwork>? {
+	override suspend fun getOriginData(): StepOrigin<PowerNetwork>? {
 		if (getTransferableNodes().isEmpty()) return null
 		return ExtractorPowerOrigin(this)
 	}
