@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node
 
 import com.manya.pdc.base.EnumDataType
-import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 import net.horizonsend.ion.server.features.transport.node.power.EndRodNode
 import net.horizonsend.ion.server.features.transport.node.power.InvertedDirectionalNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerDirectionalNode
@@ -29,7 +29,7 @@ enum class NodeType(val clazz: Class<out TransportNode>) {
 	//ITEM
 	;
 
-	fun newInstance(network: ChunkTransportNetwork): TransportNode {
+	fun newInstance(network: TransportNetwork): TransportNode {
 		return clazz.getDeclaredConstructor(network::class.java).newInstance(network)
 	}
 
