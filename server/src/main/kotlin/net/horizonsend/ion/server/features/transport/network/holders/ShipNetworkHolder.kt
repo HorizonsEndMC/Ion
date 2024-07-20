@@ -21,11 +21,12 @@ class ShipNetworkHolder<T: TransportNetwork>(val starship: ActiveStarship) : Net
 	override fun getWorld(): World = starship.world
 
 	override fun handleLoad() {
-		TODO("Not yet implemented")
+		captureNodes()
 	}
 
 	override fun handleUnload() {
-		TODO("Not yet implemented")
+		network.clearData()
+		rebuildStaticNetwork()
 	}
 
 	override fun getInternalNode(key: BlockKey): TransportNode? {
@@ -37,7 +38,17 @@ class ShipNetworkHolder<T: TransportNetwork>(val starship: ActiveStarship) : Net
 		return getInternalNode(key)
 	}
 
+	/**
+	 * Build the transport network from the starship blocks
+	 **/
 	fun captureNodes() {
+
+	}
+
+	/**
+	 * Rebuild the base networks in the chunks the ship occupies when it is released
+	 **/
+	fun rebuildStaticNetwork() {
 
 	}
 }
