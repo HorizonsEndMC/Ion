@@ -8,9 +8,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
@@ -41,7 +41,6 @@ object StarCommand : net.horizonsend.ion.server.command.SLCommand() {
 		spaceWorld: World,
 		x: Int,
 		z: Int,
-		material: Material,
 		size: Double
 	) {
 		if (!SpaceWorlds.contains(spaceWorld)) {
@@ -56,14 +55,15 @@ object StarCommand : net.horizonsend.ion.server.command.SLCommand() {
 			throw InvalidCommandArgument("A star with that name already exists!")
 		}
 
-		Star.create(name, spaceWorld.name, x, 128, z, material.name, size)
+		val seed: Long = name.hashCode().toLong()
+		Star.create(name, spaceWorld.name, x, 128, z, size, seed)
 
 		Space.reload()
 
 		Space.starNameCache[name].get().generate()
 
 		sender.success(
-			"Created star $name at $x $z in $spaceWorld with material $material and size $size"
+			"Created star $name at $x $z in $spaceWorld with size $size"
 		)
 	}
 
@@ -128,5 +128,59 @@ object StarCommand : net.horizonsend.ion.server.command.SLCommand() {
 				planet.move(newLoc, spaceWorld)
 			}
 		}
+	}
+
+	@Suppress("Unused")
+	@Subcommand("set crust layer")
+	@CommandCompletion("@stars @nothing @nothing")
+	fun onSetCrustLayer(sender: CommandSender, star: CachedStar, index: Int, noise: Double, newMaterials: String) {
+		val materials: List<String> = try {
+			newMaterials.split(" ")
+				.map { "${Material.valueOf(it)}" }
+		} catch (exception: Exception) {
+			exception.printStackTrace()
+			throw InvalidCommandArgument("An error occurred parsing materials, try again")
+		}
+
+		val material = Star.Companion.CrustLayer(index, noise,  materials)
+		Star.setCrustLayer(star.databaseId, material)
+
+		val starName = star.name
+		Space.reload()
+		Space.starNameCache[starName].get().generate()
+
+		sender.success(
+			"Updated crust materials in database, reloaded systems, and regenerated star."
+		)
+	}
+
+	@Suppress("Unused")
+	@Subcommand("remove crust layer")
+	@CommandCompletion("@stars @nothing @nothing")
+	fun onRemoveCrustLayer(sender: CommandSender, star: CachedStar, index: Int) {
+		Star.removeCrustLayer(star.databaseId, index)
+
+		val starName = star.name
+		Space.reload()
+		Space.starNameCache[starName].get().generate()
+
+		sender.success(
+			"Updated crust materials in database, reloaded systems, and regenerated star."
+		)
+	}
+
+	@Suppress("Unused")
+	@Subcommand("clear crust")
+	@CommandCompletion("@stars @nothing @nothing")
+	fun onClearCrustLayer(sender: CommandSender, star: CachedStar) {
+		Star.clearCrustLayers(star.databaseId)
+
+		val starName = star.name
+		Space.reload()
+		Space.starNameCache[starName].get().generate()
+
+		sender.success(
+			"Updated crust materials in database, reloaded systems, and regenerated star."
+		)
 	}
 }

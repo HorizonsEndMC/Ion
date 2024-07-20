@@ -68,16 +68,26 @@ object Space : IonServerComponent() {
 			val starX: Int = mongoStar.x
 			val starY: Int = 192 // mongoStar.y
 			val starZ: Int = mongoStar.z
-			val starMaterial: Material = Material.valueOf(mongoStar.material)
 			val starSize: Double = mongoStar.size
+			val starSeed: Long = mongoStar.seed
+			val layers = mongoStar.crustLayers.map { layer ->
+				CachedStar.StarCrustLayer(
+					layer.index,
+					layer.crustNoise,
+					layer.materials
+						.map { Material.getMaterial(it) ?: error("No material $it!") }
+						.map(Bukkit::createBlockData)
+				)
+			}
 
 			val star = CachedStar(
 				databaseId = starId,
 				name = starName,
 				spaceWorldName = spaceWorldName,
 				location = Vec3i(starX, starY, starZ),
-				material = starMaterial,
-				size = starSize
+				size = starSize,
+				seed = starSeed,
+				crustLayers = layers
 			)
 
 			stars += star
