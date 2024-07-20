@@ -184,7 +184,7 @@ class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwo
 	}
 
 	suspend fun addMergeNode(key: BlockKey, variant: Material) {
-		network.nodes[key] = DirectionalNode(network, key, variant).apply {
+		network.nodes[key] = PowerDirectionalNode(network, key, variant).apply {
 			onPlace(position)
 		}
 	}

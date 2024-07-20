@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.transport.node
 
 import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
-import net.horizonsend.ion.server.features.transport.node.power.DirectionalNode
 import net.horizonsend.ion.server.features.transport.node.power.EndRodNode
 import net.horizonsend.ion.server.features.transport.node.power.InvertedDirectionalNode
+import net.horizonsend.ion.server.features.transport.node.power.PowerDirectionalNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerEqualSplitterNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerFlowMeter
@@ -20,7 +20,7 @@ enum class NodeType(val clazz: Class<out TransportNode>) {
 	POWER_EXTRACTOR_NODE(PowerExtractorNode::class.java),
 	POWER_INPUT_NODE(PowerInputNode::class.java),
 	POWER_FLOW_METER(PowerFlowMeter::class.java),
-	POWER_DIRECTIONAL_NODE(DirectionalNode::class.java),
+	POWER_DIRECTIONAL_NODE(PowerDirectionalNode::class.java),
 	POWER_INVERSE_DIRECTIONAL_NODE(InvertedDirectionalNode::class.java),
 	POWER_EQUAL_SPLITTER(PowerEqualSplitterNode::class.java),
 
