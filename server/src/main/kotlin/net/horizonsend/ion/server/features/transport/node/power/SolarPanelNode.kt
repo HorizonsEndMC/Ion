@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.transport.node.type.StepHandler
 import net.horizonsend.ion.server.features.transport.step.Step
 import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
 import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
-import net.horizonsend.ion.server.features.transport.step.origin.SolarPowerOrigin
+import net.horizonsend.ion.server.features.transport.step.origin.power.SolarPowerOrigin
 import net.horizonsend.ion.server.features.transport.step.result.MoveForward
 import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
