@@ -13,7 +13,7 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
-import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
@@ -86,7 +86,7 @@ object IonChunkCommand : SLCommand() {
 		sender.information("${grid.nodes.values.distinct().size} unique node(s).")
 
 		when (grid) {
-			is ChunkPowerNetwork -> {
+			is PowerNetwork -> {
 				sender.information("${grid.solarPanels.size} solar panels")
 				sender.information("${grid.extractors.size} extractors")
 				sender.information("Node list: ${grid.nodes.values.groupBy { it.javaClass.simpleName }.mapValues { it.value.size }.entries.joinToString { it.toString() + "\n" }}")
@@ -112,7 +112,7 @@ object IonChunkCommand : SLCommand() {
 		grid.nodes.clear()
 
 		when (grid) {
-			is ChunkPowerNetwork -> {
+			is PowerNetwork -> {
 				grid.extractors.clear()
 				grid.solarPanels.clear()
 			}
