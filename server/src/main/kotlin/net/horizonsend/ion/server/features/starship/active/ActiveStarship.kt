@@ -40,6 +40,9 @@ import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustDat
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.transport.network.GasNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
+import net.horizonsend.ion.server.features.transport.network.holders.ShipNetworkHolder
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -411,4 +414,8 @@ abstract class ActiveStarship (
 
 	/** Gets the plain text serialized version of this starship's display name */
 	open fun getDisplayNamePlain(): String = type.displayName
+
+	abstract val powerNetwork: ShipNetworkHolder<PowerNetwork>
+	abstract val gasNetwork: ShipNetworkHolder<GasNetwork>
+//	abstract val itemNetwork: ShipNetworkHolder<PowerNetwork>
 }

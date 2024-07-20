@@ -29,6 +29,9 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedExce
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.features.transport.network.GasNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
+import net.horizonsend.ion.server.features.transport.network.holders.ShipNetworkHolder
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
@@ -276,4 +279,7 @@ class ActiveControlledStarship(
 	}
 
 	override fun getDisplayNamePlain(): String = getDisplayName().plainText()
+
+	override val powerNetwork: ShipNetworkHolder<PowerNetwork> = ShipNetworkHolder(this) { PowerNetwork(it) }
+	override val gasNetwork: ShipNetworkHolder<GasNetwork> = ShipNetworkHolder(this) { GasNetwork(it) }
 }
