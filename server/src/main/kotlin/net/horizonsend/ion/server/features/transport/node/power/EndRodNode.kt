@@ -4,7 +4,7 @@ import com.manya.pdc.base.EnumDataType
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
-import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
@@ -24,8 +24,8 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode, EndRodNode>, StepHandler<ChunkPowerNetwork> {
-	constructor(network: ChunkPowerNetwork, origin: Long, axis: Axis) : this(network) {
+class EndRodNode(override val network: PowerNetwork) : MultiNode<EndRodNode, EndRodNode>, StepHandler<PowerNetwork> {
+	constructor(network: PowerNetwork, origin: Long, axis: Axis) : this(network) {
 		positions.add(origin)
 		this.axis = axis
 	}
@@ -39,12 +39,12 @@ class EndRodNode(override val network: ChunkPowerNetwork) : MultiNode<EndRodNode
 		return node !is SourceNode<*>
 	}
 
-	override suspend fun handleHeadStep(head: SingleBranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+	override suspend fun handleHeadStep(head: SingleBranchHead<PowerNetwork>): StepResult<PowerNetwork> {
 		// Simply move on to the next node
 		return MoveForward()
 	}
 
-	override suspend fun getNextNode(head: SingleBranchHead<ChunkPowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? = getTransferableNodes()
+	override suspend fun getNextNode(head: SingleBranchHead<PowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? = getTransferableNodes()
 		.filterNot { head.previousNodes.contains(it.first) }
 		.firstOrNull()
 

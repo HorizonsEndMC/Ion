@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.transport.step.origin.power
 
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
 import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
 
-class SolarPowerOrigin(val origin: SolarPanelNode) : StepOrigin<ChunkPowerNetwork>, PowerOrigin {
+class SolarPowerOrigin(val origin: SolarPanelNode) : StepOrigin<PowerNetwork>, PowerOrigin {
 	override val transferLimit: Int = Int.MAX_VALUE
 	private val powerTransfer = origin.tickAndGetPower()
 
