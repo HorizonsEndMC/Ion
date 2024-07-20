@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
-import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
@@ -43,10 +43,10 @@ import kotlin.math.sin
  * Represents a solar panel, or multiple
  **/
 class SolarPanelNode(
-	override val network: ChunkPowerNetwork
+	override val network: PowerNetwork
 ) : MultiNode<SolarPanelNode, SolarPanelNode>,
-	SourceNode<ChunkPowerNetwork>,
-	StepHandler<ChunkPowerNetwork> {
+	SourceNode<PowerNetwork>,
+	StepHandler<PowerNetwork> {
 	override var isDead: Boolean = false
 	override val positions: MutableSet<BlockKey> = ConcurrentHashMap.newKeySet()
 	override val relationships: MutableSet<NodeRelationship> = ConcurrentHashMap.newKeySet()
@@ -62,7 +62,7 @@ class SolarPanelNode(
 		return node !is PowerExtractorNode
 	}
 
-	override suspend fun startStep(): Step<ChunkPowerNetwork>? {
+	override suspend fun startStep(): Step<PowerNetwork>? {
 		val power = getPower()
 		if (power <= 0) return null
 
@@ -79,7 +79,7 @@ class SolarPanelNode(
 		}
 	}
 
-	override suspend fun handleHeadStep(head: SingleBranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+	override suspend fun handleHeadStep(head: SingleBranchHead<PowerNetwork>): StepResult<PowerNetwork> {
 		// Simply move on to the next node
 		return MoveForward()
 	}
@@ -92,7 +92,7 @@ class SolarPanelNode(
 	 **/
 	private var exitDistance: Int = 0
 
-	override suspend fun getNextNode(head: SingleBranchHead<ChunkPowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? {
+	override suspend fun getNextNode(head: SingleBranchHead<PowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? {
 		val neighbors = getTransferableNodes()
 		return neighbors.shuffled().firstOrNull { it.first !is SolarPanelNode } ?:
 		neighbors

@@ -4,7 +4,9 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
+import net.horizonsend.ion.server.features.transport.network.holders.ChunkNetworkHolder
+import net.horizonsend.ion.server.features.transport.network.holders.ShipNetworkHolder
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.DestinationNode
@@ -24,8 +26,8 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode, DestinationNode<ChunkPowerNetwork> {
-	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
+class PowerInputNode(override val network: PowerNetwork) : SingleNode, DestinationNode<PowerNetwork> {
+	constructor(network: PowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 	}
 
@@ -52,11 +54,20 @@ class PowerInputNode(override val network: ChunkPowerNetwork) : SingleNode, Dest
 			val newZ = z + offset.z
 
 			val newKey = toBlockKey(newX, newY, newZ)
-			network.manager.chunk.multiblockManager[newKey] as? PoweredMultiblockEntity
+
+			return@mapNotNull when (val holder = network.holder) {
+				is ChunkNetworkHolder<*> -> {
+					holder.manager.chunk.multiblockManager[newKey] as? PoweredMultiblockEntity
+				}
+				is ShipNetworkHolder<*> -> {
+					null //TODO
+				}
+				else -> null
+			}
 		}
 	}
 
-	override suspend fun finishChain(head: BranchHead<ChunkPowerNetwork>) {
+	override suspend fun finishChain(head: BranchHead<PowerNetwork>) {
 		val origin = head.holder.getOrigin()
 
 		head.markDead()

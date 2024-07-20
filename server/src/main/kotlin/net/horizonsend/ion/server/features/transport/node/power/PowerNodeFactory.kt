@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
-import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
 import net.horizonsend.ion.server.features.transport.node.handleMerges
@@ -17,7 +17,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.data.Directional
 
-class PowerNodeFactory(network: ChunkPowerNetwork) : NodeFactory<ChunkPowerNetwork>(network) {
+class PowerNodeFactory(network: PowerNetwork) : NodeFactory<PowerNetwork>(network) {
 	override suspend fun create(key: BlockKey, snapshot: BlockSnapshot) {
 		if (network.nodes.contains(key)) return
 

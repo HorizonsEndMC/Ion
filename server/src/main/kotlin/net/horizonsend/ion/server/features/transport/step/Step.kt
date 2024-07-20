@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.transport.step
 
-import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.features.transport.step.head.HeadHolder
 import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
 
-class Step<T: ChunkTransportNetwork> private constructor(
+class Step<T: TransportNetwork> private constructor(
 	val network: T,
 	private val stepOrigin: StepOrigin<T>,
 ) : HeadHolder<T> {

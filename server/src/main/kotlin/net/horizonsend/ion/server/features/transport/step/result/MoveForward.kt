@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.step.result
 
-import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 import net.horizonsend.ion.server.features.transport.node.type.DestinationNode
 import net.horizonsend.ion.server.features.transport.node.type.SourceNode
 import net.horizonsend.ion.server.features.transport.node.type.StepHandler
@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.transport.step.head.MultiBranchHead
 import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
 
 /** A result which moves the head of the branch forward, using the current node's pathfinding */
-class MoveForward<T: ChunkTransportNetwork>() : StepResult<T> {
+class MoveForward<T: TransportNetwork>() : StepResult<T> {
 	override suspend fun apply(headHolder: HeadHolder<T>) {
 		val branchHead = headHolder.head
 

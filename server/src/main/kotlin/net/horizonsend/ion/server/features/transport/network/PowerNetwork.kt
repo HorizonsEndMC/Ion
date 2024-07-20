@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.transport.network
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.transport.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.network.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
@@ -18,7 +18,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
-class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(manager) {
+class PowerNetwork(holder: NetworkHolder<PowerNetwork>) : TransportNetwork(holder) {
 	override val type: NetworkType = NetworkType.POWER
 	override val namespacedKey: NamespacedKey = POWER_TRANSPORT
 	override val nodeFactory: PowerNodeFactory = PowerNodeFactory(this)

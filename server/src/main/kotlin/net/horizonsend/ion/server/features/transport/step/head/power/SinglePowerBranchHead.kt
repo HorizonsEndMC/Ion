@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.transport.step.head.power
 
-import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork as ChunkTransportNetwork1
-import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
-import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.TransportNetwork as ChunkTransportNetwork1
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
+import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.DestinationNode
 import net.horizonsend.ion.server.features.transport.node.type.StepHandler
@@ -16,12 +16,12 @@ import org.bukkit.block.BlockFace
  *
  **/
 class SinglePowerBranchHead(
-	override val holder: HeadHolder<ChunkPowerNetwork>,
+	override val holder: HeadHolder<PowerNetwork>,
 	override var lastDirection: BlockFace,
 	override var currentNode: TransportNode,
 	override val share: Double,
 	override val previousNodes: MutableSet<TransportNode> = mutableSetOf()
-) : SingleBranchHead<ChunkPowerNetwork>, PowerBranchHead {
+) : SingleBranchHead<PowerNetwork>, PowerBranchHead {
 	private var isDead = false
 
 	override fun markDead() {
@@ -34,14 +34,14 @@ class SinglePowerBranchHead(
 	override suspend fun stepForward() {
 		val node = currentNode
 
-		if (tryCast<DestinationNode<ChunkPowerNetwork>>(node) { finishChain(this@SinglePowerBranchHead) }) return
+		if (tryCast<DestinationNode<PowerNetwork>>(node) { finishChain(this@SinglePowerBranchHead) }) return
 
 		// All other nodes handle steps transferring in / out
 		node as StepHandler<ChunkTransportNetwork1>
 
-		val result = node.handleHeadStep(this as SingleBranchHead<ChunkTransportNetwork>)
+		val result = node.handleHeadStep(this as SingleBranchHead<TransportNetwork>)
 
-		result.apply(holder as HeadHolder<ChunkTransportNetwork>)
+		result.apply(holder as HeadHolder<TransportNetwork>)
 	}
 
 	// Get around runtime type erasure

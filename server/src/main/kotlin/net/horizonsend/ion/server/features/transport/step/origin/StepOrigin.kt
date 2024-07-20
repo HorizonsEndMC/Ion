@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.step.origin
 
-import net.horizonsend.ion.server.features.transport.network.ChunkTransportNetwork
+import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 
-interface StepOrigin<T: ChunkTransportNetwork>
+interface StepOrigin<T: TransportNetwork>
 
