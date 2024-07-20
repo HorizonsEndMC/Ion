@@ -19,7 +19,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class DirectionalNode(override val network: ChunkPowerNetwork) : SingleNode, StepHandler<ChunkPowerNetwork> {
+class PowerDirectionalNode(override val network: ChunkPowerNetwork) : SingleNode, StepHandler<ChunkPowerNetwork> {
 	override var isDead: Boolean = false
 	override var position: BlockKey by Delegates.notNull()
 	private var variant: Material by Delegates.notNull()

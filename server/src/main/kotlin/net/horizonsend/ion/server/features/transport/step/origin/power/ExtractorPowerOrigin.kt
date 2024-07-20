@@ -1,9 +1,10 @@
-package net.horizonsend.ion.server.features.transport.step.origin
+package net.horizonsend.ion.server.features.transport.step.origin.power
 
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
+import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
 
 class ExtractorPowerOrigin(
 	val extractorNode: PowerExtractorNode

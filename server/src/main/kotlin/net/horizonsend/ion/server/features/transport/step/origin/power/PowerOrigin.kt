@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.step.origin
+package net.horizonsend.ion.server.features.transport.step.origin.power
 
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 

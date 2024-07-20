@@ -10,7 +10,8 @@ import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNo
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerNodeFactory
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER_TRANSPORT
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.NamespacedKey
@@ -19,10 +20,10 @@ import java.util.concurrent.ConcurrentHashMap
 
 class ChunkPowerNetwork(manager: ChunkTransportManager) : ChunkTransportNetwork(manager) {
 	override val type: NetworkType = NetworkType.POWER
-	override val namespacedKey: NamespacedKey = NamespacedKeys.POWER_TRANSPORT
+	override val namespacedKey: NamespacedKey = POWER_TRANSPORT
 	override val nodeFactory: PowerNodeFactory = PowerNodeFactory(this)
 
-	val extractors: ConcurrentHashMap<Long, PowerExtractorNode> = ConcurrentHashMap()
+	val extractors: ConcurrentHashMap<BlockKey, PowerExtractorNode> = ConcurrentHashMap()
 
 	/** Store solar panels for ticking */
 	val solarPanels: ObjectOpenHashSet<SolarPanelNode> = ObjectOpenHashSet()

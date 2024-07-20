@@ -10,8 +10,8 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.DestinationNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.step.head.BranchHead
-import net.horizonsend.ion.server.features.transport.step.origin.ExtractorPowerOrigin
-import net.horizonsend.ion.server.features.transport.step.origin.PowerOrigin
+import net.horizonsend.ion.server.features.transport.step.origin.power.ExtractorPowerOrigin
+import net.horizonsend.ion.server.features.transport.step.origin.power.PowerOrigin
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
