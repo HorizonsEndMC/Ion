@@ -131,6 +131,21 @@ object StarCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("Unused")
+	@Subcommand("set size")
+	@CommandCompletion("@stars @nothing @nothing")
+	fun onSetSizeLayer(sender: CommandSender, star: CachedStar, size: Double) {
+		Star.setSize(star.databaseId, size)
+
+		val starName = star.name
+		Space.reload()
+		Space.starNameCache[starName].get().generate()
+
+		sender.success(
+			"Updated crust materials in database, reloaded systems, and regenerated star."
+		)
+	}
+
+	@Suppress("Unused")
 	@Subcommand("set crust layer")
 	@CommandCompletion("@stars @nothing @nothing")
 	fun onSetCrustLayer(sender: CommandSender, star: CachedStar, index: Int, noise: Double, newMaterials: String) {

@@ -57,6 +57,10 @@ data class Star(
 			updateById(id, push(Star::crustLayers, layer))
 		}
 
+		fun setSize(id: Oid<Star>, size: Double) {
+			updateById(id, setValue(Star::size, size))
+		}
+
 		data class CrustLayer(
 			val index: Int,
 			val crustNoise: Double = 0.05,
