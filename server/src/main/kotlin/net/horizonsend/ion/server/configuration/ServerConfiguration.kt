@@ -31,6 +31,8 @@ data class ServerConfiguration(
 	val mobSpawns: Map<String, PlanetSpawnConfig> = mapOf(),
 	val dutyModeMonitorWebhook: String? = null,
 	val eventLoggerWebhook: String? = null,
+	val getPosMaxRange: Double = 600.0,
+	val nearMaxRange: Double = 1200.0,
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
