@@ -62,7 +62,12 @@ enum class NetworkType {
 		override fun get(chunk: IonChunk): ChunkTransportNetwork {
 			return chunk.transportNetwork.powerNetwork
 		}
-	}
+	},
+	GAS {
+		override fun get(chunk: IonChunk): ChunkTransportNetwork {
+			return chunk.transportNetwork.powerNetwork
+		}
+	},
 
 
 	;
