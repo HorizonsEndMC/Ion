@@ -11,12 +11,11 @@ import net.horizonsend.ion.common.utils.text.subStringBetween
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.newer.MultiblockEntities.getMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.newer.MultiblockEntities.removeMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.newer.MultiblockEntities.setMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.SignMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -167,17 +166,11 @@ object MultiblockAccess : IonServerComponent() {
 				log.warn("Attempted to place multiblock entity where one was already present!")
 			}
 
-			// Create blank multiblock entity
-			setMultiblockEntity(world, x, y, z) {
-				multiblock.createEntity(
-					it,
-					PersistentMultiblockData(x, y, z, multiblock, face),
-					world,
-					x,
-					y,
-					z,
-					face
-				)
+			val chunkX = x.shr(4)
+			val chunkZ = z.shr(4)
+
+			world.ion.getChunk(chunkX, chunkZ)?.let {
+				it.region.launch { it.multiblockManager.addNewMultiblockEntity(multiblock, x, y, z, face) }
 			}
 		}
 

@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
@@ -69,12 +70,9 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	/**
 	 * Add a new multiblock to the chunk data
 	 **/
-	suspend fun addNewMultiblockEntity(multiblock: EntityMultiblock<*>, sign: Sign) {
+	suspend fun addNewMultiblockEntity(multiblock: EntityMultiblock<*>, x: Int, y: Int, z: Int, face: BlockFace) {
 		// Allow smart cast
 		multiblock as Multiblock
-
-		val (x, y, z) = Multiblock.getOrigin(sign)
-		val signOffset = sign.getFacing()
 
 		if (isOccupied(x, y, z)) {
 			log.warn("Attempted to place a multiblock where one already existed!")
@@ -84,10 +82,10 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 		// Create new empty data
 		val entity = multiblock.createEntity(
 			this,
-			PersistentMultiblockData(x, y, z, multiblock, signOffset),
+			PersistentMultiblockData(x, y, z, multiblock, face),
 			chunk.inner.world,
 			x, y, z,
-			signOffset
+			face
 		)
 
 		// Place the entity into the chunk
