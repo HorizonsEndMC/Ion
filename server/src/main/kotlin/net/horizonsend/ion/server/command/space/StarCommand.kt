@@ -133,7 +133,7 @@ object StarCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("set size")
 	@CommandCompletion("@stars @nothing @nothing")
-	fun onSetSizeLayer(sender: CommandSender, star: CachedStar, size: Double) {
+	fun onSetSize(sender: CommandSender, star: CachedStar, size: Double) {
 		Star.setSize(star.databaseId, size)
 
 		val starName = star.name
