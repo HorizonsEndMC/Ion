@@ -850,15 +850,9 @@ object CustomItems {
 
 	// Tools begin
 	val POWER_DRILL = register(PowerDrill)
+//	val POWER_CHAINSAW = register(PowerDrill) TODO
+//	val POWER_HOE = register(PowerDrill) TODO
 	val CRATE_PLACER = register(CratePlacer)
-
-	val MOD_TABLE: CustomBlockItem = register(object : CustomBlockItem(
-		identifier = "MOD_TABLE",
-		material = IRON_BLOCK,
-		customModelData = 1003,
-		displayName = text("Mod Table").decoration(ITALIC, false),
-		customBlockSupplier = { CustomBlocks.MOD_TABLE }
-	) {})
 
 	val DRILL_AOE_1: ModificationItem = register(ModificationItem(
 		"DRILL_AOE_1",

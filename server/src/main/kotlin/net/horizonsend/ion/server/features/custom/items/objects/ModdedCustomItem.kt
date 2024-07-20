@@ -3,11 +3,13 @@ package net.horizonsend.ion.server.features.custom.items.objects
 import com.manya.pdc.base.array.StringArrayDataType
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.TOOL_MODIFICATIONS
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.inventory.ItemStack
@@ -48,25 +50,7 @@ interface ModdedCustomItem : LoreCustomItem {
 		return true
 	}
 
-	/** Format the lore of the mod description **/
-	fun getModsLore(item: ItemStack): MutableList<Component> {
-		val mods = getMods(item)
-		val lore = mutableListOf<Component>()
-		if (mods.isEmpty()) return lore
-
-		lore.add(modPrefix)
-
-		val modList = mods.map { mod -> ofChildren(text("  "), mod.displayName) }
-
-		for (loreEntry in modList) {
-			lore.add(loreEntry)
-		}
-
-		return lore
-	}
-
 	companion object ModList : PersistentDataType<ByteArray, Array<ItemModification>> {
-		private val modPrefix = text("Mods: ", HE_MEDIUM_GRAY).decoration(TextDecoration.ITALIC, false)
 		private val stringArrayType = StringArrayDataType(Charset.defaultCharset())
 
 		override fun getComplexType(): Class<Array<ItemModification>> = Array<ItemModification>::class.java
@@ -83,6 +67,28 @@ interface ModdedCustomItem : LoreCustomItem {
 			return Array(stringArray.size) {
 				ItemModRegistry[stringArray[it]]!!
 			}
+		}
+	}
+
+	object ModLoreManager : LoreCustomItem.CustomItemLoreManager() {
+		private val modPrefix = text("Mods: ", HE_MEDIUM_GRAY).decoration(TextDecoration.ITALIC, false)
+
+		override fun getLineAllotment(itemStack: ItemStack): Int {
+			val custom = itemStack.customItem as? ModdedCustomItem ?: return 0
+			val mods = custom.getMods(itemStack)
+
+			return mods.size + 1
+		}
+
+		override fun rebuildLine(itemStack: ItemStack, line: Int): Component {
+			val custom = itemStack.customItem as? ModdedCustomItem ?: return empty()
+			val mods = custom.getMods(itemStack)
+
+			if (line == 0) {
+				return modPrefix
+			}
+
+			return ofChildren(text(" • "), mods[line - 1].displayName)
 		}
 	}
 }

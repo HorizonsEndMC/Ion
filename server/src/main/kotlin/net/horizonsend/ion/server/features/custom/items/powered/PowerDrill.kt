@@ -9,14 +9,14 @@ import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
+import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
+import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
@@ -53,6 +53,13 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 
 	override val displayDurability: Boolean = true
 
+	override fun getLoreManagers(): List<LoreCustomItem.CustomItemLoreManager> {
+		return listOf(
+			PoweredItem.PowerLoreManager,
+			ModdedCustomItem.ModLoreManager,
+		)
+	}
+
 	override fun constructItemStack(): ItemStack {
 		val base = getModeledItem()
 
@@ -63,19 +70,6 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
 			it.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
 		}
-	}
-
-	override fun rebuildLore(itemStack: ItemStack) = Tasks.async {
-		val powerLore = getPowerLore(itemStack)
-		val modLore = getModsLore(itemStack)
-
-		val fullLore = mutableListOf<Component>()
-
-		fullLore.addAll(powerLore)
-		fullLore.add(empty())
-		fullLore.addAll(modLore)
-
-		Tasks.sync { itemStack.updateMeta { it.lore(fullLore) } }
 	}
 
 	override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
