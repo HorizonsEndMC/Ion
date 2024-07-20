@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.features.transport.network.ChunkPowerNetwork
+import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -20,12 +20,12 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class PowerEqualSplitterNode(override val network: ChunkPowerNetwork) : SingleNode, StepHandler<ChunkPowerNetwork> {
+class PowerEqualSplitterNode(override val network: PowerNetwork) : SingleNode, StepHandler<PowerNetwork> {
 	override var isDead: Boolean = false
 	override var position: BlockKey by Delegates.notNull()
 	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
-	constructor(network: ChunkPowerNetwork, position: BlockKey) : this(network) {
+	constructor(network: PowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 	}
 
@@ -33,11 +33,11 @@ class PowerEqualSplitterNode(override val network: ChunkPowerNetwork) : SingleNo
 		return node !is SourceNode<*>
 	}
 
-	override suspend fun getNextNode(head: SingleBranchHead<ChunkPowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? = getTransferableNodes()
+	override suspend fun getNextNode(head: SingleBranchHead<PowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? = getTransferableNodes()
 		.filterNot { head.previousNodes.contains(it.first) }
 		.randomOrNull()
 
-	override suspend fun handleHeadStep(head: SingleBranchHead<ChunkPowerNetwork>): StepResult<ChunkPowerNetwork> {
+	override suspend fun handleHeadStep(head: SingleBranchHead<PowerNetwork>): StepResult<PowerNetwork> {
 		val transferable = getTransferableNodes()
 
 		val newHeads = transferable.mapTo(mutableSetOf()) { neighbor ->
