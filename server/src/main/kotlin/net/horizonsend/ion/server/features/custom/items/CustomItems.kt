@@ -874,7 +874,7 @@ object CustomItems {
 
 	val SILK_TOUCH_MOD: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_SILK_TOUCH_MOD",
-		100, //TODO
+		6003,
 		text("Silk Touch Modifier").decoration(ITALIC, false)
 	) { ItemModRegistry.SILK_TOUCH })
 
