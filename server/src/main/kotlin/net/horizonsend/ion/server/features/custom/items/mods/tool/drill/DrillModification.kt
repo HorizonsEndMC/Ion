@@ -12,5 +12,5 @@ import kotlin.reflect.KClass
 abstract class DrillModification : ItemModification, BlockListModifier {
 	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class)
 
-	open val additionalPowerUsage: Int = 0
+	override val crouchingDisables: Boolean = true
 }

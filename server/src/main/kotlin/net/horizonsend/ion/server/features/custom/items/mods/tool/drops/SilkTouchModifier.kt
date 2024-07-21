@@ -22,6 +22,7 @@ import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 object SilkTouchModifier : ItemModification, DropModifier, PowerUsageIncrease {
+	override val crouchingDisables: Boolean = false
 	override val displayName: Component = ofChildren(text("Silk Touch ", HE_LIGHT_BLUE, BOLD).decoration(TextDecoration.ITALIC, false))
 	override val identifier: String = "SILK_TOUCH"
 	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class)
