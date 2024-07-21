@@ -24,6 +24,7 @@ class FortuneModifier(
 	color: String,
 	override val modItem: Supplier<ModificationItem?>
 ) : ItemModification, DropModifier, PowerUsageIncrease {
+	override val crouchingDisables: Boolean = false
 	override val identifier: String = "FORTUNE_$level"
 	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchModifier::class, AutoSmeltModifier::class)

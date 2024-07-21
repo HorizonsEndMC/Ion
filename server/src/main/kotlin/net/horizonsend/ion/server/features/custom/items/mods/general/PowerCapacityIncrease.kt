@@ -19,6 +19,7 @@ class PowerCapacityIncrease(
 	val increaseAmount: Int,
 	override val modItem: Supplier<ModificationItem?>
 ) : ItemModification {
+	override val crouchingDisables: Boolean = false
 	override val identifier: String = "POWER_CAPACITY_$increaseAmount"
 	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()

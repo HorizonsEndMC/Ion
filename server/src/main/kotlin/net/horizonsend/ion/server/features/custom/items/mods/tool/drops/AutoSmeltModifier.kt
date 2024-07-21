@@ -30,6 +30,7 @@ import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
 object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
+	override val crouchingDisables: Boolean = false
 	override val displayName: Component = "<gradient:red:yellow>Auto Smelt".miniMessage().decoration(TextDecoration.ITALIC, false)
 	override val identifier: String = "AUTO_SMELT"
 	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class)

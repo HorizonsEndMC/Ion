@@ -83,9 +83,13 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 
 		val mods = getMods(itemStack)
 
-		mods.filterIsInstance<BlockListModifier>().sortedBy { it.priority }.forEach {
-			it.modifyBlockList(event.blockFace, origin, blockList)
-		}
+		mods
+			.filterNot { it.crouchingDisables && livingEntity.isSneaking }
+			.filterIsInstance<BlockListModifier>()
+			.sortedBy { it.priority }
+			.forEach {
+				it.modifyBlockList(event.blockFace, origin, blockList)
+			}
 
 		var availablePower = getPower(itemStack)
 		val powerUse = getPowerUse(itemStack)
@@ -139,7 +143,10 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 			return false
 		}
 
-		val dropProvider = mods.filterIsInstance<DropModifier>().firstOrNull() ?: DropModifier.DEFAULT_DROP_PROVIDER
+		val dropProvider = mods
+			.filterNot { it.crouchingDisables && player.isSneaking }
+			.filterIsInstance<DropModifier>()
+			.firstOrNull() ?: DropModifier.DEFAULT_DROP_PROVIDER
 
 		// customBlock turns to AIR due to BlockBreakEvent; play break sound and drop item
 		if (customBlock != null) {

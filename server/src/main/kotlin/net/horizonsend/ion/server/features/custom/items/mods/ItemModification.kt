@@ -12,4 +12,6 @@ interface ItemModification {
 	val applicableTo: Array<KClass<out CustomItem>>
 	val incompatibleWithMods: Array<KClass<out ItemModification>>
 	val modItem: Supplier<ModificationItem?>
+
+	val crouchingDisables: Boolean
 }
