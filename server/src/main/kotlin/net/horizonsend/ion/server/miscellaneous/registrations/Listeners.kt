@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.horizonsend.ion.server.features.custom.ItemConverters
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.blasters.BlasterListeners
+import net.horizonsend.ion.server.features.custom.items.mods.ToolModMenu
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
@@ -80,6 +81,7 @@ val listeners: List<Listener> = listOf(
 	BiomeFixer9001(),
 	TractorBeamMultiblock,
 	PlayerDeathListener,
+	ToolModMenu,
 
 	// Achievement Listeners
 	AchievementListeners(),

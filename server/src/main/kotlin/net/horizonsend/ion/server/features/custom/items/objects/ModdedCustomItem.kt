@@ -8,12 +8,14 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.mods.ToolModMenu
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.TOOL_MODIFICATIONS
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
@@ -50,6 +52,10 @@ interface ModdedCustomItem : LoreCustomItem {
 
 		setMods(item, without.toTypedArray())
 		return true
+	}
+
+	fun openMenu(player: Player, item: ItemStack) {
+		ToolModMenu.create(player, item, this).open()
 	}
 
 	companion object ModList : PersistentDataType<ByteArray, Array<ItemModification>> {
