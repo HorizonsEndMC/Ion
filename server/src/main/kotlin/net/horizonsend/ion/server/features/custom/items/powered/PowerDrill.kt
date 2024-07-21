@@ -83,8 +83,7 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 
 		val mods = getMods(itemStack)
 
-		mods
-			.filterNot { it.crouchingDisables && livingEntity.isSneaking }
+		mods.filterNot { it.crouchingDisables && livingEntity.isSneaking }
 			.filterIsInstance<BlockListModifier>()
 			.sortedBy { it.priority }
 			.forEach {
@@ -121,6 +120,10 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 		}
 
 		return
+	}
+
+	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
+		if (livingEntity is Player && livingEntity.isSneaking) openMenu(livingEntity, itemStack)
 	}
 
 	private fun tryBreakBlock(
