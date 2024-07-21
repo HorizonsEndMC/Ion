@@ -856,61 +856,61 @@ object CustomItems {
 
 	val DRILL_AOE_1: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_DRILL_AOE_1",
-		6000,
+		7000,
 		text("Drill AOE 1").decoration(ITALIC, false)
 	) { ItemModRegistry.AOE_1 })
 
 	val DRILL_AOE_2: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_DRILL_AOE_2",
-		6001,
+		7001,
 		text("Drill AOE 2").decoration(ITALIC, false)
 	) { ItemModRegistry.AOE_2 })
 
 	val VEIN_MINER_25: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_VEIN_MINER_25",
-		6002,
+		7002,
 		text("Vein Miner").decoration(ITALIC, false)
 	) { ItemModRegistry.VEIN_MINER_25 })
 
 	val SILK_TOUCH_MOD: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_SILK_TOUCH_MOD",
-		6003,
+		7003,
 		text("Silk Touch Modifier").decoration(ITALIC, false)
 	) { ItemModRegistry.SILK_TOUCH })
 
 	val AUTO_SMELT: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_AUTO_SMELT",
-		6004,
+		7004,
 		text("Auto Smelt Modifier").decoration(ITALIC, false)
 	) { ItemModRegistry.AUTO_SMELT })
 
 	val FORTUNE_1: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_FORTUNE_1",
-		6005,
+		7005,
 		text("Fortune 1").decoration(ITALIC, false)
 	) { ItemModRegistry.FORTUNE_1 })
 
 	val FORTUNE_2: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_FORTUNE_2",
-		6006,
+		7006,
 		text("Fortune 2").decoration(ITALIC, false)
 	) { ItemModRegistry.FORTUNE_2 })
 
 	val FORTUNE_3: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_FORTUNE_3",
-		6007,
+		7007,
 		text("Fortune 3").decoration(ITALIC, false)
 	) { ItemModRegistry.FORTUNE_3 })
 
 	val POWER_CAPACITY_25: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_POWER_CAPACITY_25",
-		6008,
+		7008,
 		text("Power Capacity 25000").decoration(ITALIC, false)
 	) { ItemModRegistry.POWER_CAPACITY_25 })
 
 	val POWER_CAPACITY_50: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_POWER_CAPACITY_50",
-		6009,
+		7009,
 		text("Power Capacity 50000").decoration(ITALIC, false)
 	) { ItemModRegistry.POWER_CAPACITY_50 })
 
