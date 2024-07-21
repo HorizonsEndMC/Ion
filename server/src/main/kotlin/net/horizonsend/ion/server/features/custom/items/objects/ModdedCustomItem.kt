@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.custom.items.objects
 
 import com.manya.pdc.base.array.StringArrayDataType
+import net.horizonsend.ion.common.utils.text.ITALIC
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
@@ -72,6 +74,7 @@ interface ModdedCustomItem : LoreCustomItem {
 
 	object ModLoreManager : LoreCustomItem.CustomItemLoreManager() {
 		private val modPrefix = text("Mods: ", HE_MEDIUM_GRAY).decoration(TextDecoration.ITALIC, false)
+		private val namePrefix = text(" • ", HE_DARK_GRAY).decoration(ITALIC, false)
 
 		override fun getLineAllotment(itemStack: ItemStack): Int {
 			val custom = itemStack.customItem as? ModdedCustomItem ?: return 0
@@ -84,11 +87,10 @@ interface ModdedCustomItem : LoreCustomItem {
 			val custom = itemStack.customItem as? ModdedCustomItem ?: return empty()
 			val mods = custom.getMods(itemStack)
 
-			if (line == 0) {
-				return modPrefix
+			return when	(line) {
+				0 -> modPrefix
+				else -> ofChildren(namePrefix, mods[line - 1].displayName)
 			}
-
-			return ofChildren(text(" • "), mods[line - 1].displayName)
 		}
 	}
 }
