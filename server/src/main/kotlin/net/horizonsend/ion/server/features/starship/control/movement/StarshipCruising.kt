@@ -117,7 +117,7 @@ object StarshipCruising : IonServerComponent() {
 				text(targetSpeed, NamedTextColor.DARK_AQUA)
 			))
 
-			if (starship.isInterdicting) {
+			if (starship.isInterdicting && starship.controller !is AIController) {
 				starship.setIsInterdicting(false)
 			}
 		}
@@ -135,7 +135,7 @@ object StarshipCruising : IonServerComponent() {
 			return
 		}
 
-		if (starship.isInterdicting) {
+		if (starship.isInterdicting && starship.controller !is AIController) {
 			starship.setIsInterdicting(false)
 		}
 
