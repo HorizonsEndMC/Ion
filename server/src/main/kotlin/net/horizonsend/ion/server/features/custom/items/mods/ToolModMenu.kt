@@ -67,13 +67,18 @@ class ToolModMenu(
 	}
 
 	private fun rebuildFromContents(contents: Collection<ItemStack?>) {
-		val customItems = contents
-			.mapNotNullTo(mutableSetOf()) { it?.customItem }
+		val nonItemMods = customItem
+			.getMods(itemStack)
+			.filter { it.modItem.get() == null }
+
+		val mods = contents
+			.mapNotNull { it?.customItem }
 			.filterIsInstance<ModificationItem>()
-			.map { it.modification }
+			.mapTo(mutableSetOf()) { it.modification }
+			.plus(nonItemMods)
 			.toTypedArray()
 
-		updateBaseItem(customItems)
+		updateBaseItem(mods)
 	}
 
 	private fun updateBaseItem(newModList: Array<ItemModification>) {
