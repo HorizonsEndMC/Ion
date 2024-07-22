@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStartCruisingEvent
@@ -110,7 +111,7 @@ object StarshipCruising : IonServerComponent() {
 				text(targetSpeed, NamedTextColor.DARK_AQUA)
 			))
 
-			if (starship.isInterdicting) {
+			if (starship.isInterdicting && starship.controller !is AIController) {
 				starship.setIsInterdicting(false)
 			}
 		}
@@ -128,7 +129,7 @@ object StarshipCruising : IonServerComponent() {
 			return
 		}
 
-		if (starship.isInterdicting) {
+		if (starship.isInterdicting && starship.controller !is AIController) {
 			starship.setIsInterdicting(false)
 		}
 

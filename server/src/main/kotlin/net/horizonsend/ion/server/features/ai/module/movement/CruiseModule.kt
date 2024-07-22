@@ -37,7 +37,7 @@ class CruiseModule(
 		val origin = starshipLocation.toLocation(world)
 
 		Tasks.sync {
-			if (assessDistance()) handleCruise()
+			if (assessDistance()) handleCruise() else stopCruising()
 
 			shiftFlightType.handleShiftFlight(this, origin)
 			shiftFlightType.refresh(controller)
