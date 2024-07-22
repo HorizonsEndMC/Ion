@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 
 object ExtendedBar : ItemModification {
 	override val identifier: String = "EXTENDED_BLADE"
-	override val displayName: Component = "<i><gradient:#a0a0a0:#6c6c6c>Extended Blade</gradient></i>".miniMessage()
+	override val displayName: Component = "<i><gradient:#a0a0a0:#6c6c6c>Extended Bar</gradient></i>".miniMessage()
 
 	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerChainsaw::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()

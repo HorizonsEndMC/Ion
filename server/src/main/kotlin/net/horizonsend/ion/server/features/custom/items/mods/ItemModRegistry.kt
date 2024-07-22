@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.custom.items.mods.tool.chainsaw.Exten
 import net.horizonsend.ion.server.features.custom.items.mods.tool.drill.VeinMinerMod
 import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.AutoSmeltModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.FortuneModifier
-import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.SilkTouchModifier
+import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.SilkTouchSource
 import net.horizonsend.ion.server.features.custom.items.mods.tool.hoe.AutoReplantModifier
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 
@@ -26,7 +26,7 @@ object ItemModRegistry {
 
 	val VEIN_MINER_25 = registerMod(VeinMinerMod(depth = 25) { CustomItems.VEIN_MINER_25 })
 
-	val SILK_TOUCH = registerMod(SilkTouchModifier)
+	val SILK_TOUCH = registerMod(SilkTouchSource)
 
 	val AUTO_SMELT = registerMod(AutoSmeltModifier)
 

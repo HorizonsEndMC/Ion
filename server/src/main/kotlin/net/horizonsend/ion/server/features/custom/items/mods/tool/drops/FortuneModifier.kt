@@ -23,11 +23,11 @@ class FortuneModifier(
 	private val level: Int,
 	color: String,
 	override val modItem: Supplier<ModificationItem?>
-) : ItemModification, DropModifier, PowerUsageIncrease {
+) : ItemModification, DropSource, PowerUsageIncrease {
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "FORTUNE_$level"
 	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class)
-	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchModifier::class, AutoSmeltModifier::class)
+	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class)
 	override val shouldDropXP: Boolean = true
 	override val usageMultiplier: Double = 2.0 + level
 

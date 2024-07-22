@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.DropModifier
+import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.DropSource
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
@@ -146,28 +147,44 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 			return false
 		}
 
-		val dropProvider = mods
+		val dropSource = mods
 			.filterNot { it.crouchingDisables && player.isSneaking }
+			.filterIsInstance<DropSource>()
+			.firstOrNull() ?: DropSource.DEFAULT_DROP_PROVIDER
+
+		val dropModifiers = mods
 			.filterIsInstance<DropModifier>()
-			.firstOrNull() ?: DropModifier.DEFAULT_DROP_PROVIDER
+			.sortedByDescending { it.priority }
 
 		// customBlock turns to AIR due to BlockBreakEvent; play break sound and drop item
 		if (customBlock != null) {
 			block.world.playSound(block.location.toCenterLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f)
 			block.world.playEffect(block.location, Effect.STEP_SOUND, Material.IRON_ORE)
 
-			drops[BlockPos.asLong(block.x, block.y, block.z)] = dropProvider.getDrop(customBlock)
+			val baseDrops = dropSource.getDrop(customBlock)
+			handleModifiers(baseDrops, dropModifiers)
+
+			drops[BlockPos.asLong(block.x, block.y, block.z)] = baseDrops
 		} else {
-			drops[BlockPos.asLong(block.x, block.y, block.z)] = dropProvider.getDrop(block)
+			val baseDrops = dropSource.getDrop(block)
+			handleModifiers(baseDrops, dropModifiers)
+
+			drops[BlockPos.asLong(block.x, block.y, block.z)] = baseDrops
 			block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
 		}
 
 		block.type = Material.AIR
-		breakNaturally(block, dropProvider.shouldDropXP)
+		breakNaturally(block, dropSource.shouldDropXP)
 
 		if (blockType == Material.END_PORTAL_FRAME) block.world.dropItem(block.location, ItemStack(Material.END_PORTAL_FRAME))
 
 		return true
+	}
+
+	private fun handleModifiers(drops: Collection<ItemStack>, dropModifiers: Collection<DropModifier>) {
+		for (drop in drops) {
+			dropModifiers.forEach { it.modify(drop) }
+		}
 	}
 
 	private val defaultPickaxe = ItemStack(Material.DIAMOND_PICKAXE)
