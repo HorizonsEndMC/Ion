@@ -69,7 +69,7 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 		}
 	}
 
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
+	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
 		if (livingEntity is Player && livingEntity.isSneaking) openMenu(livingEntity, itemStack)
 	}
 

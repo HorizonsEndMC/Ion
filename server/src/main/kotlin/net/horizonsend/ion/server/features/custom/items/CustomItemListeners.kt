@@ -27,7 +27,7 @@ class CustomItemListeners : SLEventListener() {
 		val customItem = event.item?.customItem ?: return
 		when (event.action) {
 			Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
-				customItem.handleSecondaryInteract(event.player, event.player.inventory.itemInMainHand)
+				customItem.handleSecondaryInteract(event.player, event.player.inventory.itemInMainHand, event)
 				if (customItem !is CustomBlockItem) {
 					event.isCancelled = true
 				}
@@ -58,7 +58,7 @@ class CustomItemListeners : SLEventListener() {
 
 		val customItem = offhand.customItem ?: return
 
-		customItem.handleSecondaryInteract(entity, offhand)
+		customItem.handleSecondaryInteract(entity, offhand, null)
 		event.isCancelled = true
 	}
 

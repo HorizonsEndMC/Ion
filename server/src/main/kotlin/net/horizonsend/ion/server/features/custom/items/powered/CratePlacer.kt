@@ -30,6 +30,7 @@ import org.bukkit.craftbukkit.v1_20_R3.block.CraftShulkerBox
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
@@ -65,7 +66,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 
 	val range = 16
 
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
+	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
 		if (livingEntity !is Player) return
 		if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
 		if (getPower(itemStack) < getPowerUse(itemStack)) return
