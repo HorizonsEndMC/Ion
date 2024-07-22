@@ -21,9 +21,9 @@ class StandoffPositioningModule(
 	override fun findPosition(): Vec3i? {
 		val target = targetSupplier.get() ?: return null
 
-		val vector = targetToShipVector(target)
+		val vector = targetToShipVector(target).clone().multiply(standoffRange).setY(0)
 
-		return Vec3i(target.getLocation().add(vector.multiply(standoffRange)))
+		return Vec3i(target.getLocation().add(vector))
 	}
 
 	override fun getDestination(): Vec3i? {
@@ -35,7 +35,7 @@ class StandoffPositioningModule(
 		val center = getCenterVec3i().toVector()
 		val targetPosition = target.getLocation().toVector()
 
-		return targetPosition.subtract(center).normalize()
+		return center.subtract(targetPosition).normalize()
 	}
 
 	override fun toString(): String {
