@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.mods.tool.drill
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.mods.general.AOEDMod
 import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -27,7 +28,7 @@ class VeinMinerMod(
 	override val displayName: Component = ofChildren(text("Vein ", HE_LIGHT_ORANGE), text("Mining", GRAY)).decoration(TextDecoration.ITALIC, false)
 
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(
-		AOEDrillMod::class,
+		AOEDMod::class,
 		VeinMinerMod::class
 	)
 

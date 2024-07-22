@@ -70,7 +70,7 @@ class ToolModMenu(
 		val customItems = contents
 			.mapNotNullTo(mutableSetOf()) { it?.customItem }
 			.filterIsInstance<ModificationItem>()
-			.map { it.mod.get() }
+			.map { it.modification }
 			.toTypedArray()
 
 		updateBaseItem(customItems)
@@ -181,7 +181,7 @@ class ToolModMenu(
 			return false
 		}
 
-		val mod: ItemModification = customItem.mod.get()
+		val mod: ItemModification = customItem.modification
 
 		return this.customItem.getMods(this.itemStack).none { existingMod ->
 			val incompatible = existingMod.incompatibleWithMods.contains(mod::class)

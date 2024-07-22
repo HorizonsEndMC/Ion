@@ -16,16 +16,17 @@ class ModificationItem(
 
 	override val customModelData: Int,
 	val displayName: Component,
-	val mod: Supplier<ItemModification>,
+	val description: List<Component>? = null,
+	private val modSupplier: Supplier<ItemModification>,
 ) : CustomItem(identifier), CustomModeledItem {
 	override val material: Material = Material.WARPED_FUNGUS_ON_A_STICK
 
-	override fun constructItemStack(): ItemStack {
-		val itemStack = getModeledItem()
+	/** The tool modification this item represents */
+	val modification get() = modSupplier.get()
 
-		return getModeledItem().updateMeta {
-			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
-			it.displayName(displayName)
-		}
+	override fun constructItemStack(): ItemStack = getModeledItem().updateMeta {
+		it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
+		it.lore(description)
+		it.displayName(displayName)
 	}
 }

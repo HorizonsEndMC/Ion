@@ -15,7 +15,9 @@ import net.horizonsend.ion.server.features.custom.items.misc.ShellItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.powered.CratePlacer
+import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
+import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownPumpkinGrenade
@@ -850,8 +852,8 @@ object CustomItems {
 
 	// Tools begin
 	val POWER_DRILL = register(PowerDrill)
-//	val POWER_CHAINSAW = register(PowerDrill) TODO
-//	val POWER_HOE = register(PowerDrill) TODO
+	val POWER_CHAINSAW = register(PowerChainsaw)
+	val POWER_HOE = register(PowerHoe)
 	val CRATE_PLACER = register(CratePlacer)
 
 	val DRILL_AOE_1: ModificationItem = register(ModificationItem(
