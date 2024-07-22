@@ -73,7 +73,7 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 	}
 
 	override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
-		if (event.player.gameMode == GameMode.CREATIVE) return
+		if (event.player.gameMode != GameMode.SURVIVAL) return
 
 		if (livingEntity !is Player) return
 

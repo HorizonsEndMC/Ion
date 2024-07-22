@@ -74,7 +74,7 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 	}
 
 	override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
-		if (event.player.gameMode == GameMode.CREATIVE) return
+		if (event.player.gameMode != GameMode.SURVIVAL) return
 
 		if (livingEntity !is Player) return
 
