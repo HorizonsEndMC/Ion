@@ -31,14 +31,14 @@ data class StarshipTypeBalancing(
 	val shuttle: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 5,
 		maxSneakFlyAccel = 2,
-		interdictionRange = 300,
+		interdictionRange = 10,
 		hyperspaceRangeMultiplier = 1.2,
 		shieldPowerMultiplier = 1.0
 	),
 	val transport: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 10,
 		maxSneakFlyAccel = 3,
-		interdictionRange = 600,
+		interdictionRange = 10,
 		hyperspaceRangeMultiplier = 1.25,
 		shieldPowerMultiplier = 1.0
 	),
@@ -99,7 +99,7 @@ data class StarshipTypeBalancing(
 	val gunship: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 5,
 		maxSneakFlyAccel = 2,
-		interdictionRange = 1200,
+		interdictionRange = 10,
 		hyperspaceRangeMultiplier = 1.6,
 		shieldPowerMultiplier = 1.0,
 		weapons = StarshipWeapons(
