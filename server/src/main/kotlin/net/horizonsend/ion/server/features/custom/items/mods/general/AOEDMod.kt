@@ -1,10 +1,14 @@
-package net.horizonsend.ion.server.features.custom.items.mods.tool.drill
+package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
+import net.horizonsend.ion.server.features.custom.items.mods.tool.drill.VeinMinerMod
+import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
+import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -14,20 +18,24 @@ import org.bukkit.block.BlockFace
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 
-class AOEDrillMod(
+class AOEDMod(
 	val radius: Int,
-	override val identifier: String = "DRILL_AOE_$radius",
-	override val modItem: Supplier<ModificationItem?>
-) : DrillModification(), BlockListModifier {
+	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class, PowerHoe::class),
+	override val modItem: Supplier<ModificationItem?>,
+) : ItemModification, BlockListModifier {
+	override val identifier: String = "AOE_$radius"
+
+	override val crouchingDisables: Boolean = true
+
 	override val displayName: Component = ofChildren(
 		text(1 + (2 * radius), HEColorScheme.HE_LIGHT_ORANGE).decoration(TextDecoration.ITALIC, false),
 		text("×", HEColorScheme.HE_MEDIUM_GRAY).decoration(TextDecoration.ITALIC, false),
 		text(1 + (2 * radius), HEColorScheme.HE_LIGHT_ORANGE).decoration(TextDecoration.ITALIC, false),
-		text(" Mining", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+		text(" Range", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
 	)
 
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(
-		AOEDrillMod::class,
+		AOEDMod::class,
 		VeinMinerMod::class
 	)
 

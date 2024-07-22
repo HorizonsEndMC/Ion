@@ -126,7 +126,7 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 		if (livingEntity is Player && livingEntity.isSneaking) openMenu(livingEntity, itemStack)
 	}
 
-	private fun tryBreakBlock(
+	fun tryBreakBlock(
 		player: Player,
 		block: Block,
 		mods: Array<ItemModification>,
