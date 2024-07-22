@@ -9,7 +9,7 @@ import net.kyori.adventure.text.Component
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 
-object ExtendedBlade : ItemModification {
+object ExtendedBar : ItemModification {
 	override val identifier: String = "EXTENDED_BLADE"
 	override val displayName: Component = "<i><gradient:#a0a0a0:#6c6c6c>Extended Blade</gradient></i>".miniMessage()
 

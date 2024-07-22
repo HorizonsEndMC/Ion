@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.mods.tool.chainsaw.ExtendedBlade
+import net.horizonsend.ion.server.features.custom.items.mods.tool.chainsaw.ExtendedBar
 import net.horizonsend.ion.server.features.custom.items.mods.tool.hoe.AutoReplantModifier
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
@@ -82,7 +82,7 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 
 		val mods = getMods(itemStack)
 
-		val maxDepth = if (mods.contains(ExtendedBlade)) 100 else 50
+		val maxDepth = if (mods.contains(ExtendedBar)) 150 else 50
 
 		PowerChainsawMineTask(
 			player = livingEntity,
@@ -162,6 +162,7 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 				items.forEach { origin.world.dropItemNaturally(location, it) }
 			}
 
+			// Handle auto-replant
 			replacementType?.let {
 				block.type = it
 			}

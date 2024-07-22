@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.mods.general.AOEDMod
 import net.horizonsend.ion.server.features.custom.items.mods.general.AutoCompostModifier
 import net.horizonsend.ion.server.features.custom.items.mods.general.PowerCapacityIncrease
-import net.horizonsend.ion.server.features.custom.items.mods.tool.chainsaw.ExtendedBlade
+import net.horizonsend.ion.server.features.custom.items.mods.tool.chainsaw.ExtendedBar
 import net.horizonsend.ion.server.features.custom.items.mods.tool.drill.VeinMinerMod
 import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.AutoSmeltModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.FortuneModifier
@@ -22,7 +22,7 @@ object ItemModRegistry {
 	// AOE 3 is just for power hoes
 	val AOE_3 = registerMod(AOEDMod(radius = 3, applicableTo = arrayOf(PowerHoe::class)) { CustomItems.DRILL_AOE_2 })
 
-	val EXTENDED_BLADE = registerMod(ExtendedBlade)
+	val EXTENDED_BAR = registerMod(ExtendedBar)
 
 	val VEIN_MINER_25 = registerMod(VeinMinerMod(depth = 25) { CustomItems.VEIN_MINER_25 })
 
