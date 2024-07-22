@@ -123,7 +123,7 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 		return
 	}
 
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
+	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
 		if (livingEntity is Player && livingEntity.isSneaking) openMenu(livingEntity, itemStack)
 	}
 
@@ -181,7 +181,7 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 		return true
 	}
 
-	private fun handleModifiers(drops: Collection<ItemStack>, dropModifiers: Collection<DropModifier>) {
+	fun handleModifiers(drops: Collection<ItemStack>, dropModifiers: Collection<DropModifier>) {
 		for (drop in drops) {
 			dropModifiers.forEach { it.modify(drop) }
 		}

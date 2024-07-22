@@ -34,6 +34,7 @@ import org.bukkit.Particle.REDSTONE
 import org.bukkit.SoundCategory.PLAYERS
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
@@ -88,10 +89,6 @@ abstract class Blaster<T : Balancing>(
 				magazineTypeComponent
 			))
 		}
-	}
-
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
-		fireWeapon(livingEntity, itemStack)
 	}
 
 	override fun handleSwapHands(livingEntity: LivingEntity, itemStack: ItemStack) {
@@ -163,6 +160,10 @@ abstract class Blaster<T : Balancing>(
 	}
 
 	override fun getMaximumAmmunition(): Int = balancing.magazineSize
+
+	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
+		fireWeapon(livingEntity, itemStack)
+	}
 	override fun getTypeRefill(): String = magazineType.getTypeRefill()
 	override fun getAmmoPerRefill(): Int = balancing.ammoPerRefill
 	override fun getConsumesAmmo(): Boolean = balancing.consumesAmmo

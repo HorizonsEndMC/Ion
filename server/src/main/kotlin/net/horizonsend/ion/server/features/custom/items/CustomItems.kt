@@ -146,7 +146,8 @@ object CustomItems {
 				// Allows fire above 300 rpm
 				override fun handleSecondaryInteract(
 					livingEntity: LivingEntity,
-					itemStack: ItemStack
+					itemStack: ItemStack,
+					event: PlayerInteractEvent?
 				) {
 					val repeatCount = if (balancing.timeBetweenShots >= 4) {
 						1
@@ -157,9 +158,9 @@ object CustomItems {
 					for (count in 0 until repeatCount) {
 						val delay = (count * division).toLong()
 						if (delay > 0) {
-							Tasks.syncDelay(delay) { super.handleSecondaryInteract(livingEntity, itemStack) }
+							Tasks.syncDelay(delay) { super.handleSecondaryInteract(livingEntity, itemStack, event) }
 						} else {
-							super.handleSecondaryInteract(livingEntity, itemStack)
+							super.handleSecondaryInteract(livingEntity, itemStack, event)
 						}
 					}
 				}
@@ -955,7 +956,7 @@ abstract class CustomItem(val identifier: String) {
 	open fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {}
 
 	/** Right Click **/
-	open fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {}
+	open fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {}
 
 	/** Swap Hands **/
 	open fun handleSwapHands(livingEntity: LivingEntity, itemStack: ItemStack) {}
