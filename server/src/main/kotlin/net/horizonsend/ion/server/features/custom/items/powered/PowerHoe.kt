@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.powered
 
 import net.horizonsend.ion.common.extensions.alertAction
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -99,10 +98,54 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		handleReap(livingEntity, itemStack, block)
 	}
 
-	private fun handleHoe(player: Player, hoe: ItemStack, origin: Block) {
-		val blockList = compileBlockList(player, origin, hoe)
+	private fun handleHoe(player: Player, itemStack: ItemStack, origin: Block) {
+		val blockList = compileBlockList(player, origin, itemStack)
 
-		player.userError("u a hoe")
+		var availablePower = getPower(itemStack)
+		val powerUse = getPowerUse(itemStack)
+		var broken = 0
+
+		for (block in blockList) {
+			if (availablePower < powerUse) {
+				player.alertAction("Out of power!")
+				break
+			}
+
+			if (processHoe(player, itemStack, block)) {
+				availablePower -= powerUse
+				broken++
+			}
+		}
+
+		if (broken <= 0) return
+		setPower(itemStack, availablePower)
+	}
+
+	private fun processHoe(player: Player, itemStack: ItemStack, block: Block): Boolean {
+		val type = block.type
+
+		val event = BlockBreakEvent(block, player)
+		CustomBlockListeners.noDropEvents.add(event)
+
+		println("processing $block")
+
+		if (!event.callEvent()) {
+			return false
+		}
+
+		if (TILL_ABLE.contains(type) && block.getRelative(BlockFace.UP).type.isAir) {
+			block.setType(Material.FARMLAND, true)
+
+			return true
+		}
+
+		if (DIRT_CONVERTIBLE.contains(type)) {
+			block.setType(Material.DIRT, true)
+
+			return true
+		}
+
+		return false
 	}
 
 	private fun tryHarvest(player: Player, hoe: ItemStack, block: Block, drops: MutableMap<Long, Collection<ItemStack>>): Boolean {
@@ -187,4 +230,7 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 
 		return blockList
 	}
+
+	private val TILL_ABLE = enumSetOf(Material.DIRT, Material.DIRT_PATH, Material.DIRT, Material.GRASS_BLOCK)
+	private val DIRT_CONVERTIBLE = enumSetOf(Material.ROOTED_DIRT, Material.COARSE_DIRT, Material.DIRT)
 }
