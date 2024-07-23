@@ -19,11 +19,6 @@ object ItemModRegistry {
 	val AOE_1 = registerMod(AOEDMod(radius = 1) { CustomItems.DRILL_AOE_1 })
 	val AOE_2 = registerMod(AOEDMod(radius = 2) { CustomItems.DRILL_AOE_2 })
 
-	// AOE 3 is just for power hoes
-	val AOE_3 = registerMod(AOEDMod(radius = 3, applicableTo = arrayOf(PowerHoe::class)) { CustomItems.DRILL_AOE_2 })
-
-	val EXTENDED_BAR = registerMod(ExtendedBar)
-
 	val VEIN_MINER_25 = registerMod(VeinMinerMod(depth = 25) { CustomItems.VEIN_MINER_25 })
 
 	val SILK_TOUCH = registerMod(SilkTouchSource)
@@ -39,6 +34,11 @@ object ItemModRegistry {
 
 	val AUTO_REPLANT = registerMod(AutoReplantModifier)
 	val AUTO_COMPOST = registerMod(AutoCompostModifier)
+
+	// AOE 3 is just for power hoes
+	val AOE_3 = registerMod(AOEDMod(radius = 3, applicableTo = arrayOf(PowerHoe::class)) { CustomItems.DRILL_AOE_2 })
+
+	val EXTENDED_BAR = registerMod(ExtendedBar)
 
 	fun <T: ItemModification> registerMod(mod: T): T {
 		mods[mod.identifier] = mod

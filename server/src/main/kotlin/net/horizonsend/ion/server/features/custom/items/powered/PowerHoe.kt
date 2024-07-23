@@ -99,44 +99,13 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		handleReap(livingEntity, itemStack, block)
 	}
 
-	fun handleHoe(player: Player, hoe: ItemStack, origin: Block) {
+	private fun handleHoe(player: Player, hoe: ItemStack, origin: Block) {
 		val blockList = compileBlockList(player, origin, hoe)
 
 		player.userError("u a hoe")
 	}
 
-	fun handleReap(player: Player, itemStack: ItemStack, origin: Block) {
-		val blockList = compileBlockList(player, origin, itemStack)
-
-		var availablePower = getPower(itemStack)
-		val powerUse = getPowerUse(itemStack)
-		var broken = 0
-
-		val drops = mutableMapOf<Long, Collection<ItemStack>>()
-
-		for (block in blockList) {
-			if (availablePower < powerUse) {
-				player.alertAction("Out of power!")
-				break
-			}
-
-			if (tryHarvest(player, itemStack, block, drops)) {
-				availablePower -= powerUse
-				broken++
-			}
-		}
-
-		for ((key, items) in drops) {
-			val location = BlockPos.of(key).toLocation(origin.world)
-			items.forEach { origin.world.dropItemNaturally(location, it) }
-		}
-
-		if (broken <= 0) return
-
-		setPower(itemStack, availablePower)
-	}
-
-	fun tryHarvest(player: Player, hoe: ItemStack, block: Block, drops: MutableMap<Long, Collection<ItemStack>>): Boolean {
+	private fun tryHarvest(player: Player, hoe: ItemStack, block: Block, drops: MutableMap<Long, Collection<ItemStack>>): Boolean {
 		val data = block.blockData
 
 		if (data !is Ageable) return false
@@ -171,6 +140,37 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		block.setBlockData(replacement, true)
 
 		return true
+	}
+
+	private fun handleReap(player: Player, itemStack: ItemStack, origin: Block) {
+		val blockList = compileBlockList(player, origin, itemStack)
+
+		var availablePower = getPower(itemStack)
+		val powerUse = getPowerUse(itemStack)
+		var broken = 0
+
+		val drops = mutableMapOf<Long, Collection<ItemStack>>()
+
+		for (block in blockList) {
+			if (availablePower < powerUse) {
+				player.alertAction("Out of power!")
+				break
+			}
+
+			if (tryHarvest(player, itemStack, block, drops)) {
+				availablePower -= powerUse
+				broken++
+			}
+		}
+
+		for ((key, items) in drops) {
+			val location = BlockPos.of(key).toLocation(origin.world)
+			items.forEach { origin.world.dropItemNaturally(location, it) }
+		}
+
+		if (broken <= 0) return
+
+		setPower(itemStack, availablePower)
 	}
 
 	private fun compileBlockList(player: Player, origin: Block, itemStack: ItemStack) : List<Block> {
