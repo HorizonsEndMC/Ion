@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -46,7 +47,10 @@ object LocatorCommands : SLCommand() {
 
 			distance = sender.location.distance(target.location)
 
-			failIf(distance > IonServer.configuration.getPosMaxRange) {
+			val gates = HyperspaceBeaconManager.beaconWorlds[target.world]
+			val gateDistance = gates?.let { it.minOfOrNull { gate -> gate.spaceLocation.toLocation().distance(sender.location) } }
+
+			failIf(distance > IonServer.configuration.getPosMaxRange || (gateDistance != null && gateDistance < 2000)) {
 				"You need to be closer to ${target.name} to do that!"
 			}
 		}
