@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -47,16 +48,23 @@ object LocatorCommands : SLCommand() {
 				if (targetNation != null) relation = RelationCache[it, targetNation]
 			}
 
-			failIf(sender.world != target.world) {
-				"You need to be closer to ${target.name} to do that!"
-			}
+			distance = if (sender.world != target.world) {
+				failIf(relation < NationRelation.Level.ALLY) {
+					"You need to be closer to ${target.name} to do that!"
+				}
 
-			distance = sender.location.distance(target.location)
+				0.0
+			} else sender.location.distance(target.location)
 
 			val gates = HyperspaceBeaconManager.beaconWorlds[target.world]
-			val gateDistance = gates?.let { it.minOfOrNull { gate -> gate.spaceLocation.toLocation().distance(sender.location) } }
+			val gateDistance = gates?.let { it.minOfOrNull { gate -> gate.spaceLocation.toLocation().distance(target.location) } }
 
-			failIf(distance > IonServer.configuration.getPosMaxRange || (gateDistance != null && gateDistance < 2000)) {
+			println("Relation: $relation")
+
+			if (relation < NationRelation.Level.ALLY) failIf(
+				distance > IonServer.configuration.getPosMaxRange &&
+				(gateDistance != null && gateDistance > 2000)
+			) {
 				"You need to be closer to ${target.name} to do that!"
 			}
 		}
@@ -68,8 +76,7 @@ object LocatorCommands : SLCommand() {
 			text("Y: ", HE_LIGHT_GRAY), text(target.location.blockY, HE_LIGHT_BLUE), newline(),
 			text("Z: ", HE_LIGHT_GRAY), text(target.location.blockZ, HE_LIGHT_BLUE), newline(),
 			text("Yaw: ", HE_LIGHT_GRAY), text(target.location.yaw.toDouble().roundToHundredth(), HE_LIGHT_BLUE), newline(),
-			text("Pitch: ", HE_LIGHT_GRAY), text(target.location.pitch.toDouble().roundToHundredth(), HE_LIGHT_BLUE), newline(),
-			text("Distance: ", HE_LIGHT_GRAY), text(distance.roundToHundredth(), HE_LIGHT_BLUE)
+			text("Pitch: ", HE_LIGHT_GRAY), text(target.location.pitch.toDouble().roundToHundredth(), HE_LIGHT_BLUE)
 		))
 	}
 
@@ -88,6 +95,8 @@ object LocatorCommands : SLCommand() {
 
 		val senderNation = PlayerCache[sender].nationOid
 
+		val count = players.count()
+
 		val body = players.mapNotNull { player ->
 			val cached = PlayerCache.getIfOnline(player) ?: return@mapNotNull null
 			val nation = cached.nationOid
@@ -103,7 +112,7 @@ object LocatorCommands : SLCommand() {
 			ofChildren(text(player.name, nameColor), text(": ", HE_DARK_GRAY), text(distance.roundToHundredth(), HE_LIGHT_GRAY))
 		}.join(separator = newline())
 
-		sender.sendMessage(ofChildren(text("Nearby Players:", HE_MEDIUM_GRAY), newline(), body))
+		sender.sendMessage(ofChildren(text("Nearby Players:", HE_MEDIUM_GRAY), if (count == 0) empty() else newline(), body))
 	}
 
 	private val autoNearPlayers = mutableListOf<UUID>()
@@ -120,13 +129,14 @@ object LocatorCommands : SLCommand() {
 		}
 	}
 
-	@CommandAlias("near auto")
+	@CommandAlias("autonear")
 	@Suppress("Unused")
 	fun onAutoNear(sender: Player) {
 		if (autoNearPlayers.contains(sender.uniqueId)) {
 			autoNearPlayers.remove(sender.uniqueId)
 
 			sender.success("Stopppd auto near. Run this command again to enable it")
+			return
 		}
 
 		sender.success("Started auto near. Run this command again to disable it")
