@@ -1,10 +1,12 @@
 package net.horizonsend.ion.server.command.misc
 
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
@@ -16,12 +18,16 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerQuitEvent
+import java.util.UUID
 
 object LocatorCommands : SLCommand() {
 	@CommandAlias("getpos")
@@ -98,5 +104,32 @@ object LocatorCommands : SLCommand() {
 		}.join(separator = newline())
 
 		sender.sendMessage(ofChildren(text("Nearby Players:", HE_MEDIUM_GRAY), newline(), body))
+	}
+
+	private val autoNearPlayers = mutableListOf<UUID>()
+
+	override fun onEnable(manager: PaperCommandManager) {
+		Tasks.syncRepeat(600L, 600L) {
+			for (player in autoNearPlayers.mapNotNull(Bukkit::getPlayer)) {
+				onNear(player)
+			}
+		}
+
+		listen<PlayerQuitEvent> { event ->
+			autoNearPlayers.remove(event.player.uniqueId)
+		}
+	}
+
+	@CommandAlias("near auto")
+	@Suppress("Unused")
+	fun onAutoNear(sender: Player) {
+		if (autoNearPlayers.contains(sender.uniqueId)) {
+			autoNearPlayers.remove(sender.uniqueId)
+
+			sender.success("Stopppd auto near. Run this command again to enable it")
+		}
+
+		sender.success("Started auto near. Run this command again to disable it")
+		autoNearPlayers.add(sender.uniqueId)
 	}
 }
