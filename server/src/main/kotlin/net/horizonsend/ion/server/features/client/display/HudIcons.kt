@@ -467,7 +467,7 @@ object HudIcons : IonServerComponent() {
         else if (name.contains(STAR_PREFIX)) {
             return when (name) {
                 STAR_PREFIX + "Asteri" -> CustomItems.ASTERI
-                STAR_PREFIX + "EdenHack" -> CustomItems.HORIZON
+                STAR_PREFIX + "Horizon" -> CustomItems.HORIZON
                 STAR_PREFIX + "Ilios" -> CustomItems.ILIOS
                 STAR_PREFIX + "Regulus" -> CustomItems.REGULUS
                 STAR_PREFIX + "Sirius" -> CustomItems.SIRIUS
