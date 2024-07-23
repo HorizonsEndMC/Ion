@@ -917,6 +917,30 @@ object CustomItems {
 		text("Power Capacity 50000").decoration(ITALIC, false)
 	) { ItemModRegistry.POWER_CAPACITY_50 })
 
+	val AUTO_REPLANT: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_AUTO_REPLANT",
+		7010,
+		text("Auto Replant Modifier").decoration(ITALIC, false)
+	) { ItemModRegistry.AUTO_REPLANT })
+
+	val AUTO_COMPOST: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_AUTO_COMPOST",
+		7011,
+		text("Auto Compost Modifier").decoration(ITALIC, false)
+	) { ItemModRegistry.AUTO_COMPOST })
+
+	val DRILL_AOE_3: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_DRILL_AOE_3",
+		7012,
+		text("Drill AOE 3").decoration(ITALIC, false)
+	) { ItemModRegistry.AOE_3 })
+
+	val EXTENDED_BAR: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_EXTENDED_BAR",
+		7013,
+		text("Extended Bar Modifier").decoration(ITALIC, false)
+	) { ItemModRegistry.EXTENDED_BAR })
+
 	// Tools end
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
