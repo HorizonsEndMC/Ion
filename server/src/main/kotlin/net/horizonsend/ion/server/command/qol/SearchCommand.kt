@@ -168,8 +168,10 @@ object SearchCommand : SLCommand() {
 		for(item in inventory){
 			if(item == null) continue
 			if(item.type == itemStack.type) {
-				if ( !(item.itemMeta.hasCustomModelData() && itemStack.itemMeta.hasCustomModelData()) ) return true //if both don't have custom item data, return true
-				else if (item.itemMeta.customModelData == itemStack.itemMeta.customModelData) return true //if both do, and they both match, return true
+				if( !item.itemMeta.hasCustomModelData() && !itemStack.itemMeta.hasCustomModelData() ) return true // if both don't have custom model data, return true
+
+				if ( (item.itemMeta.hasCustomModelData() && itemStack.itemMeta.hasCustomModelData()) &&
+					item.itemMeta.customModelData == itemStack.itemMeta.customModelData ) return true //if their custom model data both match, return true
 			}
 		}
 		return false
