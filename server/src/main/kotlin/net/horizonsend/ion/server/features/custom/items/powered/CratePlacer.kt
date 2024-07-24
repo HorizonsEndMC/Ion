@@ -55,7 +55,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 	override fun constructItemStack(): ItemStack {
 		val base = getModeledItem()
 
-		setPower(base, PowerDrill.getPowerCapacity(base))
+		setPower(base, getPowerCapacity(base))
 
 		return base.updateMeta {
 			it.displayName(displayName)

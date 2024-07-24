@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.powered
 
 import net.horizonsend.ion.common.extensions.alertAction
-import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -18,10 +17,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.BaseFireBlock
 import net.minecraft.world.level.block.Blocks
@@ -44,16 +39,17 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledItem {
-	val displayName: Component = ofChildren(text("Power ", GOLD), text("Drill", GRAY)).decoration(TextDecoration.ITALIC, false)
-	override val basePowerCapacity: Int = 50_000
+class PowerDrill(
+	identifier: String,
+	val displayName: Component,
+	override val modLimit: Int,
+	override val basePowerCapacity: Int
+) : CustomItem(identifier), ModdedPowerItem, CustomModeledItem {
 	override val basePowerUsage: Int = 10
 	override val displayDurability: Boolean = true
 
 	override val material: Material = Material.DIAMOND_PICKAXE
 	override val customModelData: Int = 1
-
-	override val modLimit: Int = 2
 
 	override fun getLoreManagers(): List<LoreCustomItem.CustomItemLoreManager> {
 		return listOf(
@@ -128,106 +124,108 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 		if (livingEntity is Player && livingEntity.isSneaking) openMenu(livingEntity, itemStack)
 	}
 
-	fun tryBreakBlock(
-		player: Player,
-		block: Block,
-		mods: Array<ItemModification>,
-		drops: MutableMap<Long, Collection<ItemStack>>,
-	): Boolean {
-		val blockType = block.type
-		val customBlock = CustomBlocks.getByBlock(block)
+	companion object {
+		fun tryBreakBlock(
+			player: Player,
+			block: Block,
+			mods: Array<ItemModification>,
+			drops: MutableMap<Long, Collection<ItemStack>>,
+		): Boolean {
+			val blockType = block.type
+			val customBlock = CustomBlocks.getByBlock(block)
 
-		if (blockType == Material.BEDROCK || blockType == Material.BARRIER) {
-			return false
+			if (blockType == Material.BEDROCK || blockType == Material.BARRIER) {
+				return false
+			}
+
+			val event = BlockBreakEvent(block, player)
+			CustomBlockListeners.noDropEvents.add(event)
+
+			if (!event.callEvent()) {
+				return false
+			}
+
+			val dropSource = mods
+				.filterNot { it.crouchingDisables && player.isSneaking }
+				.filterIsInstance<DropSource>()
+				.firstOrNull() ?: DropSource.DEFAULT_DROP_PROVIDER
+
+			val dropModifiers = mods
+				.filterIsInstance<DropModifier>()
+				.sortedByDescending { it.priority }
+
+			// customBlock turns to AIR due to BlockBreakEvent; play break sound and drop item
+			if (customBlock != null) {
+				block.world.playSound(block.location.toCenterLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f)
+				block.world.playEffect(block.location, Effect.STEP_SOUND, Material.IRON_ORE)
+
+				val baseDrops = dropSource.getDrop(customBlock)
+				handleModifiers(baseDrops, dropModifiers)
+
+				drops[BlockPos.asLong(block.x, block.y, block.z)] = baseDrops
+			} else {
+				val baseDrops = dropSource.getDrop(block)
+				handleModifiers(baseDrops, dropModifiers)
+
+				drops[BlockPos.asLong(block.x, block.y, block.z)] = baseDrops
+				block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
+			}
+
+			block.type = Material.AIR
+			breakNaturally(block, dropSource.shouldDropXP)
+
+			if (blockType == Material.END_PORTAL_FRAME) block.world.dropItem(block.location, ItemStack(Material.END_PORTAL_FRAME))
+
+			return true
 		}
 
-		val event = BlockBreakEvent(block, player)
-		CustomBlockListeners.noDropEvents.add(event)
-
-		if (!event.callEvent()) {
-			return false
+		fun handleModifiers(drops: Collection<ItemStack>, dropModifiers: Collection<DropModifier>) {
+			for (drop in drops) {
+				dropModifiers.forEach { it.modifyDrop(drop) }
+			}
 		}
 
-		val dropSource = mods
-			.filterNot { it.crouchingDisables && player.isSneaking }
-			.filterIsInstance<DropSource>()
-			.firstOrNull() ?: DropSource.DEFAULT_DROP_PROVIDER
+		private val defaultPickaxe = ItemStack(Material.DIAMOND_PICKAXE)
 
-		val dropModifiers = mods
-			.filterIsInstance<DropModifier>()
-			.sortedByDescending { it.priority }
+		/**
+		 * A modified version of the Spigot API Block#breakNaturally
+		 *
+		 * This will break a block as normal but not drop any items. XP Will be dropped as normal, if desired
+		 **/
+		fun breakNaturally(block: Block, dropExperience: Boolean, tool: ItemStack? = null) {
+			block as CraftBlock
+			val nmsTool = CraftItemStack.asNMSCopy(tool ?: defaultPickaxe)
 
-		// customBlock turns to AIR due to BlockBreakEvent; play break sound and drop item
-		if (customBlock != null) {
-			block.world.playSound(block.location.toCenterLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f)
-			block.world.playEffect(block.location, Effect.STEP_SOUND, Material.IRON_ORE)
+			val level = block.world.minecraft
+			val pos = block.position
 
-			val baseDrops = dropSource.getDrop(customBlock)
-			handleModifiers(baseDrops, dropModifiers)
+			val blockState: BlockState = block.getNMSBlockData()
+			val nmsBlock = blockState.block
 
-			drops[BlockPos.asLong(block.x, block.y, block.z)] = baseDrops
-		} else {
-			val baseDrops = dropSource.getDrop(block)
-			handleModifiers(baseDrops, dropModifiers)
+			// Modelled off EntityHuman#hasBlock
+			if (nmsBlock !== Blocks.AIR && (!blockState.requiresCorrectToolForDrops() || nmsTool.isCorrectToolForDrops(blockState))) {
+				net.minecraft.world.level.block.Block.dropResources(
+					blockState,
+					level,
+					pos,
+					level.getBlockEntity(block.position),
+					null,
+					nmsTool,
+					false
+				)
 
-			drops[BlockPos.asLong(block.x, block.y, block.z)] = baseDrops
-			block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
-		}
+				if (blockState.block is BaseFireBlock) level.levelEvent(LevelEvent.SOUND_EXTINGUISH_FIRE, pos, 0)
+				if (dropExperience) nmsBlock.popExperience(level, pos, nmsBlock.getExpDrop(blockState, level, pos, nmsTool, true))
+			}
 
-		block.type = Material.AIR
-		breakNaturally(block, dropSource.shouldDropXP)
+			val destroyed: Boolean = level.removeBlock(pos, false)
+			if (destroyed) nmsBlock.destroy(level, pos, blockState)
 
-		if (blockType == Material.END_PORTAL_FRAME) block.world.dropItem(block.location, ItemStack(Material.END_PORTAL_FRAME))
-
-		return true
-	}
-
-	fun handleModifiers(drops: Collection<ItemStack>, dropModifiers: Collection<DropModifier>) {
-		for (drop in drops) {
-			dropModifiers.forEach { it.modifyDrop(drop) }
-		}
-	}
-
-	private val defaultPickaxe = ItemStack(Material.DIAMOND_PICKAXE)
-
-	/**
-	 * A modified version of the Spigot API Block#breakNaturally
-	 *
-	 * This will break a block as normal but not drop any items. XP Will be dropped as normal, if desired
-	 **/
-	fun breakNaturally(block: Block, dropExperience: Boolean, tool: ItemStack? = null) {
-		block as CraftBlock
-		val nmsTool = CraftItemStack.asNMSCopy(tool ?: defaultPickaxe)
-
-		val level = block.world.minecraft
-		val pos = block.position
-
-		val blockState: BlockState = block.getNMSBlockData()
-		val nmsBlock = blockState.block
-
-		// Modelled off EntityHuman#hasBlock
-		if (nmsBlock !== Blocks.AIR && (!blockState.requiresCorrectToolForDrops() || nmsTool.isCorrectToolForDrops(blockState))) {
-			net.minecraft.world.level.block.Block.dropResources(
-				blockState,
-				level,
-				pos,
-				level.getBlockEntity(block.position),
-				null,
-				nmsTool,
-				false
-			)
-
-			if (blockState.block is BaseFireBlock) level.levelEvent(LevelEvent.SOUND_EXTINGUISH_FIRE, pos, 0)
-			if (dropExperience) nmsBlock.popExperience(level, pos, nmsBlock.getExpDrop(blockState, level, pos, nmsTool, true))
-		}
-
-		val destroyed: Boolean = level.removeBlock(pos, false)
-		if (destroyed) nmsBlock.destroy(level, pos, blockState)
-
-		// special cases
-		when (nmsBlock) {
-			is IceBlock -> nmsBlock.afterDestroy(level, pos, nmsTool)
-			is TurtleEggBlock -> nmsBlock.decreaseEggs(level, pos, blockState)
+			// special cases
+			when (nmsBlock) {
+				is IceBlock -> nmsBlock.afterDestroy(level, pos, nmsTool)
+				is TurtleEggBlock -> nmsBlock.decreaseEggs(level, pos, blockState)
+			}
 		}
 	}
 }

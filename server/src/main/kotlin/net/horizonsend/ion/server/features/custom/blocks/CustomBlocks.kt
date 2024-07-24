@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.custom.blocks
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.miscellaneous.utils.getMatchingMaterials
 import net.horizonsend.ion.server.miscellaneous.utils.nms
@@ -266,21 +266,21 @@ data class BlockLoot(
 
 	enum class Tool(vararg val checks: (ItemStack) -> Boolean) {
 		PICKAXE(
-			customItem(POWER_DRILL),
+			customItem(POWER_DRILL_BASIC),
 			matchAnyMaterial(getMatchingMaterials { it.name.endsWith("PICKAXE") })
 		),
 		SHOVEL(
-			customItem(POWER_DRILL),
+			customItem(POWER_DRILL_BASIC),
 			matchAnyMaterial(getMatchingMaterials { it.name.endsWith("SHOVEL") })
 
 		),
 		AXE(
-			customItem(POWER_DRILL),
+			customItem(POWER_DRILL_BASIC),
 			matchAnyMaterial(getMatchingMaterials { it.name.endsWith("AXE") })
 
 		),
 		SHEARS(
-			customItem(POWER_DRILL),
+			customItem(POWER_DRILL_BASIC),
 			matchMaterial(Material.SHEARS)
 		);
 
