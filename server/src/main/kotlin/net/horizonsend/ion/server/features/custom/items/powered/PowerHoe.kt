@@ -42,10 +42,12 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 	val displayName: Component = ofChildren(text("Power ", GOLD), text("Hoe", GRAY)).decoration(TextDecoration.ITALIC, false)
 	override val basePowerCapacity: Int = 50_000
 	override val basePowerUsage: Int = 10
+	override val displayDurability: Boolean = true
 
 	override val material: Material = Material.DIAMOND_PICKAXE
 	override val customModelData: Int = 3
-	override val displayDurability: Boolean = true
+
+	override val modLimit: Int = 2
 
 	override fun constructItemStack(): ItemStack {
 		val base = getModeledItem()

@@ -22,6 +22,8 @@ import org.bukkit.persistence.PersistentDataType
 import java.nio.charset.Charset
 
 interface ModdedCustomItem : LoreCustomItem {
+	val modLimit: Int
+
 	fun getMods(item: ItemStack): Array<ItemModification> = item.itemMeta.persistentDataContainer.getOrDefault(TOOL_MODIFICATIONS, ModList, arrayOf())
 
 	fun setMods(item: ItemStack, mods: Array<ItemModification>) {

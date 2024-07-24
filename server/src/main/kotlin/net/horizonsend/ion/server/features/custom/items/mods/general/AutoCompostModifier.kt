@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.drops.AutoSmeltModifier
@@ -23,7 +24,7 @@ object AutoCompostModifier : ItemModification, DropModifier {
 	override val displayName: Component = Component.text("AUTO_COMPOST")
 	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(AutoSmeltModifier::class, SilkTouchSource::class)
-	override val modItem: Supplier<ModificationItem?> = Supplier { null }
+	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.AUTO_COMPOST }
 
 	override val crouchingDisables: Boolean = false
 

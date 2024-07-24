@@ -48,11 +48,12 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 	val displayName: Component = ofChildren(text("Power ", GOLD), text("Drill", GRAY)).decoration(TextDecoration.ITALIC, false)
 	override val basePowerCapacity: Int = 50_000
 	override val basePowerUsage: Int = 10
+	override val displayDurability: Boolean = true
 
 	override val material: Material = Material.DIAMOND_PICKAXE
 	override val customModelData: Int = 1
 
-	override val displayDurability: Boolean = true
+	override val modLimit: Int = 2
 
 	override fun getLoreManagers(): List<LoreCustomItem.CustomItemLoreManager> {
 		return listOf(

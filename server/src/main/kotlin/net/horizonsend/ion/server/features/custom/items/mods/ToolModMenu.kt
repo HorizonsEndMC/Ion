@@ -187,6 +187,10 @@ class ToolModMenu(
 
 		val mod: ItemModification = customItem.modification
 
+		if (this.customItem.getMods(this.itemStack).size >= this.customItem.modLimit) {
+			return false
+		}
+
 		return this.customItem.getMods(this.itemStack).none { existingMod ->
 			val incompatible = existingMod.incompatibleWithMods.contains(mod::class)
 
