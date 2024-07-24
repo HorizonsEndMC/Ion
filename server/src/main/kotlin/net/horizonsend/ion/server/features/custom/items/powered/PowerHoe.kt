@@ -92,10 +92,10 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		val mods = getMods(itemStack)
 
 		// If targeting a crop, harvest it
-		if (Crop[block.type] != null) return handleReap(livingEntity, mods, itemStack, block)
+		if (Crop[block.type] != null) return tryHarvest(livingEntity, mods, itemStack, block)
 
 		// Else try to use the hoe
-		handleHoe(livingEntity, itemStack, block)
+		tryTill(livingEntity, itemStack, block)
 	}
 
 	override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
@@ -104,12 +104,42 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 
 		val mods = getMods(itemStack)
 
-		handleReap(livingEntity, mods, itemStack, block)
+		tryHarvest(livingEntity, mods, itemStack, block)
 	}
 
-	private fun tryHarvest(
+	private fun tryHarvest(player: Player, mods: Array<ItemModification>, itemStack: ItemStack, origin: Block) {
+		val blockList = compileBlockList(player, origin, itemStack)
+
+		var availablePower = getPower(itemStack)
+		val powerUse = getPowerUse(itemStack)
+		var broken = 0
+
+		val drops = mutableMapOf<Long, Collection<ItemStack>>()
+
+		for (block in blockList) {
+			if (availablePower < powerUse) {
+				player.alertAction("Out of power!")
+				break
+			}
+
+			if (handleHarvest(player, mods, block, drops)) {
+				availablePower -= powerUse
+				broken++
+			}
+		}
+
+		for ((key, items) in drops) {
+			val location = BlockPos.of(key).toLocation(origin.world)
+			items.forEach { origin.world.dropItemNaturally(location, it) }
+		}
+
+		if (broken <= 0) return
+
+		setPower(itemStack, availablePower)
+	}
+
+	private fun handleHarvest(
 		player: Player,
-		hoe: ItemStack,
 		mods: Array<ItemModification>,
 		block: Block,
 		drops: MutableMap<Long, Collection<ItemStack>>
@@ -154,38 +184,7 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		return true
 	}
 
-	private fun handleReap(player: Player, mods: Array<ItemModification>, itemStack: ItemStack, origin: Block) {
-		val blockList = compileBlockList(player, origin, itemStack)
-
-		var availablePower = getPower(itemStack)
-		val powerUse = getPowerUse(itemStack)
-		var broken = 0
-
-		val drops = mutableMapOf<Long, Collection<ItemStack>>()
-
-		for (block in blockList) {
-			if (availablePower < powerUse) {
-				player.alertAction("Out of power!")
-				break
-			}
-
-			if (tryHarvest(player, itemStack, mods, block, drops)) {
-				availablePower -= powerUse
-				broken++
-			}
-		}
-
-		for ((key, items) in drops) {
-			val location = BlockPos.of(key).toLocation(origin.world)
-			items.forEach { origin.world.dropItemNaturally(location, it) }
-		}
-
-		if (broken <= 0) return
-
-		setPower(itemStack, availablePower)
-	}
-
-	private fun handleHoe(player: Player, itemStack: ItemStack, origin: Block) {
+	private fun tryTill(player: Player, itemStack: ItemStack, origin: Block) {
 		val blockList = compileBlockList(player, origin, itemStack)
 
 		var availablePower = getPower(itemStack)
@@ -198,7 +197,7 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 				break
 			}
 
-			if (processHoe(player, itemStack, block)) {
+			if (processTill(player, block)) {
 				availablePower -= powerUse
 				broken++
 
@@ -210,7 +209,7 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		setPower(itemStack, availablePower)
 	}
 
-	private fun processHoe(player: Player, itemStack: ItemStack, block: Block): Boolean {
+	private fun processTill(player: Player, block: Block): Boolean {
 		val type = block.type
 
 		val event = BlockBreakEvent(block, player)
