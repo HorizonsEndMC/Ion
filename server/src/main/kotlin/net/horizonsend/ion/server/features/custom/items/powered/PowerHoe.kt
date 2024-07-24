@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.powered
 
 import net.horizonsend.ion.common.extensions.alertAction
-import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry.AUTO_REPLANT
@@ -18,10 +17,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.core.BlockPos
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Material
@@ -38,16 +33,17 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
 import java.util.EnumSet
 
-object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
-	val displayName: Component = ofChildren(text("Power ", GOLD), text("Hoe", GRAY)).decoration(TextDecoration.ITALIC, false)
-	override val basePowerCapacity: Int = 50_000
+class PowerHoe(
+	identifier: String,
+	val displayName: Component,
+	override val modLimit: Int,
+	override val basePowerCapacity: Int,
+	override val customModelData: Int
+) : CustomItem(identifier), ModdedPowerItem, CustomModeledItem {
 	override val basePowerUsage: Int = 10
 	override val displayDurability: Boolean = true
 
 	override val material: Material = Material.DIAMOND_PICKAXE
-	override val customModelData: Int = 3
-
-	override val modLimit: Int = 2
 
 	override fun constructItemStack(): ItemStack {
 		val base = getModeledItem()
@@ -249,6 +245,8 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		return blockList
 	}
 
-	private val TILL_ABLE = enumSetOf(Material.DIRT, Material.DIRT_PATH, Material.DIRT, Material.GRASS_BLOCK)
-	private val DIRT_CONVERTIBLE = enumSetOf(Material.ROOTED_DIRT, Material.COARSE_DIRT, Material.DIRT)
+	companion object {
+		private val TILL_ABLE = enumSetOf(Material.DIRT, Material.DIRT_PATH, Material.DIRT, Material.GRASS_BLOCK)
+		private val DIRT_CONVERTIBLE = enumSetOf(Material.ROOTED_DIRT, Material.COARSE_DIRT, Material.DIRT)
+	}
 }

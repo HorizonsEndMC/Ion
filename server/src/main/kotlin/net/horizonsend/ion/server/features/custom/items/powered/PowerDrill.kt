@@ -43,13 +43,13 @@ class PowerDrill(
 	identifier: String,
 	val displayName: Component,
 	override val modLimit: Int,
-	override val basePowerCapacity: Int
+	override val basePowerCapacity: Int,
+	override val customModelData: Int
 ) : CustomItem(identifier), ModdedPowerItem, CustomModeledItem {
 	override val basePowerUsage: Int = 10
 	override val displayDurability: Boolean = true
 
 	override val material: Material = Material.DIAMOND_PICKAXE
-	override val customModelData: Int = 1
 
 	override fun getLoreManagers(): List<LoreCustomItem.CustomItemLoreManager> {
 		return listOf(
