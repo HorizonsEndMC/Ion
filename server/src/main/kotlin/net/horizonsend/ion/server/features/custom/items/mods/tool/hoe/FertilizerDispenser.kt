@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.mods.tool.hoe
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
@@ -21,11 +22,11 @@ object FertilizerDispenser : ItemModification {
 	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 
-	override val modItem: Supplier<ModificationItem?> = Supplier { null }
+	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.FERTILIZER_DISPENSER }
 
 	override val crouchingDisables: Boolean = true
 
-	fun fertilizeCrop(player: Player, block: Block, hoe: ItemStack): Boolean {
+	fun fertilizeCrop(player: Player, block: Block): Boolean {
 		if (!player.inventory.contains(Material.BONE_MEAL)) return false
 
 		val result = block.applyBoneMeal(BlockFace.DOWN)

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.mods.general
 
+import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
@@ -15,7 +16,6 @@ import org.bukkit.Material
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
-import kotlin.random.Random
 import kotlin.reflect.KClass
 
 object AutoCompostModifier : ItemModification, DropModifier {
@@ -35,8 +35,7 @@ object AutoCompostModifier : ItemModification, DropModifier {
 
 		if (percentage == -1.0f) return
 
-		val testChance = Random.nextDouble()
-		if (percentage / 8.0f < testChance) return
+		if (testRandom(percentage / 8.0f)) return
 
 		itemStack.type = Material.BONE_MEAL
 		itemStack.itemMeta = null

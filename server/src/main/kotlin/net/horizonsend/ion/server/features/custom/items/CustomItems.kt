@@ -943,7 +943,7 @@ object CustomItems {
 
 	val FERTILIZER_DISPENSER: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_FERTILIZER_DISPENSER",
-		7013,
+		7014,
 		text("Fertilizer Dispenser Bar Modifier").decoration(ITALIC, false)
 	) { ItemModRegistry.FERTILIZER_DISPENSER })
 
