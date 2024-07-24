@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.powered
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -22,10 +21,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.isWood
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.core.BlockPos
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -41,16 +36,17 @@ import org.bukkit.scheduler.BukkitRunnable
 import java.util.ArrayDeque
 import java.util.EnumSet
 
-object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomModeledItem {
-	val displayName: Component = ofChildren(text("Power ", GOLD), text("Chainsaw", GRAY)).decoration(TextDecoration.ITALIC, false)
-	override val basePowerCapacity: Int = 50_000
+class PowerChainsaw(
+	identifier: String,
+	val displayName: Component,
+	override val modLimit: Int,
+	override val basePowerCapacity: Int,
+	override val customModelData: Int
+) : CustomItem(identifier), ModdedPowerItem, CustomModeledItem {
 	override val basePowerUsage: Int = 10
 	override val displayDurability: Boolean = true
 
 	override val material: Material = Material.DIAMOND_PICKAXE
-	override val customModelData: Int = 2
-
-	override val modLimit: Int = 2
 
 	override fun getLoreManagers(): List<LoreCustomItem.CustomItemLoreManager> {
 		return listOf(
@@ -88,7 +84,8 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 
 		PowerChainsawMineTask(
 			player = livingEntity,
-			chainsaw = itemStack,
+			chainsawItem = itemStack,
+			chainsaw = this,
 			mods = mods,
 			origin = origin,
 			maxDepth = maxDepth
@@ -97,7 +94,8 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 
 	class PowerChainsawMineTask(
 		private val player: Player,
-		private val chainsaw: ItemStack,
+		private val chainsawItem: ItemStack,
+		private val chainsaw: PowerChainsaw,
 		private val mods: Array<ItemModification>,
 		private val origin: Block,
 		private val maxDepth: Int
@@ -116,7 +114,7 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 		}
 
 		override fun run() {
-			if (!player.inventory.contains(chainsaw)) return
+			if (!player.inventory.contains(chainsawItem)) return
 
 			if (visited.count() > maxDepth || queue.isEmpty()) {
 				cancel()
@@ -131,7 +129,7 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 			// Do not allow checking blocks larger than render distance
 			val block = getBlockIfLoaded(origin.world, x, y, z) ?: return
 
-			if (!canMine(chainsaw, block)) {
+			if (!canMine(block)) {
 				// Immediately run again if it can't be mined
 				run()
 				return
@@ -140,8 +138,8 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 			visited[key] = block
 
 
-			val powerUse = getPowerUse(chainsaw)
-			if (powerUse > getPower(chainsaw)) {
+			val powerUse = chainsaw.getPowerUse(chainsawItem)
+			if (powerUse > chainsaw.getPower(chainsawItem)) {
 				player.userError("Out of power!")
 				cancel()
 				return
@@ -159,7 +157,7 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 			val drops = mutableMapOf<Long, Collection<ItemStack>>()
 
 			if (PowerDrill.tryBreakBlock(player, block, mods, drops)) {
-				removePower(chainsaw, powerUse)
+				chainsaw.removePower(chainsawItem, powerUse)
 			}
 
 			for ((dropLocation, items) in drops) {
@@ -192,28 +190,30 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 		}
 	}
 
-	fun canMine(chainsaw: ItemStack, block: Block): Boolean {
-		if (block.customBlock != null) return false
+	companion object {
+		fun canMine(block: Block): Boolean {
+			if (block.customBlock != null) return false
 
-		return (block.type.isLeaves || block.type.isWood || block.type.isLog || block.type.isFence)
+			return (block.type.isLeaves || block.type.isWood || block.type.isLog || block.type.isFence)
+		}
+
+		val saplingTypes = mapOf(
+			Material.OAK_WOOD to Material.OAK_SAPLING,
+			Material.OAK_LOG to Material.OAK_SAPLING,
+			Material.SPRUCE_WOOD to Material.SPRUCE_SAPLING,
+			Material.SPRUCE_LOG to Material.SPRUCE_SAPLING,
+			Material.BIRCH_WOOD to Material.BIRCH_SAPLING,
+			Material.BIRCH_LOG to Material.BIRCH_SAPLING,
+			Material.ACACIA_WOOD to Material.ACACIA_SAPLING,
+			Material.ACACIA_LOG to Material.ACACIA_SAPLING,
+			Material.DARK_OAK_WOOD to Material.DARK_OAK_SAPLING,
+			Material.DARK_OAK_LOG to Material.DARK_OAK_SAPLING,
+			Material.JUNGLE_WOOD to Material.JUNGLE_SAPLING,
+			Material.JUNGLE_LOG to Material.JUNGLE_SAPLING,
+			Material.CHERRY_WOOD to Material.CHERRY_SAPLING,
+			Material.CHERRY_LOG to Material.CHERRY_SAPLING,
+			Material.MANGROVE_WOOD to Material.MANGROVE_PROPAGULE,
+			Material.MANGROVE_LOG to Material.MANGROVE_PROPAGULE
+		)
 	}
-
-	val saplingTypes = mapOf(
-		Material.OAK_WOOD to Material.OAK_SAPLING,
-		Material.OAK_LOG to Material.OAK_SAPLING,
-		Material.SPRUCE_WOOD to Material.SPRUCE_SAPLING,
-		Material.SPRUCE_LOG to Material.SPRUCE_SAPLING,
-		Material.BIRCH_WOOD to Material.BIRCH_SAPLING,
-		Material.BIRCH_LOG to Material.BIRCH_SAPLING,
-		Material.ACACIA_WOOD to Material.ACACIA_SAPLING,
-		Material.ACACIA_LOG to Material.ACACIA_SAPLING,
-		Material.DARK_OAK_WOOD to Material.DARK_OAK_SAPLING,
-		Material.DARK_OAK_LOG to Material.DARK_OAK_SAPLING,
-		Material.JUNGLE_WOOD to Material.JUNGLE_SAPLING,
-		Material.JUNGLE_LOG to Material.JUNGLE_SAPLING,
-		Material.CHERRY_WOOD to Material.CHERRY_SAPLING,
-		Material.CHERRY_LOG to Material.CHERRY_SAPLING,
-		Material.MANGROVE_WOOD to Material.MANGROVE_PROPAGULE,
-		Material.MANGROVE_LOG to Material.MANGROVE_PROPAGULE
-	)
 }

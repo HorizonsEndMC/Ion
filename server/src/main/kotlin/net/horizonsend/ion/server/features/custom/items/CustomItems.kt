@@ -37,6 +37,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
+import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.fromHexString
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
@@ -854,29 +855,85 @@ object CustomItems {
 	// Planets end
 
 	// Tools begin
+	private fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
+		text("$tierName ", tierColor),
+		text("$toolName ", GOLD),
+		text("Drill", GRAY)
+	).decoration(ITALIC, false)
+
 	val POWER_DRILL_BASIC = register(PowerDrill(
 		identifier = "POWER_DRILL_BASIC",
-		displayName = ofChildren(text("Basic ", HE_LIGHT_ORANGE), text("Power ", GOLD), text("Drill", GRAY)).decoration(ITALIC, false),
+		displayName = formatToolName("Basic", HE_LIGHT_ORANGE, "Drill"),
 		modLimit = 2,
-		basePowerCapacity = 50_000
+		basePowerCapacity = 50_000,
+		customModelData = 1
 	))
 
 	val POWER_DRILL_ENHANCED = register(PowerDrill(
 		identifier = "POWER_DRILL_ENHANCED",
-		displayName = ofChildren(text("Enhanced ", fromHexString("#00FFA1")), text("Power ", GOLD), text("Drill", GRAY)).decoration(ITALIC, false),
+		displayName = formatToolName("Enhanced", fromHexString("#00FFA1")!!, "Drill"),
 		modLimit = 4,
-		basePowerCapacity = 75_000
+		basePowerCapacity = 75_000,
+		customModelData = 4
 	))
 
 	val POWER_DRILL_ADVANCED = register(PowerDrill(
 		identifier = "POWER_DRILL_ADVANCED",
-		displayName = ofChildren(text("Advanced ", fromHexString("#B12BC9")), text("Power ", GOLD), text("Drill", GRAY)).decoration(ITALIC, false),
+		displayName = formatToolName("Advanced", fromHexString("#B12BC9")!!, "Drill"),
 		modLimit = 6,
-		basePowerCapacity = 100_000
+		basePowerCapacity = 100_000,
+		customModelData = 7
 	))
 
-	val POWER_CHAINSAW = register(PowerChainsaw)
-	val POWER_HOE = register(PowerHoe)
+	val POWER_CHAINSAW_BASIC = register(PowerChainsaw(
+		identifier = "POWER_CHAINSAW_BASIC",
+		displayName = formatToolName("Basic", HE_LIGHT_ORANGE, "Chainsaw"),
+		modLimit = 2,
+		basePowerCapacity = 50_000,
+		customModelData = 2
+	))
+
+	val POWER_CHAINSAW_ENHANCED = register(PowerChainsaw(
+		identifier = "POWER_CHAINSAW_ENHANCED",
+		displayName = formatToolName("Enhanced", fromHexString("#00FFA1")!!, "Chainsaw"),
+		modLimit = 4,
+		basePowerCapacity = 75_000,
+		customModelData = 5
+
+	))
+
+	val POWER_CHAINSAW_ADVANCED = register(PowerChainsaw(
+		identifier = "POWER_CHAINSAW_ADVANCED",
+		displayName = formatToolName("Advanced", fromHexString("#B12BC9")!!, "Chainsaw"),
+		modLimit = 6,
+		basePowerCapacity = 100_000,
+		customModelData = 8
+	))
+
+	val POWER_HOE_BASIC = register(PowerHoe(
+		identifier = "POWER_HOE_BASIC",
+		displayName = formatToolName("Basic", HE_LIGHT_ORANGE, "Hoe"),
+		modLimit = 2,
+		basePowerCapacity = 50_000,
+		customModelData = 3
+	))
+
+	val POWER_HOE_ENHANCED = register(PowerHoe(
+		identifier = "POWER_HOE_ENHANCED",
+		displayName = formatToolName("Enhanced", fromHexString("#00FFA1")!!, "Hoe"),
+		modLimit = 4,
+		basePowerCapacity = 75_000,
+		customModelData = 6
+	))
+
+	val POWER_HOE_ADVANCED = register(PowerHoe(
+		identifier = "POWER_HOE_ADVANCED",
+		displayName = formatToolName("Advanced", fromHexString("#B12BC9")!!, "Hoe"),
+		modLimit = 6,
+		basePowerCapacity = 100_000,
+		customModelData = 9
+	))
+
 	val CRATE_PLACER = register(CratePlacer)
 
 	val DRILL_AOE_1: ModificationItem = register(ModificationItem(
