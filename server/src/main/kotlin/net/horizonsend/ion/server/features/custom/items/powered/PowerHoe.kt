@@ -5,8 +5,8 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry.AUTO_REPLANT
+import net.horizonsend.ion.server.features.custom.items.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
-import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
@@ -36,12 +36,12 @@ import org.bukkit.persistence.PersistentDataType.STRING
 import java.util.EnumSet
 
 object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
-	val displayName: Component = ofChildren(text("Power ", GOLD), text("Drill", GRAY)).decoration(TextDecoration.ITALIC, false)
+	val displayName: Component = ofChildren(text("Power ", GOLD), text("Hoe", GRAY)).decoration(TextDecoration.ITALIC, false)
 	override val basePowerCapacity: Int = 50_000
 	override val basePowerUsage: Int = 10
 
-	override val material: Material = Material.DIAMOND_HOE
-	override val customModelData: Int = 1
+	override val material: Material = Material.DIAMOND_PICKAXE
+	override val customModelData: Int = 3
 	override val displayDurability: Boolean = true
 
 	override fun constructItemStack(): ItemStack {
@@ -96,56 +96,6 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		val block = event.clickedBlock ?: return
 
 		handleReap(livingEntity, itemStack, block)
-	}
-
-	private fun handleHoe(player: Player, itemStack: ItemStack, origin: Block) {
-		val blockList = compileBlockList(player, origin, itemStack)
-
-		var availablePower = getPower(itemStack)
-		val powerUse = getPowerUse(itemStack)
-		var broken = 0
-
-		for (block in blockList) {
-			if (availablePower < powerUse) {
-				player.alertAction("Out of power!")
-				break
-			}
-
-			if (processHoe(player, itemStack, block)) {
-				availablePower -= powerUse
-				broken++
-			}
-		}
-
-		if (broken <= 0) return
-		setPower(itemStack, availablePower)
-	}
-
-	private fun processHoe(player: Player, itemStack: ItemStack, block: Block): Boolean {
-		val type = block.type
-
-		val event = BlockBreakEvent(block, player)
-		CustomBlockListeners.noDropEvents.add(event)
-
-		println("processing $block")
-
-		if (!event.callEvent()) {
-			return false
-		}
-
-		if (TILL_ABLE.contains(type) && block.getRelative(BlockFace.UP).type.isAir) {
-			block.setType(Material.FARMLAND, true)
-
-			return true
-		}
-
-		if (DIRT_CONVERTIBLE.contains(type)) {
-			block.setType(Material.DIRT, true)
-
-			return true
-		}
-
-		return false
 	}
 
 	private fun tryHarvest(player: Player, hoe: ItemStack, block: Block, drops: MutableMap<Long, Collection<ItemStack>>): Boolean {
@@ -214,6 +164,54 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		if (broken <= 0) return
 
 		setPower(itemStack, availablePower)
+	}
+
+	private fun handleHoe(player: Player, itemStack: ItemStack, origin: Block) {
+		val blockList = compileBlockList(player, origin, itemStack)
+
+		var availablePower = getPower(itemStack)
+		val powerUse = getPowerUse(itemStack)
+		var broken = 0
+
+		for (block in blockList) {
+			if (availablePower < powerUse) {
+				player.alertAction("Out of power!")
+				break
+			}
+
+			if (processHoe(player, itemStack, block)) {
+				availablePower -= powerUse
+				broken++
+			}
+		}
+
+		if (broken <= 0) return
+		setPower(itemStack, availablePower)
+	}
+
+	private fun processHoe(player: Player, itemStack: ItemStack, block: Block): Boolean {
+		val type = block.type
+
+		val event = BlockBreakEvent(block, player)
+		CustomBlockListeners.noDropEvents.add(event)
+
+		if (!event.callEvent()) {
+			return false
+		}
+
+		if (TILL_ABLE.contains(type) && block.getRelative(BlockFace.UP).type.isAir) {
+			block.setType(Material.FARMLAND, true)
+
+			return true
+		}
+
+		if (DIRT_CONVERTIBLE.contains(type)) {
+			block.setType(Material.DIRT, true)
+
+			return true
+		}
+
+		return false
 	}
 
 	private fun compileBlockList(player: Player, origin: Block, itemStack: ItemStack) : List<Block> {

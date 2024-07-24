@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.custom.items.mods.tool.drops
+package net.horizonsend.ion.server.features.custom.items.mods.drops
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
