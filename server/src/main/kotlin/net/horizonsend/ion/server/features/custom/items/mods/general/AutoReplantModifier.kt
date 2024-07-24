@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
@@ -15,7 +16,7 @@ object AutoReplantModifier: ItemModification {
 
 	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
-	override val modItem: Supplier<ModificationItem?> = Supplier { null } //TODO
+	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.AUTO_REPLANT }
 
 	// Just a range extender for something that already vein mines
 	override val crouchingDisables: Boolean = true
