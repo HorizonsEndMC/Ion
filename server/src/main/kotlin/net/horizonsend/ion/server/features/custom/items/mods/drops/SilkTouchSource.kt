@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
+import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta

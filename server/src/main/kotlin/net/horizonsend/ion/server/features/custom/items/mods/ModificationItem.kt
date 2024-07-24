@@ -1,7 +1,6 @@
-package net.horizonsend.ion.server.features.custom.items.mods.items
+package net.horizonsend.ion.server.features.custom.items.mods
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta

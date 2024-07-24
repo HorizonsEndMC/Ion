@@ -1,8 +1,8 @@
-package net.horizonsend.ion.server.features.custom.items.mods.tool.hoe
+package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
+import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 import net.kyori.adventure.text.Component

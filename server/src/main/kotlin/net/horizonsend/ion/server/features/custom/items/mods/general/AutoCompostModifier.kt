@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.drops.AutoSmeltModifier
 import net.horizonsend.ion.server.features.custom.items.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.mods.drops.SilkTouchSource
-import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
@@ -29,7 +29,7 @@ object AutoCompostModifier : ItemModification, DropModifier {
 
 	override val priority: Int = 1
 
-	override fun modify(itemStack: ItemStack) {
+	override fun modifyDrop(itemStack: ItemStack) {
 		val nms = CraftItemStack.asNMSCopy(itemStack)
 		val percentage = ComposterBlock.COMPOSTABLES.getFloat(nms.item)
 
