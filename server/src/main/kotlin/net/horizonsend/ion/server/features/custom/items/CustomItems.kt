@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
@@ -36,6 +37,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
+import net.kyori.adventure.text.format.TextColor.fromHexString
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
@@ -852,7 +854,27 @@ object CustomItems {
 	// Planets end
 
 	// Tools begin
-	val POWER_DRILL = register(PowerDrill)
+	val POWER_DRILL_BASIC = register(PowerDrill(
+		identifier = "POWER_DRILL_BASIC",
+		displayName = ofChildren(text("Basic ", HE_LIGHT_ORANGE), text("Power ", GOLD), text("Drill", GRAY)).decoration(ITALIC, false),
+		modLimit = 2,
+		basePowerCapacity = 50_000
+	))
+
+	val POWER_DRILL_ENHANCED = register(PowerDrill(
+		identifier = "POWER_DRILL_ENHANCED",
+		displayName = ofChildren(text("Enhanced ", fromHexString("#00FFA1")), text("Power ", GOLD), text("Drill", GRAY)).decoration(ITALIC, false),
+		modLimit = 4,
+		basePowerCapacity = 75_000
+	))
+
+	val POWER_DRILL_ADVANCED = register(PowerDrill(
+		identifier = "POWER_DRILL_ADVANCED",
+		displayName = ofChildren(text("Advanced ", fromHexString("#B12BC9")), text("Power ", GOLD), text("Drill", GRAY)).decoration(ITALIC, false),
+		modLimit = 6,
+		basePowerCapacity = 100_000
+	))
+
 	val POWER_CHAINSAW = register(PowerChainsaw)
 	val POWER_HOE = register(PowerHoe)
 	val CRATE_PLACER = register(CratePlacer)

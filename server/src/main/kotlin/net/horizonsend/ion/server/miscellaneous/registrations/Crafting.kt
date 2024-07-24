@@ -29,7 +29,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL_RECEIVER
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_TITANIUM
@@ -467,7 +467,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		// Power Drill Crafting
-		itemStackShapeRecipe("power_drill", POWER_DRILL.constructItemStack()) {
+		itemStackShapeRecipe("power_drill", POWER_DRILL_BASIC.constructItemStack()) {
 			shape("ixx", "xbt", "xts")
 
 			setIngredient('i', ExactChoice(ItemStack(Material.IRON_INGOT)))

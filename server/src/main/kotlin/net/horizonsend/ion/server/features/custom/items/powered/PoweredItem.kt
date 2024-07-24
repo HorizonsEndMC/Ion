@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.powered
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.StoredValues
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -56,15 +57,18 @@ interface PoweredItem : LoreCustomItem {
 		}
 
 		override fun rebuildLine(itemStack: ItemStack, line: Int): Component {
-			return getPowerLore(itemStack)
+			val customItem = itemStack.customItem
+			require(customItem is PoweredItem)
+
+			return getPowerLore(itemStack, customItem)
 		}
 
 		/** Format the lore of the power description **/
-		fun getPowerLore(item: ItemStack): Component = ofChildren(
+		fun getPowerLore(item: ItemStack, customItem: PoweredItem): Component = ofChildren(
 			powerPrefix,
-			text(PowerDrill.getPower(item), HEColorScheme.HE_LIGHT_GRAY),
+			text(customItem.getPower(item), HEColorScheme.HE_LIGHT_GRAY),
 			text(" / ", HEColorScheme.HE_MEDIUM_GRAY),
-			text(PowerDrill.getPowerCapacity(item), HEColorScheme.HE_LIGHT_GRAY)
+			text(customItem.getPowerCapacity(item), HEColorScheme.HE_LIGHT_GRAY)
 		).decoration(TextDecoration.ITALIC, false)
 	}
 }

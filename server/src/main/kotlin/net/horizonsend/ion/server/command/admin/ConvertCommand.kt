@@ -7,9 +7,8 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.misc.getPower
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -102,8 +101,8 @@ object ConvertCommand : SLCommand() { // I imagine we'll need more than blasters
 
 		val oldPower = getPower(heldItem)
 
-		val newDrill = POWER_DRILL.constructItemStack()
-		PowerDrill.setPower(newDrill, oldPower)
+		val newDrill = POWER_DRILL_BASIC.constructItemStack()
+		POWER_DRILL_BASIC.setPower(newDrill, oldPower)
 
 		return newDrill
 	}
