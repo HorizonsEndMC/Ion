@@ -4,13 +4,13 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
+import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
@@ -33,7 +33,7 @@ object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
 
 	override val crouchingDisables: Boolean = false
 
-	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class)
+	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class, AutoSmeltModifier::class)
 
 	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.AUTO_SMELT }
