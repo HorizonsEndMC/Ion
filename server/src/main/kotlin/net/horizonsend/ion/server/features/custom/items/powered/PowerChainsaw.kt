@@ -114,6 +114,8 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 		}
 
 		override fun run() {
+			if (!player.inventory.contains(chainsaw)) return
+
 			if (visited.count() > maxDepth || queue.isEmpty()) {
 				cancel()
 				return
@@ -134,6 +136,7 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 			}
 
 			visited[key] = block
+
 
 			val powerUse = getPowerUse(chainsaw)
 			if (powerUse > getPower(chainsaw)) {
