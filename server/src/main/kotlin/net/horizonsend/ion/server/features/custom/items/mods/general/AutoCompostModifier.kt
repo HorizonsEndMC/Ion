@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
-import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.drops.AutoSmeltModifier
 import net.horizonsend.ion.server.features.custom.items.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.mods.drops.SilkTouchSource
+import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
@@ -22,7 +22,7 @@ import kotlin.reflect.KClass
 object AutoCompostModifier : ItemModification, DropModifier {
 	override val identifier: String = "AUTO_COMPOST"
 	override val displayName: Component = Component.text("AUTO_COMPOST")
-	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
+	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(AutoSmeltModifier::class, SilkTouchSource::class)
 	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.AUTO_COMPOST }
 

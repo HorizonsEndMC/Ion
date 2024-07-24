@@ -187,7 +187,13 @@ class ToolModMenu(
 
 		val mod: ItemModification = customItem.modification
 
+		if (!mod.applicableTo.contains(this.customItem::class)) {
+			player.userError("${mod.displayName.plainText()} cannot be used on this tool!")
+			return false
+		}
+
 		if (this.customItem.getMods(this.itemStack).size >= this.customItem.modLimit) {
+			player.userError("Mod limit reached!")
 			return false
 		}
 

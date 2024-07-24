@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
+import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
@@ -23,7 +23,7 @@ class PowerCapacityIncrease(
 ) : ItemModification {
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "POWER_CAPACITY_$increaseAmount"
-	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class, PowerHoe::class, PowerChainsaw::class)
+	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerHoe::class, PowerChainsaw::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 
 	override val displayName: Component = ofChildren(
