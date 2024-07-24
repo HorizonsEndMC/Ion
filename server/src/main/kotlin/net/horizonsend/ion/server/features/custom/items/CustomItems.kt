@@ -857,8 +857,8 @@ object CustomItems {
 	// Tools begin
 	private fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
 		text("$tierName ", tierColor),
-		text("$toolName ", GOLD),
-		text("Drill", GRAY)
+		text("Power ", GOLD),
+		text(toolName, GRAY)
 	).decoration(ITALIC, false)
 
 	val POWER_DRILL_BASIC = register(PowerDrill(
