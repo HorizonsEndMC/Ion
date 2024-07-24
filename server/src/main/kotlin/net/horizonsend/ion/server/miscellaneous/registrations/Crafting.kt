@@ -29,7 +29,9 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL_RECEIVER
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_ADVANCED
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_BASIC
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_ENHANCED
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_TITANIUM
@@ -72,6 +74,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_ROD
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import org.bukkit.Bukkit
@@ -466,14 +469,38 @@ object Crafting : IonServerComponent() {
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 		}
 
-		// Power Drill Crafting
+		// Basic Power Drill Crafting
 		itemStackShapeRecipe("power_drill", POWER_DRILL_BASIC.constructItemStack()) {
 			shape("ixx", "xbt", "xts")
 
-			setIngredient('i', ExactChoice(ItemStack(Material.IRON_INGOT)))
+			setIngredient('i', ExactChoice(ItemStack(IRON_INGOT)))
 			setIngredient('b', ExactChoice(BATTERY_MEDIUM.singleItem()))
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('s', STICK)
+			setIngredient('x', AIR)
+		}
+
+		// Enhanced Power Drill Crafting
+		itemStackShapeRecipe("power_drill_enhanced", POWER_DRILL_ENHANCED.constructItemStack()) {
+			shape("iix", "idc", "xts")
+
+			setIngredient('i', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
+			setIngredient('d', ExactChoice(POWER_DRILL_BASIC.constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
+			setIngredient('t', ExactChoice(URANIUM_BLOCK.constructItemStack()))
+			setIngredient('s', ExactChoice(BATTERY_MEDIUM.singleItem()))
+			setIngredient('x', AIR)
+		}
+
+		// Advanced Power Drill Crafting
+		itemStackShapeRecipe("power_drill_advanced", POWER_DRILL_ADVANCED.constructItemStack()) {
+			shape("iix", "idc", "xts")
+
+			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
+			setIngredient('d', ExactChoice(POWER_DRILL_ENHANCED.constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
+			setIngredient('t', ExactChoice(FUEL_ROD_CORE.constructItemStack()))
+			setIngredient('s', ExactChoice(BATTERY_LARGE.singleItem()))
 			setIngredient('x', AIR)
 		}
 
