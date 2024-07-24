@@ -53,7 +53,6 @@ object MovementScheduler : IonServerComponent(false) {
 
 	private fun completeMovement(starship: ActiveStarship, movement: StarshipMovement, success: Boolean) {
 		movement.future.complete(success)
-		starship.isMoving = false
 
 		if (!success) return
 
@@ -63,40 +62,44 @@ object MovementScheduler : IonServerComponent(false) {
 
 	@Synchronized
 	private fun executeMovement(starship: ActiveControlledStarship, movement: StarshipMovement) = movementWorker.execute {
-		try {
-			starship.isMoving = true
+		synchronized(starship.mutex) {
+			try {
+				starship.isMoving = true
 
-			movement.execute()
+				movement.execute()
 
-			completeMovement(starship, movement, true)
-		} catch (e: StarshipMovementException) {
-			val location = if (e is StarshipBlockedException) e.location else null
-			starship.controller.onBlocked(movement, e, location)
-			starship.controller.sendMessage(e.formatMessage())
+				completeMovement(starship, movement, true)
+			} catch (e: StarshipMovementException) {
+				val location = if (e is StarshipBlockedException) e.location else null
+				starship.controller.onBlocked(movement, e, location)
+				starship.controller.sendMessage(e.formatMessage())
 
-			starship.sneakMovements = 0
-			starship.lastBlockedTime = System.currentTimeMillis()
+				starship.sneakMovements = 0
+				starship.lastBlockedTime = System.currentTimeMillis()
 
-			completeMovement(starship, movement, false)
-		} catch (e: Throwable) {
-			starship.serverError("There was an unhandled exception during movement! Please forward this to staff")
-			val stackTrace = "$e\n" + e.stackTrace.joinToString(separator = "\n")
+				completeMovement(starship, movement, false)
+			} catch (e: Throwable) {
+				starship.serverError("There was an unhandled exception during movement! Please forward this to staff")
+				val stackTrace = "$e\n" + e.stackTrace.joinToString(separator = "\n")
 
-			val exceptionMessage =
-				ofChildren(
-					text(e.message ?: "No message provided", NamedTextColor.RED),
-					space(),
-					bracketed(text("Hover for info", HEColorScheme.HE_LIGHT_GRAY))
-				)
-				.hoverEvent(text(stackTrace))
-				.clickEvent(ClickEvent.copyToClipboard(stackTrace))
+				val exceptionMessage =
+					ofChildren(
+						text(e.message ?: "No message provided", NamedTextColor.RED),
+						space(),
+						bracketed(text("Hover for info", HEColorScheme.HE_LIGHT_GRAY))
+					)
+						.hoverEvent(text(stackTrace))
+						.clickEvent(ClickEvent.copyToClipboard(stackTrace))
 
-			starship.sendMessage(exceptionMessage)
+				starship.sendMessage(exceptionMessage)
 
-			IonServer.slF4JLogger.error(e.message)
-			e.printStackTrace()
+				IonServer.slF4JLogger.error(e.message)
+				e.printStackTrace()
 
-			completeMovement(starship, movement, false)
+				completeMovement(starship, movement, false)
+			} finally {
+				starship.isMoving = false
+			}
 		}
 	}
 

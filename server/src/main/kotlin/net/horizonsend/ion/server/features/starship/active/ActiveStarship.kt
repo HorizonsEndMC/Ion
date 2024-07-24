@@ -85,6 +85,8 @@ abstract class ActiveStarship (
 	var centerOfMass: Vec3i,
 	private val hitbox: ActiveStarshipHitbox
 ) : ForwardingAudience {
+	val mutex = Any()
+
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 
 	abstract val type: StarshipType
