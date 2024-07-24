@@ -119,7 +119,7 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		if (data.age != data.maximumAge) {
 			if (!mods.contains(FertilizerDispenser)) return false
 
-			return FertilizerDispenser.fertilizeCrop(player, block, hoe)
+			return FertilizerDispenser.fertilizeCrop(player, block)
 		}
 
 		val crop = Crop[block.type] ?: return false

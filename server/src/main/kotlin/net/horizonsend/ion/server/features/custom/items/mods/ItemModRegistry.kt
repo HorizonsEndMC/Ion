@@ -46,7 +46,7 @@ object ItemModRegistry {
 	val AUTO_COMPOST = registerMod(AutoCompostModifier)
 
 	// AOE 3 is just for power hoes
-	val AOE_3 = registerMod(AOEDMod(radius = 3, applicableTo = arrayOf(PowerHoe::class)) { CustomItems.DRILL_AOE_2 })
+	val AOE_3 = registerMod(AOEDMod(radius = 3, applicableTo = arrayOf(PowerHoe::class)) { CustomItems.DRILL_AOE_3 })
 
 	// Longer chainsaw reach
 	val EXTENDED_BAR = registerMod(ExtendedBar)
