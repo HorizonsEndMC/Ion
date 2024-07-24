@@ -16,11 +16,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.translatable
+import net.kyori.adventure.translation.GlobalTranslator
 import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import java.util.Locale
 
 /** An object capable of damaging a starship **/
 interface Damager : ForwardingAudience {
@@ -90,7 +93,7 @@ fun getDamager(entity: Entity) : Damager {
 }
 
 class EntityDamager(val entity: Entity) : NoOpDamager() {
-	override fun getDisplayName(): Component = entity.customName() ?: entity.name()
+	override fun getDisplayName(): Component = entity.customName() ?: GlobalTranslator.render(translatable(entity.type), Locale.ENGLISH)
 	override fun getAITarget(): AITarget? = null
 
 	override fun audiences(): MutableIterable<Audience> {
