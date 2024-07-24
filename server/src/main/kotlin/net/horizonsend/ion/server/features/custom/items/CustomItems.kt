@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.misc.ShellItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
-import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
+import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.powered.CratePlacer
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
@@ -940,6 +940,12 @@ object CustomItems {
 		7013,
 		text("Extended Bar Modifier").decoration(ITALIC, false)
 	) { ItemModRegistry.EXTENDED_BAR })
+
+	val FERTILIZER_DISPENSER: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_FERTILIZER_DISPENSER",
+		7013,
+		text("Fertilizer Dispenser Bar Modifier").decoration(ITALIC, false)
+	) { ItemModRegistry.FERTILIZER_DISPENSER })
 
 	// Tools end
 

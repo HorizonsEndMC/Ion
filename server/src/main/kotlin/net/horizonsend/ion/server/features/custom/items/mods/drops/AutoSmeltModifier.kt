@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
+import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -42,7 +42,7 @@ object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
 
 	override val priority: Int = 1
 
-	override fun modify(itemStack: ItemStack) {
+	override fun modifyDrop(itemStack: ItemStack) {
 		val customItem = itemStack.customItem
 		if (customItem is Smeltable) return
 

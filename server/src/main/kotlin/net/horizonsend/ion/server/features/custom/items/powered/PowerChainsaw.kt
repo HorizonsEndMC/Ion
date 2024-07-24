@@ -6,8 +6,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.mods.general.AutoReplantModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.chainsaw.ExtendedBar
-import net.horizonsend.ion.server.features.custom.items.mods.tool.hoe.AutoReplantModifier
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem

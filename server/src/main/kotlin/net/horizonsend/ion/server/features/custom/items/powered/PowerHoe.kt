@@ -5,8 +5,10 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry.AUTO_REPLANT
+import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
+import net.horizonsend.ion.server.features.custom.items.mods.tool.hoe.FertilizerDispenser
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
@@ -85,8 +87,10 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 
 		val block = event?.clickedBlock ?: return
 
+		val mods = getMods(itemStack)
+
 		// If targeting a crop, harvest it
-		if (Crop[block.type] != null) return handleReap(livingEntity, itemStack, block)
+		if (Crop[block.type] != null) return handleReap(livingEntity, mods, itemStack, block)
 
 		// Else try to use the hoe
 		handleHoe(livingEntity, itemStack, block)
@@ -96,14 +100,27 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		if (livingEntity !is Player) return
 		val block = event.clickedBlock ?: return
 
-		handleReap(livingEntity, itemStack, block)
+		val mods = getMods(itemStack)
+
+		handleReap(livingEntity, mods, itemStack, block)
 	}
 
-	private fun tryHarvest(player: Player, hoe: ItemStack, block: Block, drops: MutableMap<Long, Collection<ItemStack>>): Boolean {
+	private fun tryHarvest(
+		player: Player,
+		hoe: ItemStack,
+		mods: Array<ItemModification>,
+		block: Block,
+		drops: MutableMap<Long, Collection<ItemStack>>
+	): Boolean {
 		val data = block.blockData
 
 		if (data !is Ageable) return false
-		if (data.age != data.maximumAge) return false
+
+		if (data.age != data.maximumAge) {
+			if (!mods.contains(FertilizerDispenser)) return false
+
+			return FertilizerDispenser.fertilizeCrop(player, block, hoe)
+		}
 
 		val crop = Crop[block.type] ?: return false
 
@@ -116,7 +133,6 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 
 		val dropList = crop.getDrops(block)
 
-		val mods = getMods(hoe)
 		val dropModifiers = mods
 			.filterIsInstance<DropModifier>()
 			.sortedByDescending { it.priority }
@@ -136,7 +152,7 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 		return true
 	}
 
-	private fun handleReap(player: Player, itemStack: ItemStack, origin: Block) {
+	private fun handleReap(player: Player, mods: Array<ItemModification>, itemStack: ItemStack, origin: Block) {
 		val blockList = compileBlockList(player, origin, itemStack)
 
 		var availablePower = getPower(itemStack)
@@ -151,7 +167,7 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 				break
 			}
 
-			if (tryHarvest(player, itemStack, block, drops)) {
+			if (tryHarvest(player, itemStack, mods, block, drops)) {
 				availablePower -= powerUse
 				broken++
 			}

@@ -183,7 +183,7 @@ object PowerDrill : CustomItem("POWER_DRILL"), ModdedPowerItem, CustomModeledIte
 
 	fun handleModifiers(drops: Collection<ItemStack>, dropModifiers: Collection<DropModifier>) {
 		for (drop in drops) {
-			dropModifiers.forEach { it.modify(drop) }
+			dropModifiers.forEach { it.modifyDrop(drop) }
 		}
 	}
 
