@@ -6,9 +6,9 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.mods.drops.DropModifier
+import net.horizonsend.ion.server.features.custom.items.mods.drops.DropSource
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
-import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.DropModifier
-import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.DropSource
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem

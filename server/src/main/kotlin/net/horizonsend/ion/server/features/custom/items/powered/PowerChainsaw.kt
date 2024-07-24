@@ -46,8 +46,8 @@ object PowerChainsaw : CustomItem("POWER_CHAINSAW"), ModdedPowerItem, CustomMode
 	override val basePowerCapacity: Int = 50_000
 	override val basePowerUsage: Int = 10
 
-	override val material: Material = Material.DIAMOND_AXE
-	override val customModelData: Int = 1
+	override val material: Material = Material.DIAMOND_PICKAXE
+	override val customModelData: Int = 2
 	override val displayDurability: Boolean = true
 
 	override fun getLoreManagers(): List<LoreCustomItem.CustomItemLoreManager> {

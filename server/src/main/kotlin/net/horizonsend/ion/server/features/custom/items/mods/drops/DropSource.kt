@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.custom.items.mods.tool.drops
+package net.horizonsend.ion.server.features.custom.items.mods.drops
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import org.bukkit.Material

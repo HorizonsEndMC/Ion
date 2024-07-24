@@ -1,14 +1,14 @@
 package net.horizonsend.ion.server.features.custom.items.mods
 
 import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.mods.drops.AutoSmeltModifier
+import net.horizonsend.ion.server.features.custom.items.mods.drops.FortuneModifier
+import net.horizonsend.ion.server.features.custom.items.mods.drops.SilkTouchSource
 import net.horizonsend.ion.server.features.custom.items.mods.general.AOEDMod
 import net.horizonsend.ion.server.features.custom.items.mods.general.AutoCompostModifier
 import net.horizonsend.ion.server.features.custom.items.mods.general.PowerCapacityIncrease
 import net.horizonsend.ion.server.features.custom.items.mods.tool.chainsaw.ExtendedBar
 import net.horizonsend.ion.server.features.custom.items.mods.tool.drill.VeinMinerMod
-import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.AutoSmeltModifier
-import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.FortuneModifier
-import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.SilkTouchSource
 import net.horizonsend.ion.server.features.custom.items.mods.tool.hoe.AutoReplantModifier
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 
@@ -49,6 +49,9 @@ object ItemModRegistry {
 
 	// Longer chainsaw reach
 	val EXTENDED_BAR = registerMod(ExtendedBar)
+
+//	// Longer chainsaw reach
+//	val FERTILIZER_DISPENSER = registerMod(FertilizerDispenser)
 
 	fun <T: ItemModification> registerMod(mod: T): T {
 		mods[mod.identifier] = mod

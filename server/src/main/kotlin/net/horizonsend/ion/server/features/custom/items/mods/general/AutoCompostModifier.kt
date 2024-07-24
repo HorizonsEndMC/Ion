@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.mods.drops.AutoSmeltModifier
+import net.horizonsend.ion.server.features.custom.items.mods.drops.DropModifier
+import net.horizonsend.ion.server.features.custom.items.mods.drops.SilkTouchSource
 import net.horizonsend.ion.server.features.custom.items.mods.items.ModificationItem
-import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.AutoSmeltModifier
-import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.DropModifier
-import net.horizonsend.ion.server.features.custom.items.mods.tool.drops.SilkTouchSource
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
