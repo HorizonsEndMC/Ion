@@ -36,7 +36,7 @@ object AutoCompostModifier : ItemModification, DropModifier {
 		if (percentage == -1.0f) return
 
 		val testChance = Random.nextDouble()
-		if (percentage / 8.0f > testChance) return
+		if (percentage / 8.0f < testChance) return
 
 		itemStack.type = Material.BONE_MEAL
 		itemStack.itemMeta = null
