@@ -41,7 +41,8 @@ class PowerChainsaw(
 	val displayName: Component,
 	override val modLimit: Int,
 	override val basePowerCapacity: Int,
-	override val customModelData: Int
+	override val customModelData: Int,
+	val initialBlocksBroken: Int,
 ) : CustomItem(identifier), ModdedPowerItem, CustomModeledItem {
 	override val basePowerUsage: Int = 10
 	override val displayDurability: Boolean = true
@@ -80,7 +81,7 @@ class PowerChainsaw(
 
 		val mods = getMods(itemStack)
 
-		val maxDepth = if (mods.contains(ExtendedBar)) 150 else 50
+		val maxDepth = if (mods.contains(ExtendedBar)) initialBlocksBroken + 100 else initialBlocksBroken
 
 		PowerChainsawMineTask(
 			player = livingEntity,

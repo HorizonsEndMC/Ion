@@ -890,7 +890,8 @@ object CustomItems {
 		displayName = formatToolName("Basic", HE_LIGHT_ORANGE, "Chainsaw"),
 		modLimit = 2,
 		basePowerCapacity = 50_000,
-		customModelData = 2
+		customModelData = 2,
+		initialBlocksBroken = 50,
 	))
 
 	val POWER_CHAINSAW_ENHANCED = register(PowerChainsaw(
@@ -898,8 +899,8 @@ object CustomItems {
 		displayName = formatToolName("Enhanced", fromHexString("#00FFA1")!!, "Chainsaw"),
 		modLimit = 4,
 		basePowerCapacity = 75_000,
-		customModelData = 5
-
+		customModelData = 5,
+		initialBlocksBroken = 100,
 	))
 
 	val POWER_CHAINSAW_ADVANCED = register(PowerChainsaw(
@@ -907,7 +908,8 @@ object CustomItems {
 		displayName = formatToolName("Advanced", fromHexString("#B12BC9")!!, "Chainsaw"),
 		modLimit = 6,
 		basePowerCapacity = 100_000,
-		customModelData = 8
+		customModelData = 8,
+		initialBlocksBroken = 150,
 	))
 
 	val POWER_HOE_BASIC = register(PowerHoe(
