@@ -23,6 +23,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.core.BlockPos
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Material
+import org.bukkit.SoundCategory
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Ageable
@@ -182,6 +183,8 @@ object PowerHoe : CustomItem("POWER_HOE"), ModdedPowerItem, CustomModeledItem {
 			if (processHoe(player, itemStack, block)) {
 				availablePower -= powerUse
 				broken++
+
+				origin.world.playSound(block.location, "minecraft:item.hoe.till", SoundCategory.BLOCKS, 1.0f, 1.0f)
 			}
 		}
 
