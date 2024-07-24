@@ -51,10 +51,10 @@ object ItemModRegistry {
 	// Longer chainsaw reach
 	val EXTENDED_BAR = registerMod(ExtendedBar)
 
-	// Longer chainsaw reach
+	// Dispenses bonemeal on crops
 	val FERTILIZER_DISPENSER = registerMod(FertilizerDispenser)
 
-	fun <T: ItemModification> registerMod(mod: T): T {
+	private fun <T: ItemModification> registerMod(mod: T): T {
 		mods[mod.identifier] = mod
 		return mod
 	}
