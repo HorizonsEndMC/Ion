@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
@@ -24,6 +25,7 @@ import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomI
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownDetonator
 import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownSmokeGrenade
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -938,94 +940,114 @@ object CustomItems {
 
 	val CRATE_PLACER = register(CratePlacer)
 
-	val DRILL_AOE_1: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_DRILL_AOE_1",
-		7000,
-		text("Drill AOE 1").decoration(ITALIC, false)
+	val RANGE_1: ModificationItem = register(ModificationItem(
+		identifier = "TOOL_MODIFICATION_RANGE_1",
+		customModelData = 7000,
+		displayName = text("Range Addon +1").decoration(ITALIC, false),
+		text("Expands the working area by 1 block", GRAY).decoration(ITALIC, false)
 	) { ItemModRegistry.AOE_1 })
 
-	val DRILL_AOE_2: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_DRILL_AOE_2",
-		7001,
-		text("Drill AOE 2").decoration(ITALIC, false)
+	val RANGE_2: ModificationItem = register(ModificationItem(
+		identifier = "TOOL_MODIFICATION_RANGE_2",
+		customModelData = 7001,
+		displayName = text("Range Addon +2").decoration(ITALIC, false),
+		text("Expands the working area by 2 blocks", GRAY).decoration(ITALIC, false)
 	) { ItemModRegistry.AOE_2 })
 
 	val VEIN_MINER_25: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_VEIN_MINER_25",
-		7002,
-		text("Vein Miner").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_VEIN_MINER_25",
+		customModelData = 7002,
+		displayName = text("Vein Miner").decoration(ITALIC, false),
+		text("Allows a drill to mine veins of connected blocks, up to 25.", GRAY).decoration(ITALIC, false)
 	) { ItemModRegistry.VEIN_MINER_25 })
 
 	val SILK_TOUCH_MOD: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_SILK_TOUCH_MOD",
-		7003,
-		text("Silk Touch Modifier").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_SILK_TOUCH_MOD",
+		customModelData = 7003,
+		displayName = text("Silk Touch Modifier").decoration(ITALIC, false),
+		text("Applies silk touch to drops", GRAY).decoration(ITALIC, false),
+		text("Incurs a power usage penalty", RED).decoration(ITALIC, false)
 	) { ItemModRegistry.SILK_TOUCH })
 
 	val AUTO_SMELT: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_AUTO_SMELT",
-		7004,
-		text("Auto Smelt Modifier").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_AUTO_SMELT",
+		customModelData = 7004,
+		displayName = text("Auto Smelt Modifier").decoration(ITALIC, false),
+		text("Sears the drops before they hit the ground", GRAY).decoration(ITALIC, false),
+		text("Incurs a power usage penalty", RED).decoration(ITALIC, false)
 	) { ItemModRegistry.AUTO_SMELT })
 
 	val FORTUNE_1: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_FORTUNE_1",
-		7005,
-		text("Fortune 1").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_FORTUNE_1",
+		customModelData = 7005,
+		displayName = text("Fortune 1 Modifier").decoration(ITALIC, false),
+		text("Applies fortune 1 touch to drops", GRAY).decoration(ITALIC, false),
+		text("Incurs a power usage penalty", RED).decoration(ITALIC, false)
 	) { ItemModRegistry.FORTUNE_1 })
 
 	val FORTUNE_2: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_FORTUNE_2",
-		7006,
-		text("Fortune 2").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_FORTUNE_2",
+		customModelData = 7006,
+		displayName = text("Fortune 2 Modifier").decoration(ITALIC, false),
+		text("Applies fortune 2 touch to drops", GRAY).decoration(ITALIC, false),
+		text("Incurs a power usage penalty", RED).decoration(ITALIC, false)
 	) { ItemModRegistry.FORTUNE_2 })
 
 	val FORTUNE_3: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_FORTUNE_3",
-		7007,
-		text("Fortune 3").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_FORTUNE_3",
+		customModelData = 7007,
+		displayName = text("Fortune 3 Modifier").decoration(ITALIC, false),
+		text("Applies fortune 3 touch to drops", GRAY).decoration(ITALIC, false),
+		text("Incurs a power usage penalty", RED).decoration(ITALIC, false)
 	) { ItemModRegistry.FORTUNE_3 })
 
 	val POWER_CAPACITY_25: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_POWER_CAPACITY_25",
-		7008,
-		text("Power Capacity 25000").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_POWER_CAPACITY_25",
+		customModelData = 7008,
+		displayName = text("Small Auxiliary battery").decoration(ITALIC, false),
+		ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), PowerMachines.prefixComponent, text(25000, GREEN)).decoration(ITALIC, false)
 	) { ItemModRegistry.POWER_CAPACITY_25 })
 
 	val POWER_CAPACITY_50: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_POWER_CAPACITY_50",
-		7009,
-		text("Power Capacity 50000").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_POWER_CAPACITY_50",
+		customModelData = 7009,
+		displayName = text("Medium Auxiliary battery").decoration(ITALIC, false),
+		ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), PowerMachines.prefixComponent, text(50000, GREEN)).decoration(ITALIC, false)
 	) { ItemModRegistry.POWER_CAPACITY_50 })
 
 	val AUTO_REPLANT: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_AUTO_REPLANT",
-		7010,
-		text("Auto Replant Modifier").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_AUTO_REPLANT",
+		customModelData = 7010,
+		displayName = text("Auto Replant Modifier").decoration(ITALIC, false),
+		text("Automatically plants back harvested crops and cut trees", GRAY).decoration(ITALIC, false),
 	) { ItemModRegistry.AUTO_REPLANT })
 
 	val AUTO_COMPOST: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_AUTO_COMPOST",
-		7011,
-		text("Auto Compost Modifier").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_AUTO_COMPOST",
+		customModelData = 7011,
+		displayName = text("Auto Compost Modifier").decoration(ITALIC, false),
+		text("Sends applicable drops through a composter, turning them into bonemeal.", GRAY).decoration(ITALIC, false),
 	) { ItemModRegistry.AUTO_COMPOST })
 
-	val DRILL_AOE_3: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_DRILL_AOE_3",
-		7012,
-		text("Drill AOE 3").decoration(ITALIC, false)
+	val RANGE_3: ModificationItem = register(ModificationItem(
+		identifier = "TOOL_MODIFICATION_DRILL_RANGE_3",
+		customModelData = 7012,
+		displayName = text("Range Addon +3").decoration(ITALIC, false),
+		text("Expands the working area by 3 blocks", GRAY).decoration(ITALIC, false)
 	) { ItemModRegistry.AOE_3 })
 
 	val EXTENDED_BAR: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_EXTENDED_BAR",
-		7013,
-		text("Extended Bar Modifier").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_EXTENDED_BAR",
+		customModelData = 7013,
+		displayName = text("Extended Chainsaw Bar").decoration(ITALIC, false),
+		text("Allows a chainsaw to cut down larger trees", GRAY).decoration(ITALIC, false)
 	) { ItemModRegistry.EXTENDED_BAR })
 
 	val FERTILIZER_DISPENSER: ModificationItem = register(ModificationItem(
-		"TOOL_MODIFICATION_FERTILIZER_DISPENSER",
-		7014,
-		text("Fertilizer Dispenser Bar Modifier").decoration(ITALIC, false)
+		identifier = "TOOL_MODIFICATION_FERTILIZER_DISPENSER",
+		customModelData = 7014,
+		displayName = text("Fertilizer Sprayer").decoration(ITALIC, false),
+		text("Applies bonemeal to crops in the effected area, if available in the user's inventory", GRAY).decoration(ITALIC, false)
 	) { ItemModRegistry.FERTILIZER_DISPENSER })
 
 	// Tools end

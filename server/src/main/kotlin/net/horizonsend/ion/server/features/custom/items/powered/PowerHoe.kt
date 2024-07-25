@@ -36,7 +36,7 @@ import kotlin.math.roundToInt
 
 class PowerHoe(
 	identifier: String,
-	val displayName: Component,
+	override val displayName: Component,
 	override val modLimit: Int,
 	override val basePowerCapacity: Int,
 	override val customModelData: Int
