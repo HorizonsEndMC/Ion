@@ -6,7 +6,9 @@ import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
+import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
+import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -26,7 +28,7 @@ class FortuneModifier(
 ) : ItemModification, DropSource, PowerUsageIncrease {
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "FORTUNE_$level"
-	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class)
+	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class)
 	override val shouldDropXP: Boolean = true
 	override val usageMultiplier: Double = 0.25 + level

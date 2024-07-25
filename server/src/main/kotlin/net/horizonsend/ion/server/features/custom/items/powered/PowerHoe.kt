@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.drops.DropModifier
+import net.horizonsend.ion.server.features.custom.items.mods.drops.DropSource
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.hoe.FertilizerDispenser
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
@@ -165,11 +166,16 @@ class PowerHoe(
 			return false
 		}
 
-		val dropList = crop.getDrops(block)
+		val dropSource = mods
+			.filterNot { it.crouchingDisables && player.isSneaking }
+			.filterIsInstance<DropSource>()
+			.firstOrNull() ?: DropSource.DEFAULT_DROP_PROVIDER
 
 		val dropModifiers = mods
 			.filterIsInstance<DropModifier>()
 			.sortedByDescending { it.priority }
+
+		val dropList = dropSource.getDrop(block)
 
 		usage.multiplier = PowerDrill.handleModifiers(dropList, dropModifiers)
 		drops[BlockPos.asLong(block.x, block.y, block.z)] = dropList
