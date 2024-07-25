@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.ai.module.pathfinding.SteeringPathfin
 import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.module.positioning.BasicPositioningModule
 import net.horizonsend.ion.server.features.ai.module.positioning.StandoffPositioningModule
+import net.horizonsend.ion.server.features.ai.module.targeting.ClosestLargeStarshipTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestSmallStarshipTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.HighestDamagerTargetingModule
@@ -108,7 +109,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 1500.0))
 			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 16_384.0))
+			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.MATCH_Y, 16_384.0))
 
 			builder
 		}
@@ -199,8 +200,8 @@ object AIControllerFactories : IonServerComponent() {
 		setModuleBuilder {
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = true })
-			builder.addModule("tracking", TrackingModule(it, 5, 87.5, 15.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			builder.addModule("targeting", ClosestLargeStarshipTargetingModule(it, 5000.0, null).apply { sticky = true })
+			builder.addModule("tracking", TrackingModule(it, 5, 87.5, 35.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TrackingModule>("tracking").get().findTarget() })
 
 			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 0.0))

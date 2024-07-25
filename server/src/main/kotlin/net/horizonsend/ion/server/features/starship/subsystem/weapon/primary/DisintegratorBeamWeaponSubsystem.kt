@@ -79,8 +79,8 @@ class DisintegratorBeamWeaponSubsystem(
         return when (beamStacks) {
             in 1 .. 5 -> 0.5
             in 6 .. 10 -> 1.0
-            in 11 .. 15 -> 2.0
-            in 16 .. 20 -> 4.0
+            in 11 .. 15 -> 1.5
+            in 16 .. 20 -> 3.5
             else -> 0.5
         }
     }
