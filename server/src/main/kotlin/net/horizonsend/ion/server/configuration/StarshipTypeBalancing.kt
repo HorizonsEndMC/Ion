@@ -1255,6 +1255,32 @@ class StarshipWeapons(
 			minBlockCount = 0
 		),
 
+		val logisticTurret: StarshipWeapon = StarshipWeapon(
+			canFire = true,
+			range = 150.0,
+			speed = 2000.0,
+			areaShieldDamageMultiplier = 0.0,
+			starshipShieldDamageMultiplier = 0.0,
+			particleThickness = 1.0,
+			explosionPower = 0f,
+			volume = 50000, // actually the healing value (is this even used still?)
+			pitch = 1.0f,
+			soundName = "horizonsend:starship.weapon.turbolaser.light.shoot",
+			powerUsage = 100,
+			length = 0,
+			angleRadiansHorizontal = 0.0,
+			angleRadiansVertical = 0.0,
+			convergeDistance = 0.0,
+			extraDistance = 1,
+			fireCooldownMillis = 500,
+			aimDistance = 0,
+			inaccuracyRadians = 0.5,
+			maxPerShot = 1,
+			applyCooldownToAll = true,
+			minBlockCount = 0,
+			delayMillis = 250
+		),
+
 		val pointDefence: StarshipWeapon = StarshipWeapon(
 				range = 120.0,
 				speed = 150.0,
