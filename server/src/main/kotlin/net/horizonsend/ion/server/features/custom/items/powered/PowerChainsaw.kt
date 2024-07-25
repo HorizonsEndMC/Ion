@@ -116,12 +116,12 @@ class PowerChainsaw(
 		}
 
 		override fun run() {
-			if (!player.inventory.contains(chainsawItem)) return
-
-			if (visited.count() > maxDepth || queue.isEmpty()) {
+			if (visited.count() > maxDepth || queue.isEmpty() || !player.isOnline) {
 				cancel()
 				return
 			}
+
+			if (!player.inventory.contains(chainsawItem)) return
 
 			val key = queue.removeFirst()
 			val x = BlockPos.getX(key)
