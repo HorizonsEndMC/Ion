@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.minecraft.world.level.block.ComposterBlock
 import org.bukkit.Material
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
@@ -21,7 +23,7 @@ import kotlin.reflect.KClass
 
 object AutoCompostModifier : ItemModification, DropModifier {
 	override val identifier: String = "AUTO_COMPOST"
-	override val displayName: Component = Component.text("AUTO_COMPOST")
+	override val displayName: Component = text("Automatic Composter", HEColorScheme.HE_LIGHT_GRAY)
 	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(AutoSmeltModifier::class, SilkTouchSource::class)
 	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.AUTO_COMPOST }

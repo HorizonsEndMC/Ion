@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.objects
 import com.manya.pdc.base.array.StringArrayDataType
 import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
@@ -22,6 +23,7 @@ import org.bukkit.persistence.PersistentDataType
 import java.nio.charset.Charset
 
 interface ModdedCustomItem : LoreCustomItem {
+	val displayName: Component
 	val modLimit: Int
 
 	fun getMods(item: ItemStack): Array<ItemModification> = item.itemMeta.persistentDataContainer.getOrDefault(TOOL_MODIFICATIONS, ModList, arrayOf())
@@ -81,7 +83,7 @@ interface ModdedCustomItem : LoreCustomItem {
 	}
 
 	object ModLoreManager : LoreCustomItem.CustomItemLoreManager() {
-		private val modPrefix = text("Mods: ", HE_MEDIUM_GRAY).decoration(TextDecoration.ITALIC, false)
+		private val modPrefix = text("Mods (limit: ", HE_MEDIUM_GRAY)
 		private val namePrefix = text(" • ", HE_DARK_GRAY).decoration(ITALIC, false)
 
 		override fun getLineAllotment(itemStack: ItemStack): Int {
@@ -96,7 +98,7 @@ interface ModdedCustomItem : LoreCustomItem {
 			val mods = custom.getMods(itemStack)
 
 			return when	(line) {
-				0 -> modPrefix
+				0 -> ofChildren(modPrefix, text(custom.modLimit, HE_LIGHT_GRAY), text("):", HE_MEDIUM_GRAY)).decoration(TextDecoration.ITALIC, false)
 				else -> ofChildren(namePrefix, mods[line - 1].displayName)
 			}
 		}

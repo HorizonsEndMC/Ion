@@ -18,8 +18,8 @@ object ItemModRegistry {
 	val mods: MutableMap<String, ItemModification> = mutableMapOf()
 
 	// Collects a square one deep based off the face of the clicked block
-	val AOE_1 = registerMod(AOEDMod(radius = 1) { CustomItems.DRILL_AOE_1 })
-	val AOE_2 = registerMod(AOEDMod(radius = 2) { CustomItems.DRILL_AOE_2 })
+	val AOE_1 = registerMod(AOEDMod(radius = 1) { CustomItems.RANGE_2 })
+	val AOE_2 = registerMod(AOEDMod(radius = 2) { CustomItems.RANGE_1 })
 
 	// Mines groups of connected blocks of the same type
 	val VEIN_MINER_25 = registerMod(VeinMinerMod(depth = 25) { CustomItems.VEIN_MINER_25 })
@@ -46,7 +46,7 @@ object ItemModRegistry {
 	val AUTO_COMPOST = registerMod(AutoCompostModifier)
 
 	// AOE 3 is just for power hoes
-	val AOE_3 = registerMod(AOEDMod(radius = 3, applicableTo = arrayOf(PowerHoe::class)) { CustomItems.DRILL_AOE_3 })
+	val AOE_3 = registerMod(AOEDMod(radius = 3, applicableTo = arrayOf(PowerHoe::class)) { CustomItems.RANGE_3 })
 
 	// Longer chainsaw reach
 	val EXTENDED_BAR = registerMod(ExtendedBar)
