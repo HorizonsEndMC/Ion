@@ -23,7 +23,7 @@ import kotlin.reflect.KClass
 
 object AutoCompostModifier : ItemModification, DropModifier {
 	override val identifier: String = "AUTO_COMPOST"
-	override val displayName: Component = text("Automatic Composter", HEColorScheme.HE_LIGHT_GRAY)
+	override val displayName: Component = text("Auto Composter", HEColorScheme.HE_LIGHT_GRAY)
 	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(AutoSmeltModifier::class, SilkTouchSource::class)
 	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.AUTO_COMPOST }
