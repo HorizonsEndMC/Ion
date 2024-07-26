@@ -27,7 +27,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_ROCKET_BOOSTING
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_SHOCK_ABSORBING
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_SPEED_BOOSTING
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_TOOL_CHAINSAW
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -44,13 +43,11 @@ import org.bukkit.Material.FEATHER
 import org.bukkit.Material.FIREWORK_ROCKET
 import org.bukkit.Material.GLASS_PANE
 import org.bukkit.Material.GLOWSTONE_DUST
-import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.PINK_TULIP
 import org.bukkit.Material.PRISMARINE_CRYSTALS
 import org.bukkit.Material.REDSTONE
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SPIDER_EYE
-import org.bukkit.Material.STICK
 import org.bukkit.Material.WARPED_PLANKS
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
@@ -66,7 +63,6 @@ object CustomRecipes : IonServerComponent() {
 			registerArmorRecipes()
 			registerModuleRecipes()
 			registerSwordRecipes()
-			registerPowerToolRecipes()
 			registerWireRecipe()
 			registerSeaLanternRecipe()
 			registerEndPortalFrameRecipe()
@@ -226,19 +222,6 @@ object CustomRecipes : IonServerComponent() {
 				'g' to materialChoice(GLASS_PANE),
 				'*' to specialItem,
 				't' to customItemChoice(TITANIUM_INGOT)
-			)
-		)
-	}
-
-	private fun registerPowerToolRecipes() {
-		createRecipe(
-			POWER_TOOL_CHAINSAW, "ai ", "ibt", " ts",
-			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM_INGOT),
-				'i' to materialChoice(IRON_INGOT),
-				'b' to legacyCustomItemChoice(BATTERY_MEDIUM),
-				't' to customItemChoice(TITANIUM_INGOT),
-				's' to materialChoice(STICK)
 			)
 		)
 	}
