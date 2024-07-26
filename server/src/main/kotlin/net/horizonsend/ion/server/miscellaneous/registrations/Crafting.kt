@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.items.CustomItems.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CANNON_RECEIVER
@@ -17,7 +18,11 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.CRUISER_REAC
 import net.horizonsend.ion.server.features.custom.items.CustomItems.DETONATOR
 import net.horizonsend.ion.server.features.custom.items.CustomItems.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.ENRICHED_URANIUM_BLOCK
+import net.horizonsend.ion.server.features.custom.items.CustomItems.EXTENDED_BAR
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FABRICATED_ASSEMBLY
+import net.horizonsend.ion.server.features.custom.items.CustomItems.FERTILIZER_DISPENSER
+import net.horizonsend.ion.server.features.custom.items.CustomItems.FORTUNE_1
+import net.horizonsend.ion.server.features.custom.items.CustomItems.FORTUNE_2
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FUEL_CELL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FUEL_CONTROL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FUEL_ROD_CORE
@@ -29,6 +34,8 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL_RECEIVER
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CAPACITY_25
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CAPACITY_50
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CHAINSAW_ADVANCED
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CHAINSAW_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CHAINSAW_ENHANCED
@@ -56,6 +63,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.REINFORCED_F
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RIFLE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RIFLE_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SHOTGUN_RECEIVER
+import net.horizonsend.ion.server.features.custom.items.CustomItems.SILK_TOUCH_MOD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SMB_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SMOKE_GRENADE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SNIPER_RECEIVER
@@ -83,6 +91,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_ROD
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Material.AIR
@@ -90,16 +99,21 @@ import org.bukkit.Material.AMETHYST_SHARD
 import org.bukkit.Material.BELL
 import org.bukkit.Material.BLACKSTONE
 import org.bukkit.Material.BLACK_WOOL
+import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.BLUE_WOOL
 import org.bukkit.Material.BROWN_WOOL
 import org.bukkit.Material.COAL
+import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COBWEB
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.CYAN_WOOL
 import org.bukkit.Material.DARK_PRISMARINE
+import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
+import org.bukkit.Material.DISPENSER
 import org.bukkit.Material.EMERALD_BLOCK
+import org.bukkit.Material.ENCHANTED_BOOK
 import org.bukkit.Material.GILDED_BLACKSTONE
 import org.bukkit.Material.GLASS
 import org.bukkit.Material.GLASS_PANE
@@ -110,6 +124,7 @@ import org.bukkit.Material.GRAY_WOOL
 import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.GREEN_WOOL
 import org.bukkit.Material.HONEYCOMB
+import org.bukkit.Material.HOPPER
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_TRAPDOOR
@@ -134,11 +149,13 @@ import org.bukkit.Material.PAPER
 import org.bukkit.Material.PEARLESCENT_FROGLIGHT
 import org.bukkit.Material.PINK_TULIP
 import org.bukkit.Material.PINK_WOOL
+import org.bukkit.Material.PISTON
 import org.bukkit.Material.PRISMARINE
 import org.bukkit.Material.PRISMARINE_BRICKS
 import org.bukkit.Material.PRISMARINE_CRYSTALS
 import org.bukkit.Material.PURPLE_WOOL
 import org.bukkit.Material.QUARTZ
+import org.bukkit.Material.RAW_GOLD
 import org.bukkit.Material.REDSTONE
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.RED_TERRACOTTA
@@ -158,6 +175,7 @@ import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WHITE_WOOL
 import org.bukkit.Material.YELLOW_WOOL
 import org.bukkit.NamespacedKey
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice
@@ -874,6 +892,114 @@ object Crafting : IonServerComponent() {
 			setIngredient('y', SUPERCONDUCTOR_CORE.constructItemStack())
 			setIngredient('z', FUEL_CONTROL.constructItemStack())
 		}
+
+		// Tool Mods start
+		itemStackShapeRecipe("silk_touch_modifier", SILK_TOUCH_MOD.constructItemStack()) {
+			shape("gbg", "tst", "ctc")
+
+			setIngredient('g', RAW_GOLD)
+			setIngredient('b', TITANIUM_BLOCK.constructItemStack())
+			setIngredient('t', TITANIUM_INGOT.constructItemStack())
+			setIngredient('s', ItemStack(ENCHANTED_BOOK).updateMeta {
+				it.addEnchant(Enchantment.SILK_TOUCH, 1, true)
+			})
+			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
+		}
+
+		itemStackShapeRecipe("fortune_1_touch_modifier", FORTUNE_1.constructItemStack()) {
+			shape("dgd", "csc", "dgd")
+
+			setIngredient('d', DIAMOND)
+			setIngredient('g', GOLD_BLOCK)
+			setIngredient('c', REACTIVE_COMPONENT.constructItemStack())
+			setIngredient('s', SUPERCONDUCTOR.constructItemStack())
+		}
+
+		itemStackShapeRecipe("fortune_2_touch_modifier", FORTUNE_1.constructItemStack()) {
+			shape("dgd", "csc", "dgd")
+
+			setIngredient('d', STEEL_PLATE.constructItemStack())
+			setIngredient('g', URANIUM_BLOCK.constructItemStack())
+			setIngredient('c', REACTIVE_PLATING.constructItemStack())
+			setIngredient('s', FORTUNE_1.constructItemStack())
+		}
+
+		itemStackShapeRecipe("fortune_2_touch_modifier", FORTUNE_1.constructItemStack()) {
+			shape("dgd", "csc", "dgd")
+
+			setIngredient('d', STEEL_ASSEMBLY.constructItemStack())
+			setIngredient('g', ENRICHED_URANIUM_BLOCK.constructItemStack())
+			setIngredient('c', REACTIVE_ASSEMBLY.constructItemStack())
+			setIngredient('s', FORTUNE_2.constructItemStack())
+		}
+
+		itemStackShapeRecipe("power_capacity_25_modifier", POWER_CAPACITY_25.constructItemStack()) {
+			shape("sbs", "brb", "scs")
+
+			setIngredient('s', STEEL_INGOT.constructItemStack())
+			setIngredient('b', BATTERY_MEDIUM.singleItem())
+			setIngredient('r', REDSTONE_BLOCK)
+			setIngredient('c', CIRCUITRY.constructItemStack())
+		}
+
+		itemStackShapeRecipe("power_capacity_50_modifier", POWER_CAPACITY_50.constructItemStack()) {
+			shape("sbs", "brb", "scs")
+
+			setIngredient('s', STEEL_PLATE.constructItemStack())
+			setIngredient('b', BATTERY_LARGE.singleItem())
+			setIngredient('r', REDSTONE_BLOCK)
+			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
+		}
+
+		itemStackShapeRecipe("auto_smelt_modifier", POWER_CAPACITY_50.constructItemStack()) {
+			shape("srs", "bfb", "scs")
+
+			setIngredient('s', STEEL_PLATE.constructItemStack())
+			setIngredient('b', GOLD_BLOCK)
+			setIngredient('f', BLAST_FURNACE)
+			setIngredient('r', REDSTONE_BLOCK)
+			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
+		}
+
+		itemStackShapeRecipe("auto_compost_modifier", POWER_CAPACITY_50.constructItemStack()) {
+			shape("tit", "tct", "trt")
+
+			setIngredient('t', TITANIUM_INGOT.constructItemStack())
+			setIngredient('i', IRON_INGOT)
+			setIngredient('c', COMPOSTER)
+			setIngredient('r', REDSTONE_BLOCK)
+		}
+
+		itemStackShapeRecipe("auto_replant_modifier", AUTO_REPLANT.constructItemStack()) {
+			shape("ipi", "tct", "iri")
+
+			setIngredient('i', IRON_INGOT)
+			setIngredient('p', PISTON)
+			setIngredient('t', TITANIUM_INGOT.constructItemStack())
+			setIngredient('c', DISPENSER)
+			setIngredient('r', REDSTONE_BLOCK)
+		}
+
+		itemStackShapeRecipe("auto_fertilizer_modifier", FERTILIZER_DISPENSER.constructItemStack()) {
+			shape("ipi", "tct", "iri")
+
+			setIngredient('i', IRON_INGOT)
+			setIngredient('p', HOPPER)
+			setIngredient('t', TITANIUM_INGOT.constructItemStack())
+			setIngredient('c', DISPENSER)
+			setIngredient('r', REDSTONE_BLOCK)
+		}
+
+		itemStackShapeRecipe("extended_bar_modifier", EXTENDED_BAR.constructItemStack()) {
+			shape("stx", "tct", "xts")
+
+			setIngredient('s', STEEL_PLATE.constructItemStack())
+			setIngredient('t', TITANIUM_INGOT.constructItemStack())
+			setIngredient('c', STEEL_CHASSIS.constructItemStack())
+			setIngredient('x', AIR)
+		}
+
+		// Tool mods end
 	}
 
 	private fun shapedRecipe(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {
