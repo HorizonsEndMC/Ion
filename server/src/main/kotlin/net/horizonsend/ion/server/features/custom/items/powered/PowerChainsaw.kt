@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.multiblock.farming.Crop
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
-import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isFence
 import net.horizonsend.ion.server.miscellaneous.utils.isLeaves
@@ -34,7 +33,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.ArrayDeque
-import java.util.EnumSet
 import kotlin.math.roundToInt
 
 class PowerChainsaw(
@@ -174,11 +172,10 @@ class PowerChainsaw(
 				block.type = it
 			}
 
-			// Detect adjacent blocks
-			for (offset in EnumSet.complementOf(enumSetOf(BlockFace.SELF))) {
-				val adjacentX = offset.modX + x
-				val adjacentY = offset.modY + y
-				val adjacentZ = offset.modZ + z
+			for (offsetX in -1..1) for (offsetY in -1..1) for (offsetZ in -1..1) {
+				val adjacentX = offsetX + x
+				val adjacentY = offsetY + y
+				val adjacentZ = offsetZ + z
 
 				// Ensure it's a valid Y-level before adding it to the queue
 				if (adjacentY < 0 || adjacentY > origin.world.maxHeight) {
@@ -186,6 +183,8 @@ class PowerChainsaw(
 				}
 
 				val key1 = BlockPos.asLong(adjacentX, adjacentY, adjacentZ)
+
+				if (key1 == BlockPos.asLong(x, y, z)) continue
 
 				if (visited.containsKey(key1)) continue
 
@@ -198,7 +197,17 @@ class PowerChainsaw(
 		fun canMine(block: Block): Boolean {
 			if (block.customBlock != null) return false
 
-			return (block.type.isLeaves || block.type.isWood || block.type.isLog || block.type.isFence)
+			return block.type.isLeaves ||
+				block.type.isWood ||
+				block.type.isLog ||
+				block.type.isFence ||
+				block.type == Material.CRIMSON_STEM ||
+				block.type == Material.CRIMSON_HYPHAE ||
+				block.type == Material.WARPED_STEM ||
+				block.type == Material.WARPED_HYPHAE ||
+				block.type == Material.NETHER_WART_BLOCK ||
+				block.type == Material.WARPED_WART_BLOCK ||
+				block.type == Material.SHROOMLIGHT
 		}
 
 		val saplingTypes = mapOf(
@@ -217,7 +226,11 @@ class PowerChainsaw(
 			Material.CHERRY_WOOD to Material.CHERRY_SAPLING,
 			Material.CHERRY_LOG to Material.CHERRY_SAPLING,
 			Material.MANGROVE_WOOD to Material.MANGROVE_PROPAGULE,
-			Material.MANGROVE_LOG to Material.MANGROVE_PROPAGULE
+			Material.MANGROVE_LOG to Material.MANGROVE_PROPAGULE,
+			Material.CRIMSON_HYPHAE to Material.CRIMSON_FUNGUS,
+			Material.CRIMSON_STEM to Material.CRIMSON_FUNGUS,
+			Material.WARPED_HYPHAE to Material.WARPED_FUNGUS,
+			Material.WARPED_STEM to Material.WARPED_FUNGUS
 		)
 	}
 }

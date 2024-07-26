@@ -57,7 +57,7 @@ object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
 		return true
 	}
 
-	private val level = Bukkit.getServer().worlds.first().minecraft
+	private val level get() = Bukkit.getServer().worlds.first().minecraft
 
 	private val smeltedItemCache: LoadingCache<ItemStack, Optional<ItemStack>> = CacheBuilder.newBuilder().build(CacheLoader.from { baseDrop ->
 		val optional: Optional<RecipeHolder<SmeltingRecipe>> = level

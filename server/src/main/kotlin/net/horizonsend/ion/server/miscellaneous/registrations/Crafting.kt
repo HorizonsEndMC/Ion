@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.FABRICATED_A
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FERTILIZER_DISPENSER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FORTUNE_1
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FORTUNE_2
+import net.horizonsend.ion.server.features.custom.items.CustomItems.FORTUNE_3
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FUEL_CELL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FUEL_CONTROL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FUEL_ROD_CORE
@@ -915,7 +916,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('s', SUPERCONDUCTOR.constructItemStack())
 		}
 
-		itemStackShapeRecipe("fortune_2_touch_modifier", FORTUNE_1.constructItemStack()) {
+		itemStackShapeRecipe("fortune_2_touch_modifier", FORTUNE_2.constructItemStack()) {
 			shape("dgd", "csc", "dgd")
 
 			setIngredient('d', STEEL_PLATE.constructItemStack())
@@ -924,7 +925,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('s', FORTUNE_1.constructItemStack())
 		}
 
-		itemStackShapeRecipe("fortune_2_touch_modifier", FORTUNE_1.constructItemStack()) {
+		itemStackShapeRecipe("fortune_3_touch_modifier", FORTUNE_3.constructItemStack()) {
 			shape("dgd", "csc", "dgd")
 
 			setIngredient('d', STEEL_ASSEMBLY.constructItemStack())
