@@ -29,9 +29,15 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL_RECEIVER
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CHAINSAW_ADVANCED
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CHAINSAW_BASIC
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CHAINSAW_ENHANCED
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_ADVANCED
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_ENHANCED
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_ADVANCED
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_BASIC
+import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_ENHANCED
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_TITANIUM
@@ -469,7 +475,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		// Basic Power Drill Crafting
-		itemStackShapeRecipe("power_drill", POWER_DRILL_BASIC.constructItemStack()) {
+		itemStackShapeRecipe("power_drill_basic", POWER_DRILL_BASIC.constructItemStack()) {
 			shape("ixx", "xbt", "xts")
 
 			setIngredient('i', ExactChoice(ItemStack(IRON_INGOT)))
@@ -487,7 +493,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('d', ExactChoice(POWER_DRILL_BASIC.constructItemStack()))
 			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
 			setIngredient('t', ExactChoice(URANIUM_BLOCK.constructItemStack()))
-			setIngredient('s', ExactChoice(BATTERY_MEDIUM.singleItem()))
+			setIngredient('s', ExactChoice(BATTERY_LARGE.singleItem()))
 			setIngredient('x', AIR)
 		}
 
@@ -495,11 +501,82 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("power_drill_advanced", POWER_DRILL_ADVANCED.constructItemStack()) {
 			shape("iix", "idc", "xts")
 
-			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
+			setIngredient('i', ExactChoice(STEEL_PLATE.constructItemStack()))
 			setIngredient('d', ExactChoice(POWER_DRILL_ENHANCED.constructItemStack()))
 			setIngredient('c', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
-			setIngredient('t', ExactChoice(FUEL_ROD_CORE.constructItemStack()))
+			setIngredient('t', ExactChoice(SUPERCONDUCTOR.constructItemStack()))
+			setIngredient('s', ExactChoice(STEEL_CHASSIS.constructItemStack()))
+			setIngredient('x', AIR)
+		}
+
+		// Basic Power Chainsaw
+		itemStackShapeRecipe("power_chainsaw_basic", POWER_CHAINSAW_BASIC.constructItemStack()) {
+			shape("iix", "idc", "xcs")
+
+			setIngredient('i', ExactChoice(ItemStack(IRON_INGOT)))
+			setIngredient('d', ExactChoice(BATTERY_MEDIUM.singleItem()))
+			setIngredient('c', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('s', STICK)
+			setIngredient('x', AIR)
+		}
+
+		// Enhanced Power Chainsaw
+		itemStackShapeRecipe("power_chainsaw_enhanced", POWER_CHAINSAW_ENHANCED.constructItemStack()) {
+			shape("iix", "idc", "xus")
+
+			setIngredient('i', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
+			setIngredient('d', ExactChoice(POWER_CHAINSAW_BASIC.constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
+			setIngredient('u', ExactChoice(URANIUM_BLOCK.constructItemStack()))
 			setIngredient('s', ExactChoice(BATTERY_LARGE.singleItem()))
+			setIngredient('x', AIR)
+		}
+
+		// Advanced Power Chainsaw Crafting
+		itemStackShapeRecipe("power_chainsaw_advanced", POWER_CHAINSAW_ADVANCED.constructItemStack()) {
+			shape("pbx", "bdc", "xts")
+
+			setIngredient('p', ExactChoice(STEEL_PLATE.constructItemStack()))
+			setIngredient('b', ExactChoice(STEEL_BLOCK.constructItemStack()))
+			setIngredient('d', ExactChoice(POWER_CHAINSAW_ENHANCED.constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
+			setIngredient('t', ExactChoice(SUPERCONDUCTOR.constructItemStack()))
+			setIngredient('s', ExactChoice(STEEL_CHASSIS.constructItemStack()))
+			setIngredient('x', AIR)
+		}
+
+		// Basic Power Hoe
+		itemStackShapeRecipe("power_hoe_basic", POWER_HOE_BASIC.constructItemStack()) {
+			shape("xib", "xsi", "ccx")
+
+			setIngredient('b', ExactChoice(BATTERY_MEDIUM.singleItem()))
+			setIngredient('i', COPPER_INGOT)
+			setIngredient('c', ExactChoice(TITANIUM_INGOT.constructItemStack()))
+			setIngredient('s', STICK)
+			setIngredient('x', AIR)
+		}
+
+		// Enhanced Power Hoe
+		itemStackShapeRecipe("power_hoe_enhanced", POWER_HOE_ENHANCED.constructItemStack()) {
+			shape("xus", "xdc", "iix")
+
+			setIngredient('d', ExactChoice(POWER_HOE_BASIC.constructItemStack()))
+			setIngredient('i', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
+			setIngredient('u', ExactChoice(URANIUM_BLOCK.constructItemStack()))
+			setIngredient('s', ExactChoice(BATTERY_LARGE.singleItem()))
+			setIngredient('x', AIR)
+		}
+
+		// Advanced Power Hoe Crafting
+		itemStackShapeRecipe("power_hoe_advanced", POWER_HOE_ADVANCED.constructItemStack()) {
+			shape("xtu", "xdc", "ssx")
+
+			setIngredient('d', ExactChoice(POWER_HOE_ENHANCED.constructItemStack()))
+			setIngredient('s', ExactChoice(STEEL_BLOCK.constructItemStack()))
+			setIngredient('c', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
+			setIngredient('t', ExactChoice(SUPERCONDUCTOR.constructItemStack()))
+			setIngredient('u', ExactChoice(STEEL_CHASSIS.constructItemStack()))
 			setIngredient('x', AIR)
 		}
 
