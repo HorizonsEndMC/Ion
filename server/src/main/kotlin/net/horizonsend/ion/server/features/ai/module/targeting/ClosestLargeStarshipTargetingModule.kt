@@ -10,7 +10,8 @@ class ClosestLargeStarshipTargetingModule(
     controller: AIController,
     var maxRange: Double,
     existingTarget: AITarget? = null,
-    val targetAI: Boolean = false
+    private val targetAI: Boolean = false,
+    private val focusRange: Double = 0.0
 ) : TargetingModule(controller) {
     private var lastDamaged: Long = 0
 
@@ -35,7 +36,7 @@ class ClosestLargeStarshipTargetingModule(
                 if (!targetAI) it.ship.controller !is AIController else it.ship.controller is AIController && starship.controller != it.ship.controller
             } else true
         }.sortedWith(
-            Comparator { o1, o2 ->
+            Comparator<AITarget> { o1, o2 ->
                 // if both objects are not StarshipTargets, maintain order
                 // if only object 1 is not a StarshipTarget, object 1 should appear after object 2
                 if (o1 !is StarshipTarget) if (o2 !is StarshipTarget) return@Comparator 0 else return@Comparator 1
@@ -50,7 +51,16 @@ class ClosestLargeStarshipTargetingModule(
                 if (!map.containsKey(type2)) return@Comparator -1
 
                 return@Comparator map[type1]!! - map[type2]!!
-            }
+            }.thenComparing(Comparator<AITarget> { o1, o2 ->
+                // compare by distance within focusRange
+                val distance1 = controller.getCenter().distance(o1.getVec3i())
+                val distance2 = controller.getCenter().distance(o2.getVec3i())
+
+                if (distance1 > focusRange) if (distance2 > focusRange) return@Comparator 0 else return@Comparator 1
+                if (distance2 > focusRange) return@Comparator -1
+
+                return@Comparator distance1.compareTo(distance2)
+            })
         )
     }
 

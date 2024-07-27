@@ -753,6 +753,13 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 1.7,
 		weapons = corvette.weapons
 	),
+	val aiCorvetteLogistic: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 3,
+		maxSneakFlyAccel = 13,
+		interdictionRange = 1800,
+		hyperspaceRangeMultiplier = 1.7,
+		weapons = corvette.weapons
+	),
 	val aiFrigate: StarshipBalancing = frigate,
 	val aiDestroyer: StarshipBalancing = destroyer,
 	val aiCruiser: StarshipBalancing = cruiser,
@@ -1183,7 +1190,7 @@ class StarshipWeapons(
 			range = 275.0,
 			speed = 1800.0,
 			areaShieldDamageMultiplier = 1.0,
-			starshipShieldDamageMultiplier = 0.6,
+			starshipShieldDamageMultiplier = 0.75,
 			particleThickness = 0.25,
 			explosionPower = 2f,
 			volume = 0,
@@ -1206,7 +1213,7 @@ class StarshipWeapons(
 
 		val disintegratorBeam: StarshipWeapon = StarshipWeapon(
 			canFire = true,
-			range = 200.0,
+			range = 100.0,
 			speed = 2000.0,
 			areaShieldDamageMultiplier = 1.0,
 			starshipShieldDamageMultiplier = 1.0,
