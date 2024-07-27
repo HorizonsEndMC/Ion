@@ -204,6 +204,12 @@ class ToolModMenu(
 				player.userError("${mod.displayName.plainText()} is incompatible with ${existingMod.displayName.plainText()}!")
 			}
 
+			// Already installed
+			if (existingMod == customItem) {
+				player.userError("${mod.displayName.plainText()} is already installed!")
+				return@none true
+			}
+
 			incompatible
 		}
 	}
