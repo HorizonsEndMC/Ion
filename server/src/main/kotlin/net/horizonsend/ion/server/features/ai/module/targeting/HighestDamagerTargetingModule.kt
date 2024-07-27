@@ -7,4 +7,8 @@ class HighestDamagerTargetingModule(controller: AIController) : TargetingModule(
 	override fun searchForTarget(): AITarget? {
 		return starship.damagers.maxByOrNull { it.value.points.get() }?.key?.getAITarget()
 	}
+
+	override fun searchForTargetList(): List<AITarget> {
+		return starship.damagers.keys.mapNotNull { it.getAITarget() }
+	}
 }
