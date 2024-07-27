@@ -36,7 +36,7 @@ object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
 	override val crouchingDisables: Boolean = false
 
 	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
-	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class, AutoSmeltModifier::class)
+	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(AutoSmeltModifier::class)
 
 	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.AUTO_SMELT }
 
