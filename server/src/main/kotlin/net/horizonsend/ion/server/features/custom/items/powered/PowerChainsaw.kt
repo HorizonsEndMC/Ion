@@ -207,7 +207,8 @@ class PowerChainsaw(
 				block.type == Material.WARPED_HYPHAE ||
 				block.type == Material.NETHER_WART_BLOCK ||
 				block.type == Material.WARPED_WART_BLOCK ||
-				block.type == Material.SHROOMLIGHT
+				block.type == Material.SHROOMLIGHT ||
+				block.type == Material.VINE
 		}
 
 		val saplingTypes = mapOf(
