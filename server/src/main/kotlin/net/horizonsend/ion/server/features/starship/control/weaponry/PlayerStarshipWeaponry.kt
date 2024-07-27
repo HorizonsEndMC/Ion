@@ -93,6 +93,8 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		event.isCancelled = true
 
 		val item = player.inventory.itemInMainHand
+		// do not run if the clock is not named
+		if (!item.itemMeta.hasDisplayName()) return
 		val clockWeaponSet = item.displayNameString.lowercase()
 
 		val ignoreBlockList = mutableSetOf(Material.AIR, Material.GLASS).apply {
