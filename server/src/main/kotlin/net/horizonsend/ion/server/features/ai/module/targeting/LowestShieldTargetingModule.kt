@@ -11,4 +11,8 @@ class LowestShieldTargetingModule(controller: AIController,	existingTarget: AITa
 	override fun searchForTarget(): AITarget? {
 		TODO("Not yet implemented")
 	}
+
+	override fun searchForTargetList(): List<AITarget> {
+		TODO("Not yet implemented")
+	}
 }

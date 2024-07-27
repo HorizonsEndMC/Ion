@@ -16,6 +16,10 @@ class AggroUponDamageModule(
 		return damagedBy
 	}
 
+	override fun searchForTargetList(): List<AITarget> {
+		TODO("Not yet implemented")
+	}
+
 	override fun onDamaged(damager: Damager) {
 		val combatController = controller.modules["combat"] as? CombatModule
 

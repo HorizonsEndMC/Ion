@@ -3,14 +3,17 @@ package net.horizonsend.ion.server.features.ai
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.module.combat.DefensiveCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.FrigateCombatModule
+import net.horizonsend.ion.server.features.ai.module.combat.MultiTargetFrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.StarfighterCombatModule
 import net.horizonsend.ion.server.features.ai.module.misc.FleeModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.TrackingModule
 import net.horizonsend.ion.server.features.ai.module.movement.CruiseModule
+import net.horizonsend.ion.server.features.ai.module.movement.ShiftFlightMovementModule
 import net.horizonsend.ion.server.features.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.module.positioning.BasicPositioningModule
+import net.horizonsend.ion.server.features.ai.module.positioning.CirclingPositionModule
 import net.horizonsend.ion.server.features.ai.module.positioning.StandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestLargeStarshipTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestSmallStarshipTargetingModule
@@ -110,6 +113,23 @@ object AIControllerFactories : IonServerComponent() {
 			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 1500.0))
 			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
 			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.MATCH_Y, 16_384.0))
+
+			builder
+		}
+		build()
+	}
+
+	val logisticCorvette = registerFactory("LOGISTIC_CORVETTE") {
+		setControllerTypeName("Logistic Corvette")
+		setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			builder.addModule("targeting", ClosestLargeStarshipTargetingModule(it, 500.0, null, true).apply { sticky = false })
+			builder.addModule("combat", MultiTargetFrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
+
+			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 50.0))
+			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
+			builder.addModule("movement",ShiftFlightMovementModule(it, pathfinding))
 
 			builder
 		}

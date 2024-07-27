@@ -9,7 +9,8 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 class ClosestLargeStarshipTargetingModule(
     controller: AIController,
     var maxRange: Double,
-    existingTarget: AITarget? = null
+    existingTarget: AITarget? = null,
+    val targetAI: Boolean = false
 ) : TargetingModule(controller) {
     private var lastDamaged: Long = 0
 
@@ -23,11 +24,15 @@ class ClosestLargeStarshipTargetingModule(
     }
 
     override fun searchForTarget(): AITarget? {
-        if (lastTarget != null && lastDamaged >= System.currentTimeMillis() - 5000) return lastTarget
+        return searchForTargetList().firstOrNull()
+    }
+
+    override fun searchForTargetList(): List<AITarget> {
+        val map = if (!targetAI) sortMap else aiSortMap
 
         return controller.getNearbyTargetsInRadius(0.0, maxRange) {
             if (it is StarshipTarget) {
-                it.ship.controller !is AIController
+                if (!targetAI) it.ship.controller !is AIController else it.ship.controller is AIController && starship.controller != it.ship.controller
             } else true
         }.sortedWith(
             Comparator { o1, o2 ->
@@ -41,12 +46,12 @@ class ClosestLargeStarshipTargetingModule(
                 val type1 = o1.ship.type
                 val type2 = o2.ship.type
 
-                if (!sortMap.containsKey(type1)) if (!sortMap.containsKey(type2)) return@Comparator 0 else return@Comparator 1
-                if (!sortMap.containsKey(type2)) return@Comparator -1
+                if (!map.containsKey(type1)) if (!map.containsKey(type2)) return@Comparator 0 else return@Comparator 1
+                if (!map.containsKey(type2)) return@Comparator -1
 
-                return@Comparator sortMap[type1]!! - sortMap[type2]!!
+                return@Comparator map[type1]!! - map[type2]!!
             }
-        ).firstOrNull()
+        )
     }
 
     private val sortMap = mapOf(
@@ -57,5 +62,14 @@ class ClosestLargeStarshipTargetingModule(
         StarshipType.BARGE to 0,
         StarshipType.HEAVY_FREIGHTER to 2,
         StarshipType.MEDIUM_FREIGHTER to 3
+    )
+
+    private val aiSortMap = mapOf(
+        StarshipType.AI_BATTLECRUISER to 0,
+        StarshipType.AI_CRUISER to 1,
+        StarshipType.AI_DESTROYER to 2,
+        StarshipType.AI_FRIGATE to 3,
+        StarshipType.AI_BARGE to 0,
+        StarshipType.AI_HEAVY_FREIGHTER to 2
     )
 }

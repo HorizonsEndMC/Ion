@@ -5,4 +5,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 
 class SingleTargetingModule(controller: AIController, val target: AITarget) : TargetingModule(controller) {
 	override fun searchForTarget(): AITarget = target
+
+	override fun searchForTargetList(): List<AITarget> {
+		TODO("Not yet implemented")
+	}
 }

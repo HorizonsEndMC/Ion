@@ -25,6 +25,10 @@ class ClosestSmallStarshipTargetingModule(
     override fun searchForTarget(): AITarget? {
         if (lastTarget != null && lastDamaged >= System.currentTimeMillis() - 5000) return lastTarget
 
+        return searchForTargetList().firstOrNull()
+    }
+
+    override fun searchForTargetList(): List<AITarget> {
         return controller.getNearbyTargetsInRadius(0.0, maxRange) {
             if (it is StarshipTarget) {
                 it.ship.controller !is AIController
@@ -46,7 +50,7 @@ class ClosestSmallStarshipTargetingModule(
 
                 return@Comparator sortMap[type1]!! - sortMap[type2]!!
             }
-        ).firstOrNull()
+        )
     }
 
     private val sortMap = mapOf(
