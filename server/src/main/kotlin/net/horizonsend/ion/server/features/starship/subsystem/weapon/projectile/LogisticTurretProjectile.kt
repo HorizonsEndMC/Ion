@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
@@ -51,6 +52,7 @@ class LogisticTurretProjectile(
     }
 
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
+        if (starship.controller !is AIController) return
         for (shield: ShieldSubsystem in starship.shields) {
             shield.power += balancing?.volume ?: 50000
         }

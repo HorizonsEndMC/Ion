@@ -13,7 +13,13 @@ abstract class TargetingModule(controller: AIController) : net.horizonsend.ion.s
 		return searchForTarget()
 	}
 
+	open fun findTargets(): List<AITarget> {
+		return searchForTargetList()
+	}
+
 	protected abstract fun searchForTarget(): AITarget?
+
+	protected abstract fun searchForTargetList(): List<AITarget>
 
 	override fun toString(): String {
 		return "${javaClass.simpleName}[sticky: $sticky, lastTarget: $lastTarget]"

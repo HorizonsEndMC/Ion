@@ -24,6 +24,10 @@ class ClosestTargetingModule(
 	override fun searchForTarget(): AITarget? {
 		if (lastTarget != null && lastDamaged >= System.currentTimeMillis() - 5000) return lastTarget
 
-		return controller.getNearbyTargetsInRadius(0.0, maxRange) { if (it is StarshipTarget) { it.ship.controller !is AIController } else true }.firstOrNull()
+		return searchForTargetList().firstOrNull()
+	}
+
+	override fun searchForTargetList(): List<AITarget> {
+		return controller.getNearbyTargetsInRadius(0.0, maxRange) { if (it is StarshipTarget) { it.ship.controller !is AIController } else true }.toList()
 	}
 }
