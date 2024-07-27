@@ -49,6 +49,8 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 	private var iteration = 0
 	private val world = starship.world
 
+	val sinkInformation get() = SinkInformation(world, Vec3i(velocity), iteration)
+
 	override fun setup() {
 		val world = starship.world
 		val blocks = starship.blocks
@@ -56,9 +58,9 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		if (SpaceWorlds.contains(world)) {
 			val random = Random(blocks.hashCode())
 
-			velocity.setX(random.nextDouble(-1.0, 1.0))
-			velocity.setY(random.nextDouble(-1.0, 1.0))
-			velocity.setZ(random.nextDouble(-1.0, 1.0))
+			velocity.setX(random.nextDouble(-2.0, 2.0))
+			velocity.setY(random.nextDouble(-2.0, 2.0))
+			velocity.setZ(random.nextDouble(-2.0, 2.0))
 		} else {
 			velocity.setY(-1.0)
 		}
@@ -74,37 +76,18 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			}
 		}
 
-		if (!processSinkQueue(iterator, obstructedLocs, world, newSinking, sinking, placements, Vec3i(velocity))) {
-			return
-		}
+		val oldPositions = blocks.toLongArray()
 
-		placements.clear()
+		val newPositionArray = SinkBlockMovement.buildNewPositionArray(oldPositions, sinkInformation)
 
-		removeBlocksAroundObstructed(newSinking, obstructedLocs)
+		SinkBlockMovement.moveBlocks(
+			oldPositionArray = oldPositions,
+			newPositionArray = newPositionArray,
+			sinkInformation = sinkInformation,
+		)
 
-		val randomBlock = blocks.random()
-		val x = blockKeyX(randomBlock).toDouble()
-		val y = blockKeyY(randomBlock).toDouble()
-		val z = blockKeyZ(randomBlock).toDouble()
-
-		if (isBlockLoaded(world, x, y, z)) {
-			Tasks.sync { world.createExplosion(x, y, z, 8.0f) }
-		}
-
-		sinking.clear()
-		sinking.addAll(newSinking)
-		iterator = sinking.iterator()
-		blocks.removeAll(placements.keys)
-		blocks.addAll(newSinking)
-
-		if (newSinking.isEmpty()) {
-			cancel()
-			Tasks.sync {
-				explode(world, blocks)
-			}
-		} else {
-			newSinking.clear()
-		}
+		blocks.clear()
+		blocks.addAll(newPositionArray.filterNot { it == -1L })
 	}
 
 	private fun processSinkQueue(

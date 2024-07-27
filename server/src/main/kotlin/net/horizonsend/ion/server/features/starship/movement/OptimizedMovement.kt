@@ -32,7 +32,7 @@ import kotlin.collections.component2
 import kotlin.collections.set
 
 object OptimizedMovement {
-	private val passThroughBlocks = listOf(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.SNOW)
+	val passThroughBlocks = listOf(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.SNOW)
 		.map { it.createBlockData().nms }
 		.toSet()
 
@@ -137,7 +137,7 @@ object OptimizedMovement {
 		}
 	}
 
-	private val AIR = Blocks.AIR.defaultBlockState()
+	val AIR: BlockState = Blocks.AIR.defaultBlockState()
 
 	private fun processOldBlocks(
 		oldChunkMap: ChunkMap,
@@ -245,7 +245,7 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun updateHeightMaps(nmsLevelChunk: LevelChunk) {
+	fun updateHeightMaps(nmsLevelChunk: LevelChunk) {
 		Heightmap.primeHeightmaps(nmsLevelChunk, nmsLevelChunk.heightmaps.keys)
 	}
 
@@ -269,7 +269,7 @@ object OptimizedMovement {
 		chunk.removeBlockEntity(blockPos)
 	}
 
-	private fun getChunkMap(positionArray: LongArray): ChunkMap {
+	fun getChunkMap(positionArray: LongArray): ChunkMap {
 		val chunkMap = mutableMapOf<Long, MutableMap<Int, MutableMap<Long, Int>>>()
 
 		for (index in positionArray.indices) {
@@ -290,7 +290,7 @@ object OptimizedMovement {
 	/* Chunk map containing only positions
 		from the new chunk map that
 		are not in the old chunk map */
-	private fun getCollisionChunkMap(oldChunkMap: ChunkMap, newChunkMap: ChunkMap): ChunkMap {
+	fun getCollisionChunkMap(oldChunkMap: ChunkMap, newChunkMap: ChunkMap): ChunkMap {
 		val chunkMap = mutableMapOf<Long, MutableMap<Int, MutableMap<Long, Int>>>()
 
 		for ((chunkKey, newSectionMap) in newChunkMap) {
@@ -314,7 +314,7 @@ object OptimizedMovement {
 		return chunkMap
 	}
 
-	private fun sendChunkUpdatesToPlayers(world1: World, world2: World, oldChunkMap: ChunkMap, newChunkMap: ChunkMap) {
+	fun sendChunkUpdatesToPlayers(world1: World, world2: World, oldChunkMap: ChunkMap, newChunkMap: ChunkMap) {
 		for ((chunkMap, world) in listOf(oldChunkMap to world1.uid, newChunkMap to world2.uid)) {
 			for ((chunkKey, _) in chunkMap) {
 				val nmsChunk = Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft
@@ -324,4 +324,4 @@ object OptimizedMovement {
 	}
 }
 
-private typealias ChunkMap = Map<Long, Map<Int, Map<Long, Int>>>
+typealias ChunkMap = Map<Long, Map<Int, Map<Long, Int>>>
