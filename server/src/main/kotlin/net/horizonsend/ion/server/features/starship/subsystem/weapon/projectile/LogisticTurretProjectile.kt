@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
+import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -29,26 +29,22 @@ class LogisticTurretProjectile(
 
     override val volume: Int = (range / 16).toInt()
 
-    override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-        val vector = dir.clone().normalize().multiply(travel)
-        val particle = Particle.REDSTONE
-        val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
-
-        helixAroundVector(oldLocation, vector, 1.0, 30, wavelength = 3.0) {
-            loc.world.spawnParticle(
+    override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
+        Location(loc.world, x, y, z).spherePoints(1.0, 10).forEach {
+            it.world.spawnParticle(
                 Particle.VILLAGER_HAPPY,
-                it,
-                0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
+                it.x,
+                it.y,
+                it.z,
+                1,
+                0.25,
+                0.25,
+                0.25,
+                2.0,
                 null,
-                true
+                force
             )
         }
-
-        loc.world.spawnParticle(particle, loc.x, loc.y, loc.z, 1, 0.0, 0.0, 0.0, 0.5, dustOptions, true)
     }
 
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
