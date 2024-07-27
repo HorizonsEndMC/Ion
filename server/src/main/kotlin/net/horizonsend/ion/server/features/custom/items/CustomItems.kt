@@ -1030,7 +1030,7 @@ object CustomItems {
 	) { ItemModRegistry.AUTO_COMPOST })
 
 	val RANGE_3: ModificationItem = register(ModificationItem(
-		identifier = "TOOL_MODIFICATION_DRILL_RANGE_3",
+		identifier = "TOOL_MODIFICATION_RANGE_3",
 		customModelData = 7012,
 		displayName = text("Range Addon +3").decoration(ITALIC, false),
 		text("Expands the working area by 3 blocks", GRAY).decoration(ITALIC, false)
