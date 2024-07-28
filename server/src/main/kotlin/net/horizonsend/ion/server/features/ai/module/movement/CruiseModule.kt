@@ -89,7 +89,7 @@ class CruiseModule(
 			override fun handleShiftFlight(module: CruiseModule, origin: Location) {
 				val destination = module.getDestination() ?: return
 
-				val difference = origin.y - destination.y
+				val difference = destination.y - origin.y
 				if (abs(difference) < 5) {
 					module.controller.setShiftFlying(false)
 					return
@@ -99,6 +99,31 @@ class CruiseModule(
 
 				module.shiftFlyTowardsBlockFace(blockFace, false)
 			}
+
+			override fun refresh(controller: AIController) { }
+		},
+		MATCH_Y_WITH_OFFSET_150 {
+			override fun handleShiftFlight(module: CruiseModule, origin: Location) {
+				val destination = module.getDestination() ?: return
+
+				// get the low and high offset from the target
+				val lowDifference = (destination.y - 150) - origin.y
+				val highDifference = (destination.y + 150) - origin.y
+
+				// attempt to be higher than the target, but choose the lower point if the high point is past world height
+				val difference = if (destination.y + 150 > 383) lowDifference else highDifference
+
+				if (abs(difference) < 5) {
+					module.controller.setShiftFlying(false)
+					return
+				}
+
+				val blockFace = if (difference > 0) BlockFace.UP else BlockFace.DOWN
+
+				module.shiftFlyTowardsBlockFace(blockFace, false)
+			}
+
+			override fun refresh(controller: AIController) { }
 		},
 		IF_BLOCKED {
 			override fun handleShiftFlight(module: CruiseModule, origin: Location) {

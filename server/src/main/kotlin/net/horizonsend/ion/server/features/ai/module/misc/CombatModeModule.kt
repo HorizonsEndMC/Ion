@@ -14,7 +14,7 @@ class CombatModeModule(
 	private val targetFilter: (AITarget) -> Boolean
 ) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
 	override fun tick() {
-		val target = controller.getNearbyTargetsInRadius(0.0, minRange, targetFilter).firstOrNull() ?: return
+		val target = controller.getNearbyTargetsInRadius(0.0, minRange, minRange, targetFilter).firstOrNull() ?: return
 
 		switchToCombatMode(target)
 	}
