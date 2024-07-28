@@ -170,6 +170,24 @@ enum class StarshipType(
 		overridePermission = "ion.ships.ai.corvette",
 		balancingSupplier = IonServer.starshipBalancing::aiCorvette
 	),
+	AI_CORVETTE_LOGISTIC(
+		displayName = "Logistic Corvette",
+		icon = SidebarIcon.AI_CORVETTE_ICON.text,
+		minSize = 2000,
+		maxSize = 4000,
+		minLevel = 1000,
+		containerPercent = 0.5,
+		crateLimitMultiplier = 0.5,
+		menuItemMaterial = Material.SPONGE,
+		isWarship = true,
+		color = "#ff0000",
+		dynmapIcon = "corvette",
+		maxMiningLasers = 1,
+		miningLaserTier = 1,
+		concretePercent = 0.0,
+		overridePermission = "ion.ships.ai.corvette",
+		balancingSupplier = IonServer.starshipBalancing::aiCorvetteLogistic
+	),
 	FRIGATE(
 		displayName = "Frigate",
 		icon = SidebarIcon.FRIGATE_ICON.text,
