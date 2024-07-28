@@ -152,7 +152,7 @@ class AIController private constructor(
 	fun hasBeenBlockedWithin(millis: Long = TimeUnit.SECONDS.toMillis(5)) = (starship as ActiveControlledStarship).lastBlockedTime > (System.currentTimeMillis() - millis)
 
 	/** Gets and filters targets within the starship's world in the specified radius */
-	fun getNearbyTargetsInRadius(minRange: Double, maxRange: Double, filter: (AITarget) -> Boolean): Set<AITarget> {
+	fun getNearbyTargetsInRadius(minRange: Double, maxRange: Double, playerRange: Double = 50.0, filter: (AITarget) -> Boolean): Set<AITarget> {
 		val targets = mutableSetOf<AITarget>()
 
 		targets += ActiveStarships.getInWorld(starship.world).map { StarshipTarget(it) }
@@ -165,7 +165,7 @@ class AIController private constructor(
 		targets += starship.world.players.map { PlayerTarget(it) }
 			.filter(filter)
 			.associateWith { it.getVec3i().distance(starship.centerOfMass) }
-			.filter { it.value in 0.0..50.0 }
+			.filter { it.value in 0.0..playerRange }
 			.sortedByValue()
 			.keys
 

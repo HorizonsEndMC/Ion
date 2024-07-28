@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.FLEET_COMMANDER_ICON
@@ -45,6 +46,7 @@ import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -54,6 +56,7 @@ import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -409,24 +412,41 @@ object ContactsSidebar {
                     suffix = constructSuffixTextComponent(
                         if (currentStarship != null) {
                             autoTurretTextComponent(currentStarship, starship)
-                        } else Component.empty(),
+                        } else empty(),
                         if (starship.isInterdicting) {
                             interdictionTextComponent(interdictionDistance, starship.balancing.interdictionRange, true)
-                        } else Component.empty(),
+                        } else empty(),
                         if (inFleet) {
                             if (fleet != null && otherPlayer != null && fleet.leaderId == otherPlayer.uniqueId) {
                                 fleetCommanderTextComponent()
                             } else fleetTextComponent()
-                        } else Component.empty()
+                        } else empty()
                     ),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
                     distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
-                    padding = Component.empty()
+                    padding = empty()
                 )
             )
         }
+    }
+
+    fun createJammedStarshipContact(contactsData: ContactsData): ContactsData {
+        return ContactsData(
+            name = text("########", DARK_RED),
+            type = contactsData.type,
+            relation = null,
+            priority = false,
+            prefix = constructPrefixTextComponent(SidebarIcon.X_CROSS_ICON.text, DARK_RED),
+            suffix = empty(),
+            heading = constructHeadingTextComponent("XX", DARK_GRAY),
+            height = constructHeightTextComponent("XXX", DARK_GRAY),
+            distance = constructDistanceTextComponent("XXXX", DARK_GRAY),
+            distanceInt = contactsData.distanceInt,
+            padding = text(repeatString(" ", 1))
+
+        )
     }
 
     private fun addLastStarshipContact(
@@ -468,12 +488,12 @@ object ContactsSidebar {
                     relation = null,
                     priority = priority,
                     prefix = constructPrefixTextComponent(GENERIC_STARSHIP_ICON.text, prefixColor),
-                    suffix = Component.empty(),
+                    suffix = empty(),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
                     distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
-                    padding = Component.empty()
+                    padding = empty()
                 )
             )
         }
@@ -526,7 +546,7 @@ object ContactsSidebar {
                     height = constructHeightTextComponent(height, color),
                     distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
-                    padding = Component.empty()
+                    padding = empty()
                 )
             )
         }
@@ -579,7 +599,7 @@ object ContactsSidebar {
                     height = constructHeightTextComponent(height, color),
                     distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
-                    padding = Component.empty()
+                    padding = empty()
                 )
             )
         }
@@ -626,7 +646,7 @@ object ContactsSidebar {
                     height = constructHeightTextComponent(height, color),
                     distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
-                    padding = Component.empty()
+                    padding = empty()
                 )
             )
         }
@@ -668,12 +688,12 @@ object ContactsSidebar {
                     relation = stationRelationType(player, station),
                     priority = priority,
                     prefix = constructPrefixTextComponent(STATION_ICON.text, prefixColor),
-                    suffix = Component.empty(),
+                    suffix = empty(),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
                     distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
-                    padding = Component.empty()
+                    padding = empty()
                 )
             )
         }
@@ -715,12 +735,12 @@ object ContactsSidebar {
                     relation = capturableStationRelationType(player, station),
                     priority = priority,
                     prefix = constructPrefixTextComponent(SIEGE_STATION_ICON.text, prefixColor),
-                    suffix = Component.empty(),
+                    suffix = empty(),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
                     distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
-                    padding = Component.empty()
+                    padding = empty()
                 )
             )
         }
@@ -759,12 +779,12 @@ object ContactsSidebar {
                     relation = null,
                     priority = false,
                     prefix = constructPrefixTextComponent(BOOKMARK_ICON.text, prefixColor),
-                    suffix = Component.empty(),
+                    suffix = empty(),
                     heading = constructHeadingTextComponent(direction, color),
                     height = constructHeightTextComponent(height, color),
                     distance = constructDistanceTextComponent(distance, color),
                     distanceInt = distance,
-                    padding = Component.empty()
+                    padding = empty()
                 )
             )
         }
@@ -784,17 +804,21 @@ object ContactsSidebar {
         return returnComponent.build()
     }
 
-    private fun constructDistanceTextComponent(distance: Int, color: NamedTextColor) =
+    private fun constructDistanceTextComponent(distance: String, color: NamedTextColor) =
         text(distance)
             .append(text("m"))
-            .append(text(repeatString(" ", 4 - distance.toString().length)).font(fontKey))
+            .append(text(repeatString(" ", 4 - distance.length)).font(fontKey))
             .color(color)
 
-    private fun constructHeightTextComponent(height: Int, color: NamedTextColor) =
+    private fun constructDistanceTextComponent(distance: Int, color: NamedTextColor) = constructDistanceTextComponent(distance.toString(), color)
+
+    private fun constructHeightTextComponent(height: String, color: NamedTextColor) =
         text(height)
             .append(text("y"))
-            .append(text(repeatString(" ", 3 - height.toString().length)).font(fontKey))
+            .append(text(repeatString(" ", 3 - height.length)).font(fontKey))
             .color(color)
+
+    private fun constructHeightTextComponent(height: Int, color: NamedTextColor) = constructHeightTextComponent(height.toString(), color)
 
     private fun constructHeadingTextComponent(direction: String, color: NamedTextColor) =
         text(direction)
@@ -806,7 +830,7 @@ object ContactsSidebar {
             text(INTERDICTION_ICON.text, RED).font(fontKey)
         } else if (visibleOutOfRange) {
             text(INTERDICTION_ICON.text, GOLD).font(fontKey)
-        } else Component.empty()
+        } else empty()
 
     private fun fleetTextComponent() = text(FLEET_ICON.text, AQUA).font(fontKey)
 
@@ -814,7 +838,7 @@ object ContactsSidebar {
 
     private fun beaconTextComponent(text: String?) =
         if (text?.contains("⚠") == true) text("⚠", RED)
-        else Component.empty()
+        else empty()
 
     private fun autoTurretTextComponent(starship: ActiveControlledStarship, otherStarship: ActiveStarship): Component {
         val textComponent = text()
