@@ -755,7 +755,7 @@ data class StarshipTypeBalancing(
 	),
 	val aiCorvetteLogistic: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 3,
-		maxSneakFlyAccel = 13,
+		maxSneakFlyAccel = 10,
 		interdictionRange = 1800,
 		hyperspaceRangeMultiplier = 1.7,
 		weapons = corvette.weapons
@@ -1264,7 +1264,7 @@ class StarshipWeapons(
 
 		val logisticTurret: StarshipWeapon = StarshipWeapon(
 			canFire = true,
-			range = 150.0,
+			range = 200.0,
 			speed = 2000.0,
 			areaShieldDamageMultiplier = 0.0,
 			starshipShieldDamageMultiplier = 0.0,

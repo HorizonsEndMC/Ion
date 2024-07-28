@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.features.ai.module.misc.FleeModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.TrackingModule
 import net.horizonsend.ion.server.features.ai.module.movement.CruiseModule
-import net.horizonsend.ion.server.features.ai.module.movement.ShiftFlightMovementModule
 import net.horizonsend.ion.server.features.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.module.positioning.BasicPositioningModule
@@ -144,12 +143,12 @@ object AIControllerFactories : IonServerComponent() {
 		setModuleBuilder {
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			builder.addModule("targeting", ClosestLargeStarshipTargetingModule(it, 500.0, null, true).apply { sticky = false })
+			builder.addModule("targeting", ClosestLargeStarshipTargetingModule(it, 2000.0, null, true).apply { sticky = false })
 			builder.addModule("combat", MultiTargetFrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 50.0))
+			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 130.0))
 			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", ShiftFlightMovementModule(it, pathfinding))
+			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.MATCH_Y_WITH_OFFSET_150, 16_384.0))
 
 			builder
 		}
