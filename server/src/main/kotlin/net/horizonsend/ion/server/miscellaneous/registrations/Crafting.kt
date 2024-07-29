@@ -82,6 +82,7 @@ import org.bukkit.Material.BLACK_WOOL
 import org.bukkit.Material.BLUE_WOOL
 import org.bukkit.Material.BROWN_WOOL
 import org.bukkit.Material.COAL
+import org.bukkit.Material.COBWEB
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.CYAN_WOOL
@@ -287,6 +288,13 @@ object Crafting : IonServerComponent() {
 
 		// Nether Wart Block -> Nether Warts
 		shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
+
+		// Cobweb
+		shapedRecipe("cobweb", COBWEB) {
+			shape("sxs", "xsx", "sxs")
+
+			setIngredient('s', STRING)
+		}
 
 		//Unloaded Turret Shell Crafting
 		itemStackShapeRecipe("Unloaded__Shell", UNLOADED_SHELL.constructItemStack()) {
