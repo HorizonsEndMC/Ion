@@ -55,6 +55,10 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		val possibleTiers = Multiblocks.all().filter { it.name == multiblockType }
 
+		if (possibleTiers.size == 1) {
+			onCheck(player, possibleTiers.first(), sign.x, sign.y, sign.z)
+		}
+
 		val message = Component.text()
 			.append(Component.text("Which type of $multiblockType are you trying to build? (Click one)"))
 			.append(Component.newline())
@@ -102,7 +106,7 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 				sendEntityPacket(sender, displayBlock(sender.world.minecraft, expected, Vector(xx, yy, zz), 0.5f, true), 10 * 20L)
 				sender.userError(
-					"Block at ${Vec3i(relative.location)} doesn't match! Expected ${expected.material}, found ${relative.type}."
+					"Block at ${Vec3i(relative.location)} doesn't match! Expected ${requirement.alias}, found ${relative.type}."
 				)
 			}
 		}
