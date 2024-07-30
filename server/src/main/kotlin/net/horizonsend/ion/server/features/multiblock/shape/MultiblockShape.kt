@@ -264,6 +264,7 @@ class MultiblockShape {
 
 		fun type(type: Material) {
 			val requirement = BlockRequirement(
+				alias = type.toString(),
 				example = type.createBlockData(),
 				syncCheck = { block, _, loadChunks -> if (loadChunks) block.type == type else block.getTypeSafe() == type },
 				asyncCheck = { block, _, loadChunks -> getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.type == type }
@@ -272,10 +273,11 @@ class MultiblockShape {
 			complete(requirement)
 		}
 
-		fun anyType(vararg types: Material, edit: BlockRequirement.() -> Unit = {}) {
+		fun anyType(vararg types: Material, alias: String, edit: BlockRequirement.() -> Unit = {}) {
 			val typeSet = EnumSet.copyOf(types.toList())
 
 			val requirement = BlockRequirement(
+				alias = alias,
 				example = types.first().createBlockData(),
 				syncCheck = { block, _, loadChunks ->
 					typeSet.contains(if (loadChunks) block.type else block.getTypeSafe())
@@ -294,6 +296,7 @@ class MultiblockShape {
 
 		fun customBlock(customBlock: CustomBlock) {
 			val requirement = BlockRequirement(
+				alias = customBlock.identifier,
 				example = customBlock.blockData,
 				syncCheck = { block, _, loadChunks ->
 					if (loadChunks) CustomBlocks.getByBlock(block) else {
@@ -308,14 +311,18 @@ class MultiblockShape {
 			complete(requirement)
 		}
 
-		fun anyType(types: Iterable<Material>, edit: BlockRequirement.() -> Unit = {}) = anyType(*types.toList().toTypedArray(), edit = edit)
+		fun anyType(alias: String, types: Iterable<Material>, edit: BlockRequirement.() -> Unit = {}) = anyType(
+			*types.toList().toTypedArray(),
+			alias = alias,
+			edit = edit
+		)
 
-		fun filteredTypes(filter: (Material) -> Boolean) = anyType(MATERIALS.filter(filter))
+		fun filteredTypes(alias: String, filter: (Material) -> Boolean) = anyType(alias, MATERIALS.filter(filter))
 
-		fun carbyne() = anyType(CONCRETE_TYPES) { setExample(Material.GRAY_CONCRETE.createBlockData()) }
+		fun carbyne() = anyType("any concrete", CONCRETE_TYPES) { setExample(Material.GRAY_CONCRETE.createBlockData()) }
 
-		fun terracotta() = anyType(TERRACOTTA_TYPES) { setExample(Material.CYAN_TERRACOTTA.createBlockData()) }
-		fun stainedTerracotta() = anyType(STAINED_TERRACOTTA_TYPES) { setExample(Material.CYAN_TERRACOTTA.createBlockData()) }
+		fun terracotta() = anyType("any terracotta", TERRACOTTA_TYPES) { setExample(Material.CYAN_TERRACOTTA.createBlockData()) }
+		fun stainedTerracotta() = anyType("any stained terracotta", STAINED_TERRACOTTA_TYPES) { setExample(Material.CYAN_TERRACOTTA.createBlockData()) }
 
 		fun glass() = type(Material.GLASS)
 		fun anvil() = type(Material.ANVIL)
@@ -324,22 +331,23 @@ class MultiblockShape {
 		fun cruiserReactorCore() = customBlock(CRUISER_REACTOR_CORE)
 		fun netheriteCasing() = customBlock(NETHERITE_CASING)
 		fun enrichedUraniumBlock() = customBlock(ENRICHED_URANIUM_BLOCK)
-		fun stainedGlass() = filteredTypes { it.isStainedGlass }
-		fun anyGlass() = filteredTypes { it.isGlass }
+		fun stainedGlass() = filteredTypes("any stained glass block") { it.isStainedGlass }
+		fun anyGlass() = filteredTypes("any glass block") { it.isGlass }
 		fun seaLantern() = type(Material.SEA_LANTERN)
 		fun glassPane() = type(Material.GLASS_PANE)
-		fun stainedGlassPane() = filteredTypes { it.isStainedGlassPane }
-		fun anyGlassPane() = filteredTypes { it.isGlassPane }
+		fun stainedGlassPane() = filteredTypes("any stained glass pane") { it.isStainedGlassPane }
+		fun anyGlassPane() = filteredTypes("any stained glass") { it.isGlassPane }
 
-		fun anyStairs() = filteredTypes { it.isStairs }
+		fun anyStairs() = filteredTypes("any stair block") { it.isStairs }
 
-		fun anyWall() = filteredTypes { it.isWall }
+		fun anyWall() = filteredTypes("any wall block") { it.isWall }
 
-		fun anyWool() = filteredTypes { it.isWool }
+		fun anyWool() = filteredTypes("any wool block") { it.isWool }
 
-		fun anySlab() = filteredTypes { it.isSlab }
+		fun anySlab() = filteredTypes("any slab block") { it.isSlab }
 		fun anyDoubleSlab() = complete(
 			BlockRequirement(
+				alias = "any double slab block",
 				example = Material.STONE_BRICK_SLAB.createBlockData().apply {
 					this as Slab
 					this.type = Slab.Type.DOUBLE
@@ -359,6 +367,7 @@ class MultiblockShape {
 
 		fun terracottaOrDoubleslab() {
 			BlockRequirement(
+				alias = "any double slab or terracotta block",
 				example = Material.TERRACOTTA.createBlockData(),
 				syncCheck = { block, _, loadChunks ->
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
@@ -376,7 +385,7 @@ class MultiblockShape {
 			)
 		}
 
-		fun concrete() = filteredTypes { it.isConcrete }
+		fun concrete() = filteredTypes("any concrete block") { it.isConcrete }
 
 		fun sculkCatalyst() = type(Material.SCULK_CATALYST)
 		fun stoneBrick() = type(Material.STONE_BRICKS)
@@ -404,7 +413,8 @@ class MultiblockShape {
 			Material.WAXED_CUT_COPPER,
 			Material.WAXED_EXPOSED_CUT_COPPER,
 			Material.WAXED_WEATHERED_CUT_COPPER,
-			Material.WAXED_OXIDIZED_CUT_COPPER
+			Material.WAXED_OXIDIZED_CUT_COPPER,
+			alias = "any copper block",
 		)
 
 		fun titaniumBlock() = customBlock(CustomBlocks.TITANIUM_BLOCK)
@@ -413,25 +423,25 @@ class MultiblockShape {
 		fun steelBlock() = customBlock(CustomBlocks.STEEL_BLOCK)
 		fun wireInputComputer() = type(Wires.INPUT_COMPUTER_BLOCK)
 
-		fun redstoneLamp() = filteredTypes { it.isRedstoneLamp }
+		fun redstoneLamp() = filteredTypes("redstone lamp") { it.isRedstoneLamp }
 
-		fun daylightSensor() = filteredTypes { it.isDaylightSensor }
+		fun daylightSensor() = filteredTypes("daylight sensor") { it.isDaylightSensor }
 		fun craftingTable() = type(Material.CRAFTING_TABLE)
 
 		fun extractor() = type(Extractors.EXTRACTOR_BLOCK)
 
 		fun glowstone() = type(Material.GLOWSTONE)
 
-		fun sponge() = anyType(Material.SPONGE, Material.WET_SPONGE)
+		fun sponge() = anyType(Material.SPONGE, Material.WET_SPONGE, alias = "sponge")
 		fun endRod() = type(Material.END_ROD)
 		fun grindstone() = type(Material.GRINDSTONE)
 
 		fun hopper() = type(Material.HOPPER)
 
-		fun anyDoor() = filteredTypes { it.isDoor }
-		fun anyButton() = filteredTypes { it.isButton }
+		fun anyDoor() = filteredTypes("any door") { it.isDoor }
+		fun anyButton() = filteredTypes("any button") { it.isButton }
 
-		fun anyPipedInventory() = filteredTypes { Pipes.isPipedInventory(it) }
+		fun anyPipedInventory() = filteredTypes("any container block") { Pipes.isPipedInventory(it) }
 
 		fun pistonBase() = type(Material.PISTON)
 		fun pistonHead() = type(Material.PISTON_HEAD)
@@ -440,8 +450,8 @@ class MultiblockShape {
 		fun dispenser() = type(Material.DISPENSER)
 		fun lodestone() = type(Material.LODESTONE)
 		fun noteBlock() = type(Material.NOTE_BLOCK)
-		fun anyTrapdoor() = filteredTypes { it.isTrapdoor }
-		fun anyFroglight() = filteredTypes { it.isFroglight }
+		fun anyTrapdoor() = filteredTypes("any trapdoor") { it.isTrapdoor }
+		fun anyFroglight() = filteredTypes("any froglight") { it.isFroglight }
 
 		fun thrusterBlock() = anyType(
 			Material.OCHRE_FROGLIGHT,
@@ -450,12 +460,14 @@ class MultiblockShape {
 			Material.GLOWSTONE,
 			Material.REDSTONE_LAMP,
 			Material.MAGMA_BLOCK,
-			Material.SEA_LANTERN
+			Material.SEA_LANTERN,
+			alias = "any light block"
 		)
 
 		fun lightningRod() = type(Material.LIGHTNING_ROD)
 
 		fun machineFurnace() = complete(BlockRequirement(
+			alias = "furnace",
 			example = Material.FURNACE.createBlockData(),
 			syncCheck = check@{ block, inward, loadChunks ->
 				val blockData = if (loadChunks) block.getNMSBlockData() else getNMSBlockSateSafe(block.world, block.x, block.y, block.z) ?: return@check false
@@ -505,6 +517,7 @@ class MultiblockShape {
 			Material.SMOOTH_QUARTZ,
 			Material.QUARTZ_BRICKS,
 			Material.QUARTZ_BLOCK,
+			alias = "stone bricks"
 		)
 	}
 }
