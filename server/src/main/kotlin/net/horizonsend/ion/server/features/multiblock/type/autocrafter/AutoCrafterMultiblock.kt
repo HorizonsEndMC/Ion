@@ -67,7 +67,7 @@ abstract class AutoCrafterMultiblock(
 			y(+0) {
 				x(-2).anyPipedInventory()
 				x(-1).endRod()
-				x(+0).anyType(Material.DISPENSER, Material.DROPPER)
+				x(+0).anyType(Material.DISPENSER, Material.DROPPER, alias= "dispenser or dropper")
 				x(+1).endRod()
 				x(+2).anyPipedInventory()
 			}
