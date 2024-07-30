@@ -37,11 +37,11 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 			}
 
 			y(-1) {
-				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL)
+				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL, alias = "iron bars")
 			}
 
 			y(+0) {
-				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL)
+				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL, alias = "iron bars")
 			}
 		}
 	}
