@@ -18,5 +18,5 @@ object ArmorPrinterMultiblock : PrinterMultiblock() {
 	override fun MultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
 	override fun MultiblockShape.RequirementBuilder.printerCoreBlock() = type(Material.ANVIL)
 	override fun MultiblockShape.RequirementBuilder.printerProductBlock() =
-		filteredTypes { it == Material.TERRACOTTA || it.isStainedTerracotta }
+		filteredTypes("any terracotta") { it == Material.TERRACOTTA || it.isStainedTerracotta }
 }
