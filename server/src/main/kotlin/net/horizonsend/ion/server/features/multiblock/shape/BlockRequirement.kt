@@ -5,6 +5,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 
 class BlockRequirement(
+	val alias: String,
 	var example: BlockData,
 	private val syncCheck: (Block, BlockFace, Boolean) -> Boolean,
 	private val asyncCheck: suspend (Block, BlockFace, Boolean) -> Boolean

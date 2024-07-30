@@ -16,7 +16,7 @@ abstract class AbstractCarbonPrinterMultiblock : PrinterMultiblock() {
 
 	override fun MultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
 	override fun MultiblockShape.RequirementBuilder.printerCoreBlock() = type(Material.MAGMA_BLOCK)
-	override fun MultiblockShape.RequirementBuilder.printerProductBlock() = filteredTypes { it.isConcretePowder }
+	override fun MultiblockShape.RequirementBuilder.printerProductBlock() = filteredTypes("any concrete powder") { it.isConcretePowder }
 }
 
 object CarbonPrinterMultiblock : AbstractCarbonPrinterMultiblock() {
