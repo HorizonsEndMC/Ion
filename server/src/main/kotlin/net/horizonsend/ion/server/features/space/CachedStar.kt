@@ -29,7 +29,8 @@ class CachedStar(
 		require(size > 0 && size <= 1)
 	}
 
-	val sphereRadius = (MAX_SIZE * size).toInt()
+	val innerSphereRadius = (MAX_SIZE * size).toInt()
+	val outerSphereRadius get() = innerSphereRadius + (crustLayers.maxOfOrNull { it.index } ?: 0)
 
 	override fun createStructure(): Map<Vec3i, BlockState> {
 		val crust = mutableMapOf<Vec3i, BlockState>()
@@ -39,7 +40,7 @@ class CachedStar(
 
 			val palette: List<BlockState> = crustMaterials.map(BlockData::nms)
 
-			getSphereBlocks(sphereRadius + index).associateWithTo(crust) { (x, y, z) ->
+			getSphereBlocks(innerSphereRadius + index).associateWithTo(crust) { (x, y, z) ->
 				// number from -1 to 1
 				val simplexNoise = random.noise(x.d() * crustNoise, y.d() * crustNoise, z.d() * crustNoise)
 

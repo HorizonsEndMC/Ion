@@ -17,12 +17,15 @@ import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.block.Block
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import java.util.concurrent.TimeUnit
@@ -128,7 +131,7 @@ object SpaceMechanics : IonServerComponent() {
 			}
 
 			for (star in Space.getStars()) {
-				if (check(star.spaceWorld, star.location, star.sphereRadius)) {
+				if (check(star.spaceWorld, star.location, star.outerSphereRadius)) {
 					event.isCancelled = true
 					return@listen
 				}
@@ -146,6 +149,79 @@ object SpaceMechanics : IonServerComponent() {
 			if (!SpaceWorlds.contains(event.block.world)) return@listen
 
 			if (event.newState.type.isWater) event.isCancelled = true
+		}
+
+		fun editExplosionBlockList(list: MutableList<Block>, bodyLoc: Vec3i, radius: Int) {
+			list.removeAll { block ->
+				distanceSquared(
+					block.x,
+					block.y,
+					block.z,
+					bodyLoc.x,
+					bodyLoc.y,
+					bodyLoc.z
+				) <= radius.squared()
+			}
+		}
+
+		listen<BlockExplodeEvent> { event ->
+			for (star in Space.getStars().filter { it.spaceWorld?.uid == event.block.world.uid }) {
+				// Avoid looping on stars across the galaxy
+				if (distanceSquared(
+						star.location.x,
+						star.location.y,
+						star.location.z,
+						event.block.x,
+						event.block.y,
+						event.block.z,
+				) > (star.outerSphereRadius + event.yield.squared()).squared()) continue
+
+				editExplosionBlockList(event.blockList(), star.location, star.outerSphereRadius)
+			}
+
+			for (planet in Space.getPlanets().filter { it.spaceWorld?.uid == event.block.world.uid }) {
+				// Avoid looping on stars across the galaxy
+				if (distanceSquared(
+						planet.location.x,
+						planet.location.y,
+						planet.location.z,
+						event.block.x,
+						event.block.y,
+						event.block.z,
+					) > (planet.crustRadius + event.yield.squared()).squared()) continue
+
+				editExplosionBlockList(event.blockList(), planet.location, planet.crustRadius)
+			}
+		}
+
+		listen<EntityExplodeEvent> { event ->
+			for (star in Space.getStars().filter { it.spaceWorld?.uid == event.entity.world.uid }) {
+				// Avoid looping on stars across the galaxy
+				if (distanceSquared(
+						star.location.x,
+						star.location.y,
+						star.location.z,
+						event.entity.location.blockX,
+						event.entity.location.blockY,
+						event.entity.location.blockZ,
+					) > (star.outerSphereRadius + event.yield.squared()).squared()) continue
+
+				editExplosionBlockList(event.blockList(), star.location, star.outerSphereRadius)
+			}
+
+			for (planet in Space.getPlanets().filter { it.spaceWorld?.uid == event.entity.world.uid }) {
+				// Avoid looping on stars across the galaxy
+				if (distanceSquared(
+						planet.location.x,
+						planet.location.y,
+						planet.location.z,
+						event.entity.location.blockX,
+						event.entity.location.blockY,
+						event.entity.location.blockZ,
+					) > (planet.crustRadius + event.yield.squared()).squared()) continue
+
+				editExplosionBlockList(event.blockList(), planet.location, planet.crustRadius)
+			}
 		}
 	}
 
