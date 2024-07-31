@@ -19,6 +19,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
@@ -98,7 +99,7 @@ object StarshipsCommand : SLCommand() {
 
 			template(
 				text("{0} at {1} {2} {3} in {4}{5}{6}", HE_MEDIUM_GRAY),
-				PilotedStarships.getDisplayName(ship),
+				PilotedStarships.getDisplayName(ship).hoverEvent(ship.starshipType.actualType.displayNameComponent),
 				x, y, z,
 				ship.levelName,
 				if (ship.captain != sender) template(text(" owned by {0}", AQUA), SLPlayer[ship.captain]?.lastKnownName) else empty(),
