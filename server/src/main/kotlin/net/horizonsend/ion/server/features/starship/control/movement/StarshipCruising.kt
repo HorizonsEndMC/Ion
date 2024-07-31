@@ -2,12 +2,15 @@ package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.Colors
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -21,8 +24,10 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopC
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor.color
@@ -227,6 +232,19 @@ object StarshipCruising : IonServerComponent() {
 				starship.informationAction("Cruise started, dir<dark_gray>: $info")
 			} else {
 				starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
+				starship.success("Adjusted dir to $info <yellow>[Left click to stop]")
+			}
+			starship.onlinePassengers.forEach { passenger ->
+				if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
+					var tick = 0
+					runnable {
+						val startCruiseSound =
+							starship.data.starshipType.actualType.balancingSupplier.get().sounds.startCruise.sound
+						playSoundInRadius(passenger.location, 1.0, startCruiseSound)
+						tick += 1
+						if (tick >= 4) cancel()
+					}.runTaskTimer(IonServer, 0L, 5L)
+				}
 			}
 		}
 	}
@@ -256,6 +274,16 @@ object StarshipCruising : IonServerComponent() {
 			passenger.information(
 				"Cruise stopped, decelerating..."
 			)
+			if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
+				var tick = 0
+				runnable {
+					val stopCruiseSound =
+						starship.data.starshipType.actualType.balancingSupplier.get().sounds.stopCruise.sound
+					playSoundInRadius(passenger.location, 1.0, stopCruiseSound)
+					tick += 1
+					if (tick >= 20) cancel()
+				}.runTaskTimer(IonServer, 0L, 1L)
+			}
 		}
 	}
 

@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.custom.settings.commands.SettingsCommand
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -37,7 +38,8 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private val buttonsList = listOf(
         DcOverrideButton(),
-        ShowItemSearchItems()
+        ShowItemSearchItems(),
+        EnableAdditionalSoundsButton()
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -72,7 +74,8 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
 
         val enabledSettings = listOf(
             PlayerCache[player.uniqueId].useAlternateDCCruise,
-            PlayerCache[player.uniqueId].showItemSearchItem
+            PlayerCache[player.uniqueId].showItemSearchItem,
+            PlayerCache[player.uniqueId].enableAdditionalSounds
         )
 
         // create a new GuiText builder
@@ -139,6 +142,18 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val itemSearch = PlayerCache[player.uniqueId].showItemSearchItem
             SearchCommand.itemSearchToggle(player, !itemSearch)
+
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private inner class EnableAdditionalSoundsButton : GuiItems.AbstractButtonItem(
+        text("Enable Additional Sounds").decoration(TextDecoration.ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            val enableAdditionalSounds = PlayerCache[player.uniqueId].enableAdditionalSounds
+            SettingsCommand.onToggleEnableAdditionalSounds(player, !enableAdditionalSounds)
 
             currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
