@@ -28,6 +28,43 @@ object AITemplateRegistry {
 
 	private val templates = mutableMapOf<String, AITemplate>()
 
+	// START_TEST_FACTION
+	val TEST_JAMMER = registerTemplate(builder(
+		identifier = "TEST_JAMMER",
+		template = StarshipTemplateRegistry.TEST_JAMMER,
+		controllerFactory = AIControllerFactories.jammingGunship,
+		engagementRange = 2500.0
+	).build())
+
+	val TEST_LOGISTIC = registerTemplate(builder(
+		identifier = "TEST_LOGISTIC",
+		template = StarshipTemplateRegistry.TEST_LOGISTIC,
+		controllerFactory = AIControllerFactories.logisticCorvette,
+		engagementRange = 2500.0
+	).build())
+
+	val TEST_BATTLECRUISER = registerTemplate(builder(
+		identifier = "TEST_BATTLECRUISER",
+		template = StarshipTemplateRegistry.TEST_BATTLECRUISER,
+		controllerFactory = AIControllerFactories.battlecruiser,
+		engagementRange = 5000.0
+	).build())
+
+	val TEST_DISINTEGRATOR = registerTemplate(builder(
+		identifier = "TEST_DISINTEGRATOR",
+		template = StarshipTemplateRegistry.TEST_DISINTEGRATOR,
+		controllerFactory = AIControllerFactories.advancedDestroyer,
+		engagementRange = 5000.0
+	).build())
+
+	val TEST_CYCLE = registerTemplate(builder(
+		identifier = "TEST_CYCLE",
+		template = StarshipTemplateRegistry.TEST_CYCLE,
+		controllerFactory = AIControllerFactories.advancedFrigate,
+		engagementRange = 2500.0
+	).build())
+	// END_TEST_FACTION
+
 	// START_WATCHER
 	val VERDOLITH_REINFORCEMENT = registerTemplate(builder(
 		identifier = "VERDOLITH_REINFORCEMENT",

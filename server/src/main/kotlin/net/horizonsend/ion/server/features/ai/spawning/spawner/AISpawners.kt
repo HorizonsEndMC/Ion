@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.GroupSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
@@ -32,6 +33,9 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MALINGSHU_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBAO_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TERALITH
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_BATTLECRUISER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_JAMMER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_LOGISTIC
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOLITH_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOLITH_REINFORCEMENT
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.spawnChance
@@ -152,6 +156,27 @@ object AISpawners : IonServerComponent(true) {
 				)
 			)
 		}
+
+		registerSingleWorldSpawner("Space") {
+			SingleWorldSpawner(
+				"AI_2_TEST_SPAWNER",
+				it,
+				pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7,
+				GroupSpawner(
+					formatLocationSupplier(it, 1500.0, 2500.0),
+					mutableListOf(
+						吃饭人.asSpawnedShip(TEST_BATTLECRUISER),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC),
+						吃饭人.asSpawnedShip(TEST_JAMMER),
+					)
+				)
+			)
+		}
+
+
 
 		registerGlobalSpawner(StandardFactionSpawner(
 			"吃饭人_BASIC",
