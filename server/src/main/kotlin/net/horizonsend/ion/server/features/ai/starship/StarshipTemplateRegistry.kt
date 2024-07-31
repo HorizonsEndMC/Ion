@@ -20,6 +20,8 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHE
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人_STANDARD
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_BATTLECRUISER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_CORVETTE
+import net.horizonsend.ion.server.features.starship.StarshipType.AI_CORVETTE_LOGISTIC
+import net.horizonsend.ion.server.features.starship.StarshipType.AI_DESTROYER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_FRIGATE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_GUNSHIP
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_LIGHT_FREIGHTER
@@ -42,6 +44,38 @@ import net.kyori.adventure.text.Component.text
  **/
 object StarshipTemplateRegistry : IonServerComponent(true) {
 	private val TEMPLATE_DIRECTORY = IonServer.configurationFolder.resolve("starship_templates").apply { mkdirs() }
+
+	// START_TEST
+	val TEST_JAMMER = registerTemplate(StarshipTemplate(
+		schematicName = "test_jammer",
+		type = AI_GUNSHIP,
+		miniMessageName = miniMessage(text("Test Jammer", WATCHER_STANDARD))
+	))
+
+	val TEST_LOGISTIC = registerTemplate(StarshipTemplate(
+		schematicName = "test_logistic",
+		type = AI_CORVETTE_LOGISTIC,
+		miniMessageName = miniMessage(text("Test Logistic", WATCHER_STANDARD))
+	))
+
+	val TEST_BATTLECRUISER = registerTemplate(StarshipTemplate(
+		schematicName = "test_battlecruiser",
+		type = AI_BATTLECRUISER,
+		miniMessageName = miniMessage(text("Test Battlecruiser", WATCHER_STANDARD))
+	))
+
+	val TEST_DISINTEGRATOR = registerTemplate(StarshipTemplate(
+		schematicName = "test_disintegrator",
+		type = AI_DESTROYER,
+		miniMessageName = miniMessage(text("Test Disintegrator", WATCHER_STANDARD))
+	))
+
+	val TEST_CYCLE = registerTemplate(StarshipTemplate(
+		schematicName = "test_cycle",
+		type = AI_FRIGATE,
+		miniMessageName = miniMessage(text("Test Cycle", WATCHER_STANDARD))
+	))
+	// END_TEST
 
 	// START_WATCHERS
 

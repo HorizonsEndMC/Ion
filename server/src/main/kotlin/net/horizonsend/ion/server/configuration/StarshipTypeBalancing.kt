@@ -763,7 +763,15 @@ data class StarshipTypeBalancing(
 	val aiFrigate: StarshipBalancing = frigate,
 	val aiDestroyer: StarshipBalancing = destroyer,
 	val aiCruiser: StarshipBalancing = cruiser,
-	val aiBattlecruiser: StarshipBalancing = battlecruiser,
+	val aiBattlecruiser: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 3,
+		maxSneakFlyAccel = 3,
+		interdictionRange = 4500,
+		hyperspaceRangeMultiplier = 2.5,
+		cruiseSpeedMultiplier = 0.88,
+		shieldPowerMultiplier = 1.20,
+		weapons = battlecruiser.weapons
+	),
 	val aiBattleship: StarshipBalancing = battleship,
 	val aiDreadnought: StarshipBalancing = dreadnought,
 

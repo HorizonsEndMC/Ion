@@ -19,8 +19,9 @@ class MultiTargetFrigateCombatModule(controller: AIController, private val toggl
 
 	override fun tick() {
 		ticks++
-		val targets = targetingSupplier.get() ?: return
+		val targets = targetingSupplier.get()
         val numTargets = targets.size
+		if (targets.isEmpty()) return // prevent divide by zero
 		val target = targets[ticks % numTargets]
 
 		// Get the closest axis
