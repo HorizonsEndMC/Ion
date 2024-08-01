@@ -31,9 +31,9 @@ object ItemModRegistry {
 	val AUTO_SMELT = registerMod(AutoSmeltModifier)
 
 	// Fortune enchantment
-	val FORTUNE_1 = registerMod(FortuneModifier(0, "#E196E1") { CustomItems.FORTUNE_1 })
-	val FORTUNE_2 = registerMod(FortuneModifier(1, "#E164E1") { CustomItems.FORTUNE_2 })
-	val FORTUNE_3 = registerMod(FortuneModifier(2, "#E132E1") { CustomItems.FORTUNE_3 })
+	val FORTUNE_1 = registerMod(FortuneModifier(1, "#E196E1") { CustomItems.FORTUNE_1 })
+	val FORTUNE_2 = registerMod(FortuneModifier(2, "#E164E1") { CustomItems.FORTUNE_2 })
+	val FORTUNE_3 = registerMod(FortuneModifier(3, "#E132E1") { CustomItems.FORTUNE_3 })
 
 	// Boost power capacity (x1000)
 	val POWER_CAPACITY_25 = registerMod(PowerCapacityIncrease(25_000) { CustomItems.POWER_CAPACITY_25 })
