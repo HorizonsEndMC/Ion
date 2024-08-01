@@ -13,6 +13,8 @@ data class GroupSpawnedShip(
     val nameProvider: Supplier<Component>,
     val controllerModifier: AIController.() -> Unit = {},
 ) : SpawnedShip {
+    override var offset: SpawnedShip.SpawnOffset? = null
+
     override fun createController(logger: Logger, starship: ActiveStarship): AIController {
         val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
 

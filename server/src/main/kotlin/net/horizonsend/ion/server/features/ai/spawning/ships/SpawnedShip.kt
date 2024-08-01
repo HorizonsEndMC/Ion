@@ -12,6 +12,8 @@ import org.slf4j.Logger
 
 interface SpawnedShip {
 	val template: AITemplate
+	var offset: SpawnOffset?
+
 	fun createController(logger: Logger, starship: ActiveStarship): AIController
 	fun getName(logger: Logger): Component
 
@@ -26,4 +28,15 @@ interface SpawnedShip {
 			{ createController(logger, it) }
 		)
 	}
+
+	fun withOffset(minDistance: Double, maxDistance: Double, y: Double): SpawnedShip {
+		offset = SpawnOffset(minDistance, maxDistance, y)
+		return this
+	}
+
+	data class SpawnOffset(
+		val minDistanceFromCenter: Double,
+		val maxDistanceFromCenter: Double,
+		val yLevel: Double
+	)
 }
