@@ -167,10 +167,10 @@ object AISpawners : IonServerComponent(true) {
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					mutableListOf(
 						吃饭人.asSpawnedShip(TEST_BATTLECRUISER),
-						吃饭人.asSpawnedShip(TEST_LOGISTIC),
-						吃饭人.asSpawnedShip(TEST_LOGISTIC),
-						吃饭人.asSpawnedShip(TEST_LOGISTIC),
-						吃饭人.asSpawnedShip(TEST_JAMMER),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withOffset(100.0, 101.0, 192.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withOffset(150.0, 151.0, 192.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withOffset(200.0, 201.0, 192.0),
+						吃饭人.asSpawnedShip(TEST_JAMMER).withOffset(250.0, 251.0, 192.0),
 					)
 				)
 			)
