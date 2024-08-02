@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.listener.misc.JoinLeaveListener
 import net.horizonsend.ion.server.listener.misc.MiscListeners
 import net.horizonsend.ion.server.listener.misc.PlayerDeathListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.horizonsend.ion.server.listener.misc.RecipeModifications
 import net.horizonsend.ion.server.listener.misc.ResourcePackListener
 import net.horizonsend.ion.server.listener.nations.FriendlyFireListener
 import net.horizonsend.ion.server.listener.nations.MovementListener
@@ -82,6 +83,7 @@ val listeners: List<Listener> = listOf(
 	TractorBeamMultiblock,
 	PlayerDeathListener,
 	ToolModMenu,
+	RecipeModifications,
 
 	// Achievement Listeners
 	AchievementListeners(),

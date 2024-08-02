@@ -63,13 +63,18 @@ class PowerDrill(
 	override fun constructItemStack(): ItemStack {
 		val base = getModeledItem()
 
-		setPower(base, getPowerCapacity(base))
-
-		return base.updateMeta {
+		base.updateMeta {
 			it.displayName(displayName)
 			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
 			it.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
 		}
+
+		setPower(base, getPowerCapacity(base))
+		setMods(base, arrayOf())
+
+		rebuildLore(base, asTask = false)
+
+		return base
 	}
 
 	override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {

@@ -22,7 +22,7 @@ interface LoreCustomItem {
 	/**
 	 * Rebuilds the entire lore of the item, from each lore manager
 	 **/
-	fun rebuildLore(itemStack: ItemStack) {
+	fun rebuildLore(itemStack: ItemStack, asTask: Boolean = true) {
 		val managers = getLoreManagers()
 
 		val lore = mutableListOf<Component>()
@@ -46,7 +46,7 @@ interface LoreCustomItem {
 			}
 		}
 
-		Tasks.sync { itemStack.updateMeta { it.lore(lore) } }
+		if (asTask) Tasks.sync { itemStack.updateMeta { it.lore(lore) } } else itemStack.updateMeta { it.lore(lore) }
 	}
 
 	/**
