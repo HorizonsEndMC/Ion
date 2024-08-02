@@ -41,7 +41,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 	val displayName: Component = ofChildren(text("Crate ", GOLD), text("Placer", GRAY)).decoration(ITALIC, false)
 
 	override val material: Material = Material.DIAMOND_PICKAXE
-	override val customModelData: Int = 2
+	override val customModelData: Int = 10
 
 	override val displayDurability: Boolean = true
 
