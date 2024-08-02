@@ -46,6 +46,8 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_ADVANCED
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_ENHANCED
+import net.horizonsend.ion.server.features.custom.items.CustomItems.RANGE_1
+import net.horizonsend.ion.server.features.custom.items.CustomItems.RANGE_2
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_TITANIUM
@@ -104,8 +106,8 @@ import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.BLUE_WOOL
 import org.bukkit.Material.BROWN_WOOL
 import org.bukkit.Material.COAL
-import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COBWEB
+import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.CYAN_WOOL
@@ -144,6 +146,7 @@ import org.bukkit.Material.NETHERITE_BLOCK
 import org.bukkit.Material.NETHER_WART
 import org.bukkit.Material.NETHER_WART_BLOCK
 import org.bukkit.Material.OAK_LOG
+import org.bukkit.Material.OBSERVER
 import org.bukkit.Material.OCHRE_FROGLIGHT
 import org.bukkit.Material.ORANGE_WOOL
 import org.bukkit.Material.PAPER
@@ -998,6 +1001,38 @@ object Crafting : IonServerComponent() {
 			setIngredient('t', TITANIUM_INGOT.constructItemStack())
 			setIngredient('c', STEEL_CHASSIS.constructItemStack())
 			setIngredient('x', AIR)
+		}
+
+		itemStackShapeRecipe("aoe_1_modifier", EXTENDED_BAR.constructItemStack()) {
+			shape("ipi", "prp", "ipi")
+
+			setIngredient('i', IRON_BLOCK)
+			setIngredient('p', PISTON)
+			setIngredient('r', REDSTONE_BLOCK)
+		}
+
+		itemStackShapeRecipe("aoe_2_modifier", EXTENDED_BAR.constructItemStack()) {
+			shape("ipi", "prp", "ipi")
+
+			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
+			setIngredient('p', PISTON)
+			setIngredient('r', ExactChoice(RANGE_1.constructItemStack()))
+		}
+
+		itemStackShapeRecipe("aoe_3_modifier", EXTENDED_BAR.constructItemStack()) {
+			shape("ipi", "prp", "ipi")
+
+			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
+			setIngredient('p', ExactChoice(STEEL_PLATE.constructItemStack()))
+			setIngredient('r', ExactChoice(RANGE_2.constructItemStack()))
+		}
+
+		itemStackShapeRecipe("vein_miner_modifier", EXTENDED_BAR.constructItemStack()) {
+			shape("ipi", "prp", "ipi")
+
+			setIngredient('i', ExactChoice(ALUMINUM_BLOCK.constructItemStack()))
+			setIngredient('p', OBSERVER)
+			setIngredient('r', ExactChoice(RANGE_1.constructItemStack()))
 		}
 
 		// Tool mods end
