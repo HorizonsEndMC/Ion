@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
-import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
 import org.bukkit.Location
 import org.slf4j.Logger
 import java.util.function.Supplier
@@ -15,11 +14,13 @@ abstract class MultiSpawner(private val locationProvider: Supplier<Location?>) :
 
 		for (ship in ships) {
 			val offset = ship.offset
+			val absoluteHeight = ship.absoluteHeight
 			val spawnPoint = if (offset != null) {
-				spawnOrigin.getLocationNear(
-					offset.minDistanceFromCenter,
-					offset.maxDistanceFromCenter)
-					.apply { y = offset.yLevel }
+				if (absoluteHeight != null) {
+					spawnOrigin.add(offset).apply { y = absoluteHeight }
+				} else {
+					spawnOrigin.add(offset)
+				}
 			} else spawnOrigin
 
 			@Suppress("DeferredResultUnused")

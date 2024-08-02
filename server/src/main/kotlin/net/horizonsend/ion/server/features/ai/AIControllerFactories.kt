@@ -89,7 +89,7 @@ object AIControllerFactories : IonServerComponent() {
 		setControllerTypeName("JammingGunship")
 		setModuleBuilder {
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
-			builder.addModule("targeting", ClosestPlayerTargetingModule(it, 700.0))
+			builder.addModule("targeting", ClosestPlayerTargetingModule(it, 5000.0))
 			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
 			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 250.0))

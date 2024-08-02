@@ -41,6 +41,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOL
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.spawnChance
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
 
@@ -148,9 +149,7 @@ object AISpawners : IonServerComponent(true) {
 				"DAGGER_SWARM",
 				it,
 				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7,
-				BagSpawner(
-					formatLocationSupplier(it, 1500.0, 2500.0),
+				pointThreshold = 20 * 60 * 7, BagSpawner( formatLocationSupplier(it, 1500.0, 2500.0),
 					VariableIntegerAmount(3, 5),
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 1)
 				)
@@ -166,11 +165,11 @@ object AISpawners : IonServerComponent(true) {
 				GroupSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					mutableListOf(
-						吃饭人.asSpawnedShip(TEST_BATTLECRUISER),
-						吃饭人.asSpawnedShip(TEST_LOGISTIC).withOffset(100.0, 101.0, 192.0),
-						吃饭人.asSpawnedShip(TEST_LOGISTIC).withOffset(150.0, 151.0, 192.0),
-						吃饭人.asSpawnedShip(TEST_LOGISTIC).withOffset(200.0, 201.0, 192.0),
-						吃饭人.asSpawnedShip(TEST_JAMMER).withOffset(250.0, 251.0, 192.0),
+						吃饭人.asSpawnedShip(TEST_BATTLECRUISER).withDirectionalOffset(1.0, BlockFace.NORTH.direction, 38.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.SOUTH.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.EAST.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.WEST.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_JAMMER).withRandomRadialOffset(180.0, 181.0, 0.0, 192.0),
 					)
 				)
 			)
