@@ -133,7 +133,6 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			starship.calculateMinMax()
 			updateCenter()
 			updateSubsystems(world2)
-			updateMisc(world2)
 
 			onComplete()
 		}
@@ -296,13 +295,6 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 				}
 			}
 		}
-	}
-
-	private fun updateMisc(world2: World) {
-		starship.previousDestroyedBlocks = starship.destroyedBlockKeys
-
-		val new = starship.destroyedBlockKeys.mapTo(mutableListOf()) { displacedKey(it) }
-		starship.destroyedBlockKeys = new.toLongArray()
 	}
 
 	private fun exitPlanet(world: World, starship: ActiveControlledStarship): Boolean {

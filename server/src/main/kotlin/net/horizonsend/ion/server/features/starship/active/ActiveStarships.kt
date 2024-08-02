@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -147,6 +148,37 @@ object ActiveStarships : IonServerComponent() {
 
 	fun findByBlock(world: World, x: Int, y: Int, z: Int): ActiveStarship? {
 		return getInWorld(world).firstOrNull { it.contains(x, y, z) }
+	}
+
+	fun findByChunkSectionPosition(world: World, x: Int, y: Int, z: Int): Collection<ActiveStarship> {
+		val sectionKey = blockKey(x, y, z)
+
+		val realX = x.shl(4)
+		val realY = y.shl(4)
+		val realZ = z.shl(4)
+
+		return getInWorld(world).filter {
+			val (centerX, centerY, centerZ) = it.centerOfMass
+
+			if (distanceSquared(realX, realY, realZ, centerX, centerY, centerZ) > 4900) return@filter false
+
+			val blocks = it.blocks.clone()
+			val iterator = blocks.iterator()
+
+			while (iterator.hasNext()) {
+				val key = iterator.nextLong()
+
+				val sectionX = blockKeyX(key).shr(4)
+				val sectionY = (blockKeyY(key) - world.minHeight).shr(4)
+				val sectionZ = blockKeyZ(key).shr(4)
+
+				val blockSectionKey = blockKey(sectionX, sectionY, sectionZ)
+
+				if (blockSectionKey == sectionKey) return@filter true
+			}
+
+			false
+		}
 	}
 
 	fun isActive(starship: ActiveStarship) = worldMap[starship.world].contains(starship)

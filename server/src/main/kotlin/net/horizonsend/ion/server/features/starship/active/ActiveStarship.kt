@@ -44,7 +44,6 @@ import net.horizonsend.ion.server.miscellaneous.IonWorld
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.alongVector
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
@@ -57,7 +56,6 @@ import net.kyori.adventure.text.Component
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -83,9 +81,6 @@ abstract class ActiveStarship (
 	var centerOfMass: Vec3i,
 	private val hitbox: ActiveStarshipHitbox
 ) : ForwardingAudience {
-	var previousDestroyedBlocks = LongArray(0)
-	var destroyedBlockKeys = LongArray(0)
-
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 
 	abstract val type: StarshipType
@@ -124,34 +119,6 @@ abstract class ActiveStarship (
 		controller.tick()
 
 		subsystems.forEach { it.tick() }
-
-		if (tickCount % 20 == 0) playSmokeEffect()
-		tickCount++
-	}
-
-	private var tickCount = 0
-
-	private fun playSmokeEffect() {
-		Tasks.async {
-			val asLocations: List<Pair<Location, Location?>> = destroyedBlockKeys.indices.map {
-				Vec3i(destroyedBlockKeys[it]).toLocation(world).toCenterLocation() to
-					previousDestroyedBlocks.getOrNull(it)?.let { oldLoc -> Vec3i(oldLoc).toLocation(world).toCenterLocation() }
-			}
-
-			world.players.forEach { player ->
-				for ((location, prevLocation) in asLocations) {
-					if (prevLocation == null) {
-						player.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, location, 1,0.0, 0.0, 0.0, 0.0, null)
-						continue
-					}
-
-					val vector = prevLocation.toVector().subtract(location.toVector())
-					location.alongVector(vector, (vector.length() / 2.0).roundToInt()).forEach {
-						player.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, it, 1,0.0, 0.0, 0.0, 0.0, null)
-					}
-				}
-			}
-		}
 	}
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
@@ -403,10 +370,7 @@ abstract class ActiveStarship (
 
 	fun updateHullIntegrity() {
 		currentBlockCount = blocks.count {
-			val air = getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir
-			if (air == true) destroyedBlockKeys += it
-
-			air != true
+			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
 		}
 		hullIntegrity = currentBlockCount.toDouble() / initialBlockCount.toDouble()
 	}
