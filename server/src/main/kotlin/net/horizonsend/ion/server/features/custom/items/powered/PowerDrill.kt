@@ -30,6 +30,7 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
+import org.bukkit.block.Container
 import org.bukkit.craftbukkit.v1_20_R3.block.CraftBlock
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.entity.LivingEntity
@@ -164,6 +165,8 @@ class PowerDrill(
 				.filterIsInstance<DropModifier>()
 				.sortedByDescending { it.priority }
 
+			val state = block.state
+
 			// customBlock turns to AIR due to BlockBreakEvent; play break sound and drop item
 			if (customBlock != null) {
 				block.world.playSound(block.location.toCenterLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f)
@@ -173,6 +176,11 @@ class PowerDrill(
 				usage.multiplier = handleModifiers(baseDrops, dropModifiers)
 
 				drops[BlockPos.asLong(block.x, block.y, block.z)] = baseDrops
+			} else if (state is Container) {
+				block.world.playSound(block.location.toCenterLocation(), Sound.BLOCK_STONE_BREAK, 1.0f, 1.0f)
+				block.world.playEffect(block.location, Effect.STEP_SOUND, Material.IRON_ORE)
+
+				// Do nothing
 			} else {
 				val baseDrops = dropSource.getDrop(block)
 				usage.multiplier = handleModifiers(baseDrops, dropModifiers)
@@ -181,7 +189,6 @@ class PowerDrill(
 				block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
 			}
 
-			block.type = Material.AIR
 			breakNaturally(block, dropSource.shouldDropXP)
 
 			if (blockType == Material.END_PORTAL_FRAME) block.world.dropItem(block.location, ItemStack(Material.END_PORTAL_FRAME))

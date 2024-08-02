@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.listener.fixers.GameplayTweaksListeners
 import net.horizonsend.ion.server.listener.gear.DetonatorListener
 import net.horizonsend.ion.server.listener.gear.DoubleJumpListener
 import net.horizonsend.ion.server.listener.gear.PowerArmorListener
-import net.horizonsend.ion.server.listener.gear.PowerToolListener
 import net.horizonsend.ion.server.listener.gear.SwordListener
 import net.horizonsend.ion.server.listener.misc.BlockListener
 import net.horizonsend.ion.server.listener.misc.BowHitListener
@@ -59,7 +58,6 @@ val listeners: List<Listener> = listOf(
 	DetonatorListener,
 	DoubleJumpListener,
 	PowerArmorListener,
-	PowerToolListener,
 	SwordListener,
 
 	// Ion
