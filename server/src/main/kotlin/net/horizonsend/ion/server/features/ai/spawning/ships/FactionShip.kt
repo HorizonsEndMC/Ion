@@ -6,13 +6,15 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.kyori.adventure.text.Component
+import org.bukkit.util.Vector
 import org.slf4j.Logger
 
 class FactionShip(
 	override val template: AITemplate,
 	private val faction: AIFaction
 ) : SpawnedShip {
-	override var offset: SpawnedShip.SpawnOffset? = null
+	override var offset: Vector? = null
+	override var absoluteHeight: Double? = null
 
 	override fun createController(logger: Logger, starship: ActiveStarship): AIController {
 		val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
