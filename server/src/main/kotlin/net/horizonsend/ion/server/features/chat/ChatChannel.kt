@@ -140,11 +140,11 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			val worlds = mutableSetOf<World>()
 
+			worlds.add(world)
+
 			val planet = Space.getPlanet(world)
 
 			if (planet != null) {
-				worlds.add(world)
-
 				val spaceWorld = planet.spaceWorld
 				spaceWorld?.let { worlds.add(it) }
 
@@ -155,7 +155,6 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 			// this might become a problem if we ever put more than 1 star in a system
 			val star = Space.getStars().firstOrNull { it.spaceWorld == world }
 			if (star != null) {
-				worlds.add(world)
 				Space.getPlanets().filter { it.sun == star }.mapNotNullTo(worlds) { it.planetWorld }
 			}
 
