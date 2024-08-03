@@ -6,7 +6,9 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_COMPOST
 import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_REPLANT
+import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_SMELT
 import net.horizonsend.ion.server.features.custom.items.CustomItems.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CANNON_RECEIVER
@@ -48,6 +50,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_BA
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_ENHANCED
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RANGE_1
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RANGE_2
+import net.horizonsend.ion.server.features.custom.items.CustomItems.RANGE_3
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RAW_TITANIUM
@@ -91,6 +94,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_ROD
+import net.horizonsend.ion.server.features.custom.items.CustomItems.VEIN_MINER_25
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
@@ -955,7 +959,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
 		}
 
-		itemStackShapeRecipe("auto_smelt_modifier", POWER_CAPACITY_50.constructItemStack()) {
+		itemStackShapeRecipe("auto_smelt_modifier", AUTO_SMELT.constructItemStack()) {
 			shape("srs", "bfb", "scs")
 
 			setIngredient('s', STEEL_PLATE.constructItemStack())
@@ -965,7 +969,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
 		}
 
-		itemStackShapeRecipe("auto_compost_modifier", POWER_CAPACITY_50.constructItemStack()) {
+		itemStackShapeRecipe("auto_compost_modifier", AUTO_COMPOST.constructItemStack()) {
 			shape("tit", "tct", "trt")
 
 			setIngredient('t', TITANIUM_INGOT.constructItemStack())
@@ -1003,7 +1007,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', AIR)
 		}
 
-		itemStackShapeRecipe("aoe_1_modifier", EXTENDED_BAR.constructItemStack()) {
+		itemStackShapeRecipe("aoe_1_modifier", RANGE_1.constructItemStack()) {
 			shape("ipi", "prp", "ipi")
 
 			setIngredient('i', IRON_BLOCK)
@@ -1011,7 +1015,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('r', REDSTONE_BLOCK)
 		}
 
-		itemStackShapeRecipe("aoe_2_modifier", EXTENDED_BAR.constructItemStack()) {
+		itemStackShapeRecipe("aoe_2_modifier", RANGE_2.constructItemStack()) {
 			shape("ipi", "prp", "ipi")
 
 			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
@@ -1019,7 +1023,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('r', ExactChoice(RANGE_1.constructItemStack()))
 		}
 
-		itemStackShapeRecipe("aoe_3_modifier", EXTENDED_BAR.constructItemStack()) {
+		itemStackShapeRecipe("aoe_3_modifier", RANGE_3.constructItemStack()) {
 			shape("ipi", "prp", "ipi")
 
 			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
@@ -1027,7 +1031,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('r', ExactChoice(RANGE_2.constructItemStack()))
 		}
 
-		itemStackShapeRecipe("vein_miner_modifier", EXTENDED_BAR.constructItemStack()) {
+		itemStackShapeRecipe("vein_miner_modifier", VEIN_MINER_25.constructItemStack()) {
 			shape("ipi", "prp", "ipi")
 
 			setIngredient('i', ExactChoice(ALUMINUM_BLOCK.constructItemStack()))
