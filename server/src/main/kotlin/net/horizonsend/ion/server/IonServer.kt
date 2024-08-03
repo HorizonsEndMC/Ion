@@ -36,8 +36,6 @@ import org.bukkit.event.Listener
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
-import org.litote.kmongo.eq
-import org.litote.kmongo.setValue
 import java.io.File
 import kotlin.system.measureTimeMillis
 
@@ -106,14 +104,6 @@ object IonServer : JavaPlugin() {
 
 				server.pluginManager.registerEvents(component, IonServer)
 			} else startAndMeasureTime(component)
-		}
-
-		BazaarItem.find(BazaarItem::itemString eq "power_tool_drill").forEach {
-			BazaarItem.updateById(it._id, setValue(BazaarItem::itemString, "POWER_DRILL_BASIC"))
-		}
-
-		BazaarItem.find(BazaarItem::itemString eq "power_tool_chainsaw").forEach {
-			BazaarItem.updateById(it._id, setValue(BazaarItem::itemString, "POWER_CHAINSAW_BASIC"))
 		}
 
 		// The listeners are defined in a separate file for the sake of keeping the main class clean.
