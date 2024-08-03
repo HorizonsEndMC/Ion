@@ -14,6 +14,7 @@ import net.horizonsend.ion.common.extensions.serverErrorActionMessage
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.utils.miscellaneous.toText
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServerComponent
@@ -156,6 +157,12 @@ object StarshipComputers : IonServerComponent() {
 		}
 
 		if (data !is PlayerStarshipData && !player.hasPermission("ion.core.starship.override")) return
+
+		val starship = PilotedStarships[player]
+		if (starship != null && starship.isDirectControlEnabled) {
+			starship.userErrorActionMessage("Cannot open starship menu while in Direct Control!")
+			return
+		}
 
 		if (!StarshipComputerOpenMenuEvent(player).callEvent()) {
 			return
