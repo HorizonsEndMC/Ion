@@ -606,6 +606,16 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', AIR)
 		}
 
+		itemStackShapeRecipe("crate_placer", CustomItems.CRATE_PLACER.constructItemStack()) {
+			shape("xsx", "xcd", "txx")
+
+			setIngredient('s', ExactChoice(STEEL_INGOT.constructItemStack()))
+			setIngredient('t', GAS_CANISTER_EMPTY.constructItemStack())
+			setIngredient('d', DIAMOND)
+			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('x', AIR)
+		}
+
 		// Circuitry Crafting 1
 		itemStackShapeRecipe("circuitry_1", CIRCUITRY.constructItemStack()) {
 			shape("qdq", "arg", "ccc")

@@ -26,7 +26,7 @@ class StarfighterCombatModule(controller: AIController, targetingSupplier: Suppl
 		handleAutoWeapons(starship.centerOfMass, target)
 		fireAllWeapons(
 			origin = starship.centerOfMass,
-			target = target.getVec3i(false).toVector(),
+			target = target.getVec3i(true).toVector(),
 			direction = direction
 		)
 	}
