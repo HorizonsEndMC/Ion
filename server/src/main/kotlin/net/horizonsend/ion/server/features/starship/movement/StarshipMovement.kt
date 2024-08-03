@@ -192,28 +192,16 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		val newMin = displacedVec(min).toLocation(world2)
 		val newMax = displacedVec(max).toLocation(world2)
 
-		val planets = Space.getPlanets().filter { it.spaceWorld?.uid == world2.uid }
-
-		for (planet in planets) {
-			val planetLoc = planet.location.toLocation(world2)
-
-			val distance1 = newMin.toLocation(world2).distance(planetLoc)
-			val distance2 = newMax.toLocation(world2).distance(planetLoc)
-
-			if (distance1 < planet.crustRadius || distance2 < planet.crustRadius)
-				throw StarshipOutOfBoundsException("Starship would be inside ${planet.name}!")
-		}
-
 		val stars = Space.getStars().filter { it.spaceWorld?.uid == world2.uid }
 
-		for (planet in stars) {
-			val planetLoc = planet.location.toLocation(world2)
+		for (star in stars) {
+			val planetLoc = star.location.toLocation(world2)
 
 			val distance1 = newMin.toLocation(world2).distance(planetLoc)
 			val distance2 = newMax.toLocation(world2).distance(planetLoc)
 
-			if (distance1 < planet.outerSphereRadius || distance2 < planet.outerSphereRadius)
-				throw StarshipOutOfBoundsException("Starship would be inside ${planet.name}!")
+			if (distance1 < star.outerSphereRadius || distance2 < star.outerSphereRadius)
+				throw StarshipOutOfBoundsException("Starship would be inside ${star.name}!")
 		}
 	}
 
