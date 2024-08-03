@@ -482,11 +482,6 @@ object PilotedStarships : IonServerComponent() {
 			return false
 		}
 
-		if (starship.isDirectControlEnabled) {
-			starship.userErrorActionMessage("Cannot release while in Direct Control!")
-			return false
-		}
-
 		// Keep pilot for info even after unpilot
 		val oldController = starship.controller
 

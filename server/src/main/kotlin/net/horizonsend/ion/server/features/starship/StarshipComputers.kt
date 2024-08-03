@@ -82,6 +82,12 @@ object StarshipComputers : IonServerComponent() {
 			return
 		}
 
+		val starship = PilotedStarships[player]
+		if (starship != null && starship.isDirectControlEnabled) {
+			player.userErrorActionMessage("Cannot interact with starship computer while in Direct Control!")
+			return
+		}
+
 		event.isCancelled = true
 		val data: StarshipData? = StarshipComputers[event.player.world, block.x, block.y, block.z]
 
@@ -157,12 +163,6 @@ object StarshipComputers : IonServerComponent() {
 		}
 
 		if (data !is PlayerStarshipData && !player.hasPermission("ion.core.starship.override")) return
-
-		val starship = PilotedStarships[player]
-		if (starship != null && starship.isDirectControlEnabled) {
-			starship.userErrorActionMessage("Cannot open starship menu while in Direct Control!")
-			return
-		}
 
 		if (!StarshipComputerOpenMenuEvent(player).callEvent()) {
 			return
