@@ -32,6 +32,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
     private val buttonsList = listOf(
         SidebarSettingsButton(),
         HudSettingsButton(),
+        SoundSettingsButton(),
         OtherSettingsButton()
     )
 
@@ -117,6 +118,15 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsHudGui(player).openMainWindow()
+        }
+    }
+
+    private inner class SoundSettingsButton : GuiItems.AbstractButtonItem(
+        text("Sound Settings").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SettingsSoundGui(player).openMainWindow()
         }
     }
 

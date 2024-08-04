@@ -87,5 +87,6 @@ enum class GuiItem(val customModelData: Int) {
     ROUTE_SEGMENT(6030),
     LIST(6034),
     COMPASS_NEEDLE(6035),
-    BOOKMARK(6036)
+    BOOKMARK(6036),
+    SOUND(6058),
 }

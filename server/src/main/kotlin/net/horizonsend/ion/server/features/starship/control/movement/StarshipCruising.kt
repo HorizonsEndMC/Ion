@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
@@ -227,6 +228,28 @@ object StarshipCruising : IonServerComponent() {
 			} else {
 				starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
 			}
+
+			starship.onlinePassengers.forEach { passenger ->
+				if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
+					var tick = 0
+					val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
+						SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
+						SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 2
+						SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 4
+						else -> 0
+					}
+
+					runnable {
+						if (tick >= length) cancel()
+						if (length != 0) {
+							val startCruiseSound =
+								starship.data.starshipType.actualType.balancingSupplier.get().sounds.startCruise.sound
+							playSoundInRadius(passenger.location, 1.0, startCruiseSound)
+							tick += 1
+						} else cancel()
+					}.runTaskTimer(IonServer, 0L, 5L)
+				}
+			}
 		} else {
 			if (!isCruising(starship)) {
 				starship.informationAction("Cruise started, dir<dark_gray>: $info")
@@ -237,12 +260,21 @@ object StarshipCruising : IonServerComponent() {
 			starship.onlinePassengers.forEach { passenger ->
 				if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
 					var tick = 0
+					val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
+						SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
+						SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 2
+						SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 4
+						else -> 0
+					}
+
 					runnable {
-						val startCruiseSound =
-							starship.data.starshipType.actualType.balancingSupplier.get().sounds.startCruise.sound
-						playSoundInRadius(passenger.location, 1.0, startCruiseSound)
-						tick += 1
-						if (tick >= 4) cancel()
+						if (tick >= length) cancel()
+						if (length != 0) {
+							val startCruiseSound =
+								starship.data.starshipType.actualType.balancingSupplier.get().sounds.startCruise.sound
+							playSoundInRadius(passenger.location, 1.0, startCruiseSound)
+							tick += 1
+						} else cancel()
 					}.runTaskTimer(IonServer, 0L, 5L)
 				}
 			}
@@ -276,12 +308,21 @@ object StarshipCruising : IonServerComponent() {
 			)
 			if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
 				var tick = 0
+				val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
+					SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
+					SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 5
+					SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 20
+					else -> 0
+				}
+
 				runnable {
-					val stopCruiseSound =
-						starship.data.starshipType.actualType.balancingSupplier.get().sounds.stopCruise.sound
-					playSoundInRadius(passenger.location, 1.0, stopCruiseSound)
-					tick += 1
-					if (tick >= 20) cancel()
+					if (tick >= length) cancel()
+					if (length != 0) {
+						val stopCruiseSound =
+							starship.data.starshipType.actualType.balancingSupplier.get().sounds.stopCruise.sound
+						playSoundInRadius(passenger.location, 1.0, stopCruiseSound)
+						tick += 1
+					} else cancel()
 				}.runTaskTimer(IonServer, 0L, 1L)
 			}
 		}

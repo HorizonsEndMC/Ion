@@ -108,6 +108,7 @@ data class SLPlayer(
 	var showItemSearchItem: Boolean = true,
 	var useAlternateDCCruise: Boolean = false,
 	var enableAdditionalSounds: Boolean = true,
+	var soundCruiseIndicator: Int = 0,
 
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 ) : DbObject {

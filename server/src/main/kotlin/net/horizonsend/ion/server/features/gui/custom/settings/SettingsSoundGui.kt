@@ -1,18 +1,17 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
-import net.horizonsend.ion.server.command.qol.SearchCommand
-import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -26,18 +25,19 @@ import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
+class SettingsSoundGui(val player: Player) : AbstractBackgroundPagedGui {
 
     companion object {
         private const val SETTINGS_PER_PAGE = 5
         private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
     }
 
+
     override var currentWindow: Window? = null
 
     private val buttonsList = listOf(
-        DcOverrideButton(),
-        ShowItemSearchItems()
+        EnableButton(),
+        CruiseIndicatorSoundButton(),
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -71,13 +71,12 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
     override fun createText(player: Player, currentPage: Int): Component {
 
         val enabledSettings = listOf(
-            PlayerCache[player.uniqueId].useAlternateDCCruise,
-            PlayerCache[player.uniqueId].showItemSearchItem,
-            PlayerCache[player.uniqueId].enableAdditionalSounds
+            PlayerCache[player.uniqueId].enableAdditionalSounds,
+            PlayerCache[player.uniqueId].soundCruiseIndicator
         )
 
         // create a new GuiText builder
-        val header = "Other Settings"
+        val header = "Sound Settings"
         val guiText = GuiText(header)
         guiText.addBackground()
 
@@ -98,7 +97,12 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
 
             // setting description
             guiText.add(
-                component = if (enabledSettings[buttonIndex]) text("ENABLED", GREEN) else text("DISABLED", RED),
+                component = if (enabledSettings[buttonIndex] is Boolean) {
+                    if (enabledSettings[buttonIndex] as Boolean) text("ENABLED", GREEN) else text("DISABLED", RED)
+                } else when (buttonIndex) {
+                    1 -> text(SoundSettingsCommand.CruiseIndicatorSounds.entries[PlayerCache[player.uniqueId].soundCruiseIndicator].toString())
+                    else -> Component.empty()
+                },
                 line = line + 1,
                 horizontalShift = 21
             )
@@ -121,25 +125,24 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
         currentWindow = open(player).apply { open() }
     }
 
-    private inner class DcOverrideButton : GuiItems.AbstractButtonItem(
-        text("DC Overrides Cruise").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+    private inner class EnableButton: GuiItems.AbstractButtonItem(
+        text("Enable Additional Sounds").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.SOUND.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            val alternateDcCruise = PlayerCache[player.uniqueId].useAlternateDCCruise
-            MiscStarshipCommands.onUseAlternateDCCruise(player, !alternateDcCruise)
+            val enableAdditionalSounds = PlayerCache[player.uniqueId].enableAdditionalSounds
+            SoundSettingsCommand.onToggleEnableAdditionalSounds(player, !enableAdditionalSounds)
 
             currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 
-    private inner class ShowItemSearchItems : GuiItems.AbstractButtonItem(
-        text("Show /itemsearch Items").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
+    private inner class CruiseIndicatorSoundButton: GuiItems.AbstractButtonItem(
+        text("Cruise Indicator Sound").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.SOUND.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            val itemSearch = PlayerCache[player.uniqueId].showItemSearchItem
-            SearchCommand.itemSearchToggle(player, !itemSearch)
+            SoundSettingsCommand.onChangeCruiseIndicatorSound(player)
 
             currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
