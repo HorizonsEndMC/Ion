@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStartCruisingEvent
@@ -227,6 +228,7 @@ object StarshipCruising : IonServerComponent() {
 				}
 			} else {
 				starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
+				if (starship.controller !is AIController) starship.success("Adjusted dir to $info <yellow>[Left click to stop]")
 			}
 
 			starship.onlinePassengers.forEach { passenger ->
@@ -255,7 +257,7 @@ object StarshipCruising : IonServerComponent() {
 				starship.informationAction("Cruise started, dir<dark_gray>: $info")
 			} else {
 				starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
-				starship.success("Adjusted dir to $info <yellow>[Left click to stop]")
+				if (starship.controller !is AIController) starship.success("Adjusted dir to $info <yellow>[Left click to stop]")
 			}
 			starship.onlinePassengers.forEach { passenger ->
 				if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
