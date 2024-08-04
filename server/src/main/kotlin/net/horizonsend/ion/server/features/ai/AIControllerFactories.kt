@@ -96,7 +96,7 @@ object AIControllerFactories : IonServerComponent() {
 			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
 			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.MATCH_Y_WITH_OFFSET_150, 256.0))
 
-			builder.addModule("jamming", ContactsJammerModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
+			builder.addModule("jamming", ContactsJammerModule(it, 300.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
 
 			builder
 		}

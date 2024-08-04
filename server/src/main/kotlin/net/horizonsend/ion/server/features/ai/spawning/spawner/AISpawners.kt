@@ -34,6 +34,8 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MALING
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBAO_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TERALITH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_BATTLECRUISER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_CYCLE
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_DISINTEGRATOR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_JAMMER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_LOGISTIC
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOLITH_REINFORCED
@@ -158,7 +160,7 @@ object AISpawners : IonServerComponent(true) {
 
 		registerSingleWorldSpawner("Space") {
 			SingleWorldSpawner(
-				"AI_2_TEST_SPAWNER",
+				"AI_2_BC_JAM_TEST_SPAWNER",
 				it,
 				pointChance = 0.5,
 				pointThreshold = 20 * 60 * 7,
@@ -175,7 +177,110 @@ object AISpawners : IonServerComponent(true) {
 			)
 		}
 
+		registerSingleWorldSpawner("Space") {
+			SingleWorldSpawner(
+				"AI_2_BC_CYCLE_TEST_SPAWNER",
+				it,
+				pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7,
+				GroupSpawner(
+					formatLocationSupplier(it, 1500.0, 2500.0),
+					mutableListOf(
+						吃饭人.asSpawnedShip(TEST_BATTLECRUISER).withDirectionalOffset(1.0, BlockFace.NORTH.direction, 38.0),
+						吃饭人.asSpawnedShip(TEST_CYCLE).withDirectionalOffset(1.0, BlockFace.NORTH.direction, 100.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.SOUTH.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.EAST.direction, 60.0),
+					)
+				)
+			)
+		}
 
+		registerSingleWorldSpawner("Space") {
+			SingleWorldSpawner(
+				"AI_2_DESTROYER_JAM_TEST_SPAWNER",
+				it,
+				pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7,
+				GroupSpawner(
+					formatLocationSupplier(it, 1500.0, 2500.0),
+					mutableListOf(
+						吃饭人.asSpawnedShip(TEST_DISINTEGRATOR).withDirectionalOffset(1.0, BlockFace.NORTH.direction, 38.0),
+						吃饭人.asSpawnedShip(TEST_DISINTEGRATOR).withDirectionalOffset(150.0, BlockFace.NORTH.direction, 38.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.SOUTH.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.EAST.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.WEST.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_JAMMER).withRandomRadialOffset(180.0, 181.0, 0.0, 192.0),
+					)
+				)
+			)
+		}
+
+		registerSingleWorldSpawner("Space") {
+			SingleWorldSpawner(
+				"AI_2_DESTROYER_CYCLE_TEST_SPAWNER",
+				it,
+				pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7,
+				GroupSpawner(
+					formatLocationSupplier(it, 1500.0, 2500.0),
+					mutableListOf(
+						吃饭人.asSpawnedShip(TEST_DISINTEGRATOR).withDirectionalOffset(1.0, BlockFace.NORTH.direction, 38.0),
+						吃饭人.asSpawnedShip(TEST_DISINTEGRATOR).withDirectionalOffset(150.0, BlockFace.NORTH.direction, 38.0),
+						吃饭人.asSpawnedShip(TEST_CYCLE).withDirectionalOffset(1.0, BlockFace.NORTH.direction, 100.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.SOUTH.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.EAST.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.WEST.direction, 60.0),
+					)
+				)
+			)
+		}
+
+		registerSingleWorldSpawner("Space") {
+			SingleWorldSpawner(
+				"AI_2_CYCLE_DESTROYER_JAM_TEST_SPAWNER",
+				it,
+				pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7,
+				GroupSpawner(
+					formatLocationSupplier(it, 1500.0, 2500.0),
+					mutableListOf(
+						吃饭人.asSpawnedShip(TEST_DISINTEGRATOR).withDirectionalOffset(1.0, BlockFace.NORTH.direction, 38.0),
+						吃饭人.asSpawnedShip(TEST_CYCLE).withDirectionalOffset(1.0, BlockFace.NORTH.direction, 100.0),
+						吃饭人.asSpawnedShip(TEST_CYCLE).withDirectionalOffset(100.0, BlockFace.NORTH.direction, 75.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.SOUTH.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.EAST.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_JAMMER).withRandomRadialOffset(180.0, 181.0, 0.0, 192.0),
+					)
+				)
+			)
+		}
+
+		registerSingleWorldSpawner("Space") {
+			SingleWorldSpawner(
+				"AI_2_GIGA_FLEET_TEST_SPAWNER",
+				it,
+				pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7,
+				GroupSpawner(
+					formatLocationSupplier(it, 1500.0, 2500.0),
+					mutableListOf(
+						吃饭人.asSpawnedShip(TEST_BATTLECRUISER).withDirectionalOffset(1.0, BlockFace.NORTH.direction, 38.0),
+						吃饭人.asSpawnedShip(TEST_BATTLECRUISER).withDirectionalOffset(500.0, BlockFace.NORTH.direction, 75.0),
+						吃饭人.asSpawnedShip(TEST_DISINTEGRATOR).withDirectionalOffset(250.0, BlockFace.NORTH.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_DISINTEGRATOR).withDirectionalOffset(250.0, BlockFace.SOUTH.direction, 60.0),
+						吃饭人.asSpawnedShip(TEST_CYCLE).withDirectionalOffset(300.0, BlockFace.SOUTH_EAST.direction, 100.0),
+						吃饭人.asSpawnedShip(TEST_CYCLE).withDirectionalOffset(300.0, BlockFace.SOUTH_WEST.direction, 100.0),
+						吃饭人.asSpawnedShip(TEST_CYCLE).withDirectionalOffset(750.0, BlockFace.NORTH.direction, 100.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(500.0, BlockFace.EAST.direction, 192.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(500.0, BlockFace.WEST.direction, 192.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(500.0, BlockFace.SOUTH.direction, 192.0),
+						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(500.0, BlockFace.NORTH.direction, 192.0),
+						吃饭人.asSpawnedShip(TEST_JAMMER).withRandomRadialOffset(400.0, 401.0, 0.0, 250.0),
+						吃饭人.asSpawnedShip(TEST_JAMMER).withRandomRadialOffset(400.0, 401.0, 0.0, 250.0),
+					)
+				)
+			)
+		}
 
 		registerGlobalSpawner(StandardFactionSpawner(
 			"吃饭人_BASIC",
