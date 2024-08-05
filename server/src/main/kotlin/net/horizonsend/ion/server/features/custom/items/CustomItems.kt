@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.minerals.MineralItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
+import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.misc.ShellItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
@@ -786,6 +787,14 @@ object CustomItems {
 				return ThrownSmokeGrenade(item, maxTicks, damageSource)
 			}
 		}
+	)
+
+	val PERSONAL_TRANSPORTER = register(
+		object : PersonalTransporter(
+			identifier = "PERSONAL_TRANSPORTER",
+			customModelData = 1103,
+			text("Personal Transporter", GOLD).decoration(ITALIC, false)
+		) {}
 	)
 
 	val PUMPKIN_GRENADE = register(
