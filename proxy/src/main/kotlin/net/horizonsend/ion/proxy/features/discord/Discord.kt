@@ -21,6 +21,7 @@ import net.horizonsend.ion.proxy.commands.discord.DiscordNationCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordPlayerCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordPlayerListCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordSettlementCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordTPSCommand
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.KeybindComponent
 import net.kyori.adventure.text.TranslatableComponent
@@ -61,6 +62,7 @@ object Discord : IonProxyComponent() {
 			commandManager.registerGlobalCommand(DiscordNationCommand)
 			commandManager.registerGlobalCommand(DiscordSettlementCommand)
 			commandManager.registerGlobalCommand(DiscordInfoCommand)
+			commandManager.registerGlobalCommand(DiscordTPSCommand)
 
 			commandManager.build()
 

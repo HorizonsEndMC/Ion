@@ -1,6 +1,7 @@
 package net.horizonsend.ion.proxy.features.misc
 
 import com.velocitypowered.api.proxy.Player
+import com.velocitypowered.api.proxy.server.RegisteredServer
 import com.velocitypowered.api.scheduler.ScheduledTask
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.configuration.redis
@@ -11,7 +12,7 @@ import java.time.Duration
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
-object GameModeTracking : IonProxyComponent() {
+object ServerMessaging : IonProxyComponent() {
 	private lateinit var retrievalTask: ScheduledTask
 
 	override fun onEnable() {
@@ -48,5 +49,13 @@ object GameModeTracking : IonProxyComponent() {
 		val server = player.currentServer.getOrNull()?.server?.serverInfo?.name ?: return -1
 
 		return serverMap[server]?.get(player.uniqueId) ?: -1
+	}
+
+	fun getTps(server: RegisteredServer) = redis {
+		val key = "tps_${server.serverInfo.name}"
+
+		if (!exists(key)) return@redis 0
+
+		get(key).toInt()
 	}
 }

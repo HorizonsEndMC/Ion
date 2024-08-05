@@ -5,7 +5,6 @@ import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
-import com.velocitypowered.api.plugin.Dependency
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
@@ -15,7 +14,6 @@ import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.proxy.configuration.ProxyConfiguration
-import net.horizonsend.ion.proxy.configuration.TabConfiguration
 import net.horizonsend.ion.proxy.registration.commands
 import net.horizonsend.ion.proxy.registration.components
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
@@ -31,8 +29,7 @@ lateinit var PLUGIN: IonProxy private set
 	id = "ion",
 	name = "IonProxy",
 	url = "https://github.com/HorizonsEndMC/Ion",
-	description = "Proxy plugin for the Horizon's End server.",
-	dependencies = [Dependency(id = "velocitab", optional = false)]
+	description = "Proxy plugin for the Horizon's End server."
 )
 class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, @DataDirectory val dataDirectory: Path) {
 	private val startTime = System.currentTimeMillis()
@@ -41,7 +38,6 @@ class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, 
 
 	val configuration: ProxyConfiguration = Configuration.load(dataFolder, "proxy.json")
 	val discordConfiguration: DiscordConfiguration = Configuration.load(dataFolder, "discord.json")
-	val tabListConfiguration: TabConfiguration = Configuration.load(dataFolder, "tabList.json")
 
 	val dataFolder: File get() = dataDirectory.toFile()
 
