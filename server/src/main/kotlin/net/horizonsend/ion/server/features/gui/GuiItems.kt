@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.gui
 
+import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -16,6 +17,7 @@ import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.item.impl.controlitem.PageItem
+import java.util.UUID
 
 object GuiItems {
 
@@ -57,6 +59,14 @@ object GuiItems {
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) = item.handleClick(clickType, player, event)
+    }
+
+    open class PlayerHeadItem(val uuid: UUID, val name: String) : ControlItem<Gui>() {
+        override fun getItemProvider(gui: Gui): ItemProvider {
+            return ItemBuilder(skullItem(uuid, name))
+        }
+
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) { }
     }
 }
 
