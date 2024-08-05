@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
@@ -160,6 +161,17 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 		val nationId = resolveNation(nation)
 		Nation.updateById(nationId, setValue(Nation::balance, balance))
 		sender msg "Set balance of $nation to ${balance.toCreditsString()}"
+	}
+
+	@Subcommand("nation set capital")
+	@Suppress("unused")
+	fun onNationSetCapital(sender: CommandSender, nation: String, capital: String) = asyncCommand(sender) {
+		val nationId = resolveNation(nation)
+		val newCapital = resolveSettlement(capital)
+
+		failIf(SettlementCache[newCapital].nation != nationId) { "Settlement $capital must be in nation $nation" }
+
+		Nation.setCapital(nationId, newCapital)
 	}
 
 	@CommandPermission("nations.admin.movestation")
@@ -318,6 +330,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 			sender.userError("You are about to change the owner of this territory from $ownerName to ${getNationName(nation)}. You must confirm.")
 		}
 
+		Territory.setNation(currentTerritory.id, null)
 		Territory.setNation(currentTerritory.id, nation)
 	}
 }
