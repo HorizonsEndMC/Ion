@@ -13,7 +13,6 @@ repositories {
 	maven("https://repo.aikar.co/content/groups/aikar/") // ACF
 	maven("https://repo.papermc.io/repository/maven-public/") // Waterfall
 	maven("https://jitpack.io/")
-	maven("https://repo.william278.net/releases")
 }
 
 dependencies {
@@ -30,8 +29,6 @@ dependencies {
 	implementation("net.dv8tion:JDA:5.0.2")
 	implementation("net.kyori:adventure-text-logger-slf4j:4.17.0")
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
-
-	compileOnly("net.william278:velocitab:1.5.2")
 }
 
 tasks.build { dependsOn("shadowJar") }
