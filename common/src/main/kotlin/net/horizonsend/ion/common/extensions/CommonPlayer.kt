@@ -1,7 +1,7 @@
 package net.horizonsend.ion.common.extensions
 
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
 import net.luckperms.api.model.user.User
 import java.util.UUID
 
@@ -13,9 +13,9 @@ interface CommonPlayer {
 
 	fun getDisplayName(): Component
 
-	fun getPrefix(): Component? = getMetaData().prefix?.let { legacyAmpersand().deserialize(it) }
+	fun getPrefix(): Component? = getMetaData().prefix?.let { miniMessage.deserialize(it) }
 
-	fun getSuffix(): Component? = getMetaData().suffix?.let { legacyAmpersand().deserialize(it) }
+	fun getSuffix(): Component? = getMetaData().suffix?.let { miniMessage.deserialize(it) }
 
 	fun getMetaData() = getUser().cachedData.metaData
 
