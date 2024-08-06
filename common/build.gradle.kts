@@ -32,7 +32,7 @@ dependencies {
 	api("com.googlecode.cqengine:cqengine:3.6.0")
 
 	api("org.litote.kmongo:kmongo:5.1.0")
-	api("com.fasterxml.jackson.core:jackson-databind:2.17.1")
+	api("com.fasterxml.jackson.core:jackson-databind:2.17.2")
 
 	api("redis.clients:jedis:5.1.3")
 }
