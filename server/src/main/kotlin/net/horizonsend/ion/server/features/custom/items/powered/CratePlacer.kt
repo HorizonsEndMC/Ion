@@ -31,6 +31,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.ShulkerBox
 import org.bukkit.block.data.Directional
+import org.bukkit.block.data.type.Piston
 import org.bukkit.craftbukkit.v1_20_R3.block.CraftShulkerBox
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.entity.LivingEntity
@@ -144,7 +145,8 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			chunk.addAndRegisterBlockEntity(blockEntity)
 
 			//event check
-			val event = BlockPlaceEvent(target,
+			val event = BlockPlaceEvent(
+				target,
 				state,
 				against,
 				item,
@@ -154,7 +156,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			)
 
 			if (event.callEvent()) {
-				player.inventory.removeItem(item)
+				player.inventory.removeItem(item.asOne())
 
 				removePower(itemStack, getPowerUse(itemStack))
 
@@ -229,7 +231,15 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 
 				if (adj.type == Material.STICKY_PISTON) {
 					valid = true
-					adjStikies.add(adj to face.oppositeFace)
+
+					val data = adj.blockData as Piston
+
+					if (data.facing == face.oppositeFace) {
+						adjStikies.add(adj to face.oppositeFace)
+					} else {
+						valid = false
+					}
+
 					break
 				}
 			}
