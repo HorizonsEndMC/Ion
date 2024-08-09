@@ -20,7 +20,7 @@ import org.litote.kmongo.addToSet
 import org.litote.kmongo.pull
 
 object BlockCommand : SLCommand() {
-	@CommandAlias("block")
+	@CommandAlias("block|ignore")
 	@Suppress("unused")
 	@CommandCompletion("@players")
 	fun onBlock(sender: Player, player: String) = asyncCommand(sender) {
@@ -35,7 +35,7 @@ object BlockCommand : SLCommand() {
 		sender.success("Blocked $player")
 	}
 
-	@CommandAlias("unblock")
+	@CommandAlias("unblock|unignore")
 	@Suppress("unused")
 	@CommandCompletion("@players")
 	fun onUnblock(sender: Player, player: String) = asyncCommand(sender) {
@@ -50,7 +50,7 @@ object BlockCommand : SLCommand() {
 		sender.success("Unblocked $player")
 	}
 
-	@CommandAlias("blocks")
+	@CommandAlias("blocks|ignores")
 	@Suppress("unused")
 	@CommandCompletion("@players")
 	fun onBlocks(sender: Player, @Optional page: Int?) = asyncCommand(sender) {
