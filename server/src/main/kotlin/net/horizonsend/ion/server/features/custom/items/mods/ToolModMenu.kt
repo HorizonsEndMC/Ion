@@ -66,6 +66,8 @@ class ToolModMenu(
 	}
 
 	private fun rebuildFromContents(contents: Collection<ItemStack?>) {
+		val existingMods = customItem.getMods(itemStack).toMutableList()
+
 		val nonItemMods = customItem
 			.getMods(itemStack)
 			.filter { it.modItem.get() == null }
@@ -77,11 +79,19 @@ class ToolModMenu(
 			.plus(nonItemMods)
 			.toTypedArray()
 
-		updateBaseItem(mods)
-	}
+		val newMods = mods.toMutableList()
 
-	private fun updateBaseItem(newModList: Array<ItemModification>) {
-		customItem.setMods(itemStack, newModList)
+		// Remove all the mods that were present
+		newMods.removeAll(existingMods)
+
+		// Remove all the mods that still are present
+		existingMods.removeAll(mods.toSet())
+
+		customItem.setMods(itemStack, mods)
+
+		// Handle the removal / addition of mods
+		existingMods.forEach { it.onRemove(itemStack) }
+		newMods.forEach { it.onAdd(itemStack) }
 	}
 
 	/**
@@ -205,7 +215,7 @@ class ToolModMenu(
 			}
 
 			// Already installed
-			if (existingMod == customItem) {
+			if (existingMod == mod) {
 				player.userError("${mod.displayName.plainText()} is already installed!")
 				return@none true
 			}

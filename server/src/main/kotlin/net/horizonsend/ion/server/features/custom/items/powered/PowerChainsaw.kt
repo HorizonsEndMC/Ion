@@ -24,7 +24,6 @@ import net.minecraft.core.BlockPos
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -142,7 +141,6 @@ class PowerChainsaw(
 
 			visited[key] = block
 
-
 			val powerUse = chainsaw.getPowerUse(chainsawItem)
 			if (powerUse > chainsaw.getPower(chainsawItem)) {
 				player.userError("Out of power!")
@@ -153,8 +151,7 @@ class PowerChainsaw(
 			var replacementType: Material? = null
 
 			if (mods.contains(AutoReplantModifier) && (block.type.isWood || block.type.isLog)) {
-				val blockBelow = block.getRelative(BlockFace.DOWN)
-				if (Crop.SWEET_BERRIES.canBePlanted(blockBelow)) {
+				if (Crop.SWEET_BERRIES.canBePlanted(block)) {
 					replacementType = saplingTypes[block.type]
 				}
 			}

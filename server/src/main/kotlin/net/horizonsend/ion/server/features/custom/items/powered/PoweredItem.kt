@@ -30,13 +30,19 @@ interface PoweredItem : LoreCustomItem {
 		val corrected = amount.coerceAtMost(capacity)
 		StoredValues.POWER.setAmount(itemStack, corrected)
 
-		itemStack.updateMeta {
-			if (displayDurability && it is Damageable) {
-				it.damage = (itemStack.type.maxDurability - amount.toDouble() / capacity * itemStack.type.maxDurability).roundToInt()
-			}
+		if (displayDurability && itemStack.itemMeta is Damageable) {
+			updateDurability(itemStack, amount, capacity)
 		}
 
 		lineChanged(0, itemStack)
+	}
+
+	fun updateDurability(itemStack: ItemStack, power: Int, capacity: Int) {
+		itemStack.updateMeta {
+			it as Damageable
+
+			it.damage = (itemStack.type.maxDurability - power.toDouble() / capacity * itemStack.type.maxDurability).roundToInt()
+		}
 	}
 
 	fun removePower(itemStack: ItemStack, amount: Int) {
