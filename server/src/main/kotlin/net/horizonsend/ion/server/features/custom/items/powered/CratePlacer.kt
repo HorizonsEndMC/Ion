@@ -18,6 +18,9 @@ import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import net.minecraft.core.BlockPos
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
+import net.minecraft.nbt.NbtUtils
 import net.minecraft.nbt.StringTag
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.FluidCollisionMode
@@ -25,8 +28,11 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.SoundCategory
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.ShulkerBox
+import org.bukkit.block.data.Directional
 import org.bukkit.craftbukkit.v1_20_R3.block.CraftShulkerBox
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
@@ -75,11 +81,11 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 		val lookingAt = livingEntity.getTargetBlockExact(range) ?: return
 
 		nearTargets(lookingAt).forEach { pair ->
-			placeCrate(livingEntity, itemStack, pair.key, pair.value)
+			placeCrate(livingEntity, itemStack, pair.first, pair.second, pair.third)
 		}
 	}
 
-	private fun placeCrate(player: Player, itemStack: ItemStack, target: Block, against: Block) {
+	private fun placeCrate(player: Player, itemStack: ItemStack, target: Block, against: Block, offset: BlockFace) {
 		val x = target.x
 		val y = target.y
 		val z = target.z
@@ -96,11 +102,21 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			//attempt to place the crate
 			//I copied gutins code and prayed that it worked
 			//fake block place event
-			target.setBlockData(item.type.createBlockData(), true)
+			val data = item.type.createBlockData()
+			data as Directional
+
+			data.facing = offset
+
+			target.setBlockData(data, true)
+
+			val paperItem = itemState.inventory.filterNotNull().first()
+			val nms = CraftItemStack.asNMSCopy(paperItem)
+
+			val itemNBT = CompoundTag()
+			nms.save(itemNBT)
 
 			val boxEntity = target.state as ShulkerBox
 			boxEntity.customName = item.itemMeta.displayName
-			boxEntity.inventory.addItem(*itemState.inventory.filterNotNull().toList().toTypedArray())
 			boxEntity.update()
 
 			// Add the raw nms tag for shipment id
@@ -109,8 +125,16 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			val chunk = entity.location.chunk.minecraft
 			// Save the full compound tag
 			val base = entity.saveWithFullMetadata()
+
 			//incomplete crates dont have shipment ids
 			if (id != null) base.put("shipment_oid", StringTag.valueOf(id))
+
+			val items = ListTag()
+			items.add(itemNBT)
+
+			base.put("Items", items)
+
+			println(NbtUtils.structureToSnbt(base))
 
 			val blockPos = BlockPos(x, y, z)
 			// Remove old
@@ -118,6 +142,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 
 			val blockEntity = BlockEntity.loadStatic(blockPos, entity.blockState, base)!!
 			chunk.addAndRegisterBlockEntity(blockEntity)
+
 			//event check
 			val event = BlockPlaceEvent(target,
 				state,
@@ -129,8 +154,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			)
 
 			if (event.callEvent()) {
-				//placement is valid, delete item from inventory and decriement ammo
-				player.inventory.removeItem(item.asOne())
+				player.inventory.removeItem(item)
 
 				removePower(itemStack, getPowerUse(itemStack))
 
@@ -185,7 +209,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 		)
 	}
 
-	private fun nearTargets(target : Block) : Map<Block, Block>{
+	private fun nearTargets(target : Block) : List<Triple<Block, Block, BlockFace>>{
 		val nearblocks :MutableList<Block> = mutableListOf()
 
 		for (x in -1..1) for (y in -1..1) for (z in -1..1) {
@@ -196,7 +220,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			if (relative.type == Material.AIR || relative.type == Material.WATER) nearblocks.add(relative)
 		}
 
-		val adjStikies : MutableList<Block> = mutableListOf()
+		val adjStikies : MutableList<Pair<Block, BlockFace>> = mutableListOf()
 		val filtered = nearblocks.filter {
 			var valid = false
 
@@ -205,7 +229,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 
 				if (adj.type == Material.STICKY_PISTON) {
 					valid = true
-					adjStikies.add(adj)
+					adjStikies.add(adj to face.oppositeFace)
 					break
 				}
 			}
@@ -213,6 +237,8 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			valid
 		}
 
-		return filtered.zip(adjStikies).toMap()
+		return filtered.zip(adjStikies).map { (target, against) ->
+			Triple(target, against.first, against.second)
+		}
 	}
 }
