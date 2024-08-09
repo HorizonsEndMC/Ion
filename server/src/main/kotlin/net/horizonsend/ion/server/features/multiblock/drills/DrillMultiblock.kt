@@ -223,11 +223,13 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			return
 		}
 
+		/*
 		if (SpaceWorlds.contains(furnace.world) && !furnace.world.name.contains("plots", ignoreCase = true)) {
 			player.userError("Starship drills are not optimized for use in outer space! The starship drill was not enabled.")
 			setUser(sign, null)
 			return
 		}
+		 */
 
 		drillCount[player.uniqueId] = drillCount.getOrDefault(player.uniqueId, 0) + 1
 		val drills = lastDrillCount.getOrDefault(player.uniqueId, 1)
@@ -249,14 +251,19 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			return
 		}
 
+		val inSpace = SpaceWorlds.contains(furnace.world) && !furnace.world.name.contains("plots", ignoreCase = true)
+
 		event.isBurning = false
-		event.burnTime = 5
+		event.burnTime = if (!inSpace) 5 else 20
 		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
 
 		val toDestroy = getBlocksToDestroy(sign)
 
-		val maxBroken = max(1, if (drills > 5) (5 + drills) / drills + 15 / drills else 10 - drills)
+		// set to 1 block broken per furnace tick in space
+		val maxBroken = if (!inSpace) {
+			max(1, if (drills > 5) (5 + drills) / drills + 15 / drills else 10 - drills)
+		} else 1
 
 		val broken = breakBlocks(
 			sign,
