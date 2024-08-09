@@ -18,8 +18,8 @@ object ItemModRegistry {
 	val mods: MutableMap<String, ItemModification> = mutableMapOf()
 
 	// Collects a square one deep based off the face of the clicked block
-	val AOE_1 = registerMod(AOEDMod(radius = 1) { CustomItems.RANGE_2 })
-	val AOE_2 = registerMod(AOEDMod(radius = 2) { CustomItems.RANGE_1 })
+	val AOE_1 = registerMod(AOEDMod(radius = 1) { CustomItems.RANGE_1 })
+	val AOE_2 = registerMod(AOEDMod(radius = 2) { CustomItems.RANGE_2 })
 
 	// Mines groups of connected blocks of the same type
 	val VEIN_MINER_25 = registerMod(VeinMinerMod(depth = 25) { CustomItems.VEIN_MINER_25 })
