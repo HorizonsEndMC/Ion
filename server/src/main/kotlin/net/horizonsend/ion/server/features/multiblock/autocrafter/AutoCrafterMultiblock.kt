@@ -134,7 +134,9 @@ abstract class AutoCrafterMultiblock(
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
 		event.isCancelled = false
 		event.isBurning = false
-		event.burnTime = 20
+
+		// Assume fail state
+		event.burnTime = 500
 
 		if (furnace.inventory.smelting?.type != Material.PRISMARINE_CRYSTALS) return
 		if (furnace.inventory.fuel?.type != Material.PRISMARINE_CRYSTALS) return
@@ -146,16 +148,21 @@ abstract class AutoCrafterMultiblock(
 		// material data of each item in the recipe holder, used as the crafting grid
 		val grid: List<ItemStack?> = recipeHolder.inventory.map { it }
 
-		var power = PowerMachines.getPower(sign, fast = true)
+		val basePower = PowerMachines.getPower(sign, fast = true)
+
+		if (basePower < POWER_USAGE_PER_INGREDIENT) return
+
+		var power = basePower
 
 		// result item of this recipe
-		val result: ItemStack = recipeCache[grid].orElse(null)?.clone() ?: run {
-			return
-		}
+		val result: ItemStack = recipeCache[grid].orElse(null)?.clone() ?: return
 
 		val inputInventory = input.inventory
 
 		val powerUsage = grid.filterNotNull().distinct().count() * POWER_USAGE_PER_INGREDIENT
+
+		// Success state
+		event.burnTime = 20
 
 		try {
 			for (iteration in (1..iterations)) {
@@ -235,7 +242,10 @@ abstract class AutoCrafterMultiblock(
 				}
 			}
 		} finally {
-			PowerMachines.setPower(sign, power)
+			if (basePower != power) PowerMachines.setPower(sign, power) else {
+				// Nothing crafted, could be temporary resource shortage, pause for shorter time period
+				event.burnTime = 200
+			}
 		}
 	}
 
