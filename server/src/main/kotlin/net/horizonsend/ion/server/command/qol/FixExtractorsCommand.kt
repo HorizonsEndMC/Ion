@@ -5,9 +5,9 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import org.bukkit.entity.Player
 
@@ -19,12 +19,12 @@ object FixExtractorsCommand : SLCommand() {
 	fun onFixExtractors(sender: Player) {
 		val maxSelectionVolume = 200000
 		val selection = sender.getSelection() ?: return
-		if(selection.volume > maxSelectionVolume) {
+		if (selection.volume > maxSelectionVolume && !sender.hasPermission("group.dutymode")) {
 			sender.userError("Selection too large! The maximum volume is $maxSelectionVolume.")
 			return
 		}
 
-		if(sender.world.name != selection.world?.name) return
+		if (sender.world.name != selection.world?.name) return
 
 		var count = 0
 
