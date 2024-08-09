@@ -236,7 +236,7 @@ object StarshipCruising : IonServerComponent() {
 					var tick = 0
 					val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
 						SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
-						SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 2
+						SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 1
 						SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 4
 						else -> 0
 					}
@@ -264,7 +264,7 @@ object StarshipCruising : IonServerComponent() {
 					var tick = 0
 					val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
 						SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
-						SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 2
+						SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 1
 						SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 4
 						else -> 0
 					}
