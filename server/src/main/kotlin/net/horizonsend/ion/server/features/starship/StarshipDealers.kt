@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.nations.gui.item
+import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
@@ -73,20 +74,19 @@ object StarshipDealers : IonServerComponent() {
 	private fun loadShip(player: Player, ship: ServerConfiguration.Ship, schematic: Clipboard) {
 		val shipLastBuy = lastBuyTimes.getOrDefault(ship, mutableMapOf())
 
-		if (
-			shipLastBuy.getOrDefault(player.uniqueId, 0) + (ship.cooldown) > currentTimeMillis()
-		) {
+		if (shipLastBuy.getOrDefault(player.uniqueId, 0) + (ship.cooldown) > currentTimeMillis()) {
 			if (player.hasProtection() && ship.protectionCanBypass) {
-				player.information(
-					"You seem new around these parts. I usually don't do this, but I'll let you take another"
-				)
+				player.information("You seem new around these parts. I usually don't do this, but I'll let you take another")
 			} else {
-				player.userError(
-					"Didn't I sell you a ship not too long ago? These things are expensive, " +
-							"and I am already selling them at a discount, leave some for other people."
-				)
+				player.userError("Didn't I sell you a ship not too long ago? These things are expensive, " +
+							"and I am already selling them at a discount, leave some for other people.")
 				return
 			}
+		}
+
+		if (Levels[player] < ship.shipType.minLevel) {
+			player.userError("You are not a high enough level to pilot that ship!")
+			return
 		}
 
 		if (!player.hasEnoughMoney(ship.price)) {
