@@ -283,10 +283,10 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			settlementAction(NationsChatMessage(
 				id = settlement,
-				prefix = prefix,
-				playerPrefix = player.common().getPrefix(),
+				ionPrefix = prefix,
+				luckPermsPrefix = player.common().getPrefix(),
 				playerDisplayName = event.player.displayName(),
-				playerSuffix = player.common().getSuffix(),
+				luckPermsSuffix = player.common().getSuffix(),
 				message = event.message(),
 				playerInfo = text(playerInfo(player)),
 				color = messageColor
@@ -311,10 +311,10 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			nationAction(NationsChatMessage(
 				id = nation,
-				prefix = prefix,
-				playerPrefix = player.common().getPrefix(),
+				ionPrefix = prefix,
+				luckPermsPrefix = player.common().getPrefix(),
 				playerDisplayName = event.player.displayName(),
-				playerSuffix = player.common().getSuffix(),
+				luckPermsSuffix = player.common().getSuffix(),
 				message = event.message(),
 				playerInfo = text(playerInfo(player)),
 				color = messageColor
@@ -338,10 +338,10 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			allyAction(NationsChatMessage(
 				id = nation,
-				prefix = prefix,
-				playerPrefix = player.common().getPrefix(),
+				ionPrefix = prefix,
+				luckPermsPrefix = player.common().getPrefix(),
 				playerDisplayName = event.player.displayName(),
-				playerSuffix = player.common().getSuffix(),
+				luckPermsSuffix = player.common().getSuffix(),
 				message = event.message(),
 				playerInfo = text(playerInfo(player)),
 				color = messageColor
@@ -428,10 +428,10 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		event: AsyncChatEvent,
 		color: TextColor
 	): NormalChatMessage = NormalChatMessage(
-		prefix = ofChildren(bracketed(text(Levels[event.player], AQUA)), formatSpacePrefix(prefix)),
-		playerPrefix = player.common().getPrefix(),
+		ionPrefix = ofChildren(bracketed(text(Levels[event.player], AQUA)), formatSpacePrefix(prefix)),
+		luckPermsPrefix = player.common().getPrefix(),
 		playerDisplayName = event.player.displayName(),
-		playerSuffix = player.common().getSuffix(),
+		luckPermsSuffix = player.common().getSuffix(),
 		message = event.message(),
 		playerInfo = text(playerInfo(player)),
 		color = color,

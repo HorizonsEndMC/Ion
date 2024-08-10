@@ -7,10 +7,10 @@ import net.kyori.adventure.text.format.TextColor
 
 data class NationsChatMessage<A : DbObject>(
 	val id: Oid<A>,
-	override val prefix: Component,
-	override val playerPrefix: Component?,
+	override val ionPrefix: Component,
+	override val luckPermsPrefix: Component?,
 	override val playerDisplayName: Component,
-	override val playerSuffix: Component?,
+	override val luckPermsSuffix: Component?,
 	override val message: Component,
 	override val playerInfo: Component,
 

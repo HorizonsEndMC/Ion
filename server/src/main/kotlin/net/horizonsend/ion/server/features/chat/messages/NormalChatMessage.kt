@@ -5,10 +5,10 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 
 data class NormalChatMessage(
-	override val prefix: Component?,
-	override val playerPrefix: Component?,
+	override val ionPrefix: Component?,
+	override val luckPermsPrefix: Component?,
 	override val playerDisplayName: Component,
-	override val playerSuffix: Component?,
+	override val luckPermsSuffix: Component?,
 	override val message: Component,
 	override val playerInfo: Component,
 
