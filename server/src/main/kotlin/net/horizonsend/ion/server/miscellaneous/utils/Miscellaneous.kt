@@ -51,9 +51,9 @@ val gayColors = arrayOf(
 	Color.fromRGB(255, 0, 24),
 	Color.fromRGB(255, 165, 44),
 	Color.fromRGB(255, 255, 65),
-	Color.fromRGB(0, 128, 24),
+	Color.fromRGB(0, 255, 51),
 	Color.fromRGB(0, 0, 249),
-	Color.fromRGB(134, 0, 125)
+	Color.fromRGB(255, 0, 239)
 )
 
 /** Used for catching when a function that is not designed to be used async is being used async. */
