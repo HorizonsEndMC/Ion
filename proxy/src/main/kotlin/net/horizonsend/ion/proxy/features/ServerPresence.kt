@@ -6,9 +6,9 @@ import com.velocitypowered.api.network.ProtocolVersion
 import com.velocitypowered.api.proxy.server.ServerPing
 import com.velocitypowered.api.proxy.server.ServerPing.SamplePlayer
 import com.velocitypowered.api.util.Favicon
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.proxy.IonProxyComponent
 import net.horizonsend.ion.proxy.PLUGIN
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import java.net.URL
 import java.util.EnumSet
 import javax.imageio.ImageIO
@@ -45,7 +45,7 @@ object ServerPresence : IonProxyComponent() {
 			response.version(ServerPing.Version(primaryVersion.protocol, primaryVersion.name))
 		}
 
-		response.description(LegacyComponentSerializer.legacyAmpersand().deserialize("${PLUGIN.configuration.motdFirstLine}\n${messages.random()}"))
+		response.description(miniMessage.deserialize("${PLUGIN.configuration.motdFirstLine}\n${messages.random()}"))
 		response.favicon(icon)
 
 		response.onlinePlayers(PLUGIN.proxy.onlineCount)

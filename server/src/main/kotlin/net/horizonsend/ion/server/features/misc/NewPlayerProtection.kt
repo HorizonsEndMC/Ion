@@ -33,7 +33,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	private val lpUserManager = luckPerms.userManager
 
 	private val protectionIndicator = SuffixNode.builder("&6★&r", 0).build()
-	private val alternateProtectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()
+	private val alternateProtectionIndicator = SuffixNode.builder(" <gold>★<reset>", 0).build()
 	private val removeProtectionPermission = PermissionNode.builder("ion.core.protection.removed").build()
 
 	override fun onEnable(manager: PaperCommandManager) {
