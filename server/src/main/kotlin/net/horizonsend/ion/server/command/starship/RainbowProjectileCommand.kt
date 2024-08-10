@@ -8,12 +8,12 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 object RainbowProjectileCommand : SLCommand() {
-	@CommandAlias("gaymode")
+	@CommandAlias("rainbowweapons")
 	@CommandPermission("ioncore.rainbow")
 	fun onExecute(sender: CommandSender, p: Player) = asyncCommand(sender) {
 		val ship = getStarshipPiloting(p)
 
 		ship.rainbowToggle = !ship.rainbowToggle
-		sender.success("${if (ship.rainbowToggle) "Dea" else "A"}activated gay mode")
+		sender.success("${if (ship.rainbowToggle) "Dea" else "A"}activated rainbow weapons")
 	}
 }
