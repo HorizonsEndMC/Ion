@@ -38,7 +38,6 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	private val oldAlternateProtectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()
 
 	private val protectionIndicator = SuffixNode.builder("<gold>★<reset>", 0).build()
-	private val alternateProtectionIndicator = SuffixNode.builder(" <gold>★<reset>", 0).build()
 	private val removeProtectionPermission = PermissionNode.builder("ion.core.protection.removed").build()
 
 	override fun onEnable(manager: PaperCommandManager) {
@@ -69,7 +68,6 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		lpUser.data().run {
 			add(removeProtectionPermission)
 			remove(protectionIndicator)
-			remove(alternateProtectionIndicator)
 		}
 
 		lpUserManager.saveUser(lpUser)
@@ -105,10 +103,6 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		val lpUser = lpUserManager.getUser(uniqueId)!!
 
 		lpUser.data().run {
-			if (contains(alternateProtectionIndicator, NodeEqualityPredicate.IGNORE_EXPIRY_TIME) == Tristate.TRUE) {
-				remove(alternateProtectionIndicator)
-			}
-
 			if (contains(oldProtectionIndicator, NodeEqualityPredicate.IGNORE_EXPIRY_TIME) == Tristate.TRUE) {
 				remove(oldProtectionIndicator)
 			}
