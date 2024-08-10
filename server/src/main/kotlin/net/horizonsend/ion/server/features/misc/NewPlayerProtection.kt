@@ -18,8 +18,10 @@ import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.luckperms.api.node.NodeEqualityPredicate
 import net.luckperms.api.node.types.PermissionNode
 import net.luckperms.api.node.types.SuffixNode
+import net.luckperms.api.util.Tristate
 import org.bukkit.Bukkit
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player
@@ -32,7 +34,10 @@ import kotlin.math.pow
 object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Listener {
 	private val lpUserManager = luckPerms.userManager
 
-	private val protectionIndicator = SuffixNode.builder("&6★&r", 0).build()
+	private val oldProtectionIndicator = SuffixNode.builder("&6★&r", 0).build()
+	private val oldAlternateProtectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()
+
+	private val protectionIndicator = SuffixNode.builder("<gold>★<reset>", 0).build()
 	private val alternateProtectionIndicator = SuffixNode.builder(" <gold>★<reset>", 0).build()
 	private val removeProtectionPermission = PermissionNode.builder("ion.core.protection.removed").build()
 
@@ -100,11 +105,22 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		val lpUser = lpUserManager.getUser(uniqueId)!!
 
 		lpUser.data().run {
+			if (contains(alternateProtectionIndicator, NodeEqualityPredicate.IGNORE_EXPIRY_TIME) == Tristate.TRUE) {
+				remove(alternateProtectionIndicator)
+			}
+
+			if (contains(oldProtectionIndicator, NodeEqualityPredicate.IGNORE_EXPIRY_TIME) == Tristate.TRUE) {
+				remove(oldProtectionIndicator)
+			}
+
+			if (contains(oldAlternateProtectionIndicator, NodeEqualityPredicate.IGNORE_EXPIRY_TIME) == Tristate.TRUE) {
+				remove(oldAlternateProtectionIndicator)
+			}
+
 			if (hasProtection()) {
 				add(protectionIndicator)
 			} else {
 				remove(protectionIndicator)
-				remove(alternateProtectionIndicator)
 			}
 		}
 
