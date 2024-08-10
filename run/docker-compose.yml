@@ -22,16 +22,19 @@ services:
       MONGO_INITDB_DATABASE: "test"
       MONGO_REPLICA_SET_NAME: rs0
 
-  waterfall:
-    image: "itzg/bungeecord"
-    container_name: "waterfall"
+  velocity:
+    image: "itzg/mc-proxy"
+    container_name: "velocity"
+    depends_on:
+      - "mongo"
     ports: [ 25565:25577 ]
     tty: true
     stdin_open: true
     volumes:
-      - ./waterfall:/server
+      - ./velocity:/server
       - ../build/IonProxy.jar:/server/plugins/IonProxy.jar
-      - ./config/waterfall/config.yml:/server/config.yml
+      - ./config/velocity/velocity.toml:/server/velocity.toml
+      - ./config/velocity/forwarding.secret:/server/forwarding.secret
     environment:
       TYPE: "WATERFALL"
       JVM_XX_OPTS: "-XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
@@ -39,6 +42,8 @@ services:
   paper:
     image: "itzg/minecraft-server"
     container_name: "paper"
+    depends_on:
+      - "mongo"
     ports:
       - "5005:5005"
       - "8123:8123"
