@@ -11,7 +11,6 @@ import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.configuration.FeatureFlags
 import net.horizonsend.ion.server.configuration.GlobalGassesConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration

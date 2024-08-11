@@ -19,16 +19,14 @@ abstract class Gas(
 ) {
 	val configuration = configurationSupplier.get()
 
-	fun getFactors(world: World): List<CollectionFactor> = collectionFactorSupplier(world.ion)
+	private fun getFactors(world: World): List<CollectionFactor> = collectionFactorSupplier(world.ion)
 
     fun tryCollect(location: Location): Boolean {
 		val factors = getFactors(location.world)
 
 		if (factors.isEmpty()) return false
 
-        return factors.stream().allMatch { factor: CollectionFactor ->
-			return@allMatch factor.factor(location)
-		}
+		return factors.all { it.factor(location) }
     }
 
 	fun canBeFound(location: Location): Boolean {
@@ -36,6 +34,6 @@ abstract class Gas(
 
 		if (factors.isEmpty()) return false
 
-		return factors.all { factor: CollectionFactor -> factor.canBeFound(location) }
+		return factors.all { it.canBeFound(location) }
 	}
 }

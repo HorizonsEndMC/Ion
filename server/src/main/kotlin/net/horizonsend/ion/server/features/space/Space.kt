@@ -81,7 +81,7 @@ object Space : IonServerComponent() {
 			}
 
 			for (star in getStars()) {
-				if (check(star.location, star.sphereRadius)) {
+				if (check(star.location, star.outerSphereRadius)) {
 					event.isCancelled = true
 					return@listen
 				}

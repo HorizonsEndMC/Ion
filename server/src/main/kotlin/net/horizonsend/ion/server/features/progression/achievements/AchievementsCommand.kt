@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.achievements
+package net.horizonsend.ion.server.features.progression.achievements
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
@@ -6,15 +6,9 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.utils.text.CHETHERITE_CHARACTER
-import net.horizonsend.ion.common.utils.text.SLOT_OVERLAY_WIDTH
-import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
-import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.shift
-import net.horizonsend.ion.common.utils.text.slotOverlay
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.kyori.adventure.text.Component
