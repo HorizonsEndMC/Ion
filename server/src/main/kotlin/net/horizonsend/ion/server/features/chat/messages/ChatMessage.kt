@@ -21,7 +21,7 @@ abstract class ChatMessage {
 		luckPermsPrefix.orEmpty(),
 		playerDisplayName,
 		luckPermsSuffix.orEmpty(),
-		text("» ", HEColorScheme.HE_DARK_GRAY),
+		text(" » ", HEColorScheme.HE_DARK_GRAY),
 		message.color(color),
 	).hoverEvent(playerInfo)
 }
