@@ -37,12 +37,4 @@ object TransportDebugCommand : SLCommand() {
 		wireQueue.shutdownNow()
 		Wires.thread = Executors.newSingleThreadExecutor(Wires.threadFactory)
 	}
-
-	@Subcommand("dumplag")
-	fun dumpStackTrace(sender: CommandSender) {
-		val string = PowerMachines.traceTrack.entries.joinToString(separator = "\n") { "${it.key}: ${it.value}" }
-		log.info(string)
-
-		sender.userError(string)
-	}
 }
