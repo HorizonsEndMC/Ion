@@ -70,7 +70,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustDat
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.IonWorld
+import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -143,7 +143,7 @@ class Starship (
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
 	fun destroy() {
-		IonWorld[world.minecraft].starships.remove(this)
+		IonWorld[world].starships.remove(this)
 		controller.destroy()
 	}
 
@@ -635,6 +635,6 @@ class Starship (
 	//endregion
 
 	init {
-		IonWorld[world.minecraft].starships.add(this)
+		IonWorld[world].starships.add(this)
 	}
 }

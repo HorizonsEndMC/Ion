@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.achievements
+package net.horizonsend.ion.server.features.progression.achievements
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.features.custom.items.CustomItems.ALUMINUM_INGOT
@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.TITANIUM_ING
 import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipDetectEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipDetectedEvent
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.event.EventHandler
