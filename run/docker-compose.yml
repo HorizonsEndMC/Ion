@@ -36,7 +36,7 @@ services:
       - ./config/velocity/velocity.toml:/server/velocity.toml
       - ./config/velocity/forwarding.secret:/server/forwarding.secret
     environment:
-      TYPE: "WATERFALL"
+      TYPE: "VELOCITY"
       JVM_XX_OPTS: "-XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
 
   paper:
