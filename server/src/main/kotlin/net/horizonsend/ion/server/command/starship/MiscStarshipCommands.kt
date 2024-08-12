@@ -506,7 +506,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("unused")
-	@CommandAlias("directcontrol|dc")
+	@CommandAlias("directcontrol|dc|DC")
 	fun onDirectControl(sender: Player) {
 		val starship = getStarshipPiloting(sender)
 		failIf(!starship.isDirectControlEnabled && !isHoldingController(sender)) {
