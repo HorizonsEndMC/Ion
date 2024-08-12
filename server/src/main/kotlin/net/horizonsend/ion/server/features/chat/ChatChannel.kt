@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.PlayerWrapper.Companion.co
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
+import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -428,7 +429,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		event: AsyncChatEvent,
 		color: TextColor
 	): NormalChatMessage = NormalChatMessage(
-		ionPrefix = ofChildren(bracketed(text(Levels[event.player], AQUA)), formatSpacePrefix(prefix)),
+		ionPrefix = ofChildren(bracketed(text(Levels[event.player], AQUA)), space(), formatSpacePrefix(prefix)),
 		luckPermsPrefix = player.common().getPrefix(),
 		playerDisplayName = event.player.displayName(),
 		luckPermsSuffix = player.common().getSuffix(),
