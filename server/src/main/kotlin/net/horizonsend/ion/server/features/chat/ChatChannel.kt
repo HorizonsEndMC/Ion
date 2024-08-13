@@ -39,7 +39,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
@@ -107,7 +106,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		private val distanceSquared = LegacySettings.chat.localDistance * LegacySettings.chat.localDistance
 
 		override fun onChat(player: Player, event: AsyncChatEvent) {
-			val component = formatChatMessage(text("Local", YELLOW, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
+			val component = formatChatMessage(text("Local ", YELLOW, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
 
 			for (other in player.world.players) {
 				if (other.location.distanceSquared(player.location) > distanceSquared) continue
@@ -126,7 +125,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return player.userError("You're not on a planet! To go back to global chat, use /global")
 			}
 
-			val component = formatChatMessage(text("Planet", BLUE, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
+			val component = formatChatMessage(text("Planet ", BLUE, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
 
 			for (other in player.world.players) {
 				if (PlayerCache[other].blockedPlayerIDs.contains(player.slPlayerId)) continue
@@ -163,7 +162,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return player.userError("You're not in a system! To go back to global chat, use /global")
 			}
 
-			val component = formatChatMessage(text("System", TextColor.fromHexString("#FF8234")!!, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
+			val component = formatChatMessage(text("System ", TextColor.fromHexString("#FF8234")!!, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
 
 			for (other in worlds.flatMap { it.players }) {
 				if (PlayerCache[other].blockedPlayerIDs.contains(player.slPlayerId)) continue
@@ -179,7 +178,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return
 			}
 
-			adminAction(formatChatMessage(text("Admin", DARK_RED, TextDecoration.BOLD), player, event, messageColor))
+			adminAction(formatChatMessage(text("Admin ", DARK_RED, TextDecoration.BOLD), player, event, messageColor))
 		}
 	},
 
@@ -190,18 +189,18 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return
 			}
 
-			staffAction(formatChatMessage(text("Staff", DARK_GRAY, TextDecoration.BOLD), player, event, messageColor))
+			staffAction(formatChatMessage(text("Staff ", AQUA, TextDecoration.BOLD), player, event, messageColor))
 		}
 	},
 
-	MOD(text("Mod", GREEN), listOf("mod", "modchat"), AQUA) {
+	MOD(text("Mod", DARK_AQUA), listOf("mod", "modchat"), AQUA) {
 		override fun onChat(player: Player, event: AsyncChatEvent) {
 			if (!player.hasPermission("chat.channel.mod")) {
 				player.userError("You don't have access to that!")
 				return
 			}
 
-			modAction(formatChatMessage(text("Mod", DARK_AQUA, TextDecoration.BOLD), player, event, messageColor))
+			modAction(formatChatMessage(text("Mod ", DARK_AQUA, TextDecoration.BOLD), player, event, messageColor))
 		}
 	},
 
@@ -212,7 +211,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return
 			}
 
-			devAction(formatChatMessage(text("Dev", DARK_AQUA, TextDecoration.BOLD), player, event, messageColor))
+			devAction(formatChatMessage(text("Dev ", DARK_AQUA, TextDecoration.BOLD), player, event, messageColor))
 		}
 	},
 
@@ -224,7 +223,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 			}
 
 			contentDesignAction(formatChatMessage(
-				ofChildren(text("Content", GREEN, TextDecoration.BOLD), text("Design", RED, TextDecoration.BOLD)),
+				ofChildren(text("Content ", GREEN, TextDecoration.BOLD), text("Design", RED, TextDecoration.BOLD)),
 				player,
 				event,
 				messageColor
@@ -239,7 +238,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return
 			}
 
-			vipAction(formatChatMessage(text("VIP", GREEN, TextDecoration.BOLD), player, event, messageColor))
+			vipAction(formatChatMessage(text("VIP ", GREEN, TextDecoration.BOLD), player, event, messageColor))
 		}
 	},
 
@@ -249,8 +248,8 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				?: return player.userError("You're not riding a starship! <italic>(Hint: To get back to global, use /global)")
 
 			val prefix = when (player) {
-				(starship.controller as? PlayerController)?.player -> text("[Captain]", BLUE)
-				else -> text("[Ship]", HEColorScheme.HE_LIGHT_BLUE)
+				(starship.controller as? PlayerController)?.player -> text("[Captain] ", BLUE)
+				else -> text("[Ship] ", HEColorScheme.HE_LIGHT_BLUE)
 			}
 
 			starship.sendMessage(formatChatMessage(prefix, player, event, messageColor).buildChatComponent())
@@ -264,7 +263,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			val prefix = ofChildren(
 				displayName,
-				Component.space(),
+				space(),
 				if (fleet.leaderId == player.uniqueId) text(SidebarIcon.FLEET_COMMANDER_ICON.text, GOLD, TextDecoration.BOLD) else empty()
 			)
 
@@ -307,7 +306,8 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				displayName,
 				text(" "),
 				text(settlementName, AQUA),
-				formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.nationTag ?: ""))
+				formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.nationTag ?: "")),
+				space()
 			)
 
 			nationAction(NationsChatMessage(
@@ -334,7 +334,8 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				displayName,
 				text(" "),
 				text(nationName, YELLOW),
-				formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.nationTag ?: ""))
+				formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.nationTag ?: "")),
+				space()
 			)
 
 			allyAction(NationsChatMessage(
