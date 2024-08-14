@@ -43,6 +43,7 @@ import net.horizonsend.ion.server.features.nations.StationSieges
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.npcs.StarshipDealers
 import net.horizonsend.ion.server.features.npcs.TutorialNPCs
+import net.horizonsend.ion.server.features.npcs.traits.NPCTraits
 import net.horizonsend.ion.server.features.ores.generation.OreGeneration
 import net.horizonsend.ion.server.features.player.CombatNPCs
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
@@ -104,6 +105,7 @@ val components: List<IonComponent> = listOf(
 	Levels,
 	SLXP,
 
+	NPCTraits,
 	CombatNPCs,
 
 	CustomRecipes,
