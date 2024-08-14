@@ -127,7 +127,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	}
 
 	fun Player.hasProtection(): Boolean {
-		if (isCitizensLoaded && registries.any { it.getByUniqueId(uniqueId) != null }) return false
+		if (hasMetadata("NPC")) return false
 
 		val player = PlayerCache[this]
 		val playerLevel = PlayerXPLevelCache[this]
