@@ -410,7 +410,13 @@ internal object NationCommand : SLCommand() {
 		sender.rewardAchievement(Achievement.CREATE_OUTPOST)
 
 		val nationName = getNationName(nationId)
-		Notify.chatAndEvents(nationImportantMessageFormat("{0} claimed the territory {1} for their nation {2}!", sender.name, territory.name, nationName))
+		Notify.chatAndEvents(nationImportantMessageFormat(
+			"{0} claimed the territory {1} on {2} for their nation {3}!",
+			sender.name,
+			territory.name,
+			territory.world,
+			nationName
+		))
 	}
 
 	@Suppress("unused")
@@ -425,13 +431,20 @@ internal object NationCommand : SLCommand() {
 			.firstOrNull { it.name.equals(territory, ignoreCase = true) }
 			?: fail { "Territory $territory not found" }
 		val territoryName = regionTerritory.name
+		val territoryWorld = regionTerritory.world
 
 		failIf(regionTerritory.nation != nationId) { "$territoryName is not claimed by your nation" }
 
 		Territory.setNation(regionTerritory.id, null)
 
 		val nationName = getNationName(nationId)
-		Notify.chatAndEvents(nationImportantMessageFormat("{0} unclaimed the territory {1} from their nation {2}!", sender.name, territoryName, nationName))
+		Notify.chatAndEvents(nationImportantMessageFormat(
+			"{0} unclaimed the territory {1} on {2} from their nation {2}!",
+			sender.name,
+			territoryName,
+			territoryWorld,
+			nationName
+		))
 	}
 
 	@Suppress("unused")
