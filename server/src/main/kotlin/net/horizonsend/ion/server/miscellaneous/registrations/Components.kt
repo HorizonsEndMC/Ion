@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.features.gear.Gear
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
+import net.horizonsend.ion.server.features.misc.AutoRestart
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.misc.CombatNPCs
 import net.horizonsend.ion.server.features.misc.Decomposers
@@ -92,6 +93,7 @@ val components: List<IonComponent> = listOf(
 	GameplayTweaks,
 	DBManager,
 	RedisActions,
+	AutoRestart,
 	Caches,
 	Discord,
 	Notify,

@@ -33,6 +33,7 @@ data class ServerConfiguration(
 	val eventLoggerWebhook: String? = null,
 	val getPosMaxRange: Double = 600.0,
 	val nearMaxRange: Double = 1200.0,
+	val restartHour: Int = 8,
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
