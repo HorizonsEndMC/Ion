@@ -51,7 +51,7 @@ object Tasks {
 
 		val now: ZonedDateTime = ZonedDateTime.now()
 
-		var time: ZonedDateTime = now.withHour(hour)
+		var time: ZonedDateTime = now.withHour(hour).withMinute(0).withSecond(0)
 
 		if (time.isBefore(now) || time.isEqual(now)) {
 			time = now.plusDays(1).withHour(hour)
