@@ -64,3 +64,10 @@ data class NoiseFactor(
 		return previousResult + (previousResult * noise).roundToInt()
 	}
 }
+
+@Serializable
+data class WeightFactor(val weight: DoubleAmount, override val parent: Factor) : ChildFactor {
+	override fun modifyFactor(location: Location, previousResult: Int): Int {
+		return (previousResult * weight.get()).roundToInt()
+	}
+}
