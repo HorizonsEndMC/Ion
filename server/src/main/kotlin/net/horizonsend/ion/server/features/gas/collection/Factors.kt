@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.gas.collection
 
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.server.configuration.DoubleAmount
+import net.horizonsend.ion.server.configuration.IntegerAmount
 import org.bukkit.Location
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -22,25 +24,25 @@ sealed interface ChildFactor : Factor {
 }
 
 @Serializable
-data class StaticBase(val amount: Int) : Factor {
+data class StaticBase(val amount: IntegerAmount) : Factor {
 	override fun getAmount(location: Location): Int {
-		return amount
+		return amount.get()
 	}
 }
 
 @Serializable
 data class HeightRamp(
 	override val parent: Factor,
-	val minHeight: Int,
-	val maxHeight: Int,
-	val minValue: Double,
-	val maxValue: Double
+	val minHeight: IntegerAmount,
+	val maxHeight: IntegerAmount,
+	val minValue: DoubleAmount,
+	val maxValue: DoubleAmount
 ) : ChildFactor {
 	override fun modifyFactor(location: Location, previousResult: Int): Int {
-		if (location.y < minHeight || location.y > maxHeight) return previousResult
+		if (location.y < minHeight.get() || location.y > maxHeight.get()) return previousResult
 
-		val slope = (maxValue - minValue) / (maxHeight - minHeight)
-		val ramp = ((location.y - minHeight) * slope) + minValue
+		val slope = (maxValue.get() - minValue.get()) / (maxHeight.get() - minHeight.get())
+		val ramp = ((location.y - minHeight.get()) * slope) + minValue.get()
 
 		return (previousResult * ramp).roundToInt()
 	}
@@ -49,15 +51,15 @@ data class HeightRamp(
 @Serializable
 data class NoiseFactor(
 	override val parent: Factor,
-	val minHeight: Int,
-	val maxHeight: Int,
-	val noiseMin: Double,
-	val noiseMax: Double,
+	val minHeight: IntegerAmount,
+	val maxHeight: IntegerAmount,
+	val noiseMin: DoubleAmount,
+	val noiseMax: DoubleAmount,
 ) : ChildFactor {
 	override fun modifyFactor(location: Location, previousResult: Int): Int {
-		if (location.y < minHeight || location.y > maxHeight) return previousResult
+		if (location.y < minHeight.get() || location.y > maxHeight.get()) return previousResult
 
-		val noise = Random.nextDouble(noiseMin, noiseMax)
+		val noise = Random.nextDouble(noiseMin.get(), noiseMax.get())
 
 		return previousResult + (previousResult * noise).roundToInt()
 	}
