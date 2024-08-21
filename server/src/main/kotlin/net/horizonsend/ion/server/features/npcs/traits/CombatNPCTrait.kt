@@ -42,8 +42,10 @@ class CombatNPCTrait : Trait("ioncombatnpc") {
 		npc.destroy()
 	}
 
-	object InventoryPersister : Persister<Array<ItemStack?>> {
-		private val itemStackPersister = ItemStackPersister()
+	class InventoryPersister : Persister<Array<ItemStack?>> {
+		companion object {
+			private val itemStackPersister = ItemStackPersister()
+		}
 
 		override fun create(root: DataKey): Array<ItemStack?>? {
 			val size = root.getInt("size", 0)
