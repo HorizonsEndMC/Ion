@@ -69,7 +69,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "OXYGEN",
 			displayName = text("Oxygen", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_OXYGEN",
-			powerMultipler = IonServer.globalGassesConfiguration.gasses.oxygen.powerMultiplier,
+			powerMultiplier = IonServer.globalGassesConfiguration.gasses.oxygen.powerMultiplier,
 			configurationSupplier = IonServer.globalGassesConfiguration.gasses::oxygen
 		) {}
 	)
@@ -78,7 +78,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "CHLORINE",
 			displayName = text("Chlorine", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_CHLORINE",
-			powerMultipler = IonServer.globalGassesConfiguration.gasses.chlorine.powerMultiplier,
+			powerMultiplier = IonServer.globalGassesConfiguration.gasses.chlorine.powerMultiplier,
 			configurationSupplier = IonServer.globalGassesConfiguration.gasses::chlorine
 		) {}
 	)
@@ -87,7 +87,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "FLUORINE",
 			displayName = text("Fluorine", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_FLUORINE",
-			powerMultipler = IonServer.globalGassesConfiguration.gasses.fluorine.powerMultiplier,
+			powerMultiplier = IonServer.globalGassesConfiguration.gasses.fluorine.powerMultiplier,
 			configurationSupplier = IonServer.globalGassesConfiguration.gasses::fluorine
 		) {}
 	)

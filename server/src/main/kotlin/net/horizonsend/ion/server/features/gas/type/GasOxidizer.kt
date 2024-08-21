@@ -10,6 +10,5 @@ abstract class GasOxidizer(
 	containerIdentifier: String,
 	configurationSupplier: Supplier<Gasses.GasConfiguration>,
 
-	val powerMultipler: Double
+	val powerMultiplier: Double
 ) : Gas(identifier, displayName, containerIdentifier, configurationSupplier)
-

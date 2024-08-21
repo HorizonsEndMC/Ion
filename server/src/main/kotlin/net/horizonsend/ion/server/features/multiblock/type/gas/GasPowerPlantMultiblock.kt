@@ -182,7 +182,7 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 			furnace.burnTime = fuelType.cooldown.toShort()
 			furnace.cookTime = (-1000).toShort()
 
-			val power = (fuelType.powerPerUnit * oxidizerType.powerMultipler) * consumed
+			val power = (fuelType.powerPerUnit * oxidizerType.powerMultiplier) * consumed
 			PowerMachines.addPower(sign, power.roundToInt())
 		} else {
 			furnace.world.playEffect(furnace.location.add(0.5, 0.5, 0.5), Effect.SMOKE, 4)
