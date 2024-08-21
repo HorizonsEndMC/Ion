@@ -1,0 +1,30 @@
+{
+	"flags": [],
+	"environments": [],
+	"gasses": {
+		"hydrogen": {
+			"factors": []
+		},
+		"nitrogen": {
+			"factors": []
+		},
+		"methane": {
+			"factors": []
+		},
+		"oxygen": {
+			"factors": []
+		},
+		"chlorine": {
+			"factors": []
+		},
+		"fluorine": {
+			"factors": []
+		},
+		"carbonDioxide": {
+			"factors": []
+		},
+		"helium": {
+			"factors": []
+		}
+	}
+}
