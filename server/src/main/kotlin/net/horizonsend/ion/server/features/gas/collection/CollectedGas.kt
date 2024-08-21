@@ -8,7 +8,7 @@ import org.bukkit.Location
 @Serializable
 data class CollectedGas(
 	private val gasIdentifier: String,
-	val factors: Factor
+	val factorStack: Factor
 ) {
 	val gas get() = Gasses[gasIdentifier]
 
@@ -16,7 +16,7 @@ data class CollectedGas(
 	 * Returns the amount collected
 	 **/
 	private fun tryCollect(location: Location): CollectionResult {
-		return CollectionResult(gas, factors.getAmount(location))
+		return CollectionResult(gas, factorStack.getAmount(location))
 	}
 
 	data class CollectionResult(val gas: Gas, val amount: Int)

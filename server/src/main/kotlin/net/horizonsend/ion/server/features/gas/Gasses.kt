@@ -39,10 +39,7 @@ object Gasses : IonServerComponent(false) {
 			containerIdentifier = "GAS_CANISTER_HYDROGEN",
 			powerPerUnit = IonServer.globalGassesConfiguration.gasses.hydrogen.powerPerUnit,
 			cooldown = IonServer.globalGassesConfiguration.gasses.hydrogen.cooldown,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::hydrogen,
-			collectionFactorSupplier = {
-				it.configuration.gasses.hydrogen.formattedFactors
-			}
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::hydrogen
 		) {}
 	)
 	val NITROGEN = registerGas(
@@ -52,10 +49,7 @@ object Gasses : IonServerComponent(false) {
 			containerIdentifier = "GAS_CANISTER_NITROGEN",
 			powerPerUnit = IonServer.globalGassesConfiguration.gasses.nitrogen.powerPerUnit,
 			cooldown = IonServer.globalGassesConfiguration.gasses.nitrogen.cooldown,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::nitrogen,
-			collectionFactorSupplier = {
-				it.configuration.gasses.nitrogen.formattedFactors
-			}
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::nitrogen
 		) {}
 	)
 	val METHANE = registerGas(
@@ -65,10 +59,7 @@ object Gasses : IonServerComponent(false) {
 			containerIdentifier = "GAS_CANISTER_METHANE",
 			powerPerUnit = IonServer.globalGassesConfiguration.gasses.methane.powerPerUnit,
 			cooldown = IonServer.globalGassesConfiguration.gasses.methane.cooldown,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::methane,
-			collectionFactorSupplier = {
-				it.configuration.gasses.methane.formattedFactors
-			}
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::methane
 		) {}
 	)
 
@@ -79,10 +70,7 @@ object Gasses : IonServerComponent(false) {
 			displayName = text("Oxygen", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_OXYGEN",
 			powerMultipler = IonServer.globalGassesConfiguration.gasses.oxygen.powerMultiplier,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::oxygen,
-			collectionFactorSupplier = {
-				it.configuration.gasses.oxygen.formattedFactors
-			}
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::oxygen
 		) {}
 	)
 	val CHLORINE = registerGas(
@@ -91,10 +79,7 @@ object Gasses : IonServerComponent(false) {
 			displayName = text("Chlorine", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_CHLORINE",
 			powerMultipler = IonServer.globalGassesConfiguration.gasses.chlorine.powerMultiplier,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::chlorine,
-			collectionFactorSupplier = {
-				it.configuration.gasses.chlorine.formattedFactors
-			}
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::chlorine
 		) {}
 	)
 	val FLUORINE = registerGas(
@@ -103,10 +88,7 @@ object Gasses : IonServerComponent(false) {
 			displayName = text("Fluorine", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_FLUORINE",
 			powerMultipler = IonServer.globalGassesConfiguration.gasses.fluorine.powerMultiplier,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::fluorine,
-			collectionFactorSupplier = {
-				it.configuration.gasses.fluorine.formattedFactors
-			}
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::fluorine
 		) {}
 	)
 
@@ -116,10 +98,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "HELIUM",
 			displayName = text("Helium", NamedTextColor.BLUE),
 			containerIdentifier = "GAS_CANISTER_HELIUM",
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::helium,
-			collectionFactorSupplier = {
-				it.configuration.gasses.helium.formattedFactors
-			}
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::helium
 		) {}
 	)
 	val CARBON_DIOXIDE = registerGas(
@@ -127,10 +106,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "CARBON_DIOXIDE",
 			displayName = text("Carbon Dioxide", NamedTextColor.BLUE),
 			containerIdentifier = "GAS_CANISTER_CARBON_DIOXIDE",
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::carbonDioxide,
-			collectionFactorSupplier = {
-				it.configuration.gasses.carbonDioxide.formattedFactors
-			}
+			configurationSupplier = IonServer.globalGassesConfiguration.gasses::carbonDioxide
 		) {}
 	)
 

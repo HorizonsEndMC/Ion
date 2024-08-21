@@ -8,5 +8,5 @@ import net.horizonsend.ion.server.features.world.environment.Environment
 data class WorldSettings(
     val flags: MutableSet<WorldFlag> = mutableSetOf(),
     val environments: MutableSet<Environment> = mutableSetOf(),
-	val gasses: WorldGasConfiguration = WorldGasConfiguration()
+	val gasConfiguration: WorldGasConfiguration = WorldGasConfiguration()
 )
