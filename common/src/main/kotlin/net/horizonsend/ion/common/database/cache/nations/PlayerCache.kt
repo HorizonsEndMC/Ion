@@ -84,6 +84,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var showItemSearchItem: Boolean = true,
 
 		var useAlternateDCCruise: Boolean = true,
+		var dcSpeedModifier: Int = 1,
 		var enableAdditionalSounds: Boolean = true,
 		var soundCruiseIndicator: Int = 0,
 
@@ -549,6 +550,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::dcSpeedModifier]?.let {
+				synced{
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val dcSpeedModifier = it.int()
+					data.dcSpeedModifier = dcSpeedModifier
+				}
+			}
+
 			change[SLPlayer::enableAdditionalSounds]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -662,6 +672,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			hudIconBookmarks = data.hudIconBookmarks,
 			showItemSearchItem = data.showItemSearchItem,
 			useAlternateDCCruise = data.useAlternateDCCruise,
+			dcSpeedModifier = data.dcSpeedModifier,
 			enableAdditionalSounds = data.enableAdditionalSounds,
 			soundCruiseIndicator = data.soundCruiseIndicator
 		)

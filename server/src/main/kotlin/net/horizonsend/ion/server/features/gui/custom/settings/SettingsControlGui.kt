@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
-import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.custom.settings.commands.ControlSettingsCommand
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -25,17 +25,19 @@ import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
+class SettingsControlGui(val player: Player) : AbstractBackgroundPagedGui {
 
     companion object {
         private const val SETTINGS_PER_PAGE = 5
         private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
     }
 
+
     override var currentWindow: Window? = null
 
     private val buttonsList = listOf(
-        ShowItemSearchItems()
+        DcOverrideButton(),
+        DcSpeedModifierButton()
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -69,11 +71,12 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
     override fun createText(player: Player, currentPage: Int): Component {
 
         val enabledSettings = listOf(
-            PlayerCache[player.uniqueId].showItemSearchItem
+            PlayerCache[player.uniqueId].useAlternateDCCruise,
+            PlayerCache[player.uniqueId].dcSpeedModifier
         )
 
         // create a new GuiText builder
-        val header = "Other Settings"
+        val header = "Control Settings"
         val guiText = GuiText(header)
         guiText.addBackground()
 
@@ -94,7 +97,12 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
 
             // setting description
             guiText.add(
-                component = if (enabledSettings[buttonIndex]) text("ENABLED", GREEN) else text("DISABLED", RED),
+                component = if (enabledSettings[buttonIndex] is Boolean){
+                    if (enabledSettings[buttonIndex] as Boolean) text("ENABLED", GREEN) else text("DISABLED", RED)
+                } else when (buttonIndex) {
+                    1 -> text(PlayerCache[player.uniqueId].dcSpeedModifier)
+                    else -> Component.empty()
+                },
                 line = line + 1,
                 horizontalShift = 21
             )
@@ -117,13 +125,24 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
         currentWindow = open(player).apply { open() }
     }
 
-    private inner class ShowItemSearchItems : GuiItems.AbstractButtonItem(
-        text("Show /itemsearch Items").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
+    private inner class DcOverrideButton : GuiItems.AbstractButtonItem(
+        text("DC Overrides Cruise").decoration(TextDecoration.ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            val itemSearch = PlayerCache[player.uniqueId].showItemSearchItem
-            SearchCommand.itemSearchToggle(player, !itemSearch)
+            val alternateDcCruise = PlayerCache[player.uniqueId].useAlternateDCCruise
+            ControlSettingsCommand.onUseAlternateDCCruise(player, !alternateDcCruise)
+
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private inner class DcSpeedModifierButton : GuiItems.AbstractButtonItem(
+        text("DC Speed Modifier").decoration(TextDecoration.ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            ControlSettingsCommand.onChangeDcModifier(player)
 
             currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }

@@ -4,6 +4,7 @@ import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType.BATTLECRUISER
@@ -80,7 +81,8 @@ object StarshipControl : IonServerComponent() {
 		// Ping compensation
 		val ping = playerPilot?.let { getPing(playerPilot) }
 		val movementCooldown = starship.directControlCooldown
-		val speedFac = if (ping != null && ping > movementCooldown) 2 else 1
+		val playerDcModifier = playerPilot?.let { PlayerCache[playerPilot.uniqueId].dcSpeedModifier } ?: 1
+		val speedFac = if (ping != null && ping > movementCooldown) max(2, playerDcModifier) else playerDcModifier
 
 		val selectedSpeed = controller.selectedDirectControlSpeed
 

@@ -107,6 +107,7 @@ data class SLPlayer(
 
 	var showItemSearchItem: Boolean = true,
 	var useAlternateDCCruise: Boolean = false,
+	var dcSpeedModifier: Int = 1,
 	var enableAdditionalSounds: Boolean = true,
 	var soundCruiseIndicator: Int = 0,
 
