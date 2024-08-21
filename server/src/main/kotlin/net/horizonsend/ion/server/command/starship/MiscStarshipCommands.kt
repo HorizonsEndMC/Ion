@@ -9,7 +9,6 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
@@ -76,7 +75,6 @@ import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import org.litote.kmongo.setValue
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
@@ -752,20 +750,5 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		starship.targetedPosition = Location(starship.world, x, y, z)
 		sender.information("Targeted: $x, $y, $z with the ships Arsenal Missiles")
-	}
-
-	@CommandAlias("enableAlternateDCCruise")
-	@CommandCompletion("true|false")
-	@Suppress("unused")
-	fun onUseAlternateDCCruise(sender: Player, @Optional toggle: Boolean?) {
-		val useAlternateDcCruise = toggle ?: !PlayerCache[sender].useAlternateDCCruise
-		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::useAlternateDCCruise, useAlternateDcCruise))
-		PlayerCache[sender.uniqueId].useAlternateDCCruise = useAlternateDcCruise
-		sender.success("Changed alternate DC cruise to $useAlternateDcCruise")
-		if (useAlternateDcCruise) {
-			sender.success("Activating cruise while in direct control will override DC")
-		} else {
-			sender.success("Direct control will not be overriden by cruise")
-		}
 	}
 }

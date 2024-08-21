@@ -30,6 +30,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
     override var currentWindow: Window? = null
 
     private val buttonsList = listOf(
+        ControlSettingsButton(),
         SidebarSettingsButton(),
         HudSettingsButton(),
         SoundSettingsButton(),
@@ -101,6 +102,15 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     fun openMainWindow() {
         currentWindow = open(player).apply { open() }
+    }
+
+    private inner class ControlSettingsButton : GuiItems.AbstractButtonItem(
+        text("Control Settings").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SettingsControlGui(player).openMainWindow()
+        }
     }
 
     private inner class SidebarSettingsButton : GuiItems.AbstractButtonItem(
