@@ -112,6 +112,7 @@ data class SLPlayer(
 	var soundCruiseIndicator: Int = 0,
 
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
+	var wasKilledOn: Set<String> = setOf(),
 ) : DbObject {
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(
 		SLPlayer::class, setup = {

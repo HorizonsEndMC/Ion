@@ -32,6 +32,7 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
+import org.litote.kmongo.push
 import org.litote.kmongo.setValue
 import java.util.EnumSet
 import java.util.UUID
@@ -43,6 +44,9 @@ object CombatNPCs : IonServerComponent(true) {
 
 	override fun onEnable() {
 		if (!isCitizensLoaded) return
+
+		// Do not register the listeners if not enabled
+		if (!IonServer.featureFlags.combatNPCs) return
 
 		manager.enableRegistry()
 
@@ -59,8 +63,6 @@ object CombatNPCs : IonServerComponent(true) {
 
 		//when a player quits, create a combat npc
 		listen<PlayerQuitEvent> { event ->
-			if (!IonServer.featureFlags.combatNPCs) return@listen
-
 			val player = event.player
 			val playerId = player.uniqueId
 
@@ -95,31 +97,19 @@ object CombatNPCs : IonServerComponent(true) {
 		}
 
 		listen<NPCDamageByEntityEvent>(EventPriority.LOWEST) { event ->
-			if (event.damager is Player) return@listen
-
-			event.isCancelled = true
+			if (event.damager !is Player) {
+				event.isCancelled = true
+			}
 		}
 
-		val acceptableCauses: EnumSet<EntityDamageEvent.DamageCause> = EnumSet.of(
-			EntityDamageEvent.DamageCause.ENTITY_ATTACK,
-			EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK,
-			EntityDamageEvent.DamageCause.ENTITY_EXPLOSION,
-			EntityDamageEvent.DamageCause.BLOCK_EXPLOSION,
-			EntityDamageEvent.DamageCause.FIRE,
-			EntityDamageEvent.DamageCause.FIRE_TICK,
-			EntityDamageEvent.DamageCause.PROJECTILE,
-			EntityDamageEvent.DamageCause.SUICIDE,
-			EntityDamageEvent.DamageCause.CUSTOM,
-			EntityDamageEvent.DamageCause.LAVA,
-		)
-
 		listen<NPCDamageEvent>(EventPriority.LOWEST) { event ->
-			if (!acceptableCauses.contains(event.cause)) return@listen
+			if (acceptableCauses.contains(event.cause)) return@listen
 
 			event.isCancelled = true
 		}
 
 		listen<NPCDeathEvent>(EventPriority.LOWEST) { event ->
+			println("NPC DIED")
 			val npc = event.npc
 			val trait = npc.getTraitNullable(CombatNPCTrait::class.java) ?: return@listen
 
@@ -149,7 +139,7 @@ object CombatNPCs : IonServerComponent(true) {
 			destroyNPC(npc)
 
 			Tasks.async {
-				SLPlayer.updateById(playerId.slPlayerId, setValue(SLPlayer::wasKilled, true))
+				SLPlayer.updateById(playerId.slPlayerId, push(SLPlayer::wasKilledOn, IonServer.configuration.serverName))
 
 				val name: String = SLPlayer.getName(playerId.slPlayerId) ?: "UNKNOWN"
 				Notify.chatAndEvents(miniMessage.deserialize("<red>Combat NPC of $name was slain by ${killer?.name}"))
@@ -162,7 +152,7 @@ object CombatNPCs : IonServerComponent(true) {
 
 		// Handle logins after npc killed
 		listen<PlayerJoinEvent> { event ->
-			if (SLPlayer[event.player].wasKilled && IonServer.legacySettings.master) { // TODO find a more permanent fix for server checks
+			if (SLPlayer[event.player].wasKilledOn.contains(IonServer.configuration.serverName)) {
 				event.player.inventory.clear()
 				event.player.health = 0.0
 				event.player.alert("Your NPC was killed while you were offline.")
@@ -171,10 +161,10 @@ object CombatNPCs : IonServerComponent(true) {
 
 		// Handle deaths from having npc killed
 		listen<PlayerDeathEvent>(priority = EventPriority.LOWEST) { event ->
-			if (event.player.isCombatNpc()) return@listen
+			if (event.player.hasMetadata("NPC")) return@listen
 
 			val data = SLPlayer[event.player]
-			if (data.wasKilled) {
+			if (data.wasKilledOn.contains(IonServer.configuration.serverName)) {
 				event.drops.clear()
 				event.deathMessage(null)
 
@@ -183,20 +173,29 @@ object CombatNPCs : IonServerComponent(true) {
 		}
 	}
 
+	private val acceptableCauses: EnumSet<EntityDamageEvent.DamageCause> = EnumSet.of(
+		EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+		EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK,
+		EntityDamageEvent.DamageCause.ENTITY_EXPLOSION,
+		EntityDamageEvent.DamageCause.BLOCK_EXPLOSION,
+		EntityDamageEvent.DamageCause.FIRE,
+		EntityDamageEvent.DamageCause.FIRE_TICK,
+		EntityDamageEvent.DamageCause.PROJECTILE,
+		EntityDamageEvent.DamageCause.SUICIDE,
+		EntityDamageEvent.DamageCause.CUSTOM,
+		EntityDamageEvent.DamageCause.LAVA,
+	)
+
 	override fun onDisable() {
+		if (!IonServer.featureFlags.combatNPCs) return // Not enabled
+
 		manager.disableRegistry()
 	}
 
-	fun destroyNPC(npc: NPC): CompletableFuture<Unit> =
-		npc.storedLocation.world.getChunkAtAsync(npc.storedLocation).thenApply { _ ->
-			manager.removeNPC(npc.uniqueId)
+	fun destroyNPC(npc: NPC): CompletableFuture<Unit> = npc.storedLocation.world.getChunkAtAsync(npc.storedLocation).thenApply { _ ->
+		manager.removeNPC(npc.uniqueId)
 
-			npc.storedLocation.chunk.removePluginChunkTicket(IonServer)
-		}
-
-	/** Bukkit treats NPCs as Player **/
-	fun Player.isCombatNpc() : Boolean {
-		return manager.isNpc(this)
+		npc.storedLocation.chunk.removePluginChunkTicket(IonServer)
 	}
 
 	val EXPIRED_NPC_CUTOFF get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(4)
