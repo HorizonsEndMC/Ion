@@ -34,17 +34,9 @@ class BlasterListeners : SLEventListener() {
 		val arena: String = if (killer.world.hasFlag(WorldFlag.ARENA)) "<#555555>[<#ffff66>Arena<#555555>]<reset> " else ""
 
 		val blaster = customItem.displayName
-		val victimColor =
-			"<#" + Integer.toHexString((
-					PlayerCache[victim].nationOid?.let { Nation.findById(it) }?.color
-						?: 16777215
-					)) + ">"
+		val victimColor = if (victim.hasMetadata("NPC")) "<#FFFFFF>" else "<#" + Integer.toHexString((PlayerCache[victim].nationOid?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
 
-		val killerColor =
-			"<#" + Integer.toHexString((
-					PlayerCache[killer].nationOid?.let { Nation.findById(it) }?.color
-						?: 16777215
-					)) + ">"
+		val killerColor = "<#" + Integer.toHexString((PlayerCache[killer].nationOid?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
 
 		val distance = killer.location.distance(victim.location)
 		val verb = when (customItem.identifier) {
