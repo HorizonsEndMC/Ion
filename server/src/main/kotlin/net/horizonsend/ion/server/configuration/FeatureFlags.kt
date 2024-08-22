@@ -7,5 +7,5 @@ data class FeatureFlags(
 	val economy: Boolean = true,
 	val bounties: Boolean = true,
 	val tutorials: Boolean = false,
-	val combatNPCs: Boolean = true,
+	val combatNPCs: Boolean = true
 )
