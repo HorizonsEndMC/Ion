@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -33,7 +34,9 @@ class IonWorld private constructor(
 	 * @see Environment
 	 * @see WorldSettings
 	 **/
-	val configuration: WorldSettings by lazy { Configuration.load(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json") }
+	val configuration: WorldSettings by lazy {
+		Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name])
+	}
 
 	/** Write the configuration to the disk */
 	fun saveConfiguration() = Configuration.save(configuration, WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json")
