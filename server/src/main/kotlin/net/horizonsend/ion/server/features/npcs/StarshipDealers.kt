@@ -3,10 +3,6 @@ package net.horizonsend.ion.server.features.npcs
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.citizensnpcs.api.event.NPCRightClickEvent
-import net.citizensnpcs.api.npc.NPC
-import net.citizensnpcs.api.npc.NPCRegistry
-import net.citizensnpcs.trait.LookClose
-import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -16,8 +12,9 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.nations.gui.item
-import net.horizonsend.ion.server.features.progression.Levels
+import net.horizonsend.ion.server.features.npcs.traits.ShipDealerTrait
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
@@ -55,9 +52,7 @@ object StarshipDealers : IonServerComponent(true) {
 		val npc = event.npc
 		val player = event.clicker
 
-		if (!manager.contains(npc)) {
-			return
-		}
+		if (npc.traits.filterIsInstance<ShipDealerTrait>().none()) return
 
 		MenuHelper.apply {
 			val ships: List<GuiItem> = schematicMap.map { (ship, schematic) ->
