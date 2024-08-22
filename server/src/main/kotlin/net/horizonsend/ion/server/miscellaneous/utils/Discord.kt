@@ -68,6 +68,13 @@ object Discord : IonServerComponent(true) {
 
 		textChannel.sendMessage(message).queue()
 	}
+
+	fun sendMessage(channel: Long, message: Component) {
+		if (!enabled) return
+		val textChannel = getChannel(channel) ?: return
+
+		textChannel.sendMessage(asDiscord(message)).queue()
+	}
 }
 
 fun Embed.jda(): MessageEmbed {
