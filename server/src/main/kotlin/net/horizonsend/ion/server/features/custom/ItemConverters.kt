@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom
 
 import net.horizonsend.ion.server.command.admin.ConvertCommand
+import net.horizonsend.ion.server.features.misc.NewPlayerProtection.updateProtection
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryOpenEvent
@@ -32,6 +33,8 @@ object ItemConverters : SLEventListener() {
 
 	@EventHandler
 	fun onPlayerLogin(event: PlayerJoinEvent) {
+		event.player.updateProtection()
+
 		val inventory = event.player.inventory
 		for (item in inventory.filterNotNull()) {
 			val newVersion = ConvertCommand.convertCustomMineral(item)
