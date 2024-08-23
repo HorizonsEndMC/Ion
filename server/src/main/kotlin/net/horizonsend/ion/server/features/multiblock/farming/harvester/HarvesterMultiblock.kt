@@ -42,13 +42,13 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, tierNumber: Int) 
 		val inventory = getInventory(sign) ?: return
 		event.isCancelled = false
 		event.isBurning = false
-		event.burnTime = 20
+		event.burnTime = 200
 
 		var broken = 0
 		val initialPower = PowerMachines.getPower(sign)
 
 		if (initialPower == 0) {
-			event.burnTime = 500
+			event.burnTime = 800
 			return
 		}
 
@@ -63,13 +63,13 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, tierNumber: Int) 
 
 			for (item in drops) {
 				if (!LegacyItemUtils.canFit(inventory, item)) {
-					event.burnTime = 500
+					event.burnTime = 800
 					break
 				}
 			}
 
 			if ((broken + 1) * powerPerCrop > initialPower) {
-				event.burnTime = 500
+				event.burnTime = 800
 				break
 			}
 
@@ -79,7 +79,7 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, tierNumber: Int) 
 			val didNotFit = inventory.addItem(*drops)
 
 			if (didNotFit.isNotEmpty()) {
-				event.burnTime = 500
+				event.burnTime = 800
 				break
 			}
 		}
