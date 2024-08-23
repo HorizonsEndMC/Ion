@@ -439,7 +439,7 @@ internal object NationCommand : SLCommand() {
 
 		val nationName = getNationName(nationId)
 		Notify.chatAndEvents(nationImportantMessageFormat(
-			"{0} unclaimed the territory {1} on {2} from their nation {2}!",
+			"{0} unclaimed the territory {1} on {2} from their nation {3}!",
 			sender.name,
 			territoryName,
 			territoryWorld,
