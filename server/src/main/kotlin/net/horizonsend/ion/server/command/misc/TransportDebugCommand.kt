@@ -4,7 +4,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.TransportConfig
 import net.horizonsend.ion.server.features.transport.Wires
@@ -34,5 +36,13 @@ object TransportDebugCommand : SLCommand() {
 
 		wireQueue.shutdownNow()
 		Wires.thread = Executors.newSingleThreadExecutor(Wires.threadFactory)
+	}
+
+	@Subcommand("dumplag")
+	fun dumpStackTrace(sender: CommandSender) {
+		val string = PowerMachines.traceTrack.entries.joinToString(separator = "\n") { "${it.key}: ${it.value}" }
+		log.info(string)
+
+		sender.userError(string)
 	}
 }
