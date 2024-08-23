@@ -111,6 +111,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.AIHeavyLaserStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.AIPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.BottomArsenalStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.DownwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.HeavyLaserStarshipWeaponMultiblock
@@ -238,6 +239,7 @@ object Multiblocks : IonServerComponent() {
 			PulseCannonStarshipWeaponMultiblock,
 			HeavyLaserStarshipWeaponMultiblock,
 			AIHeavyLaserStarshipWeaponMultiblock,
+			AIPhaserStarshipWeaponMultiblock,
 			TorpedoStarshipWeaponMultiblock,
 			PointDefenseStarshipWeaponMultiblockTop,
 			PointDefenseStarshipWeaponMultiblockSide,
