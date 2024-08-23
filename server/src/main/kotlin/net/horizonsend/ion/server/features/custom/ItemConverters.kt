@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom
 
 import net.horizonsend.ion.server.command.admin.ConvertCommand
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection.updateProtection
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.updateProtection
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryOpenEvent
