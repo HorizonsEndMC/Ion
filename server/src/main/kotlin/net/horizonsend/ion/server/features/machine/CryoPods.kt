@@ -69,12 +69,12 @@ object CryoPods: SLEventListener() {
 		val sign = signPosition.block.state as? Sign
 
 		if (sign == null) {
-			player.serverError("Cryopod sign at ${cryopod.x}, ${cryopod.y}, ${cryopod.z} is missing!")
+			player.serverError("Cryopod sign at ${cryopod.x}, ${cryopod.y}, ${cryopod.z} in ${cryopod.worldName} is missing!")
 			return
 		}
 
 		if (!CryoPodMultiblock.signMatchesStructure(sign, loadChunks = true)) {
-			player.serverError("Cryopod at ${cryopod.x}, ${cryopod.y}, ${cryopod.z} is not intact!!")
+			player.serverError("Cryopod at ${cryopod.x}, ${cryopod.y}, ${cryopod.z} in ${cryopod.worldName} is not intact!")
 			return
 		}
 

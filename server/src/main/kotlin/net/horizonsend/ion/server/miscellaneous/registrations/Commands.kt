@@ -52,6 +52,7 @@ import net.horizonsend.ion.server.command.progression.BuyXPCommand
 import net.horizonsend.ion.server.command.progression.XPCommand
 import net.horizonsend.ion.server.command.qol.BlastResistanceCommand
 import net.horizonsend.ion.server.command.qol.CalcExpCommand
+import net.horizonsend.ion.server.command.qol.CheckCryoCommand
 import net.horizonsend.ion.server.command.qol.CheckProtectionCommand
 import net.horizonsend.ion.server.command.qol.ContainerCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
@@ -173,4 +174,5 @@ val commands: List<SLCommand> = listOf(
 //	HelpCommand,
 	TutorialAdminCommand,
 	TutorialCommand,
+	CheckCryoCommand,
 )
