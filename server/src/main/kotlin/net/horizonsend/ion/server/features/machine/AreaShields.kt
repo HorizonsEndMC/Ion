@@ -206,7 +206,7 @@ object AreaShields : IonServerComponent() {
 			val block = shieldLocation.block
 			if (!block.type.isWallSign) continue
 			val sign = block.getState(false) as Sign
-			val multiblock = Multiblocks[sign] as? net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield ?: continue
+			val multiblock = Multiblocks[sign] as? AreaShield ?: continue
 			if (multiblock.radius != areaShields[shieldLocation]) continue
 			if (PowerMachines.getPower(sign) > 0) event.isCancelled = true
 		}
