@@ -178,7 +178,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		}
 	}
 
-    private fun Audience.highlightBlocks(positions: Collection<Vec3i>, duration: Long) {
+    fun Audience.highlightBlocks(positions: Collection<Vec3i>, duration: Long) {
         for (pos in positions) this.highlightBlock(pos, duration)
     }
 
