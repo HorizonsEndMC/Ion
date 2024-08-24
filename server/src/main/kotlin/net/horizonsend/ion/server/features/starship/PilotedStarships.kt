@@ -86,11 +86,18 @@ object PilotedStarships : IonServerComponent() {
 		}
 
 		listen<PlayerJoinEvent> { event ->
-			val starship = getUnpiloted(event.player) ?: return@listen
+			val unpiloted = ActiveStarships.all().mapNotNull { it.controller as? UnpilotedController }
+
+			if (unpiloted.isEmpty()) return@listen
+
+			val starship = unpiloted.firstOrNull { it.player.uniqueId == event.player.uniqueId }?.starship ?: return@listen
 			val loc = starship.pilotDisconnectLocation ?: return@listen
+
+			log.info("${event.player.name} joined after disconnecting while piloting")
+			event.player.teleport(loc.toLocation(starship.world).toCenterLocation().subtract(0.0, 0.5, 0.0))
+
 			tryPilot(event.player, starship.data)
 
-			event.player.teleport(loc.toLocation(starship.world))
 			event.player.success("Since you logged out while piloting, you were teleported back to your starship")
 		}
 	}
@@ -224,10 +231,6 @@ object PilotedStarships : IonServerComponent() {
 
 		StarshipUnpilotedEvent(starship, controller).callEvent()
 	}
-
-	fun getUnpiloted(player: Player): ActiveControlledStarship? = map.filter { (controller, _) ->
-		controller is UnpilotedController && controller.player.uniqueId == player.uniqueId
-	}.values.firstOrNull()
 
 	operator fun get(player: Player): ActiveControlledStarship? = get(player.uniqueId)
 
