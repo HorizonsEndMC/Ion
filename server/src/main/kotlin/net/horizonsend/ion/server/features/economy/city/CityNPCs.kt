@@ -143,6 +143,8 @@ object CityNPCs : IonServerComponent(true) {
 						setRealisticLooking(true)
 					}
 
+					npcTypeMap[npc.uniqueId] = info.type
+
 					npc.isProtected = true
 				}
 
