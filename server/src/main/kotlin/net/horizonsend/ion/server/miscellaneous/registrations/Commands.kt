@@ -31,8 +31,6 @@ import net.horizonsend.ion.server.command.misc.RegenerateCommand
 import net.horizonsend.ion.server.command.misc.ShipFactoryCommand
 import net.horizonsend.ion.server.command.misc.ShuttleCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
-import net.horizonsend.ion.server.command.misc.tutorial.TutorialAdminCommand
-import net.horizonsend.ion.server.command.misc.tutorial.TutorialCommand
 import net.horizonsend.ion.server.command.nations.NationCommand
 import net.horizonsend.ion.server.command.nations.NationRelationCommand
 import net.horizonsend.ion.server.command.nations.SettlementCommand
@@ -172,7 +170,7 @@ val commands: List<SLCommand> = listOf(
 	LocatorCommands,
 	ItemDebugCommand,
 //	HelpCommand,
-	TutorialAdminCommand,
-	TutorialCommand,
+//	TutorialAdminCommand,
+//	TutorialCommand,
 	CheckCryoCommand,
 )
