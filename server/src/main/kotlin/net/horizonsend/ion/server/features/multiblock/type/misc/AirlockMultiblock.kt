@@ -12,6 +12,9 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.block.data.MultipleFacing
+import org.bukkit.block.data.Orientable
+import org.bukkit.block.sign.Side.FRONT
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
@@ -43,10 +46,10 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 		}
 	}
 
-	override fun onTransformSign(player: Player, sign: Sign) = sign.line(1, OFF)
+	override fun onTransformSign(player: Player, sign: Sign) = sign.getSide(FRONT).line(1, OFF)
 
-	private val OFF = text("-[OFF]-", NamedTextColor.RED)
-	private val ON = text("-[ON]-", NamedTextColor.GREEN)
+	val OFF = text("-[OFF]-", NamedTextColor.RED)
+	val ON = text("-[ON]-", NamedTextColor.GREEN)
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (event.hand != EquipmentSlot.HAND) return
@@ -60,11 +63,11 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 
 		val newData = if (enabled) {
 			Material.NETHER_PORTAL.createBlockData {
-				(it as org.bukkit.block.data.Orientable).axis = direction.rightFace.axis
+				(it as Orientable).axis = direction.rightFace.axis
 			}
 		} else {
 			Material.IRON_BARS.createBlockData {
-				(it as org.bukkit.block.data.MultipleFacing).setFace(direction.rightFace, true)
+				(it as MultipleFacing).setFace(direction.rightFace, true)
 				it.setFace(direction.leftFace, true)
 			}
 		}
