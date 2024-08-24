@@ -98,6 +98,8 @@ object PilotedStarships : IonServerComponent() {
 
 			tryPilot(event.player, starship.data)
 
+			starship.pilotDisconnectLocation = null
+
 			event.player.success("Since you logged out while piloting, you were teleported back to your starship")
 		}
 	}

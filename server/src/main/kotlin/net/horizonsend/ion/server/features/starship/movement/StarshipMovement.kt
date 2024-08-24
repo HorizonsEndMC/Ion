@@ -130,6 +130,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			starship.blocks = newLocationSet
 			moveShipComputers(world2)
 			updateDirectControlCenter()
+			moveDisconnectLocation()
 			starship.calculateMinMax()
 			updateCenter()
 			updateSubsystems(world2)
