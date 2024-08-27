@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class AIXPRewardProvider(override val starship: ActiveStarship, override val configuration: AITemplate.SLXPRewardProviderConfiguration) : AIRewardsProvider {
+class AIXPRewardProvider(override val starship: ActiveStarship, val configuration: AITemplate.SLXPRewardProviderConfiguration) : AIRewardsProvider {
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	override fun processDamagerRewards(damager: PlayerDamager, points: AtomicInteger, pointsSum: Int) {
