@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.entity
 
-import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.world.data.DataFixer
 import org.bukkit.block.Sign
 
