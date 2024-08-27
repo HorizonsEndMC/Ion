@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATE_DARK_RED
-import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -12,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.SyncTickingMul
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
+import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -54,13 +54,13 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 	}
 
 	class TestMultiblockEntity(
-		manager: ChunkMultiblockManager,
-		world: World,
-		x: Int,
-		y: Int,
-		z: Int,
-		signOffset: BlockFace,
-		var string: String
+        manager: ChunkMultiblockManager,
+        world: World,
+        x: Int,
+        y: Int,
+        z: Int,
+        signOffset: BlockFace,
+        var string: String
 	) : MultiblockEntity(manager, TestMultiblock, x, y, z, world, signOffset), SyncTickingMultiblockEntity {
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			store.addAdditionalData(NamespacedKeys.key("test"), PersistentDataType.STRING, string)

@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.multiblock.type.powerbank.new
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
-import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -12,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.SignMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
+import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Material
 import org.bukkit.World
@@ -97,15 +97,15 @@ abstract class NewPowerBankMultiblock(tierText: String) : Multiblock(), EntityMu
 	}
 
 	class PowerBankEntity(
-		manager: ChunkMultiblockManager,
-		multiblock: NewPowerBankMultiblock,
-		x: Int,
-		y: Int,
-		z: Int,
-		world: World,
-		signDirection: BlockFace,
-		override val maxPower: Int,
-		override var powerUnsafe: Int = 0
+        manager: ChunkMultiblockManager,
+        multiblock: NewPowerBankMultiblock,
+        x: Int,
+        y: Int,
+        z: Int,
+        world: World,
+        signDirection: BlockFace,
+        override val maxPower: Int,
+        override var powerUnsafe: Int = 0
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
 		override val powerDisplay: TextDisplayHandler = createTextDisplayHandler(this)
 
