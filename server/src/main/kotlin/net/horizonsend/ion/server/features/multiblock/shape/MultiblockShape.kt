@@ -317,7 +317,7 @@ class MultiblockShape {
 			edit = edit
 		)
 
-		fun filteredTypes(alias: String, filter: (Material) -> Boolean) = anyType(alias, MATERIALS.filter(filter))
+		fun filteredTypes(alias: String, edit: BlockRequirement.() -> Unit = {}, filter: (Material) -> Boolean) = anyType(alias, MATERIALS.filter(filter), edit = edit)
 
 		fun carbyne() = anyType("any concrete", CONCRETE_TYPES) { setExample(Material.GRAY_CONCRETE.createBlockData()) }
 
@@ -338,13 +338,13 @@ class MultiblockShape {
 		fun stainedGlassPane() = filteredTypes("any stained glass pane") { it.isStainedGlassPane }
 		fun anyGlassPane() = filteredTypes("any stained glass") { it.isGlassPane }
 
-		fun anyStairs() = filteredTypes("any stair block") { it.isStairs }
+		fun anyStairs() = filteredTypes("any stair block", edit = { setExample(Material.STONE_BRICK_STAIRS.createBlockData()) }) { it.isStairs }
 
-		fun anyWall() = filteredTypes("any wall block") { it.isWall }
+		fun anyWall() = filteredTypes("any wall block", edit = { setExample(Material.STONE_BRICK_WALL.createBlockData()) }) { it.isWall }
 
 		fun anyWool() = filteredTypes("any wool block") { it.isWool }
 
-		fun anySlab() = filteredTypes("any slab block") { it.isSlab }
+		fun anySlab() = filteredTypes("any slab block", edit = { setExample(Material.STONE_BRICK_SLAB.createBlockData()) }) { it.isSlab }
 		fun anyDoubleSlab() = complete(
 			BlockRequirement(
 				alias = "any double slab block",
@@ -368,7 +368,7 @@ class MultiblockShape {
 		fun terracottaOrDoubleslab() {
 			BlockRequirement(
 				alias = "any double slab or terracotta block",
-				example = Material.TERRACOTTA.createBlockData(),
+				example = Material.CYAN_TERRACOTTA.createBlockData(),
 				syncCheck = { block, _, loadChunks ->
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 					val blockType = if (loadChunks) block.type else block.getTypeSafe()
@@ -438,10 +438,10 @@ class MultiblockShape {
 
 		fun hopper() = type(Material.HOPPER)
 
-		fun anyDoor() = filteredTypes("any door") { it.isDoor }
+		fun anyDoor() = filteredTypes("any door", edit = { setExample(Material.OAK_DOOR.createBlockData()) }) { it.isDoor }
 		fun anyButton() = filteredTypes("any button") { it.isButton }
 
-		fun anyPipedInventory() = filteredTypes("any container block") { Pipes.isPipedInventory(it) }
+		fun anyPipedInventory() = filteredTypes("any container block", edit = { setExample(Material.CHEST.createBlockData()) }) { Pipes.isPipedInventory(it) }
 
 		fun pistonBase() = type(Material.PISTON)
 		fun pistonHead() = type(Material.PISTON_HEAD)
