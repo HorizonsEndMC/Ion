@@ -17,6 +17,8 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModif
 import net.horizonsend.ion.server.features.custom.items.util.serialization.CustomItemSerialization
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import org.bukkit.command.CommandSender
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -92,6 +94,15 @@ object ItemDebugCommand : SLCommand() {
 		custom.setPower(customItem, item, amount)
 
 		sender.information("Removed power to $amount")
+	}
+
+	@Subcommand("give prepackaged")
+	@CommandCompletion("@multiblocks")
+	fun onGivePrepackaged(sender: CommandSender, prePackagedType: Multiblock, recipient: Player?) {
+		val destination: Player = recipient ?: (sender as? Player ?: fail { "You must specify a player!" })
+
+		destination.inventory.addItem(PackagedMultiblockItem.constructFor(prePackagedType))
+		sender.information("Added to inventory")
 	}
 
 	@Subcommand("test all")
