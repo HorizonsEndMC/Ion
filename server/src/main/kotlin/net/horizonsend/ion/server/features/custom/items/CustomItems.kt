@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.minerals.MineralItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
+import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblockItem
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.misc.ShellItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
@@ -1050,6 +1051,8 @@ object CustomItems {
 		displayName = text("Fertilizer Sprayer").decoration(ITALIC, false),
 		text("Applies bonemeal to crops in the effected area, if available in the user's inventory", GRAY).decoration(ITALIC, false)
 	) { ItemModRegistry.FERTILIZER_DISPENSER })
+
+	val PACKAGED_MULTIBLOCK = register(PackagedMultiblockItem)
 
 	// Tools end
 
