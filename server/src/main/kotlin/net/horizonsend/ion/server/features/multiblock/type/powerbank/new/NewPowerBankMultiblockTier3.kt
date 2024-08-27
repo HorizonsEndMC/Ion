@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.powerbank.new
 
-import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Material
 import org.bukkit.World
@@ -12,13 +12,13 @@ data object NewPowerBankMultiblockTier3 : NewPowerBankMultiblock("&bTier 3") {
 	override val tierMaterial = Material.DIAMOND_BLOCK
 
 	override fun createEntity(
-		manager: ChunkMultiblockManager,
-		data: PersistentMultiblockData,
-		world: World,
-		x: Int,
-		y: Int,
-		z: Int,
-		signOffset: BlockFace
+        manager: ChunkMultiblockManager,
+        data: PersistentMultiblockData,
+        world: World,
+        x: Int,
+        y: Int,
+        z: Int,
+        signOffset: BlockFace
 	): PowerBankEntity {
 		return PowerBankEntity(
 			manager,
