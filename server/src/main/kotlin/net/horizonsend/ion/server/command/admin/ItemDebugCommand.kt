@@ -3,15 +3,19 @@ package net.horizonsend.ion.server.command.admin
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblockItem
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.custom.items.powered.PoweredItem
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 @CommandAlias("itemdebug")
@@ -66,5 +70,14 @@ object ItemDebugCommand : SLCommand() {
 		custom.setPower(item, amount)
 
 		sender.information("Removed power to $amount")
+	}
+
+	@Subcommand("give prepackaged")
+	@CommandCompletion("@multiblocks")
+	fun onGivePrepackaged(sender: CommandSender, prePackagedType: Multiblock, recipient: Player?) {
+		val destination: Player = recipient ?: (sender as? Player ?: fail { "You must specify a player!" })
+
+		destination.inventory.addItem(PackagedMultiblockItem.constructFor(prePackagedType))
+		sender.information("Added to inventory")
 	}
 }
