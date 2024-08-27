@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.machine.AreaShields
+import net.horizonsend.ion.server.features.multiblock.world.WorldMultiblockManager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -40,6 +41,8 @@ class IonWorld private constructor(
 	private val chunks: ConcurrentHashMap<Long, IonChunk> = ConcurrentHashMap()
 	val regionPositions: ConcurrentHashMap<Long, ChunkRegion> = ConcurrentHashMap()
 	val chunkRegions: MutableSet<ChunkRegion> = ObjectOpenHashSet()
+
+	val multiblockManager = WorldMultiblockManager(this)
 
 	/**
 	 * Gets the IonChunk at the specified coordinates if it is loaded
