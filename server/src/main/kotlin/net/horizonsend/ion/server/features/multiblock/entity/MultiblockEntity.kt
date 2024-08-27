@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.entity
 
-import net.horizonsend.ion.server.features.multiblock.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -27,14 +27,14 @@ import org.bukkit.block.Sign
  * @param facing The direction this multiblock is oriented [from the origin]
  **/
 abstract class MultiblockEntity(
-	val manager: ChunkMultiblockManager,
-	val multiblock: Multiblock,
+    val manager: ChunkMultiblockManager,
+    val multiblock: Multiblock,
 
-	var x: Int,
-	var y: Int,
-	var z: Int,
-	var world: World,
-	var facing: BlockFace
+    var x: Int,
+    var y: Int,
+    var z: Int,
+    var world: World,
+    var facing: BlockFace
 ): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion> {
 	/** Mark this entity as having been removed */
 	var removed: Boolean = false
@@ -61,6 +61,9 @@ abstract class MultiblockEntity(
 	fun remove() {
 		manager.removeMultiblockEntity(x, y, z)
 	}
+
+	/** Logic to be run upon the unloading of the chunk holding this entity */
+	open fun handleUnload() {}
 
 	/**
 	 * Stores any additional data for this multiblock (e.g. power, owner, etc)
