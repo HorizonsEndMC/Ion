@@ -1,6 +1,8 @@
-package net.horizonsend.ion.server.features.multiblock
+package net.horizonsend.ion.server.features.multiblock.world
 
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.AsyncTickingMultiblockEntity
