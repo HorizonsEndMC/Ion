@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -81,9 +80,7 @@ object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntit
 			.filter { abs(location.x - it.x) < 50 }
 			.filter { abs(location.y - it.y) < 50 }
 			.filter { abs(location.z - it.z) < 50 }
-			.mapNotNull { getBlockIfLoaded(it.world, it.x, it.y, it.z) }
-			.mapNotNull { it.getState(false) as? Sign }
-			.any { signMatchesStructure(it, loadChunks = false) }
+			.any { it.isIntact() }
 	}
 
 	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): MobDefenderEntity {
@@ -97,5 +94,17 @@ object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntit
 		z: Int,
 		world: World,
 		signDirection: BlockFace
-	) : MultiblockEntity(manager, MobDefender, x, y, z, world, signDirection)
+	) : MultiblockEntity(manager, MobDefender, x, y, z, world, signDirection) {
+		override fun onLoad() {
+			world.ion.multiblockManager.register(this)
+		}
+
+		override fun handleRemoval() {
+			world.ion.multiblockManager.register(this)
+		}
+
+		override fun onUnload() {
+			world.ion.multiblockManager.deregister(this)
+		}
+	}
 }
