@@ -104,6 +104,8 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	fun addMultiblockEntity(entity: MultiblockEntity, save: Boolean = true) {
 		multiblockEntities[entity.locationKey] = entity
 
+		entity.onLoad()
+
 		if (entity is SyncTickingMultiblockEntity) {
 			syncTickingMultiblockEntities[entity.locationKey] = entity
 		}
@@ -181,6 +183,12 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 		entity?.handleRemoval()
 
 		return entity
+	}
+
+	fun onUnload() {
+		multiblockEntities.values.forEach {
+			it.onUnload()
+		}
 	}
 
 	/**
