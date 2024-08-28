@@ -68,7 +68,7 @@ abstract class MultiblockEntity(
 	/**
 	 * Stores any additional data for this multiblock (e.g. power, owner, etc)
 	 **/
-	abstract fun storeAdditionalData(store: PersistentMultiblockData)
+	protected open fun storeAdditionalData(store: PersistentMultiblockData) {}
 
 	/**
 	 * Returns the serializable data for this multiblock entity
