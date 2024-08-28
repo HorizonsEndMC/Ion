@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.faces
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.DOWN
+import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.data.Directional
 
 class PowerNodeFactory(network: PowerNetwork) : NodeFactory<PowerNetwork>(network) {
@@ -143,7 +144,8 @@ class PowerNodeFactory(network: PowerNetwork) : NodeFactory<PowerNetwork>(networ
 	 **/
 	suspend fun addSolarPanel(position: BlockKey, handleRelationships: Boolean = true) {
 		// The diamond and daylight detector
-		val panelPositions = (1..2).map { getRelative(position, BlockFace.UP, it) }
+		val diamondPosition = getRelative(position, UP, 1)
+		val detectorPosition = getRelative(position, UP, 2)
 
 		// Get the nodes that might be touching the solar panel
 		//
@@ -171,11 +173,11 @@ class PowerNodeFactory(network: PowerNetwork) : NodeFactory<PowerNetwork>(networ
 		val node = when (neighboringNodes.size) {
 			0 ->  SolarPanelNode(network).apply {
 				network.solarPanels += this
-			}.addPosition(position, panelPositions)
+			}.addPosition(position, diamondPosition, detectorPosition)
 
-			1 -> neighboringNodes.firstOrNull()?.addPosition(position, panelPositions) ?: throw ConcurrentModificationException("Node removed during processing")
+			1 -> neighboringNodes.firstOrNull()?.addPosition(position, diamondPosition, detectorPosition) ?: throw ConcurrentModificationException("Node removed during processing")
 
-			in 2..4 -> handleMerges(neighboringNodes).addPosition(position, panelPositions)
+			in 2..4 -> handleMerges(neighboringNodes).addPosition(position, diamondPosition, detectorPosition)
 
 			else -> throw IllegalArgumentException()
 		}

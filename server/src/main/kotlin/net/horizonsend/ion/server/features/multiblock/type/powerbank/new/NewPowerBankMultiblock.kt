@@ -109,6 +109,10 @@ abstract class NewPowerBankMultiblock(tierText: String) : Multiblock(), EntityMu
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
 		override val powerDisplay: TextDisplayHandler = createTextDisplayHandler(this)
 
+		override fun onLoad() {
+			powerDisplay.update()
+		}
+
 		override fun handleRemoval() {
 			powerDisplay.remove()
 		}
