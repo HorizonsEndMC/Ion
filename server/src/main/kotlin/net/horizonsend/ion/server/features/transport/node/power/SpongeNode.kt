@@ -17,4 +17,6 @@ class SpongeNode(network: PowerNetwork) : JunctionNode<PowerNetwork, SpongeNode,
 	override suspend fun addBack(position: BlockKey) {
 		network.nodeFactory.addSponge(position, handleRelationships = false)
 	}
+
+	override fun toString(): String = "(SPONGE NODE: ${positions.size} positions, Transferable to: ${getTransferableNodes().joinToString { it.first.javaClass.simpleName }} nodes)"
 }
