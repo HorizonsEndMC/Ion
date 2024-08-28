@@ -21,12 +21,14 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 @CommandAlias("ionworld")
 @CommandPermission("ion.admin.world")
@@ -181,5 +183,35 @@ object WorldCommand : SLCommand() {
 				?.joinToString { it.name }
 				?: "None"
 			))
+	}
+
+	@Subcommand("query entities")
+	fun onQueryEntities(sender: Player, type: String, @Optional page: Int?) {
+		val manager = sender.world.ion.multiblockManager
+		val keys = manager.getStoredMultiblocks()
+
+		val clazz = keys.firstOrNull { it.simpleName == type }
+
+		if (clazz == null) {
+			sender.userError("$type not found! Stored types are: ${keys.map { it.simpleName }}")
+			return
+		}
+
+		val entities = manager[clazz].toList()
+
+		val menu = formatPaginatedMenu(
+			entities.size,
+			"/onQueryEntities $type",
+			page ?: 1
+		) {
+			val entity = entities[it]
+
+			ofChildren(text(entity.javaClass.simpleName), space(), bracketed(text("${entity.x} ${entity.y} ${entity.z}")),)
+				.clickEvent(ClickEvent.runCommand("/tp ${entity.x} ${entity.y} ${entity.z}"))
+				.hoverEvent(text("/tp ${entity.x} ${entity.y} ${entity.z}"))
+		}
+
+		sender.information("Entities:")
+		sender.sendMessage(menu)
 	}
 }

@@ -28,7 +28,7 @@ import org.bukkit.block.Sign
  **/
 abstract class MultiblockEntity(
     val manager: ChunkMultiblockManager,
-    val multiblock: Multiblock,
+    open val multiblock: Multiblock,
 
     var x: Int,
     var y: Int,
@@ -63,7 +63,10 @@ abstract class MultiblockEntity(
 	}
 
 	/** Logic to be run upon the unloading of the chunk holding this entity */
-	open fun handleUnload() {}
+	open fun onUnload() {}
+
+	/** Logic to be run upon the loading of the chunk holding this entity, or its creation */
+	open fun onLoad() {}
 
 	/**
 	 * Stores any additional data for this multiblock (e.g. power, owner, etc)
