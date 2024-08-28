@@ -58,14 +58,4 @@ abstract class JunctionNode<T: TransportNetwork, A: JunctionNode<T, B, A>, B: Ju
 	override suspend fun getNextNode(head: SingleBranchHead<T>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? = getTransferableNodes()
 		.filterNot { head.previousNodes.contains(it.first) }
 		.firstOrNull()
-
-//	override fun toString(): String = "(SPONGE NODE: ${positions.size} positions, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
-
-	override fun toString(): String {
-		return """
-			[Gas Junction Node]
-			${positions.size} positions
-			Relationships: ${relationships.joinToString { it.sideTwo.toString() }}
-		""".trimIndent()
-	}
 }
