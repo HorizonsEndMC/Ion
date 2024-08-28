@@ -12,4 +12,12 @@ class GasJunctionNode(network: GasNetwork) : JunctionNode<GasNetwork, GasJunctio
 	override suspend fun addBack(position: BlockKey) {
 		network.nodeFactory.addJunction(position, handleRelationships = false)
 	}
+
+	override fun toString(): String {
+		return """
+			[Gas Junction Node]
+			${positions.size} positions
+			Relationships: ${relationships.joinToString { it.sideTwo.toString() }}
+		""".trimIndent()
+	}
 }
