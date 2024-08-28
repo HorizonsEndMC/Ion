@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.multiblock.world.WorldMultiblockManager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
@@ -152,8 +151,6 @@ class IonWorld private constructor(
 			ionWorlds[world] = ionWorld
 
 			DataFixers.handleWorldInit(ionWorld)
-
-			AreaShields.loadData(world)
 
 			ionWorld.configuration.environments.forEach { it.setup() }
 			Tasks.syncRepeat(10, 10, ionWorld::tickEnvironments)

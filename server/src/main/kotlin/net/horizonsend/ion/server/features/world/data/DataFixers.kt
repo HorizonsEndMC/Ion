@@ -15,7 +15,7 @@ object DataFixers: IonServerComponent() {
 	private val chunkDataFixers = mutableListOf<ChunkDataFixer>()
 
 	private val multiblockEntityDataFixers = mutableListOf<MultiblockEntityDataFixer<*>>()
-	private val multiblockSignDataFixers = mutableListOf<MultiblockSignDataFixer>()
+	private val signDataFixers = mutableListOf<SignDataFixer>()
 
 	private fun registerFixer(fixer: DataFixer) {
 		dataFixers.add(fixer)
@@ -35,7 +35,7 @@ object DataFixers: IonServerComponent() {
 		dataFixers.filterIsInstanceTo(worldDataFixers)
 		dataFixers.filterIsInstanceTo(chunkDataFixers)
 		dataFixers.filterIsInstanceTo(multiblockEntityDataFixers)
-		dataFixers.filterIsInstanceTo(multiblockSignDataFixers)
+		dataFixers.filterIsInstanceTo(signDataFixers)
 	}
 
 	fun handleWorldInit(world: IonWorld) {
@@ -63,7 +63,7 @@ object DataFixers: IonServerComponent() {
 	fun handleMultiblockSignLoad(sign: Sign) {
 		val dataVersion = sign.persistentDataContainer.getOrDefault(DATA_VERSION, INTEGER, 0)
 
-		for (signFixer in multiblockSignDataFixers.filter { it.dataVersion > dataVersion }) {
+		for (signFixer in signDataFixers.filter { it.dataVersion > dataVersion }) {
 			signFixer.fixSign(sign)
 
 			sign.persistentDataContainer.set(DATA_VERSION, INTEGER, signFixer.dataVersion)
