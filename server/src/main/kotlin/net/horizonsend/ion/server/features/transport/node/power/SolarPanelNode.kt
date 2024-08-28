@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.transport.step.origin.power.SolarPowe
 import net.horizonsend.ion.server.features.transport.step.result.MoveForward
 import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_DETECTORS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_EXTRACTORS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -21,9 +22,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.firsts
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.minecraft.core.BlockPos
-import net.minecraft.world.level.LightLayer
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.World
@@ -31,13 +30,11 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.BlockFace.SELF
 import org.bukkit.block.BlockFace.UP
+import org.bukkit.block.data.AnaloguePowerable
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
-import kotlin.math.PI
-import kotlin.math.max
-import kotlin.math.sin
 
 /**
  * Represents a solar panel, or multiple
@@ -53,6 +50,9 @@ class SolarPanelNode(
 
 	/** The positions of extractors in this solar panel */
 	private val extractorPositions = ConcurrentHashMap.newKeySet<BlockKey>()
+
+	/** The positions of daylight detectors in this solar panel */
+	private val detectorPositions = ConcurrentHashMap.newKeySet<BlockKey>()
 
 	/** The number of solar cells contained in this node */
 	private val cellNumber: Int get() = extractorPositions.size
@@ -152,22 +152,28 @@ class SolarPanelNode(
 			network.world.environment == World.Environment.NORMAL &&
 			network.world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE) == true
 		) {
-			// Sample position
-			val sample = positions.first()
-			val pos = BlockPos(getX(sample), getY(sample), getZ(sample))
-			val lightLevel = network.world.minecraft.getBrightness(LightLayer.SKY, pos)
-
-			if (lightLevel == 0) return 0
-
-			// Calculate via sine curve otherwise
-			val daylight = sin((network.world.time / (12000.0 / PI)) - (PI / 2))
-			max(0.0, daylight) * 1.5 // 1.5 to bring area under curve to around equal with night
+			getPowerRatio()
 		} else 0.5
 
 		val time = System.currentTimeMillis()
 		val diff = time - this.lastTicked
 
 		return ((diff / 1000.0) * POWER_PER_SECOND * cellNumber * daylightMultiplier).toInt()
+	}
+
+	/**
+	 * Calculates the light level at the detectors
+	 **/
+	private fun getPowerRatio(): Double {
+		val total = detectorPositions.size * 15
+		val sum = detectorPositions.sumOf {
+			val data = getBlockDataSafe(network.world, getX(it), getY(it), getZ(it)) ?: return@sumOf 0
+			if (data !is AnaloguePowerable) return@sumOf 0
+
+			data.power
+		}
+
+		return sum.toDouble() / total.toDouble()
 	}
 
 	/**
@@ -224,7 +230,7 @@ class SolarPanelNode(
 		rebuildNode(position)
 	}
 
-	suspend fun addPosition(extractorKey: BlockKey, others: Iterable<BlockKey>): SolarPanelNode {
+	suspend fun addPosition(extractorKey: BlockKey, diamondKey: BlockKey, detectorKey: BlockKey): SolarPanelNode {
 		extractorPositions += extractorKey
 
 		// Make sure there isn't still an extractor
@@ -232,7 +238,10 @@ class SolarPanelNode(
 		addPosition(extractorKey)
 		buildRelations(extractorKey)
 
-		positions += others
+		positions += diamondKey
+		positions += detectorKey
+
+		detectorPositions += detectorKey
 
 		for (position: BlockKey in positions) {
 			network.nodes[position] = this
@@ -261,6 +270,7 @@ class SolarPanelNode(
 
 	override suspend fun rebuildNode(position: BlockKey) {
 		network.solarPanels.remove(this)
+		detectorPositions.clear()
 
 		// Create new nodes, automatically merging together
 		extractorPositions.forEach {
@@ -277,6 +287,7 @@ class SolarPanelNode(
 		super.drainTo(new)
 
 		new.extractorPositions.addAll(extractorPositions)
+		new.detectorPositions.addAll(detectorPositions)
 	}
 
 	override fun loadIntoNetwork() {
@@ -287,6 +298,7 @@ class SolarPanelNode(
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
 		persistentDataContainer.set(NODE_COVERED_POSITIONS, LONG_ARRAY, positions.toLongArray())
 		persistentDataContainer.set(SOLAR_CELL_EXTRACTORS, LONG_ARRAY, extractorPositions.toLongArray())
+		persistentDataContainer.set(SOLAR_CELL_DETECTORS, LONG_ARRAY, detectorPositions.toLongArray())
 	}
 
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
@@ -295,6 +307,9 @@ class SolarPanelNode(
 
 		val extractors = persistentDataContainer.get(SOLAR_CELL_EXTRACTORS, LONG_ARRAY)
 		extractors?.let { extractorPositions.addAll(it.asIterable()) }
+
+		val detectors = persistentDataContainer.get(SOLAR_CELL_DETECTORS, LONG_ARRAY)
+		detectors?.let { detectorPositions.addAll(it.asIterable()) }
 	}
 
 	companion object {
@@ -311,5 +326,5 @@ class SolarPanelNode(
 		}
 	}
 
-	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().firsts().joinToString { it.javaClass.simpleName }} nodes, distance = $exitDistance"
+	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().firsts().joinToString { it.javaClass.simpleName }} nodes, distance = $exitDistance, powerRatio = ${getPowerRatio()}"
 }
