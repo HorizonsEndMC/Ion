@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.transport.node.power.SpongeNode
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.faces
-import org.bukkit.Material
 import org.bukkit.block.data.Directional
 
 class GasNodeFactory(network: GasNetwork) : NodeFactory<GasNetwork>(network) {
@@ -18,10 +17,10 @@ class GasNodeFactory(network: GasNetwork) : NodeFactory<GasNetwork>(network) {
 
 		when {
 			// Straight wires
-			snapshot.type == Material.END_ROD -> addLightningRod(snapshot.data as Directional, key)
+//			snapshot.type == Material.END_ROD -> addLightningRod(snapshot.data as Directional, key)
 
 			// Omnidirectional wires
-			snapshot.type == Material.SPONGE -> addJunction(key)
+//			snapshot.type == Material.SPONGE -> addJunction(key)
 		}
 	}
 
