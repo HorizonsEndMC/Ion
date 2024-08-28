@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.client.display.container.TextDisplayH
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity.Companion.createTextDisplayHandler
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
@@ -100,10 +99,12 @@ abstract class AreaShield(val radius: Int) : Multiblock(), PowerStoringMultibloc
 		signDirection: BlockFace,
 		override var powerUnsafe: Int,
 		override val maxPower: Int
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity, SimpleTextDisplayPoweredMultiblockEntity {
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
 		override val powerDisplay: TextDisplayHandler = createTextDisplayHandler(this)
 
 		override fun onLoad() {
+			powerDisplay.update()
+
 			world.ion.multiblockManager.register(this)
 		}
 
@@ -116,12 +117,11 @@ abstract class AreaShield(val radius: Int) : Multiblock(), PowerStoringMultibloc
 			world.ion.multiblockManager.deregister(this)
 		}
 
-		override fun updatePowerVisually() {
-			powerDisplay.update()
-		}
-
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			store.addAdditionalData(POWER, INTEGER, getPower())
 		}
+
+		override fun toString(): String = "AREA SHIELD::: POWER:: ${getPower()}"
+
 	}
 }

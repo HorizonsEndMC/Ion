@@ -27,7 +27,11 @@ class ChunkRegion(val world: IonWorld) {
 		}
 	}
 
+	var lastTicked: Long = 0
+
 	fun tick() {
+		lastTicked = System.currentTimeMillis()
+
 		tickChunkTransport.invoke()
 
 		for ((key, chunk) in chunks) chunk.tick()
