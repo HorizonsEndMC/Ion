@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.TestMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier2
@@ -35,6 +36,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(NewPowerBankMultiblockTier1)
 		registerMultiblock(NewPowerBankMultiblockTier2)
 		registerMultiblock(NewPowerBankMultiblockTier3)
+		registerMultiblock(MobDefender)
 	}
 
 	private fun sortMultiblocks() {
