@@ -16,7 +16,7 @@ import net.horizonsend.ion.server.features.multiblock.newer.MultiblockEntities.r
 import net.horizonsend.ion.server.features.multiblock.type.SignMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -37,13 +37,27 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.persistence.PersistentDataType
+import org.bukkit.persistence.PersistentDataType.STRING
 import java.util.Optional
 import java.util.concurrent.TimeUnit
 import kotlin.jvm.optionals.getOrNull
 
 object MultiblockAccess : IonServerComponent() {
 	private val multiblockCache: MutableMap<World, LoadingCache<Pair<Vec3i, BlockFace>, Optional<Multiblock>>> = mutableMapOf()
+
+	/**
+	 * Quickly gets the multiblock type stored in the sign. Does not check for structure
+	 **/
+	fun getFast(sign: Sign): Multiblock? {
+		val (x, y, z) = Vec3i(sign.x, sign.y, sign.z).getRelative(sign.getFacing().oppositeFace)
+
+		val cached = getCachedMultiblock(sign.world, x, y, z, sign.getFacing().oppositeFace)
+		if (cached != null) return cached
+
+		val value = sign.persistentDataContainer.get(MULTIBLOCK, STRING) ?: return null
+
+		return MultiblockRegistration.getByStorageName(value)
+	}
 
 	/**
 	 * Access or compute the multiblock at a world position
@@ -124,7 +138,7 @@ object MultiblockAccess : IonServerComponent() {
 
 	fun getMultiblock(sign: Sign, checkStructure: Boolean, loadChunks: Boolean): Multiblock? {
 		if (!checkStructure) {
-			return sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)?.let {
+			return sign.persistentDataContainer.get(MULTIBLOCK, STRING)?.let {
 				MultiblockRegistration.getByStorageName(it)
 			}
 		}
@@ -146,8 +160,8 @@ object MultiblockAccess : IonServerComponent() {
 
 			Tasks.sync {
 				sign.persistentDataContainer.set(
-					NamespacedKeys.MULTIBLOCK,
-					PersistentDataType.STRING,
+					MULTIBLOCK,
+					STRING,
 					multiblock.javaClass.simpleName
 				)
 
@@ -245,7 +259,7 @@ object MultiblockAccess : IonServerComponent() {
 		val clickedBlock = event.clickedBlock ?: return
 		val sign = clickedBlock.state as? Sign ?: return
 
-		if (sign.persistentDataContainer.has(NamespacedKeys.MULTIBLOCK)) return
+		if (sign.persistentDataContainer.has(MULTIBLOCK)) return
 
 		val result = tryDetectMultiblock(event.player, sign, false)
 

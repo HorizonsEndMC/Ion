@@ -1,21 +1,22 @@
 package net.horizonsend.ion.server.features.multiblock.type.misc
 
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
+import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
-import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
-import java.io.File
-import java.io.IOException
 import kotlin.math.abs
 
-object MobDefender : Multiblock() {
+object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntity> {
 	override val name = "mobdefender"
 
 	override val signText = createSignText(
@@ -68,68 +69,33 @@ object MobDefender : Multiblock() {
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		mobDefenders.add(sign.location)
 		player.information("Created mob defender.")
-		save() // TODO: don't do this on the main thread >_>
-	}
-
-	// TODO: come up with something less stupid for this
-	private val mobDefenders = ArrayList<Location>()
-	private var config = YamlConfiguration()
-	private val file = File(IonServer.dataFolder, "mobdefenders.yml")
-
-	init {
-		Tasks.sync {
-			file.createNewFile()
-			config = YamlConfiguration.loadConfiguration(file)
-			for (worldName in config.getKeys(false)) {
-				val world = Bukkit.getWorld(worldName) ?: continue
-				val keys = config.getConfigurationSection(worldName)?.getKeys(false) ?: continue
-				for (key in keys) {
-					val coords = key.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-					val x = coords[0].toDoubleOrNull()?.toInt() ?: continue
-					val y = coords[1].toDoubleOrNull()?.toInt() ?: continue
-					val z = coords[2].toDoubleOrNull()?.toInt() ?: continue
-					mobDefenders.add(Location(world, x.toDouble(), y.toDouble(), z.toDouble()))
-				}
-			}
-		}
-	}
-
-	private fun save() {
-		config = YamlConfiguration()
-		for (location in mobDefenders)
-			config.set(
-				String.format(
-					"%s.%d-%d-%d",
-					location.world.name, location.blockX, location.blockY,
-					location.blockZ
-				),
-				location.hashCode()
-			)
-		try {
-			config.save(file)
-		} catch (e: IOException) {
-			e.printStackTrace()
-		}
 	}
 
 	fun cancelSpawn(location: Location): Boolean {
 		if (location.world.name.lowercase().contains("eden")) return false
+		val mobDefenders = location.world.ion.multiblockManager[MobDefenderEntity::class]
 
 		return mobDefenders.asSequence()
 			.filter { it.world == location.world }
 			.filter { abs(location.x - it.x) < 50 }
 			.filter { abs(location.y - it.y) < 50 }
 			.filter { abs(location.z - it.z) < 50 }
-			.mapNotNull { getBlockIfLoaded(it.world, it.blockX, it.blockY, it.blockZ) }
+			.mapNotNull { getBlockIfLoaded(it.world, it.x, it.y, it.z) }
 			.mapNotNull { it.getState(false) as? Sign }
 			.any { signMatchesStructure(it, loadChunks = false) }
 	}
 
-	fun removeDefender(location: Location) {
-		if (!mobDefenders.contains(location)) return
-		mobDefenders.remove(location)
-		save()
+	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): MobDefenderEntity {
+		return MobDefenderEntity(manager, x, y, z, world, signOffset)
 	}
+
+	class MobDefenderEntity(
+		manager: ChunkMultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		signDirection: BlockFace
+	) : MultiblockEntity(manager, MobDefender, x, y, z, world, signDirection)
 }
