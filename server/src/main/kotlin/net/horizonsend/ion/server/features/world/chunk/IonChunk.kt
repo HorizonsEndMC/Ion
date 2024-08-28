@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.features.world.data.ChunkDataFixer
+import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
@@ -12,18 +12,25 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.chunk.LevelChunkSection
 import org.bukkit.Chunk
 import org.bukkit.World
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.ChunkUnloadEvent
 import org.bukkit.persistence.PersistentDataType.INTEGER
 import java.util.concurrent.ConcurrentHashMap
+import java.util.function.Consumer
 
 class IonChunk(
 	val inner: Chunk,
 	val region: ChunkRegion,
 ) {
-	val dataVersion = inner.persistentDataContainer.getOrDefault(NamespacedKeys.DATA_VERSION, INTEGER, 0)
+	var dataVersion = inner.persistentDataContainer.getOrDefault(NamespacedKeys.DATA_VERSION, INTEGER, 0)
+		set	(value) {
+			world.persistentDataContainer.set(NamespacedKeys.DATA_VERSION, INTEGER, value)
+			field = value
+		}
+
 	val locationKey = inner.chunkKey
 
 	/** The origin X coordinate of this chunk (in real coordinates) **/
@@ -126,7 +133,7 @@ class IonChunk(
 			ionChunk.onLoad()
 
 			// Upgrade data after it has been loaded
-			ChunkDataFixer.upgrade(ionChunk)
+			DataFixers.handleChunkLoad(ionChunk)
 
 			return ionChunk
 		}
@@ -154,6 +161,12 @@ class IonChunk(
 
 		fun getXFromKey(key: Long): Int = key.toInt()
 		fun getZFromKey(key: Long): Int = (key shr 32).toInt()
+	}
+
+	fun iterateBlocks(consumer: Consumer<Block>) {
+		for (x in 0..15) for (y in inner.world.minHeight until inner.world.maxHeight) for (z in 0..15) {
+			consumer.accept(inner.getBlock(x, y ,z))
+		}
 	}
 
 	/** Mark this chunk as needing to be saved */
