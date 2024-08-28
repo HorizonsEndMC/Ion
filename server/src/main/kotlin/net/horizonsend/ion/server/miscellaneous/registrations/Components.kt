@@ -96,6 +96,7 @@ import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawning
 import net.horizonsend.ion.server.listener.misc.WorldEditListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
@@ -109,6 +110,7 @@ val components: List<IonComponent> = listOf(
 	Caches,
 	Discord,
 	Notify,
+	DataFixers,
 	Shuttles,
 	ProxyMessaging,
 	IonWorld,
