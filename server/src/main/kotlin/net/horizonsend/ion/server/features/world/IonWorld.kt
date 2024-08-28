@@ -12,10 +12,12 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
+import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawner
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.FORBIDDEN_BLOCKS
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FORBIDDEN_BLOCKS
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DATA_VERSION
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import org.bukkit.Chunk
@@ -25,6 +27,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldSaveEvent
 import org.bukkit.event.world.WorldUnloadEvent
+import org.bukkit.persistence.PersistentDataType.INTEGER
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
 import kotlin.DeprecationLevel.ERROR
@@ -33,6 +36,12 @@ class IonWorld private constructor(
 	val world: World,
 	val starships: MutableList<ActiveStarship> = mutableListOf()
 ) {
+	var dataVersion = world.persistentDataContainer.getOrDefault(DATA_VERSION, INTEGER, 0)
+		set	(value) {
+			world.persistentDataContainer.set(DATA_VERSION, INTEGER, value)
+			field = value
+		}
+
 	/**
 	 * Key: The location of the chunk packed into a long
 	 *
@@ -140,6 +149,8 @@ class IonWorld private constructor(
 
 			val ionWorld = IonWorld(world)
 			ionWorlds[world] = ionWorld
+
+			DataFixers.handleWorldInit(ionWorld)
 
 			AreaShields.loadData(world)
 
