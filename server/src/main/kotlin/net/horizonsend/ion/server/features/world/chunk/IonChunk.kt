@@ -66,6 +66,7 @@ class IonChunk(
 	 **/
 	fun onUnload() {
 		save()
+		multiblockManager.onUnload()
 		transportNetwork.onUnload()
 	}
 

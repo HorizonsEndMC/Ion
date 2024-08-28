@@ -61,7 +61,7 @@ class ChunkNetworkHolder<T: TransportNetwork> private constructor (val manager: 
 		network.namespacedKey,
 		PersistentDataType.TAG_CONTAINER
 	) ?: run {
-		IonServer.slF4JLogger.warn("chunk ${manager.chunk.x}, ${manager.chunk.z} ${manager.chunk.world.name} didn't have transport information!")
+//		IonServer.slF4JLogger.warn("chunk ${manager.chunk.x}, ${manager.chunk.z} ${manager.chunk.world.name} didn't have transport information!")
 
 		chunkPDC.adapterContext.newPersistentDataContainer()
 	}

@@ -6,6 +6,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield10
+import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield20
+import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield30
+import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield5
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.TestMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier1
@@ -36,6 +40,12 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(NewPowerBankMultiblockTier1)
 		registerMultiblock(NewPowerBankMultiblockTier2)
 		registerMultiblock(NewPowerBankMultiblockTier3)
+
+		registerMultiblock(AreaShield5)
+		registerMultiblock(AreaShield10)
+		registerMultiblock(AreaShield20)
+		registerMultiblock(AreaShield30)
+
 		registerMultiblock(MobDefender)
 	}
 
