@@ -13,19 +13,27 @@ class WorldMultiblockManager(val world: IonWorld) {
 
 	fun register(multiblockEntity: MultiblockEntity): Boolean {
 		val kClass = multiblockEntity::class
-		return worldMultiblocks.getOrPut(kClass) { LinkedBlockingQueue<MultiblockEntity>() }.add(multiblockEntity)
+		return getCollection(kClass).add(multiblockEntity)
 	}
 
 	fun deregister(multiblockEntity: MultiblockEntity): Boolean {
 		val kClass = multiblockEntity::class
-		val success =  worldMultiblocks.getOrPut(kClass) { LinkedBlockingQueue<MultiblockEntity>() }.remove(multiblockEntity)
+		val success =  getCollection(kClass).remove(multiblockEntity)
 
 		if (!success) IonServer.slF4JLogger.warn("Tried to deregister multiblock entity that was not registered!")
 		return success
 	}
 
+	private fun <T : MultiblockEntity> getCollection(type: KClass<T>): LinkedBlockingQueue<MultiblockEntity> {
+		return worldMultiblocks.getOrPut(type) { LinkedBlockingQueue<MultiblockEntity>() }
+	}
+
 	operator fun <T : MultiblockEntity> get(type: KClass<T>): Collection<T> {
 		@Suppress("UNCHECKED_CAST")
-		return worldMultiblocks[type] as Collection<T>
+		return getCollection(type) as Collection<T>
+	}
+
+	fun getStoredMultiblocks(): Set<KClass<out MultiblockEntity>> {
+		return worldMultiblocks.keys
 	}
 }
