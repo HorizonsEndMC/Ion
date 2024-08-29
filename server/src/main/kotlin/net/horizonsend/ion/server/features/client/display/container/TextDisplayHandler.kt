@@ -26,6 +26,7 @@ import org.joml.Vector3f
 import java.util.UUID
 
 class TextDisplayHandler(
+	val holder: DisplayHandlerHolder,
 	val world: World,
 	var x: Double,
 	var y: Double,

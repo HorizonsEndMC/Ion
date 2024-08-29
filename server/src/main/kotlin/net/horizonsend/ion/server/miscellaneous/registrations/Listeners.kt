@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractTractorB
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
+import net.horizonsend.ion.server.features.transport.TransportManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
@@ -83,6 +84,7 @@ val listeners: List<Listener> = listOf(
 	net.horizonsend.ion.server.features.custom.items.type.tool.mods.ToolModMenu,
 	RecipeModifications,
 	ActivePlayerController.Companion,
+	TransportManager,
 	PersonalTransporterManager,
 
 	// Achievement Listeners

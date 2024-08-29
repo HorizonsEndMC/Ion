@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.transport
 
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot.Companion.snapshot
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
@@ -13,7 +13,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 
-object TransportManager : IonServerComponent() {
+object TransportManager : SLEventListener() {
 	@EventHandler
 	fun onBlockBreak(event: BlockBreakEvent) {
 		val world = event.block.world

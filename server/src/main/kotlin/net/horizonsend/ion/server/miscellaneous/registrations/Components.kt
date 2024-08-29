@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.client.display.modular.MultiBlockDisplay
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.SwordListener
+import net.horizonsend.ion.server.features.client.display.container.DisplayHandlers
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateRestrictions
@@ -89,7 +90,6 @@ import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCoold
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.TransportConfig
-import net.horizonsend.ion.server.features.transport.TransportManager
 import net.horizonsend.ion.server.features.transport.Wires
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
@@ -229,7 +229,8 @@ val components: List<IonComponent> = listOf(
 	ContactsJammingSidebar,
 	CombatTimer,
 	WorldEditListener,
-	TransportManager,
+	TransportManager
+	DisplayHandlers,
 	PlanetTeleportCooldown,
 	MultiBlockDisplay,
 )

@@ -107,14 +107,25 @@ abstract class NewPowerBankMultiblock(tierText: String) : Multiblock(), EntityMu
         override val maxPower: Int,
         override var powerUnsafe: Int = 0
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
-		override val powerDisplay: TextDisplayHandler = createTextDisplayHandler(this)
+		override val displayHandler: TextDisplayHandler = createTextDisplayHandler(this)
 
 		override fun onLoad() {
-			powerDisplay.update()
+			register()
+			displayHandler.update()
+		}
+
+		override fun onUnload() {
+			unRegister()
+			displayHandler.remove()
 		}
 
 		override fun handleRemoval() {
-			powerDisplay.remove()
+			unRegister()
+			displayHandler.remove()
+		}
+
+		override fun isValid(): Boolean {
+			return !removed
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
