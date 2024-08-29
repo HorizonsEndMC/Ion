@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMulti
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
+import net.horizonsend.ion.server.features.transport.TransportManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
@@ -85,6 +86,7 @@ val listeners: List<Listener> = listOf(
 	PlayerDeathListener,
 	ToolModMenu,
 	RecipeModifications,
+	TransportManager,
 
 	// Achievement Listeners
 	AchievementListeners(),
