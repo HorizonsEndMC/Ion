@@ -90,7 +90,7 @@ object MultiblockAccess : IonServerComponent() {
 		z: Int,
 		face: BlockFace?,
 		loadChunks: Boolean = false,
-		restrictedList: Collection<Multiblock> = MultiblockRegistration.getAllMultiblocks().values
+		restrictedList: Collection<Multiblock> = MultiblockRegistration.getAllMultiblocks()
 	): Multiblock? {
 		// Will only return null if not loaded and don't load chunks
 		val originBlock = if (loadChunks) world.getBlockAt(x, y, z) else getBlockIfLoaded(world, x, y, z) ?: return null
