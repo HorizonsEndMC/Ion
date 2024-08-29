@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import org.bukkit.World
+import org.bukkit.block.Block
 
 object MultiblockEntities {
 	/**
@@ -14,6 +15,10 @@ object MultiblockEntities {
 		val ionChunk = getIonChunk(world, x, y, z) ?: return null
 
 		return ionChunk.multiblockManager[x, y, z]
+	}
+
+	fun getMultiblockEntity(origin: Block): MultiblockEntity? {
+		return getMultiblockEntity(origin.world, origin.x, origin.y, origin.z)
 	}
 
 	/**

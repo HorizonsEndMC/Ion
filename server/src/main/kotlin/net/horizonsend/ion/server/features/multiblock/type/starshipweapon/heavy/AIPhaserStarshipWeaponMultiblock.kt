@@ -12,7 +12,7 @@ object AIPhaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<AIPha
 	override fun MultiblockShape.buildStructure() {
 		y(+0) {
 			z(+0..+4 step 2) {
-				x(+0).copperBlock()
+				x(+0).anyCopperVariant()
 			}
 			z(+1..+3 step 2) {
 				x(+0).type(Material.BELL)
