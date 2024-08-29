@@ -11,9 +11,9 @@ import net.horizonsend.ion.common.utils.text.subStringBetween
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.newer.MultiblockEntities.getMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.newer.MultiblockEntities.removeMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.type.SignMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
@@ -27,7 +27,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import org.bukkit.World
-import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -143,7 +142,7 @@ object MultiblockAccess : IonServerComponent() {
 			}
 		}
 
-		val origin = sign.getMultiblockOrigin()
+		val origin = MultiblockEntity.getOriginFromSign(sign)
 		return getMultiblock(sign.world, origin.x, origin.y, origin.z, sign.getFacing().oppositeFace, checkStructure, loadChunks)
 	}
 
@@ -152,25 +151,22 @@ object MultiblockAccess : IonServerComponent() {
 	 *
 	 * @return if the multiblock could be created properly.
 	 **/
-	fun setMultiblock(detector: Player, world: World, x: Int, y: Int, z: Int, face: BlockFace, multiblock: Multiblock): Boolean {
-		if (multiblock is SignMultiblock) {
-			val signOffset = face.oppositeFace
-			val signLoc = Vec3i(x, y, z).getRelative(signOffset)
-			val sign = getBlockIfLoaded(world, signLoc.x, signLoc.y, signLoc.z)?.state as? Sign ?: return false
+	fun setMultiblock(detector: Player, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace, multiblock: Multiblock): Boolean {
+		val signBlock = MultiblockEntity.getSignFromOrigin(world, Vec3i(x, y, z), structureDirection)
+		val sign = signBlock.state as? Sign ?: return false
 
-			Tasks.sync {
-				sign.persistentDataContainer.set(
-					MULTIBLOCK,
-					STRING,
-					multiblock.javaClass.simpleName
-				)
+		Tasks.sync {
+			sign.persistentDataContainer.set(
+				MULTIBLOCK,
+				STRING,
+				multiblock.javaClass.simpleName
+			)
 
-				sign.isWaxed = true
+			sign.isWaxed = true
 
-				multiblock.setupSign(detector, sign)
+			multiblock.setupSign(detector, sign)
 
-				sign.update(false, false)
-			}
+			sign.update(false, false)
 		}
 
 		if (multiblock is EntityMultiblock<*>) {
@@ -184,7 +180,7 @@ object MultiblockAccess : IonServerComponent() {
 			val chunkZ = z.shr(4)
 
 			world.ion.getChunk(chunkX, chunkZ)?.let {
-				it.region.launch { it.multiblockManager.addNewMultiblockEntity(multiblock, x, y, z, face) }
+				it.region.launch { it.multiblockManager.addNewMultiblockEntity(multiblock, x, y, z, structureDirection) }
 			}
 		}
 
@@ -194,9 +190,13 @@ object MultiblockAccess : IonServerComponent() {
 	/**
 	 * Remove this multiblock & entity, provided the multiblock origin
 	 **/
-	fun removeMultiblock(world: World, x: Int, y: Int, z: Int, facing: BlockFace): Multiblock? {
+	fun removeMultiblock(world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): Multiblock? {
+		val existing = getMultiblockEntity(world, x, y, z)
+		// Ensure that the removal additional signs placed on the sides of an origin don't remove the entity
+		if (existing?.structureDirection != structureDirection) return null
+
 		val removed = removeMultiblockEntity(world, x, y, z)
-		multiblockCache[world]?.invalidate(Vec3i(x, y, z) to facing)
+		multiblockCache[world]?.invalidate(Vec3i(x, y, z) to structureDirection)
 		return removed?.multiblock
 	}
 
@@ -205,8 +205,7 @@ object MultiblockAccess : IonServerComponent() {
 	 *
 	 * @return the detected multiblock, if found
 	 **/
-	fun tryDetectMultiblock(player: Player, sign: Sign, loadChunks: Boolean = false): Multiblock? {
-		val signLoc = Vec3i(sign.location)
+	fun tryDetectMultiblock(player: Player, sign: Sign, face: BlockFace? = null, loadChunks: Boolean = false): Multiblock? {
 		val world = sign.world
 
 		val blankText = sign.front().line(0).plainText()
@@ -215,8 +214,7 @@ object MultiblockAccess : IonServerComponent() {
 		val direction = sign.getFacing().oppositeFace
 
 		// Get the block that the sign is placed on
-		val originBlock = signLoc.getRelative(direction, 1)
-		val (x, y, z) = originBlock
+		val originBlock = MultiblockEntity.getOriginFromSign(sign)
 
 		// Possible multiblocks from the sign
 		val possible = MultiblockRegistration.getBySignName(name)
@@ -225,10 +223,10 @@ object MultiblockAccess : IonServerComponent() {
 
 		val found = computeMultiblockAtLocation(
 			world,
-			x,
-			y,
-			z,
-			null,
+			originBlock.x,
+			originBlock.y,
+			originBlock.z,
+			face,
 			loadChunks = loadChunks,
 			restrictedList = possible
 		)
@@ -241,7 +239,7 @@ object MultiblockAccess : IonServerComponent() {
 			return null
 		}
 
-		setMultiblock(player, world, x, y, z, direction, found)
+		setMultiblock(player, world, originBlock.x, originBlock.y, originBlock.z, direction, found)
 
 		return found
 	}
@@ -261,11 +259,9 @@ object MultiblockAccess : IonServerComponent() {
 
 		if (sign.persistentDataContainer.has(MULTIBLOCK)) return
 
-		val result = tryDetectMultiblock(event.player, sign, false)
+		val result = tryDetectMultiblock(event.player, sign, face = sign.getFacing().oppositeFace, loadChunks = false) ?: return
 
-		if (result != null) {
-			event.player.success("Detected new ${result.name}")
-		}
+		event.player.success("Detected new ${result.name}")
 	}
 
 	@EventHandler
@@ -273,14 +269,10 @@ object MultiblockAccess : IonServerComponent() {
 		if (getBlockTypeSafe(event.block.world, event.block.x, event.block.y, event.block.z)?.isSign == false) return
 		val sign = event.block.state as? Sign ?: return
 
-		val origin = sign.getMultiblockOrigin()
+		val origin = MultiblockEntity.getOriginFromSign(sign)
 
 		val removed = removeMultiblock(event.block.world, origin.x, origin.y, origin.z, sign.getFacing().oppositeFace) ?: return
 
 		event.player.information("Destroyed ${removed.name}")
-	}
-
-	fun Sign.getMultiblockOrigin(): Block {
-		return block.getRelative(getFacing().oppositeFace, 1)
 	}
 }
