@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.powerbank.new
 
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
@@ -8,7 +7,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity.Companion.createTextDisplayHandler
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.SignMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
@@ -16,12 +14,9 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.block.Sign
-import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataType
 
-abstract class NewPowerBankMultiblock(tierText: String) : Multiblock(), EntityMultiblock<NewPowerBankMultiblock.PowerBankEntity>, SignMultiblock, InteractableMultiblock {
+abstract class NewPowerBankMultiblock(tierText: String) : Multiblock(), EntityMultiblock<NewPowerBankMultiblock.PowerBankEntity>, SignMultiblock {
 	abstract val tierMaterial: Material
 	override val name = "newpowerbank"
 
@@ -82,18 +77,6 @@ abstract class NewPowerBankMultiblock(tierText: String) : Multiblock(), EntityMu
 				x(+1).anyGlassPane()
 			}
 		}
-	}
-
-	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		val world = sign.world
-		val origin = getOrigin(sign)
-
-		val entity = getMultiblockEntity(world, origin.x, origin.y, origin.z) as PowerBankEntity
-
-		player.information("Entity: $entity")
-		player.information("Removed: ${entity.removed}")
-		player.information("Power: ${entity.getPower()}")
-		player.information("Unsafe Power: ${entity.powerUnsafe}")
 	}
 
 	class PowerBankEntity(
