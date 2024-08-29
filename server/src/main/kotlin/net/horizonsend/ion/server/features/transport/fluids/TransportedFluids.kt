@@ -2,28 +2,26 @@ package net.horizonsend.ion.server.features.transport.fluids
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.gas.Gasses
-import net.horizonsend.ion.server.features.transport.fluids.types.BasicFluid
-import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
+import net.horizonsend.ion.server.features.transport.fluids.types.GasPipedFluid
 
 //
 object TransportedFluids : IonServerComponent() {
-	val HYDROGEN = register(GasFluid { Gasses.HYDROGEN })
-	val NITROGEN = register(GasFluid { Gasses.NITROGEN })
-	val METHANE = register(GasFluid { Gasses.METHANE })
-	val OXYGEN = register(GasFluid { Gasses.OXYGEN })
-	val CHLORINE = register(GasFluid { Gasses.CHLORINE })
-	val FLUORINE = register(GasFluid { Gasses.FLUORINE })
-	val HELIUM = register(GasFluid { Gasses.FLUORINE })
-	val CARBON_DIOXIDE = register(GasFluid { Gasses.FLUORINE })
+	private val pipedFluids = mutableListOf<PipedFluid>()
 
-	private val fluids = mutableListOf<Fluid>()
+	val HYDROGEN = register(GasPipedFluid { Gasses.HYDROGEN })
+	val NITROGEN = register(GasPipedFluid { Gasses.NITROGEN })
+	val METHANE = register(GasPipedFluid { Gasses.METHANE })
+	val OXYGEN = register(GasPipedFluid { Gasses.OXYGEN })
+	val CHLORINE = register(GasPipedFluid { Gasses.CHLORINE })
+	val FLUORINE = register(GasPipedFluid { Gasses.FLUORINE })
+	val HELIUM = register(GasPipedFluid { Gasses.FLUORINE })
+	val CARBON_DIOXIDE = register(GasPipedFluid { Gasses.FLUORINE })
 
-	fun <T: Fluid> register(fluid: T): T {
-		fluids.add(fluid)
+	fun <T: PipedFluid> register(fluid: T): T {
+		pipedFluids.add(fluid)
+
+		fluid.categories.forEach { it.addMember(fluid) }
+
 		return fluid
-	}
-
-	fun registerBasic(): BasicFluid {
-		throw NotImplementedError()
 	}
 }
