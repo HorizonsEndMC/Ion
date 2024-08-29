@@ -83,8 +83,8 @@ object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntit
 			.any { it.isIntact() }
 	}
 
-	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): MobDefenderEntity {
-		return MobDefenderEntity(manager, x, y, z, world, signOffset)
+	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): MobDefenderEntity {
+		return MobDefenderEntity(manager, x, y, z, world, structureDirection)
 	}
 
 	class MobDefenderEntity(
