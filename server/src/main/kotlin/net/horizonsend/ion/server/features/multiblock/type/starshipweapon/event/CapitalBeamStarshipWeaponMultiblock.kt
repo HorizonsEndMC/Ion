@@ -18,59 +18,59 @@ object CapitalBeamStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Ca
 	override fun MultiblockShape.buildStructure() {
 		z(-1) {
 			y(1) {
-				x(-1).copperBlock()
-				x(0).copperBlock()
-				x(+1).copperBlock()
+				x(-1).anyCopperVariant()
+				x(0).anyCopperVariant()
+				x(+1).anyCopperVariant()
 			}
 			y(2) {
-				x(-1).copperBlock()
-				x(0).copperBlock()
-				x(+1).copperBlock()
+				x(-1).anyCopperVariant()
+				x(0).anyCopperVariant()
+				x(+1).anyCopperVariant()
 			}
 			y(3) {
-				x(-1).copperBlock()
-				x(0).copperBlock()
-				x(+1).copperBlock()
+				x(-1).anyCopperVariant()
+				x(0).anyCopperVariant()
+				x(+1).anyCopperVariant()
 			}
 		}
 		z(0) {
 			y(1) {
-				x(-1).copperBlock()
-				x(0).copperBlock()
-				x(+1).copperBlock()
+				x(-1).anyCopperVariant()
+				x(0).anyCopperVariant()
+				x(+1).anyCopperVariant()
 			}
 			y(2) {
-				x(-1).copperBlock()
-				x(0).copperBlock()
-				x(+1).copperBlock()
+				x(-1).anyCopperVariant()
+				x(0).anyCopperVariant()
+				x(+1).anyCopperVariant()
 			}
 			y(3) {
-				x(-1).copperBlock()
-				x(0).copperBlock()
-				x(+1).copperBlock()
+				x(-1).anyCopperVariant()
+				x(0).anyCopperVariant()
+				x(+1).anyCopperVariant()
 			}
 		}
 		z(+1) {
 			y(1) {
-				x(-1).copperBlock()
-				x(0).copperBlock()
-				x(+1).copperBlock()
+				x(-1).anyCopperVariant()
+				x(0).anyCopperVariant()
+				x(+1).anyCopperVariant()
 			}
 			y(2) {
-				x(-1).copperBlock()
-				x(0).copperBlock()
-				x(+1).copperBlock()
+				x(-1).anyCopperVariant()
+				x(0).anyCopperVariant()
+				x(+1).anyCopperVariant()
 			}
 			y(3) {
-				x(-1).copperBlock()
-				x(0).copperBlock()
-				x(+1).copperBlock()
+				x(-1).anyCopperVariant()
+				x(0).anyCopperVariant()
+				x(+1).anyCopperVariant()
 			}
 		}
 
 		z(+0) {
 			y(0) {
-				x(+0).copperBlock()
+				x(+0).anyCopperVariant()
 			}
 			y(+4) {
 				x(+0).anyWall()

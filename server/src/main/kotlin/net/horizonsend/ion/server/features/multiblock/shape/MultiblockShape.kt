@@ -397,7 +397,7 @@ class MultiblockShape {
 		fun emeraldBlock() = type(Material.EMERALD_BLOCK)
 		fun redstoneBlock() = type(Material.REDSTONE_BLOCK)
 		fun lapisBlock() = type(Material.LAPIS_BLOCK)
-		fun copperBlock() = anyType(
+		fun anyCopperVariant() = anyType(
 			Material.COPPER_BLOCK,
 			Material.EXPOSED_COPPER,
 			Material.WEATHERED_COPPER,
@@ -414,8 +414,21 @@ class MultiblockShape {
 			Material.WAXED_EXPOSED_CUT_COPPER,
 			Material.WAXED_WEATHERED_CUT_COPPER,
 			Material.WAXED_OXIDIZED_CUT_COPPER,
-			alias = "any copper block",
+			alias = "any copper variant",
 		)
+		fun anyCopperBlock() = anyType(
+			Material.COPPER_BLOCK,
+			Material.EXPOSED_COPPER,
+			Material.WEATHERED_COPPER,
+			Material.OXIDIZED_COPPER,
+			Material.WAXED_COPPER_BLOCK,
+			Material.WAXED_EXPOSED_COPPER,
+			Material.WAXED_WEATHERED_COPPER,
+			Material.WAXED_OXIDIZED_COPPER,
+			alias = "any solid copper block"
+		)
+		fun copperGrate() = type(Material.COPPER_GRATE)
+		fun fluidInput() = type(Material.FLETCHING_TABLE)
 
 		fun titaniumBlock() = customBlock(CustomBlocks.TITANIUM_BLOCK)
 		fun aluminumBlock() = customBlock(CustomBlocks.ALUMINUM_BLOCK)

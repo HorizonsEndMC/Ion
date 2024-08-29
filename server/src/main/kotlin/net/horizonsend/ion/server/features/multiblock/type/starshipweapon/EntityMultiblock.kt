@@ -2,10 +2,12 @@ package net.horizonsend.ion.server.features.multiblock.type.starshipweapon
 
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.newer.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
 
 /**
  * A multiblock which has a corresponding multiblock entity
@@ -17,13 +19,13 @@ interface EntityMultiblock<T : MultiblockEntity> {
 	 * Create the multiblock entity using the stored data
 	 **/
 	fun createEntity(
-        manager: ChunkMultiblockManager,
-        data: PersistentMultiblockData,
-        world: World,
-        x: Int,
-        y: Int,
-        z: Int,
-        signOffset: BlockFace
+		manager: ChunkMultiblockManager,
+		data: PersistentMultiblockData,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		structureDirection: BlockFace
 	): T
 
 	fun getMultiblockEntity(world: World, x: Int, y: Int, z: Int): T? {
@@ -32,5 +34,12 @@ interface EntityMultiblock<T : MultiblockEntity> {
 
 		@Suppress("UNCHECKED_CAST")
 		return world.ion.getChunk(chunkX, chunkZ)?.multiblockManager?.get(x, y, z) as T?
+	}
+
+	fun getMultiblockEntity(sign: Sign): T? {
+		val origin = MultiblockEntity.getOriginFromSign(sign)
+
+		@Suppress("UNCHECKED_CAST")
+		return MultiblockEntities.getMultiblockEntity(origin) as T?
 	}
 }
