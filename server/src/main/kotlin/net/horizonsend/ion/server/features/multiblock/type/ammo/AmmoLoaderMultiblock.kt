@@ -44,9 +44,9 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+2) {
 			y(-1) {
 				x(-2).ironBlock()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).ironBlock()
 			}
 
@@ -62,9 +62,9 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+3) {
 			y(-1) {
 				x(-2).anyGlassPane()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).aluminumBlock()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).anyGlassPane()
 			}
 
@@ -80,9 +80,9 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+4) {
 			y(-1) {
 				x(-2).ironBlock()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).ironBlock()
 			}
 

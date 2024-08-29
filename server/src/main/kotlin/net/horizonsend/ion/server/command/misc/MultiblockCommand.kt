@@ -10,15 +10,15 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.newer.MultiblockRegistration
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -32,19 +32,19 @@ import org.bukkit.util.Vector
 
 @CommandAlias("multiblock")
 @CommandPermission("ion.multiblock")
-object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
+object MultiblockCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandContexts.registerContext(Multiblock::class.java) { c: BukkitCommandExecutionContext ->
 			val name: String = c.popFirstArg()
 
-			Multiblocks.all().firstOrNull { it.javaClass.simpleName == name }
+			MultiblockRegistration.getAllMultiblocks().firstOrNull { it.javaClass.simpleName == name }
 				?: throw InvalidCommandArgument("Multiblock $name not found!")
 		}
 
 		registerStaticCompletion(
 			manager,
 			"multiblocks",
-			Multiblocks.all().joinToString("|") { it.javaClass.simpleName })
+			MultiblockRegistration.getAllMultiblocks().joinToString("|") { it.javaClass.simpleName })
 	}
 
 	/**
@@ -53,7 +53,7 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 	fun setupCommand(player: Player, sign: Sign, lastMatch: Multiblock) {
 		val multiblockType = lastMatch.name
 
-		val possibleTiers = Multiblocks.all().filter { it.name == multiblockType }
+		val possibleTiers = MultiblockRegistration.getAllMultiblocks().filter { it.name == multiblockType }
 
 		if (possibleTiers.size == 1) {
 			onCheck(player, possibleTiers.first(), sign.x, sign.y, sign.z)
