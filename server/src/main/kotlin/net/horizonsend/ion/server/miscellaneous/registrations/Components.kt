@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.features.misc.GameplayTweaks
 import net.horizonsend.ion.server.features.misc.ProxyMessaging
 import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
+import net.horizonsend.ion.server.features.multiblock.MultiblockRecipes
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.newer.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.newer.MultiblockRegistration
@@ -229,7 +230,7 @@ val components: List<IonComponent> = listOf(
 	ContactsJammingSidebar,
 	CombatTimer,
 	WorldEditListener,
-	TransportManager
+	TransportManager,
 	DisplayHandlers,
 	PlanetTeleportCooldown,
 	MultiBlockDisplay,

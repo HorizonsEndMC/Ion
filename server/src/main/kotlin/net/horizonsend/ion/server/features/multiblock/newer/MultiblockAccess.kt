@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.newer.MultiblockEntities.getMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.newer.MultiblockEntities.removeMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
@@ -217,7 +218,7 @@ object MultiblockAccess : IonServerComponent() {
 		val originBlock = MultiblockEntity.getOriginFromSign(sign)
 
 		// Possible multiblocks from the sign
-		val possible = MultiblockRegistration.getBySignName(name)
+		val possible = MultiblockRegistration.getByDetectionName(name)
 
 		if (possible.isEmpty()) return null
 
@@ -257,11 +258,26 @@ object MultiblockAccess : IonServerComponent() {
 		val clickedBlock = event.clickedBlock ?: return
 		val sign = clickedBlock.state as? Sign ?: return
 
-		if (sign.persistentDataContainer.has(MULTIBLOCK)) return
+		if (sign.persistentDataContainer.has(MULTIBLOCK)) {
+			checkInteractable(sign, event)
+			return
+		}
 
 		val result = tryDetectMultiblock(event.player, sign, face = sign.getFacing().oppositeFace, loadChunks = false) ?: return
 
 		event.player.success("Detected new ${result.name}")
+	}
+
+	fun checkInteractable(sign: Sign, event: PlayerInteractEvent) {
+		// Quick check
+		val multiblockType = getFast(sign)
+		if (multiblockType !is InteractableMultiblock) return
+
+		// Check structure
+		val origin = MultiblockEntity.getOriginFromSign(sign)
+		if (!multiblockType.blockMatchesStructure(origin, sign.getFacing().oppositeFace)) return
+
+		multiblockType.onSignInteract(sign, event.player, event)
 	}
 
 	@EventHandler
