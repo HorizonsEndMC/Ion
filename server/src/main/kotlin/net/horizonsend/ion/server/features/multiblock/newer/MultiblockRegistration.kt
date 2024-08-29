@@ -1,9 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.newer
 
 import com.google.common.collect.Multimap
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockBottom
@@ -80,10 +77,9 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopTriTurretMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 
-//TODO store the progress of migrated multiblocks here
 object MultiblockRegistration : IonServerComponent() {
 	private val multiblocks: MutableMap<String, Multiblock> = mutableMapOf()
-	private val multiblockCoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
 	/**
 	 * The multiblocks grouped by their sign text.
 	 *
@@ -197,8 +193,14 @@ object MultiblockRegistration : IonServerComponent() {
 	}
 
 	private fun sortMultiblocks() {
-		for ((_, multi) in getAllMultiblocks()) {
+		for (multi in getAllMultiblocks()) {
 			byDetectionName[multi.name].add(multi)
+
+			if (multi.alternativeDetectionNames.isEmpty()) continue
+
+			for (altName in multi.alternativeDetectionNames) {
+				byDetectionName[multi.name].add(multi)
+			}
 		}
 	}
 
@@ -220,9 +222,9 @@ object MultiblockRegistration : IonServerComponent() {
 		multiblocks[alias] = multiblock
 	}
 
-	fun getAllMultiblocks() = multiblocks
+	fun getAllMultiblocks() = multiblocks.values.toSet()
 
-	fun getBySignName(name: String): List<Multiblock> {
+	fun getByDetectionName(name: String): List<Multiblock> {
 		return byDetectionName[name].toList()
 	}
 
