@@ -32,9 +32,9 @@ object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+1) {
 			y(-1) {
 				x(-2).anyGlassPane()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).endRod()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).anyGlassPane()
 			}
 			y(+0) {
@@ -48,9 +48,9 @@ object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+2) {
 			y(-1) {
 				x(-2).ironBlock()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).ironBlock()
 			}
 			y(+0) {
@@ -64,9 +64,9 @@ object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+3) {
 			y(-1) {
 				x(-2).anyGlassPane()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).endRod()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).anyGlassPane()
 			}
 			y(+0) {

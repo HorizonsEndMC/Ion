@@ -41,14 +41,14 @@ object TestMultiblock : Multiblock(), EntityMultiblock<TestMultiblock.TestMultib
 		at(0, 0,0 ).type(Material.BEDROCK)
 	}
 
-	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): TestMultiblockEntity {
+	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): TestMultiblockEntity {
 		return TestMultiblockEntity(
 			manager,
 			world,
 			x,
 			y,
 			z,
-			signOffset,
+			structureDirection,
 			data.getAdditionalData(NamespacedKeys.key("test"), PersistentDataType.STRING) ?: ""
 		)
 	}
