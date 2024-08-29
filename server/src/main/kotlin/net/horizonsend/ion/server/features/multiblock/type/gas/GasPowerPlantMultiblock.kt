@@ -52,27 +52,27 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 				x(+2).anyGlassPane()
 			}
 			y(-1) {
-				x(-2).copperBlock()
+				x(-2).anyCopperVariant()
 				x(-1).extractor()
 				x(+0).wireInputComputer()
 				x(+1).extractor()
-				x(+2).copperBlock()
+				x(+2).anyCopperVariant()
 			}
 		}
 		z(+1) {
 			y(+0) {
-				x(-2).copperBlock()
+				x(-2).anyCopperVariant()
 				x(-1).lightningRod()
 				x(+0).sponge()
 				x(+1).lightningRod()
-				x(+2).copperBlock()
+				x(+2).anyCopperVariant()
 			}
 			y(-1) {
-				x(-2).copperBlock()
+				x(-2).anyCopperVariant()
 				x(-1).anyWall()
 				x(+0).redstoneBlock()
 				x(+1).anyWall()
-				x(+2).copperBlock()
+				x(+2).anyCopperVariant()
 			}
 		}
 		z(+2) {
@@ -84,11 +84,11 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 				x(+2).anyGlass()
 			}
 			y(-1) {
-				x(-2).copperBlock()
+				x(-2).anyCopperVariant()
 				x(-1).anyWall()
 				x(+0).redstoneBlock()
 				x(+1).anyWall()
-				x(+2).copperBlock()
+				x(+2).anyCopperVariant()
 			}
 		}
 		z(+3) {
@@ -116,27 +116,27 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 				x(+2).anyGlass()
 			}
 			y(-1) {
-				x(-2).copperBlock()
+				x(-2).anyCopperVariant()
 				x(-1).anyWall()
 				x(+0).redstoneBlock()
 				x(+1).anyWall()
-				x(+2).copperBlock()
+				x(+2).anyCopperVariant()
 			}
 		}
 		z(+5) {
 			y(+0) {
-				x(-2).copperBlock()
+				x(-2).anyCopperVariant()
 				x(-1).lightningRod()
 				x(+0).sponge()
 				x(+1).lightningRod()
-				x(+2).copperBlock()
+				x(+2).anyCopperVariant()
 			}
 			y(-1) {
-				x(-2).copperBlock()
+				x(-2).anyCopperVariant()
 				x(-1).anyWall()
 				x(+0).redstoneBlock()
 				x(+1).anyWall()
-				x(+2).copperBlock()
+				x(+2).anyCopperVariant()
 			}
 		}
 		z(+6) {
@@ -148,11 +148,11 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 				x(+2).anyGlassPane()
 			}
 			y(-1) {
-				x(-2).copperBlock()
+				x(-2).anyCopperVariant()
 				x(-1).ironBlock()
 				x(+0).extractor()
 				x(+1).ironBlock()
-				x(+2).copperBlock()
+				x(+2).anyCopperVariant()
 			}
 		}
 	}

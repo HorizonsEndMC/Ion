@@ -25,15 +25,15 @@ object HorizontalPumpkinCannonStarshipWeaponMultiblock : PumpkinCannonStarshipWe
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
-				x(0).copperBlock()
+				x(0).anyCopperVariant()
 			}
 			y(+0) {
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).type(Material.SHROOMLIGHT)
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 			}
 			y(+1) {
-				x(0).copperBlock()
+				x(0).anyCopperVariant()
 			}
 		}
 
@@ -67,15 +67,15 @@ object HorizontalPumpkinCannonStarshipWeaponMultiblock : PumpkinCannonStarshipWe
 
 		z(+3) {
 			y(-1) {
-				x(0).copperBlock()
+				x(0).anyCopperVariant()
 			}
 			y(+0) {
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).type(Material.SHROOMLIGHT)
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 			}
 			y(+1) {
-				x(0).copperBlock()
+				x(0).anyCopperVariant()
 			}
 		}
 
