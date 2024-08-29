@@ -12,9 +12,9 @@ import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield5
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.TestMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.new.NewPowerBankMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier3
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 
 //TODO store the progress of migrated multiblocks here
@@ -37,9 +37,9 @@ object MultiblockRegistration : IonServerComponent() {
 
 	private fun initMultiblocks() {
         registerMultiblock(TestMultiblock)
-		registerMultiblock(NewPowerBankMultiblockTier1)
-		registerMultiblock(NewPowerBankMultiblockTier2)
-		registerMultiblock(NewPowerBankMultiblockTier3)
+		registerMultiblock(PowerBankMultiblockTier1)
+		registerMultiblock(PowerBankMultiblockTier2)
+		registerMultiblock(PowerBankMultiblockTier3)
 
 		registerMultiblock(AreaShield5)
 		registerMultiblock(AreaShield10)
