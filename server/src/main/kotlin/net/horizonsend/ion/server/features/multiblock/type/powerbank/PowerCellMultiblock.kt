@@ -41,7 +41,7 @@ object PowerCellMultiblock : Multiblock(), PowerStoringMultiblock, EntityMultibl
 		}
 	}
 
-	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): PowerBankMultiblock.PowerBankEntity {
+	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): PowerBankMultiblock.PowerBankEntity {
 		return PowerBankMultiblock.PowerBankEntity(
 			manager,
 			this,
@@ -49,7 +49,7 @@ object PowerCellMultiblock : Multiblock(), PowerStoringMultiblock, EntityMultibl
 			y,
 			z,
 			world,
-			signOffset,
+			structureDirection,
 			50_000,
 			data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0)
 		)

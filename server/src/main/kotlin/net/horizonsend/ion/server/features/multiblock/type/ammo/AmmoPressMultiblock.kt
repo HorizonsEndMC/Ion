@@ -48,9 +48,9 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 
 		z(+2) {
 			y(-1) {
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 			}
 
 			y(+0) {
@@ -76,9 +76,9 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 
 		z(+4) {
 			y(-1) {
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 			}
 
 			y(+0) {

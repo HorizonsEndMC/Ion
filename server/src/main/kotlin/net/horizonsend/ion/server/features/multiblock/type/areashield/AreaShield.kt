@@ -75,7 +75,7 @@ abstract class AreaShield(val radius: Int) : Multiblock(), PowerStoringMultibloc
 		"&8Radius: &a$radius"
 	)
 
-	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): AreaShieldEntity {
+	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AreaShieldEntity {
 		return AreaShieldEntity(
 			manager,
 			this,
@@ -83,7 +83,7 @@ abstract class AreaShield(val radius: Int) : Multiblock(), PowerStoringMultibloc
 			y,
 			z,
 			world,
-			signOffset,
+			structureDirection,
 			data.getAdditionalDataOrDefault(POWER, INTEGER, 0),
 			maxPower
 		)
