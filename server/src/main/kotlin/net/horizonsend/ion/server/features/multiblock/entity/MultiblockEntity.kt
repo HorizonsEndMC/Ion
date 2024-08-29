@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
 import org.bukkit.Location
 import org.bukkit.World
@@ -16,15 +16,15 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
 /**
+ * @param manager The multiblock manager that this is registered to
+ * @param multiblock The type of multiblock this entity represents
+ *
  * @param x The absolute x position of this multiblock's origin location
  * @param y The absolute x position of this multiblock's origin location
  * @param z The absolute x position of this multiblock's origin location
- *
  * @param world The world this multiblock is in
  *
- * @param multiblock The type of multiblock this entity represents
- *
- * @param facing The direction this multiblock is oriented [from the origin]
+ * @param structureDirection The direction this multiblock is oriented [from the origin]
  **/
 abstract class MultiblockEntity(
     val manager: ChunkMultiblockManager,
@@ -34,7 +34,8 @@ abstract class MultiblockEntity(
     var y: Int,
     var z: Int,
     var world: World,
-    var facing: BlockFace
+
+    var structureDirection: BlockFace
 ): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion> {
 	/** Mark this entity as having been removed */
 	var removed: Boolean = false
@@ -81,14 +82,14 @@ abstract class MultiblockEntity(
 	 * This data is serialized and stored on the chunk when not loaded.
 	 **/
 	fun store(): PersistentMultiblockData {
-		val store = PersistentMultiblockData(x, y, z, multiblock, facing)
+		val store = PersistentMultiblockData(x, y, z, multiblock, structureDirection)
 		storeAdditionalData(store)
 
 		return store
 	}
 
 	fun isSignLoaded(): Boolean {
-		val signDirection = facing.oppositeFace
+		val signDirection = structureDirection.oppositeFace
 		val signLoc = Vec3i(x, y, z) + Vec3i(signDirection.modX, 0, signDirection.modZ)
 
 		return isBlockLoaded(world, signLoc.x, signLoc.y, signLoc.z)
@@ -98,25 +99,47 @@ abstract class MultiblockEntity(
 	 * Gets the sign of this multiblock
 	 **/
 	fun getSign(): Sign? {
-		val signDirection = facing.oppositeFace
-		val signLoc = Vec3i(x, y, z) + Vec3i(signDirection.modX, 0, signDirection.modZ)
-
-		return getBlockIfLoaded(world, signLoc.x, signLoc.y, signLoc.z)?.state as? Sign
+		return getSignFromOrigin(world,vec3i, structureDirection).state as? Sign
 	}
 
-	fun isIntact(): Boolean = multiblock.blockMatchesStructure(
-		world.getBlockAt(x, y, z),
-		facing.oppositeFace,
-		loadChunks = false,
-		particles = false
-	)
+	/**
+	 *
+	 **/
+	fun isIntact(checkSign: Boolean = true): Boolean {
+		if (checkSign && getSign() == null) return false
+
+		return multiblock.blockMatchesStructure(
+			world.getBlockAt(x, y, z),
+			structureDirection,
+			loadChunks = false,
+			particles = false
+		)
+	}
 
 	/**
 	 *
 	 **/
 	fun getBlockRelative(backFourth: Int, leftRight: Int, upDown: Int): Block {
-		val (x, y, z) = getRelative(vec3i, facing.oppositeFace, backFourth, leftRight, upDown)
+		val (x, y, z) = getRelative(vec3i, structureDirection, backFourth, leftRight, upDown)
 
 		return world.getBlockAt(x, y, z)
+	}
+
+	companion object {
+		/** Get the multiblock's origin from its sign */
+		fun getOriginFromSign(sign: Sign): Block {
+			val multiblockDirection = sign.getFacing().oppositeFace
+
+			return sign.block.getRelative(multiblockDirection)
+		}
+
+		/** Get the sign position from a multiblock's orientation and origin */
+		fun getSignFromOrigin(origin: Block, structureDirection: BlockFace): Block = origin.getRelative(structureDirection.oppositeFace)
+
+		/** Get the sign position from a multiblock's orientation and origin */
+		fun getSignFromOrigin(world: World, origin: Vec3i, structureDirection: BlockFace): Block {
+			val position = origin.getRelative(structureDirection.oppositeFace)
+			return world.getBlockAt(position.x, position.y, position.z)
+		}
 	}
 }
