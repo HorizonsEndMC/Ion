@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity.Companion.createTextDisplayHandler
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.SignMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -16,7 +15,7 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataType
 
-abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMultiblock<PowerBankMultiblock.PowerBankEntity>, SignMultiblock {
+abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMultiblock<PowerBankMultiblock.PowerBankEntity> {
 	abstract val tierMaterial: Material
 	override val name = "powerbank"
 
@@ -140,7 +139,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMulti
 		}
 
 		override fun toString(): String {
-			return "POWER BANK TIER: $multiblock! Power: ${getPower()}, Facing: $facing"
+			return "POWER BANK TIER: $multiblock! Power: ${getPower()}, Facing: $structureDirection"
 		}
 	}
 }
