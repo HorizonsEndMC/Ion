@@ -105,6 +105,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(PowerBankMultiblockTier1)
 		registerMultiblock(PowerBankMultiblockTier2)
 		registerMultiblock(PowerBankMultiblockTier3)
+		registerMultiblock(PowerBankMultiblockTier1, "NewPowerBankMultiblockTier1") //TODO testing only - remove on live
+		registerMultiblock(PowerBankMultiblockTier2, "NewPowerBankMultiblockTier2") //TODO testing only - remove on live
+		registerMultiblock(PowerBankMultiblockTier3, "NewPowerBankMultiblockTier3") //TODO testing only - remove on live
 		registerMultiblock(PowerCellMultiblock)
 
 		// Defenses
