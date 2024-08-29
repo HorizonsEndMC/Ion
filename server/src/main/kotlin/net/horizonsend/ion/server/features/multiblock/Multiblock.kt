@@ -21,6 +21,7 @@ import org.bukkit.entity.Player
 
 abstract class Multiblock {
 	abstract val name: String
+	open val alternativeDetectionNames: Array<String> = arrayOf()
 
 	abstract val signText: Array<Component?>
 
