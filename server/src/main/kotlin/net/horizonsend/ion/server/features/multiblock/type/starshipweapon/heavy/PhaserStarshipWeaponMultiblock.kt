@@ -13,7 +13,7 @@ object PhaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<PhaserW
 		y(+0) {
 			z(+0..+4 step 2) {
 				x(-1).anyWall()
-				x(+0).copperBlock()
+				x(+0).anyCopperVariant()
 				x(+1).anyWall()
 			}
 			z(+1..+3 step 2) {
