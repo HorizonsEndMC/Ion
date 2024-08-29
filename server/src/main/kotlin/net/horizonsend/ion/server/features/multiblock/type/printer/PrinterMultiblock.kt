@@ -43,13 +43,13 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 		z(+1) {
 			y(-1) {
 				if (!mirrored) {
-					x(-1).copperBlock()
+					x(-1).anyCopperVariant()
 					x(+0).printerMachineryBlock()
 					x(+1).ironBlock()
 				} else {
 					x(-1).ironBlock()
 					x(+0).printerMachineryBlock()
-					x(+1).copperBlock()
+					x(+1).anyCopperVariant()
 				}
 			}
 
@@ -63,13 +63,13 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 		z(+2) {
 			y(-1) {
 				if (!mirrored) {
-					x(-1).copperBlock()
+					x(-1).anyCopperVariant()
 					x(+0).printerCoreBlock()
 					x(+1).anyGlass()
 				} else {
 					x(-1).anyGlass()
 					x(+0).printerCoreBlock()
-					x(+1).copperBlock()
+					x(+1).anyCopperVariant()
 				}
 			}
 
@@ -83,13 +83,13 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 		z(+3) {
 			y(-1) {
 				if (!mirrored) {
-					x(-1).copperBlock()
+					x(-1).anyCopperVariant()
 					x(+0).printerMachineryBlock()
 					x(+1).ironBlock()
 				} else {
 					x(-1).ironBlock()
 					x(+0).printerMachineryBlock()
-					x(+1).copperBlock()
+					x(+1).anyCopperVariant()
 				}
 			}
 
