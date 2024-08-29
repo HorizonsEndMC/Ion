@@ -1,13 +1,26 @@
 package net.horizonsend.ion.server.features.multiblock.type.powerbank
 
+import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity.Companion.createTextDisplayHandler
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.SignMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
+import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Material
+import org.bukkit.World
+import org.bukkit.block.BlockFace
+import org.bukkit.persistence.PersistentDataType
 
-abstract class PowerBankMultiblock(tierText: String) : Multiblock(), PowerStoringMultiblock {
+abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMultiblock<PowerBankMultiblock.PowerBankEntity>, SignMultiblock {
 	abstract val tierMaterial: Material
 	override val name = "powerbank"
+
+	abstract val maxPower: Int
 
 	override val signText = createSignText(
 		line1 = "&2Power &8Bank",
@@ -65,6 +78,69 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), PowerStorin
 				x(+0).anyGlass()
 				x(+1).anyGlassPane()
 			}
+		}
+	}
+
+	override fun createEntity(
+		manager: ChunkMultiblockManager,
+		data: PersistentMultiblockData,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		signOffset: BlockFace
+	): PowerBankEntity {
+		return PowerBankEntity(
+			manager,
+			this,
+			x,
+			y,
+			z,
+			world,
+			signOffset,
+			maxPower,
+			data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0)
+		)
+	}
+
+	class PowerBankEntity(
+		manager: ChunkMultiblockManager,
+		multiblock: Multiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		signDirection: BlockFace,
+		override val maxPower: Int,
+		override var powerUnsafe: Int = 0
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
+		override val displayHandler: TextDisplayHandler = createTextDisplayHandler(this)
+
+		override fun onLoad() {
+			register()
+			displayHandler.update()
+		}
+
+		override fun onUnload() {
+			unRegister()
+			displayHandler.remove()
+		}
+
+		override fun handleRemoval() {
+			unRegister()
+			displayHandler.remove()
+		}
+
+		override fun isValid(): Boolean {
+			return !removed
+		}
+
+		override fun storeAdditionalData(store: PersistentMultiblockData) {
+			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
+		}
+
+		override fun toString(): String {
+			return "POWER BANK TIER: $multiblock! Power: ${getPower()}, Facing: $facing"
 		}
 	}
 }

@@ -1,10 +1,17 @@
 package net.horizonsend.ion.server.features.multiblock.type.powerbank
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
+import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import org.bukkit.World
+import org.bukkit.block.BlockFace
+import org.bukkit.persistence.PersistentDataType
 
-object PowerCellMultiblock : Multiblock(), PowerStoringMultiblock {
+object PowerCellMultiblock : Multiblock(), PowerStoringMultiblock, EntityMultiblock<PowerBankMultiblock.PowerBankEntity> {
 	override val name = "powercell"
 
 	override val signText = createSignText(
@@ -32,5 +39,19 @@ object PowerCellMultiblock : Multiblock(), PowerStoringMultiblock {
 				x(+1).anyGlassPane()
 			}
 		}
+	}
+
+	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, signOffset: BlockFace): PowerBankMultiblock.PowerBankEntity {
+		return PowerBankMultiblock.PowerBankEntity(
+			manager,
+			this,
+			x,
+			y,
+			z,
+			world,
+			signOffset,
+			50_000,
+			data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0)
+		)
 	}
 }
