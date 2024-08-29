@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.type.checklist.BattleCruis
 import net.horizonsend.ion.server.features.multiblock.type.checklist.CruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.ConnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.DisconnectedDockingTubeMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gas.PipedGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblockClass1
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblockClass2
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblockClass3
@@ -105,6 +106,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(PowerBankMultiblockTier2, "NewPowerBankMultiblockTier2") //TODO testing only - remove on live
 		registerMultiblock(PowerBankMultiblockTier3, "NewPowerBankMultiblockTier3") //TODO testing only - remove on live
 		registerMultiblock(PowerCellMultiblock)
+
+		// Gas
+		registerMultiblock(PipedGasCollectorMultiblock)
 
 		// Defenses
 		registerMultiblock(AreaShield5)
