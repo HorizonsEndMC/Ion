@@ -13,10 +13,6 @@ import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield10
-import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield20
-import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield30
-import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield5
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
@@ -77,7 +73,6 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblo
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.OdometerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
@@ -93,7 +88,6 @@ import net.horizonsend.ion.server.features.multiblock.type.particleshield.Shield
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass30
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass65
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass85
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerCellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier3
@@ -184,11 +178,6 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(PowerFurnaceMultiblockTier2)
 		registerMultiblock(PowerFurnaceMultiblockTier3)
 
-//		registerMultiblock(PowerBankMultiblockTier1)
-//		registerMultiblock(PowerBankMultiblockTier2)
-//		registerMultiblock(PowerBankMultiblockTier3)
-
-		registerMultiblock(PowerCellMultiblock)
 		registerMultiblock(ChargerMultiblockTier1)
 		registerMultiblock(ChargerMultiblockTier2)
 		registerMultiblock(ChargerMultiblockTier3)
@@ -237,13 +226,6 @@ object Multiblocks : IonServerComponent() {
 
 		registerMultiblock(StandardGravityWellMultiblock)
 		registerMultiblock(AmplifiedGravityWellMultiblock)
-
-		registerMultiblock(AreaShield5)
-		registerMultiblock(AreaShield10)
-		registerMultiblock(AreaShield20)
-		registerMultiblock(AreaShield30)
-
-		registerMultiblock(MobDefender)
 
 		registerMultiblock(StandardAmmoPressMultiblock)
 		registerMultiblock(AmmoLoaderMultiblock)

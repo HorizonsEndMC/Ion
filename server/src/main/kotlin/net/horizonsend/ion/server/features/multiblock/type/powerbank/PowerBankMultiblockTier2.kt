@@ -2,7 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.type.powerbank
 
 import org.bukkit.Material
 
-object PowerBankMultiblockTier2 : PowerBankMultiblock("&eTier 2") {
-	override val maxPower = 350_000
+data object PowerBankMultiblockTier2 : PowerBankMultiblock("&eTier 2") {
 	override val tierMaterial = Material.GOLD_BLOCK
+
+	override val maxPower: Int = 350_000
 }
