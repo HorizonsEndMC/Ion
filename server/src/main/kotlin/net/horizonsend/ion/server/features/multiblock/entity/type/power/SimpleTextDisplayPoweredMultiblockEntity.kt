@@ -21,7 +21,7 @@ interface SimpleTextDisplayPoweredMultiblockEntity : PoweredMultiblockEntity, Di
 		fun createTextDisplayHandler(entity: SimpleTextDisplayPoweredMultiblockEntity): TextDisplayHandler {
 			require(entity is MultiblockEntity)
 
-			val signDirection = entity.facing.oppositeFace
+			val signDirection = entity.structureDirection.oppositeFace
 			val signLoc = Vec3i(entity.x, entity.y, entity.z) + Vec3i(signDirection.modX, 0, signDirection.modZ)
 
 			// 70% of the way through the block
