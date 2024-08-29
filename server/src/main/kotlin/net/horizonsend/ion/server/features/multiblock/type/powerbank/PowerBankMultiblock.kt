@@ -87,7 +87,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMulti
 		x: Int,
 		y: Int,
 		z: Int,
-		signOffset: BlockFace
+		structureDirection: BlockFace
 	): PowerBankEntity {
 		return PowerBankEntity(
 			manager,
@@ -96,7 +96,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMulti
 			y,
 			z,
 			world,
-			signOffset,
+			structureDirection,
 			maxPower,
 			data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0)
 		)
@@ -109,10 +109,10 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMulti
 		y: Int,
 		z: Int,
 		world: World,
-		signDirection: BlockFace,
+		structureDirection: BlockFace,
 		override val maxPower: Int,
 		override var powerUnsafe: Int = 0
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), SimpleTextDisplayPoweredMultiblockEntity {
 		override val displayHandler: TextDisplayHandler = createTextDisplayHandler(this)
 
 		override fun onLoad() {
