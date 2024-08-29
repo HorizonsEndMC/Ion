@@ -100,21 +100,31 @@ abstract class AreaShield(val radius: Int) : Multiblock(), PowerStoringMultibloc
 		override var powerUnsafe: Int,
 		override val maxPower: Int
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
-		override val powerDisplay: TextDisplayHandler = createTextDisplayHandler(this)
+		override val displayHandler: TextDisplayHandler = createTextDisplayHandler(this)
 
 		override fun onLoad() {
-			powerDisplay.update()
-
 			world.ion.multiblockManager.register(this)
+
+			displayHandler.update()
+			register()
 		}
 
 		override fun handleRemoval() {
 			world.ion.multiblockManager.deregister(this)
-			powerDisplay.remove()
+
+			unRegister()
+			displayHandler.remove()
 		}
 
 		override fun onUnload() {
 			world.ion.multiblockManager.deregister(this)
+
+			unRegister()
+			displayHandler.remove()
+		}
+
+		override fun isValid(): Boolean {
+			return !removed
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
