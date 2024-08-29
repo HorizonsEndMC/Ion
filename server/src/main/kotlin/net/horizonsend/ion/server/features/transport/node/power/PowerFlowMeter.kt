@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.client.display.container.DisplayHandlerHolder
 import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
 import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
@@ -33,7 +34,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandler<PowerNetwork> {
+class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandler<PowerNetwork>, DisplayHandlerHolder {
 	constructor(network: PowerNetwork, position: BlockKey, direction: BlockFace) : this(network) {
 		this.position = position
 		this.direction = direction
@@ -77,7 +78,13 @@ class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandl
 	}
 
 	private fun formatPower(): Component {
-		val avg = runCatching { calculateAverage().roundToHundredth() }.getOrDefault(0.0)
+		var avg = runCatching { calculateAverage().roundToHundredth() }.getOrDefault(0.0)
+
+		// If no averages, or no power has been moved in 5 seconds, go to 0
+		if (averages.isEmpty() || System.currentTimeMillis() - averages.maxOf { it.time } > 5000) {
+			avg = 0.0
+		}
+
 		return ofChildren(firstLine, text(avg, GREEN), secondLine)
 	}
 
@@ -105,7 +112,7 @@ class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandl
 		return sum / timeDiff
 	}
 
-	private lateinit var displayHandler: TextDisplayHandler
+	override lateinit var displayHandler: TextDisplayHandler
 
 	private fun setupDisplayEntity() {
 		// 95% of the way to the edge of the block once added to the center of the block, to avoid z fighting
@@ -118,6 +125,7 @@ class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandl
 		val z = getZ(facingBlock).toDouble() + 0.5 - offset.z
 
 		displayHandler = TextDisplayHandler(
+			this,
 			network.world,
 			x,
 			y,
@@ -127,8 +135,18 @@ class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandl
 		)
 	}
 
+	override fun refresh() {
+		if (!::displayHandler.isInitialized) return
+		displayHandler.setText(formatPower())
+	}
+
+	override fun isValid(): Boolean {
+		return !isDead
+	}
+
 	override fun loadIntoNetwork() {
 		setupDisplayEntity()
+		register()
 
 		super.loadIntoNetwork()
 	}
@@ -140,6 +158,7 @@ class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandl
 	}
 
 	override suspend fun handleRemoval(position: BlockKey) {
+		unRegister()
 		if (::displayHandler.isInitialized) displayHandler.remove()
 
 		super.handleRemoval(position)
