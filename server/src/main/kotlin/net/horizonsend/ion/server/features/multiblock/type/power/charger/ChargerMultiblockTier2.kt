@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.charger
+package net.horizonsend.ion.server.features.multiblock.type.power.charger
 
 import org.bukkit.Material
 
