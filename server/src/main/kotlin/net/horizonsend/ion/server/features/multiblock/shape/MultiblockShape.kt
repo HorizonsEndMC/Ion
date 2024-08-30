@@ -428,6 +428,7 @@ class MultiblockShape {
 			alias = "any solid copper block"
 		)
 		fun copperGrate() = type(Material.COPPER_GRATE)
+		fun copperBulb() = type(Material.COPPER_BULB)
 		fun fluidInput() = type(Material.FLETCHING_TABLE)
 
 		fun titaniumBlock() = customBlock(CustomBlocks.TITANIUM_BLOCK)
