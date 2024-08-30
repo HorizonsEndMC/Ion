@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.powerbank
+package net.horizonsend.ion.server.features.multiblock.type.power.storage
 
 import org.bukkit.Material
 
