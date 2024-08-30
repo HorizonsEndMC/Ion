@@ -6,8 +6,9 @@ import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCate
 import java.util.function.Supplier
 
 class GasPipedFluid(
-	private val gasSupplier: Supplier<Gas>
-) : PipedFluid() {
+	identifier: String,
+	private val gasSupplier: Supplier<Gas>,
+) : PipedFluid(identifier) {
 	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS)
 
 	val gas get() = gasSupplier.get()
