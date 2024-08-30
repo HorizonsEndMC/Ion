@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.powerfurnace
+package net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace
 
 import org.bukkit.Material
 

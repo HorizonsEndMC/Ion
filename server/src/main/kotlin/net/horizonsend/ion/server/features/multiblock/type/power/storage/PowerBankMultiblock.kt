@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.powerbank
+package net.horizonsend.ion.server.features.multiblock.type.power.storage
 
 import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
 import net.horizonsend.ion.server.features.multiblock.Multiblock
