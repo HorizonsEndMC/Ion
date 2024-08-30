@@ -12,11 +12,16 @@ import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER
 interface FluidStoringEntity {
 	val capacities: Array<StorageContainer>
 
-	fun canStore(fluid: PipedFluid, amount: Double) = capacities.any { it.storage.canStore(fluid, amount) }
+	fun canStore(fluid: PipedFluid, amount: Int) = capacities.any { it.storage.canStore(fluid, amount) }
 
-	fun firstCasStore(fluid: PipedFluid, amount: Double): StorageContainer? = capacities.firstOrNull { it.storage.canStore(fluid, amount) }
+	fun firstCasStore(fluid: PipedFluid, amount: Int): StorageContainer? = capacities.firstOrNull { it.storage.canStore(fluid, amount) }
 
-	fun getStoredResources() : Map<PipedFluid?, Double> = capacities.associate { it.storage.getStoredFluid() to it.storage.getAmount().toDouble() }
+	fun getStoredResources() : Map<PipedFluid?, Int> = capacities.associate { it.storage.getStoredFluid() to it.storage.getAmount() }
+
+	fun getNamedStorage(name: String): StorageContainer = capacities.first { it.name == name }
+
+	fun getStorage(key: NamespacedKey): StorageContainer = capacities.first { it.namespacedKey == key }
+
 
 	fun storeStorageData(destination: PersistentDataContainer, context: PersistentDataAdapterContext) {
 		val storages = context.newPersistentDataContainer()
