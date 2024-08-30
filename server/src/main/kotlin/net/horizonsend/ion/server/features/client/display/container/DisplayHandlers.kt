@@ -18,7 +18,6 @@ object DisplayHandlers : IonServerComponent() {
 
 			toRemove
 		}
-		println("Have ${displayHolders.size} handlers")
 
 		for (displayHolder in displayHolders) {
 			displayHolder.refresh()
