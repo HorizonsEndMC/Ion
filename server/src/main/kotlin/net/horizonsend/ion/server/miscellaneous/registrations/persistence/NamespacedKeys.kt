@@ -104,10 +104,9 @@ object NamespacedKeys {
 
 	// Fluid storage
 	val FLUID = key("fluid")
-	val CONTAINER_TYPE = key("container_type")
 
 	val STORAGES = key("storages")
-	val FLUID_CATEGORIES = key("fluid_categories")
+	val MAIN_STORAGE = key("main_storage")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
