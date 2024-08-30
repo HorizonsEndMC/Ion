@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.gas
+package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
