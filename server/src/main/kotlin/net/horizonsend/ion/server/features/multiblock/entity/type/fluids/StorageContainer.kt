@@ -8,7 +8,7 @@ import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER
 class StorageContainer(
 	val name: String,
 	val displayName: Component,
-	private val namespacedKey: NamespacedKey,
+	val namespacedKey: NamespacedKey,
 	val storage: InternalStorage
 ) {
 	fun save(destination: PersistentDataContainer) {
@@ -16,5 +16,9 @@ class StorageContainer(
 		storage.saveData(pdc)
 
 		destination.set(namespacedKey, TAG_CONTAINER, pdc)
+	}
+
+	override fun toString(): String {
+		return "Container[name= $name, key= $namespacedKey, storage= $storage]"
 	}
 }
