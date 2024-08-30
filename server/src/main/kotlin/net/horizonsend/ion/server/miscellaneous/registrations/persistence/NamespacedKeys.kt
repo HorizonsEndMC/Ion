@@ -105,8 +105,8 @@ object NamespacedKeys {
 	val NODES = key("chunk_nodes")
 
 	// Fluid storage
-	val CONTAINER_TYPE = key("container_type")
 	val FLUID = key("fluid")
+	val CONTAINER_TYPE = key("container_type")
 
 	val STORAGES = key("storages")
 	val FLUID_CATEGORIES = key("fluid_categories")
