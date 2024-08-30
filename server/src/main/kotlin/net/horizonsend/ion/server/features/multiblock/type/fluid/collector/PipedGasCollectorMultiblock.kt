@@ -106,7 +106,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		)
 
 		override suspend fun tickAsync() {
-			firstCasStore(HYDROGEN, 1.0)?.storage?.addAmount(HYDROGEN, 1)
+			firstCasStore(HYDROGEN, 1)?.storage?.addAmount(HYDROGEN, 1)
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
