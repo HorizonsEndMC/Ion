@@ -16,6 +16,8 @@ import net.horizonsend.ion.server.features.multiblock.type.checklist.CruiserReac
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.ConnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.DisconnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.PipedGasCollectorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankMedium
+import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankSmall
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblockClass1
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblockClass2
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblockClass3
@@ -109,6 +111,9 @@ object MultiblockRegistration : IonServerComponent() {
 
 		// Gas
 		registerMultiblock(PipedGasCollectorMultiblock)
+		registerMultiblock(FluidTankSmall)
+		registerMultiblock(FluidTankMedium)
+//		registerMultiblock(FluidTankLarge)
 
 		// Defenses
 		registerMultiblock(AreaShield5)
@@ -218,12 +223,15 @@ object MultiblockRegistration : IonServerComponent() {
 		multiblocks[name] = multiblock
 	}
 
-	private fun registerMultiblock(multiblock: Multiblock, alias: String) {
-		if (multiblocks.containsKey(alias)) {
-			throw IllegalArgumentException("Attempted to register duplicate multiblock name! Exisitng: ${multiblocks[alias]}, new: $multiblock")
+	/**
+	 * Registers a multiblock under a different storage identifier. This is to be used in the case a class has to be renamed, or similar.
+	 **/
+	private fun registerMultiblock(multiblock: Multiblock, storageAlias: String) {
+		if (multiblocks.containsKey(storageAlias)) {
+			throw IllegalArgumentException("Attempted to register duplicate multiblock name! Exisitng: ${multiblocks[storageAlias]}, new: $multiblock")
 		}
 
-		multiblocks[alias] = multiblock
+		multiblocks[storageAlias] = multiblock
 	}
 
 	fun getAllMultiblocks() = multiblocks.values.toSet()
