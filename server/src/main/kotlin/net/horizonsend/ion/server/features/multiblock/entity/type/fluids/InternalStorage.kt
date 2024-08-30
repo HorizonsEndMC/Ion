@@ -15,23 +15,50 @@ abstract class InternalStorage {
 	protected var amountUnsafe: Int = 0
 	protected var fluidUnsafe: PipedFluid? = null
 
-	abstract fun canStore(resource: PipedFluid, liters: Double): Boolean
-
 	abstract fun getCapacity(): Int
 
-	fun getStoredFluid(): PipedFluid? = fluidUnsafe
+	abstract fun canStore(resource: PipedFluid, liters: Int): Boolean
 
-	fun addAmount(amount: Int) {
-		setAmount(getAmount() + amount)
+	fun isEmpty(): Boolean = getStoredFluid() == null || getAmount() == 0
+
+	fun isFull(): Boolean = getStoredFluid() != null && getAmount() == getCapacity()
+
+	fun remove(amount: Int): Int {
+		val newTotal = getAmount() - amount
+		// negative total will be a remainder
+		val notRemoved = if (newTotal < 0) -newTotal else 0
+
+		setAmount(newTotal)
+
+		return notRemoved
 	}
 
-	fun addAmount(fluid: PipedFluid, amount: Int) {
-		if (getStoredFluid() != null && fluid != getStoredFluid()) return
+	fun remove(fluid: PipedFluid, amount: Int): Int {
+		if (getStoredFluid() != null && fluid != getStoredFluid()) return amount
 
 		if (getStoredFluid() == null) setFluid(fluid)
 
-		addAmount(amount)
+		return remove(amount)
 	}
+
+	fun addAmount(amount: Int): Int {
+		val newTotal = getAmount() + amount
+		val notAdded = if (newTotal > getCapacity()) newTotal - getCapacity() else 0
+
+		setAmount(getAmount() + amount)
+
+		return notAdded
+	}
+
+	fun addAmount(fluid: PipedFluid, amount: Int): Int {
+		if (getStoredFluid() != null && fluid != getStoredFluid()) return amount
+
+		if (getStoredFluid() == null) setFluid(fluid)
+
+		return addAmount(amount)
+	}
+
+	fun getStoredFluid(): PipedFluid? = fluidUnsafe
 
 	fun getAmount(): Int = amountUnsafe
 
@@ -46,35 +73,35 @@ abstract class InternalStorage {
 		this.amountUnsafe = corrected
 
 		if (corrected == 0) setFluid(null)
-
-		updateVisually()
 	}
 
 	fun setFluid(fluid: PipedFluid?) {
 		this.fluidUnsafe = fluid
-
-		updateVisually()
 	}
 
-	open fun updateVisually() {}
-
-	fun getContents(): Pair<PipedFluid?, Int> = fluidUnsafe to getAmount()
-
-	open fun saveAdditionalData(pdc: PersistentDataContainer) {}
-
+	/**
+	 * Load storage data from the provided persistent data container
+	 **/
 	fun loadData(pdc: PersistentDataContainer) {
 		val fluid = pdc.get(NamespacedKeys.FLUID, PersistentDataType.STRING)?.let { TransportedFluids[it] }
-		val amount = pdc.getOrDefault(NamespacedKeys.RESOURCE_AMOUNT, PersistentDataType.INTEGER, 0)
+		val amount = pdc.getOrDefault(NamespacedKeys.FLUID_AMOUNT, PersistentDataType.INTEGER, 0)
 
 		setFluid(fluid)
 		setAmount(amount)
 	}
 
+	/**
+	 * Save storage data to the provided persistent data container
+	 **/
 	fun saveData(destination: PersistentDataContainer) {
 		val fluid = getStoredFluid() ?: return
 		val amount = getAmount()
 
 		destination.set(NamespacedKeys.FLUID, PersistentDataType.STRING, fluid.identifier)
-		destination.set(NamespacedKeys.RESOURCE_AMOUNT, PersistentDataType.INTEGER, amount)
+		destination.set(NamespacedKeys.FLUID_AMOUNT, PersistentDataType.INTEGER, amount)
+	}
+
+	override fun toString(): String {
+		return "${javaClass.simpleName}[capacity= ${getCapacity()} fluid= (${getStoredFluid()}, ${getAmount()})]"
 	}
 }
