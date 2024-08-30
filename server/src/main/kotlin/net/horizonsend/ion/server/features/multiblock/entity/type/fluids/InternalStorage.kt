@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
 
 import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
+import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
-import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
@@ -12,8 +11,7 @@ import org.bukkit.persistence.PersistentDataType
  *
  * Each internal storage can hold a single type of fluid
  **/
-abstract class InternalStorage : PDCSerializable<InternalStorage, InternalStorage.Companion> {
-	abstract val containerType: ContainerType
+abstract class InternalStorage {
 	protected var amountUnsafe: Int = 0
 	protected var fluidUnsafe: PipedFluid? = null
 
@@ -62,33 +60,21 @@ abstract class InternalStorage : PDCSerializable<InternalStorage, InternalStorag
 
 	fun getContents(): Pair<PipedFluid?, Int> = fluidUnsafe to getAmount()
 
-	override val persistentDataType: Companion = Companion
-
 	open fun saveAdditionalData(pdc: PersistentDataContainer) {}
 
-	companion object : PersistentDataType<PersistentDataContainer, InternalStorage> {
-		override fun getPrimitiveType(): Class<PersistentDataContainer> = PersistentDataContainer::class.java
-		override fun getComplexType(): Class<InternalStorage> = InternalStorage::class.java
+	fun loadData(pdc: PersistentDataContainer) {
+		val fluid = pdc.get(NamespacedKeys.FLUID, PersistentDataType.STRING)?.let { TransportedFluids[it] }
+		val amount = pdc.getOrDefault(NamespacedKeys.RESOURCE_AMOUNT, PersistentDataType.INTEGER, 0)
 
-		override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): InternalStorage {
-			val type = primitive.get(NamespacedKeys.CONTAINER_TYPE, ContainerType.persistentDataType)!!
-			return type.create(primitive)
-		}
+		setFluid(fluid)
+		setAmount(amount)
+	}
 
-		override fun toPrimitive(complex: InternalStorage, context: PersistentDataAdapterContext): PersistentDataContainer {
-			val pdc = context.newPersistentDataContainer()
-			pdc.set(NamespacedKeys.CONTAINER_TYPE, ContainerType.persistentDataType, complex.containerType)
-			pdc.set(NamespacedKeys.RESOURCE_CAPACITY_MAX, PersistentDataType.INTEGER, complex.getCapacity())
+	fun saveData(destination: PersistentDataContainer) {
+		val fluid = getStoredFluid() ?: return
+		val amount = getAmount()
 
-			val fluid = complex.getStoredFluid()
-			if (fluid != null) {
-				pdc.set(NamespacedKeys.FLUID, PersistentDataType.STRING, fluid.identifier)
-				pdc.set(NamespacedKeys.RESOURCE_AMOUNT, PersistentDataType.INTEGER, complex.getAmount())
-			}
-
-			complex.saveAdditionalData(pdc)
-
-			return pdc
-		}
+		destination.set(NamespacedKeys.FLUID, PersistentDataType.STRING, fluid.identifier)
+		destination.set(NamespacedKeys.RESOURCE_AMOUNT, PersistentDataType.INTEGER, amount)
 	}
 }
