@@ -24,11 +24,13 @@ import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.Hyperdrive
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblockClass4
 import net.horizonsend.ion.server.features.multiblock.type.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableAirlock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.OdometerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.TestMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
@@ -193,11 +195,15 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(BoxShieldMultiblock)
 		registerMultiblock(EventShieldMultiblock)
 
+		// Machine
+		registerMultiblock(ShipFactoryMultiblock)
+
 		// Misc
 		registerMultiblock(DisconnectedDockingTubeMultiblock)
 		registerMultiblock(ConnectedDockingTubeMultiblock)
 		registerMultiblock(CryoPodMultiblock)
 		registerMultiblock(AirlockMultiblock)
+		registerMultiblock(ExpandableAirlock)
 		registerMultiblock(TractorBeamMultiblock)
 	}
 
