@@ -89,14 +89,13 @@ object NamespacedKeys {
 
 	val RESOURCE_CAPACITY_MAX = key("resource_capacity_max")
 	val RESOURCE_CAPACITY_MIN = key("resource_capacity_min")
-	val RESOURCE_AMOUNT = key("resource_amount")
 
 	val PROCESSING_PROGRESS = key("processing_progress")
 
 	val NODE_COVERED_POSITIONS = key("node_covered_positions")
 	val AXIS = key("axis")
 	val SOLAR_CELL_EXTRACTORS = key("solar_cell_extractors")
-	val SOLAR_CELL_DETECTORS = key("solar_cell_extractors")
+	val SOLAR_CELL_DETECTORS = key("solar_cell_detectors")
 
 	val NODE_TYPE = key("node_type")
 
@@ -106,6 +105,7 @@ object NamespacedKeys {
 
 	// Fluid storage
 	val FLUID = key("fluid")
+	val FLUID_AMOUNT = key("fluid_amount")
 
 	val STORAGES = key("storages")
 	val MAIN_STORAGE = key("main_storage")
