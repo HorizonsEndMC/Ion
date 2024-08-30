@@ -104,7 +104,12 @@ object NamespacedKeys {
 
 	val NODES = key("chunk_nodes")
 
+	// Fluid storage
+	val CONTAINER_TYPE = key("container_type")
+	val FLUID = key("fluid")
 
+	val STORAGES = key("storages")
+	val FLUID_CATEGORIES = key("fluid_categories")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
