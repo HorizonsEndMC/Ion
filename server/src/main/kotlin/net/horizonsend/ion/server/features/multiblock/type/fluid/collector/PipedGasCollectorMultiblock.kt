@@ -3,19 +3,17 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.AsyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.BasicFluidStoringEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.CategoryRestrictedInternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.StorageContainer
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.HYDROGEN
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
@@ -97,21 +95,14 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, PipedGasCollectorMultiblock, x, y, z, world, structureDirection),
+	) : BasicFluidStoringEntity(manager, PipedGasCollectorMultiblock, data, x, y, z, world, structureDirection, CategoryRestrictedInternalStorage(500, FluidCategory.GAS)),
 		AsyncTickingMultiblockEntity,
 		FluidStoringEntity
 	{
-		override val capacities: Array<StorageContainer> = arrayOf(
-			loadStoredResource(data, "main", text("Main Gas Storage"), NamespacedKeys.MAIN_STORAGE, CategoryRestrictedInternalStorage(500, FluidCategory.GAS))
-		)
+		private var lastTicked: Long = System.currentTimeMillis()
 
 		override suspend fun tickAsync() {
 			firstCasStore(HYDROGEN, 1)?.storage?.addAmount(HYDROGEN, 1)
-		}
-
-		override fun storeAdditionalData(store: PersistentMultiblockData) {
-			val rawStorage = store.getAdditionalDataRaw()
-			storeStorageData(rawStorage, rawStorage.adapterContext)
 		}
 
 		override fun onLoad() {
@@ -127,10 +118,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		}
 
 		override fun toString(): String {
-			return """
-				Piped gas collector :)
-				Storage: ${getStoredResources()}
-				""".trimIndent()
+			return "Piped gas collector. Storage: $mainStorage"
 		}
 	}
 }
