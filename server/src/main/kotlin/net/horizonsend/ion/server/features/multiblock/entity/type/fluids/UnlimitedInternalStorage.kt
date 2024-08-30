@@ -6,8 +6,6 @@ import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
  * Internal storage with no limits on what fluid can be stored
  **/
 class UnlimitedInternalStorage(private val storageCapacity: Int) : InternalStorage() {
-	override val containerType: ContainerType = ContainerType.UNLIMITED_INTERNAL_STORAGE
-
 	override fun getCapacity(): Int = storageCapacity
 
 	override fun canStore(resource: PipedFluid, liters: Double): Boolean {
