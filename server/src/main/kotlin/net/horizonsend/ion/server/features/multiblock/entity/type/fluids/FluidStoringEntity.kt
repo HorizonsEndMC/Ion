@@ -36,19 +36,19 @@ interface FluidStoringEntity {
 		name: String,
 		displayName: Component,
 		namespacedKey: NamespacedKey,
-		storageDefault: () -> InternalStorage
+		internalStorage: InternalStorage
 	): StorageContainer {
 		val storages = data.getAdditionalData(STORAGES, TAG_CONTAINER)
 
-		val internalStorage = storages?.let { containers ->
-			containers.get(namespacedKey, InternalStorage)!!
+		storages?.get(namespacedKey, TAG_CONTAINER)?.let {
+			internalStorage.loadData(it)
 		}
 
 		return StorageContainer(
 			name,
 			displayName,
 			namespacedKey,
-			internalStorage ?: storageDefault.invoke()
+			internalStorage
 		)
 	}
 }

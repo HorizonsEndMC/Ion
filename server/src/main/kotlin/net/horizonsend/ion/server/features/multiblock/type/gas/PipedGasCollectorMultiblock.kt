@@ -102,7 +102,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		FluidStoringEntity
 	{
 		override val capacities: Array<StorageContainer> = arrayOf(
-			loadStoredResource(data, "main", text("Main Gas Storage"), NamespacedKeys.GAS) { CategoryRestrictedInternalStorage(500, FluidCategory.GAS) },
+			loadStoredResource(data, "main", text("Main Gas Storage"), NamespacedKeys.GAS, CategoryRestrictedInternalStorage(500, FluidCategory.GAS))
 		)
 
 		override suspend fun tickAsync() {
