@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.multiblock.newer.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.newer.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -100,6 +102,8 @@ object PrePackaged {
 		sign.getSide(Side.FRONT).line(0, text("[${data.multiblock.name}]"))
 		sign.update()
 
+		MultiblockAccess.tryDetectMultiblock(player, sign, direction, false)
+
 		data.multiblock.setupSign(player, sign)
 	}
 
@@ -111,7 +115,7 @@ object PrePackaged {
 		val data = itemStack.itemMeta.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.TAG_CONTAINER) ?: return null
 		//TODO rework for player packaged items
 		val storageName = data.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)!!
-		val multiblock = Multiblocks.getMultiblockByName(storageName)
+		val multiblock = MultiblockRegistration.getByStorageName(storageName)!!
 
 		return PackagedMultiblockData(multiblock)
 	}

@@ -9,7 +9,7 @@ class CategoryRestrictedInternalStorage(
 ) : InternalStorage() {
 	override fun getCapacity(): Int = storageCapacity
 
-	override fun canStore(resource: PipedFluid, liters: Double): Boolean {
+	override fun canStore(resource: PipedFluid, liters: Int): Boolean {
 		if (liters + getAmount() > getCapacity()) {
 			return false
 		}
