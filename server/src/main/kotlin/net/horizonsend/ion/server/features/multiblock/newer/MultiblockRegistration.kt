@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.type.checklist.BattleCruis
 import net.horizonsend.ion.server.features.multiblock.type.checklist.CruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.ConnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.DisconnectedDockingTubeMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.gas.PipedGasCollectorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.PipedGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblockClass1
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblockClass2
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblockClass3
@@ -41,10 +41,10 @@ import net.horizonsend.ion.server.features.multiblock.type.particleshield.Shield
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass30
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass65
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass85
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerBankMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.type.powerbank.PowerCellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerCellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
