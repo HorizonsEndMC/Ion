@@ -31,6 +31,8 @@ class PersistentMultiblockData(val x: Int, val y: Int, val z: Int, val type: Mul
 	fun <Z: Any> getAdditionalData(key: NamespacedKey, type: PersistentDataType<*, Z>) = additionalData.get(key, type)
 	fun <Z: Any> getAdditionalDataOrDefault(key: NamespacedKey, type: PersistentDataType<*, Z>, default: Z) = additionalData.getOrDefault(key, type, default)
 
+	fun getAdditionalDataRaw(): PersistentDataContainer = additionalData
+
 	companion object : PersistentDataType<PersistentDataContainer, PersistentMultiblockData> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
 		override fun getComplexType() = PersistentMultiblockData::class.java

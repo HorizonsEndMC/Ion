@@ -138,3 +138,5 @@ inline fun <T: Any> Collection<T>.averageBy(transform: (T) -> Double): Double {
 
 	return total / size
 }
+
+fun <T : Any?> MutableList<T>?.orEmpty(): MutableList<T> = this ?: mutableListOf()

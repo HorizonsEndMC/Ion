@@ -26,7 +26,8 @@ import org.bukkit.entity.Player
 object IonChunkCommand : SLCommand() {
 	@Subcommand("dumpEntities")
 	fun onDumpEntities(sender: Player, @Optional visual: Boolean?, @Optional page: Int?) {
-		val entities = sender.chunk.ion().multiblockManager.getAllMultiblockEntities().toList()
+		val manager = sender.chunk.ion().multiblockManager
+		val entities = manager.getAllMultiblockEntities().toList()
 
 		sender.sendMessage(formatPaginatedMenu(
 			entities.size,
@@ -47,6 +48,9 @@ object IonChunkCommand : SLCommand() {
 				sender.highlightBlock(vec, 30L)
 			}
 		}
+
+		sender.information("Sync Ticked: ${manager.syncTickingMultiblockEntities}")
+		sender.information("Async Ticked: ${manager.asyncTickingMultiblockEntities}")
 	}
 
 	@Subcommand("remove all")
