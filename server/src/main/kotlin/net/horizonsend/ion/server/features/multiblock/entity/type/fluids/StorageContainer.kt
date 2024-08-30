@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
 import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataContainer
+import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER
 
 class StorageContainer(
 	val name: String,
@@ -11,6 +12,9 @@ class StorageContainer(
 	val storage: InternalStorage
 ) {
 	fun save(destination: PersistentDataContainer) {
-		destination.set(namespacedKey, InternalStorage, storage)
+		val pdc = destination.adapterContext.newPersistentDataContainer()
+		storage.saveData(pdc)
+
+		destination.set(namespacedKey, TAG_CONTAINER, pdc)
 	}
 }
