@@ -8,13 +8,14 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.CategoryRestrictedInternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.InternalStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.StorageContainer
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
-import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids
+import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.HYDROGEN
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
@@ -85,11 +86,12 @@ object PipedGasCollectorMultiblock : Multiblock(),
 	}
 
 	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): GasCollectorEntity {
-		return GasCollectorEntity(manager, x, y, z, world, structureDirection)
+		return GasCollectorEntity(manager, data, x, y, z, world, structureDirection)
 	}
 
 	class GasCollectorEntity(
 		manager: ChunkMultiblockManager,
+		data: PersistentMultiblockData,
 		x: Int,
 		y: Int,
 		z: Int,
@@ -99,10 +101,29 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		AsyncTickingMultiblockEntity,
 		FluidStoringEntity
 	{
-		override val capacities: Array<InternalStorage> = arrayOf(CategoryRestrictedInternalStorage(500, FluidCategory.GAS))
+		override val capacities: Array<StorageContainer> = arrayOf(
+			loadStoredResource(data, "main", text("Main Gas Storage"), NamespacedKeys.GAS) { CategoryRestrictedInternalStorage(500, FluidCategory.GAS) },
+		)
 
 		override suspend fun tickAsync() {
-			firstCasStore(TransportedFluids.HYDROGEN, 1.0)?.addAmount(1)
+			firstCasStore(HYDROGEN, 1.0)?.storage?.addAmount(HYDROGEN, 1)
+		}
+
+		override fun storeAdditionalData(store: PersistentMultiblockData) {
+			val rawStorage = store.getAdditionalDataRaw()
+			storeStorageData(rawStorage, rawStorage.adapterContext)
+		}
+
+		override fun onLoad() {
+
+		}
+
+		override fun onUnload() {
+
+		}
+
+		override fun handleRemoval() {
+
 		}
 
 		override fun toString(): String {
