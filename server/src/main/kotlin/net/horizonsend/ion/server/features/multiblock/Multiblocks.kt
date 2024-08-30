@@ -8,17 +8,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.command.misc.MultiblockCommand.setupCommand
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Bottom
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Side
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Top
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.defense.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier2
@@ -29,12 +28,9 @@ import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.Har
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.GasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.VentMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.GasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.gravitywell.AmplifiedGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.gravitywell.StandardGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
@@ -52,17 +48,15 @@ import net.horizonsend.ion.server.features.multiblock.type.mininglasers.MiningLa
 import net.horizonsend.ion.server.features.multiblock.type.mininglasers.MiningLaserMultiblockTier3Bottom
 import net.horizonsend.ion.server.features.multiblock.type.mininglasers.MiningLaserMultiblockTier3Side
 import net.horizonsend.ion.server.features.multiblock.type.mininglasers.MiningLaserMultiblockTier3Top
-import net.horizonsend.ion.server.features.multiblock.type.mininglasers.MiningLaserMultiblockTier4Bottom
-import net.horizonsend.ion.server.features.multiblock.type.mininglasers.MiningLaserMultiblockTier4Side
-import net.horizonsend.ion.server.features.multiblock.type.mininglasers.MiningLaserMultiblockTier4Top
-import net.horizonsend.ion.server.features.multiblock.type.misc.AirlockMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableAirlock
-import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.ShipFactoryMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace.PowerFurnaceMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace.PowerFurnaceMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace.PowerFurnaceMultiblockTier3
@@ -73,7 +67,9 @@ import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterM
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -129,18 +125,6 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(TechnicalPrinterMultiblock)
 		registerMultiblock(GlassPrinterMultiblock)
 		registerMultiblock(ArmorPrinterMultiblock)
-
-		registerMultiblock(DisconnectedDockingTubeMultiblock)
-		registerMultiblock(ConnectedDockingTubeMultiblock)
-
-		registerMultiblock(CryoPodMultiblock)
-		registerMultiblock(FuelTankMultiblock)
-		registerMultiblock(MagazineMultiblock)
-		registerMultiblock(AirlockMultiblock)
-		registerMultiblock(ExpandableAirlock)
-		registerMultiblock(TractorBeamMultiblock)
-
-		registerMultiblock(ShipFactoryMultiblock)
 
 		registerMultiblock(DrillMultiblockTier1)
 		registerMultiblock(DrillMultiblockTier2)
