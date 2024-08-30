@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.charger
+package net.horizonsend.ion.server.features.multiblock.type.power.charger
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem

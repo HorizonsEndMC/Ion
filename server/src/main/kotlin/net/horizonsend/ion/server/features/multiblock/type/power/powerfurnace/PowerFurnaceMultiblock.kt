@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.powerfurnace
+package net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace
 
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock

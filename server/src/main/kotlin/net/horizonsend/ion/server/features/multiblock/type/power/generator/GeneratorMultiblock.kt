@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.generator
+package net.horizonsend.ion.server.features.multiblock.type.power.generator
 
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
 import net.horizonsend.ion.server.features.machine.PowerMachines

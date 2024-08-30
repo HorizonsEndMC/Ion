@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.gas
+package net.horizonsend.ion.server.features.multiblock.type.fluid
 
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
