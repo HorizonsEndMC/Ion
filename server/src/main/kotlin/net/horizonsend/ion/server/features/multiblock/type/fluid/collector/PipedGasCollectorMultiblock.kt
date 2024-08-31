@@ -123,7 +123,9 @@ object PipedGasCollectorMultiblock : Multiblock(),
 
 			amounts.forEach { (gas, amount) ->
 				val fluid = gas.fluid
-				firstCasStore(fluid, amount)?.storage?.addAmount(fluid, (amount * deltaT).roundToInt())
+				val adjusted = (amount * deltaT).roundToInt()
+
+				addFirstAvailable(fluid, adjusted)
 			}
 
 			lastTicked = time
