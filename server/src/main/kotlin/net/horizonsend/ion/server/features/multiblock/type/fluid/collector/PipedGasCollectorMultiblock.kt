@@ -3,17 +3,21 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.AsyncTickingMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.BasicFluidStoringEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.CategoryRestrictedInternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.StorageContainer
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
-import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.HYDROGEN
-import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory.GAS
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_3
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
@@ -23,6 +27,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 object PipedGasCollectorMultiblock : Multiblock(),
 	EntityMultiblock<PipedGasCollectorMultiblock.GasCollectorEntity>,
@@ -95,14 +101,33 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : BasicFluidStoringEntity(manager, PipedGasCollectorMultiblock, data, x, y, z, world, structureDirection, CategoryRestrictedInternalStorage(500, FluidCategory.GAS)),
+	) : MultiblockEntity(manager, PipedGasCollectorMultiblock, x, y, z, world, structureDirection),
 		AsyncTickingMultiblockEntity,
 		FluidStoringEntity
 	{
+		override val capacities: Array<StorageContainer> = arrayOf(
+			StorageContainer("tank_1", text("Tank 1"), TANK_1, CategoryRestrictedInternalStorage(500, GAS)),
+			StorageContainer("tank_2", text("Tank 2"), TANK_2, CategoryRestrictedInternalStorage(500, GAS)),
+			StorageContainer("tank_3", text("Tank 3"), TANK_3, CategoryRestrictedInternalStorage(500, GAS)),
+		)
+
 		private var lastTicked: Long = System.currentTimeMillis()
 
+		private val worldConfig get() = world.ion.configuration.gasConfiguration
+
 		override suspend fun tickAsync() {
-			mainStorage.storage.addAmount(HYDROGEN, 1)
+			val amounts = worldConfig.gasses.associate { it.gas to it.factorStack.getAmount(location) }
+
+			val time = System.currentTimeMillis()
+
+			val deltaT = (time - lastTicked).toDouble() / 1000.0
+
+			amounts.forEach { (gas, amount) ->
+				val fluid = gas.fluid
+				firstCasStore(fluid, amount)?.storage?.addAmount(fluid, abs(amount * deltaT).roundToInt()) //TODO remove abs
+			}
+
+			lastTicked = time
 		}
 
 		override fun onLoad() {
@@ -118,7 +143,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		}
 
 		override fun toString(): String {
-			return "Piped gas collector. Storage: $mainStorage"
+			return "Piped gas collector. Storages: ${capacities.toList()}"
 		}
 	}
 }
