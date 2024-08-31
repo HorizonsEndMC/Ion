@@ -79,7 +79,7 @@ object PrePackaged {
 
 			if (!event) return player.userError("You can't build here!")
 
-			placements[existingBlock] = requirement.example
+			placements[existingBlock] = requirement.example.invoke(direction)
 		}
 
 		for ((block, placement) in placements) {
