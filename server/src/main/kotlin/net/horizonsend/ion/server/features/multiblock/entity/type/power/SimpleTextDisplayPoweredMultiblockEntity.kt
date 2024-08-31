@@ -18,7 +18,7 @@ interface SimpleTextDisplayPoweredMultiblockEntity : PoweredMultiblockEntity, Di
 	}
 
 	companion object {
-		fun createTextDisplayHandler(entity: SimpleTextDisplayPoweredMultiblockEntity): TextDisplayHandler {
+		fun createTextDisplayHandler(entity: DisplayHandlerHolder): TextDisplayHandler {
 			require(entity is MultiblockEntity)
 
 			val signDirection = entity.structureDirection.oppositeFace
