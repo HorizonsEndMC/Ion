@@ -31,18 +31,28 @@ data class StaticBase(val amount: IntegerAmount) : Factor {
 }
 
 @Serializable
+data class ChildWeight(
+	override val parent: Factor,
+	val weight: DoubleAmount
+) : ChildFactor {
+	override fun modifyFactor(location: Location, previousResult: Int): Int {
+		return (previousResult * weight.get()).roundToInt()
+	}
+}
+
+@Serializable
 data class HeightRamp(
 	override val parent: Factor,
 	val minHeight: IntegerAmount,
 	val maxHeight: IntegerAmount,
-	val minValue: DoubleAmount,
-	val maxValue: DoubleAmount
+	val minWeight: DoubleAmount,
+	val maxWeight: DoubleAmount
 ) : ChildFactor {
 	override fun modifyFactor(location: Location, previousResult: Int): Int {
 		if (location.y < minHeight.get() || location.y > maxHeight.get()) return previousResult
 
-		val slope = (maxValue.get() - minValue.get()) / (maxHeight.get() - minHeight.get())
-		val ramp = ((location.y - minHeight.get()) * slope) + minValue.get()
+		val slope = (maxWeight.get() - minWeight.get()) / (maxHeight.get() - minHeight.get())
+		val ramp = ((location.y - minHeight.get()) * slope) + minWeight.get()
 
 		return (previousResult * ramp).roundToInt()
 	}
@@ -62,12 +72,5 @@ data class NoiseFactor(
 		val noise = Random.nextDouble(noiseMin.get(), noiseMax.get())
 
 		return previousResult + (previousResult * noise).roundToInt()
-	}
-}
-
-@Serializable
-data class WeightFactor(val weight: DoubleAmount, override val parent: Factor) : ChildFactor {
-	override fun modifyFactor(location: Location, previousResult: Int): Int {
-		return (previousResult * weight.get()).roundToInt()
 	}
 }

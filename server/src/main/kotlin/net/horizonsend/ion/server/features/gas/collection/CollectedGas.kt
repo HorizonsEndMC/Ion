@@ -15,8 +15,12 @@ data class CollectedGas(
 	/**
 	 * Returns the amount collected
 	 **/
-	private fun tryCollect(location: Location): CollectionResult {
+	fun tryCollect(location: Location): CollectionResult {
 		return CollectionResult(gas, factorStack.getAmount(location))
+	}
+
+	fun canBeFound(location: Location): Boolean {
+		return factorStack.getAmount(location) > 0
 	}
 
 	data class CollectionResult(val gas: Gas, val amount: Int)
