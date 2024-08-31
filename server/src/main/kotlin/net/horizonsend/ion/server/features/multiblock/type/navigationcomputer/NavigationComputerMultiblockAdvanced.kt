@@ -1,6 +1,13 @@
 package net.horizonsend.ion.server.features.multiblock.type.navigationcomputer
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.LEFT
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.RIGHT
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.SELF
+import org.bukkit.block.data.Bisected.Half.BOTTOM
+import org.bukkit.block.data.Bisected.Half.TOP
+import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
 
 sealed class NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock() {
 	override val signText = createSignText(
@@ -17,26 +24,26 @@ data object VerticalNavigationComputerMultiblockAdvanced : NavigationComputerMul
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
-				x(-2).anyStairs()
-				x(-1).anyStairs()
+				x(-2).anyStairs(PrepackagedPreset.stairs(SELF, TOP, shape = STRAIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(SELF, TOP, shape = STRAIGHT))
 				x(+0).ironBlock()
-				x(+1).anyStairs()
-				x(+2).anyStairs()
+				x(+1).anyStairs(PrepackagedPreset.stairs(SELF, TOP, shape = STRAIGHT))
+				x(+2).anyStairs(PrepackagedPreset.stairs(SELF, TOP, shape = STRAIGHT))
 			}
 
 			y(+1) {
 				x(-2).ironBlock()
-				x(-1).anyGlassPane()
-				x(+0).anyGlassPane()
-				x(+1).anyGlassPane()
+				x(-1).anyGlassPane(PrepackagedPreset.pane(LEFT, RIGHT))
+				x(+0).anyGlassPane(PrepackagedPreset.pane(LEFT, RIGHT))
+				x(+1).anyGlassPane(PrepackagedPreset.pane(LEFT, RIGHT))
 				x(+2).ironBlock()
 			}
 			y(+2) {
-				x(-2).anyStairs()
-				x(-1).anyStairs()
+				x(-2).anyStairs(PrepackagedPreset.stairs(SELF, BOTTOM, shape = STRAIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(SELF, BOTTOM, shape = STRAIGHT))
 				x(+0).ironBlock()
-				x(+1).anyStairs()
-				x(+2).anyStairs()
+				x(+1).anyStairs(PrepackagedPreset.stairs(SELF, BOTTOM, shape = STRAIGHT))
+				x(+2).anyStairs(PrepackagedPreset.stairs(SELF, BOTTOM, shape = STRAIGHT))
 			}
 		}
 
