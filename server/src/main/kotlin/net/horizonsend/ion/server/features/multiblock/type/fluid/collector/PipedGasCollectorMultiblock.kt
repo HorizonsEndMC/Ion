@@ -102,7 +102,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		private var lastTicked: Long = System.currentTimeMillis()
 
 		override suspend fun tickAsync() {
-			firstCasStore(HYDROGEN, 1)?.storage?.addAmount(HYDROGEN, 1)
+			mainStorage.storage.addAmount(HYDROGEN, 1)
 		}
 
 		override fun onLoad() {
