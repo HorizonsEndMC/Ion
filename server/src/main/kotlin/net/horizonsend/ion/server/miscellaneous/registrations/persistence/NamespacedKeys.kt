@@ -110,6 +110,10 @@ object NamespacedKeys {
 	val STORAGES = key("storages")
 	val MAIN_STORAGE = key("main_storage")
 
+	val TANK_1 = key("tank_1")
+	val TANK_2 = key("tank_2")
+	val TANK_3 = key("tank_3")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
 	// Used for datapacks and resource packs
