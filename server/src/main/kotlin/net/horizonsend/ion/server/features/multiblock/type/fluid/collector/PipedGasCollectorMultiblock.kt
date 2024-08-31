@@ -27,7 +27,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
-import kotlin.math.abs
 import kotlin.math.roundToInt
 
 object PipedGasCollectorMultiblock : Multiblock(),
@@ -106,9 +105,9 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		FluidStoringEntity
 	{
 		override val capacities: Array<StorageContainer> = arrayOf(
-			StorageContainer("tank_1", text("Tank 1"), TANK_1, CategoryRestrictedInternalStorage(500, GAS)),
-			StorageContainer("tank_2", text("Tank 2"), TANK_2, CategoryRestrictedInternalStorage(500, GAS)),
-			StorageContainer("tank_3", text("Tank 3"), TANK_3, CategoryRestrictedInternalStorage(500, GAS)),
+			loadStoredResource(data, "tank_1", text("Tank 1"), TANK_1, CategoryRestrictedInternalStorage(500, GAS)),
+			loadStoredResource(data, "tank_2", text("Tank 2"), TANK_2, CategoryRestrictedInternalStorage(500, GAS)),
+			loadStoredResource(data, "tank_3", text("Tank 3"), TANK_3, CategoryRestrictedInternalStorage(500, GAS)),
 		)
 
 		private var lastTicked: Long = System.currentTimeMillis()
@@ -124,22 +123,15 @@ object PipedGasCollectorMultiblock : Multiblock(),
 
 			amounts.forEach { (gas, amount) ->
 				val fluid = gas.fluid
-				firstCasStore(fluid, amount)?.storage?.addAmount(fluid, abs(amount * deltaT).roundToInt()) //TODO remove abs
+				firstCasStore(fluid, amount)?.storage?.addAmount(fluid, (amount * deltaT).roundToInt())
 			}
 
 			lastTicked = time
 		}
 
-		override fun onLoad() {
-
-		}
-
-		override fun onUnload() {
-
-		}
-
-		override fun handleRemoval() {
-
+		override fun storeAdditionalData(store: PersistentMultiblockData) {
+			val rawStorage = store.getAdditionalDataRaw()
+			storeStorageData(rawStorage, rawStorage.adapterContext)
 		}
 
 		override fun toString(): String {
