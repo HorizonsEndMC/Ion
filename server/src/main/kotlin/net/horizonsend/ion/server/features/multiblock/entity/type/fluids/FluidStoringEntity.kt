@@ -12,9 +12,47 @@ import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER
 interface FluidStoringEntity {
 	val capacities: Array<StorageContainer>
 
+	/**
+	 * Returns whether any of the internal storages can store the amount of the fluid provided
+	 **/
 	fun canStore(fluid: PipedFluid, amount: Int) = capacities.any { it.storage.canStore(fluid, amount) }
 
+	/**
+	 * Returns the first internal storage that can contain the amount of the fluid provided.
+	 **/
 	fun firstCasStore(fluid: PipedFluid, amount: Int): StorageContainer? = capacities.firstOrNull { it.storage.canStore(fluid, amount) }
+
+	/**
+	 * Adds the amount of the fluid to the first available internal storage
+	 **/
+	fun addFirstAvailable(fluid: PipedFluid, amount: Int): Int {
+		var remaining = amount
+
+		for (container in capacities.filter { it.storage.getStoredFluid() == fluid || it.storage.getStoredFluid() == null }) {
+			val unfit = container.storage.addAmount(fluid, remaining)
+			remaining -= (remaining - unfit)
+
+			if (remaining <= 0) break
+		}
+
+		return remaining
+	}
+
+	/**
+	 * Removes the amount of the fluid to the first available internal storage
+	 **/
+	fun removeFirstAvailable(fluid: PipedFluid, amount: Int): Int {
+		var remaining = amount
+
+		for (container in capacities.filter { it.storage.getStoredFluid() == fluid || it.storage.getStoredFluid() == null }) {
+			val unRemoved = container.storage.remove(fluid, remaining)
+			remaining -= (remaining - unRemoved)
+
+			if (remaining <= 0) break
+		}
+
+		return remaining
+	}
 
 	fun getStoredResources() : Map<PipedFluid?, Int> = capacities.associate { it.storage.getStoredFluid() to it.storage.getAmount() }
 
