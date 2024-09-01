@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.type.checklist.BattleCruis
 import net.horizonsend.ion.server.features.multiblock.type.checklist.CruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.ConnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.DisconnectedDockingTubeMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.ElectrolysisMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.PipedGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankMedium
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankSmall
@@ -113,6 +114,7 @@ object MultiblockRegistration : IonServerComponent() {
 
 		// Gas
 		registerMultiblock(PipedGasCollectorMultiblock)
+		registerMultiblock(ElectrolysisMultiblock)
 		registerMultiblock(FluidTankSmall)
 		registerMultiblock(FluidTankMedium)
 //		registerMultiblock(FluidTankLarge)

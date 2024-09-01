@@ -37,7 +37,7 @@ object FluidTankMedium : FluidStorageMultiblock(75_000) {
 			y(-1) {
 				x(-2).anyCopperVariant()
 				x(-1).titaniumBlock()
-				x(+0).anyCopperBlock()
+				x(+0).copperBlock()
 				x(+1).titaniumBlock()
 				x(+2).anyCopperVariant()
 			}
@@ -74,7 +74,7 @@ object FluidTankMedium : FluidStorageMultiblock(75_000) {
 			y(+1) {
 				x(-2).anyStairs(stairs(OPPOSITE, BOTTOM, shape = STRAIGHT))
 				x(-1).titaniumBlock()
-				x(+0).anyCopperBlock()
+				x(+0).copperBlock()
 				x(+1).titaniumBlock()
 				x(+2).anyStairs(stairs(OPPOSITE, BOTTOM, shape = STRAIGHT))
 			}
