@@ -425,7 +425,7 @@ class MultiblockShape {
 			Material.WAXED_OXIDIZED_CUT_COPPER,
 			alias = "any copper variant",
 		)
-		fun anyCopperBlock() = anyType(
+		fun copperBlock() = anyType(
 			Material.COPPER_BLOCK,
 			Material.EXPOSED_COPPER,
 			Material.WEATHERED_COPPER,
