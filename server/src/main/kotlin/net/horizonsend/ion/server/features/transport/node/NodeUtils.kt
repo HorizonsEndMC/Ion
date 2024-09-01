@@ -68,7 +68,7 @@ enum class NetworkType {
 			TODO("Not yet implemented")
 		}
 	},
-	GAS {
+	FLUID {
 		override fun get(chunk: IonChunk): TransportNetwork {
 			return chunk.transportNetwork.powerNetwork.network
 		}
