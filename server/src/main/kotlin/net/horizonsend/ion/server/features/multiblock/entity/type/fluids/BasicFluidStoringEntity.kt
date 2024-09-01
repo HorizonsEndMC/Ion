@@ -34,6 +34,6 @@ abstract class BasicFluidStoringEntity(
 
 	override fun storeAdditionalData(store: PersistentMultiblockData) {
 		val rawStorage = store.getAdditionalDataRaw()
-		storeStorageData(rawStorage, rawStorage.adapterContext)
+		storeFluidData(rawStorage, rawStorage.adapterContext)
 	}
 }
