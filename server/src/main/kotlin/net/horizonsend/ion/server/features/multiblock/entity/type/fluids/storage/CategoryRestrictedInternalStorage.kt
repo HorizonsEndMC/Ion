@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
+package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 
 import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory

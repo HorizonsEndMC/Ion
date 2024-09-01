@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
+package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 
 import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey

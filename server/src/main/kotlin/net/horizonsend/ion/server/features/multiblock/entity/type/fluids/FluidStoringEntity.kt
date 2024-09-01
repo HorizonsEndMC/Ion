@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
 
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.InternalStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORAGES
 import net.kyori.adventure.text.Component
@@ -44,7 +46,7 @@ interface FluidStoringEntity {
 	fun removeFirstAvailable(fluid: PipedFluid, amount: Int): Int {
 		var remaining = amount
 
-		for (container in capacities.filter { it.storage.getStoredFluid() == fluid || it.storage.getStoredFluid() == null }) {
+		for (container in capacities.filter { it.storage.getStoredFluid() == fluid }) {
 			val unRemoved = container.storage.remove(fluid, remaining)
 			remaining -= (remaining - unRemoved)
 

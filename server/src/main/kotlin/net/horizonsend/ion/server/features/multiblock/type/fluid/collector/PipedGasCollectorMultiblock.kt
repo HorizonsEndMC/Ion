@@ -6,9 +6,9 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.AsyncTickingMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.CategoryRestrictedInternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.StorageContainer
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.CategoryRestrictedInternalStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
@@ -45,7 +45,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		z(0) {
 			y(0) {
 				x(-1).lightningRod()
-				x(0).anyCopperBlock()
+				x(0).copperBlock()
 				x(+1).lightningRod()
 			}
 			y(-1) {
@@ -70,12 +70,12 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		z(+2) {
 			y(0) {
 				x(-1).lightningRod()
-				x(0).anyCopperBlock()
+				x(0).copperBlock()
 				x(+1).lightningRod()
 			}
 			y(-1) {
 				x(-1).anyStairs()
-				x(0).anyCopperBlock()
+				x(0).copperBlock()
 				x(+1).anyStairs()
 			}
 
@@ -100,10 +100,15 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, PipedGasCollectorMultiblock, x, y, z, world, structureDirection),
-		AsyncTickingMultiblockEntity,
-		FluidStoringEntity
-	{
+	) : MultiblockEntity(
+		manager,
+		PipedGasCollectorMultiblock,
+		x,
+		y,
+		z,
+		world,
+		structureDirection
+	), AsyncTickingMultiblockEntity, FluidStoringEntity {
 		override val capacities: Array<StorageContainer> = arrayOf(
 			loadStoredResource(data, "tank_1", text("Tank 1"), TANK_1, CategoryRestrictedInternalStorage(500, GAS)),
 			loadStoredResource(data, "tank_2", text("Tank 2"), TANK_2, CategoryRestrictedInternalStorage(500, GAS)),
