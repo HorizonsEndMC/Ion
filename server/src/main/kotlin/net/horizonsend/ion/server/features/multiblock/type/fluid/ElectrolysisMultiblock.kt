@@ -37,7 +37,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 
 object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMultiblock.ElectrolysisMultiblockEntity>, InteractableMultiblock {
-	override val name: String = "Electrolysis"
+	override val name: String = "ElectrolysisMultiblock"
+	override val alternativeDetectionNames: Array<String> = arrayOf("Electrolysis")
 
 	override val signText: Array<Component?> = arrayOf(
 		text("Electrolysis", NamedTextColor.GOLD),
@@ -146,6 +147,8 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		val entity = getMultiblockEntity(sign)
 
+		entity?.addFirstAvailable(WATER, 100)
+
 		player.information(entity.toString())
 	}
 
@@ -167,20 +170,37 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		structureDirection
 	), AsyncTickingMultiblockEntity, FluidStoringEntity {
 		override val capacities: Array<StorageContainer> = arrayOf(
-			loadStoredResource(data, "hydrogen_tank", text("Hydrogen Tank"), TANK_1, SingleFluidStorage(500, HYDROGEN)),
-			loadStoredResource(data, "oxygen_tank", text("Oxygen Tank"), TANK_2, SingleFluidStorage(500, OXYGEN)),
-			loadStoredResource(data, "water_tank", text("Water Tank"), TANK_3, SingleFluidStorage(500, WATER))
+			loadStoredResource(data, "water_tank", text("Water Tank"), TANK_1, SingleFluidStorage(1000, WATER)),
+			loadStoredResource(data, "oxygen_tank", text("Oxygen Tank"), TANK_2, SingleFluidStorage(10000, OXYGEN)),
+			loadStoredResource(data, "hydrogen_tank", text("Hydrogen Tank"), TANK_3, SingleFluidStorage(10000, HYDROGEN))
 		)
 
-		override suspend fun tickAsync() {
+		private val hydrogenStorage by lazy {getNamedStorage("hydrogen_tank")  }
+		private val oxygenStorage by lazy {getNamedStorage("oxygen_tank")  }
+		private val waterStorage by lazy {getNamedStorage("water_tank")  }
 
+		override suspend fun tickAsync() {
+			val remainder = waterStorage.storage.remove(WATER_INCREMENT)
+			val removed = WATER_INCREMENT - remainder
+
+			oxygenStorage.storage.addAmount(3 * removed)
+			hydrogenStorage.storage.addAmount(6 * removed)
+		}
+
+		override fun storeAdditionalData(store: PersistentMultiblockData) {
+			val rawStorage = store.getAdditionalDataRaw()
+			storeFluidData(rawStorage, rawStorage.adapterContext)
 		}
 
 		override fun toString(): String = """
 			Electrolysis multi
-				Hydrogen: ${getNamedStorage("hydrogen_tank")}
-				Oxygen: ${getNamedStorage("oxygen_tank")}
-				Water: ${getNamedStorage("water_tank")}
+				Hydrogen: $hydrogenStorage
+				Oxygen: $oxygenStorage
+				Water: $waterStorage
 		""".trimIndent()
+
+		companion object {
+			const val WATER_INCREMENT = 5
+		}
 	}
 }
