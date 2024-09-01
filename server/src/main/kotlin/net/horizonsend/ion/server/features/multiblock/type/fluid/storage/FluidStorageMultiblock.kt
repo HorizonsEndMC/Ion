@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.BasicFluidStoringEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.UnlimitedInternalStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.UnlimitedInternalStorage
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.kyori.adventure.text.Component

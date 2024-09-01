@@ -18,6 +18,7 @@ object TransportedFluids : IonServerComponent() {
 	val FLUORINE = register(GasPipedFluid("FLUORINE") { Gasses.FLUORINE })
 	val HELIUM = register(GasPipedFluid("FLUORINE") { Gasses.FLUORINE })
 	val CARBON_DIOXIDE = register(GasPipedFluid("FLUORINE") { Gasses.FLUORINE })
+	val WATER = register(GasPipedFluid("FLUORINE") { Gasses.FLUORINE })
 
 	init {
 	    pipedFluids.associateByTo(byIdentifier) { it.identifier }
