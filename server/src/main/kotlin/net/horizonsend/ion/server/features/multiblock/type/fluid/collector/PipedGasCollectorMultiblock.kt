@@ -138,7 +138,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			val rawStorage = store.getAdditionalDataRaw()
-			storeStorageData(rawStorage, rawStorage.adapterContext)
+			storeFluidData(rawStorage, rawStorage.adapterContext)
 		}
 
 		override fun toString(): String {
