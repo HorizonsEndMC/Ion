@@ -24,7 +24,7 @@ enum class NodeType(val clazz: Class<out TransportNode>) {
 	POWER_INVERSE_DIRECTIONAL_NODE(InvertedDirectionalNode::class.java),
 	POWER_EQUAL_SPLITTER(PowerEqualSplitterNode::class.java),
 
-	//GAS
+	//FLUID
 
 	//ITEM
 	;
