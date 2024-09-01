@@ -63,7 +63,7 @@ interface FluidStoringEntity {
 	fun getStorage(key: NamespacedKey): StorageContainer = capacities.first { it.namespacedKey == key }
 
 
-	fun storeStorageData(destination: PersistentDataContainer, context: PersistentDataAdapterContext) {
+	fun storeFluidData(destination: PersistentDataContainer, context: PersistentDataAdapterContext) {
 		val storages = context.newPersistentDataContainer()
 
 		capacities.forEach {
