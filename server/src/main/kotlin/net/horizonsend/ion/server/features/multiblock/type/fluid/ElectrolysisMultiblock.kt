@@ -147,8 +147,6 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		val entity = getMultiblockEntity(sign)
 
-		entity?.addFirstAvailable(WATER, 100)
-
 		player.information(entity.toString())
 	}
 
