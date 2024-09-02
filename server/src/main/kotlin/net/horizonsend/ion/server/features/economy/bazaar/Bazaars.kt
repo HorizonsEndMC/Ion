@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
+import net.horizonsend.ion.server.features.gui.custom.bazaar.BazaarPurchaseMenuGui
 import net.horizonsend.ion.server.features.nations.gui.anvilInput
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -159,7 +160,18 @@ object Bazaars : IonServerComponent() {
 					val priceString = bazaarItem.price.toCreditsString()
 					val stock = bazaarItem.stock
 					return@map guiButton(itemStack) {
-						openPurchaseMenu(playerClicker, bazaarItem, sellerName, 0, remote)
+						//openPurchaseMenu(playerClicker, bazaarItem, sellerName, 0, remote)
+						BazaarPurchaseMenuGui(
+							playerClicker,
+							bazaarItem,
+							sellerName,
+							remote,
+							{
+								playerClicker.closeInventory()
+								openItemMenu(player, terrId, item, sort, descend, remote)
+							},
+							::tryBuy
+						).openMainWindow()
 					}.setName(priceString).setLore(listOf("Seller: $sellerName", "Stock: $stock"))
 				}
 				.toList()
@@ -172,7 +184,7 @@ object Bazaars : IonServerComponent() {
 		}
 	}
 
-	private fun priceMult(remote: Boolean) = if (remote) 4 else 1
+	fun priceMult(remote: Boolean) = if (remote) 4 else 1
 
 	private fun openPurchaseMenu(
 		player: Player,
