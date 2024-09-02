@@ -57,6 +57,7 @@ object MultiblockCommand : SLCommand() {
 
 		if (possibleTiers.size == 1) {
 			onCheck(player, possibleTiers.first(), sign.x, sign.y, sign.z)
+			return
 		}
 
 		val message = Component.text()
