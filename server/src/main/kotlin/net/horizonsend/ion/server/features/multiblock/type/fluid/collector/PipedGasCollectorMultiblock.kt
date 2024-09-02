@@ -115,16 +115,12 @@ object PipedGasCollectorMultiblock : Multiblock(),
 			loadStoredResource(data, "tank_3", text("Tank 3"), TANK_3, CategoryRestrictedInternalStorage(500, GAS)),
 		)
 
-		private var lastTicked: Long = System.currentTimeMillis()
-
 		private val worldConfig get() = world.ion.configuration.gasConfiguration
 
 		override suspend fun tickAsync() {
 			val amounts = worldConfig.gasses.associate { it.gas to it.factorStack.getAmount(location) }
 
-			val time = System.currentTimeMillis()
-
-			val deltaT = (time - lastTicked).toDouble() / 1000.0
+			val deltaT = deltaTMS / 1000.0
 
 			amounts.forEach { (gas, amount) ->
 				val fluid = gas.fluid
@@ -132,8 +128,6 @@ object PipedGasCollectorMultiblock : Multiblock(),
 
 				addFirstAvailable(fluid, adjusted)
 			}
-
-			lastTicked = time
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
