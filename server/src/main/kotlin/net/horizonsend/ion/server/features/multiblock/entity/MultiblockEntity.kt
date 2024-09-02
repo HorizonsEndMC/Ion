@@ -37,6 +37,17 @@ abstract class MultiblockEntity(
 
     var structureDirection: BlockFace
 ): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion> {
+	private var lastRetrieved = System.currentTimeMillis()
+
+	/** Gets the time since this value was last retrieved */
+	protected val deltaTMS: Long get() {
+		val time = System.currentTimeMillis()
+		val delta = time - lastRetrieved
+		lastRetrieved = time
+
+		return delta
+	}
+
 	/** Mark this entity as having been removed */
 	var removed: Boolean = false
 
