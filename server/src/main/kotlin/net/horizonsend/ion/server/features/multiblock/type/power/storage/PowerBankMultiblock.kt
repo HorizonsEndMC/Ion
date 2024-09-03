@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.multiblock.type.power.storage
 
-import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
+import net.horizonsend.ion.server.features.client.elsed.DisplayHandlers.newMultiblockSignOverlay
+import net.horizonsend.ion.server.features.client.elsed.display.PowerDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity.Companion.createTextDisplayHandler
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedPowerDisplayEntity
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
@@ -110,27 +110,36 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 		structureDirection: BlockFace,
 		override val maxPower: Int,
 		override var powerUnsafe: Int = 0
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), SimpleTextDisplayPoweredMultiblockEntity {
-		override val displayHandler: TextDisplayHandler = createTextDisplayHandler(this)
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), /*SimpleTextDisplayPoweredMultiblockEntity*/ UpdatedPowerDisplayEntity {
+		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
+
+		val displayHandler = newMultiblockSignOverlay(
+			this,
+			PowerDisplay(this, +0.0, +1.0, 0.0, structureDirection.oppositeFace, 0.7f),
+			PowerDisplay(this, +1.0, +0.0, 0.0, structureDirection.oppositeFace, 0.7f),
+			PowerDisplay(this, -1.0, -1.0, 0.0, structureDirection.oppositeFace, 0.7f),
+		).register()
+
+//		override val displayHandler: TextDisplayHandler = createTextDisplayHandler(this)
 
 		override fun onLoad() {
-			register()
+//			register()
 			displayHandler.update()
 		}
 
 		override fun onUnload() {
-			unRegister()
+//			unRegister()
 			displayHandler.remove()
 		}
 
 		override fun handleRemoval() {
-			unRegister()
+//			unRegister()
 			displayHandler.remove()
 		}
 
-		override fun isValid(): Boolean {
-			return !removed
-		}
+//		override fun isValid(): Boolean {
+//			return !removed
+//		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
