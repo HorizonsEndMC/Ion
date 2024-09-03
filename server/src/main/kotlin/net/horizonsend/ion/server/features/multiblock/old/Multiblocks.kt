@@ -1,14 +1,13 @@
-package net.horizonsend.ion.server.features.multiblock
+package net.horizonsend.ion.server.features.multiblock.old
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.misc.MultiblockCommand.setupCommand
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockAccess.multiblockCoroutineScope
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Bottom
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Side
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Top
@@ -91,7 +90,6 @@ import java.util.UUID
 
 object Multiblocks : IonServerComponent() {
 	private val multiblocks: MutableMap<String, Multiblock> = mutableMapOf()
-	val multiblockCoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	override fun onEnable() {
 		initMultiblocks()
