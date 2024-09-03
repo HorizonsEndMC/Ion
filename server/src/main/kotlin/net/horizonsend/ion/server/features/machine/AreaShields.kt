@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.machine
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield
+import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInRange
 import org.bukkit.Color

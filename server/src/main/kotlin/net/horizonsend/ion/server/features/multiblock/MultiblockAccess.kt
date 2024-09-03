@@ -16,8 +16,8 @@ import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.getMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.removeMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
