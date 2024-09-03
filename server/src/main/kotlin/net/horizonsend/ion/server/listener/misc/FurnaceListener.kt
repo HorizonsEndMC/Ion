@@ -33,7 +33,7 @@ object FurnaceListener : SLEventListener() {
 		val sign = signBlock.getState(false) as Sign
 		val checkStructure = false
 		val loadChunks = false
-		val multiblock = Multiblocks[sign, checkStructure, loadChunks]
+		val multiblock = MultiblockAccess.getMultiblock(sign, checkStructure, loadChunks)
 
 		if (multiblock is FurnaceMultiblock) {
 			if (Multiblocks[sign, true, false] !== multiblock) {
