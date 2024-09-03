@@ -1,8 +1,11 @@
-package net.horizonsend.ion.server.features.multiblock.newer
+package net.horizonsend.ion.server.features.multiblock
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -10,10 +13,9 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.subStringBetween
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
-import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.getMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.removeMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.newer.MultiblockEntities.getMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.newer.MultiblockEntities.removeMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -43,6 +45,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.jvm.optionals.getOrNull
 
 object MultiblockAccess : IonServerComponent() {
+	val multiblockCoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 	private val multiblockCache: MutableMap<World, LoadingCache<Pair<Vec3i, BlockFace>, Optional<Multiblock>>> = mutableMapOf()
 
 	/**
@@ -268,7 +271,7 @@ object MultiblockAccess : IonServerComponent() {
 		event.player.success("Detected new ${result.name}")
 	}
 
-	fun checkInteractable(sign: Sign, event: PlayerInteractEvent) {
+	private fun checkInteractable(sign: Sign, event: PlayerInteractEvent) {
 		// Quick check
 		val multiblockType = getFast(sign)
 		if (multiblockType !is InteractableMultiblock) return
