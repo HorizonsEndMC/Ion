@@ -1,6 +1,10 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.features.client.elsed.DisplayHandlers
+import net.horizonsend.ion.server.features.client.elsed.display.PowerDisplay
+import net.horizonsend.ion.server.features.client.elsed.display.fluid.ComplexFluidDisplay
+import net.horizonsend.ion.server.features.client.elsed.display.fluid.SimpleFluidDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -8,15 +12,17 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.AsyncTickingMu
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.SingleFluidStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedPowerDisplayEntity
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.pane
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.stairs
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.HYDROGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.OXYGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.WATER
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_3
@@ -35,8 +41,9 @@ import org.bukkit.block.data.Bisected.Half.TOP
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.persistence.PersistentDataType
 
-object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMultiblock.ElectrolysisMultiblockEntity>, InteractableMultiblock {
+object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisMultiblock.ElectrolysisMultiblockEntity>, InteractableMultiblock {
 	override val name: String = "ElectrolysisMultiblock"
 	override val alternativeDetectionNames: Array<String> = arrayOf("Electrolysis")
 
@@ -140,8 +147,19 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		}
 	}
 
+	override val maxPower: Int = 100_000
+
 	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): ElectrolysisMultiblockEntity {
-		return ElectrolysisMultiblockEntity(manager, data, x, y, z, world, structureDirection)
+		return ElectrolysisMultiblockEntity(
+			manager,
+			data,
+			x,
+			y,
+			z,
+			world,
+			structureDirection,
+			data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0)
+		)
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
@@ -157,7 +175,8 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		y: Int,
 		z: Int,
 		world: World,
-		structureDirection: BlockFace
+		structureDirection: BlockFace,
+		override var powerUnsafe: Int
 	) : MultiblockEntity(
 		manager,
 		ElectrolysisMultiblock,
@@ -166,12 +185,23 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		z,
 		world,
 		structureDirection
-	), AsyncTickingMultiblockEntity, FluidStoringEntity {
+	), AsyncTickingMultiblockEntity, FluidStoringEntity, UpdatedPowerDisplayEntity {
+		override val maxPower: Int = ElectrolysisMultiblock.maxPower
+		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
+
 		override val capacities: Array<StorageContainer> = arrayOf(
 			loadStoredResource(data, "water_tank", text("Water Tank"), TANK_1, SingleFluidStorage(1000, WATER)),
 			loadStoredResource(data, "oxygen_tank", text("Oxygen Tank"), TANK_2, SingleFluidStorage(10000, OXYGEN)),
 			loadStoredResource(data, "hydrogen_tank", text("Hydrogen Tank"), TANK_3, SingleFluidStorage(10000, HYDROGEN))
 		)
+
+		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.45f),
+			SimpleFluidDisplay(getNamedStorage("water_tank"), +0.0, -0.10, +0.0, structureDirection.oppositeFace, 0.45f),
+			ComplexFluidDisplay(getNamedStorage("hydrogen_tank"), text("Hydrogen"), +1.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f),
+			ComplexFluidDisplay(getNamedStorage("oxygen_tank"), text("Oxygen"), -1.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f)
+		).register()
 
 		private val hydrogenStorage by lazy { getNamedStorage("hydrogen_tank") }
 		private val oxygenStorage by lazy { getNamedStorage("oxygen_tank") }
@@ -188,6 +218,19 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			val rawStorage = store.getAdditionalDataRaw()
 			storeFluidData(rawStorage, rawStorage.adapterContext)
+			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
+		}
+
+		override fun onLoad() {
+			displayHandler.update()
+		}
+
+		override fun onUnload() {
+			displayHandler.remove()
+		}
+
+		override fun handleRemoval() {
+			displayHandler.remove()
 		}
 
 		override fun toString(): String = """
