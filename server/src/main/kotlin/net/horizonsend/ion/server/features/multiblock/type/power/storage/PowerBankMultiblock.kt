@@ -110,7 +110,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 		structureDirection: BlockFace,
 		override val maxPower: Int,
 		override var powerUnsafe: Int = 0
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), /*SimpleTextDisplayPoweredMultiblockEntity*/ UpdatedPowerDisplayEntity {
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), UpdatedPowerDisplayEntity {
 		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
 
 		private val displayHandler = newMultiblockSignOverlay(
