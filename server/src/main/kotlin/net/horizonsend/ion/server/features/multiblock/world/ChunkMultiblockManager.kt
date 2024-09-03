@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.world
 
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.AsyncTickingMultiblockEntity
@@ -62,7 +62,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 		}
 
 		for ((key, asyncTicking) in asyncTickingMultiblockEntities) runCatching {
-			Multiblocks.multiblockCoroutineScope.launch { asyncTicking.tickAsync() }
+			MultiblockAccess.multiblockCoroutineScope.launch { asyncTicking.tickAsync() }
 		}.onFailure { e ->
 			log.warn("Exception ticking async multiblock ${asyncTicking.javaClass.simpleName} at ${toVec3i(key)}: ${e.message}")
 			e.printStackTrace()
@@ -120,7 +120,7 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 	/**
 	 * Save the multiblock data back into the chunk
 	 **/
-	private fun saveMultiblocks(adapterContext: PersistentDataAdapterContext) = Multiblocks.multiblockCoroutineScope.launch {
+	private fun saveMultiblocks(adapterContext: PersistentDataAdapterContext) = MultiblockAccess.multiblockCoroutineScope.launch {
 		val old = chunk.inner.persistentDataContainer.get(STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY)
 		old?.let {
 			chunk.inner.persistentDataContainer.set(STORED_MULTIBLOCK_ENTITIES_OLD, PersistentDataType.TAG_CONTAINER_ARRAY, it)
