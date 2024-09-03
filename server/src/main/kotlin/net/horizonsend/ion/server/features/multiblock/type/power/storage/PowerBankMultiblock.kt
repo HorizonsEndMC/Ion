@@ -113,11 +113,9 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), /*SimpleTextDisplayPoweredMultiblockEntity*/ UpdatedPowerDisplayEntity {
 		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
 
-		val displayHandler = newMultiblockSignOverlay(
+		private val displayHandler = newMultiblockSignOverlay(
 			this,
-			PowerDisplay(this, +0.0, +1.0, 0.0, structureDirection.oppositeFace, 0.7f),
-			PowerDisplay(this, +1.0, +0.0, 0.0, structureDirection.oppositeFace, 0.7f),
-			PowerDisplay(this, -1.0, -1.0, 0.0, structureDirection.oppositeFace, 0.7f),
+			PowerDisplay(this, +0.0, +0.0, 0.0, structureDirection.oppositeFace, 0.7f)
 		).register()
 
 //		override val displayHandler: TextDisplayHandler = createTextDisplayHandler(this)
