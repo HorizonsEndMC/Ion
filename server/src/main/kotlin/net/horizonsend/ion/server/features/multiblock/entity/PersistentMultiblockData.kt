@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.entity
 
 import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.newer.MultiblockRegistration
+import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.ADDITIONAL_MULTIBLOCK_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_SIGN_OFFSET

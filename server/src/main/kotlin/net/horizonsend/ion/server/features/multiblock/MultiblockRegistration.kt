@@ -1,8 +1,7 @@
-package net.horizonsend.ion.server.features.multiblock.newer
+package net.horizonsend.ion.server.features.multiblock
 
 import com.google.common.collect.Multimap
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockTop

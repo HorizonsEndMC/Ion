@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AntiAirCannons.isOccupied
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
@@ -74,8 +74,6 @@ object AntiAirCannonBaseMultiblock : Multiblock(), PowerStoringMultiblock, Inter
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (!PlayerStarshipControl.isHoldingController(player)) return
-
-		if (Multiblocks[sign] !is AntiAirCannonBaseMultiblock) return
 
 		val turretFacing = turretIntact(sign) ?: return player.userError("Turret not intact!")
 
@@ -666,7 +664,7 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 			val originBlock = world.getBlockAt(x, y, z)
 			val sign = originBlock.state as? Sign ?: continue
 
-			if (Multiblocks[sign] === AntiAirCannonBaseMultiblock) return sign
+			if (MultiblockAccess.getMultiblock(sign, checkStructure = true, loadChunks = false) === AntiAirCannonBaseMultiblock) return sign
 		}
 
 		return null
