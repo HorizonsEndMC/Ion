@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.old.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -299,7 +300,7 @@ object Wires : IonServerComponent() {
 				val destinationFreeSpace = destinationPowerMax - destinationPower
 
 				val transferLimit = when (destinationMultiblock) {
-					is net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield -> transportConfig.wires.maxShieldInput
+					is AreaShield -> transportConfig.wires.maxShieldInput
 					else -> transportConfig.wires.maxPowerInput
 				}
 
