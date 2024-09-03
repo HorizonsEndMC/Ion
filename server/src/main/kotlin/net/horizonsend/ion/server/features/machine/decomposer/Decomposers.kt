@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.miscellaneous.utils.CHISELED_TYPES
@@ -17,7 +16,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import kotlin.math.max
@@ -29,10 +27,8 @@ object Decomposers : IonServerComponent() {
 	private const val BLOCKS_PER_SECOND = 1000
 	private val FRAME_MATERIAL = CHISELED_TYPES
 
-	@EventHandler
 	fun onClick(event: PlayerInteractEvent) {
 		val sign = event.clickedBlock?.state as? Sign ?: return
-		val multiblock = Multiblocks[sign] as? DecomposerMultiblock ?: return
 		val signLoc = sign.location
 
 		if (event.action == Action.RIGHT_CLICK_BLOCK) {
@@ -76,7 +72,7 @@ object Decomposers : IonServerComponent() {
 				up,
 				forward,
 				event.player.uniqueId,
-				multiblock
+				DecomposerMultiblock
 			)
 
 			if (busySigns.containsKey(signLoc)) {
