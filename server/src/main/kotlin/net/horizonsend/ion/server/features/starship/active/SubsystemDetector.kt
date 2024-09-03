@@ -2,7 +2,8 @@ package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.multiblock.old.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
@@ -19,6 +20,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.Cr
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
@@ -109,7 +111,7 @@ object SubsystemDetector {
 	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
 		val sign = block.state as Sign
 
-		if (Multiblocks.getFromPDC(sign) is AreaShield) {
+		if (MultiblockAccess.getFast(sign) is AreaShield) {
 			throw ActiveStarshipFactory.StarshipActivationException("Starships cannot fly with area shields!")
 		}
 
@@ -132,7 +134,7 @@ object SubsystemDetector {
 			return
 		}
 
-		val multiblock = Multiblocks[sign] ?: return
+		val multiblock = MultiblockAccess.getFast(sign) ?: return
 
 		when (multiblock) {
 			is SphereShieldMultiblock -> {
@@ -254,7 +256,7 @@ object SubsystemDetector {
 			return null
 		}
 
-		val multiblock = Multiblocks[sign]
+		val multiblock = MultiblockAccess.getMultiblock(sign)
 
 		if (multiblock !is SubsystemMultiblock<*>) {
 			return null
@@ -264,8 +266,8 @@ object SubsystemDetector {
 	}
 
 	private fun getSignlessStarshipWeaponMultiblock(block: Block, face: BlockFace): SubsystemMultiblock<*>? {
-		return Multiblocks.all()
-			.filterIsInstance<net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock<*>>()
+		return MultiblockRegistration.getAllMultiblocks()
+			.filterIsInstance<SignlessStarshipWeaponMultiblock<*>>()
 			.firstOrNull { it.blockMatchesStructure(block, face) }
 	}
 
