@@ -5,23 +5,22 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.multiblock.old.Multiblocks
-import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield
-import net.horizonsend.ion.server.features.multiblock.type.checklist.BargeReactorMultiBlock
-import net.horizonsend.ion.server.features.multiblock.type.checklist.BattleCruiserReactorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractMagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.LandingGearMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.NavigationComputerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractMagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.SphereShieldMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.SignlessStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.SubsystemMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BattleCruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TurretBaseMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
@@ -306,7 +305,7 @@ object SubsystemDetector {
 
 	private fun getSignlessStarshipWeaponMultiblock(block: Block, face: BlockFace): SubsystemMultiblock<*>? {
 		return Multiblocks.all()
-			.filterIsInstance<SignlessStarshipWeaponMultiblock<*>>()
+			.filterIsInstance<net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock<*>>()
 			.firstOrNull { it.blockMatchesStructure(block, face) }
 	}
 
