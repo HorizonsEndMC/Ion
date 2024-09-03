@@ -86,8 +86,6 @@ abstract class Display(
 	fun display() {
 		if (!::handler.isInitialized) return
 
-		println("Displaying at ${entity.x}, ${entity.y}, ${entity.z}")
-
 		setText(getText())
 		update()
 	}
