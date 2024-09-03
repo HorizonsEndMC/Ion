@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.old.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.type.checklist.BargeReactorMultiBlock
 import net.horizonsend.ion.server.features.multiblock.type.checklist.BattleCruiserReactorMultiblock
@@ -11,8 +11,8 @@ import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractMagazineMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock

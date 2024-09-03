@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.features.custom.ItemConverters
-import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.old.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -35,7 +35,7 @@ object FurnaceListener : SLEventListener() {
 		val sign = signBlock.getState(false) as Sign
 		val checkStructure = false
 		val loadChunks = false
-		val multiblock = Multiblocks[sign, checkStructure, loadChunks]
+		val multiblock = MultiblockAccess.getMultiblock(sign, checkStructure, loadChunks)
 
 		if (multiblock is FurnaceMultiblock) {
 			if (Multiblocks[sign, true, false] !== multiblock) {
@@ -55,21 +55,6 @@ object FurnaceListener : SLEventListener() {
 	fun onFurnaceSmeltCustomOre(event: FurnaceSmeltEvent) {
 		val source: ItemStack = event.source
 		val item = source.customItem
-
-		// Legacy custom item smelting
-		if (net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems[source] is
-					net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem &&
-			item == null
-			) {
-			event.result = when (source.itemMeta.customModelData) {
-				1 -> CustomItems.ALUMINUM_INGOT.constructItemStack()
-				2 -> CustomItems.CHETHERITE.constructItemStack()
-				3 -> CustomItems.TITANIUM_INGOT.constructItemStack()
-				4 -> CustomItems.URANIUM.constructItemStack()
-				else -> ItemStack(Material.AIR)
-			}
-			return
-		}
 
 		// If customItem has the Smeltable interface, get the smeltable customItem result
 		if (item is Smeltable) {
