@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.gear.setPower
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
