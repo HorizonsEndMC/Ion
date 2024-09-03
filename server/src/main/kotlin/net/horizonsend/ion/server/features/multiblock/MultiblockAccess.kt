@@ -139,7 +139,7 @@ object MultiblockAccess : IonServerComponent() {
 		return computeMultiblockAtLocation(world, x, y, z, face, true)
 	}
 
-	fun getMultiblock(sign: Sign, checkStructure: Boolean, loadChunks: Boolean): Multiblock? {
+	fun getMultiblock(sign: Sign, checkStructure: Boolean = true, loadChunks: Boolean = false): Multiblock? {
 		if (!checkStructure) {
 			return sign.persistentDataContainer.get(MULTIBLOCK, STRING)?.let {
 				MultiblockRegistration.getByStorageName(it)
