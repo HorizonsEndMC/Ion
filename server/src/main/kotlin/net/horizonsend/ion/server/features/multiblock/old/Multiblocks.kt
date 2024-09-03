@@ -67,13 +67,10 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
-import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.block.sign.Side
@@ -81,7 +78,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
-import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.persistence.PersistentDataContainer
@@ -179,40 +175,6 @@ object Multiblocks : IonServerComponent() {
 		multiblocks[name] = multiblock
 	}
 
-	private fun registerAlternateName(name: String, multiblock: Multiblock) {
-		if (multiblocks.containsKey(name)) {
-			throw IllegalArgumentException("Attempted to register duplicate multiblock name! Exisitng: ${multiblocks[name]}, new: $multiblock")
-		}
-
-		multiblocks[name] = multiblock
-	}
-
-	// Access
-
-	/**
-	 * Get a multiblock by its identifying name
-	 **/
-	fun getMultiblockByName(name: String): Multiblock = multiblocks[name]!!
-
-	/** Check if a sign has been registered as a multiblock, if so, return that value */
-	fun getFromPDC(sign: Sign): Multiblock? {
-		return getFromPDC(sign.persistentDataContainer)
-	}
-
-	/** Check if a pdc, if so, return that value */
-	fun getFromPDC(pdc: PersistentDataContainer): Multiblock? {
-		val data = pdc.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING) ?: return null
-
-		return getMultiblockByName(data)
-	}
-
-	/**
-	 * Get all registered multiblocks
-	 **/
-	fun all(): List<Multiblock> = multiblocks.values.toList()
-
-	// End access
-
 	/**
 	 * Map of world UUIDs to a map of block keys to Multiblock types
 	 *
@@ -222,31 +184,10 @@ object Multiblocks : IonServerComponent() {
 	private val multiblockLocationCache: MutableMap<UUID, MutableMap<Long, Multiblock>> = Object2ObjectOpenHashMap()
 
 	/**
-	 * Get a previously found multiblock at this location
-	 **/
-	fun getCached(world: World, x: Int, y: Int, z: Int): Multiblock? {
-		return getCached(world, toBlockKey(x, y, z))
-	}
-
-	/**
-	 * Get a previously found multiblock at this location
-	 **/
-	fun getCached(world: World, key: Long): Multiblock? {
-		return multiblockLocationCache.getOrPut(world.uid) { Object2ObjectOpenHashMap() }[key]
-	}
-
-	/**
 	 * Get a multiblock from the sign
 	 **/
 	operator fun get(sign: Sign, checkStructure: Boolean = true, loadChunks: Boolean = false) = runBlocking {
 		getFromSignPosition(sign.world, sign.x, sign.y, sign.z, checkStructure, loadChunks)
-	}
-
-	/**
-	 * Get a multiblock from the sign position
-	 **/
-	operator fun get(world: World, x: Int, y: Int, z: Int, checkStructure: Boolean = true, loadChunks: Boolean = false) = runBlocking {
-		getFromSignPosition(world, x, y, z, checkStructure, loadChunks)
 	}
 
 	/**
@@ -354,25 +295,6 @@ object Multiblocks : IonServerComponent() {
 		}
 	}
 
-	@EventHandler
-	fun onPlayerBreakBlock(event: BlockBreakEvent) {
-		if (getBlockTypeSafe(event.block.world, event.block.x, event.block.y, event.block.z)?.isSign == false) return
-		val sign = event.block.state as? Sign ?: return
-
-		runBlocking { //TODO replace this
-			val multiblock = getFromSignPosition(
-				sign.world,
-				sign.x,
-				sign.y,
-				sign.z,
-				checkStructure = true,
-				loadChunks = false
-			) ?: return@runBlocking
-
-			removeMultiblock(multiblock, sign)
-		}
-	}
-
 	/**
 	 * Called upon the creation of a new multiblock
 	 *
@@ -391,15 +313,5 @@ object Multiblocks : IonServerComponent() {
 
 		sign.isWaxed = true
 		sign.update()
-	}
-
-	/** Upon a multiblock being removed */
-	fun removeMultiblock(multiblock: Multiblock, sign: Sign) = Tasks.sync  {
-		val (x, y, z) = Multiblock.getOrigin(sign)
-
-		val chunkX = x.shr(4)
-		val chunkZ = z.shr(4)
-
-		val chunk = sign.world.ion.getChunk(chunkX, chunkZ) ?: return@sync
 	}
 }
