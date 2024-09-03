@@ -3,7 +3,7 @@
 // import java.util.concurrent.TimeUnit
 // import net.horizonsend.ion.server.IonServerComponent
 // import net.horizonsend.ion.server.features.multiblock.Multiblocks
-// import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TurretMultiblock
+// import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretMultiblock
 // import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 // import net.horizonsend.ion.server.features.starship.control.StarshipControl
 // import net.starlegacy.util.PerPlayerCooldown
