@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.elsed.DisplayHandlers
-import net.horizonsend.ion.server.features.client.elsed.display.FluidDisplay
+import net.horizonsend.ion.server.features.client.elsed.display.fluid.SimpleFluidDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -102,15 +102,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(
-		manager,
-		PipedGasCollectorMultiblock,
-		x,
-		y,
-		z,
-		world,
-		structureDirection
-	), AsyncTickingMultiblockEntity, FluidStoringEntity {
+	) : MultiblockEntity(manager, PipedGasCollectorMultiblock, x, y, z, world, structureDirection), AsyncTickingMultiblockEntity, FluidStoringEntity {
 		override val capacities: Array<StorageContainer> = arrayOf(
 			loadStoredResource(data, "tank_1", text("Tank 1"), TANK_1, CategoryRestrictedInternalStorage(500, GAS)),
 			loadStoredResource(data, "tank_2", text("Tank 2"), TANK_2, CategoryRestrictedInternalStorage(500, GAS)),
@@ -119,9 +111,9 @@ object PipedGasCollectorMultiblock : Multiblock(),
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			FluidDisplay(getNamedStorage("tank_1"), +0.0, +0.10, 0.0, structureDirection.oppositeFace, 0.45f),
-			FluidDisplay(getNamedStorage("tank_2"), +0.0, -0.00, 0.0, structureDirection.oppositeFace, 0.45f),
-			FluidDisplay(getNamedStorage("tank_3"), +0.0, -0.10, 0.0, structureDirection.oppositeFace, 0.45f)
+			SimpleFluidDisplay(getNamedStorage("tank_1"), +0.0, +0.10, 0.0, structureDirection.oppositeFace, 0.45f),
+			SimpleFluidDisplay(getNamedStorage("tank_2"), +0.0, -0.00, 0.0, structureDirection.oppositeFace, 0.45f),
+			SimpleFluidDisplay(getNamedStorage("tank_3"), +0.0, -0.10, 0.0, structureDirection.oppositeFace, 0.45f)
 		).register()
 
 		override fun onLoad() {

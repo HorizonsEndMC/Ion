@@ -35,32 +35,35 @@ abstract class Display(
 	protected lateinit var handler: TextDisplayHandler
 	lateinit var entity: TextDisplay; private set
 
+	open fun createEntity(parent: TextDisplayHandler): CraftTextDisplay =  CraftTextDisplay(
+		IonServer.server as CraftServer,
+		TextDisplay(EntityType.TEXT_DISPLAY, parent.world.minecraft)
+	).apply {
+		billboard = org.bukkit.entity.Display.Billboard.FIXED
+		viewRange = 5.0f
+		brightness = org.bukkit.entity.Display.Brightness(15, 15)
+		teleportDuration = 0
+		backgroundColor = Color.fromARGB(0x00000000)
+		alignment = org.bukkit.entity.TextDisplay.TextAlignment.CENTER
+
+		transformation = Transformation(
+			Vector3f(0f),
+			ClientDisplayEntities.rotateToFaceVector2d(this@Display.facing.direction.toVector3f()),
+			Vector3f(scale),
+			Quaternionf()
+		)
+	}
+
 	fun setParent(parent: TextDisplayHandler) {
 		this.handler = parent
+
 		val rightFace = facing.rightFace
 
 		val offsetX = rightFace.modX * offsetLeft + facing.modX * offsetBack
 		val offsetY = offsetUp
 		val offsetZ = rightFace.modZ * offsetLeft + facing.modZ * offsetBack
 
-		entity = CraftTextDisplay(
-			IonServer.server as CraftServer,
-			TextDisplay(EntityType.TEXT_DISPLAY, parent.world.minecraft)
-		).apply {
-			billboard = org.bukkit.entity.Display.Billboard.FIXED
-			viewRange = 5.0f
-			brightness = org.bukkit.entity.Display.Brightness(15, 15)
-			teleportDuration = 0
-			backgroundColor = Color.fromARGB(0x00000000)
-			alignment = org.bukkit.entity.TextDisplay.TextAlignment.CENTER
-
-			transformation = Transformation(
-				Vector3f(0f),
-				ClientDisplayEntities.rotateToFaceVector2d(this@Display.facing.direction.toVector3f()),
-				Vector3f(scale),
-				Quaternionf()
-			)
-		}.getNMSData(parent.x + offsetX, parent.y + offsetY, parent.z + offsetZ)
+		entity = createEntity(parent).getNMSData(parent.x + offsetX, parent.y + offsetY, parent.z + offsetZ)
 	}
 
 	/** Registers this display handler */
