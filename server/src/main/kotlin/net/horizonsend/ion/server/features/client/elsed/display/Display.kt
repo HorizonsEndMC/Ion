@@ -5,11 +5,15 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.client.elsed.TextDisplayHandler
+import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
+import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Display.TextDisplay
 import net.minecraft.world.entity.EntityType
+import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.v1_20_R3.CraftServer
@@ -17,6 +21,7 @@ import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
 import org.bukkit.util.Transformation
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import java.util.UUID
 
 abstract class Display(
 	private val offsetLeft: Double,
@@ -25,6 +30,8 @@ abstract class Display(
 	val facing: BlockFace,
 	val scale: Float
 ) {
+	var shownPlayers = mutableSetOf<UUID>()
+
 	protected lateinit var handler: TextDisplayHandler
 	lateinit var entity: TextDisplay; private set
 
@@ -68,12 +75,48 @@ abstract class Display(
 		entity.text = PaperAdventure.asVanilla(text)
 	}
 
+	fun remove() {
+		for (shownPlayer in shownPlayers) Bukkit.getPlayer(shownPlayer)?.minecraft?.connection?.send(
+			ClientboundRemoveEntitiesPacket(entity.id)
+		)
+
+		shownPlayers.clear()
+	}
+
 	fun display() {
 		if (!::handler.isInitialized) return
 
-		println("Displaying $this")
+		println("Displaying at ${entity.x}, ${entity.y}, ${entity.z}")
 
 		setText(getText())
-		handler.update(entity)
+		update()
+	}
+
+	fun update() {
+		val chunk = entity.level().world.getChunkAtIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
+		val playerChunk = chunk.minecraft.playerChunk ?: return
+
+		val viewers = playerChunk.getPlayers(false).toSet()
+		val newPlayers = viewers.filterNot { shownPlayers.contains(it.uuid) }
+		val old = viewers.filter { shownPlayers.contains(it.uuid) }
+
+		for (player in newPlayers) {
+			broadcast(player)
+		}
+
+		for (player in old) {
+			update(player)
+		}
+
+		shownPlayers = viewers.mapTo(mutableSetOf()) { it.uuid }
+	}
+
+	private fun update(player: ServerPlayer) {
+		entity.entityData.refresh(player)
+	}
+
+	private fun broadcast(player: ServerPlayer) {
+		ClientDisplayEntities.sendEntityPacket(player, entity)
+		shownPlayers.add(player.uuid)
 	}
 }
