@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.machine
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.multiblock.type.defense.AntiAirCannonBaseMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.defense.AntiAirCannonTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonBaseMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonTurretMultiblock
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
