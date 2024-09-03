@@ -173,9 +173,9 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 			loadStoredResource(data, "hydrogen_tank", text("Hydrogen Tank"), TANK_3, SingleFluidStorage(10000, HYDROGEN))
 		)
 
-		private val hydrogenStorage by lazy {getNamedStorage("hydrogen_tank")  }
-		private val oxygenStorage by lazy {getNamedStorage("oxygen_tank")  }
-		private val waterStorage by lazy {getNamedStorage("water_tank")  }
+		private val hydrogenStorage by lazy { getNamedStorage("hydrogen_tank") }
+		private val oxygenStorage by lazy { getNamedStorage("oxygen_tank") }
+		private val waterStorage by lazy { getNamedStorage("water_tank") }
 
 		override suspend fun tickAsync() {
 			val remainder = waterStorage.storage.remove(WATER_INCREMENT)

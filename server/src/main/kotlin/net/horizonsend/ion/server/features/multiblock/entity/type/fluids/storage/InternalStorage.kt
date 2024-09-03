@@ -73,10 +73,14 @@ abstract class InternalStorage {
 		this.amountUnsafe = corrected
 
 		if (corrected == 0) setFluid(null)
+
+		runUpdates()
 	}
 
 	fun setFluid(fluid: PipedFluid?) {
 		this.fluidUnsafe = fluid
+
+		runUpdates()
 	}
 
 	/**
@@ -99,6 +103,23 @@ abstract class InternalStorage {
 
 		destination.set(NamespacedKeys.FLUID, PersistentDataType.STRING, fluid.identifier)
 		destination.set(NamespacedKeys.FLUID_AMOUNT, PersistentDataType.INTEGER, amount)
+	}
+
+	private val updateHandlers = mutableListOf<(InternalStorage) -> Unit>()
+
+	fun registerUpdateHandler(handler: (InternalStorage) -> Unit) {
+		updateHandlers.add(handler)
+	}
+
+	fun removeUpdateHandler(handler: (InternalStorage) -> Unit) {
+		updateHandlers.remove(handler)
+	}
+
+	fun getUpdateHandlers(): List<(InternalStorage) -> Unit> = updateHandlers
+
+	/** Notify update handlers of an update */
+	fun runUpdates() {
+		updateHandlers.forEach { it.invoke(this) }
 	}
 
 	override fun toString(): String {
