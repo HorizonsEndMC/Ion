@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.client.elsed.DisplayHandlers
+import net.horizonsend.ion.server.features.client.elsed.display.FluidDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -114,6 +116,25 @@ object PipedGasCollectorMultiblock : Multiblock(),
 			loadStoredResource(data, "tank_2", text("Tank 2"), TANK_2, CategoryRestrictedInternalStorage(500, GAS)),
 			loadStoredResource(data, "tank_3", text("Tank 3"), TANK_3, CategoryRestrictedInternalStorage(500, GAS)),
 		)
+
+		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			FluidDisplay(getNamedStorage("tank_1"), +0.0, +0.10, 0.0, structureDirection.oppositeFace, 0.45f),
+			FluidDisplay(getNamedStorage("tank_2"), +0.0, -0.00, 0.0, structureDirection.oppositeFace, 0.45f),
+			FluidDisplay(getNamedStorage("tank_3"), +0.0, -0.10, 0.0, structureDirection.oppositeFace, 0.45f)
+		).register()
+
+		override fun onLoad() {
+			displayHandler.update()
+		}
+
+		override fun onUnload() {
+			displayHandler.remove()
+		}
+
+		override fun handleRemoval() {
+			displayHandler.remove()
+		}
 
 		private val worldConfig get() = world.ion.configuration.gasConfiguration
 
