@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.multiblock.newer.MultiblockAccess
-import net.horizonsend.ion.server.features.multiblock.newer.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
