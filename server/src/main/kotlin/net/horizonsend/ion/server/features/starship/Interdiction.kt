@@ -5,9 +5,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
-import net.horizonsend.ion.server.features.multiblock.old.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -15,52 +13,14 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSu
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
-import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
-import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
-import org.bukkit.event.block.Action
-import org.bukkit.event.player.PlayerInteractEvent
 import kotlin.math.sqrt
 
 object Interdiction : IonServerComponent() {
-	override fun onEnable() {
-		listen<PlayerInteractEvent> { event ->
-			val player = event.player
-			val block = event.clickedBlock ?: return@listen
-			if (!block.type.isWallSign) {
-				return@listen
-			}
-			val sign = block.state as Sign
-			val multiblock = Multiblocks[sign]
-			if (multiblock !is GravityWellMultiblock) {
-				return@listen
-			}
-			val starship = ActiveStarships.findByPassenger(player)
-				?: return@listen player.userError("You're not riding the starship")
-			if (!starship.contains(block.x, block.y, block.z)) {
-				return@listen
-			}
-			if (StarshipCruising.isCruising(starship)) {
-				return@listen player.userError("Cannot activate while cruising")
-			}
-			when (event.action) {
-				Action.RIGHT_CLICK_BLOCK -> {
-					toggleGravityWell(starship)
-				}
-
-				Action.LEFT_CLICK_BLOCK -> {
-					pulseGravityWell(player, starship, sign)
-				}
-
-				else -> return@listen
-			}
-		}
-	}
-
 	fun toggleGravityWell(starship: ActiveStarship) {
 		if (StarshipCruising.isCruising(starship)) {
 			starship.setIsInterdicting(false)
@@ -105,7 +65,7 @@ object Interdiction : IonServerComponent() {
 		starship.setIsInterdicting(!starship.isInterdicting)
 	}
 
-	private fun pulseGravityWell(player: Player, starship: ActiveStarship, sign: Sign) {
+	fun pulseGravityWell(player: Player, starship: ActiveStarship, sign: Sign) {
 		val world = sign.world
 
 		if (!world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
@@ -133,17 +93,8 @@ object Interdiction : IonServerComponent() {
 		}
 
 		for (cruisingShip in ActiveStarships.getInWorld(world)) {
-			if (cruisingShip !is ActiveControlledStarship) {
-				continue
-			}
-
-			if (cruisingShip == starship) {
-				continue
-			}
-
-			if (!StarshipCruising.isCruising(cruisingShip)) {
-				continue
-			}
+			if (cruisingShip == starship) continue
+			if (!StarshipCruising.isCruising(cruisingShip)) continue
 
 			val controlLoc = cruisingShip.playerPilot?.location ?: starship.centerOfMass.toLocation(starship.world)
 
