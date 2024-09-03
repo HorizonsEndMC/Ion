@@ -115,7 +115,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 
 		private val displayHandler = newMultiblockSignOverlay(
 			this,
-			PowerDisplay(this, +0.0, +0.0, 0.0, structureDirection.oppositeFace, 0.7f)
+			PowerDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f)
 		).register()
 
 //		override val displayHandler: TextDisplayHandler = createTextDisplayHandler(this)
