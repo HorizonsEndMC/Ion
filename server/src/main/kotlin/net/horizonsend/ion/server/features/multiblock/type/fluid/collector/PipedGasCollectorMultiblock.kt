@@ -10,8 +10,8 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidSt
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.CategoryRestrictedInternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory.GAS
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
