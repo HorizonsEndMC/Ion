@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
 import net.horizonsend.ion.server.features.multiblock.old.Multiblocks
-import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships

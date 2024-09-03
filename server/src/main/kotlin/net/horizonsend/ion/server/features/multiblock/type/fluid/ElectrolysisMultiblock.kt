@@ -9,8 +9,8 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidSt
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.SingleFluidStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.pane
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.stairs
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
