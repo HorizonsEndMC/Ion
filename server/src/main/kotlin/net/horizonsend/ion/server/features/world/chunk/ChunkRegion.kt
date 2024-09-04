@@ -7,7 +7,6 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.utils.IntervalExecutor
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Chunk
 import java.util.concurrent.ConcurrentHashMap
@@ -18,7 +17,7 @@ class ChunkRegion(val world: IonWorld) {
 
 	val size get() = chunks.values.size
 
-	val tickChunkTransport = IntervalExecutor(4) {
+	fun tickChunkTransport() {
 		scope.launch {
 			for ((_, chunk) in chunks) {
 				chunk.transportNetwork.tick()
@@ -32,7 +31,7 @@ class ChunkRegion(val world: IonWorld) {
 	fun tick() {
 		lastTicked = System.currentTimeMillis()
 
-		tickChunkTransport.invoke()
+		tickChunkTransport()
 
 		for ((key, chunk) in chunks) chunk.tick()
 	}
