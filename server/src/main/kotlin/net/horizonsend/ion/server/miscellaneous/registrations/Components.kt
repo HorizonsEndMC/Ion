@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons
-import net.horizonsend.ion.server.features.client.display.container.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateRestrictions
