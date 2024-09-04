@@ -5,9 +5,10 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.AsyncTickingMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity.Companion.preTick
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORED_MULTIBLOCK_ENTITIES
@@ -55,14 +56,16 @@ class ChunkMultiblockManager(val chunk: IonChunk) {
 
 	private fun tickAllMultiblocks() {
 		for ((key, syncTicking) in syncTickingMultiblockEntities) runCatching {
-			syncTicking.tick()
+			if (preTick(syncTicking as MultiblockEntity)) syncTicking.tick()
 		}.onFailure { e ->
 			log.warn("Exception ticking multiblock ${syncTicking.javaClass.simpleName} at ${toVec3i(key)}: ${e.message}")
 			e.printStackTrace()
 		}
 
 		for ((key, asyncTicking) in asyncTickingMultiblockEntities) runCatching {
-			MultiblockAccess.multiblockCoroutineScope.launch { asyncTicking.tickAsync() }
+			MultiblockAccess.multiblockCoroutineScope.launch {
+				if (preTick(asyncTicking as MultiblockEntity)) asyncTicking.tickAsync()
+			}
 		}.onFailure { e ->
 			log.warn("Exception ticking async multiblock ${asyncTicking.javaClass.simpleName} at ${toVec3i(key)}: ${e.message}")
 			e.printStackTrace()

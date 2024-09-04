@@ -1,18 +1,13 @@
-package net.horizonsend.ion.server.features.multiblock.entity.type
+package net.horizonsend.ion.server.features.multiblock.entity.type.ticked
 
 /**
  * Any multiblock that should be ticked along with the world
  **/
-interface AsyncTickingMultiblockEntity {
+interface AsyncTickingMultiblockEntity : TickedMultiblockEntityParent {
 	/**
 	 * The logic that is run upon world tick
 	 **/
 	suspend fun tickAsync()
-
-	/**
-	 *
-	 **/
-	fun shouldAsyncTick(): Boolean = true
 
 	/**
 	 *
