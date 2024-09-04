@@ -2,7 +2,11 @@ package net.horizonsend.ion.server.features.transport.fluids
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.gas.Gasses
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.types.GasPipedFluid
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import java.util.concurrent.ConcurrentHashMap
 
 //
@@ -18,7 +22,10 @@ object TransportedFluids : IonServerComponent() {
 	val FLUORINE = register(GasPipedFluid("FLUORINE") { Gasses.FLUORINE })
 	val HELIUM = register(GasPipedFluid("FLUORINE") { Gasses.FLUORINE })
 	val CARBON_DIOXIDE = register(GasPipedFluid("FLUORINE") { Gasses.FLUORINE })
-	val WATER = register(GasPipedFluid("WATER") { Gasses.FLUORINE })
+	val WATER = register(object : PipedFluid("WATER") {
+		override val displayName: Component = text("Water", BLUE)
+		override val categories: Array<FluidCategory> = arrayOf()
+	})
 
 	init {
 	    pipedFluids.associateByTo(byIdentifier) { it.identifier }
