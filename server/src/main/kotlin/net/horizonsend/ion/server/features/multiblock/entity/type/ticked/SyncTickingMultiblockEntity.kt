@@ -1,35 +1,25 @@
-package net.horizonsend.ion.server.features.multiblock.entity.type
+package net.horizonsend.ion.server.features.multiblock.entity.type.ticked
 
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 
 /**
  * Any multiblock that should be ticked along with the world
  **/
-interface SyncTickingMultiblockEntity {
+interface SyncTickingMultiblockEntity : TickedMultiblockEntityParent {
 	/**
 	 * The logic that is run upon world tick
 	 **/
 	fun tick()
 
-	/**
-	 *
-	 **/
-	fun shouldTick(): Boolean = true
-
-	/**
-	 *
-	 **/
-	fun shouldCheckIntegrity(): Boolean = true
-
 	companion object {
 		/**
-		 * Checks whether this entity is able / ready to tick.
+		 * returns whether this entity is able / ready to tick.
 		 **/
 		fun <T: MultiblockEntity> preTick(multiblockEntity: T): Boolean {
-			if (multiblockEntity !is SyncTickingMultiblockEntity) return false
+			if (multiblockEntity !is TickedMultiblockEntityParent) return false
 			if (multiblockEntity.shouldCheckIntegrity() && !multiblockEntity.isIntact()) return false
 
-			return multiblockEntity.shouldTick()
+			return multiblockEntity.checkTickInterval()
 		}
 	}
 }
