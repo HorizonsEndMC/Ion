@@ -43,10 +43,10 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 	)
 
 	override fun MultiblockShape.buildStructure() {
-		at(+0, +0, +0).anySlab()
-		at(-1, +0, +1).anySlab()
-		at(+1, +0, +1).anySlab()
-		at(+0, +0, +2).anySlab()
+		at(+0, +0, +0).anySlabOrStairs()
+		at(-1, +0, +1).anySlabOrStairs()
+		at(+1, +0, +1).anySlabOrStairs()
+		at(+0, +0, +2).anySlabOrStairs()
 
 		at(+0, +0, +1).anyGlass()
 	}

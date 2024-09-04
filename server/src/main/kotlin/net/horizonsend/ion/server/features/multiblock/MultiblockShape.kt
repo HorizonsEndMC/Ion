@@ -288,6 +288,7 @@ class MultiblockShape {
 			val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 			return@complete blockData is Slab && blockData.type == Slab.Type.DOUBLE
 		}
+		fun anySlabOrStairs() = filteredTypes { it.isSlab || it.isStairs }
 
 		fun terracottaOrDoubleslab() {
 			complete(
