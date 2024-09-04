@@ -1,7 +1,7 @@
-package net.horizonsend.ion.server.features.client.elsed.display.fluid
+package net.horizonsend.ion.server.features.client.display.modular.display.fluid
 
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.client.elsed.display.Display
+import net.horizonsend.ion.server.features.client.display.modular.display.Display
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.InternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.kyori.adventure.text.Component

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.power.storage
 
-import net.horizonsend.ion.server.features.client.elsed.DisplayHandlers.newMultiblockSignOverlay
-import net.horizonsend.ion.server.features.client.elsed.display.PowerDisplay
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers.newMultiblockSignOverlay
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -115,23 +115,18 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 
 		private val displayHandler = newMultiblockSignOverlay(
 			this,
-			PowerDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f)
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f)
 		).register()
 
-//		override val displayHandler: TextDisplayHandler = createTextDisplayHandler(this)
-
 		override fun onLoad() {
-//			register()
 			displayHandler.update()
 		}
 
 		override fun onUnload() {
-//			unRegister()
 			displayHandler.remove()
 		}
 
 		override fun handleRemoval() {
-//			unRegister()
 			displayHandler.remove()
 		}
 
