@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.client.elsed.display
+package net.horizonsend.ion.server.features.client.display.modular.display
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.machine.PowerMachines.prefixComponent
@@ -9,7 +9,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.block.BlockFace
 
-class PowerDisplay(
+class PowerEntityDisplay(
 	private val multiblockEntity: UpdatedPowerDisplayEntity,
 	offsetLeft: Double,
 	offsetUp: Double,

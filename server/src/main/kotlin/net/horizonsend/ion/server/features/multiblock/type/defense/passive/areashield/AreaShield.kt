@@ -2,12 +2,12 @@ package net.horizonsend.ion.server.features.multiblock.type.defense.passive.area
 
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimpleTextDisplayPoweredMultiblockEntity.Companion.createTextDisplayHandler
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedPowerDisplayEntity
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
@@ -98,32 +98,30 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 		signDirection: BlockFace,
 		override var powerUnsafe: Int,
 		override val maxPower: Int
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), SimpleTextDisplayPoweredMultiblockEntity {
-		override val displayHandler: TextDisplayHandler = createTextDisplayHandler(this)
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), UpdatedPowerDisplayEntity {
+		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
+
+		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f)
+		).register()
 
 		override fun onLoad() {
 			world.ion.multiblockManager.register(this)
 
 			displayHandler.update()
-			register()
 		}
 
 		override fun handleRemoval() {
 			world.ion.multiblockManager.deregister(this)
 
-			unRegister()
 			displayHandler.remove()
 		}
 
 		override fun onUnload() {
 			world.ion.multiblockManager.deregister(this)
 
-			unRegister()
 			displayHandler.remove()
-		}
-
-		override fun isValid(): Boolean {
-			return !removed
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {

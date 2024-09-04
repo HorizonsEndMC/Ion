@@ -1,6 +1,6 @@
-package net.horizonsend.ion.server.features.client.elsed
+package net.horizonsend.ion.server.features.client.display.modular
 
-import net.horizonsend.ion.server.features.client.elsed.display.Display
+import net.horizonsend.ion.server.features.client.display.modular.display.Display
 import org.bukkit.World
 
 class TextDisplayHandler(val world: World, val x: Double, val y: Double, val z: Double, vararg display: Display) {
@@ -17,6 +17,8 @@ class TextDisplayHandler(val world: World, val x: Double, val y: Double, val z: 
 			it.remove()
 			it.deRegister()
 		}
+
+		DisplayHandlers.deRegisterHandler(this)
 	}
 
 	fun register(): TextDisplayHandler {
@@ -25,7 +27,7 @@ class TextDisplayHandler(val world: World, val x: Double, val y: Double, val z: 
 			it.register()
 		}
 
-		// TODO schedule updates
+		DisplayHandlers.registerHandler(this)
 
 		return this
 	}
