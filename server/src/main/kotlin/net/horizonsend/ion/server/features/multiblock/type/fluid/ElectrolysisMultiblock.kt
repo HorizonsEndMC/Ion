@@ -195,17 +195,17 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 			loadStoredResource(data, "hydrogen_tank", text("Hydrogen Tank"), TANK_3, SingleFluidStorage(10000, HYDROGEN))
 		)
 
-		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
-			this,
-			PowerDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.45f),
-			SimpleFluidDisplay(getNamedStorage("water_tank"), +0.0, -0.10, +0.0, structureDirection.oppositeFace, 0.45f),
-			ComplexFluidDisplay(getNamedStorage("hydrogen_tank"), text("Hydrogen"), +1.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f),
-			ComplexFluidDisplay(getNamedStorage("oxygen_tank"), text("Oxygen"), -1.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f)
-		).register()
-
 		private val hydrogenStorage by lazy { getNamedStorage("hydrogen_tank") }
 		private val oxygenStorage by lazy { getNamedStorage("oxygen_tank") }
 		private val waterStorage by lazy { getNamedStorage("water_tank") }
+
+		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.45f),
+			SimpleFluidDisplay(waterStorage, +0.0, -0.10, +0.0, structureDirection.oppositeFace, 0.45f),
+			ComplexFluidDisplay(hydrogenStorage, text("Hydrogen"), +1.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f),
+			ComplexFluidDisplay(oxygenStorage, text("Oxygen"), -1.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f)
+		).register()
 
 		override suspend fun tickAsync() {
 			val remainder = waterStorage.storage.remove(WATER_INCREMENT)
