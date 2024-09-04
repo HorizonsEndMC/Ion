@@ -5,8 +5,9 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.client.display.container.DisplayHandlerHolder
-import net.horizonsend.ion.server.features.client.display.container.TextDisplayHandler
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerFlowMeterDisplay
 import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
@@ -19,10 +20,7 @@ import net.horizonsend.ion.server.features.transport.step.result.MoveForward
 import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -34,7 +32,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandler<PowerNetwork>, DisplayHandlerHolder {
+class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandler<PowerNetwork> {
 	constructor(network: PowerNetwork, position: BlockKey, direction: BlockFace) : this(network) {
 		this.position = position
 		this.direction = direction
@@ -68,8 +66,6 @@ class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandl
 
 	override suspend fun onCompleteChain(final: BranchHead<*>, destination: PowerInputNode, transferred: Int) {
 		addTransferred(TransferredPower(transferred, System.currentTimeMillis()))
-
-		displayHandler.setText(formatPower())
 	}
 
 	companion object {
@@ -77,7 +73,7 @@ class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandl
 		val secondLine = ofChildren(newline(), text("E ", YELLOW), text("/ ", HE_MEDIUM_GRAY), text("Second", GREEN))
 	}
 
-	private fun formatPower(): Component {
+	fun formatPower(): Component {
 		var avg = runCatching { calculateAverage().roundToHundredth() }.getOrDefault(0.0)
 
 		// If no averages, or no power has been moved in 5 seconds, go to 0
@@ -112,41 +108,19 @@ class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandl
 		return sum / timeDiff
 	}
 
-	override lateinit var displayHandler: TextDisplayHandler
+	lateinit var displayHandler: TextDisplayHandler
 
 	private fun setupDisplayEntity() {
-		// 95% of the way to the edge of the block once added to the center of the block, to avoid z fighting
-		val offset = direction.direction.multiply(0.45)
-
-		val facingBlock = getRelative(position, direction)
-
-		val x = getX(facingBlock).toDouble() + 0.5 - offset.x
-		val y = getY(facingBlock).toDouble() + 0.35
-		val z = getZ(facingBlock).toDouble() + 0.5 - offset.z
-
-		displayHandler = TextDisplayHandler(
-			this,
+		displayHandler = DisplayHandlers.newBlockOverlay(
 			network.world,
-			x,
-			y,
-			z,
-			0.7f,
-			direction
-		)
-	}
-
-	override fun refresh() {
-		if (!::displayHandler.isInitialized) return
-		displayHandler.setText(formatPower())
-	}
-
-	override fun isValid(): Boolean {
-		return !isDead
+			toVec3i(position),
+			direction,
+			PowerFlowMeterDisplay(this, 0.0, 0.0, 0.0, direction, 0.7f)
+		).register()
 	}
 
 	override fun loadIntoNetwork() {
 		setupDisplayEntity()
-		register()
 
 		super.loadIntoNetwork()
 	}
@@ -158,7 +132,6 @@ class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandl
 	}
 
 	override suspend fun handleRemoval(position: BlockKey) {
-		unRegister()
 		if (::displayHandler.isInitialized) displayHandler.remove()
 
 		super.handleRemoval(position)
