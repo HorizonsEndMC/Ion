@@ -1,10 +1,10 @@
-package net.horizonsend.ion.server.features.client.elsed.display
+package net.horizonsend.ion.server.features.client.display.modular.display
 
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
-import net.horizonsend.ion.server.features.client.elsed.TextDisplayHandler
+import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
