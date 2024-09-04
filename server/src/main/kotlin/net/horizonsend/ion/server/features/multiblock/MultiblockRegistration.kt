@@ -22,7 +22,6 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblo
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.ShipFactoryMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.TestMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
@@ -100,8 +99,6 @@ object MultiblockRegistration : IonServerComponent() {
 	}
 
 	private fun initMultiblocks() {
-        registerMultiblock(TestMultiblock)
-
 		// Power
 		registerMultiblock(PowerBankMultiblockTier1)
 		registerMultiblock(PowerBankMultiblockTier2)
