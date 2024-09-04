@@ -8,11 +8,11 @@ import net.horizonsend.ion.server.features.client.display.modular.display.fluid.
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.SingleFluidStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedPowerDisplayEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
@@ -207,6 +207,10 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 		world,
 		structureDirection
 	), AsyncTickingMultiblockEntity, FluidStoringEntity, UpdatedPowerDisplayEntity {
+		override val tickInterval: Int = 4
+		override var currentTick: Int = 0
+		override var sleepTicks: Int = 0
+
 		override val maxPower: Int = ElectrolysisMultiblock.maxPower
 		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
 
