@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid
 
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.features.client.elsed.DisplayHandlers
-import net.horizonsend.ion.server.features.client.elsed.display.PowerDisplay
-import net.horizonsend.ion.server.features.client.elsed.display.fluid.ComplexFluidDisplay
-import net.horizonsend.ion.server.features.client.elsed.display.fluid.SimpleFluidDisplay
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplay
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -56,12 +56,19 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
-			y(-1) {
+			y(-2) {
 				x(-2).anyStairs(stairs(SELF, TOP, STRAIGHT))
+				x(-1).craftingTable()
+				x(+0).wireInputComputer()
+				x(+1).craftingTable()
+				x(+2).anyStairs(stairs(SELF, TOP, STRAIGHT))
+			}
+			y(-1) {
+				x(-2).copperBlock()
 				x(-1).craftingTable()
 				x(+0).fluidInput()
 				x(+1).craftingTable()
-				x(+2).anyStairs(stairs(SELF, TOP, STRAIGHT))
+				x(+2).copperBlock()
 			}
 			y(+0) {
 				x(-2).anyStairs(stairs(SELF, BOTTOM, STRAIGHT))
@@ -86,6 +93,13 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 			}
 		}
 		z(1) {
+			y(-2) {
+				x(-2).titaniumBlock()
+				x(-1).redstoneBlock()
+				x(+0).sponge()
+				x(+1).redstoneBlock()
+				x(+2).titaniumBlock()
+			}
 			y(-1) {
 				x(-2).titaniumBlock()
 				x(-1).redstoneBlock()
@@ -116,12 +130,19 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 			}
 		}
 		z(2) {
-			y(-1) {
+			y(-2) {
 				x(-2).anyStairs(stairs(OPPOSITE, TOP, STRAIGHT))
+				x(-1).titaniumBlock()
+				x(+0).anyStairs(stairs(OPPOSITE, TOP, STRAIGHT))
+				x(+1).titaniumBlock()
+				x(+2).anyStairs(stairs(OPPOSITE, TOP, STRAIGHT))
+			}
+			y(-1) {
+				x(-2).copperBlock()
 				x(-1).titaniumBlock()
 				x(+0).copperBlock()
 				x(+1).titaniumBlock()
-				x(+2).anyStairs(stairs(OPPOSITE, TOP, STRAIGHT))
+				x(+2).copperBlock()
 			}
 			y(+0) {
 				x(-2).anyStairs(stairs(OPPOSITE, BOTTOM, STRAIGHT))
@@ -201,7 +222,7 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			PowerDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.45f),
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.45f),
 			SimpleFluidDisplay(waterStorage, +0.0, -0.10, +0.0, structureDirection.oppositeFace, 0.45f),
 			ComplexFluidDisplay(hydrogenStorage, text("Hydrogen"), +1.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f),
 			ComplexFluidDisplay(oxygenStorage, text("Oxygen"), -1.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f)

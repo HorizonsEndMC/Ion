@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.client.elsed.DisplayHandlers
-import net.horizonsend.ion.server.features.client.elsed.display.fluid.SimpleFluidDisplay
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
