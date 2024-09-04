@@ -13,7 +13,7 @@ import org.bukkit.persistence.PersistentDataType
  **/
 abstract class InternalStorage {
 	protected var amountUnsafe: Int = 0
-	protected var fluidUnsafe: PipedFluid? = null
+	protected open var fluidUnsafe: PipedFluid? = null
 
 	abstract fun getCapacity(): Int
 
