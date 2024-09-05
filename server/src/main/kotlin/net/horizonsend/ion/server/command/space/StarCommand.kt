@@ -11,9 +11,9 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.features.space.CachedPlanet
-import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.body.CachedStar
+import net.horizonsend.ion.server.features.space.body.OrbitingCelestialBody
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -122,10 +122,10 @@ object StarCommand : net.horizonsend.ion.server.command.SLCommand() {
 	private fun moveOrbitingPlanets(sender: CommandSender, star: CachedStar, spaceWorld: World) {
 		sender.information("Moving orbiting planets...")
 
-		for (planet in Space.getPlanets()) {
+		for (planet in Space.getOrbitingPlanets()) {
 			if (planet.sun.databaseId == star.databaseId) {
 				sender.information("Moving ${planet.name}...")
-				val newLoc = CachedPlanet.calculateOrbitLocation(star, planet.orbitDistance, planet.orbitProgress)
+				val newLoc = OrbitingCelestialBody.calculateOrbitLocation(star.location, planet.orbitDistance, planet.orbitProgress)
 				planet.move(newLoc, spaceWorld)
 			}
 		}

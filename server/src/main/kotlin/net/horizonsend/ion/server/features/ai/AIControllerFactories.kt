@@ -275,7 +275,7 @@ object AIControllerFactories : IonServerComponent() {
 				val endPointZ = Random.nextInt(minZ, maxZ)
 				val endPoint = Vec3i(endPointX, origin.y, endPointZ)
 
-				val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+				val planets = Space.getAllPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
 
 				val minDistance = planets.minOfOrNull {
 					val direction = endPoint.minus(origin)

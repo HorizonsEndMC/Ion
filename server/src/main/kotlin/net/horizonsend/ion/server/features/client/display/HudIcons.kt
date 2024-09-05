@@ -518,7 +518,7 @@ object HudIcons : IonServerComponent() {
         // Only render planets if the player is in a space world
         if (!player.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) return
 
-        val planetList = Space.getPlanets().filter { it.spaceWorld == player.world }
+        val planetList = Space.getAllPlanets().filter { it.spaceWorld == player.world }
         val playerDisplayEntities = ClientDisplayEntities[player.uniqueId] ?: return
 
         // Reset planet selector information
