@@ -270,7 +270,7 @@ object StarshipControl : IonServerComponent() {
 		val world = starship.world
 		val newCenter = starship.centerOfMass.toLocation(world).add(dx.d(), dy.d(), dz.d())
 
-		val planet = Space.getPlanets().asSequence()
+		val planet = Space.getAllPlanets().asSequence()
 			.filter { it.spaceWorld == world }
 			.filter {
 				it.location.toLocation(world).distanceSquared(newCenter) < starship.getEntryRange(it).toDouble().pow(2)

@@ -148,15 +148,12 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				val spaceWorld = planet.spaceWorld
 				spaceWorld?.let { worlds.add(it) }
 
-				val star = planet.sun
-				Space.getPlanets().filter { it.sun == star }.mapNotNullTo(worlds) { it.planetWorld }
+				Space.getAllPlanets().filter { it.spaceWorld?.uid == spaceWorld?.uid }.mapNotNullTo(worlds) { it.planetWorld }
 			}
 
-			// this might become a problem if we ever put more than 1 star in a system
-			val star = Space.getStars().firstOrNull { it.spaceWorld == world }
-			if (star != null) {
-				Space.getPlanets().filter { it.sun == star }.mapNotNullTo(worlds) { it.planetWorld }
-			}
+			val spaceWorld = planet?.spaceWorld?.uid ?: world.uid
+			Space.getAllPlanets().filter { it.spaceWorld?.uid == spaceWorld }.mapNotNullTo(worlds) { it.planetWorld }
+			Space.getMoons().filter { it.spaceWorld?.uid == spaceWorld }.mapNotNullTo(worlds) { it.planetWorld }
 
 			if (worlds.isEmpty()) {
 				return player.userError("You're not in a system! To go back to global chat, use /global")
