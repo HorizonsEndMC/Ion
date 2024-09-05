@@ -36,9 +36,6 @@ import org.litote.kmongo.updateOneById
 data class Planet(
     override val _id: Oid<Planet> = objId(),
     val name: String,
-    val rogue: Boolean = false,
-    val x: Int,
-    val z: Int,
     val sun: Oid<Star>,
     val planetWorld: String,
     val size: Double,
@@ -54,7 +51,10 @@ data class Planet(
     val cloudNoise: Double = 0.1,
     val cloudMaterials: List<String> = listOf(),
 	val description: String = "",
-) : DbObject {
+	@Deprecated("Use rouge planet db") val rogue: Boolean = false,
+	@Deprecated("Use rouge planet db") val x: Int = 0,
+	@Deprecated("Use rouge planet db") val z: Int = 0,
+) : DbObject, ParentPlanet {
 	companion object : OidDbObjectCompanion<Planet>(Planet::class, setup = {
 		ensureUniqueIndex(Planet::name)
 		ensureUniqueIndex(Planet::planetWorld)
@@ -65,9 +65,6 @@ data class Planet(
 
 		fun create(
             name: String,
-            rogue: Boolean,
-            x: Int,
-            z: Int,
             sun: Oid<Star>,
             planetWorld: String,
             size: Double,
@@ -77,21 +74,12 @@ data class Planet(
             seed: Long
 		) {
 			col.insertOne(
-				Planet(objId(), name, rogue, x, z, sun, planetWorld, size, orbitDistance, orbitSpeed, orbitProgress, seed)
+				Planet(objId(), name, sun, planetWorld, size, orbitDistance, orbitSpeed, orbitProgress, seed)
 			)
 		}
 
 		fun setSun(id: Oid<Planet>, sun: Oid<Star>): UpdateResult =
 			col.updateOneById(id, setValue(Planet::sun, sun))
-
-		fun setRogue(id: Oid<Planet>, rogue: Boolean): UpdateResult =
-			col.updateOneById(id, setValue(Planet::rogue, rogue))
-
-		fun setX(id: Oid<Planet>, x: Int): UpdateResult =
-			col.updateOneById(id, setValue(Planet::x, x))
-
-		fun setZ(id: Oid<Planet>, z: Int): UpdateResult =
-			col.updateOneById(id, setValue(Planet::z, z))
 
 		fun setOrbitDistance(id: Oid<Planet>, orbitDistance: Int): UpdateResult =
 			col.updateOneById(id, setValue(Planet::orbitDistance, orbitDistance))

@@ -169,7 +169,7 @@ private fun tryPilotWithController(
 
 fun isSystemOccupied(world: World): Boolean {
 	// Ensure that it is a system with a star and planets
-	val planets = Space.getPlanets().filter { it.spaceWorld == world }
+	val planets = Space.getAllPlanets().filter { it.spaceWorld == world }
 
 	val players = world.players
 

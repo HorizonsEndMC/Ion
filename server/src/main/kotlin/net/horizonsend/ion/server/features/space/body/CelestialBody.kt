@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.space
+package net.horizonsend.ion.server.features.space.body
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
