@@ -6,7 +6,6 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoCursor
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
@@ -33,11 +32,14 @@ import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.common.database.schema.space.Moon
 import net.horizonsend.ion.common.database.schema.space.Planet
+import net.horizonsend.ion.common.database.schema.space.RoguePlanet
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.database.schema.starships.AIStarshipData
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import org.bson.BsonDocument
 import org.bson.BsonDocumentReader
 import org.bson.Document
@@ -122,6 +124,8 @@ object DBManager : IonComponent() {
 
 		// space
 		Planet.init()
+		RoguePlanet.init()
+		Moon.init()
 		Star.init()
 
 		// economy

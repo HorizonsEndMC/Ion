@@ -24,9 +24,9 @@ import net.horizonsend.ion.server.features.sidebar.SidebarIcon.PLANET_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.SIEGE_STATION_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STAR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.STATION_ICON
-import net.horizonsend.ion.server.features.space.CachedPlanet
-import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.body.CachedStar
+import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
@@ -277,7 +277,7 @@ object ContactsSidebar {
         } else listOf()
 
         val planets: List<CachedPlanet> = if (planetsEnabled) {
-            Space.getPlanets().filter {
+            Space.getAllPlanets().filter {
                 it.spaceWorld == player.world && it.location.toVector()
                     .distanceSquared(sourceVector) <= getContactsDistanceSq(player)
             }
@@ -500,10 +500,10 @@ object ContactsSidebar {
     }
 
     private fun addPlanetContacts(
-        planets: List<CachedPlanet>,
-        sourceVector: Vector,
-        contactsList: MutableList<ContactsData>,
-        player: Player
+		planets: List<CachedPlanet>,
+		sourceVector: Vector,
+		contactsList: MutableList<ContactsData>,
+		player: Player
     ) {
         val maxLength = PlayerCache[player.uniqueId].contactsMaxNameLength
         val colorSetting = PlayerCache[player.uniqueId].contactsColoring

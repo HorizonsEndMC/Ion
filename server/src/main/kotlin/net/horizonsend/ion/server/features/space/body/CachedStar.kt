@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.space
+package net.horizonsend.ion.server.features.space.body
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.space.Star

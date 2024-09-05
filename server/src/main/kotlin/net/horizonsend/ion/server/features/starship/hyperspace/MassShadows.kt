@@ -21,7 +21,7 @@ object MassShadows {
 		val realWorld = (if (Hyperspace.isHyperspaceWorld(world)) Hyperspace.getRealspaceWorld(world) else world)
 			?: return null
 
-		for (planet in Space.getPlanets()) {
+		for (planet in Space.getAllPlanets()) {
 			if (planet.spaceWorld != realWorld) continue
 
 			val loc = planet.location

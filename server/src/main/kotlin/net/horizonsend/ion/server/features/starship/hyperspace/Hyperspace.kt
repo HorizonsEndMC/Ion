@@ -5,9 +5,9 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
-import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -271,7 +271,7 @@ object Hyperspace : IonServerComponent() {
 
 		playSoundInRadius(origin, 2500.0, event.starship.balancing.sounds.enterHyperspace.sound)
 
-		Space.getPlanets()
+		Space.getAllPlanets()
 			.filter { it.location.toLocation(starship.world).distance(origin) < 2500 }
 			.filter { it.spaceWorld == starship.world }
 			.forEach {
@@ -284,7 +284,7 @@ object Hyperspace : IonServerComponent() {
 		val movement = event.movement
 		playSoundInRadius(movement.dest, 2500.0, event.starship.balancing.sounds.exitHyperspace.sound)
 
-		Space.getPlanets()
+		Space.getAllPlanets()
 			.filter { it.location.toLocation(movement.dest.world).distance(movement.dest) < 2500 }
 			.forEach {
 				it.planetWorld?.playSound(event.starship.balancing.sounds.exitHyperspace.sound)
