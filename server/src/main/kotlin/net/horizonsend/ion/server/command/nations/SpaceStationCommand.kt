@@ -35,9 +35,10 @@ import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.features.space.CachedPlanet
-import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.body.CachedMoon
+import net.horizonsend.ion.server.features.space.body.CachedStar
+import net.horizonsend.ion.server.features.space.body.planet.CachedOrbitingPlanet
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation.Companion.calculateCost
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
@@ -104,7 +105,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val y = 128 // we don't care about comparing height here
 
 		// Check conflicts with planet orbits
-		for (planet: CachedPlanet in Space.getPlanets().filter { it.spaceWorld == world }) {
+		for (planet: CachedOrbitingPlanet in Space.getOrbitingPlanets().filter { it.spaceWorld == world }) {
 			val padding = 130
 			val minDistance = planet.orbitDistance - padding - radius
 			val maxDistance = planet.orbitDistance + padding + radius
@@ -112,6 +113,18 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 			failIf(distance in minDistance..maxDistance) {
 				"This claim would be in the way of ${planet.name}'s orbit"
+			}
+		}
+
+		// Check conflicts with moon orbits
+		for (moon: CachedMoon in Space.getMoons().filter { it.spaceWorld == world }) {
+			val padding = 130
+			val minDistance = moon.orbitDistance - padding - radius
+			val maxDistance = moon.orbitDistance + padding + radius
+			val distance = distance(x, y, z, moon.parent.location.x, y, moon.parent.location.z).toInt()
+
+			failIf(distance in minDistance..maxDistance) {
+				"This claim would be in the way of ${moon.name}'s orbit"
 			}
 		}
 
