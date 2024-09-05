@@ -106,7 +106,7 @@ class StandardFactionSpawner(
 
 		val border = bukkitWorld.worldBorder
 
-		val planets = Space.getPlanets().filter { it.spaceWorld == bukkitWorld }.map { it.location.toVector() }
+		val planets = Space.getAllPlanets().filter { it.spaceWorld == bukkitWorld }.map { it.location.toVector() }
 
 		// max 10 iterations
 		while (iterations <= 15) {

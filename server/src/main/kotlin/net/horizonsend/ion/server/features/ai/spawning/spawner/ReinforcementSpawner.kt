@@ -41,7 +41,7 @@ class ReinforcementSpawner(
 		val origin = reinforced.getCenter().toLocation(reinforced.getWorld())
 		val world = reinforced.getWorld()
 
-		val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+		val planets = Space.getAllPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
 
 		var iterations = 0
 		while (iterations <= 15) {

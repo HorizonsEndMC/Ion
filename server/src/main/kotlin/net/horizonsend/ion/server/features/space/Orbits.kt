@@ -31,8 +31,8 @@ object Orbits : IonServerComponent(true) {
 		log.info("Calculating planet orbits...")
 
 		val elapsedNanos = measureNanoTime {
-			Space.getPlanets().parallelStream()
-				.filter { it.spaceWorld != null && !it.rogue }
+			Space.getOrbitingPlanets().parallelStream()
+				.filter { it.spaceWorld != null }
 				.forEach { it.orbit(updateDb = false) }
 
 			SpaceMap.refresh()
@@ -46,7 +46,7 @@ object Orbits : IonServerComponent(true) {
 		BlockPlacement.flush { world ->
 			log.info("Finished planets in ${world.name}, saving...")
 
-			for (planet in Space.getPlanets().filter { it.spaceWorld == world }) {
+			for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == world }) {
 				Planet.setOrbitProgress(planet.databaseId, planet.orbitProgress)
 			}
 
