@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.space
+package net.horizonsend.ion.server.features.space.body
 
 import java.util.Locale
 
