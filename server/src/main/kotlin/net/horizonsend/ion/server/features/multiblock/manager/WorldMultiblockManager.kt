@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.world
+package net.horizonsend.ion.server.features.multiblock.manager
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
