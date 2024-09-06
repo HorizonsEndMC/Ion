@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.world.chunk
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
+import net.horizonsend.ion.server.features.multiblock.manager.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.data.DataFixers
@@ -51,7 +51,7 @@ class IonChunk(
 	//  - Ore upgrader
 	//  - Explosion Reversal
 
-	val multiblockManager = ChunkMultiblockManager(this)
+	val multiblockManager = ChunkMultiblockManager(this, log)
 	val transportNetwork: ChunkTransportManager = ChunkTransportManager(this)
 
 	/**
