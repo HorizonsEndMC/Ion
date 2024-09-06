@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -19,7 +19,7 @@ interface EntityMultiblock<T : MultiblockEntity> {
 	 * Create the multiblock entity using the stored data
 	 **/
 	fun createEntity(
-		manager: ChunkMultiblockManager,
+		manager: MultiblockManager,
 		data: PersistentMultiblockData,
 		world: World,
 		x: Int,
