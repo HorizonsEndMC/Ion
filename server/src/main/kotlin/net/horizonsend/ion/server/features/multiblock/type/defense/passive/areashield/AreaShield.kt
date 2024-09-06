@@ -84,8 +84,7 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 			z,
 			world,
 			structureDirection,
-			data.getAdditionalDataOrDefault(POWER, INTEGER, 0),
-			maxPower
+			data.getAdditionalDataOrDefault(POWER, INTEGER, 0)
 		)
 	}
 
@@ -98,9 +97,9 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 		world: World,
 		signDirection: BlockFace,
 		override var powerUnsafe: Int,
-		override val maxPower: Int
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), UpdatedPowerDisplayEntity {
 		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
+		override val maxPower: Int = multiblock.maxPower
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
