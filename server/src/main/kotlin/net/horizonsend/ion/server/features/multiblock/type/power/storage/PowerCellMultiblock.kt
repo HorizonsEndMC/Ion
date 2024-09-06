@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.features.multiblock.type.power.storage
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -41,7 +41,7 @@ object PowerCellMultiblock : Multiblock(), PowerStoringMultiblock, EntityMultibl
 		}
 	}
 
-	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): PowerBankMultiblock.PowerBankEntity {
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): PowerBankMultiblock.PowerBankEntity {
 		return PowerBankMultiblock.PowerBankEntity(
 			manager,
 			this,
