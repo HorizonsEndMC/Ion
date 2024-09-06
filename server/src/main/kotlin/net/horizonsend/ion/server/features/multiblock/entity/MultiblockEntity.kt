@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.entity
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -27,7 +27,7 @@ import org.bukkit.block.Sign
  * @param structureDirection The direction this multiblock is oriented [from the origin]
  **/
 abstract class MultiblockEntity(
-    val manager: ChunkMultiblockManager,
+    val manager: MultiblockManager,
     open val multiblock: Multiblock,
 
     var x: Int,
