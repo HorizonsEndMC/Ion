@@ -2,21 +2,24 @@ package net.horizonsend.ion.server.features.client.display.modular
 
 import net.horizonsend.ion.server.features.client.display.modular.display.Display
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.util.Vector
 
 class TextDisplayHandler(
 	var world: World,
 	var anchorX: Double,
 	var anchorY: Double,
 	var anchorZ: Double,
-	var offset: Vector,
+	var offsetRight: Double,
+	var offsetUp: Double,
+	var offsetForward: Double,
 	var facing: BlockFace,
 	vararg display: Display
 ) {
-	private val displays = listOf(*display)
+	val displays = listOf(*display)
 
 	fun update() {
 		displays.forEach {
@@ -44,11 +47,25 @@ class TextDisplayHandler(
 		return this
 	}
 
-	fun getLocation() = Location(world, anchorX, anchorY, anchorZ).add(offset)
+	fun getLocation(): Location {
+		val rightFace = facing.rightFace
+
+		val offsetX = rightFace.modX * offsetRight + facing.modX * offsetForward
+		val offsetY = offsetUp
+		val offsetZ = rightFace.modZ * offsetRight + facing.modZ * offsetForward
+
+		return Location(world, anchorX + offsetX, anchorY + offsetY, anchorZ + offsetZ)
+	}
 
 	fun displace(movement: StarshipMovement) {
-		offset = movement.displaceVector(offset)
-		facing = movement.displaceFace(facing)
+		val oldFace = facing
+		facing = movement.displaceFace(oldFace)
+
+		if (movement is TranslateMovement) {
+			anchorX += movement.dx
+			anchorY += movement.dy
+			anchorZ += movement.dz
+		}
 
 		for (display in displays) {
 			display.resetPosition(this)

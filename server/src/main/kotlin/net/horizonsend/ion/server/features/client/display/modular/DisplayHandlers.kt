@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
 
 object DisplayHandlers : IonServerComponent() {
@@ -24,24 +23,21 @@ object DisplayHandlers : IonServerComponent() {
 
 	fun newMultiblockSignOverlay(entity: MultiblockEntity, vararg display: Display): TextDisplayHandler {
 		val signDirection = entity.structureDirection.oppositeFace
-		val signBlock = MultiblockEntity.getSignFromOrigin(entity.getOrigin(), entity.structureDirection)
-
-		val offset = signDirection.direction.multiply(0.39)
 
 		return TextDisplayHandler(
 			entity.world,
-			signBlock.x.toDouble() + 0.5,
-			signBlock.y.toDouble() + 0.4,
-			signBlock.z.toDouble() + 0.5,
-			Vector(-offset.x, 0.0, -offset.z),
-			entity.structureDirection.oppositeFace,
+			entity.x.toDouble() + 0.5,
+			entity.y.toDouble() + 0.4,
+			entity.z.toDouble() + 0.5,
+			offsetRight = 0.0,
+			offsetUp = 0.0,
+			offsetForward = 0.61,
+			signDirection,
 			*display
 		)
 	}
 
 	fun newBlockOverlay(world: World, block: Vec3i, direction: BlockFace, vararg display: Display): TextDisplayHandler {
-		val offset = direction.direction.multiply(0.45)
-
 		val facingBlock = getRelative(toBlockKey(block), direction)
 
 		val x = getX(facingBlock).toDouble() + 0.5
@@ -53,7 +49,9 @@ object DisplayHandlers : IonServerComponent() {
 			x,
 			y,
 			z,
-			Vector(-offset.x, 0.0, -offset.z),
+			offsetRight = 0.0,
+			offsetUp = 0.0,
+			offsetForward = -0.45,
 			direction,
 			*display
 		)
