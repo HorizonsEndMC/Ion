@@ -10,10 +10,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
+import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Display.TextDisplay
 import net.minecraft.world.entity.EntityType
 import org.bukkit.Bukkit
+import org.bukkit.Bukkit.getPlayer
 import org.bukkit.Color
 import org.bukkit.craftbukkit.v1_20_R3.CraftServer
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
@@ -23,7 +25,7 @@ import org.joml.Vector3f
 import java.util.UUID
 
 abstract class Display(
-	private val offsetLeft: Double,
+	private val offsetRight: Double,
 	private val offsetUp: Double,
 	private val offsetBack: Double,
 	val scale: Float
@@ -57,38 +59,42 @@ abstract class Display(
 
 		val rightFace = parent.facing.rightFace
 
-		val offsetX = rightFace.modX * offsetLeft + parent.facing.modX * offsetBack
+		val offsetX = rightFace.modX * offsetRight + parent.facing.modX * offsetBack
 		val offsetY = offsetUp
-		val offsetZ = rightFace.modZ * offsetLeft + parent.facing.modZ * offsetBack
+		val offsetZ = rightFace.modZ * offsetRight + parent.facing.modZ * offsetBack
+
+		val parentLoc = parent.getLocation()
 
 		entity = createEntity(parent).getNMSData(
-			parent.getLocation().x + offsetX,
-			parent.getLocation().y + offsetY,
-			parent.getLocation().z + offsetZ
+			parentLoc.x + offsetX,
+			parentLoc.y + offsetY,
+			parentLoc.z + offsetZ
 		)
 	}
 
 	fun resetPosition(parent: TextDisplayHandler) {
 		val rightFace = parent.facing.rightFace
 
-		val offsetX = rightFace.modX * offsetLeft + parent.facing.modX * offsetBack
+		val offsetX = rightFace.modX * offsetRight + parent.facing.modX * offsetBack
 		val offsetY = offsetUp
-		val offsetZ = rightFace.modZ * offsetLeft + parent.facing.modZ * offsetBack
+		val offsetZ = rightFace.modZ * offsetRight + parent.facing.modZ * offsetBack
 
-		entity.apply {
-			setPos(
-				parent.getLocation().x + offsetX,
-				parent.getLocation().y + offsetY,
-				parent.getLocation().z + offsetZ
-			)
+		val parentLoc = parent.getLocation()
 
-			setTransformation(com.mojang.math.Transformation(
-				Vector3f(0f),
-				ClientDisplayEntities.rotateToFaceVector2d(parent.facing.direction.toVector3f()),
-				Vector3f(scale),
-				Quaternionf()
-			))
-		}
+		entity.teleportTo(
+			parentLoc.x + offsetX,
+			parentLoc.y + offsetY,
+			parentLoc.z + offsetZ
+		)
+
+		entity.setTransformation(com.mojang.math.Transformation(
+			Vector3f(0f),
+			ClientDisplayEntities.rotateToFaceVector2d(parent.facing.direction.toVector3f()),
+			Vector3f(scale),
+			Quaternionf()
+		))
+
+		shownPlayers.map(::getPlayer).forEach { it?.minecraft?.connection?.send(ClientboundTeleportEntityPacket(entity)) }
 	}
 
 	/** Registers this display handler */
