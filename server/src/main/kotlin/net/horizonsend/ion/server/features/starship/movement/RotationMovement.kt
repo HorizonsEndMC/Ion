@@ -14,6 +14,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.util.Vector
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -95,6 +96,14 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 				else -> blockFace
 			}
 		}
+	}
+
+	override fun displaceFace(face: BlockFace): BlockFace {
+		return rotateBlockFace(face)
+	}
+
+	override fun displaceVector(vector: Vector): Vector {
+		return if (clockwise) vector.clone().rotateAroundY(0.5 * PI) else vector.clone().rotateAroundY(-0.5 * PI)
 	}
 
 	override fun onComplete() {

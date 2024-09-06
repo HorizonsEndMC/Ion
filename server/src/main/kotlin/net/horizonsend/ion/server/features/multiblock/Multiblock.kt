@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock
 
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
@@ -109,9 +110,14 @@ abstract class Multiblock {
 	}
 
 	open fun matchesUndetectedSign(sign: Sign): Boolean {
-		return (sign.getSide(Side.FRONT).line(0) as TextComponent)
-			.content()
-			.equals("[$name]", ignoreCase = true)
+		val line = sign.getSide(Side.FRONT).line(0)
+		val content = (line as? TextComponent)?.content() ?: line.plainText()
+
+		return alternativeDetectionNames
+			.toMutableList()
+			.plus(name)
+			.map { "[$it]" }
+			.any { it.equals(content, ignoreCase = true) }
 	}
 
 	open fun setupSign(player: Player, sign: Sign) {

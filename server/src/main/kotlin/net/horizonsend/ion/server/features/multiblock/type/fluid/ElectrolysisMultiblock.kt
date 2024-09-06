@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.type.InteractableMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.pane
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.stairs
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.HYDROGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.OXYGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.WATER
@@ -226,10 +227,10 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			PowerEntityDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.45f),
-			SimpleFluidDisplay(waterStorage, +0.0, -0.10, +0.0, structureDirection.oppositeFace, 0.45f),
-			ComplexFluidDisplay(hydrogenStorage, text("Hydrogen"), +1.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f),
-			ComplexFluidDisplay(oxygenStorage, text("Oxygen"), -1.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f)
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.45f),
+			SimpleFluidDisplay(waterStorage, +0.0, -0.10, +0.0, 0.45f),
+			ComplexFluidDisplay(hydrogenStorage, text("Hydrogen"), +1.0, +0.0, +0.0, 0.5f),
+			ComplexFluidDisplay(oxygenStorage, text("Oxygen"), -1.0, +0.0, +0.0, 0.5f)
 		).register()
 
 		override suspend fun tickAsync() {
@@ -258,12 +259,11 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 			displayHandler.remove()
 		}
 
-		override fun toString(): String = """
-			Electrolysis multi
-				Hydrogen: $hydrogenStorage
-				Oxygen: $oxygenStorage
-				Water: $waterStorage
-		""".trimIndent()
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
+		}
+
+		override fun toString(): String = "Structure direction $structureDirection, display direction ${displayHandler.facing}"
 
 		companion object {
 			const val WATER_INCREMENT = 5

@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedP
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Material
 import org.bukkit.World
@@ -115,7 +116,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 
 		private val displayHandler = newMultiblockSignOverlay(
 			this,
-			PowerEntityDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f)
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
 		).register()
 
 		override fun onLoad() {
@@ -128,6 +129,10 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 
 		override fun handleRemoval() {
 			displayHandler.remove()
+		}
+
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
 		}
 
 //		override fun isValid(): Boolean {

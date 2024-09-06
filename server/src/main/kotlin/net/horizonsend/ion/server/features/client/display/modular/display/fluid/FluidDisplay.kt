@@ -7,16 +7,14 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.block.BlockFace
 
 abstract class FluidDisplay(
 	val storage: StorageContainer,
 	offsetLeft: Double,
 	offsetUp: Double,
 	offsetBack: Double,
-	face: BlockFace,
 	scale: Float
-) : Display(offsetLeft, offsetUp, offsetBack, face, scale) {
+) : Display(offsetLeft, offsetUp, offsetBack, scale) {
 	private val updateHandler: (InternalStorage) -> Unit = {
 		display()
 	}

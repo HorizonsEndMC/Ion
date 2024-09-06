@@ -13,6 +13,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.util.Vector
+import java.util.concurrent.ConcurrentHashMap
 
 object DisplayHandlers : IonServerComponent() {
 
@@ -28,9 +30,11 @@ object DisplayHandlers : IonServerComponent() {
 
 		return TextDisplayHandler(
 			entity.world,
-			signBlock.x.toDouble() + 0.5 - offset.x,
+			signBlock.x.toDouble() + 0.5,
 			signBlock.y.toDouble() + 0.4,
-			signBlock.z.toDouble() + 0.5 - offset.z,
+			signBlock.z.toDouble() + 0.5,
+			Vector(-offset.x, 0.0, -offset.z),
+			entity.structureDirection.oppositeFace,
 			*display
 		)
 	}
@@ -40,15 +44,17 @@ object DisplayHandlers : IonServerComponent() {
 
 		val facingBlock = getRelative(toBlockKey(block), direction)
 
-		val x = getX(facingBlock).toDouble() + 0.5 - offset.x
+		val x = getX(facingBlock).toDouble() + 0.5
 		val y = getY(facingBlock).toDouble() + 0.35
-		val z = getZ(facingBlock).toDouble() + 0.5 - offset.z
+		val z = getZ(facingBlock).toDouble() + 0.5
 
 		return TextDisplayHandler(
 			world,
 			x,
 			y,
 			z,
+			Vector(-offset.x, 0.0, -offset.z),
+			direction,
 			*display
 		)
 	}
@@ -61,7 +67,7 @@ object DisplayHandlers : IonServerComponent() {
 
 	}
 
-	private val displayHandlers = mutableListOf<TextDisplayHandler>()
+	private val displayHandlers = ConcurrentHashMap.newKeySet<TextDisplayHandler>()
 
 	fun registerHandler(handler: TextDisplayHandler) {
 		displayHandlers.add(handler)

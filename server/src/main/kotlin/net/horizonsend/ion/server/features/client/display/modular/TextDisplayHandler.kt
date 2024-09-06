@@ -1,9 +1,21 @@
 package net.horizonsend.ion.server.features.client.display.modular
 
 import net.horizonsend.ion.server.features.client.display.modular.display.Display
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.BlockFace
+import org.bukkit.util.Vector
 
-class TextDisplayHandler(val world: World, val x: Double, val y: Double, val z: Double, vararg display: Display) {
+class TextDisplayHandler(
+	var world: World,
+	var anchorX: Double,
+	var anchorY: Double,
+	var anchorZ: Double,
+	var offset: Vector,
+	var facing: BlockFace,
+	vararg display: Display
+) {
 	private val displays = listOf(*display)
 
 	fun update() {
@@ -30,5 +42,18 @@ class TextDisplayHandler(val world: World, val x: Double, val y: Double, val z: 
 		DisplayHandlers.registerHandler(this)
 
 		return this
+	}
+
+	fun getLocation() = Location(world, anchorX, anchorY, anchorZ).add(offset)
+
+	fun displace(movement: StarshipMovement) {
+		offset = movement.displaceVector(offset)
+		facing = movement.displaceFace(facing)
+
+		for (display in displays) {
+			display.resetPosition(this)
+		}
+
+		update()
 	}
 }
