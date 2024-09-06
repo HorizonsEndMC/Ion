@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid
 
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplay
@@ -31,6 +33,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.L
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.OPPOSITE
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.RIGHT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.SELF
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -185,7 +188,11 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		val entity = getMultiblockEntity(sign)
+		val entity = getMultiblockEntity(sign) ?: return player.alert("NULL")
+
+		entity.displayHandler.displays.forEach {
+			player.highlightBlock(it.entity.blockPosition().toVec3i(), 10L)
+		}
 
 		player.information(entity.toString())
 	}
@@ -225,7 +232,7 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 		private val oxygenStorage by lazy { getNamedStorage("oxygen_tank") }
 		private val waterStorage by lazy { getNamedStorage("water_tank") }
 
-		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+		val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
 			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.45f),
 			SimpleFluidDisplay(waterStorage, +0.0, -0.10, +0.0, 0.45f),

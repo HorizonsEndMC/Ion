@@ -67,7 +67,6 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 
 			// If it was lost, don't place it back
 			if (!multiblockEntity.isIntact(checkSign = true)) {
-				println("Wasn't intact")
 				multiblockEntity.handleRemoval()
 				continue
 			}
