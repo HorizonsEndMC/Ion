@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.entity
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -80,6 +81,8 @@ abstract class MultiblockEntity(
 	/** Logic to be run upon the loading of the chunk holding this entity, or its creation */
 	open fun onLoad() {}
 
+	open fun displaceAdditional(movement: StarshipMovement) {}
+
 	/**
 	 * Stores any additional data for this multiblock (e.g. power, owner, etc)
 	 **/
@@ -141,6 +144,25 @@ abstract class MultiblockEntity(
 		val (x, y, z) = getRelative(vec3i, structureDirection, backFourth, leftRight, upDown)
 
 		return world.getBlockAt(x, y, z)
+	}
+
+	fun displace(movement: StarshipMovement) {
+		val newX = movement.displaceX(x, z)
+		val newY = movement.displaceY(y)
+		val newZ = movement.displaceZ(z, x)
+
+		this.x = newX
+		this.y = newY
+		this.z = newZ
+
+		val world = movement.newWorld
+		if (world != null) {
+			this.world = world
+		}
+
+		this.structureDirection = movement.displaceFace(structureDirection)
+
+		displaceAdditional(movement)
 	}
 
 	companion object {

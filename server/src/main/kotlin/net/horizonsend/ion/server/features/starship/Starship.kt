@@ -20,6 +20,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.multiblock.manager.ShipMultiblockManager
 import net.horizonsend.ion.server.features.gui.custom.starship.RenameButton.Companion.starshipNameSerializer
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
@@ -62,6 +63,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterS
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
+import net.horizonsend.ion.server.features.transport.ShipTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
@@ -106,7 +108,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-class Starship (
+class Starship(
 	val data: StarshipData,
 	var blocks: LongOpenHashSet,
 	val mass: Double,
@@ -169,12 +171,20 @@ class Starship (
 	}
 	//endregion
 
+	// Start region transport
+	val multiblockManager = ShipMultiblockManager(this)
+
+	val transportManager = ShipTransportManager(this)
+	// Endregion
+
 	//region Ship Blocks & Hitbox
 	var hullIntegrity = 1.0
+
 	fun updateHullIntegrity() {
 		currentBlockCount = blocks.count {
 			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
 		}
+
 		hullIntegrity = currentBlockCount.toDouble() / initialBlockCount.toDouble()
 	}
 
