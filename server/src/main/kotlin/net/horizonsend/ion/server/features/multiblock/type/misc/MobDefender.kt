@@ -4,9 +4,9 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import org.bukkit.Location
 import org.bukkit.World
@@ -83,12 +83,12 @@ object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntit
 			.any { it.isIntact() }
 	}
 
-	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): MobDefenderEntity {
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): MobDefenderEntity {
 		return MobDefenderEntity(manager, x, y, z, world, structureDirection)
 	}
 
 	class MobDefenderEntity(
-		manager: ChunkMultiblockManager,
+		manager: MultiblockManager,
 		x: Int,
 		y: Int,
 		z: Int,

@@ -6,8 +6,8 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.BasicFluidStoringEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.UnlimitedInternalStorage
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -26,12 +26,12 @@ abstract class FluidStorageMultiblock(val capacity: Int) : Multiblock(),
 		null
 	)
 
-	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): FluidStorageMultiblockEntity {
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): FluidStorageMultiblockEntity {
 		return FluidStorageMultiblockEntity(manager, this, data, x, y, z, world, structureDirection)
 	}
 
 	class FluidStorageMultiblockEntity(
-		manager: ChunkMultiblockManager,
+		manager: MultiblockManager,
 		override val multiblock: FluidStorageMultiblock,
 		data: PersistentMultiblockData,
 		x: Int,

@@ -184,7 +184,7 @@ object MultiblockAccess : IonServerComponent() {
 			val chunkZ = z.shr(4)
 
 			world.ion.getChunk(chunkX, chunkZ)?.let {
-				it.region.launch { it.multiblockManager.addNewMultiblockEntity(multiblock, x, y, z, structureDirection) }
+				it.region.launch { it.multiblockManager.handleNewMultiblockEntity(multiblock, x, y, z, structureDirection) }
 			}
 		}
 
