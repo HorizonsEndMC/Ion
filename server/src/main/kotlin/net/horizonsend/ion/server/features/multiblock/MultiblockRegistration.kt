@@ -32,6 +32,9 @@ import net.horizonsend.ion.server.features.multiblock.type.particleshield.Shield
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass30
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass65
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass85
+import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier3
@@ -107,6 +110,10 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(PowerBankMultiblockTier2, "NewPowerBankMultiblockTier2") //TODO testing only - remove on live
 		registerMultiblock(PowerBankMultiblockTier3, "NewPowerBankMultiblockTier3") //TODO testing only - remove on live
 		registerMultiblock(PowerCellMultiblock)
+
+		registerMultiblock(ChargerMultiblockTier1)
+		registerMultiblock(ChargerMultiblockTier2)
+		registerMultiblock(ChargerMultiblockTier3)
 
 		// Gas
 		registerMultiblock(PipedGasCollectorMultiblock)
