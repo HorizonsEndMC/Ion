@@ -26,9 +26,7 @@ object FurnaceListener : SLEventListener() {
 		val signBlock = state.block.getRelativeIfLoaded(directional.facing) ?: return
 
 		val type = signBlock.type
-		if (!type.isWallSign) {
-			return
-		}
+		if (!type.isWallSign) return
 
 		val sign = signBlock.getState(false) as Sign
 		val checkStructure = false
@@ -36,7 +34,7 @@ object FurnaceListener : SLEventListener() {
 		val multiblock = MultiblockAccess.getMultiblock(sign, checkStructure, loadChunks)
 
 		if (multiblock is FurnaceMultiblock) {
-			if (Multiblocks[sign, true, false] !== multiblock) {
+			if (!multiblock.signMatchesStructure(sign, loadChunks = false, particles = false)) {
 				event.isCancelled = true
 				return
 			}
