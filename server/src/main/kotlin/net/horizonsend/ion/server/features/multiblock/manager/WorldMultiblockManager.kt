@@ -3,6 +3,10 @@ package net.horizonsend.ion.server.features.multiblock.manager
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.reflect.KClass
@@ -35,5 +39,26 @@ class WorldMultiblockManager(val world: IonWorld) {
 
 	fun getStoredMultiblocks(): Set<KClass<out MultiblockEntity>> {
 		return worldMultiblocks.keys
+	}
+
+	fun getMultiblockEntity(x: Int, y: Int, z: Int): MultiblockEntity? {
+		val chunk = world.getChunk(x.shr(4), z.shr(4)) ?: return null
+		val key = toBlockKey(x, y, z)
+
+		return chunk.multiblockManager[key]
+	}
+
+	fun getMultiblockEntity(key: BlockKey): MultiblockEntity? {
+		val chunk = world.getChunk(getX(key).shr(4), getZ(key).shr(4)) ?: return null
+
+		return chunk.multiblockManager[key]
+	}
+
+	fun getChunkManager(key: BlockKey): ChunkMultiblockManager? {
+		return world.getChunk(getX(key).shr(4), getZ(key).shr(4))?.multiblockManager
+	}
+
+	fun getChunkManager(x: Int, y: Int, z: Int): ChunkMultiblockManager? {
+		return world.getChunk(x.shr(4), z.shr(4))?.multiblockManager
 	}
 }
