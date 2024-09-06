@@ -138,6 +138,7 @@ class Starship(
 	/** Called on each server tick. */
 	fun tick() {
 		controller.tick()
+		multiblockManager.tick()
 
 		subsystems.forEach { it.tick() }
 	}
