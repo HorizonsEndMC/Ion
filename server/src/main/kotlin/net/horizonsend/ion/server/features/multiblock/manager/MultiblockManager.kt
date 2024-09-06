@@ -81,7 +81,7 @@ abstract class MultiblockManager(val log: Logger) {
 		return entity
 	}
 
-	protected fun tickAllMultiblocks() {
+	private fun tickAllMultiblocks() {
 		for ((key, syncTicking) in syncTickingMultiblockEntities) runCatching {
 			if (SyncTickingMultiblockEntity.preTick(syncTicking as MultiblockEntity)) syncTicking.tick()
 		}.onFailure { e ->
