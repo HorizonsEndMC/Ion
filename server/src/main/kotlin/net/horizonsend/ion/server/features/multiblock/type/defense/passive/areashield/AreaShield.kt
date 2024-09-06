@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedP
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -103,7 +104,7 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			PowerEntityDisplay(this, +0.0, +0.0, +0.0, structureDirection.oppositeFace, 0.5f)
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
 		).register()
 
 		override fun onLoad() {
@@ -122,6 +123,10 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 			world.ion.multiblockManager.deregister(this)
 
 			displayHandler.remove()
+		}
+
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
