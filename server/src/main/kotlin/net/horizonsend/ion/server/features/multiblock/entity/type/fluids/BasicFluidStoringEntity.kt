@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.InternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
-import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.kyori.adventure.text.Component
 import org.bukkit.World
@@ -15,7 +15,7 @@ import org.bukkit.block.BlockFace
  * A simple fluid storing entity with a single main storage
  **/
 abstract class BasicFluidStoringEntity(
-	manager: ChunkMultiblockManager,
+	manager: MultiblockManager,
 	multiblock: Multiblock,
 	data: PersistentMultiblockData,
 	x: Int,

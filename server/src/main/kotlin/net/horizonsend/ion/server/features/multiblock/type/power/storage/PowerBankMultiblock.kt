@@ -6,9 +6,9 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedPowerDisplayEntity
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
-import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Material
 import org.bukkit.World
@@ -79,7 +79,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 	}
 
 	override fun createEntity(
-		manager: ChunkMultiblockManager,
+		manager: MultiblockManager,
 		data: PersistentMultiblockData,
 		world: World,
 		x: Int,
@@ -101,7 +101,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 	}
 
 	class PowerBankEntity(
-		manager: ChunkMultiblockManager,
+		manager: MultiblockManager,
 		multiblock: Multiblock,
 		x: Int,
 		y: Int,
