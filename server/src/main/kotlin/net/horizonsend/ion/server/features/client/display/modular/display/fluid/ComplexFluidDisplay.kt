@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
-import org.bukkit.block.BlockFace
 
 class ComplexFluidDisplay(
 	storage: StorageContainer,
@@ -12,9 +11,8 @@ class ComplexFluidDisplay(
 	offsetLeft: Double,
 	offsetUp: Double,
 	offsetBack: Double,
-	face: BlockFace,
 	scale: Float
-) : FluidDisplay(storage, offsetLeft, offsetUp, offsetBack, face, scale) {
+) : FluidDisplay(storage, offsetLeft, offsetUp, offsetBack, scale) {
 
 	override fun getText(): Component {
 		return ofChildren(title, newline(), formatFluid())

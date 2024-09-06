@@ -115,7 +115,7 @@ class PowerFlowMeter(override val network: PowerNetwork) : SingleNode, StepHandl
 			network.world,
 			toVec3i(position),
 			direction,
-			PowerFlowMeterDisplay(this, 0.0, 0.0, 0.0, direction, 0.7f)
+			PowerFlowMeterDisplay(this, 0.0, 0.0, 0.0, 0.7f)
 		).register()
 	}
 
