@@ -368,8 +368,7 @@ class MultiblockShape {
 				}
 			)
 		)
-		fun anySlabOrStairs() = filteredTypes { it.isSlab || it.isStairs }
-
+		fun anySlabOrStairs() = filteredTypes("any slab or stairs") { it.isSlab || it.isStairs }
 
 		fun terracottaOrDoubleslab() {
 			BlockRequirement(
