@@ -39,9 +39,6 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMu
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.power.charger.ChargerMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier3
@@ -108,10 +105,6 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(PowerFurnaceMultiblockTier1)
 		registerMultiblock(PowerFurnaceMultiblockTier2)
 		registerMultiblock(PowerFurnaceMultiblockTier3)
-
-		registerMultiblock(ChargerMultiblockTier1)
-		registerMultiblock(ChargerMultiblockTier2)
-		registerMultiblock(ChargerMultiblockTier3)
 
 		registerMultiblock(CarbonProcessorMultiblock)
 

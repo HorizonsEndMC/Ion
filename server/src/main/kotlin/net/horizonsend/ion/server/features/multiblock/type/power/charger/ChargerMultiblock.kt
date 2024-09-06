@@ -1,22 +1,33 @@
 package net.horizonsend.ion.server.features.multiblock.type.power.charger
 
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedPowerDisplayEntity
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Material
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
-import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 
-abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPoweredMultiblock<ChargerMultiblock.ChargerEntity>, FurnaceMultiblock {
 	protected abstract val tierMaterial: Material
 
 	protected abstract val powerPerSecond: Int
@@ -65,57 +76,116 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStor
 		furnace: Furnace,
 		sign: Sign
 	) {
-		event.isBurning = false
-		event.burnTime = 0
-		val inventory = furnace.inventory
-		val smelting = inventory.smelting
-		val power = PowerMachines.getPower(sign)
-		val item = event.fuel
-		if (smelting == null || smelting.type != Material.PRISMARINE_CRYSTALS) {
-			return
-		}
-		if (power == 0) {
-			return
-		}
+		val entity = getMultiblockEntity(sign) ?: return
 
-		val custom = item.customItem ?: return
-		if (custom.hasComponent(CustomComponentTypes.POWER_STORAGE))
-			handleModern(item, custom, custom.getComponent(CustomComponentTypes.POWER_STORAGE), event, furnace, inventory, sign, power)
+		entity.handleCharging(event, furnace)
 	}
 
-	fun handleModern(
-		item: ItemStack,
-		customItem: CustomItem,
-		powerManager: PowerStorage,
-		event: FurnaceBurnEvent,
-		furnace: Furnace,
-		inventory: FurnaceInventory,
-		sign: Sign,
-		power: Int
-	) {
-		if (powerManager.getMaxPower(customItem, item) == powerManager.getPower(item)) {
-			val result = inventory.result
-			if (result != null && result.type != Material.AIR) return
-			inventory.result = event.fuel
-			inventory.fuel = null
-			return
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): ChargerEntity {
+		return ChargerEntity(
+			manager,
+			this,
+			x,
+			y,
+			z,
+			world,
+			structureDirection,
+			data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0)
+		)
+	}
+
+	class ChargerEntity(
+		manager: MultiblockManager,
+		override val multiblock: ChargerMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		signDirection: BlockFace,
+		override var powerUnsafe: Int
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), UpdatedPowerDisplayEntity {
+		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
+		override val maxPower: Int = multiblock.maxPower
+
+		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
+		).register()
+
+		fun handleCharging(event: FurnaceBurnEvent, furnace: Furnace) {
+			val availablePower = getPower()
+			if (availablePower == 0) return
+
+			val item = event.fuel
+			if (isPowerable(item)) {
+				handleLegacy(item, event, furnace, availablePower)
+			}
+
+			val custom = item.customItem
+
+			val custom = item.customItem ?: return
+			if (custom.hasComponent(CustomComponentTypes.POWER_STORAGE))
+				handleModern(item, custom, custom.getComponent(CustomComponentTypes.POWER_STORAGE), event, furnace, inventory, sign, power)
 		}
 
-		var multiplier = powerPerSecond
-		multiplier /= item.amount
+		fun handleModern(
+			item: ItemStack,
+			customItem: CustomItem,
+			powerManager: PowerStorage,
+			event: FurnaceBurnEvent,
+			furnace: Furnace,
+			inventory: FurnaceInventory,
+			sign: Sign,
+			power: Int
+		) {
+			if (powerManager.getMaxPower(customItem, item) == powerManager.getPower(item)) {
+				val result = inventory.result
+				if (result != null && result.type != Material.AIR) return
+				inventory.result = event.fuel
+				inventory.fuel = null
+				return
+			}
 
-		if (item.amount * multiplier > power) return
+			var multiplier = powerPerSecond
+			multiplier /= item.amount
 
-		powerManager.addPower(item, customItem, multiplier)
+			if (item.amount * multiplier > power) return
 
-		PowerMachines.setPower(sign, power - multiplier * item.amount)
+			powerManager.addPower(item, customItem, multiplier)
 
-		furnace.cookTime = 20.toShort()
-		event.isCancelled = false
+			setPower(power - multiplier * item.amount)
 
-		val fuel = checkNotNull(inventory.fuel)
+			furnace.cookTime = 20.toShort()
 
-		event.isBurning = false
-		event.burnTime = 20
+			event.isCancelled = false
+			event.isBurning = false
+			event.burnTime = 20
+		}
+
+		override fun onLoad() {
+			world.ion.multiblockManager.register(this)
+
+			displayHandler.update()
+		}
+
+		override fun handleRemoval() {
+			world.ion.multiblockManager.deregister(this)
+
+			displayHandler.remove()
+		}
+
+		override fun onUnload() {
+			world.ion.multiblockManager.deregister(this)
+
+			displayHandler.remove()
+		}
+
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
+		}
+
+		override fun storeAdditionalData(store: PersistentMultiblockData) {
+			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
+		}
 	}
 }
