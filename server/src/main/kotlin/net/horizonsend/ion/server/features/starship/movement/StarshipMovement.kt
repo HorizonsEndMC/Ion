@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.rectangle
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Animals
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
@@ -53,6 +54,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	abstract fun displaceY(oldY: Int): Int
 	abstract fun displaceZ(oldZ: Int, oldX: Int): Int
 	abstract fun displaceLocation(oldLocation: Location): Location
+	abstract fun displaceFace(face: BlockFace): BlockFace
+	abstract fun displaceVector(vector: Vector): Vector
 	protected abstract fun movePassenger(passenger: Entity)
 	protected abstract fun onComplete()
 	protected abstract fun blockDataTransform(blockData: BlockState): BlockState
@@ -141,6 +144,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			starship.calculateMinMax()
 			updateCenter()
 			updateSubsystems(world2)
+			starship.multiblockManager.displaceEntities(this)
 
 			onComplete()
 		}
