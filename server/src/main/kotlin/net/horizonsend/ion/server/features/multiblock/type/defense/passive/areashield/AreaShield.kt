@@ -8,9 +8,9 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedPowerDisplayEntity
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
-import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -74,7 +74,7 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 		"&8Radius: &a$radius"
 	)
 
-	override fun createEntity(manager: ChunkMultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AreaShieldEntity {
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AreaShieldEntity {
 		return AreaShieldEntity(
 			manager,
 			this,
@@ -89,7 +89,7 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 	}
 
 	class AreaShieldEntity(
-		manager: ChunkMultiblockManager,
+		manager: MultiblockManager,
 		override val multiblock: AreaShield,
 		x: Int,
 		y: Int,
