@@ -17,7 +17,7 @@ interface SyncTickingMultiblockEntity : TickedMultiblockEntityParent {
 		 **/
 		fun <T: MultiblockEntity> preTick(multiblockEntity: T): Boolean {
 			if (multiblockEntity !is TickedMultiblockEntityParent) return false
-			if (multiblockEntity.shouldCheckIntegrity() && !multiblockEntity.isIntact()) return false
+			if (multiblockEntity.shouldCheckIntegrity() && !multiblockEntity.isIntact(false)) return false
 
 			return multiblockEntity.checkTickInterval()
 		}

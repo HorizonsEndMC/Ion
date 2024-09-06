@@ -15,7 +15,6 @@ import net.minecraft.world.entity.Display.TextDisplay
 import net.minecraft.world.entity.EntityType
 import org.bukkit.Bukkit
 import org.bukkit.Color
-import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.v1_20_R3.CraftServer
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
 import org.bukkit.util.Transformation
@@ -27,7 +26,6 @@ abstract class Display(
 	private val offsetLeft: Double,
 	private val offsetUp: Double,
 	private val offsetBack: Double,
-	val facing: BlockFace,
 	val scale: Float
 ) {
 	var shownPlayers = mutableSetOf<UUID>()
@@ -48,7 +46,7 @@ abstract class Display(
 
 		transformation = Transformation(
 			Vector3f(0f),
-			ClientDisplayEntities.rotateToFaceVector2d(this@Display.facing.direction.toVector3f()),
+			ClientDisplayEntities.rotateToFaceVector2d(parent.facing.direction.toVector3f()),
 			Vector3f(scale),
 			Quaternionf()
 		)
@@ -57,13 +55,40 @@ abstract class Display(
 	fun setParent(parent: TextDisplayHandler) {
 		this.handler = parent
 
-		val rightFace = facing.rightFace
+		val rightFace = parent.facing.rightFace
 
-		val offsetX = rightFace.modX * offsetLeft + facing.modX * offsetBack
+		val offsetX = rightFace.modX * offsetLeft + parent.facing.modX * offsetBack
 		val offsetY = offsetUp
-		val offsetZ = rightFace.modZ * offsetLeft + facing.modZ * offsetBack
+		val offsetZ = rightFace.modZ * offsetLeft + parent.facing.modZ * offsetBack
 
-		entity = createEntity(parent).getNMSData(parent.x + offsetX, parent.y + offsetY, parent.z + offsetZ)
+		entity = createEntity(parent).getNMSData(
+			parent.getLocation().x + offsetX,
+			parent.getLocation().y + offsetY,
+			parent.getLocation().z + offsetZ
+		)
+	}
+
+	fun resetPosition(parent: TextDisplayHandler) {
+		val rightFace = parent.facing.rightFace
+
+		val offsetX = rightFace.modX * offsetLeft + parent.facing.modX * offsetBack
+		val offsetY = offsetUp
+		val offsetZ = rightFace.modZ * offsetLeft + parent.facing.modZ * offsetBack
+
+		entity.apply {
+			setPos(
+				parent.getLocation().x + offsetX,
+				parent.getLocation().y + offsetY,
+				parent.getLocation().z + offsetZ
+			)
+
+			setTransformation(com.mojang.math.Transformation(
+				Vector3f(0f),
+				ClientDisplayEntities.rotateToFaceVector2d(parent.facing.direction.toVector3f()),
+				Vector3f(scale),
+				Quaternionf()
+			))
+		}
 	}
 
 	/** Registers this display handler */
