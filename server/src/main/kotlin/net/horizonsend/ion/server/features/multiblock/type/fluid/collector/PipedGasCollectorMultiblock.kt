@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory.GAS
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
@@ -115,9 +116,9 @@ object PipedGasCollectorMultiblock : Multiblock(),
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			SimpleFluidDisplay(getNamedStorage("tank_1"), +0.0, +0.10, 0.0, structureDirection.oppositeFace, 0.45f),
-			SimpleFluidDisplay(getNamedStorage("tank_2"), +0.0, -0.00, 0.0, structureDirection.oppositeFace, 0.45f),
-			SimpleFluidDisplay(getNamedStorage("tank_3"), +0.0, -0.10, 0.0, structureDirection.oppositeFace, 0.45f)
+			SimpleFluidDisplay(getNamedStorage("tank_1"), +0.0, +0.10, 0.0, 0.45f),
+			SimpleFluidDisplay(getNamedStorage("tank_2"), +0.0, -0.00, 0.0, 0.45f),
+			SimpleFluidDisplay(getNamedStorage("tank_3"), +0.0, -0.10, 0.0, 0.45f)
 		).register()
 
 		override fun onLoad() {
@@ -130,6 +131,10 @@ object PipedGasCollectorMultiblock : Multiblock(),
 
 		override fun handleRemoval() {
 			displayHandler.remove()
+		}
+
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
 		}
 
 		private val worldConfig get() = world.ion.configuration.gasConfiguration

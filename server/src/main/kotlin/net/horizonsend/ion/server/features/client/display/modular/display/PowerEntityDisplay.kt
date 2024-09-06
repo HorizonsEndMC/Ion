@@ -7,17 +7,15 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.block.BlockFace
 
 class PowerEntityDisplay(
 	private val multiblockEntity: UpdatedPowerDisplayEntity,
 	offsetLeft: Double,
 	offsetUp: Double,
 	offsetBack: Double,
-	face: BlockFace,
 	scale: Float,
 	val title: Component? = null
-): Display(offsetLeft, offsetUp, offsetBack, face, scale) {
+): Display(offsetLeft, offsetUp, offsetBack, scale) {
 	private val updateHandler: (UpdatedPowerDisplayEntity) -> Unit = {
 		display()
 	}

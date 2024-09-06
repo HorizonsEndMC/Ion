@@ -24,11 +24,11 @@ import java.util.concurrent.ConcurrentHashMap
 
 abstract class MultiblockManager(val log: Logger) {
 	/** All the loaded multiblock entities of this chunk */
-	protected val multiblockEntities: ConcurrentHashMap<Long, MultiblockEntity> = ConcurrentHashMap()
+	protected open val multiblockEntities: ConcurrentHashMap<Long, MultiblockEntity> = ConcurrentHashMap()
 
 	/** All the ticked multiblock entities of this chunk */
-	val syncTickingMultiblockEntities: ConcurrentHashMap<Long, SyncTickingMultiblockEntity> = ConcurrentHashMap()
-	val asyncTickingMultiblockEntities: ConcurrentHashMap<Long, AsyncTickingMultiblockEntity> = ConcurrentHashMap()
+	open val syncTickingMultiblockEntities: ConcurrentHashMap<Long, SyncTickingMultiblockEntity> = ConcurrentHashMap()
+	open val asyncTickingMultiblockEntities: ConcurrentHashMap<Long, AsyncTickingMultiblockEntity> = ConcurrentHashMap()
 
 	abstract val world: World
 
