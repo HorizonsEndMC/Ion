@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.world.ChunkMultiblockManager
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import org.bukkit.World
@@ -24,7 +24,7 @@ object MultiblockEntities {
 	/**
 	 * Add a new multiblock entity to the chunk
 	 **/
-	fun setMultiblockEntity(world: World, x: Int, y: Int, z: Int, entity: (ChunkMultiblockManager) -> MultiblockEntity): Boolean {
+	fun setMultiblockEntity(world: World, x: Int, y: Int, z: Int, entity: (MultiblockManager) -> MultiblockEntity): Boolean {
 		val ionChunk = getIonChunk(world, x, y, z) ?: return false
 
 		ionChunk.region.launch {
