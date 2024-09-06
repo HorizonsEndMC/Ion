@@ -47,6 +47,7 @@ import org.bukkit.Material.COAL_BLOCK
 import org.bukkit.Material.COMPARATOR
 import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
+import org.bukkit.Material.COPPER_GRATE
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.CREEPER_HEAD
 import org.bukkit.Material.CREEPER_WALL_HEAD
@@ -64,6 +65,7 @@ import org.bukkit.Material.ENDER_CHEST
 import org.bukkit.Material.END_PORTAL_FRAME
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.EXPOSED_COPPER
+import org.bukkit.Material.EXPOSED_COPPER_GRATE
 import org.bukkit.Material.FARMLAND
 import org.bukkit.Material.FLETCHING_TABLE
 import org.bukkit.Material.FLOWER_POT
@@ -95,6 +97,7 @@ import org.bukkit.Material.NOTE_BLOCK
 import org.bukkit.Material.OBSERVER
 import org.bukkit.Material.OCHRE_FROGLIGHT
 import org.bukkit.Material.OXIDIZED_COPPER
+import org.bukkit.Material.OXIDIZED_COPPER_GRATE
 import org.bukkit.Material.PEARLESCENT_FROGLIGHT
 import org.bukkit.Material.PISTON
 import org.bukkit.Material.PISTON_HEAD
@@ -160,10 +163,15 @@ import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WALL_TORCH
 import org.bukkit.Material.WATER_CAULDRON
 import org.bukkit.Material.WAXED_COPPER_BLOCK
+import org.bukkit.Material.WAXED_COPPER_GRATE
 import org.bukkit.Material.WAXED_EXPOSED_COPPER
+import org.bukkit.Material.WAXED_EXPOSED_COPPER_GRATE
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
+import org.bukkit.Material.WAXED_OXIDIZED_COPPER_GRATE
 import org.bukkit.Material.WAXED_WEATHERED_COPPER
+import org.bukkit.Material.WAXED_WEATHERED_COPPER_GRATE
 import org.bukkit.Material.WEATHERED_COPPER
+import org.bukkit.Material.WEATHERED_COPPER_GRATE
 import org.bukkit.Material.WET_SPONGE
 import org.bukkit.Material.WHEAT
 import org.bukkit.Material.WITHER_SKELETON_SKULL
@@ -266,6 +274,15 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	WAXED_EXPOSED_COPPER,
 	WAXED_WEATHERED_COPPER,
 	WAXED_OXIDIZED_COPPER,
+
+	COPPER_GRATE,
+	EXPOSED_COPPER_GRATE,
+	WEATHERED_COPPER_GRATE,
+	OXIDIZED_COPPER_GRATE,
+	WAXED_COPPER_GRATE,
+	WAXED_EXPOSED_COPPER_GRATE,
+	WAXED_WEATHERED_COPPER_GRATE,
+	WAXED_OXIDIZED_COPPER_GRATE,
 
 	POTTED_AZURE_BLUET,
 	POTTED_BAMBOO,

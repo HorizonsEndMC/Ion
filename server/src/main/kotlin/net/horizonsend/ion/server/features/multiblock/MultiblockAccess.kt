@@ -9,8 +9,6 @@ import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.common.utils.text.subStringBetween
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.getMultiblockEntity
@@ -24,7 +22,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -212,18 +209,16 @@ object MultiblockAccess : IonServerComponent() {
 	fun tryDetectMultiblock(player: Player, sign: Sign, face: BlockFace? = null, loadChunks: Boolean = false): Multiblock? {
 		val world = sign.world
 
-		val blankText = sign.front().line(0).plainText()
-		val name = blankText.subStringBetween('[', ']')
+		val possibleMultiblocks = MultiblockRegistration
+			.getAllMultiblocks()
+			.filter { it.matchesUndetectedSign(sign) }
+
+		if (possibleMultiblocks.isEmpty()) return null
 
 		val direction = sign.getFacing().oppositeFace
 
 		// Get the block that the sign is placed on
 		val originBlock = MultiblockEntity.getOriginFromSign(sign)
-
-		// Possible multiblocks from the sign
-		val possible = MultiblockRegistration.getByDetectionName(name)
-
-		if (possible.isEmpty()) return null
 
 		val found = computeMultiblockAtLocation(
 			world,
@@ -232,13 +227,15 @@ object MultiblockAccess : IonServerComponent() {
 			originBlock.z,
 			face,
 			loadChunks = loadChunks,
-			restrictedList = possible
+			restrictedList = possibleMultiblocks
 		)
 
-		if (found == null) {
-			player.userError("Improperly built $name. Make sure every block is correctly placed!")
+		val named = possibleMultiblocks.first()
 
-			MultiblockCommand.setupCommand(player, sign, possible.first())
+		if (found == null) {
+			player.userError("Improperly built ${named.name}. Make sure every block is correctly placed!")
+
+			MultiblockCommand.setupCommand(player, sign, named)
 
 			return null
 		}
