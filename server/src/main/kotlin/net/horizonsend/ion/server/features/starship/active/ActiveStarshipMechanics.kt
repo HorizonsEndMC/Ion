@@ -112,6 +112,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	private fun destroyLowHullIntegrityShips() {
 		ActiveStarships.all().forEach { ship ->
 			ship.updateHullIntegrity()
+
 			if (ship.hullIntegrity < MAX_SAFE_HULL_INTEGRITY) {
 				ship.alert("Critical hull integrity failure!")
 

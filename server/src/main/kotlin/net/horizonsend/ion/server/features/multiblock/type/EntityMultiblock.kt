@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -38,6 +39,14 @@ interface EntityMultiblock<T : MultiblockEntity> {
 
 	fun getMultiblockEntity(sign: Sign): T? {
 		val origin = MultiblockEntity.getOriginFromSign(sign)
+
+		val world = sign.world
+		val ship = ActiveStarships.getInWorld(world).firstOrNull { it.contains(origin.x, origin.y, origin.z) }
+
+		if (ship != null) {
+			@Suppress("UNCHECKED_CAST")
+			return ship.multiblockManager[origin.x, origin.y, origin.z] as T?
+		}
 
 		@Suppress("UNCHECKED_CAST")
 		return MultiblockEntities.getMultiblockEntity(origin) as T?
