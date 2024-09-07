@@ -11,7 +11,7 @@ class ReactorSubsystem(
 	starship: ActiveStarship
 ) : StarshipSubsystem(starship, starship.centerOfMass) {
 	val output: Double =
-		Math.cbrt(starship.initialBlockCount.coerceAtLeast(500).toDouble()) * 3000.0 * (starship.type.poweroverrider)
+		Math.cbrt(starship.initialBlockCount.coerceAtLeast(500).toDouble()) * 3000.0 * (starship.type.powerOverrider)
 	val powerDistributor = PowerDistributor()
 	val weaponCapacitor = WeaponCapacitor(this)
 	val heavyWeaponBooster = HeavyWeaponBooster(this)

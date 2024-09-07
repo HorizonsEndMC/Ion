@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Skins
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson
 import net.md_5.bungee.api.ChatColor.RED
 import net.wesjd.anvilgui.AnvilGUI
@@ -77,12 +78,14 @@ private val skinCache: LoadingCache<UUID, Optional<Skins.SkinData>> = CacheBuild
 		}
 	)
 
-fun skullItem(uuid: UUID, name: String): ItemStack =
-	item(Material.PLAYER_HEAD).setDisplayNameAndGet(name).also { item ->
+fun skullItem(uuid: UUID, playerName: String) = skullItem(uuid, playerName, text(playerName))
+
+fun skullItem(uuid: UUID, playerName: String, itemName: Component): ItemStack =
+	item(Material.PLAYER_HEAD).setDisplayNameAndGet(itemName).also { item ->
 		val meta = item.itemMeta as SkullMeta
 
 		skinCache[uuid].ifPresent { skin ->
-			meta.playerProfile = Bukkit.createProfile(uuid, name).also { profile ->
+			meta.playerProfile = Bukkit.createProfile(uuid, playerName).also { profile ->
 				profile.setProperty(ProfileProperty("textures", skin.value, skin.signature))
 			}
 		}
