@@ -25,7 +25,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGetString
 import net.horizonsend.ion.server.sharedDataFolder
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -173,7 +173,7 @@ object Shuttles : IonServerComponent() {
 
 	fun createTicket() = ItemStack(Material.PAPER, 1)
 		.setDisplayNameAndGet(TICKET_DISPLAY_NAME)
-		.setLoreAndGet(listOf("&5Ticket ID&b: &d${UUID.randomUUID()}".colorize()))
+		.setLoreAndGetString(listOf("&5Ticket ID&b: &d${UUID.randomUUID()}".colorize()))
 
 	fun isTicket(item: ItemStack): Boolean = item.itemMeta?.displayName == TICKET_DISPLAY_NAME
 
