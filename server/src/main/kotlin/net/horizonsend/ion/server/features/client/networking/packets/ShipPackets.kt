@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.client.networking.Packets
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.network.FriendlyByteBuf
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -25,8 +24,8 @@ object ShipData : IonPacketHandler() {
 				return@forEach
 			}
 
-			val name = MiniMessage.miniMessage().deserialize(ship.data.name ?: ship.type.displayNameMiniMessage)
-			val type = MiniMessage.miniMessage().deserialize(ship.type.displayNameMiniMessage)
+			val name = ship.getDisplayName()
+			val type = ship.type.displayNameComponent
 			val pm = ship.reactor.powerDistributor
 			val targets = ship.autoTurretTargets.mapValues { it.value.identifier }
 			val hull = ship.hullIntegrity.times(100).roundToInt()
