@@ -46,8 +46,8 @@ class SettingsHudGui(val player: Player) : AbstractBackgroundPagedGui {
         )
 
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-            .addIngredient('<', GuiItems.LeftItem())
-            .addIngredient('>', GuiItems.RightItem())
+            .addIngredient('<', GuiItems.PageLeftItem())
+            .addIngredient('>', GuiItems.PageRightItem())
             .addIngredient('v', SettingsMainMenuGui(player).ReturnToMainMenuButton())
 
         for (button in buttonsList) {

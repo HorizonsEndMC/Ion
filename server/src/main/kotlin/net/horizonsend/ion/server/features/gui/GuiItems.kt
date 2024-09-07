@@ -12,16 +12,18 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.gui.PagedGui
+import xyz.xenondevs.invui.gui.ScrollGui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
+import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.item.impl.controlitem.PageItem
+import xyz.xenondevs.invui.item.impl.controlitem.ScrollItem
 import java.util.UUID
 
 object GuiItems {
-
-    class LeftItem : PageItem(false) {
+    class PageLeftItem : PageItem(false) {
         override fun getItemProvider(gui: PagedGui<*>): ItemProvider {
             val builder = if (gui.hasPreviousPage()) ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
                 it.setCustomModelData(GuiItem.LEFT.customModelData)
@@ -31,9 +33,28 @@ object GuiItems {
         }
     }
 
-    class RightItem : PageItem(true) {
+    class PageRightItem : PageItem(true) {
         override fun getItemProvider(gui: PagedGui<*>): ItemProvider {
             val builder = if (gui.hasNextPage()) ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+                it.setCustomModelData(GuiItem.RIGHT.customModelData)
+                it.displayName(text("Next Page").decoration(ITALIC, false))
+            }) else ItemBuilder(ItemStack(Material.AIR))
+            return builder
+        }
+    }
+    class ScrollLeftItem : ScrollItem(-1) {
+        override fun getItemProvider(gui: ScrollGui<*>): ItemProvider {
+            val builder = if (gui.canScroll(-1)) ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+                it.setCustomModelData(GuiItem.LEFT.customModelData)
+                it.displayName(text("Previous Page").decoration(ITALIC, false))
+            }) else ItemBuilder(ItemStack(Material.AIR))
+            return builder
+        }
+    }
+
+    class ScrollRightItem : ScrollItem(1) {
+        override fun getItemProvider(gui: ScrollGui<*>): ItemProvider {
+            val builder = if (gui.canScroll(1)) ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
                 it.setCustomModelData(GuiItem.RIGHT.customModelData)
                 it.displayName(text("Next Page").decoration(ITALIC, false))
             }) else ItemBuilder(ItemStack(Material.AIR))
@@ -60,6 +81,14 @@ object GuiItems {
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) = item.handleClick(clickType, player, event)
     }
+
+	fun createButton(displayItem: ItemStack, clickHandler: (ClickType, Player, InventoryClickEvent) -> Unit) = object : AbstractItem() {
+		override fun getItemProvider(): ItemProvider = ItemProvider { displayItem }
+
+		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+			clickHandler.invoke(clickType, player, event)
+		}
+	}
 
     open class PlayerHeadItem(val uuid: UUID, val name: String, val callback: () -> Unit = {}) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
