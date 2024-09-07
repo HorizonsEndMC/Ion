@@ -25,7 +25,10 @@ fun ItemStack.setDisplayNameAndGet(name: Component): ItemStack = updateMeta { it
 val ItemStack.displayNameComponent: Component get() = if (hasItemMeta() && itemMeta.hasDisplayName()) { itemMeta.displayName() ?: displayName().hoverEvent(null) } else displayName().hoverEvent(null)
 val ItemStack.displayNameString get() = displayNameComponent.plainText()
 
-fun ItemStack.setLoreAndGet(lines: List<String>): ItemStack = apply { this.lore = lines }
+@Deprecated("use components")
+fun ItemStack.setLoreAndGetString(lines: List<String>): ItemStack = apply { this.lore = lines }
+
+fun ItemStack.setLoreAndGet(lines: List<Component>): ItemStack = apply { this.lore(lines) }
 
 val leftArrow
 	get() = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {

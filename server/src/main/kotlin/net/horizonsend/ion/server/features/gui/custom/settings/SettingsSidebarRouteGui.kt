@@ -52,8 +52,8 @@ class SettingsSidebarRouteGui(val player: Player) : AbstractBackgroundPagedGui {
         )
 
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-            .addIngredient('<', GuiItems.LeftItem())
-            .addIngredient('>', GuiItems.RightItem())
+            .addIngredient('<', GuiItems.PageLeftItem())
+            .addIngredient('>', GuiItems.PageRightItem())
             .addIngredient('v', SettingsSidebarGui(player).ReturnToSidebarButton())
 
         for (button in buttonsList) {
