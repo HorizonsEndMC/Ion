@@ -5,6 +5,8 @@ import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
 import net.kyori.adventure.text.Component
@@ -35,6 +37,9 @@ enum class StarshipType(
 	val isWarship: Boolean,
 	val eventship: Boolean = false,
 	val poweroverrider: Double = 1.0,
+
+	val requiredWorldFlags: Set<WorldFlag> = setOf(),
+	val disallowedWorldFlags: Set<WorldFlag> = setOf(),
 
 	val maxMiningLasers: Int = 0,
 	val miningLaserTier: Int = 0,
@@ -390,6 +395,21 @@ enum class StarshipType(
 		overridePermission = "ion.ships.ai.dreadnought",
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiDreadnought
 	),
+	TANK(
+		displayName = "Tank",
+		icon = SidebarIcon.STARFIGHTER_ICON.text,
+		minSize = 150,
+		maxSize = 500,
+		minLevel = 1,
+		containerPercent = 0.025,
+		crateLimitMultiplier = 0.5,
+		menuItemMaterial = Material.IRON_NUGGET,
+		isWarship = true,
+		color = "#ff8000",
+		overridePermission = "ion.ships.override.1",
+		dynmapIcon = "starfighter",
+		balancingSupplier = IonServer.starshipBalancing::starfighter
+	),
 	SHUTTLE(
 		displayName = "Shuttle",
 		icon = SidebarIcon.SHUTTLE_ICON.text,
@@ -658,7 +678,16 @@ enum class StarshipType(
 		))
 
 	fun canUse(player: Player): Boolean =
-			player.hasPermission("starships.anyship") || player.hasPermission(overridePermission) || Levels[player] >= minLevel
+		player.hasPermission("starships.anyship") ||
+		player.hasPermission(overridePermission) ||
+		Levels[player] >= minLevel
+
+	fun canPilotIn(world: IonWorld): Boolean {
+		val flags = world.configuration.flags
+
+		if (requiredWorldFlags.toMutableSet().subtract(flags).isNotEmpty()) return false
+		return disallowedWorldFlags.none { flags.contains(it) }
+	}
 
 	companion object {
 		fun getUnlockedTypes(player: Player): List<StarshipType> = entries
