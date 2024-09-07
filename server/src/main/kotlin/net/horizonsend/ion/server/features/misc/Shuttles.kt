@@ -173,7 +173,7 @@ object Shuttles : IonServerComponent() {
 
 	fun createTicket() = ItemStack(Material.PAPER, 1)
 		.setDisplayNameAndGet(TICKET_DISPLAY_NAME)
-		.setLoreAndGet(listOf("&5Ticket ID&b: &d${UUID.randomUUID()}".colorize()))
+		.setLoreAndGetString(listOf("&5Ticket ID&b: &d${UUID.randomUUID()}".colorize()))
 
 	fun isTicket(item: ItemStack): Boolean = item.itemMeta?.displayName == TICKET_DISPLAY_NAME
 
