@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.BountyCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
@@ -127,7 +128,7 @@ object Bounties : IonServerComponent() {
 	fun onShipSink(event: StarshipExplodeEvent) {
 		if (isNotSurvival()) return
 		val victim = (event.starship.controller as? PlayerController)?.player ?: return
-		if (event.starship.type.isWarship) return
+		if (event.starship.type.typeCategory == TypeCategory.WAR_SHIP) return
 
 		val blockCountMultipler = 1.5
 
