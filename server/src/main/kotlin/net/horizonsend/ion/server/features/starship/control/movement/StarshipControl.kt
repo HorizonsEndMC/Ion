@@ -27,16 +27,12 @@ import org.bukkit.Material
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.util.Vector
 import java.util.Collections
-import kotlin.math.PI
 import kotlin.math.abs
-import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.round
-import kotlin.math.roundToInt
 import kotlin.math.sign
-import kotlin.math.sin
 
 object StarshipControl : IonServerComponent() {
 	val CONTROLLER_TYPE = Material.CLOCK
@@ -54,15 +50,9 @@ object StarshipControl : IonServerComponent() {
 
 		if (starship.isTeleporting) return
 
-		val controller = starship.controller
-
 		if (starship.isDirectControlEnabled) {
 			processDirectControl(starship)
 			return
-		}
-
-		if (controller.isSneakFlying()) {
-			processSneakFlight(controller, starship)
 		}
 	}
 
@@ -225,46 +215,6 @@ object StarshipControl : IonServerComponent() {
 
 	fun calculateSpeed(selectedSlot: Int) = if (selectedSlot == 0) -1 else (selectedSlot / DIRECT_CONTROL_DIVISOR).toInt()
 	fun calculateCooldown(movementCooldown: Long, heldItemSlot: Int) = movementCooldown - heldItemSlot * 8
-
-	private fun processSneakFlight(controller: Controller, starship: ActiveControlledStarship) {
-		if (starship.type == PLATFORM) {
-			controller.userErrorAction("This ship type is not capable of moving.")
-			return
-		}
-
-		if (Hyperspace.isWarmingUp(starship)) {
-			starship.controller.userErrorAction("Cannot move while in hyperspace warmup.")
-			return
-		}
-
-		if (!controller.isSneakFlying()) return
-
-		val now = System.currentTimeMillis()
-		if (now - starship.lastManualMove < starship.manualMoveCooldownMillis) return
-
-		starship.lastManualMove = now
-		starship.sneakMovements++
-
-		val sneakMovements = starship.sneakMovements
-
-		val maxAccel = starship.balancing.maxSneakFlyAccel
-		val accelDistance = starship.balancing.sneakFlyAccelDistance
-
-		val yawRadians = Math.toRadians(controller.yaw.toDouble())
-		val pitchRadians = Math.toRadians(controller.pitch.toDouble())
-
-		val distance = max(min(maxAccel, sneakMovements / min(1, accelDistance)), 1)
-
-		val vertical = abs(pitchRadians) >= PI * 5 / 12 // 75 degrees
-
-		val dx = if (vertical) 0 else sin(-yawRadians).roundToInt() * distance
-		val dy = sin(-pitchRadians).roundToInt() * distance
-		val dz = if (vertical) 0 else cos(yawRadians).roundToInt() * distance
-
-		if (locationCheck(starship, dx, dy, dz)) return
-
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
-	}
 
 	fun locationCheck(starship: ActiveControlledStarship, dx: Int, dy: Int, dz: Int): Boolean {
 		val world = starship.world
