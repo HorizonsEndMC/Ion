@@ -4,10 +4,13 @@ import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.control.input.PlayerInputHandler
+import net.horizonsend.ion.server.features.starship.control.input.PlayerMovementInputHandler
 import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
@@ -17,7 +20,7 @@ class ActivePlayerController(player: Player, starship: ActiveStarship) : PlayerC
 	override fun isSneakFlying(): Boolean = player.isSneaking && PlayerStarshipControl.isHoldingController(player)
 	override val selectedDirectControlSpeed: Int get() = player.inventory.heldItemSlot
 
-	var inputHandler: PlayerInputHandler = ShiftFlightHandler(this)
+	var inputHandler: PlayerMovementInputHandler = ShiftFlightHandler(this)
 		set(value) {
 			field = value
 			information("Updated control move to ${value.name}")
@@ -27,8 +30,12 @@ class ActivePlayerController(player: Player, starship: ActiveStarship) : PlayerC
 		inputHandler.tick()
 	}
 
+	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
+		inputHandler.onBlocked(reason)
+	}
+
 	companion object : SLEventListener() {
-		private fun getInputHandler(player: Player): PlayerInputHandler? {
+		private fun getInputHandler(player: Player): PlayerMovementInputHandler? {
 			val ship = PilotedStarships[player] ?: return null
 			return (ship.controller as? ActivePlayerController)?.inputHandler
 		}
