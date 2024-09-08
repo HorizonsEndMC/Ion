@@ -533,6 +533,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			)
 			return
 		}
+
 		starship.setDirectControlEnabled(!starship.isDirectControlEnabled)
 	}
 
