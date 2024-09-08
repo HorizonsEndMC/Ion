@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractTractorBeam
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
 import net.horizonsend.ion.server.features.world.IonWorld
@@ -41,6 +42,8 @@ import net.horizonsend.ion.server.listener.nations.MovementListener
 import org.bukkit.event.Listener
 
 val listeners: List<Listener> = listOf(
+	IonWorld,
+
 	// StarLegacy
 	JoinLeaveListener,
 	MovementListener,
@@ -69,7 +72,6 @@ val listeners: List<Listener> = listOf(
 	GameplayTweaksListeners(),
 	HeadListener(),
 	HyperspaceBeaconManager,
-	IonWorld,
 	MiscListeners(),
 	WorldGenerationManager,
 	EncounterManager(),
@@ -81,6 +83,7 @@ val listeners: List<Listener> = listOf(
 	PlayerDeathListener,
 	net.horizonsend.ion.server.features.custom.items.type.tool.mods.ToolModMenu,
 	RecipeModifications,
+	ActivePlayerController.Companion,
 	PersonalTransporterManager,
 
 	// Achievement Listeners
