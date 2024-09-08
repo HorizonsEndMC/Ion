@@ -20,38 +20,8 @@ import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
-import java.util.EnumSet
-import java.util.LinkedList
 
-class ChangeClassButton(val main: StarshipComputerMenu) : AbstractItem() {
-	private val tradeClasses = EnumSet.of(
-		StarshipType.SHUTTLE,
-		StarshipType.TRANSPORT,
-		StarshipType.LIGHT_FREIGHTER,
-		StarshipType.MEDIUM_FREIGHTER,
-		StarshipType.HEAVY_FREIGHTER,
-		StarshipType.BARGE,
-	)
-
-	private val warshipClasses = EnumSet.of(
-		StarshipType.STARFIGHTER,
-		StarshipType.GUNSHIP,
-		StarshipType.CORVETTE,
-		StarshipType.FRIGATE,
-		StarshipType.DESTROYER,
-		StarshipType.CRUISER,
-		StarshipType.BATTLECRUISER,
-		StarshipType.BATTLESHIP,
-		StarshipType.DREADNOUGHT,
-	)
-
-	private val miscClasses = EnumSet.of(
-		StarshipType.SPEEDER,
-		StarshipType.PLATFORM,
-		StarshipType.TANK,
-		StarshipType.UNIDENTIFIEDSHIP
-	)
-
+class ChangeTypeButton(val main: StarshipComputerMenu) : AbstractItem() {
 	private val provider = ItemProvider {
 		ItemStack(Material.GHAST_TEAR)
 			.setDisplayNameAndGet(text("Change Ship Class").decoration(ITALIC, false))
@@ -73,16 +43,20 @@ class ChangeClassButton(val main: StarshipComputerMenu) : AbstractItem() {
 	private fun createButton(type: StarshipType): SelectTypeButton = SelectTypeButton(this, type)
 
 	private fun openClassMenu(player: Player) {
-		val tradeButtons = tradeClasses.filter { it.canUse(player) }.mapTo(LinkedList(), ::createButton)
-			.sortedBy { it.type.minLevel }
-		val warshipButtons = warshipClasses.filter { it.canUse(player) }.mapTo(LinkedList(), ::createButton)
-			.sortedBy { it.type.minLevel }
-		val miscButtons = miscClasses.filter { it.canUse(player) }.mapTo(LinkedList(), ::createButton)
-			.sortedBy { it.type.minLevel }
+		val grouped = StarshipType
+			.entries
+			.filter { it.displayInMainMenu }
+			.filter { it.canUse(player) }
+			.map(::createButton)
+			.groupBy { it.type.typeCategory }
+			.entries
+			.sortedBy { it.key.index }
+			.withIndex()
 
 		val gui = Gui.normal()
 			.setStructure(
 				"b . . . . . . . .",
+				". . . . . . . . .",
 				". . . . . . . . .",
 				". . . . . . . . .",
 				". . . . . . . . ."
@@ -90,9 +64,9 @@ class ChangeClassButton(val main: StarshipComputerMenu) : AbstractItem() {
 			.addIngredient('b', main.mainMenuButton)
 			.build()
 
-		for ((index, tradeClass) in tradeButtons.withIndex()) gui.setItem(index, 1, tradeClass)
-		for ((index, warshipClass) in warshipButtons.withIndex()) gui.setItem(index, 2, warshipClass)
-		for ((index, miscClass) in miscButtons.withIndex()) gui.setItem(index, 3, miscClass)
+		for ((yIndex, buttons) in grouped) {
+			for ((xIndex, button) in buttons.value.withIndex()) gui.setItem(xIndex, yIndex + 1, button)
+		}
 
 		Window.single()
 			.setViewer(player)
