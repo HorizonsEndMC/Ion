@@ -11,7 +11,6 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
-import org.bukkit.event.player.PlayerToggleSneakEvent
 import kotlin.math.roundToInt
 
 object PlayerStarshipControl : IonServerComponent() {
@@ -42,11 +41,6 @@ object PlayerStarshipControl : IonServerComponent() {
 		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
 
 		starship.tryRotate(true)
-	}
-
-	@EventHandler
-	fun onPLayerToggleSneak(event: PlayerToggleSneakEvent) {
-		PilotedStarships[event.player]?.sneakMovements = 0
 	}
 
 	@EventHandler
