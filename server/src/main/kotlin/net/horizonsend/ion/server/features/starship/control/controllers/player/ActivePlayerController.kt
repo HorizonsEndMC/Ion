@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 
@@ -22,12 +23,14 @@ class ActivePlayerController(player: Player, starship: ActiveStarship) : PlayerC
 
 	var inputHandler: PlayerMovementInputHandler = ShiftFlightHandler(this)
 		set(value) {
+			field.destroy(value)
 			field = value
+			value.create()
 			information("Updated control move to ${value.name}")
 		}
 
 	override fun tick() {
-		inputHandler.tick()
+		if (!starship.isTeleporting) inputHandler.tick()
 	}
 
 	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
@@ -53,6 +56,12 @@ class ActivePlayerController(player: Player, starship: ActiveStarship) : PlayerC
 		@EventHandler
 		fun onPlayerJump(event: PlayerJumpEvent) {
 			getInputHandler(event.player)?.handleJump(event)
+		}
+
+
+		@EventHandler
+		fun onPlayerHoldItem(event: PlayerItemHeldEvent) {
+			getInputHandler(event.player)?.handlePlayerHoldItem(event)
 		}
 	}
 }
