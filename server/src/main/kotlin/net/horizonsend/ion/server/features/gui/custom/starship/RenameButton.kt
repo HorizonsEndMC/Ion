@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -40,7 +39,7 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 
 	override fun getItemProvider(): ItemProvider = ItemProvider {
 		ItemStack(Material.NAME_TAG)
-			.setDisplayNameAndGet(text("Change Ship Name", NamedTextColor.AQUA).decoration(ITALIC, false))
+			.setDisplayNameAndGet(text("Change Ship Name", WHITE).decoration(ITALIC, false))
 			.setLoreAndGet(listOf(
 				text().decoration(ITALIC, false).color(WHITE).append(
 					text("Current Name: ", GRAY),
