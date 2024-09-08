@@ -11,8 +11,8 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -66,15 +66,9 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		check(newWorld != world1) { "New world can't be the same as the current world" }
 
-		if (starship.type == StarshipType.BATTLECRUISER && !world2.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
-			throw StarshipMovementException("Battlecruisers cannot support their weight within strong gravity wells!")
+		if (!starship.type.canPilotIn(world2.ion)) {
+			throw StarshipMovementException("Ships of this class can't be piloted in ${world2.name}")
 		}
-
-		if (starship.type == StarshipType.BARGE && !world2.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
-			throw StarshipMovementException("Barges cannot support their weight within strong gravity wells!")
-		}
-
-		//TODO replace this system with something better
 
 		if (!ActiveStarships.isActive(starship)) {
 			starship.serverError("Starship not active, movement cancelled.")
