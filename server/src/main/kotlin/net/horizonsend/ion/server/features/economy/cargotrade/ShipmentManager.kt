@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.features.progression.achievements.rewardAchiev
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -180,7 +181,7 @@ object ShipmentManager : IonServerComponent() {
 			val amount = digit.toIntOrNull() ?: return@anvilInput "Amount must be an integer"
 
 			val playerMaxShipSize =
-				StarshipType.values().filter { !it.isWarship && it.canUse(player) && it != PLATFORM }
+				StarshipType.values().filter { it.typeCategory != TypeCategory.WAR_SHIP && it.canUse(player) && it != PLATFORM }
 					.sortedByDescending { it.maxSize }[0].maxSize
 
 			val min = balancing.generator.minShipmentSize
