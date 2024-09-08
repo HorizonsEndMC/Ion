@@ -301,7 +301,6 @@ class Starship (
 	var speedLimit = -1
 	// manual move is sneak/direct control
 	var lastManualMove = System.nanoTime() / 1_000_000
-	var sneakMovements = 0
 
 	/**
 	 * Non-normalized vector containing the ships velocity
@@ -346,7 +345,6 @@ class Starship (
 			controller.onBlocked(movement, e, location)
 			controller.sendMessage(e.formatMessage())
 
-			sneakMovements = 0
 			lastBlockedTime = System.currentTimeMillis()
 			return false
 		} catch (e: Throwable) {
