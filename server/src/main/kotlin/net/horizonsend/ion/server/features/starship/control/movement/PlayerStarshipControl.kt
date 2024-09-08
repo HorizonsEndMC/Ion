@@ -49,11 +49,6 @@ object PlayerStarshipControl : IonServerComponent() {
 	}
 
 	@EventHandler
-	fun onPLayerToggleSneak(event: PlayerToggleSneakEvent) {
-		PilotedStarships[event.player]?.sneakMovements = 0
-	}
-
-	@EventHandler
 	fun onPlayerHoldItem(event: PlayerItemHeldEvent) {
 		val player = event.player
 		val starship = ActiveStarships.findByPilot(player) ?: return
