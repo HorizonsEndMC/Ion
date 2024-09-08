@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 
-class DirecterControlHandler(controller: PlayerController) : PlayerInputHandler(controller, "Direct-er") {
+class DirecterControlHandler(controller: PlayerController) : PlayerMovementInputHandler(controller, "Direct-er") {
 	override fun handleMove(event: PlayerMoveEvent) {
 		val delta = event.to.toVector().subtract(event.from.toVector())
 
@@ -36,7 +36,6 @@ class DirecterControlHandler(controller: PlayerController) : PlayerInputHandler(
 		if (now - starship.lastManualMove < starship.manualMoveCooldownMillis) return
 
 		starship.lastManualMove = now
-		starship.sneakMovements++
 
 		val (dx, dy, dz) = deltaV
 

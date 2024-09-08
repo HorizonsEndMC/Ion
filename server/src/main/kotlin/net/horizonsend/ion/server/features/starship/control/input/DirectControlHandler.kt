@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 
-class DirectControlHandler(controller: PlayerController) : PlayerInputHandler(controller, "Direct Control") {
+class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHandler(controller, "Direct Control") {
 	override fun handleMove(event: PlayerMoveEvent) {
 		TODO("Not yet implemented")
 	}
