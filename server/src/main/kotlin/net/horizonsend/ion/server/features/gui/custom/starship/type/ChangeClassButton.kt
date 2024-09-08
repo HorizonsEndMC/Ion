@@ -90,10 +90,7 @@ class ChangeClassButton(val main: StarshipComputerMenu) : AbstractItem() {
 			.addIngredient('b', main.mainMenuButton)
 			.build()
 
-		for ((index, tradeClass) in tradeButtons.withIndex()) {
-			println("index: $index")
-			gui.setItem(index, 1, tradeClass)
-		}
+		for ((index, tradeClass) in tradeButtons.withIndex()) gui.setItem(index, 1, tradeClass)
 		for ((index, warshipClass) in warshipButtons.withIndex()) gui.setItem(index, 2, warshipClass)
 		for ((index, miscClass) in miscButtons.withIndex()) gui.setItem(index, 3, miscClass)
 
