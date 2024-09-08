@@ -13,6 +13,8 @@ import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.gui.GuiItems.createButton
+import net.horizonsend.ion.server.features.gui.custom.starship.pilots.ManagePilotsMenu
+import net.horizonsend.ion.server.features.gui.custom.starship.type.ChangeClassButton
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
@@ -103,19 +105,7 @@ class StarshipComputerMenu(val player: Player, val data: StarshipData) {
 
 	private val changePilotsButton = ManagePilotsMenu(this)
 
-	private val changeClassButton = createButton(
-		ItemStack(Material.GHAST_TEAR)
-			.setDisplayNameAndGet(text("Change Ship Class").decoration(ITALIC, false))
-			.setLoreAndGet(listOf(
-				ofChildren(text("Current type: ", GRAY), data.starshipType.actualType.displayNameComponent).decoration(ITALIC, false),
-				empty(),
-				text("Different starship types", GRAY).decoration(ITALIC, false),
-				text("support different block", GRAY).decoration(ITALIC, false),
-				text("counts, weapons, and tools.", GRAY).decoration(ITALIC, false)
-			))
-	) { type, player, event ->
-
-	}
+	private val changeClassButton = ChangeClassButton(this)
 
 	private val toggleLockButton = object : AbstractItem() {
 		override fun getItemProvider(): ItemProvider = ItemProvider {
