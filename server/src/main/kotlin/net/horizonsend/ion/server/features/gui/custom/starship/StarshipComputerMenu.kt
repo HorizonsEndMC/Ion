@@ -14,7 +14,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.gui.GuiItems.createButton
 import net.horizonsend.ion.server.features.gui.custom.starship.pilots.ManagePilotsMenu
-import net.horizonsend.ion.server.features.gui.custom.starship.type.ChangeClassButton
+import net.horizonsend.ion.server.features.gui.custom.starship.type.ChangeTypeButton
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
@@ -65,7 +65,7 @@ class StarshipComputerMenu(val player: Player, val data: StarshipData) {
 			.setStructure("1 2 3 4 . . . . 5")
 			.addIngredient('1', reDetectButton)
 			.addIngredient('2', changePilotsButton)
-			.addIngredient('3', changeClassButton)
+			.addIngredient('3', changeTypeButton)
 			.addIngredient('4', toggleLockButton)
 			.addIngredient('5', renameButton)
 
@@ -105,7 +105,7 @@ class StarshipComputerMenu(val player: Player, val data: StarshipData) {
 
 	private val changePilotsButton = ManagePilotsMenu(this)
 
-	private val changeClassButton = ChangeClassButton(this)
+	private val changeTypeButton = ChangeTypeButton(this)
 
 	private val toggleLockButton = object : AbstractItem() {
 		override fun getItemProvider(): ItemProvider = ItemProvider {
