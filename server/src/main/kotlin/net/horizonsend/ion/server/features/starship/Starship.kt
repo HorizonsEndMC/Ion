@@ -32,6 +32,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
+import net.horizonsend.ion.server.features.starship.control.input.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -359,52 +361,20 @@ class Starship (
 	//endregion
 
 	//region Direct Control
-	val initialDirectControlCooldown get() = 300L + (initialBlockCount / 700) * 30
-	var directControlCooldown = initialDirectControlCooldown
-	var directControlSpeedModifier = 1.0
-	var lastDirectControlSpeedSlowed = 0L
-	var isDirectControlEnabled: Boolean = false
-		private set
-	val directControlPreviousVectors = LinkedBlockingQueue<Vector>(4)
-	val directControlVector: Vector = Vector()
+	val isDirectControlEnabled: Boolean get() {
+		return controller is ActivePlayerController &&
+			(controller as ActivePlayerController).inputHandler is DirectControlHandler
+	}
+
 	var directControlCenter: Location? = null
 
 	fun setDirectControlEnabled(enabled: Boolean) {
-		isDirectControlEnabled = enabled
-		if (enabled) {
-			val dcMessage = text()
-				.append(text("Direct Control: ", NamedTextColor.GRAY))
-				.append(text("ON ", NamedTextColor.GRAY))
-				.append(text("[Use /dc to turn it off - scroll or use hotbar keys to adjust speed - use W/A/S/D to maneuver - hold sneak (", NamedTextColor.YELLOW))
-				.append(Component.keybind("key.sneak", NamedTextColor.YELLOW))
-				.append(text(") for a boost]", NamedTextColor.YELLOW))
-				.build()
+		val controller = controller as ActivePlayerController
 
-			sendMessage(dcMessage)
-
-			val player: Player = (controller as? PlayerController)?.player ?: return
-
-			player.walkSpeed = 0.009f
-			val playerLoc = player.location
-			directControlCenter = playerLoc.toBlockLocation().add(0.5, playerLoc.y.rem(1)+0.001, 0.5)
-			player.teleport(directControlCenter!!)
-		} else {
-			sendMessage(
-				text()
-					.append(text("Direct Control: ", NamedTextColor.GRAY))
-					.append(text("OFF ", NamedTextColor.RED))
-					.append(text("[Use /dc to turn it on]", NamedTextColor.YELLOW))
-					.build()
-			)
-
-			directControlVector.x = 0.0
-			directControlVector.y = 0.0
-			directControlVector.z = 0.0
-
-			val player: Player = (controller as? PlayerController)?.player ?: return
-			player.walkSpeed = 0.2f // default
-		}
+		if (enabled) controller.inputHandler = DirectControlHandler(controller) else
+			controller.inputHandler = ShiftFlightHandler(controller)
 	}
+
 	//endregion
 
 	//region Subsystems
