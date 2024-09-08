@@ -84,10 +84,7 @@ class AddNewPilotButton(val pilotMenu: ManagePilotsMenu) : AbstractItem() {
 				val data = addPilot.pilotMenu.main.data
 				(data as PlayerStarshipData).pilots += playerId
 
-				PlayerStarshipData.updateById(
-					data._id,
-					addToSet(PlayerStarshipData::pilots, id)
-				)
+				PlayerStarshipData.updateById(data._id, addToSet(PlayerStarshipData::pilots, id))
 
 				player.success("Added ${addPilot.currentName} as a pilot to starship.")
 
