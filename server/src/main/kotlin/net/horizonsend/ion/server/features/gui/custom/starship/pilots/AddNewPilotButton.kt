@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.gui.custom.starship
+package net.horizonsend.ion.server.features.gui.custom.starship.pilots
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
