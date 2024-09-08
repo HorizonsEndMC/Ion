@@ -11,11 +11,13 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Material
 import org.bukkit.Material.BARRIER
+import org.bukkit.Material.PAPER
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -25,6 +27,7 @@ import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
+import xyz.xenondevs.invui.item.impl.SimpleItem
 import xyz.xenondevs.invui.window.AnvilWindow
 
 class AddNewPilotButton(val pilotMenu: ManagePilotsMenu) : AbstractItem() {
@@ -46,9 +49,12 @@ class AddNewPilotButton(val pilotMenu: ManagePilotsMenu) : AbstractItem() {
 		pilotMenu.openAddPilotMenu(player, pilotMenu.main.data as PlayerStarshipData)
 	}
 
+	private val namePreset = SimpleItem(ItemStack(PAPER).setDisplayNameAndGet(empty()))
+
 	fun open(player: Player) {
 		val gui = Gui.normal()
-			.setStructure("v . x")
+			.setStructure("n v x")
+			.addIngredient('n', namePreset)
 			.addIngredient('v', returnToPilotMenu)
 			.addIngredient('x', nameConfirmButton)
 
