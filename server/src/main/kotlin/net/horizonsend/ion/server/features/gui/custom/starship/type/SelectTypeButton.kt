@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
-class SelectTypeButton(val parent: ChangeClassButton, val type: StarshipType) : AbstractItem() {
+class SelectTypeButton(val parent: ChangeTypeButton, val type: StarshipType) : AbstractItem() {
 	private val subClasses = type.menuSubclasses.get().filter { it.canUse(parent.main.player) }
 
 	private val provider = ItemProvider {
