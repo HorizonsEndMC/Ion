@@ -155,6 +155,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopQuadTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopTriTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TurretBaseMultiblock
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
@@ -287,6 +288,7 @@ object Multiblocks : IonServerComponent() {
 			BottomIonTurretMultiblock,
 			TopQuadTurretMultiblock,
 			BottomQuadTurretMultiblock,
+			TurretBaseMultiblock,
 			HorizontalRocketStarshipWeaponMultiblock,
 			UpwardRocketStarshipWeaponMultiblock,
 			DownwardRocketStarshipWeaponMultiblock,
