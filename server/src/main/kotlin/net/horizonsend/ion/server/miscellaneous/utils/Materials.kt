@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import org.bukkit.Material
+import org.bukkit.block.data.Bisected
 import org.bukkit.Registry
 import java.util.EnumSet
 
@@ -121,3 +122,7 @@ val COPPER_TYPES = getMatchingMaterials { it.name.contains("COPPER") }
 val Material.isCopper: Boolean get() = COPPER_TYPES.contains(this)
 
 val SAPLING_TYPES = getMatchingMaterials { it.name.endsWith("_SAPLING") }
+val Material.isTankPassable: Boolean get() = TANK_PASSABLE_TYPES.contains(this)
+
+// Bisected is double plants
+val TANK_PASSABLE_TYPES = getMatchingMaterials { it.isAir || it.data == Bisected::class.java }
