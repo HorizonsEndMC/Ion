@@ -51,6 +51,8 @@ class AIController private constructor(
 		autoWeaponSets.forEach(::addAutoWeaponSet)
 	}
 
+	var sneakMovements: Int = 0
+
 	/** AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more. */
 	val modules: MutableMap<String, net.horizonsend.ion.server.features.ai.module.AIModule> = mutableMapOf()
 
