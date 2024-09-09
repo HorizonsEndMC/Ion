@@ -26,7 +26,7 @@ class ActivePlayerController(player: Player, starship: ActiveStarship) : PlayerC
 			field.destroy(value)
 			field = value
 			value.create()
-			information("Updated control move to ${value.name}")
+			information("Updated control mode to ${value.name}")
 		}
 
 	override fun tick() {
