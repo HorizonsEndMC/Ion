@@ -433,6 +433,7 @@ enum class StarshipType(
 		minLevel = 1,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
+		concretePercent = 0.0,
 		menuItemRaw = { CustomItems.GAS_CANISTER_EMPTY.constructItemStack() },
 		typeCategory = TypeCategory.SPECIALTY,
 		color = "#ff8000",
