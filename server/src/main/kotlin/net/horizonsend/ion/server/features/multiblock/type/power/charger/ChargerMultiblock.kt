@@ -16,7 +16,6 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Material
 import org.bukkit.World
@@ -163,20 +162,14 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 		}
 
 		override fun onLoad() {
-			world.ion.multiblockManager.register(this)
-
 			displayHandler.update()
 		}
 
 		override fun handleRemoval() {
-			world.ion.multiblockManager.deregister(this)
-
 			displayHandler.remove()
 		}
 
 		override fun onUnload() {
-			world.ion.multiblockManager.deregister(this)
-
 			displayHandler.remove()
 		}
 
