@@ -42,8 +42,8 @@ enum class StarshipType(
 	val menuItemRaw: Supplier<ItemStack>,
 	val displayInMainMenu: Boolean = true,
 	val menuSubclasses: Supplier<List<StarshipType>> = Supplier { listOf() },
-
 	val typeCategory: TypeCategory,
+
 	val eventShip: Boolean = false,
 	val powerOverrider: Double = 1.0,
 

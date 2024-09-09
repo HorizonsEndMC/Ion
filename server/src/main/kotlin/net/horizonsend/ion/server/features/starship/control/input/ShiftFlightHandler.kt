@@ -1,12 +1,16 @@
 package net.horizonsend.ion.server.features.starship.control.input
 
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.isTankPassable
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import kotlin.math.PI
 import kotlin.math.abs
@@ -59,11 +63,49 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 		val vertical = abs(pitchRadians) >= PI * 5 / 12 // 75 degrees
 
 		val dx = if (vertical) 0 else sin(-yawRadians).roundToInt() * distance
-		val dy = sin(-pitchRadians).roundToInt() * distance
+		var dy = sin(-pitchRadians).roundToInt() * distance
+
+		if (starship.type == StarshipType.TANK) {
+			dy = getHoverHeight(starship)
+		}
+
 		val dz = if (vertical) 0 else cos(yawRadians).roundToInt() * distance
 
 		if (StarshipControl.locationCheck(starship, dx, dy, dz)) return
 
 		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
+	}
+
+	companion object {
+		fun getHoverHeight(starship: Starship): Int {
+			val min = starship.min
+			val max = starship.max
+			val center = starship.centerOfMass
+
+			val points = listOf(
+				Vec3i(min.x, min.y, min.z),
+				Vec3i(min.x, min.y, max.z),
+				Vec3i(center.x, min.y, center.z),
+				Vec3i(max.z, min.y, max.x),
+				Vec3i(max.z, min.y, max.z),
+			)
+
+			// Start with 3 blocks clearance
+			var down = 3
+
+			val startY = min.y
+
+			for (y in 1 ..< startY) {
+				for (point in points) {
+					val below = getBlockTypeSafe(starship.world, point.x, point.y - y, point.z) ?: continue
+
+					if (!below.isTankPassable) return down
+				}
+
+				down--
+			}
+
+			return down
+		}
 	}
 }
