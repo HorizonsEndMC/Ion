@@ -28,6 +28,7 @@ import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
+import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
@@ -108,6 +109,7 @@ object DBManager : IonComponent() {
 
 		// nations
 		CapturableStation.init()
+		SolarSiegeZone.init()
 		CapturableStationSiege.init()
 		Nation.init()
 		NationRelation.init()
