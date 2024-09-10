@@ -278,7 +278,7 @@ data class StarshipTypeBalancing(
 		weapons = StarshipWeapons(
 			ionTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
-				range = 400.0,
+				range = 500.0,
 				speed = 95.0,
 				areaShieldDamageMultiplier = 30.0,
 				starshipShieldDamageMultiplier = 3.7,
@@ -1130,7 +1130,7 @@ class StarshipWeapons(
 
 		val ionTurret: StarshipWeapon = StarshipWeapon(
 				canFire = false,
-				range = 300.0,
+				range = 500.0,
 				speed = 200.0,
 				areaShieldDamageMultiplier = 60.0,
 				starshipShieldDamageMultiplier = 20.0,
