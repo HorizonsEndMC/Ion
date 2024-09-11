@@ -1,46 +1,40 @@
 package net.horizonsend.ion.server.features.transport
 
-import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
-import net.horizonsend.ion.server.features.transport.network.PowerNetwork
-import net.horizonsend.ion.server.features.transport.network.holders.ChunkNetworkHolder
+import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.holders.ChunkNetworkHolder
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import org.bukkit.block.Block
 
 class ChunkTransportManager(
 	val chunk: IonChunk,
 ) {
 	val scope = ChunkRegion.scope
-	val powerNetwork = ChunkNetworkHolder(this) { PowerNetwork(it) }
-//	val pipeGrid = PowerNetwork(this) // TODO
-//	val gasGrid = PowerNetwork(this) // TODO
+	val powerNodeManager = ChunkNetworkHolder(this) { PowerNodeManager(it) }
+//	val pipeGrid = PowerNodeManager(this) // TODO
+//	val gasGrid = PowerNodeManager(this) // TODO
 
 	fun setup() {
-		powerNetwork.handleLoad()
-		// TODO
-		// TODO
-	}
-
-	suspend fun tick() {
-		powerNetwork.network.tickIfReady()
+		powerNodeManager.handleLoad()
 		// TODO
 		// TODO
 	}
 
 	fun onUnload() {
-		powerNetwork.handleUnload()
+		powerNodeManager.handleUnload()
 		// TODO
 		// TODO
 	}
 
 	fun save() {
-		powerNetwork.save(chunk.inner.persistentDataContainer.adapterContext)
+		powerNodeManager.save(chunk.inner.persistentDataContainer.adapterContext)
 		// TODO
 		// TODO
 	}
 
 	fun processBlockRemoval(key: BlockKey) {
-		powerNetwork.network.processBlockRemoval(key)
+		powerNodeManager.network.processBlockRemoval(key)
 		// TODO
 		// TODO
 //		pipeGrid.processBlockRemoval(key)
@@ -48,18 +42,18 @@ class ChunkTransportManager(
 	}
 
 	fun processBlockRemovals(keys: Iterable<BlockKey>) {
-		powerNetwork.network.processBlockRemovals(keys)
+		powerNodeManager.network.processBlockRemovals(keys)
 	}
 
-	fun processBlockAddition(new: BlockSnapshot) {
-		powerNetwork.network.processBlockAddition(new)
+	fun processBlockAddition(new: Block) {
+		powerNodeManager.network.processBlockAddition(new)
 		// TODO
 		// TODO
 //		pipeGrid.processBlockAddition(key, new)
 //		gasGrid.processBlockAddition(key, new)
 	}
 
-	fun processBlockAddition(changes: Iterable<BlockSnapshot>) {
-		powerNetwork.network.processBlockAdditions(changes)
+	fun processBlockAddition(changed: Iterable<Block>) {
+		powerNodeManager.network.processBlockAdditions(changed)
 	}
 }

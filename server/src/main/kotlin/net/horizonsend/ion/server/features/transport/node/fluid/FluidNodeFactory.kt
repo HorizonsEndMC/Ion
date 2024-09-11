@@ -1,11 +1,10 @@
-package net.horizonsend.ion.server.features.transport.node.gas
+package net.horizonsend.ion.server.features.transport.node.fluid
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
-import net.horizonsend.ion.server.features.transport.network.FluidNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
 import net.horizonsend.ion.server.features.transport.node.handleMerges
+import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
 import net.horizonsend.ion.server.features.transport.node.power.SpongeNode
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -14,43 +13,44 @@ import net.horizonsend.ion.server.miscellaneous.utils.isChiseledCopper
 import net.horizonsend.ion.server.miscellaneous.utils.isCopperBlock
 import net.horizonsend.ion.server.miscellaneous.utils.isCopperBulb
 import org.bukkit.Material
+import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Directional
 
-class FluidNodeFactory(network: FluidNetwork) : NodeFactory<FluidNetwork>(network) {
-	override suspend fun create(key: BlockKey, snapshot: BlockSnapshot) {
+class FluidNodeFactory(network: FluidNodeManager) : NodeFactory<FluidNodeManager>(network) {
+	override suspend fun create(key: BlockKey, data: BlockData) {
 		if (network.nodes.contains(key)) return
 
 		when {
 			// Straight wires
-			snapshot.type == Material.LIGHTNING_ROD -> addLightningRod(snapshot.data as Directional, key)
+			data.material == Material.LIGHTNING_ROD -> addLightningRod(data as Directional, key)
 
 			// Omnidirectional wires
-			snapshot.type.isCopperBlock -> addJunction(key)
+			data.material.isCopperBlock -> addJunction(key)
 
 			// Extractor
-			snapshot.type == Material.CRAFTING_TABLE -> println("TODO")
+			data.material == Material.CRAFTING_TABLE -> println("TODO")
 
 			// Input
-			snapshot.type == Material.FLETCHING_TABLE -> println("TODO")
+			data.material == Material.FLETCHING_TABLE -> println("TODO")
 
 			// Flow meter
-			snapshot.type == Material.OBSERVER -> println("TODO")
+			data.material == Material.OBSERVER -> println("TODO")
 
 			// Merge
-			snapshot.type == Material.REDSTONE_BLOCK -> println("TODO")
-			snapshot.type == Material.IRON_BLOCK -> println("TODO")
+			data.material == Material.REDSTONE_BLOCK -> println("TODO")
+			data.material == Material.IRON_BLOCK -> println("TODO")
 
 			// Inverted Merge
-			snapshot.type == Material.LAPIS_BLOCK -> println("TODO")
+			data.material == Material.LAPIS_BLOCK -> println("TODO")
 
 			// Splitter
-			CustomBlocks.getByBlockData(snapshot.data) == CustomBlocks.ALUMINUM_BLOCK -> println("TODO")
+			CustomBlocks.getByBlockData(data) == CustomBlocks.ALUMINUM_BLOCK -> println("TODO")
 
 			// Valve
-			snapshot.type.isChiseledCopper -> println("TODO")
+			data.material.isChiseledCopper -> println("TODO")
 
 			// Filter
-			snapshot.type.isCopperBulb -> println("TODO")
+			data.material.isCopperBulb -> println("TODO")
 		}
 	}
 

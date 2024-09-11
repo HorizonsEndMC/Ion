@@ -12,9 +12,8 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
-import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
-import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NetworkType
+import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -90,7 +89,7 @@ object IonChunkCommand : SLCommand() {
 		sender.information("${grid.nodes.values.distinct().size} unique node(s).")
 
 		when (grid) {
-			is PowerNetwork -> {
+			is PowerNodeManager -> {
 				sender.information("${grid.solarPanels.size} solar panels")
 				sender.information("${grid.extractors.size} extractors")
 				sender.information("Node list: ${grid.nodes.values.groupBy { it.javaClass.simpleName }.mapValues { it.value.size }.entries.joinToString { it.toString() + "\n" }}")
@@ -116,7 +115,7 @@ object IonChunkCommand : SLCommand() {
 		grid.nodes.clear()
 
 		when (grid) {
-			is PowerNetwork -> {
+			is PowerNodeManager -> {
 				grid.extractors.clear()
 				grid.solarPanels.clear()
 			}
@@ -125,7 +124,7 @@ object IonChunkCommand : SLCommand() {
 		for (x in ionChunk.originX ..ionChunk.originX + 15) {
 			for (z in ionChunk.originZ..ionChunk.originZ + 15) {
 				for (y in ionChunk.world.minHeight until ionChunk.world.maxHeight) {
-					grid.createNodeFromBlock(getBlockSnapshotAsync(sender.world, x, y, z)!!)
+					grid.createNodeFromBlock(sender.world.getBlockAt(x, y, z))
 				}
 			}
 		}
