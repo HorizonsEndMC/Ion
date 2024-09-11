@@ -1,21 +1,19 @@
-package net.horizonsend.ion.server.features.transport.network
+package net.horizonsend.ion.server.features.transport.node.manager
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
-import net.horizonsend.ion.server.features.transport.network.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.NamespacedKey
+import org.bukkit.block.Block
 import org.bukkit.persistence.PersistentDataContainer
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class TransportNetwork(val holder: NetworkHolder<*>) {
-	var ready: Boolean = false
-
+abstract class NodeManager(val holder: NetworkHolder<*>) {
 	val nodes: ConcurrentHashMap<Long, TransportNode> = ConcurrentHashMap()
 
 	val world get() = holder.getWorld()
@@ -25,55 +23,49 @@ abstract class TransportNetwork(val holder: NetworkHolder<*>) {
 	abstract val nodeFactory: NodeFactory<*>
 	abstract val dataVersion: Int
 
-	open fun processBlockRemoval(key: BlockKey) { holder.scope.launch { withTransportDisabled {
-		val previousNode = nodes[key] ?: return@withTransportDisabled
+	open fun processBlockRemoval(key: BlockKey) { holder.scope.launch {
+		val previousNode = nodes[key] ?: return@launch
 
 		previousNode.handleRemoval(key)
-	}}}
+	}}
 
-	open fun processBlockRemovals(keys: Iterable<BlockKey>) { holder.scope.launch { withTransportDisabled {
+	open fun processBlockRemovals(keys: Iterable<BlockKey>) { holder.scope.launch {
 		for (key in keys) {
-			val previousNode = nodes[key] ?: return@withTransportDisabled
+			val previousNode = nodes[key] ?: return@launch
 
 			previousNode.handleRemoval(key)
 		}
-	}}}
+	}}
 
-	open fun processBlockAddition(new: BlockSnapshot) { holder.scope.launch {
+	open fun processBlockAddition(new: Block) { holder.scope.launch {
 		if (new.type.isAir) {
 			processBlockRemoval(toBlockKey(new.x, new.y, new.z))
 
 			return@launch
 		}
 
-		withTransportDisabled { createNodeFromBlock(new) }
+		createNodeFromBlock(new)
 	}}
 
-	open fun processBlockAdditions(changes: Iterable<BlockSnapshot>) { holder.scope.launch { withTransportDisabled {
-		for (new in changes) {
+	open fun processBlockAdditions(changed: Iterable<Block>) { holder.scope.launch {
+		for (new in changed) {
 			createNodeFromBlock(new)
 		}
-	}}}
+	}}
 
 	/**
 	 * Handle the creation / loading of the node into memory
 	 **/
-	suspend fun createNodeFromBlock(block: BlockSnapshot) {
+	suspend fun createNodeFromBlock(block: Block) {
 		val key = toBlockKey(block.x, block.y, block.z)
 
-		withTransportDisabled { nodeFactory.create(key, block) }
+		nodeFactory.create(key, block.blockData)
 	}
 
 	/**
 	 * Save additional metadata into the network PDC
 	 **/
 	open fun saveAdditional(pdc: PersistentDataContainer) {}
-
-	suspend fun tickIfReady() {
-		if (ready) tick()
-	}
-
-	abstract suspend fun tick()
 
 	abstract fun clearData()
 
@@ -97,7 +89,11 @@ abstract class TransportNetwork(val holder: NetworkHolder<*>) {
 	/**
 	 * Handles any cleanup tasks at the end of loading
 	 **/
-	open fun finalizeNodes() {}
+	open fun finalizeNodes() {
+		for ((_, node) in nodes) {
+			node.joinGrid()
+		}
+	}
 
 	fun breakAllRelations() {
 		runBlocking { nodes.values.forEach { it.clearRelations() } }
@@ -113,15 +109,5 @@ abstract class TransportNetwork(val holder: NetworkHolder<*>) {
 	 **/
 	fun getNode(key: BlockKey, allowNeighborChunks: Boolean = true): TransportNode? {
 		return if (allowNeighborChunks) holder.getGlobalNode(key) else holder.getInternalNode(key)
-	}
-
-	protected suspend inline fun withTransportDisabled(crossinline block: suspend () -> Unit) {
-		ready = false
-
-		try {
-			block.invoke()
-		} finally {
-			ready = true
-		}
 	}
 }

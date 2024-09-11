@@ -1,15 +1,15 @@
-package net.horizonsend.ion.server.features.transport.network.holders
+package net.horizonsend.ion.server.features.transport.node.manager.holders
 
 import kotlinx.coroutines.CoroutineScope
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.transport.network.TransportNetwork
+import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
 import kotlin.properties.Delegates
 
-class ShipNetworkHolder<T: TransportNetwork>(val starship: ActiveStarship) : NetworkHolder<T> {
+class ShipNetworkHolder<T: NodeManager>(val starship: ActiveStarship) : NetworkHolder<T> {
 	override var network: T by Delegates.notNull(); private set
 
 	constructor(manager: ActiveStarship, network: (ShipNetworkHolder<T>) -> T) : this(manager) {

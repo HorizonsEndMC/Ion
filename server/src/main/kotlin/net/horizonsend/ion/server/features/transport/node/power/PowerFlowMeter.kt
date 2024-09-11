@@ -1,16 +1,15 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import com.manya.pdc.base.EnumDataType
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerFlowMeterDisplay
-import net.horizonsend.ion.server.features.transport.network.PowerNetwork
-import net.horizonsend.ion.server.features.transport.node.NodeRelationship
+import net.horizonsend.ion.server.features.transport.grid.GridType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -24,18 +23,14 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.NORTH
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
-import kotlin.properties.Delegates
 
-class PowerFlowMeter(override val network: PowerNetwork) : SingleNode {
-	constructor(network: PowerNetwork, position: BlockKey, direction: BlockFace) : this(network) {
+class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode(GridType.Power) {
+	constructor(network: PowerNodeManager, position: BlockKey, direction: BlockFace) : this(network) {
 		this.position = position
 		this.direction = direction
 	}
 
-	override var position by Delegates.notNull<Long>()
-	override var isDead: Boolean = false
-	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
-	var direction: BlockFace by Delegates.notNull()
+	lateinit var direction: BlockFace
 
 	/*
 	 * Should transfer power like any normal node.
@@ -97,7 +92,7 @@ class PowerFlowMeter(override val network: PowerNetwork) : SingleNode {
 
 	private fun setupDisplayEntity() {
 		displayHandler = DisplayHandlers.newBlockOverlay(
-			network.world,
+			manager.world,
 			toVec3i(position),
 			direction,
 			PowerFlowMeterDisplay(this, 0.0, 0.0, 0.0, 0.7f)

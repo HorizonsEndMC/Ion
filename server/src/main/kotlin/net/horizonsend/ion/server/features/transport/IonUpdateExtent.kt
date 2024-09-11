@@ -8,7 +8,6 @@ import com.sk89q.worldedit.function.pattern.Pattern
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.world.block.BlockStateHolder
-import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.World
 
@@ -57,13 +56,10 @@ class IonUpdateExtent(extent: Extent, val world: World, private val stage: EditS
 		val newBlocks = region.clone().mapNotNull { position ->
 			val newBlock = pattern.applyBlock(position) ?: return@mapNotNull null
 
-			val material = BukkitAdapter.adapt(newBlock.blockType)
-			val blockData = BukkitAdapter.adapt(newBlock.toBaseBlock())
-
-			BlockSnapshot(world, position.x, position.y, position.z, material, blockData)
+			BukkitAdapter.adapt(newBlock)
 		}
 
-		TransportManager.handleBlockAdditions(world, newBlocks)
+//		TransportManager.handleBlockAdditions(world, newBlocks)
 	}
 
 	private fun handleUpdate(position: BlockVector3, newBlock: BlockStateHolder<*>?) {
@@ -77,6 +73,6 @@ class IonUpdateExtent(extent: Extent, val world: World, private val stage: EditS
 		val z = position.z
 
 		TransportManager.handleBlockRemoval(world, toBlockKey(x, y, z))
-		TransportManager.handleBlockAddition(world, BlockSnapshot(world, x, y, z, material, blockData))
+//		TransportManager.handleBlockAddition(world, BlockSnapshot(world, x, y, z, material, blockData))
 	}
 }

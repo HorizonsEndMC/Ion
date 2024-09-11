@@ -119,7 +119,7 @@ abstract class InternalStorage {
 
 	/** Notify update handlers of an update */
 	fun runUpdates() {
-		updateHandlers.forEach { it.invoke(this) }
+		updateHandlers.toList().forEach { it.invoke(this) }
 	}
 
 	override fun toString(): String {

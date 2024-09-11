@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.World
+import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -26,10 +27,10 @@ object TransportManager : SLEventListener() {
 	fun onBlockPlace(event: BlockPlaceEvent) {
 		val world = event.block.world
 
-		handleBlockAddition(world, event.block.snapshot())
+		handleBlockAddition(world, event.block)
 	}
 
-	fun handleBlockAddition(world: World, new: BlockSnapshot) {
+	fun handleBlockAddition(world: World, new: Block) {
 		val chunkX = new.x.shr(4)
 		val chunkZ = new.z.shr(4)
 
@@ -37,7 +38,7 @@ object TransportManager : SLEventListener() {
 		chunk.transportNetwork.processBlockAddition(new)
 	}
 
-	fun handleBlockAdditions(world: World, newBlocks: Iterable<BlockSnapshot>) {
+	fun handleBlockAdditions(world: World, newBlocks: Iterable<Block>) {
 		for (new in newBlocks) {
 			handleBlockAddition(world, new)
 		}

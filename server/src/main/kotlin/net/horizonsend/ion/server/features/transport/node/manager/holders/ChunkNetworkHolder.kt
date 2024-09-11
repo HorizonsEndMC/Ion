@@ -1,14 +1,13 @@
-package net.horizonsend.ion.server.features.transport.network.holders
+package net.horizonsend.ion.server.features.transport.node.manager.holders
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.ChunkTransportManager
-import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -21,7 +20,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class ChunkNetworkHolder<T: TransportNetwork> private constructor (val manager: ChunkTransportManager) : NetworkHolder<T> {
+class ChunkNetworkHolder<T: NodeManager> private constructor (val manager: ChunkTransportManager) : NetworkHolder<T> {
 	override var network: T by Delegates.notNull(); private set
 
 	constructor(manager: ChunkTransportManager, network: (ChunkNetworkHolder<T>) -> T) : this(manager) {
@@ -84,8 +83,6 @@ class ChunkNetworkHolder<T: TransportNetwork> private constructor (val manager: 
 
 			network.buildRelations()
 			network.finalizeNodes()
-
-			network.ready = true
 		}
 	}
 
@@ -177,9 +174,7 @@ class ChunkNetworkHolder<T: TransportNetwork> private constructor (val manager: 
 				for (z: Int in 0..15) {
 					val realZ = originZ + z
 
-					val snapshot = getBlockSnapshotAsync(manager.chunk.world, realX, realY, realZ) ?: continue
-
-					network.createNodeFromBlock(snapshot)
+					network.createNodeFromBlock(manager.chunk.world.getBlockAt(realX, realY, realZ))
 				}
 			}
 		}

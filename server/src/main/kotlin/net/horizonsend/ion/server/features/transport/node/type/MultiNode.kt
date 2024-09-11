@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.type
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.features.transport.grid.GridType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -8,9 +10,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 /**
  * A transport node that may cover many blocks to avoid making unnecessary steps
  **/
-interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : TransportNode {
+abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>>(type: GridType) : TransportNode(type) {
 	/** The positions occupied by the node **/
-	val positions: MutableSet<BlockKey>
+	val positions: MutableSet<BlockKey> = LongOpenHashSet()
 
 	/**
 	 * Rebuild the node during the removal process
@@ -18,14 +20,31 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 	 * When a position in a multi node is removed, the removed position is removed
 	 * from the list of contained positions, and the node is rebuilt using this method.
 	 **/
-	suspend fun rebuildNode(position: BlockKey)
+	open suspend fun rebuildNode(position: BlockKey) {
+		// Create new nodes, automatically merging together
+		positions.forEach {
+			addBack(it)
+		}
+
+		// Handle relations once fully rebuilt
+		positions.forEach {
+			manager.nodes[it]?.buildRelations(it)
+		}
+
+		// Join successor nodes to the grid
+		positions
+			.mapNotNullTo(mutableSetOf()) { manager.nodes[it] }
+			.forEach { it.joinGrid() }
+	}
+
+	abstract suspend fun addBack(position: BlockKey)
 
 	/**
 	 * Adds new a position to this node
 	 **/
 	suspend fun addPosition(position: BlockKey): Self {
 		positions += position
-		network.nodes[position] = this
+		manager.nodes[position] = this
 
 		onPlace(position)
 
@@ -39,7 +58,7 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 	suspend fun addPositions(newPositions: Iterable<BlockKey>) {
 		for (position in newPositions) {
 			positions += position
-			network.nodes[position] = this
+			manager.nodes[position] = this
 
 			onPlace(position)
 		}
@@ -52,6 +71,8 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 		clearRelations()
 		new.clearRelations()
 
+		grid.removeNode(this)
+
 		new.addPositions(positions)
 		new.positions.forEach { new.buildRelations(it) }
 	}
@@ -59,7 +80,7 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 	override suspend fun buildRelations(position: BlockKey) {
 		for (offset in ADJACENT_BLOCK_FACES) {
 			val offsetKey = getRelative(position, offset, 1)
-			val neighborNode = network.getNode(offsetKey) ?: continue
+			val neighborNode = manager.getNode(offsetKey) ?: continue
 
 			if (this == neighborNode) continue
 
@@ -78,14 +99,16 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 	override suspend fun handleRemoval(position: BlockKey) {
 		isDead = true
 
+		grid.removeNode(this)
+
 		// Remove the position from the network
-		network.nodes.remove(position)
+		manager.nodes.remove(position)
 		// Remove the position from this node
 		positions.remove(position)
 
 		// Remove all positions
 		positions.forEach {
-			network.nodes.remove(it)
+			manager.nodes.remove(it)
 		}
 
 		// Rebuild relations after cleared
@@ -95,11 +118,9 @@ interface MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Transport
 		rebuildNode(position)
 	}
 
-	override suspend fun onPlace(position: BlockKey) {}
-
 	override fun loadIntoNetwork() {
 		for (key in positions) {
-			network.nodes[key] = this
+			manager.nodes[key] = this
 		}
 	}
 }

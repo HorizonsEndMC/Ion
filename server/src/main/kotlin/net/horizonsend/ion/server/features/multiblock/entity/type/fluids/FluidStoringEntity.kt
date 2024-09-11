@@ -1,17 +1,26 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
 
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.InternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
+import net.horizonsend.ion.server.features.transport.grid.FluidGrid
+import net.horizonsend.ion.server.features.transport.grid.util.Sink
+import net.horizonsend.ion.server.features.transport.grid.util.Source
+import net.horizonsend.ion.server.features.transport.node.fluid.FluidInputNode
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORAGES
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER
 
-interface FluidStoringEntity {
+interface FluidStoringEntity : Source, Sink {
 	val capacities: Array<StorageContainer>
 
 	/**
@@ -62,7 +71,6 @@ interface FluidStoringEntity {
 
 	fun getStorage(key: NamespacedKey): StorageContainer = capacities.first { it.namespacedKey == key }
 
-
 	fun storeFluidData(destination: PersistentDataContainer, context: PersistentDataAdapterContext) {
 		val storages = context.newPersistentDataContainer()
 
@@ -95,5 +103,64 @@ interface FluidStoringEntity {
 			namespacedKey,
 			internalStorage
 		)
+	}
+
+	val fluidInputOffset: Vec3i
+
+	fun getFluidInputLocation(): Vec3i {
+		this as MultiblockEntity
+		return getRelative(
+			origin = vec3i,
+			forwardFace= structureDirection,
+			right = fluidInputOffset.x,
+			up = fluidInputOffset.y,
+			forward = fluidInputOffset.z
+		)
+	}
+
+	fun getFluidInputNode(): FluidInputNode? {
+		this as MultiblockEntity
+		val block = getFluidInputLocation()
+
+		val chunk = IonChunk[world, block.x.shr(4), block.z.shr(4)] ?: return null
+		val manager = chunk.transportNetwork.powerNodeManager
+		val node = manager.getInternalNode(toBlockKey(block))
+
+		if (node != null) return node as? FluidInputNode
+
+		// Try to place unregistered node
+		manager.manager.processBlockAddition(world.getBlockAt(block.x, block.y, block.z))
+		return manager.getInternalNode(toBlockKey(block)) as? FluidInputNode
+	}
+
+	fun bindFluidInput() {
+		val existing = getFluidInputNode() ?: return
+		if (existing.boundMultiblockEntity != null) return
+
+		existing.boundMultiblockEntity = this
+	}
+
+	fun releaseFluidInput() {
+		val existing = getFluidInputNode() ?: return
+		if (existing.boundMultiblockEntity != this) return
+
+		existing.boundMultiblockEntity = null
+	}
+
+	/**
+	 * Returns the grid that this multiblock is tied to
+	 *
+	 * Should only return null if the multiblock is partially unloaded, or not intact.
+	 **/
+	fun getFluidGrid(): FluidGrid? {
+		return getFluidInputNode()?.grid as? FluidGrid
+	}
+
+	override fun isProviding(): Boolean {
+		return getStoredResources().entries.any { it.key != null && it.value > 0 }
+	}
+
+	override fun isRequesting(): Boolean {
+		return capacities.any { it.storage.getAmount() < it.storage.getCapacity() }
 	}
 }
