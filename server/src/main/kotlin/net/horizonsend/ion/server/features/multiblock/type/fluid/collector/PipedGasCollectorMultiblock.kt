@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_3
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
@@ -151,6 +152,8 @@ object PipedGasCollectorMultiblock : Multiblock(),
 				addFirstAvailable(fluid, adjusted)
 			}
 		}
+
+		override val fluidInputOffset: Vec3i = Vec3i(0, -1, 0)
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			val rawStorage = store.getAdditionalDataRaw()

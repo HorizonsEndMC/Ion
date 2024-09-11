@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.L
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.OPPOSITE
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.RIGHT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.SELF
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -271,6 +272,14 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 		}
 
 		override fun toString(): String = "Structure direction $structureDirection, display direction ${displayHandler.facing}"
+
+		override val powerInputOffset: Vec3i = Vec3i(0, -2, 0)
+
+		override val fluidInputOffset: Vec3i = Vec3i(0, -1, 0)
+
+		override fun isRequesting(): Boolean {
+			return super<UpdatedPowerDisplayEntity>.isRequesting() || super<FluidStoringEntity>.isRequesting()
+		}
 
 		companion object {
 			const val WATER_INCREMENT = 5

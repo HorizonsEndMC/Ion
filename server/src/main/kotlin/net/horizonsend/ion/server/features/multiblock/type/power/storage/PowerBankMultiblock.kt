@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -142,6 +143,8 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
 		}
+
+		override val powerInputOffset: Vec3i = Vec3i(0, -1, 0)
 
 		override fun toString(): String {
 			return "POWER BANK TIER: $multiblock! Power: ${getPower()}, Facing: $structureDirection"
