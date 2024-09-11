@@ -200,7 +200,7 @@ class BasicSteeringModule(
      *
      */
     var wander: ContextMap = object : ContextMap(linearbins = true) {
-        val weight = 0.5
+        val weight = 1.0
         val dotShift = 1.5
         val jitterRate = 2e4
         override fun populateContext() {
@@ -221,7 +221,7 @@ class BasicSteeringModule(
      * discounting previous directions, greatly reduces jittering
      */
     var commitment: ContextMap = object : ContextMap() {
-        val weight = 1.0
+        val weight = 0.0
         val hist = 0.95
         var headingHist: ContextMap = object : ContextMap() {}
 
@@ -274,7 +274,7 @@ class BasicSteeringModule(
      */
     var offsetSeek: ContextMap = object : ContextMap() {
         val offsetDist = 700.0
-        val weight = 1.0
+        val weight = 0.0
         val dotShift = 0.0
         override fun populateContext() {
 			seekPos ?: return
@@ -353,7 +353,7 @@ class BasicSteeringModule(
     }
 
     val shieldAwareness: ContextMap = object  : ContextMap() {
-        val weight = 0.4
+        val weight = 0.0
         val power = 2.0
         val histDecay = 0.99
         val criticalPoint = 0.1

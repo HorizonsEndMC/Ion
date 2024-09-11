@@ -1,67 +1,141 @@
 package net.horizonsend.ion.server.features.ai.util.debug
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
-import net.horizonsend.ion.server.miscellaneous.utils.toVector3f
-import org.bukkit.Location
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.entity.Display.ItemDisplay
+import net.minecraft.world.entity.EntityType
+import org.bukkit.craftbukkit.v1_20_R3.CraftServer
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftItemDisplay
 import org.bukkit.entity.Display
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import java.util.UUID
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
+import kotlin.reflect.KProperty0
 
-class VectorDisplay (
-	var pos : Vector,
-	var dir : Vector,
-	val model : ItemStack
+class VectorDisplay private constructor(
+	var dir: Vector,
+	magDeg: ReadOnlyProperty<Any?, Double>,
+	val model: ItemStack,
+	val parent: ActiveStarship
 ){
-	val mag : Double get() = dir.length()
-	/**
-	 * Creates a client-side ItemDisplay entity for rendering planet icons in space.
-	 * @return the NMS ItemDisplay object
-	 * @param player the player that the entity should be visible to
-	 * @param identifier the string used to retrieve the entity later
-	 * @param distance the distance that the planet is to the player
-	 * @param direction the direction that the entity will render from with respect to the player
-	 */
-	fun createEntity(
-		player: Player,
-		identifier: String,
-		distance: Double,
-	): net.minecraft.world.entity.Display.ItemDisplay? {
+	val entity : ItemDisplay = createEntity()
+	val mag : Double by magDeg
 
-		/* Start with the Bukkit entity first as the NMS entity has private values that are easier to set by working off
-		 * the Bukkit wrapper first */
-		val entity = ClientDisplayEntityFactory.createItemDisplay(player)
-		val entityRenderDistance = ClientDisplayEntities.getViewDistanceEdge(player)
-		// do not render if the planet is closer than the entity render distance
-		if (distance < entityRenderDistance * 2) return null
+	var shownPlayers = mutableSetOf<UUID>()
 
-		entity.itemStack = model
-		entity.billboard = Display.Billboard.FIXED
-		entity.viewRange = 5.0f
-		//entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
-		entity.brightness = Display.Brightness(15, 15)
-		entity.teleportDuration = 0
+	constructor(dir : Vector,
+				magSupp : KProperty0<Double>,
+				model : ItemStack,
+				parent: ActiveStarship) : this(
+		dir,DoubleDelegate(magSupp), model, parent) {}
 
-		// apply transformation
-		entity.transformation = Transformation(
-			pos.toVector3f(),
-			ClientDisplayEntities.rotateToFaceVector(dir.toVector3f()),
+	constructor(dir : Vector,
+				magSupp : () -> Double,
+				model : ItemStack,
+				parent: ActiveStarship) : this(
+		dir,FunctionDelegate(magSupp), model, parent) {}
+
+	constructor(dir : Vector,
+				binIndex : Int,
+				bins : DoubleArray,
+				model : ItemStack,
+				parent: ActiveStarship) : this(
+		dir,ArrayPositionDelegate(bins,binIndex), model, parent) {}
+
+	fun createEntity(): ItemDisplay {
+		val entity = CraftItemDisplay(
+			IonServer.server as CraftServer,
+			ItemDisplay(EntityType.ITEM_DISPLAY, parent.world.minecraft)
+		).apply {
+			itemStack = model
+			billboard = Display.Billboard.FIXED
+			viewRange = 5.0f
+			brightness = Display.Brightness(15, 15)
+			teleportDuration = 0
+
+			transformation = Transformation(
+				Vector3f(0f),
+				ClientDisplayEntities.rotateToFaceVector(dir.clone().normalize().toVector3f()),
+				Vector3f(mag.toFloat()),
+				Quaternionf()
+			)
+		}
+		val offset = calcOffset()
+		val nmsEntity = entity.getNMSData(offset.x, offset.y, offset.z)
+
+		return nmsEntity
+	}
+
+	private fun updateEntity() {
+		val offset = calcOffset()
+		val transformation = com.mojang.math.Transformation(
+			Vector3f(0f),
+			ClientDisplayEntities.rotateToFaceVector(dir.clone().normalize().toVector3f()),
 			Vector3f(mag.toFloat()),
 			Quaternionf()
 		)
+		entity.teleportTo(offset.x, offset.y, offset.z)
+		entity.setTransformation(transformation)
+	}
 
-		// position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
-		val nmsEntity = entity.getNMSData(pos.x, pos.y, pos.z)
+	fun update() {
+		updateEntity()
+		val chunk = entity.level().world.getChunkAtIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
+		val playerChunk = chunk.minecraft.playerChunk ?: return
 
-		ClientDisplayEntities.sendEntityPacket(player, nmsEntity)
-		ClientDisplayEntities[player.uniqueId]?.set(identifier, nmsEntity)
+		val viewers = playerChunk.getPlayers(false).toSet()
+		val newPlayers = viewers.filterNot { shownPlayers.contains(it.uuid) }
+		val old = viewers.filter { shownPlayers.contains(it.uuid) }
 
-		return nmsEntity
+		for (player in newPlayers) {
+			broadcast(player)
+		}
+
+		for (player in old) {
+			update(player)
+		}
+
+		shownPlayers = viewers.mapTo(mutableSetOf()) { it.uuid }
+	}
+
+	private fun update(player: ServerPlayer) {
+		entity.entityData.refresh(player)
+	}
+
+	private fun broadcast(player: ServerPlayer) {
+		ClientDisplayEntities.sendEntityPacket(player.bukkitEntity, entity)
+		shownPlayers.add(player.uuid)
+	}
+
+	private fun calcOffset(): Vector {
+		val com = parent.centerOfMass.toVector()
+		com.add(Vector(0.0,10.0,0.0))
+		return com
+	}
+
+	class ArrayPositionDelegate(val array: DoubleArray, val index: Int): ReadOnlyProperty<Any?, Double> {
+		override fun getValue(thisRef: Any?, property: KProperty<*>): Double = array[index]
+
+	}
+
+	class DoubleDelegate(val holder: KProperty0<Double>): ReadOnlyProperty<Any?, Double> {
+		override fun getValue(thisRef: Any?, property: KProperty<*>): Double = holder.get()
+
+	}
+
+	class FunctionDelegate(val holder: () -> Double ): ReadOnlyProperty<Any?, Double> {
+		override fun getValue(thisRef: Any?, property: KProperty<*>): Double = holder()
+
 	}
 
 }
