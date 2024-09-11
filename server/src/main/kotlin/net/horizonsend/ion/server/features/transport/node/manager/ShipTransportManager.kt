@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport
+package net.horizonsend.ion.server.features.transport.node.manager
 
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement

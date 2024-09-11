@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.transport.network.PowerNetwork
-import net.horizonsend.ion.server.features.transport.node.NodeRelationship
+import net.horizonsend.ion.server.features.transport.grid.GridType
+import net.horizonsend.ion.server.features.transport.grid.util.Source
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -13,17 +13,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
-import kotlin.properties.Delegates
 
-class PowerExtractorNode(override val network: PowerNetwork) : SingleNode {
-	constructor(network: PowerNetwork, position: BlockKey) : this(network) {
+class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(GridType.Power), Source {
+	constructor(network: PowerNodeManager, position: BlockKey) : this(network) {
 		this.position = position
 		network.extractors[position] = this
 	}
-
-	override var isDead: Boolean = false
-	override var position by Delegates.notNull<Long>()
-	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
 	val extractableNodes: MutableSet<PowerInputNode> get() = relationships.mapNotNullTo(mutableSetOf()) { it.sideTwo.node as? PowerInputNode }
 
@@ -41,6 +36,7 @@ class PowerExtractorNode(override val network: PowerNetwork) : SingleNode {
 	}
 
 	private var lastTicked: Long = System.currentTimeMillis()
+
 	fun markTicked() {
 		lastTicked = System.currentTimeMillis()
 	}
@@ -63,18 +59,18 @@ class PowerExtractorNode(override val network: PowerNetwork) : SingleNode {
 
 	override fun loadIntoNetwork() {
 		super.loadIntoNetwork()
-		network.extractors[position] = this
+		manager.extractors[position] = this
 	}
 
 	override suspend fun handleRemoval(position: BlockKey) {
-		network.extractors.remove(position)
+		manager.extractors.remove(position)
 		super.handleRemoval(position)
 	}
 
 	override suspend fun buildRelations(position: BlockKey) {
 		for (offset in ADJACENT_BLOCK_FACES) {
 			val offsetKey = getRelative(position, offset, 1)
-			val neighborNode = network.getNode(offsetKey) ?: continue
+			val neighborNode = manager.getNode(offsetKey) ?: continue
 
 			if (this == neighborNode) return
 
@@ -85,6 +81,10 @@ class PowerExtractorNode(override val network: PowerNetwork) : SingleNode {
 			// Add a relationship, if one should be added
 			addRelationship(neighborNode, offset)
 		}
+	}
+
+	override fun isProviding(): Boolean {
+		return extractableNodes.mapNotNull { it.boundMultiblockEntity }.any { it.getPower() > 0 }
 	}
 
 	override fun toString(): String = "POWER Extractor NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
