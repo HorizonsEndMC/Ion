@@ -5,14 +5,6 @@ import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
-import net.horizonsend.ion.server.features.transport.node.type.SourceNode
-import net.horizonsend.ion.server.features.transport.node.type.StepHandler
-import net.horizonsend.ion.server.features.transport.step.Step
-import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
-import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
-import net.horizonsend.ion.server.features.transport.step.origin.power.SolarPowerOrigin
-import net.horizonsend.ion.server.features.transport.step.result.MoveForward
-import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_DETECTORS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_EXTRACTORS
@@ -26,9 +18,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.World
-import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.DOWN
-import org.bukkit.block.BlockFace.SELF
 import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.data.AnaloguePowerable
 import org.bukkit.persistence.PersistentDataContainer
@@ -41,9 +31,7 @@ import java.util.function.Consumer
  **/
 class SolarPanelNode(
 	override val network: PowerNetwork
-) : MultiNode<SolarPanelNode, SolarPanelNode>,
-	SourceNode<PowerNetwork>,
-	StepHandler<PowerNetwork> {
+) : MultiNode<SolarPanelNode, SolarPanelNode> {
 	override var isDead: Boolean = false
 	override val positions: MutableSet<BlockKey> = ConcurrentHashMap.newKeySet()
 	override val relationships: MutableSet<NodeRelationship> = ConcurrentHashMap.newKeySet()
@@ -62,47 +50,11 @@ class SolarPanelNode(
 		return node !is PowerExtractorNode
 	}
 
-	override suspend fun startStep(): Step<PowerNetwork>? {
-		val power = getPower()
-		if (power <= 0) return null
-
-		return Step(
-			network = this.network,
-			origin = getOriginData()
-		) {
-			SinglePowerBranchHead(
-				holder = this,
-				lastDirection = SELF,
-				currentNode = this@SolarPanelNode,
-				share = 1.0,
-			)
-		}
-	}
-
-	override suspend fun handleHeadStep(head: SingleBranchHead<PowerNetwork>): StepResult<PowerNetwork> {
-		// Simply move on to the next node
-		return MoveForward()
-	}
-
-	override suspend fun getOriginData(): SolarPowerOrigin = SolarPowerOrigin(this)
-
 	/**
 	 * The distance this solar node is from the nearest exit of the solar field
 	 * This value will be -1 if there are no exits present
 	 **/
 	private var exitDistance: Int = 0
-
-	override suspend fun getNextNode(head: SingleBranchHead<PowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? {
-		val neighbors = getTransferableNodes()
-		return neighbors.shuffled().firstOrNull { it.first !is SolarPanelNode } ?:
-		neighbors
-			.filter {
-				val node = it.first
-				node is SolarPanelNode && node.exitDistance < this.exitDistance
-			} // Make sure it can't move further from an exit
-			.shuffled() // Make sure the lowest priority, if multiple is random every time
-			.minByOrNull { (it.first as SolarPanelNode).exitDistance }
-	}
 
 	/**
 	 * Calculate the distance to an exit of a solar field
