@@ -120,11 +120,12 @@ abstract class Display(
 	fun display() {
 		if (!::handler.isInitialized) return
 
-		setText(getText())
 		update()
 	}
 
 	fun update() {
+		setText(getText())
+
 		val chunk = entity.level().world.getChunkAtIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
 		val playerChunk = chunk.minecraft.playerChunk ?: return
 
