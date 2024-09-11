@@ -1,10 +1,9 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import com.manya.pdc.base.EnumDataType
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.features.transport.network.PowerNetwork
-import net.horizonsend.ion.server.features.transport.node.NodeRelationship
+import net.horizonsend.ion.server.features.transport.grid.GridType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -13,13 +12,10 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class PowerDirectionalNode(override val network: PowerNetwork) : SingleNode {
-	override var isDead: Boolean = false
-	override var position: BlockKey by Delegates.notNull()
+class PowerDirectionalNode(override val manager: PowerNodeManager) : SingleNode(GridType.Power) {
 	private var variant: Material by Delegates.notNull()
-	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
-	constructor(network: PowerNetwork, position: BlockKey, variant: Material) : this(network) {
+	constructor(network: PowerNodeManager, position: BlockKey, variant: Material) : this(network) {
 		this.position = position
 		this.variant = variant
 	}
