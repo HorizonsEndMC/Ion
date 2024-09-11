@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.transport.node
 
-import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
-import net.horizonsend.ion.server.features.transport.network.TransportNetwork
+import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import org.bukkit.block.data.BlockData
 
-abstract class NodeFactory<T: TransportNetwork>(val network: T) {
+abstract class NodeFactory<T: NodeManager>(val network: T) {
 	/**
 	 * Create and handle placement of a node at the position, if one should be created
 	 **/
-	abstract suspend fun create(key: BlockKey, snapshot: BlockSnapshot)
+	abstract suspend fun create(key: BlockKey, data: BlockData)
 }

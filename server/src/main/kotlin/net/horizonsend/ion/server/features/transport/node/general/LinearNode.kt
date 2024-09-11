@@ -1,11 +1,9 @@
 package net.horizonsend.ion.server.features.transport.node.general
 
 import com.manya.pdc.base.EnumDataType
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.features.transport.network.TransportNetwork
-import net.horizonsend.ion.server.features.transport.node.NodeRelationship
+import net.horizonsend.ion.server.features.transport.grid.GridType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
@@ -18,34 +16,17 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-abstract class LinearNode<T: TransportNetwork, A: LinearNode<T, B, A>, B: LinearNode<T, A, B>>(override val network: T) : MultiNode<B, A> {
-	override var isDead: Boolean = false
-	override val positions: MutableSet<Long> = LongOpenHashSet()
-	override val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
+abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<T, A, B>>(override val manager: T, type: GridType) : MultiNode<B, A>(type) {
 	var axis by Delegates.notNull<Axis>()
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		return node !is PowerExtractorNode && node !is SolarPanelNode
 	}
 
-	abstract suspend fun addBack(position: BlockKey)
-
-	override suspend fun rebuildNode(position: BlockKey) {
-		// Create new nodes, automatically merging together
-		positions.forEach {
-			addBack(it)
-		}
-
-		// Handle relations once fully rebuilt
-		positions.forEach {
-			network.nodes[it]?.buildRelations(it)
-		}
-	}
-
 	override suspend fun buildRelations(position: BlockKey) {
 		for (offset in axis.faces.toList()) {
 			val offsetKey = getRelative(position, offset, 1)
-			val neighborNode = network.getNode(offsetKey) ?: continue
+			val neighborNode = manager.getNode(offsetKey) ?: continue
 
 			if (this == neighborNode) continue
 

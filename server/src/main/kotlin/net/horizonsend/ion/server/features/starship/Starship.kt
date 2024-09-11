@@ -63,7 +63,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterS
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
-import net.horizonsend.ion.server.features.transport.ShipTransportManager
+import net.horizonsend.ion.server.features.transport.node.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES

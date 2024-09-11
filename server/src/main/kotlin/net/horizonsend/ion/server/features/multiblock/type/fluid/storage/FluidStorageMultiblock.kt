@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidSt
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.UnlimitedInternalStorage
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -39,5 +40,7 @@ abstract class FluidStorageMultiblock(val capacity: Int) : Multiblock(),
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : BasicFluidStoringEntity(manager, multiblock, data, x, y, z, world, structureDirection, UnlimitedInternalStorage(multiblock.capacity)), FluidStoringEntity
+	) : BasicFluidStoringEntity(manager, multiblock, data, x, y, z, world, structureDirection, UnlimitedInternalStorage(multiblock.capacity)), FluidStoringEntity {
+		override val fluidInputOffset: Vec3i = Vec3i(0, -1, 0)
+	}
 }

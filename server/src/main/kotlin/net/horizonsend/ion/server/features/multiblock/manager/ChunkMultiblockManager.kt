@@ -4,8 +4,8 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 import net.horizonsend.ion.server.features.transport.node.NetworkType
+import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORED_MULTIBLOCK_ENTITIES
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORED_MULTIBLOCK_ENTITIES_OLD
@@ -24,7 +24,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 		saveMultiblocks(chunk.inner.persistentDataContainer.adapterContext)
 	}
 
-	override fun getNetwork(type: NetworkType): TransportNetwork {
+	override fun getNetwork(type: NetworkType): NodeManager {
 		return type.get(chunk)
 	}
 
