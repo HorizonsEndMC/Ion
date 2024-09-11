@@ -1,11 +1,10 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
-import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
 import net.horizonsend.ion.server.features.transport.node.handleMerges
+import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode.Companion.matchesSolarPanelStructure
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
@@ -16,21 +15,22 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.BlockFace.UP
+import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Directional
 
-class PowerNodeFactory(network: PowerNetwork) : NodeFactory<PowerNetwork>(network) {
-	override suspend fun create(key: BlockKey, snapshot: BlockSnapshot) {
+class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager>(network) {
+	override suspend fun create(key: BlockKey, data: BlockData) {
 		if (network.nodes.contains(key)) return
 
 		when {
 			// Straight wires
-			snapshot.type == Material.END_ROD -> addEndRod(snapshot.data as Directional, key)
+			data.material == Material.END_ROD -> addEndRod(data as Directional, key)
 
 			// Omnidirectional wires
-			snapshot.type == Material.SPONGE -> addSponge(key)
+			data.material == Material.SPONGE -> addSponge(key)
 
 			// Extract power from storage
-			snapshot.type == Material.CRAFTING_TABLE -> {
+			data.material == Material.CRAFTING_TABLE -> {
 				if (matchesSolarPanelStructure(network.world, key)) {
 					addSolarPanel(key)
 				} else {
@@ -39,7 +39,7 @@ class PowerNodeFactory(network: PowerNetwork) : NodeFactory<PowerNetwork>(networ
 			}
 
 			// Check for extractor beneath
-			snapshot.type == Material.DIAMOND_BLOCK -> {
+			data.material == Material.DIAMOND_BLOCK -> {
 				val extractorKey = getRelative(key, DOWN, 1)
 
 				if (matchesSolarPanelStructure(network.world, extractorKey)) {
@@ -48,7 +48,7 @@ class PowerNodeFactory(network: PowerNetwork) : NodeFactory<PowerNetwork>(networ
 				}
 			}
 
-			snapshot.type == Material.DAYLIGHT_DETECTOR -> {
+			data.material == Material.DAYLIGHT_DETECTOR -> {
 				val extractorKey = getRelative(key, DOWN, 2)
 
 				if (matchesSolarPanelStructure(network.world, extractorKey)) {
@@ -58,17 +58,17 @@ class PowerNodeFactory(network: PowerNetwork) : NodeFactory<PowerNetwork>(networ
 			}
 
 			// Add power to storage
-			snapshot.type == Material.NOTE_BLOCK -> addInput(key)
+			data.material == Material.NOTE_BLOCK -> addInput(key)
 
 			// Power flow meter
-			snapshot.type == Material.OBSERVER -> addFlowMeter(snapshot.data as Directional, key)
+			data.material == Material.OBSERVER -> addFlowMeter(data as Directional, key)
 
 			// Merge node behavior
-			snapshot.type == Material.IRON_BLOCK -> addMergeNode(key, Material.IRON_BLOCK)
-			snapshot.type == Material.REDSTONE_BLOCK -> addMergeNode(key, Material.REDSTONE_BLOCK)
+			data.material == Material.IRON_BLOCK -> addMergeNode(key, Material.IRON_BLOCK)
+			data.material == Material.REDSTONE_BLOCK -> addMergeNode(key, Material.REDSTONE_BLOCK)
 
 			// Split power evenly
-			CustomBlocks.getByBlockData(snapshot.data) == CustomBlocks.ALUMINUM_BLOCK -> addEqualSplitterNode(key)
+			CustomBlocks.getByBlockData(data) == CustomBlocks.ALUMINUM_BLOCK -> addEqualSplitterNode(key)
 
 			// Redstone controlled gate
 //			block.type.isRedstoneLamp -> GateNode(this, x, y, z)
@@ -172,7 +172,7 @@ class PowerNodeFactory(network: PowerNetwork) : NodeFactory<PowerNetwork>(networ
 
 		val node = when (neighboringNodes.size) {
 			0 ->  SolarPanelNode(network).apply {
-				network.solarPanels += this
+				manager.solarPanels += this
 			}.addPosition(position, diamondPosition, detectorPosition)
 
 			1 -> neighboringNodes.firstOrNull()?.addPosition(position, diamondPosition, detectorPosition) ?: throw ConcurrentModificationException("Node removed during processing")

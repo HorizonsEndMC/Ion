@@ -1,10 +1,10 @@
-package net.horizonsend.ion.server.features.transport.network
+package net.horizonsend.ion.server.features.transport.node.manager
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.transport.network.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
+import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerNodeFactory
@@ -16,7 +16,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
-class PowerNetwork(holder: NetworkHolder<PowerNetwork>) : TransportNetwork(holder) {
+class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(holder) {
 	override val type: NetworkType = NetworkType.POWER
 	override val namespacedKey: NamespacedKey = POWER_TRANSPORT
 	override val nodeFactory: PowerNodeFactory = PowerNodeFactory(this)
@@ -27,23 +27,6 @@ class PowerNetwork(holder: NetworkHolder<PowerNetwork>) : TransportNetwork(holde
 	val solarPanels: ObjectOpenHashSet<SolarPanelNode> = ObjectOpenHashSet()
 
 	override val dataVersion: Int = 0 //TODO 1
-
-	private suspend fun tickSolarPanels() {
-		for (solarPanel in solarPanels) {
-
-		}
-	}
-
-	private suspend fun tickExtractors() {
-		extractors.forEach { (key, extractor) ->
-
-		}
-	}
-
-	override suspend fun tick() {
-		tickSolarPanels()
-		tickExtractors()
-	}
 
 	override fun clearData() {
 		nodes.clear()
