@@ -28,7 +28,7 @@ import org.bukkit.block.Sign
  * @param structureDirection The direction this multiblock is oriented [from the origin]
  **/
 abstract class MultiblockEntity(
-    val manager: MultiblockManager,
+    var manager: MultiblockManager,
     open val multiblock: Multiblock,
 
     var x: Int,
