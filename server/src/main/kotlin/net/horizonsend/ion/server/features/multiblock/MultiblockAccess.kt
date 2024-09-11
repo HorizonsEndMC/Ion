@@ -25,18 +25,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
-import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.block.data.type.WallSign
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import org.bukkit.inventory.EquipmentSlot
@@ -294,15 +290,5 @@ object MultiblockAccess : IonServerComponent() {
 		val removed = removeMultiblock(event.block.world, origin.x, origin.y, origin.z, sign.getFacing().oppositeFace) ?: return
 
 		event.player.information("Destroyed ${removed.name}")
-	}
-
-	@EventHandler
-	fun onBlockPhysics(event: BlockPhysicsEvent) {
-		if (!event.changedType.isWallSign) return
-		val data = event.changedBlockData as WallSign
-		val supportingBlock = event.block.getRelativeIfLoaded(data.facing.oppositeFace) ?: return
-		if (supportingBlock.type.isAir) return
-
-		removeMultiblock(event.block.world, supportingBlock.x, supportingBlock.y, supportingBlock.z, data.facing.oppositeFace)
 	}
 }
