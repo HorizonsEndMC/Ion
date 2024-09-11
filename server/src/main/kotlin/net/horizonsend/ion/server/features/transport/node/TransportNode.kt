@@ -1,7 +1,11 @@
 package net.horizonsend.ion.server.features.transport.node
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import kotlinx.serialization.SerializationException
-import net.horizonsend.ion.server.features.transport.network.TransportNetwork
+import net.horizonsend.ion.server.features.transport.grid.Grid
+import net.horizonsend.ion.server.features.transport.grid.GridType
+import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -14,15 +18,15 @@ import java.util.concurrent.ThreadLocalRandom
 /**
  * Represents a single node, or step, in transport transportNetwork
  **/
-interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion> {
-	var isDead: Boolean
-	val network: TransportNetwork
+abstract class TransportNode(val gridType: GridType) : PDCSerializable<TransportNode, TransportNode.Companion> {
+	var isDead: Boolean = false
+	abstract val manager: NodeManager
 	override val persistentDataType: Companion get() = Companion
 
-	/**
-	 * Stored relationships between nodes
-	 **/
-	val relationships: MutableSet<NodeRelationship>
+	lateinit var grid: Grid
+
+	/** Stored relationships between nodes **/
+	val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
 
 	/**
 	 * Break all relations between this node and others
@@ -57,7 +61,7 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	/**
 	 * Returns whether this node may transport to the provided node
 	 **/
-	fun isTransferableTo(node: TransportNode): Boolean
+	abstract fun isTransferableTo(node: TransportNode): Boolean
 
 	/** Gets the nodes this can transfer to **/
 	fun getTransferableNodes(): Collection<Pair<TransportNode, BlockFace>> = relationships.filter {
@@ -68,39 +72,49 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	/**
 	 * Store additional required data in the serialized container
 	 **/
-	fun storeData(persistentDataContainer: PersistentDataContainer)
+	abstract fun storeData(persistentDataContainer: PersistentDataContainer)
 
 	/**
 	 * Load required data from the serialized container
 	 **/
-	fun loadData(persistentDataContainer: PersistentDataContainer)
+	abstract fun loadData(persistentDataContainer: PersistentDataContainer)
 
 	/**
 	 * Handle placement into the network upon loading, after data has been loaded
 	 **/
-	fun loadIntoNetwork()
+	abstract fun loadIntoNetwork()
 
 	/**
 	 * Logic for handling the removal of this node
 	 *
 	 * Cleanup, splitting into multiple, etc
 	 **/
-	suspend fun handleRemoval(position: BlockKey) {}
+	open suspend fun handleRemoval(position: BlockKey) {}
 
 	/**
 	 * Builds relations between this node and transferrable nodes
 	 **/
-	suspend fun buildRelations(position: BlockKey)
+	abstract suspend fun buildRelations(position: BlockKey)
 
 	/**
 	 * Notify a node if a neighbor changed
 	 **/
-	suspend fun neighborChanged(neighbor: TransportNode) {}
+	open suspend fun neighborChanged(neighbor: TransportNode) {}
 
 	/**
 	 * Additional logic to be run once the node is placed
 	 **/
-	suspend fun onPlace(position: BlockKey) {}
+	open suspend fun onPlace(position: BlockKey) {}
+
+	/**
+	 * Join the transport grids of the world. Only to be run once fully set up, and relations are built.
+	 **/
+	fun joinGrid() {
+		val gridManager = manager.world.ion.gridManager
+		gridManager.joinOrCreateGrid(this)
+	}
+
+	fun hasJoinedGrid() = ::grid.isInitialized
 
 	companion object : PersistentDataType<PersistentDataContainer, TransportNode> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
@@ -127,7 +141,7 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 			throw SerializationException("Error deserializing multiblock data!", e)
 		}
 
-		fun load(primitive: PersistentDataContainer, network: TransportNetwork): TransportNode = try {
+		fun load(primitive: PersistentDataContainer, network: NodeManager): TransportNode = try {
 			val type = primitive.get(NODE_TYPE, NodeType.type)!!
 
 			val instance = type.newInstance(network)
