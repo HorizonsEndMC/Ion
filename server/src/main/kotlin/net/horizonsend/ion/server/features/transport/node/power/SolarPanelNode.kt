@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
-import net.horizonsend.ion.server.features.transport.network.PowerNetwork
-import net.horizonsend.ion.server.features.transport.node.NodeRelationship
+import net.horizonsend.ion.server.features.transport.grid.GridType
+import net.horizonsend.ion.server.features.transport.grid.util.Source
+import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.firsts
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.GameRule
@@ -30,12 +32,8 @@ import java.util.function.Consumer
  * Represents a solar panel, or multiple
  **/
 class SolarPanelNode(
-	override val network: PowerNetwork
-) : MultiNode<SolarPanelNode, SolarPanelNode> {
-	override var isDead: Boolean = false
-	override val positions: MutableSet<BlockKey> = ConcurrentHashMap.newKeySet()
-	override val relationships: MutableSet<NodeRelationship> = ConcurrentHashMap.newKeySet()
-
+	override val manager: PowerNodeManager
+) : MultiNode<SolarPanelNode, SolarPanelNode>(GridType.Power), Source {
 	/** The positions of extractors in this solar panel */
 	private val extractorPositions = ConcurrentHashMap.newKeySet<BlockKey>()
 
@@ -101,8 +99,8 @@ class SolarPanelNode(
 	 **/
 	fun getPower(): Int {
 		val daylightMultiplier: Double = if (
-			network.world.environment == World.Environment.NORMAL &&
-			network.world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE) == true
+			manager.world.environment == World.Environment.NORMAL &&
+			manager.world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE) == true
 		) {
 			getPowerRatio()
 		} else 0.5
@@ -113,13 +111,17 @@ class SolarPanelNode(
 		return ((diff / 1000.0) * POWER_PER_SECOND * cellNumber * daylightMultiplier).toInt()
 	}
 
+	override fun isProviding(): Boolean {
+		return getPower() > 0
+	}
+
 	/**
 	 * Calculates the light level at the detectors
 	 **/
 	private fun getPowerRatio(): Double {
 		val total = detectorPositions.size * 15
 		val sum = detectorPositions.sumOf {
-			val data = getBlockDataSafe(network.world, getX(it), getY(it), getZ(it)) ?: return@sumOf 0
+			val data = getBlockDataSafe(manager.world, getX(it), getY(it), getZ(it)) ?: return@sumOf 0
 			if (data !is AnaloguePowerable) return@sumOf 0
 
 			data.power
@@ -168,11 +170,13 @@ class SolarPanelNode(
 	override suspend fun handleRemoval(position: BlockKey) {
 		isDead = true
 
+		grid.removeNode(this)
+
 		removePosition(position)
 
 		// Remove all positions
 		positions.forEach {
-			network.nodes.remove(it)
+			manager.nodes.remove(it)
 		}
 
 		// Rebuild relations after cleared
@@ -186,7 +190,7 @@ class SolarPanelNode(
 		extractorPositions += extractorKey
 
 		// Make sure there isn't still an extractor
-		network.extractors.remove(extractorKey)
+		manager.extractors.remove(extractorKey)
 		addPosition(extractorKey)
 		buildRelations(extractorKey)
 
@@ -196,7 +200,7 @@ class SolarPanelNode(
 		detectorPositions += detectorKey
 
 		for (position: BlockKey in positions) {
-			network.nodes[position] = this
+			manager.nodes[position] = this
 			buildRelations(position)
 		}
 
@@ -212,39 +216,28 @@ class SolarPanelNode(
 
 		positions.remove(extractorPos)
 		extractorPositions.remove(extractorPos)
-		network.nodes.remove(extractorPos)
+		manager.nodes.remove(extractorPos)
 
 		for (otherPos: BlockKey in otherPositions) {
 			positions.remove(otherPos)
-			network.nodes.remove(otherPos)
+			manager.nodes.remove(otherPos)
 		}
+	}
+
+	override suspend fun addBack(position: BlockKey) {
+		manager.nodeFactory.addSolarPanel(position, handleRelationships = false)
 	}
 
 	override suspend fun rebuildNode(position: BlockKey) {
-		network.solarPanels.remove(this)
+		manager.solarPanels.remove(this)
 		detectorPositions.clear()
 
-		// Create new nodes, automatically merging together
-		extractorPositions.forEach {
-			network.nodeFactory.addSolarPanel(it, handleRelationships = false)
-		}
-
-		// Handle relations once fully rebuilt
-		positions.forEach {
-			network.nodes[it]?.buildRelations(it)
-		}
-	}
-
-	override suspend fun drainTo(new: SolarPanelNode) {
-		super.drainTo(new)
-
-		new.extractorPositions.addAll(extractorPositions)
-		new.detectorPositions.addAll(detectorPositions)
+		super.rebuildNode(position)
 	}
 
 	override fun loadIntoNetwork() {
 		super.loadIntoNetwork()
-		network.solarPanels += this
+		manager.solarPanels += this
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
@@ -278,5 +271,5 @@ class SolarPanelNode(
 		}
 	}
 
-	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().firsts().joinToString { it.javaClass.simpleName }} nodes, distance = $exitDistance, powerRatio = ${getPowerRatio()}"
+	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().firsts().joinToString { it.javaClass.simpleName }} nodes, distance = $exitDistance, powerRatio = ${getPowerRatio()}, location = ${toVec3i(positions.random())}"
 }

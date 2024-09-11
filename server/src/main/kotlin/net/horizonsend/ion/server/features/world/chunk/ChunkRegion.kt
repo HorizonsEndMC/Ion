@@ -20,7 +20,6 @@ class ChunkRegion(val world: IonWorld) {
 	fun tickChunkTransport() {
 		scope.launch {
 			for ((_, chunk) in chunks) {
-				chunk.transportNetwork.tick()
 				chunk.multiblockManager.tick()
 			}
 		}
