@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.transport.network
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.transport.network.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.NetworkType
@@ -13,7 +12,6 @@ import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER_TRANSPORT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.NamespacedKey
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
@@ -32,19 +30,13 @@ class PowerNetwork(holder: NetworkHolder<PowerNetwork>) : TransportNetwork(holde
 
 	private suspend fun tickSolarPanels() {
 		for (solarPanel in solarPanels) {
-			runCatching { solarPanel.startStep()?.invoke() }.onFailure {
-				IonServer.slF4JLogger.error("Exception ticking solar panel! $it")
-				it.printStackTrace()
-			}
+
 		}
 	}
 
 	private suspend fun tickExtractors() {
 		extractors.forEach { (key, extractor) ->
-			runCatching { extractor.startStep()?.invoke() }.onFailure {
-				IonServer.slF4JLogger.error("Exception ticking extractor at ${toVec3i(key)}! $it")
-				it.printStackTrace()
-			}
+
 		}
 	}
 
