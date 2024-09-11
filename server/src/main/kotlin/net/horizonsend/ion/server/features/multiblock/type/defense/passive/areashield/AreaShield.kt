@@ -134,5 +134,6 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 
 		override fun toString(): String = "AREA SHIELD::: POWER:: ${getPower()}"
 
+		override val powerInputOffset: Vec3i = Vec3i(0, -1, 0)
 	}
 }
