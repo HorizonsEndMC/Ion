@@ -2,8 +2,6 @@ package net.horizonsend.ion.server.features.transport.node
 
 import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.transport.network.TransportNetwork
-import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
-import net.horizonsend.ion.server.features.transport.step.head.BranchHead
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -103,11 +101,6 @@ interface TransportNode : PDCSerializable<TransportNode, TransportNode.Companion
 	 * Additional logic to be run once the node is placed
 	 **/
 	suspend fun onPlace(position: BlockKey) {}
-
-	/**
-	 * Logic for the completion of a power transfer
-	 **/
-	suspend fun onCompleteChain(final: BranchHead<*>, destination: PowerInputNode, transferred: Int) {}
 
 	companion object : PersistentDataType<PersistentDataContainer, TransportNode> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
