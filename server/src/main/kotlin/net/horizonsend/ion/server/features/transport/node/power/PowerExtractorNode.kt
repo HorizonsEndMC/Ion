@@ -6,25 +6,16 @@ import net.horizonsend.ion.server.features.transport.network.PowerNetwork
 import net.horizonsend.ion.server.features.transport.node.NodeRelationship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
-import net.horizonsend.ion.server.features.transport.node.type.SourceNode
-import net.horizonsend.ion.server.features.transport.step.Step
-import net.horizonsend.ion.server.features.transport.step.head.SingleBranchHead
-import net.horizonsend.ion.server.features.transport.step.head.power.SinglePowerBranchHead
-import net.horizonsend.ion.server.features.transport.step.origin.StepOrigin
-import net.horizonsend.ion.server.features.transport.step.origin.power.ExtractorPowerOrigin
-import net.horizonsend.ion.server.features.transport.step.result.MoveForward
-import net.horizonsend.ion.server.features.transport.step.result.StepResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
-class PowerExtractorNode(override val network: PowerNetwork) : SingleNode, SourceNode<PowerNetwork> {
+class PowerExtractorNode(override val network: PowerNetwork) : SingleNode {
 	constructor(network: PowerNetwork, position: BlockKey) : this(network) {
 		this.position = position
 		network.extractors[position] = this
@@ -46,53 +37,12 @@ class PowerExtractorNode(override val network: PowerNetwork) : SingleNode, Sourc
 	 */
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		if (node is PowerInputNode) return false
-		return node !is SourceNode<*>
-	}
-
-	/*
-	 * Nothing unique with how pathfinding is done, simply move onto a random transferable neighbor that isn't a dead end
-	 */
-	override suspend fun getNextNode(head: SingleBranchHead<PowerNetwork>, entranceDirection: BlockFace): Pair<TransportNode, BlockFace>? {
-		return getTransferableNodes()
-			.filter { it.first.getTransferableNodes().isNotEmpty() }
-			.randomOrNull()
-	}
-
-	override suspend fun handleHeadStep(head: SingleBranchHead<PowerNetwork>): StepResult<PowerNetwork> {
-		return MoveForward()
-	}
-
-	override suspend fun startStep(): Step<PowerNetwork>? {
-		if (extractableNodes.isEmpty()) return null
-
-		val extractablePowerPool = extractableNodes.flatMap { it.getPoweredMultiblocks() }
-		if (extractablePowerPool.all { it.isEmpty() }) return null
-
-		val step =  Step(
-			network = this.network,
-			origin = getOriginData() ?: return null
-		) {
-			SinglePowerBranchHead(
-				holder = this,
-				lastDirection = BlockFace.SELF,
-				currentNode = this@PowerExtractorNode,
-				share = 1.0,
-			)
-		}
-
-		markTicked()
-
-		return step
+		return node !is PowerExtractorNode && node !is SolarPanelNode
 	}
 
 	private var lastTicked: Long = System.currentTimeMillis()
 	fun markTicked() {
 		lastTicked = System.currentTimeMillis()
-	}
-
-	override suspend fun getOriginData(): StepOrigin<PowerNetwork>? {
-		if (getTransferableNodes().isEmpty()) return null
-		return ExtractorPowerOrigin(this)
 	}
 
 	fun getTransferPower(): Int {
