@@ -9,9 +9,9 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredM
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.transport.network.PowerNetwork
-import net.horizonsend.ion.server.features.transport.network.TransportNetwork
 import net.horizonsend.ion.server.features.transport.node.NetworkType
+import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -43,7 +43,7 @@ abstract class MultiblockManager(val log: Logger) {
 
 	fun getAllMultiblockEntities() = multiblockEntities
 
-	abstract fun getNetwork(type: NetworkType): TransportNetwork
+	abstract fun getNetwork(type: NetworkType): NodeManager
 
 	/**
 	 * Handles the addition of a multiblock entity
@@ -125,7 +125,7 @@ abstract class MultiblockManager(val log: Logger) {
 		addMultiblockEntity(entity)
 
 		if (entity is PoweredMultiblockEntity) {
-			(getNetwork(NetworkType.POWER) as PowerNetwork).handleNewPoweredMultiblock(entity)
+			(getNetwork(NetworkType.POWER) as PowerNodeManager).handleNewPoweredMultiblock(entity)
 		}
 	}
 
