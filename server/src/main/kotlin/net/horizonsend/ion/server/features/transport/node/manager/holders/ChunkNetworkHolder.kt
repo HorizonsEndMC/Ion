@@ -179,4 +179,8 @@ class ChunkNetworkHolder<T: NodeManager> private constructor (val manager: Chunk
 			}
 		}
 	}
+
+	override fun markUnsaved() {
+		manager.chunk.inner.minecraft.isUnsaved = true
+	}
 }
