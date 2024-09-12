@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -68,6 +69,7 @@ object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultibl
 		world: World,
 		structureDirection: BlockFace
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity {
+		override var inputNode: PowerInputNode? = null
 		override val storage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
@@ -77,7 +79,6 @@ object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultibl
 
 		override fun onLoad() {
 			displayHandler.update()
-			bindInputNode()
 		}
 
 		override fun onUnload() {

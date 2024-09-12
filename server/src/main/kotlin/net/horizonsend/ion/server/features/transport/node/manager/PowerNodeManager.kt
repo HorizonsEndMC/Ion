@@ -1,9 +1,10 @@
 package net.horizonsend.ion.server.features.transport.node.manager
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import kotlinx.coroutines.runBlocking
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.node.NetworkType
-import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
+import net.horizonsend.ion.server.features.transport.node.manager.holders.ChunkNetworkHolder
 import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
@@ -11,9 +12,9 @@ import net.horizonsend.ion.server.features.transport.node.power.PowerNodeFactory
 import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER_TRANSPORT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.NamespacedKey
-import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
 class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(holder) {
@@ -37,13 +38,32 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 	/**
 	 * Handle the addition of a new powered multiblock entity
 	 **/
-	suspend fun handleNewPoweredMultiblock(new: MultiblockEntity) {
+	fun tryBindPowerNode(new: PoweredMultiblockEntity) {
 		// All directions
-		val neighboring = getNeighborNodes(new.position, nodes, BlockFace.entries)
-			.filterValues { it is PowerInputNode || it is PowerExtractorNode }
+		val inputVec = new.getRealInputLocation()
+		val inputKey = toBlockKey(inputVec)
 
-		neighboring.forEach {
-			it.value.buildRelations(getRelative(new.locationKey, it.key))
+		val inputNode = getNode(inputKey) as? PowerInputNode
+
+		if (inputNode != null) {
+			new.bindInputNode(inputNode)
+			return
 		}
+
+		val (x, y, z) = inputVec
+		runBlocking {
+			val block = getBlockIfLoaded(world, x, y, z)
+			if (block != null) createNodeFromBlock(block)
+		}
+
+		val attemptTwo = getNode(inputKey) as? PowerInputNode ?: return
+
+		new.bindInputNode(attemptTwo)
+	}
+
+	override fun finalizeNodes() {
+		@Suppress("UNCHECKED_CAST")
+		val chunk = (holder as? ChunkNetworkHolder<PowerNodeManager>)?.manager?.chunk ?: return
+		chunk.multiblockManager.getAllMultiblockEntities().values.filterIsInstance<PoweredMultiblockEntity>().forEach(::tryBindPowerNode)
 	}
 }
