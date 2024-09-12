@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.power
 
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import java.util.concurrent.ConcurrentHashMap
 
-class PowerStorage(amount: Int, val capacity: Int) {
+class PowerStorage(val holder: PoweredMultiblockEntity, amount: Int, val capacity: Int) {
 	private var backingPower = amount
 
 	val mutex = Any()
@@ -17,6 +18,7 @@ class PowerStorage(amount: Int, val capacity: Int) {
 			backingPower = correctedPower
 		}
 
+		(holder as MultiblockEntity).markChanged()
 		runUpdates()
 	}
 
@@ -36,6 +38,7 @@ class PowerStorage(amount: Int, val capacity: Int) {
 			newAmount
 		}
 
+		(holder as MultiblockEntity).markChanged()
 		runUpdates()
 
 		return if (newAmount > capacity) capacity - newAmount else 0
@@ -53,6 +56,7 @@ class PowerStorage(amount: Int, val capacity: Int) {
 			newAmount
 		}
 
+		(holder as MultiblockEntity).markChanged()
 		runUpdates()
 
 		return if (newAmount < 0) newAmount else 0
