@@ -21,6 +21,8 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>>(type: 
 	 * from the list of contained positions, and the node is rebuilt using this method.
 	 **/
 	open suspend fun rebuildNode(position: BlockKey) {
+		grid.removeNode(this)
+
 		// Create new nodes, automatically merging together
 		positions.forEach {
 			addBack(it)
@@ -34,6 +36,7 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>>(type: 
 		// Join successor nodes to the grid
 		positions
 			.mapNotNullTo(mutableSetOf()) { manager.nodes[it] }
+			.distinct()
 			.forEach { it.joinGrid() }
 	}
 

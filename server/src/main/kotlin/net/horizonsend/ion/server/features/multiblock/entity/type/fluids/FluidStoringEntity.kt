@@ -6,8 +6,8 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
 import net.horizonsend.ion.server.features.transport.grid.FluidGrid
-import net.horizonsend.ion.server.features.transport.grid.util.Sink
-import net.horizonsend.ion.server.features.transport.grid.util.Source
+import net.horizonsend.ion.server.features.transport.grid.sink.Sink
+import net.horizonsend.ion.server.features.transport.grid.sink.Source
 import net.horizonsend.ion.server.features.transport.node.fluid.FluidInputNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORAGES
