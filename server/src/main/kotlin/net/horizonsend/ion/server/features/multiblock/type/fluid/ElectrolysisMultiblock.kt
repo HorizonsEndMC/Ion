@@ -13,7 +13,8 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.SingleFluidStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedPowerDisplayEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
@@ -25,7 +26,6 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.HYDROGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.OXYGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.WATER
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_3
@@ -46,7 +46,6 @@ import org.bukkit.block.data.Bisected.Half.TOP
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.persistence.PersistentDataType
 
 object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisMultiblock.ElectrolysisMultiblockEntity>, InteractableMultiblock {
 	override val name: String = "ElectrolysisMultiblock"
@@ -177,14 +176,13 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): ElectrolysisMultiblockEntity {
 		return ElectrolysisMultiblockEntity(
-			manager,
 			data,
+			manager,
 			x,
 			y,
 			z,
 			world,
-			structureDirection,
-			data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0)
+			structureDirection
 		)
 	}
 
@@ -199,14 +197,13 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 	}
 
 	class ElectrolysisMultiblockEntity(
-		manager: MultiblockManager,
 		data: PersistentMultiblockData,
+		manager: MultiblockManager,
 		x: Int,
 		y: Int,
 		z: Int,
 		world: World,
-		structureDirection: BlockFace,
-		override var powerUnsafe: Int
+		structureDirection: BlockFace
 	) : MultiblockEntity(
 		manager,
 		ElectrolysisMultiblock,
@@ -215,13 +212,13 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 		z,
 		world,
 		structureDirection
-	), AsyncTickingMultiblockEntity, FluidStoringEntity, UpdatedPowerDisplayEntity {
+	), AsyncTickingMultiblockEntity, FluidStoringEntity, PoweredMultiblockEntity {
+		override val multiblock = ElectrolysisMultiblock
 		override val tickInterval: Int = 4
 		override var currentTick: Int = 0
 		override var sleepTicks: Int = 0
 
-		override val maxPower: Int = ElectrolysisMultiblock.maxPower
-		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
+		override val storage: PowerStorage = loadStoredPower(data)
 
 		override val capacities: Array<StorageContainer> = arrayOf(
 			loadStoredResource(data, "water_tank", text("Water Tank"), TANK_1, SingleFluidStorage(1000, WATER)),
@@ -252,7 +249,7 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			val rawStorage = store.getAdditionalDataRaw()
 			storeFluidData(rawStorage, rawStorage.adapterContext)
-			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
+			savePowerData(store)
 		}
 
 		override fun onLoad() {
