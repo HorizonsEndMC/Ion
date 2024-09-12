@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
-import net.horizonsend.ion.server.features.transport.grid.GridType
-import net.horizonsend.ion.server.features.transport.grid.sink.PowerSource
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
@@ -33,7 +31,7 @@ import java.util.function.Consumer
  **/
 class SolarPanelNode(
 	override val manager: PowerNodeManager
-) : MultiNode<SolarPanelNode, SolarPanelNode>(GridType.Power), PowerSource {
+) : MultiNode<SolarPanelNode, SolarPanelNode>() {
 	/** The positions of extractors in this solar panel */
 	private val extractorPositions = ConcurrentHashMap.newKeySet<BlockKey>()
 
@@ -111,10 +109,6 @@ class SolarPanelNode(
 		return ((diff / 1000.0) * POWER_PER_SECOND * cellNumber * daylightMultiplier).toInt()
 	}
 
-	override fun isProviding(): Boolean {
-		return getPower() > 0
-	}
-
 	/**
 	 * Calculates the light level at the detectors
 	 **/
@@ -169,8 +163,6 @@ class SolarPanelNode(
 
 	override suspend fun handleRemoval(position: BlockKey) {
 		isDead = true
-
-		grid.removeNode(this)
 
 		removePosition(position)
 
@@ -255,10 +247,6 @@ class SolarPanelNode(
 
 		val detectors = persistentDataContainer.get(SOLAR_CELL_DETECTORS, LONG_ARRAY)
 		detectors?.let { detectorPositions.addAll(it.asIterable()) }
-	}
-
-	override fun getTransferablePower(): Int {
-		return getPower()
 	}
 
 	companion object {
