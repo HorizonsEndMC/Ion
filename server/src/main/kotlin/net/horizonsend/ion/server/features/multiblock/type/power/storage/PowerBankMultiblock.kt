@@ -5,17 +5,16 @@ import net.horizonsend.ion.server.features.client.display.modular.display.PowerE
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedPowerDisplayEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.persistence.PersistentDataType
 
 abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredMultiblock<PowerBankMultiblock.PowerBankEntity> {
 	abstract val tierMaterial: Material
@@ -90,30 +89,28 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 		structureDirection: BlockFace
 	): PowerBankEntity {
 		return PowerBankEntity(
+			data,
 			manager,
 			this,
 			x,
 			y,
 			z,
 			world,
-			structureDirection,
-			maxPower,
-			data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0)
+			structureDirection
 		)
 	}
 
 	class PowerBankEntity(
+		data: PersistentMultiblockData,
 		manager: MultiblockManager,
-		multiblock: Multiblock,
+		override val multiblock: PowerBankMultiblock,
 		x: Int,
 		y: Int,
 		z: Int,
 		world: World,
-		structureDirection: BlockFace,
-		override val maxPower: Int,
-		override var powerUnsafe: Int = 0
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), UpdatedPowerDisplayEntity {
-		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
+		structureDirection: BlockFace
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity {
+		override val storage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = newMultiblockSignOverlay(
 			this,
@@ -140,13 +137,9 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
-			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
+			savePowerData(store)
 		}
 
 		override val powerInputOffset: Vec3i = Vec3i(0, -1, 0)
-
-		override fun toString(): String {
-			return "POWER BANK TIER: $multiblock! Power: ${getPower()}, Facing: $structureDirection"
-		}
 	}
 }
