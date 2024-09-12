@@ -33,4 +33,6 @@ interface NetworkHolder <T: NodeManager> {
 	 * Method used to access nodes inside, and outside the network
 	 **/
 	fun getGlobalNode(key: BlockKey): TransportNode?
+
+	fun markUnsaved()
 }

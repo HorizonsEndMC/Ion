@@ -27,14 +27,20 @@ abstract class NodeManager(val holder: NetworkHolder<*>) {
 		val previousNode = nodes[key] ?: return@launch
 
 		previousNode.handleRemoval(key)
+		holder.markUnsaved()
 	}}
 
 	open fun processBlockRemovals(keys: Iterable<BlockKey>) { holder.scope.launch {
+		var hits: Int = 0
+
 		for (key in keys) {
 			val previousNode = nodes[key] ?: return@launch
+			hits++
 
 			previousNode.handleRemoval(key)
 		}
+
+		if (hits > 0) holder.markUnsaved()
 	}}
 
 	open fun processBlockAddition(new: Block) { holder.scope.launch {
@@ -44,22 +50,27 @@ abstract class NodeManager(val holder: NetworkHolder<*>) {
 			return@launch
 		}
 
-		createNodeFromBlock(new)
+		if (createNodeFromBlock(new)) holder.markUnsaved()
 	}}
 
 	open fun processBlockAdditions(changed: Iterable<Block>) { holder.scope.launch {
+		var hits = 0
 		for (new in changed) {
-			createNodeFromBlock(new)
+			if (createNodeFromBlock(new)) {
+				hits++
+			}
 		}
+
+		if (hits > 0) holder.markUnsaved()
 	}}
 
 	/**
 	 * Handle the creation / loading of the node into memory
 	 **/
-	suspend fun createNodeFromBlock(block: Block) {
+	suspend fun createNodeFromBlock(block: Block): Boolean {
 		val key = toBlockKey(block.x, block.y, block.z)
 
-		nodeFactory.create(key, block.blockData)
+		return nodeFactory.create(key, block.blockData)
 	}
 
 	/**
