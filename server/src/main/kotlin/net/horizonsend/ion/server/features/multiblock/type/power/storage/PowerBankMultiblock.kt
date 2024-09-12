@@ -122,23 +122,22 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 
 		override fun onLoad() {
 			displayHandler.update()
+			bindInputNode()
 		}
 
 		override fun onUnload() {
 			displayHandler.remove()
+			releaseInputNode()
 		}
 
 		override fun handleRemoval() {
 			displayHandler.remove()
+			releaseInputNode()
 		}
 
 		override fun displaceAdditional(movement: StarshipMovement) {
 			displayHandler.displace(movement)
 		}
-
-//		override fun isValid(): Boolean {
-//			return !removed
-//		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
