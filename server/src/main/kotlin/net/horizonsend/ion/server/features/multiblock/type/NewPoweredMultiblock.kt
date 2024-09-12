@@ -20,14 +20,14 @@ interface NewPoweredMultiblock<T : MultiblockEntity> : EntityMultiblock<T> {
 		var powerToTransfer = power * item.amount
 		if (powerToTransfer == 0) return
 
-		val machinePower = entity.getPower()
-		val maxMachinePower = entity.maxPower
+		val machinePower = entity.storage.getPower()
+		val maxMachinePower = entity.storage.capacity
 		if (maxMachinePower - machinePower < powerToTransfer) {
 			powerToTransfer = maxMachinePower - machinePower
 		}
 
 		setPower(item, power - powerToTransfer / item.amount)
-		entity.addPower(powerToTransfer)
+		entity.storage.addPower(powerToTransfer)
 	}
 
 	companion object : SLEventListener() {
