@@ -14,7 +14,7 @@ interface PoweredMultiblockEntity {
 	val storage: PowerStorage
 
 	fun loadStoredPower(data: PersistentMultiblockData): PowerStorage {
-		return PowerStorage(data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0), multiblock.maxPower)
+		return PowerStorage(this, data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0), multiblock.maxPower)
 	}
 
 	fun savePowerData(store: PersistentMultiblockData) {
