@@ -31,6 +31,11 @@ abstract class ShieldSubsystem(
 		set(value) {
 			field = value.coerceIn(0, maxPower)
 		}
+
+	var recentDamage : Double = 0.0
+		set(value) {
+			field = value.coerceIn(0.0, maxPower.toDouble())
+		}
 	var isReinforcementEnabled = multiblock.isReinforced
 
 	fun isReinforcementActive(): Boolean {
