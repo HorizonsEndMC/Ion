@@ -1,16 +1,17 @@
 package net.horizonsend.ion.server.features.transport.grid
 
+import net.horizonsend.ion.server.features.transport.grid.sink.Sink
+import net.horizonsend.ion.server.features.transport.grid.sink.Source
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
-import java.lang.IndexOutOfBoundsException
 import java.util.concurrent.ConcurrentHashMap
 
 class WorldGridManager(val world: IonWorld) {
-	val allGrids = ConcurrentHashMap.newKeySet<Grid>()
-	private val byType: ConcurrentHashMap<GridType, ConcurrentHashMap.KeySetView<Grid, Boolean>> = ConcurrentHashMap()
+	val allGrids = ConcurrentHashMap.newKeySet<Grid<*, *>>()
+	private val byType: ConcurrentHashMap<GridType, ConcurrentHashMap.KeySetView<Grid<*, *>, Boolean>> = ConcurrentHashMap()
 
-	private fun getGridsOfType(type: GridType): MutableSet<Grid> {
+	private fun getGridsOfType(type: GridType): MutableSet<Grid<*, *>> {
 		return byType.getOrPut(type) { ConcurrentHashMap.newKeySet() }
 	}
 
@@ -26,18 +27,18 @@ class WorldGridManager(val world: IonWorld) {
 		allGrids.forEach { it.tickTransport() }
 	}
 
-	fun registerGrid(grid: Grid) {
+	fun registerGrid(grid: Grid<*, *>) {
 		allGrids.add(grid)
 		getGridsOfType(grid.type).add(grid)
 	}
 
-	fun removeGrid(grid: Grid) {
+	fun removeGrid(grid: Grid<*, *>) {
 		allGrids.remove(grid)
 		getGridsOfType(grid.type).remove(grid)
 	}
 
 	@Suppress("UnstableApiUsage")
-	fun joinOrCreateGrid(node: TransportNode): Grid {
+	fun joinOrCreateGrid(node: TransportNode): Grid<*, *> {
 		val relatedGrids = node.relationships.associateWithNotNull {
 			val sideTwoNode = it.sideTwo.node
 			if (!sideTwoNode.hasJoinedGrid()) return@associateWithNotNull null
@@ -71,7 +72,7 @@ class WorldGridManager(val world: IonWorld) {
 	/**
 	 * Combines the provided grid, and returns the resulting combination
 	 **/
-	fun <T: Grid> mergeGrids(others: Set<T>): T {
+	fun mergeGrids(others: Set<Grid<*, *>>): Grid<*, *> {
 		when (others.size) {
 			0 -> throw IndexOutOfBoundsException("Attempted to merge 0 grids!")
 			1 -> return others.first()
@@ -88,11 +89,11 @@ class WorldGridManager(val world: IonWorld) {
 		return largest
 	}
 
-	fun <T: Grid> splitGrid(grid: T): List<T> {
+	fun <Src: Source, Snk: Sink, T: Grid<Src, Snk>> splitGrid(grid: T): List<T> {
 		throw NotImplementedError()
 	}
 
-	fun createGrid(origin: TransportNode): Grid {
+	fun createGrid(origin: TransportNode): Grid<*, *> {
 		val newGrid = origin.gridType.newInstance(this)
 		newGrid.addNode(origin)
 		getGridsOfType(origin.gridType).add(newGrid)

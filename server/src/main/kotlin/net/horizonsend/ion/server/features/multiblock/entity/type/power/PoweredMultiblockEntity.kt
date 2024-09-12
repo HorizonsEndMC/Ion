@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.transport.grid.PowerGrid
-import net.horizonsend.ion.server.features.transport.grid.util.Sink
+import net.horizonsend.ion.server.features.transport.grid.sink.Sink
 import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -18,7 +18,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import org.bukkit.persistence.PersistentDataType
 
-interface PoweredMultiblockEntity: Sink {
+interface PoweredMultiblockEntity : Sink {
 	val position: BlockKey
 	var powerUnsafe: Int
 	val maxPower: Int
@@ -120,7 +120,7 @@ interface PoweredMultiblockEntity: Sink {
 		if (existing.boundMultiblockEntity != null) return
 
 		existing.boundMultiblockEntity = this
-		existing.grid.registerSink(this)
+		(existing.grid as PowerGrid).registerSink(this)
 	}
 
 	fun releaseInputNode() {
