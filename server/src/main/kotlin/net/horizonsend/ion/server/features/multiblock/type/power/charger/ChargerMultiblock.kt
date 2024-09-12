@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Material
 import org.bukkit.World
@@ -103,6 +104,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 		world: World,
 		signDirection: BlockFace,
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity {
+		override var inputNode: PowerInputNode? = null
 		override val storage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
