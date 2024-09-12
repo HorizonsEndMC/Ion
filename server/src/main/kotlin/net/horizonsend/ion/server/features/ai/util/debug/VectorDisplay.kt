@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.ai.util.debug
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
-import net.horizonsend.ion.server.features.client.display.PlanetSpaceRendering
 import net.horizonsend.ion.server.miscellaneous.utils.toVector3f
 import org.bukkit.Location
 import org.bukkit.entity.Display
@@ -15,7 +14,7 @@ import org.joml.Quaternionf
 import org.joml.Vector3f
 
 class VectorDisplay (
-	var pos : Location,
+	var pos : Vector,
 	var dir : Vector,
 	val model : ItemStack
 ){

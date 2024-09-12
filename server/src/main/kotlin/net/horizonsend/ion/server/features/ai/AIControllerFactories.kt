@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ai
 
+import BasicSteeringModule
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.module.combat.DefensiveCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.FrigateCombatModule
@@ -78,6 +79,24 @@ object AIControllerFactories : IonServerComponent() {
 
 			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
 			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
+			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+
+			builder
+		}
+		build()
+	}
+
+	val goonship = registerFactory("GOONSHIP") {
+		setControllerTypeName("GoonShip")
+		setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
+			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+
+			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
+			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
+			val steering = builder.addModule("steering", BasicSteeringModule(it) {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()})
 			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 
 			builder
