@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Material
 import org.bukkit.World
@@ -110,6 +111,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 		world: World,
 		structureDirection: BlockFace
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity {
+		override var inputNode: PowerInputNode? = null
 		override val storage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = newMultiblockSignOverlay(
@@ -119,7 +121,6 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 
 		override fun onLoad() {
 			displayHandler.update()
-			bindInputNode()
 		}
 
 		override fun onUnload() {
@@ -138,6 +139,12 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
 			savePowerData(store)
+		}
+
+		override fun getRealInputLocation(): Vec3i {
+			val loc = super.getRealInputLocation()
+			println("Real input loc: $loc")
+			return loc
 		}
 
 		override val powerInputOffset: Vec3i = Vec3i(0, -1, 0)
