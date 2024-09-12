@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node.type
 
-import net.horizonsend.ion.server.features.transport.grid.GridType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -10,7 +9,7 @@ import kotlin.properties.Delegates
 /**
  * A node that only occupies a single block
  **/
-abstract class SingleNode(type: GridType) : TransportNode(type) {
+abstract class SingleNode : TransportNode() {
 	var position by Delegates.notNull<Long>()
 
 	override fun loadIntoNetwork() {
@@ -31,13 +30,11 @@ abstract class SingleNode(type: GridType) : TransportNode(type) {
 
 	override suspend fun onPlace(position: BlockKey) {
 		buildRelations(position)
-		joinGrid()
 	}
 
 	override suspend fun handleRemoval(position: BlockKey) {
 		isDead = true
 		manager.nodes.remove(position)
 		clearRelations()
-		grid.removeNode(this)
 	}
 }
