@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.transport.node.manager.holders
 
 import kotlinx.coroutines.CoroutineScope
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
@@ -51,4 +51,6 @@ class ShipNetworkHolder<T: NodeManager>(val starship: ActiveStarship) : NetworkH
 	fun rebuildStaticNetwork() {
 
 	}
+
+	override fun markUnsaved() {/* Do nothing */}
 }
