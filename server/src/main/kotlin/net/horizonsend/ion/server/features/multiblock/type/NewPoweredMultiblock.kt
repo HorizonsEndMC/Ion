@@ -23,6 +23,7 @@ interface NewPoweredMultiblock<T : MultiblockEntity> : EntityMultiblock<T> {
 
 		val machinePower = entity.storage.getPower()
 		val maxMachinePower = entity.storage.capacity
+
 		if (maxMachinePower - machinePower < powerToTransfer) {
 			powerToTransfer = maxMachinePower - machinePower
 		}

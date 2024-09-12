@@ -34,6 +34,8 @@ abstract class MultiblockManager(val log: Logger) {
 
 	abstract fun save()
 
+	abstract fun markChanged()
+
 	/**
 	 * Logic upon the chunk being ticked
 	 **/

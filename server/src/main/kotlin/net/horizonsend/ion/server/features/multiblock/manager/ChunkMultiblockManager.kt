@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORED_MULTIBLOCK_ENTITIES
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORED_MULTIBLOCK_ENTITIES_OLD
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import org.bukkit.World
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
@@ -22,6 +23,10 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 	 **/
 	override fun save() {
 		saveMultiblocks(chunk.inner.persistentDataContainer.adapterContext)
+	}
+
+	override fun markChanged() {
+		chunk.inner.minecraft.isUnsaved = true
 	}
 
 	override fun getNetwork(type: NetworkType): NodeManager {
