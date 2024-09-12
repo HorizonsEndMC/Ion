@@ -19,8 +19,8 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Directional
 
 class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager>(network) {
-	override suspend fun create(key: BlockKey, data: BlockData) {
-		if (network.nodes.contains(key)) return
+	override suspend fun create(key: BlockKey, data: BlockData): Boolean {
+		if (network.nodes.contains(key)) return false
 
 		when {
 			// Straight wires
@@ -73,8 +73,10 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 			// Redstone controlled gate
 //			block.type.isRedstoneLamp -> GateNode(this, x, y, z)
 
-			else -> return
+			else -> return false
 		}
+
+		return true
 	}
 
 	suspend fun addSponge(position: BlockKey, handleRelationships: Boolean = true) {
