@@ -141,12 +141,6 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 			savePowerData(store)
 		}
 
-		override fun getRealInputLocation(): Vec3i {
-			val loc = super.getRealInputLocation()
-			println("Real input loc: $loc")
-			return loc
-		}
-
 		override val powerInputOffset: Vec3i = Vec3i(0, -1, 0)
 	}
 }
