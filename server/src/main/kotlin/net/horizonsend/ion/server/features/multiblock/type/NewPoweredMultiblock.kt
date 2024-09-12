@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
@@ -37,6 +38,9 @@ interface NewPoweredMultiblock<T : MultiblockEntity> : EntityMultiblock<T> {
 			val multiblock = MultiblockAccess.getFast(sign) ?: return
 			if (multiblock !is NewPoweredMultiblock<*>) return
 			val entity = multiblock.getMultiblockEntity(sign) ?: return
+
+			val item = event.item ?: return
+			if (CustomItems[item] !is CustomItems.BatteryItem) return
 
 			multiblock.handleBatteryInput(sign, entity as PoweredMultiblockEntity, event)
 		}
