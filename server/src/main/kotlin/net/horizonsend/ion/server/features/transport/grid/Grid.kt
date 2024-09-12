@@ -4,16 +4,17 @@ import com.google.common.graph.ElementOrder
 import com.google.common.graph.GraphBuilder
 import com.google.common.graph.MutableGraph
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.features.transport.grid.util.Sink
-import net.horizonsend.ion.server.features.transport.grid.util.Source
+import net.horizonsend.ion.server.features.transport.grid.sink.Sink
+import net.horizonsend.ion.server.features.transport.grid.sink.Source
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KClass
 
 @Suppress("UnstableApiUsage")
-abstract class Grid(val type: GridType, val manager: WorldGridManager) {
-	private val sourceList: ConcurrentHashMap.KeySetView<Source, Boolean> = ConcurrentHashMap.newKeySet()
-	private val sinkList: ConcurrentHashMap.KeySetView<Sink, Boolean> = ConcurrentHashMap.newKeySet()
+abstract class Grid<Src: Source, Snk: Sink>(val type: GridType, val manager: WorldGridManager, val source: KClass<Src>, val sink: KClass<Snk>) {
+	private val sourceList: ConcurrentHashMap.KeySetView<Src, Boolean> = ConcurrentHashMap.newKeySet()
+	private val sinkList: ConcurrentHashMap.KeySetView<Snk, Boolean> = ConcurrentHashMap.newKeySet()
 
 	val nodes: ObjectOpenHashSet<TransportNode> = ObjectOpenHashSet()
 
@@ -22,7 +23,7 @@ abstract class Grid(val type: GridType, val manager: WorldGridManager) {
 		.nodeOrder<TransportNode>(ElementOrder.unordered())
 		.build()
 
-	abstract fun transferResources(from: Source, to: Sink, resistanceContribution: Int, totalResistance: Int)
+	abstract fun transferResources(from: Src, to: Snk, resistanceContribution: Int, totalResistance: Int)
 
 	fun tickTransport() {
 		for (source in sourceList) {
@@ -32,7 +33,7 @@ abstract class Grid(val type: GridType, val manager: WorldGridManager) {
 		}
 	}
 
-	private fun distributeResources(source: Source, sinks: Map<Sink, Int>) {
+	private fun distributeResources(source: Src, sinks: Map<Snk, Int>) {
 		val total = sinks.values.sum()
 
 		for ((sink, resistance) in sinks) {
@@ -43,7 +44,7 @@ abstract class Grid(val type: GridType, val manager: WorldGridManager) {
 	/**
 	 * Finds the path between the two sources with the least resistance, and returns the resistance value. Null if no path could be found.
 	 **/
-	fun getLeastResistantPath(to: Sink, from: Source): Int? {
+	fun getLeastResistantPath(to: Snk, from: Src): Int? {
 		return 1 //TODO A*
 	}
 
@@ -52,8 +53,9 @@ abstract class Grid(val type: GridType, val manager: WorldGridManager) {
 		nodes.add(node)
 		graph.addNode(node)
 
-		if (node is Source) {
-			sourceList.add(node)
+		if (source.isInstance(node)) {
+			@Suppress("UNCHECKED_CAST")
+			sourceList.add(node as Src)
 		}
 	}
 
@@ -70,25 +72,32 @@ abstract class Grid(val type: GridType, val manager: WorldGridManager) {
 		}
 	}
 
-	fun handleMerge(other: Grid) {
-		for (edge in other.graph.edges()) {
+	@Suppress("UNCHECKED_CAST")
+	fun cast(grid: Grid<*, *>): Grid<Src, Snk> = grid as Grid<Src, Snk>
+
+	fun handleMerge(other: Grid<*, *>) {
+		val cast = cast(other)
+
+		for (edge in cast.graph.edges()) {
 			graph.putEdge(edge.nodeU(), edge.nodeV())
 		}
 
-		for (node in other.graph.nodes()) {
+		for (node in cast.graph.nodes()) {
 			addNode(node)
 			graph.addNode(node)
 			node.grid = this
 		}
 
-		postMerge(other)
+
+
+		postMerge(cast)
 	}
 
-	abstract fun postMerge(other: Grid)
+	abstract fun postMerge(other: Grid<Src, Snk>)
 
-	abstract fun postSplit(new: List<Grid>)
+	abstract fun postSplit(new: List<Grid<Src, Snk>>)
 
-	fun registerSource(source: Source) {
+	fun registerSource(source: Src) {
 		sourceList.add(source)
 	}
 
@@ -96,7 +105,7 @@ abstract class Grid(val type: GridType, val manager: WorldGridManager) {
 		sourceList.remove(source)
 	}
 
-	fun registerSink(sink: Sink) {
+	fun registerSink(sink: Snk) {
 		sinkList.add(sink)
 	}
 

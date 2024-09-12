@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node
 
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.transport.grid.Grid
 import net.horizonsend.ion.server.features.transport.grid.GridType
@@ -13,6 +12,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 
 /**
@@ -23,10 +23,10 @@ abstract class TransportNode(val gridType: GridType) : PDCSerializable<Transport
 	abstract val manager: NodeManager
 	override val persistentDataType: Companion get() = Companion
 
-	lateinit var grid: Grid
+	lateinit var grid: Grid<*, *>
 
 	/** Stored relationships between nodes **/
-	val relationships: MutableSet<NodeRelationship> = ObjectOpenHashSet()
+	val relationships: MutableSet<NodeRelationship> = ConcurrentHashMap.newKeySet()
 
 	/**
 	 * Break all relations between this node and others
