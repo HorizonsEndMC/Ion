@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.type
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.features.transport.grid.GridType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -10,7 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 /**
  * A transport node that may cover many blocks to avoid making unnecessary steps
  **/
-abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>>(type: GridType) : TransportNode(type) {
+abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : TransportNode() {
 	/** The positions occupied by the node **/
 	val positions: MutableSet<BlockKey> = LongOpenHashSet()
 
@@ -21,8 +20,6 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>>(type: 
 	 * from the list of contained positions, and the node is rebuilt using this method.
 	 **/
 	open suspend fun rebuildNode(position: BlockKey) {
-		grid.removeNode(this)
-
 		// Create new nodes, automatically merging together
 		positions.forEach {
 			addBack(it)
@@ -32,12 +29,6 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>>(type: 
 		positions.forEach {
 			manager.nodes[it]?.buildRelations(it)
 		}
-
-		// Join successor nodes to the grid
-		positions
-			.mapNotNullTo(mutableSetOf()) { manager.nodes[it] }
-			.distinct()
-			.forEach { it.joinGrid() }
 	}
 
 	abstract suspend fun addBack(position: BlockKey)
@@ -74,8 +65,6 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>>(type: 
 		clearRelations()
 		new.clearRelations()
 
-		grid.removeNode(this)
-
 		new.addPositions(positions)
 		new.positions.forEach { new.buildRelations(it) }
 	}
@@ -101,8 +90,6 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>>(type: 
 
 	override suspend fun handleRemoval(position: BlockKey) {
 		isDead = true
-
-		grid.removeNode(this)
 
 		// Remove the position from the network
 		manager.nodes.remove(position)
