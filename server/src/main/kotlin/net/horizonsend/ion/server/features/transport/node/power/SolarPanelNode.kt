@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.grid.GridType
-import net.horizonsend.ion.server.features.transport.grid.util.Source
-import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
+import net.horizonsend.ion.server.features.transport.grid.sink.PowerSource
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_DETECTORS
@@ -33,7 +33,7 @@ import java.util.function.Consumer
  **/
 class SolarPanelNode(
 	override val manager: PowerNodeManager
-) : MultiNode<SolarPanelNode, SolarPanelNode>(GridType.Power), Source {
+) : MultiNode<SolarPanelNode, SolarPanelNode>(GridType.Power), PowerSource {
 	/** The positions of extractors in this solar panel */
 	private val extractorPositions = ConcurrentHashMap.newKeySet<BlockKey>()
 
@@ -255,6 +255,10 @@ class SolarPanelNode(
 
 		val detectors = persistentDataContainer.get(SOLAR_CELL_DETECTORS, LONG_ARRAY)
 		detectors?.let { detectorPositions.addAll(it.asIterable()) }
+	}
+
+	override fun getTransferablePower(): Int {
+		return getPower()
 	}
 
 	companion object {

@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.transport.grid.GridType
-import net.horizonsend.ion.server.features.transport.grid.util.Source
+import net.horizonsend.ion.server.features.transport.grid.sink.PowerSource
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -14,7 +14,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
 
-class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(GridType.Power), Source {
+class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(GridType.Power), PowerSource {
 	constructor(network: PowerNodeManager, position: BlockKey) : this(network) {
 		this.position = position
 		network.extractors[position] = this
@@ -85,6 +85,10 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(Gr
 
 	override fun isProviding(): Boolean {
 		return extractableNodes.mapNotNull { it.boundMultiblockEntity }.any { it.getPower() > 0 }
+	}
+
+	override fun getTransferablePower(): Int {
+		return minOf(getTransferPower(), extractableNodes.sumOf { it.boundMultiblockEntity?.getPower() ?: 0 })
 	}
 
 	override fun toString(): String = "POWER Extractor NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
