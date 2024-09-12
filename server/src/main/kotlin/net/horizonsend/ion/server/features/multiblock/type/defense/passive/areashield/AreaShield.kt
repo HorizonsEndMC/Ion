@@ -7,13 +7,13 @@ import net.horizonsend.ion.server.features.client.display.modular.display.PowerE
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedPowerDisplayEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getSphereBlocks
@@ -24,7 +24,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.persistence.PersistentDataType.INTEGER
 import java.util.concurrent.TimeUnit
 
 abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<AreaShield.AreaShieldEntity>, InteractableMultiblock {
@@ -77,18 +76,19 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AreaShieldEntity {
 		return AreaShieldEntity(
+			data,
 			manager,
 			this,
 			x,
 			y,
 			z,
 			world,
-			structureDirection,
-			data.getAdditionalDataOrDefault(POWER, INTEGER, 0)
+			structureDirection
 		)
 	}
 
 	class AreaShieldEntity(
+		data: PersistentMultiblockData,
 		manager: MultiblockManager,
 		override val multiblock: AreaShield,
 		x: Int,
@@ -96,10 +96,8 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 		z: Int,
 		world: World,
 		signDirection: BlockFace,
-		override var powerUnsafe: Int,
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), UpdatedPowerDisplayEntity {
-		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
-		override val maxPower: Int = multiblock.maxPower
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity {
+		override val storage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
@@ -129,10 +127,8 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
-			store.addAdditionalData(POWER, INTEGER, getPower())
+			savePowerData(store)
 		}
-
-		override fun toString(): String = "AREA SHIELD::: POWER:: ${getPower()}"
 
 		override val powerInputOffset: Vec3i = Vec3i(0, -1, 0)
 	}
