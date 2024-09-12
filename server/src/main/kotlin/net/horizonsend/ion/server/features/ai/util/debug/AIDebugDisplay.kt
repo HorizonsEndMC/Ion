@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.ai.util.debug
 
+import BasicSteeringModule
+import ContextMap
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServerComponent
@@ -10,6 +12,9 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFac
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
@@ -37,6 +42,7 @@ object AIDebugDisplay : IonServerComponent() {
 	// These vars are for saving the info of the closest
 	private val lowestAngleMap = mutableMapOf<UUID, Float>()
 	val planetSelectorDataMap = mutableMapOf<UUID, PlanetSelectorData>()
+	private val entityList = mutableListOf<VectorDisplay>()
 
 	/**
 	 * Runs when the server starts. Schedules a task to render the planet entities for each player.
@@ -59,46 +65,29 @@ object AIDebugDisplay : IonServerComponent() {
 	 */
 	private fun createAIShipDebug(
 		player: Player,
-		identifier: String,
+		identifier: ActiveStarship,
 		distance: Double,
-		direction: Vector,
 		scaleFactor: Double = 1.0
-	): net.minecraft.world.entity.Display.ItemDisplay? {
+	): Boolean {
+		if (identifier.controller !is AIController) return false
+		val mod = (identifier.controller as AIController).getModuleByType<BasicSteeringModule>()?:return false
+		displayContext( mod.movementInterest, CustomItems.ENERGY_SWORD_GREEN.singleItem(), player,identifier,distance)
+		displayContext( mod.movementInterest, CustomItems.ENERGY_SWORD_RED.singleItem(), player,identifier,distance)
+		return true
 
-		/* Start with the Bukkit entity first as the NMS entity has private values that are easier to set by working off
-		 * the Bukkit wrapper first */
-		val entity = ClientDisplayEntityFactory.createItemDisplay(player)
-		val entityRenderDistance = ClientDisplayEntities.getViewDistanceEdge(player)
-		// do not render if the planet is closer than the entity render distance
-		if (distance < entityRenderDistance * 2) return null
+	}
 
-		entity.itemStack = getPlanetItemStack(identifier)
-		entity.billboard = Display.Billboard.FIXED
-		entity.viewRange = 5.0f
-		//entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
-		entity.brightness = Display.Brightness(15, 15)
-		entity.teleportDuration = 0
-
-		// calculate position and offset
-		val position = player.eyeLocation.toVector()
-		val scale = scale(distance, scaleFactor)
-		val offset = direction.clone().normalize().multiply(entityRenderDistance + offsetMod(scale))
-
-		// apply transformation
-		entity.transformation = Transformation(
-			offset.toVector3f(),
-			ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
-			Vector3f(scale * ClientDisplayEntities.viewDistanceFactor(entityRenderDistance)),
-			Quaternionf()
-		)
-
-		// position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
-		val nmsEntity = entity.getNMSData(position.x, position.y, position.z)
-
-		ClientDisplayEntities.sendEntityPacket(player, nmsEntity)
-		ClientDisplayEntities[player.uniqueId]?.set(identifier, nmsEntity)
-
-		return nmsEntity
+	private fun displayContext(context : ContextMap,
+							   model : ItemStack,
+							   player: Player,
+							   identifier: ActiveStarship,
+							   distance: Double,) {
+		for (i in 0..ContextMap.NUMBINS) {
+			val dir = ContextMap.bindir[i]
+			val mag = context.bins[i]
+			val display = VectorDisplay(identifier.centerOfMass.toVector(),dir.clone().multiply(mag),model)
+			display.createEntity(player, identifier.identifier, distance)
+		}
 	}
 
 	/**
@@ -173,199 +162,9 @@ object AIDebugDisplay : IonServerComponent() {
 		ClientDisplayEntities[player.uniqueId]?.remove(identifier)
 	}
 
-	/**
-	 * Creates a client-side ItemDisplay entity for displaying a planet selector in space.
-	 * @return the NMS ItemDisplay object
-	 * @param player the player that the entity should be visible to
-	 * @param data the planet selection data to update with
-	 */
-	private fun createPlanetSelectorEntity(
-		player: Player,
-		data: PlanetSelectorData
-	): net.minecraft.world.entity.Display.ItemDisplay {
 
-		val entity = ClientDisplayEntityFactory.createItemDisplay(player)
 
-		entity.itemStack = net.horizonsend.ion.server.features.custom.items.CustomItems.PLANET_SELECTOR.constructItemStack()
-		entity.billboard = Display.Billboard.FIXED
-		entity.viewRange = 5.0f
-		//entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
-		entity.brightness = Display.Brightness(15, 15)
-		entity.teleportDuration = 0
 
-		// calculate position and offset
-		val position = player.eyeLocation.toVector()
-		// subtract 1 to ensure it is rendered before the planet
-		val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 1)
-
-		// apply transformation
-		entity.transformation = Transformation(
-			offset.toVector3f(),
-			ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
-			Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
-			Quaternionf()
-		)
-
-		// position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
-		val nmsEntity = entity.getNMSData(position.x, position.y, position.z)
-
-		ClientDisplayEntities.sendEntityPacket(player, nmsEntity)
-		ClientDisplayEntities.highlightDisplayEntityPacket(player, nmsEntity, true)
-		ClientDisplayEntities[player.uniqueId]?.set("planetSelector", nmsEntity)
-
-		return nmsEntity
-	}
-
-	/**
-	 * Updates a client-side ItemDisplay for rendering a planet selector in space
-	 * @return the NMS ItemDisplay object
-	 * @param player the player that the entity should be visible to
-	 * @param data the planet selection data to update with
-	 */
-	private fun updatePlanetSelectorEntity(player: Player, data: PlanetSelectorData) {
-
-		val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get("planetSelector") ?: return
-
-		// remove entity if it is in an unloaded chunk or different world (this causes the entity client-side to despawn?)
-		// also do not render if the planet is closer than the entity render distance
-		if (!nmsEntity.isChunkLoaded ||
-			nmsEntity.level().world.name != player.world.name
-		) {
-			ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
-			ClientDisplayEntities[player.uniqueId]?.remove("planetSelector")
-			return
-		} else {
-			// calculate position and offset
-			val position = player.eyeLocation.toVector()
-			// subtract 1 to ensure it is rendered before the planet
-			val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 1)
-
-			// apply transformation
-			val transformation = com.mojang.math.Transformation(
-				offset.toVector3f(),
-				ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f()),
-				Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
-				Quaternionf()
-			)
-
-			ClientDisplayEntities.moveDisplayEntityPacket(player.minecraft, nmsEntity, position.x, position.y, position.z)
-			ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)
-		}
-	}
-
-	/**
-	 * Deletes a client-side ItemDisplay planet selector
-	 * @param player the player to delete the planet selector for
-	 */
-	private fun deletePlanetSelectorEntity(player: Player) {
-
-		val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get("planetSelector") ?: return
-
-		ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
-		ClientDisplayEntities[player.uniqueId]?.remove("planetSelector")
-
-		planetSelectorDataMap.remove(player.uniqueId)
-	}
-
-	/**
-	 * Creates a client-side TextDisplay entity for displaying a planet selector in space.
-	 * @return the NMS ItemDisplay object
-	 * @param player the player that the entity should be visible to
-	 * @param data the planet selection data to update with
-	 */
-	private fun createPlanetSelectorTextEntity(
-		player: Player,
-		data: PlanetSelectorData
-	): net.minecraft.world.entity.Display.TextDisplay {
-
-		val entity = ClientDisplayEntityFactory.createTextDisplay(player)
-
-		entity.text(ofChildren(Component.text(data.name), Component.text(" /jump", NamedTextColor.GREEN)))
-		entity.billboard = Display.Billboard.FIXED
-		entity.viewRange = 5.0f
-		//entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
-		entity.brightness = Display.Brightness(15, 15)
-		entity.teleportDuration = 0
-		entity.backgroundColor = Color.fromARGB(0x00000000)
-
-		// calculate position and offset
-		val position = player.eyeLocation.toVector()
-		val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 2)
-			.apply { this.y -= getTextOffset(data.scale, player) }
-
-		// apply transformation
-		entity.transformation = Transformation(
-			offset.toVector3f(),
-			ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f().mul(-1f)),
-			Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
-			Quaternionf()
-		)
-
-		// position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
-		val nmsEntity = entity.getNMSData(position.x, position.y, position.z)
-
-		ClientDisplayEntities.sendEntityPacket(player, nmsEntity)
-		ClientDisplayEntities[player.uniqueId]?.set("planetSelectorText", nmsEntity)
-
-		return nmsEntity
-	}
-
-	/**
-	 * Updates a client-side ItemDisplay for rendering a planet selector in space
-	 * @return the NMS ItemDisplay object
-	 * @param player the player that the entity should be visible to
-	 * @param data the planet selection data to update with
-	 */
-	private fun updatePlanetSelectorTextEntity(player: Player, data: PlanetSelectorData) {
-
-		val nmsEntity =
-			ClientDisplayEntities[player.uniqueId]?.get("planetSelectorText") as net.minecraft.world.entity.Display.TextDisplay?
-				?: return
-
-		// remove entity if it is in an unloaded chunk or different world (this causes the entity client-side to despawn?)
-		// also do not render if the planet is closer than the entity render distance
-		if (!nmsEntity.isChunkLoaded ||
-			nmsEntity.level().world.name != player.world.name
-		) {
-			ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
-			ClientDisplayEntities[player.uniqueId]?.remove("planetSelectorText")
-			return
-		} else {
-			nmsEntity.text = PaperAdventure.asVanilla(
-				ofChildren(
-					Component.text(data.name),
-					Component.text(" /jump", NamedTextColor.GREEN)
-				)
-			)
-			// calculate position and offset
-			val position = player.eyeLocation.toVector()
-			val offset = data.direction.clone().normalize().multiply(data.distance - offsetMod(data.scale) - 2)
-				.apply { this.y -= getTextOffset(data.scale, player) }
-
-			// apply transformation
-			val transformation = com.mojang.math.Transformation(
-				offset.toVector3f(),
-				ClientDisplayEntities.rotateToFaceVector2d(offset.toVector3f().mul(-1f)),
-				Vector3f(data.scale * ClientDisplayEntities.viewDistanceFactor(data.distance)),
-				Quaternionf()
-			)
-
-			ClientDisplayEntities.moveDisplayEntityPacket(player.minecraft, nmsEntity, position.x, position.y, position.z)
-			ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)
-		}
-	}
-
-	/**
-	 * Deletes a client-side TextDisplay planet selector text
-	 * @param player the player to delete the planet selector for
-	 */
-	private fun deletePlanetSelectorTextEntity(player: Player) {
-
-		val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get("planetSelectorText") ?: return
-
-		ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
-		ClientDisplayEntities[player.uniqueId]?.remove("planetSelectorText")
-	}
 
 	/**
 	 * Equation for getting the scale of a planet display entity. Maximum (0, 100) and horizontal asymptote at x = 5.
@@ -463,49 +262,6 @@ object AIDebugDisplay : IonServerComponent() {
 			}
 		}
 
-		// Rendering stars
-		val starList = Space.getStars().filter { it.spaceWorld == player.world }
-		for (star in starList) {
-			if (hudPlanetsImageEnabled) {
-				val distance = player.location.toVector().distance(star.location.toVector())
-				val direction = star.location.toVector().subtract(player.location.toVector()).normalize()
-
-				if (playerDisplayEntities[star.name] == null) {
-					// entity does not exist yet; create it
-					// send packet and create the planet entity
-					createPlanetEntity(player, star.name, distance, direction, scaleFactor = STAR_SCALE_FACTOR) ?: continue
-				} else {
-					// entity exists; update position
-					updatePlanetEntity(player, star.name, distance, direction, scaleFactor = STAR_SCALE_FACTOR, selectable = false)
-				}
-			} else if (playerDisplayEntities[star.name] != null) {
-				deletePlanetEntity(player, star.name)
-			}
-		}
-
-		// Rendering planet selector
-		if (hudPlanetsSelectorEnabled) {
-			if (PilotedStarships[player] != null && lowestAngleMap[player.uniqueId] != null &&
-				lowestAngleMap[player.uniqueId]!! < Float.MAX_VALUE
-			) {
-				if (playerDisplayEntities["planetSelector"] == null) {
-					// planet should be selected but the planet selector doesn't exist yet
-					createPlanetSelectorEntity(player, planetSelectorDataMap[player.uniqueId]!!)
-					createPlanetSelectorTextEntity(player, planetSelectorDataMap[player.uniqueId]!!)
-				} else {
-					// planet selector already exists
-					updatePlanetSelectorEntity(player, planetSelectorDataMap[player.uniqueId]!!)
-					updatePlanetSelectorTextEntity(player, planetSelectorDataMap[player.uniqueId]!!)
-				}
-			} else {
-				// planet is not selected; delete selector if it exists
-				deletePlanetSelectorEntity(player)
-				deletePlanetSelectorTextEntity(player)
-			}
-		} else if (playerDisplayEntities["planetSelector"] != null) {
-			deletePlanetSelectorEntity(player)
-			deletePlanetSelectorTextEntity(player)
-		}
 	}
 
 	/**

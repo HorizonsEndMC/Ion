@@ -60,6 +60,9 @@ class BasicSteeringModule(
 
 	val seekPos = generalTarget.get()?.getLocation()?.toVector()
 
+	var thrustOut = Vector(0.0,0.0,1.0)
+	var headingOut =  Vector(0.0,0.0,1.0)
+
     /**
      * Master steering function
      *
@@ -154,6 +157,8 @@ class BasicSteeringModule(
 			.normalize()
         val thrustmag = movementInterest.lincontext!!.interpolotedMax()
         val thrust = movementInterest.interpolatedMaxDir().normalize().multiply(thrustmag)
+		thrustOut = thrust
+		headingOut = heading
         return SteeringOutput(heading, thrust)
     }
 
