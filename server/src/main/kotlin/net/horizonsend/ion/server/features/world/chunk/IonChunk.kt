@@ -51,8 +51,9 @@ class IonChunk(
 	//  - Ore upgrader
 	//  - Explosion Reversal
 
-	val multiblockManager = ChunkMultiblockManager(this, log)
+	// Initialize the transport manager before the multiblock manager so that multiblocks can bind to nodes
 	val transportNetwork: ChunkTransportManager = ChunkTransportManager(this)
+	val multiblockManager = ChunkMultiblockManager(this, log)
 
 	/**
 	 * Logic upon loading the chunk
