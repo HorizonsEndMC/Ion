@@ -1,10 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node
 
 import kotlinx.serialization.SerializationException
-import net.horizonsend.ion.server.features.transport.grid.Grid
-import net.horizonsend.ion.server.features.transport.grid.GridType
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -18,12 +15,10 @@ import java.util.concurrent.ThreadLocalRandom
 /**
  * Represents a single node, or step, in transport transportNetwork
  **/
-abstract class TransportNode(val gridType: GridType) : PDCSerializable<TransportNode, TransportNode.Companion> {
+abstract class TransportNode() : PDCSerializable<TransportNode, TransportNode.Companion> {
 	var isDead: Boolean = false
 	abstract val manager: NodeManager
 	override val persistentDataType: Companion get() = Companion
-
-	lateinit var grid: Grid<*, *>
 
 	/** Stored relationships between nodes **/
 	val relationships: MutableSet<NodeRelationship> = ConcurrentHashMap.newKeySet()
@@ -105,16 +100,6 @@ abstract class TransportNode(val gridType: GridType) : PDCSerializable<Transport
 	 * Additional logic to be run once the node is placed
 	 **/
 	open suspend fun onPlace(position: BlockKey) {}
-
-	/**
-	 * Join the transport grids of the world. Only to be run once fully set up, and relations are built.
-	 **/
-	fun joinGrid() {
-		val gridManager = manager.world.ion.gridManager
-		gridManager.joinOrCreateGrid(this)
-	}
-
-	fun hasJoinedGrid() = ::grid.isInitialized
 
 	companion object : PersistentDataType<PersistentDataContainer, TransportNode> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
