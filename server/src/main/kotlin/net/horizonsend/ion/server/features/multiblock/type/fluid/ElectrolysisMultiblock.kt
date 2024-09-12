@@ -277,10 +277,6 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 
 		override val fluidInputOffset: Vec3i = Vec3i(0, -1, 0)
 
-		override fun isRequesting(): Boolean {
-			return super<UpdatedPowerDisplayEntity>.isRequesting() || super<FluidStoringEntity>.isRequesting()
-		}
-
 		companion object {
 			const val WATER_INCREMENT = 5
 		}

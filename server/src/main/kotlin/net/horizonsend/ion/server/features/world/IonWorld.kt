@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.manager.WorldMultiblockManager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.transport.grid.WorldGridManager
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
@@ -47,7 +46,6 @@ class IonWorld private constructor(
 	val chunkRegions: MutableSet<ChunkRegion> = ObjectOpenHashSet()
 
 	val multiblockManager = WorldMultiblockManager(this)
-	val gridManager = WorldGridManager(this)
 
 	/**
 	 * Gets the IonChunk at the specified coordinates if it is loaded
@@ -187,8 +185,6 @@ class IonWorld private constructor(
 			mainThreadCheck()
 
 			for (ionWorld in ionWorlds.values) {
-				ionWorld.gridManager.tickSafely()
-
 				for (starship in ionWorld.starships) {
 					val result = runCatching(starship::tick).exceptionOrNull() ?: continue
 					log.warn("Exception while ticking starship!", result)
