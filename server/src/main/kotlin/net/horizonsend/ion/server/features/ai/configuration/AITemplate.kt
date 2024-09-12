@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.ai.reward.AICreditRewardProvider
 import net.horizonsend.ion.server.features.ai.reward.AIItemRewardProvider
 import net.horizonsend.ion.server.features.ai.reward.AIXPRewardProvider
-import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.starship.BehaviorConfiguration
 import net.horizonsend.ion.server.features.ai.starship.StarshipTemplate
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -20,7 +19,7 @@ data class AITemplate(
 ) {
 	@Serializable
 	data class SpawningInformationHolder(
-		val template: SpawnedShip,
+		val template: AITemplate,
 		val probability: Double
 	)
 

@@ -4,11 +4,8 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
-import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.misc.FactionManagerModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.allAIStarships
-import net.horizonsend.ion.server.features.ai.spawning.ships.FactionShip
-import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.BehaviorConfiguration
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -17,7 +14,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.Color
 
 /**
  * Responsible for providing ships, colors, and managing names of AI ships
@@ -44,15 +40,6 @@ class AIFaction private constructor(
 
 	fun processTemplate(template: AITemplateRegistry.Builder) {
 		templateProcess(template)
-	}
-
-	val controllerModifier: (AIController) -> Unit = { controller ->
-		controller.setColor(Color.fromRGB(color))
-		controller.modules["faction"] = FactionManagerModule(controller, this)
-	}
-
-	fun asSpawnedShip(template: AITemplate): SpawnedShip {
-		return FactionShip(template, this)
 	}
 
 	class Builder(private val identifier: String, val color: Int) {

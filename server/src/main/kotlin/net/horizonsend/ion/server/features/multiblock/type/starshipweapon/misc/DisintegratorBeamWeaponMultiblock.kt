@@ -1,8 +1,8 @@
-package net.horizonsend.ion.server.features.multiblock.starshipweapon.turret
+package net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.SubsystemMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DisintegratorBeamWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i

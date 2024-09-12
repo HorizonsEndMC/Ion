@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.DisintegratorBeamWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.DisintegratorBeamWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
