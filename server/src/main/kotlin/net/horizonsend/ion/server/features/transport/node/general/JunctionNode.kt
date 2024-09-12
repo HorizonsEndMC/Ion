@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node.general
 
-import net.horizonsend.ion.server.features.transport.grid.GridType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
@@ -10,7 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-abstract class JunctionNode<T: NodeManager, A: JunctionNode<T, B, A>, B: JunctionNode<T, A, B>>(override val manager: T, type: GridType) : MultiNode<B, A>(type) {
+abstract class JunctionNode<T: NodeManager, A: JunctionNode<T, B, A>, B: JunctionNode<T, A, B>>(override val manager: T) : MultiNode<B, A>() {
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		return node !is PowerExtractorNode && node !is SolarPanelNode
 	}

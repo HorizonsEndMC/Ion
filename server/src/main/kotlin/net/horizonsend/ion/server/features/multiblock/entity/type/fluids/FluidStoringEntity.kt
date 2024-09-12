@@ -5,9 +5,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.InternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
-import net.horizonsend.ion.server.features.transport.grid.FluidGrid
-import net.horizonsend.ion.server.features.transport.grid.sink.Sink
-import net.horizonsend.ion.server.features.transport.grid.sink.Source
 import net.horizonsend.ion.server.features.transport.node.fluid.FluidInputNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORAGES
@@ -20,7 +17,7 @@ import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER
 
-interface FluidStoringEntity : Source, Sink {
+interface FluidStoringEntity {
 	val capacities: Array<StorageContainer>
 
 	/**
@@ -145,22 +142,5 @@ interface FluidStoringEntity : Source, Sink {
 		if (existing.boundMultiblockEntity != this) return
 
 		existing.boundMultiblockEntity = null
-	}
-
-	/**
-	 * Returns the grid that this multiblock is tied to
-	 *
-	 * Should only return null if the multiblock is partially unloaded, or not intact.
-	 **/
-	fun getFluidGrid(): FluidGrid? {
-		return getFluidInputNode()?.grid as? FluidGrid
-	}
-
-	override fun isProviding(): Boolean {
-		return getStoredResources().entries.any { it.key != null && it.value > 0 }
-	}
-
-	override fun isRequesting(): Boolean {
-		return capacities.any { it.storage.getAmount() < it.storage.getCapacity() }
 	}
 }

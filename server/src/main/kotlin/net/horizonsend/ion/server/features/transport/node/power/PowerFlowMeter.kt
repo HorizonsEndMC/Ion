@@ -7,7 +7,6 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerFlowMeterDisplay
-import net.horizonsend.ion.server.features.transport.grid.GridType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -24,7 +23,7 @@ import org.bukkit.block.BlockFace.NORTH
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode(GridType.Power) {
+class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode() {
 	constructor(network: PowerNodeManager, position: BlockKey, direction: BlockFace) : this(network) {
 		this.position = position
 		this.direction = direction

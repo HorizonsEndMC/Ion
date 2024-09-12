@@ -12,7 +12,6 @@ import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.formatSpacePrefix
-import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
@@ -22,7 +21,6 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
@@ -214,26 +212,6 @@ object WorldCommand : SLCommand() {
 		}
 
 		sender.information("Entities:")
-		sender.sendMessage(menu)
-	}
-
-	@Subcommand("query grids")
-	fun onQueryGrids(sender: Player, @Optional page: Int?) {
-		val manager = sender.world.ion.gridManager
-		val grids = manager.allGrids.toList()
-
-		val menu = formatPaginatedMenu(
-			grids.size,
-			"/onQueryEntities",
-			page ?: 1
-		) {
-			val grid = grids[it]
-
-			ofChildren(text(grid.javaClass.simpleName), space(), bracketed(text("${grid.manager.world.world.name}: grid, ${grid.nodes.size} nodes")))
-				.hoverEvent(grid.nodes.map { node -> node.toComponent() }.join(newline()))
-		}
-
-		sender.information("Grids:")
 		sender.sendMessage(menu)
 	}
 }

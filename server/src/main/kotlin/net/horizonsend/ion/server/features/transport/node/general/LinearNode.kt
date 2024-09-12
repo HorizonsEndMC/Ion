@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.general
 
 import com.manya.pdc.base.EnumDataType
-import net.horizonsend.ion.server.features.transport.grid.GridType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
@@ -16,7 +15,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<T, A, B>>(override val manager: T, type: GridType) : MultiNode<B, A>(type) {
+abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<T, A, B>>(override val manager: T) : MultiNode<B, A>() {
 	var axis by Delegates.notNull<Axis>()
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
