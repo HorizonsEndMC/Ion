@@ -11,13 +11,13 @@ import net.horizonsend.ion.server.features.gear.isPowerable
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.UpdatedPowerDisplayEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Material
 import org.bukkit.World
@@ -26,7 +26,6 @@ import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 
 abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPoweredMultiblock<ChargerMultiblock.ChargerEntity>, FurnaceMultiblock {
 	protected abstract val tierMaterial: Material
@@ -84,18 +83,19 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): ChargerEntity {
 		return ChargerEntity(
+			data,
 			manager,
 			this,
 			x,
 			y,
 			z,
 			world,
-			structureDirection,
-			data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0)
+			structureDirection
 		)
 	}
 
 	class ChargerEntity(
+		data: PersistentMultiblockData,
 		manager: MultiblockManager,
 		override val multiblock: ChargerMultiblock,
 		x: Int,
@@ -103,10 +103,8 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 		z: Int,
 		world: World,
 		signDirection: BlockFace,
-		override var powerUnsafe: Int
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), UpdatedPowerDisplayEntity {
-		override val displayUpdates: MutableList<(UpdatedPowerDisplayEntity) -> Unit> = mutableListOf()
-		override val maxPower: Int = multiblock.maxPower
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity {
+		override val storage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
@@ -114,7 +112,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 		).register()
 
 		fun handleCharging(event: FurnaceBurnEvent, furnace: Furnace) {
-			val availablePower = getPower()
+			val availablePower = storage.getPower()
 			if (availablePower == 0) return
 
 			val item = event.fuel
@@ -153,7 +151,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 
 			addPower(item, multiplier)
 
-			setPower(power - multiplier * item.amount)
+			storage.setPower(power - multiplier * item.amount)
 
 			furnace.cookTime = 20.toShort()
 
@@ -188,7 +186,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 
 			customItem.addPower(item, multiplier)
 
-			setPower(power - multiplier * item.amount)
+			storage.setPower(power - multiplier * item.amount)
 
 			furnace.cookTime = 20.toShort()
 
@@ -214,7 +212,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData) {
-			store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, getPower())
+			savePowerData(store)
 		}
 
 		override val powerInputOffset: Vec3i = Vec3i(0, -1, 0)
