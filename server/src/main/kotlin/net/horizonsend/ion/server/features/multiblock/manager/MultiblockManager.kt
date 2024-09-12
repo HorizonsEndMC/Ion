@@ -61,6 +61,10 @@ abstract class MultiblockManager(val log: Logger) {
 			asyncTickingMultiblockEntities[entity.locationKey] = entity
 		}
 
+		if (entity is PoweredMultiblockEntity) {
+			(getNetwork(NetworkType.POWER) as PowerNodeManager).tryBindPowerNode(entity)
+		}
+
 		if (save) save()
 	}
 
@@ -123,10 +127,6 @@ abstract class MultiblockManager(val log: Logger) {
 
 		// Place the entity into the chunk
 		addMultiblockEntity(entity)
-
-		if (entity is PoweredMultiblockEntity) {
-			(getNetwork(NetworkType.POWER) as PowerNodeManager).handleNewPoweredMultiblock(entity)
-		}
 	}
 
 	/**
