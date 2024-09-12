@@ -182,4 +182,8 @@ abstract class MultiblockEntity(
 			return world.getBlockAt(position.x, position.y, position.z)
 		}
 	}
+
+	fun markChanged() {
+		manager.markChanged()
+	}
 }
