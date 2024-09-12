@@ -93,13 +93,13 @@ object AreaShields : IonServerComponent() {
 		blockList.forEach { explosionResistanceTotal += it.type.blastResistance }
 
 		for (shield in areaShields) {
-			var power = shield.getPower()
+			var power = shield.storage.getPower()
 			if (power <= 0) continue
 
 			power -= ((blockList.size.toDouble()/explosionResistanceTotal) * 10 * (this.explosionPowerOverride ?: 1.0)).toInt()
-			val percent = power.toFloat() / shield.maxPower.toFloat()
+			val percent = power.toFloat() / shield.storage.capacity.toFloat()
 
-			if (usePower) shield.setPower(power)
+			if (usePower) shield.storage.setPower(power)
 
 			val color = Color.fromRGB(
 				min(255f, 255 - max(0f, 255 * percent)).toInt(),
@@ -125,7 +125,7 @@ object AreaShields : IonServerComponent() {
 		val areaShields = getNearbyAreaShields(event.entity.location, 1.0)
 
 		for (shield in areaShields) {
-			if (shield.getPower() > 0) event.isCancelled = true
+			if (shield.storage.getPower() > 0) event.isCancelled = true
 		}
 	}
 }
