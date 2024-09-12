@@ -89,11 +89,7 @@ abstract class NodeManager(val holder: NetworkHolder<*>) {
 	/**
 	 * Handles any cleanup tasks at the end of loading
 	 **/
-	open fun finalizeNodes() {
-		for ((_, node) in nodes) {
-			node.joinGrid()
-		}
-	}
+	open fun finalizeNodes() {}
 
 	fun breakAllRelations() {
 		runBlocking { nodes.values.forEach { it.clearRelations() } }
