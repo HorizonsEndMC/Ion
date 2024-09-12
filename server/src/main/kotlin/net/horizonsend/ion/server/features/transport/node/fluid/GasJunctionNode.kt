@@ -1,11 +1,10 @@
 package net.horizonsend.ion.server.features.transport.node.fluid
 
-import net.horizonsend.ion.server.features.transport.grid.GridType
 import net.horizonsend.ion.server.features.transport.node.general.JunctionNode
 import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 
-class GasJunctionNode(network: FluidNodeManager) : JunctionNode<FluidNodeManager, GasJunctionNode, GasJunctionNode>(network, GridType.Fluid) {
+class GasJunctionNode(network: FluidNodeManager) : JunctionNode<FluidNodeManager, GasJunctionNode, GasJunctionNode>(network) {
 	constructor(network: FluidNodeManager, origin: BlockKey) : this(network) {
 		positions.add(origin)
 	}
