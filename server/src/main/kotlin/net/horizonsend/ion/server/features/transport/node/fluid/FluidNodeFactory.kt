@@ -17,8 +17,8 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Directional
 
 class FluidNodeFactory(network: FluidNodeManager) : NodeFactory<FluidNodeManager>(network) {
-	override suspend fun create(key: BlockKey, data: BlockData) {
-		if (network.nodes.contains(key)) return
+	override suspend fun create(key: BlockKey, data: BlockData): Boolean {
+		if (network.nodes.contains(key)) return false
 
 		when {
 			// Straight wires
@@ -51,7 +51,11 @@ class FluidNodeFactory(network: FluidNodeManager) : NodeFactory<FluidNodeManager
 
 			// Filter
 			data.material.isCopperBulb -> println("TODO")
+
+			else -> return false
 		}
+
+		return true
 	}
 
 	suspend fun addLightningRod(data: Directional, position: Long, handleRelationships: Boolean = true) {
