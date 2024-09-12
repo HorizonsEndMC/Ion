@@ -29,5 +29,5 @@ class PowerInputNode(override val manager: PowerNodeManager) : SingleNode(GridTy
 
 	var boundMultiblockEntity: PoweredMultiblockEntity? = null
 
-	override fun toString(): String = "POWER INPUT NODE. Bound to $boundMultiblockEntity Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
+	override fun toString(): String = "POWER INPUT NODE. Bound to $boundMultiblockEntity"
 }
