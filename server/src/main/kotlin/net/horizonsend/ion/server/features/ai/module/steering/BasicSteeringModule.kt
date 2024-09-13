@@ -16,13 +16,13 @@ The strategy for implementing context steering is as follows:
 3. Make a decision based on the final interest and danger context maps, importantly decision-making
 should be the LAST step.
  */
-import net.horizonsend.ion.server.features.ai.module.steering.SimplexNoise
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import org.bukkit.util.Vector
+import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.util.function.Supplier
 import kotlin.math.abs
 import kotlin.math.max
@@ -213,10 +213,10 @@ class BasicSteeringModule(
         override fun populateContext() {
 			clearContext()
             val timeoffset = offset * jitterRate
-            val theta = SimplexNoise.noise(
-                System.currentTimeMillis() % 1000000 / jitterRate / (ship.currentBlockCount / 10.0) + timeoffset,
-                System.currentTimeMillis() % 1000000 / jitterRate /(ship.currentBlockCount / 10.0)+ timeoffset
-            ) * 2 * Math.PI
+            val generator = SimplexOctaveGenerator(1, 1)
+            val theta =
+                generator.noise(System.currentTimeMillis() % 1000000 / jitterRate / (ship.currentBlockCount / 10.0) + timeoffset,
+                1.0,1.0 ) * 2 * Math.PI
             val desiredDir = Vector(0.0,0.0,1.0).rotateAroundY(theta)
             dotContext(desiredDir, dotShift, weight)
             lincontext!!.apply(lincontext!!.populatePeak(1.0, weight))
