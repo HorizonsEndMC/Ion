@@ -24,33 +24,26 @@ import kotlin.reflect.KProperty0
 
 class VectorDisplay private constructor(
 	var dir: Vector,
-	magDeg: ReadOnlyProperty<Any?, Double>,
+	val magDeg:Box,
 	val model: ItemStack,
 	val parent: ActiveStarship
 ){
 	val entity : ItemDisplay = createEntity()
-	val mag : Double by magDeg
+	val mag : Double get() = magDeg.getVal()
 
 	var shownPlayers = mutableSetOf<UUID>()
 
 	constructor(dir : Vector,
-				magSupp : KProperty0<Double>,
 				model : ItemStack,
 				parent: ActiveStarship) : this(
-		dir, DoubleDelegate(magSupp), model, parent) {}
-
-	constructor(dir : Vector,
-				magSupp : () -> Double,
-				model : ItemStack,
-				parent: ActiveStarship) : this(
-		dir, FunctionDelegate(magSupp), model, parent) {}
+		dir, ArrayVectorBox(dir), model, parent) {}
 
 	constructor(dir : Vector,
 				binIndex : Int,
 				bins : DoubleArray,
 				model : ItemStack,
 				parent: ActiveStarship) : this(
-		dir, ArrayPositionDelegate(bins,binIndex), model, parent) {}
+		dir, ArrayPosBox(bins,binIndex), model, parent) {}
 
 	fun createEntity(): ItemDisplay {
 		println("boop2")
@@ -124,19 +117,20 @@ class VectorDisplay private constructor(
 		return com
 	}
 
-	class ArrayPositionDelegate(val array: DoubleArray, val index: Int): ReadOnlyProperty<Any?, Double> {
-		override fun getValue(thisRef: Any?, property: KProperty<*>): Double = array[index]
-
+	abstract class Box() {
+		abstract fun getVal() : Double
 	}
 
-	class DoubleDelegate(val holder: KProperty0<Double>): ReadOnlyProperty<Any?, Double> {
-		override fun getValue(thisRef: Any?, property: KProperty<*>): Double = holder.get()
-
+	class ArrayPosBox(val array: DoubleArray, val index: Int) : Box() {
+		override fun getVal(): Double {
+			return array[index]
+		}
 	}
 
-	class FunctionDelegate(val holder: () -> Double ): ReadOnlyProperty<Any?, Double> {
-		override fun getValue(thisRef: Any?, property: KProperty<*>): Double = holder()
-
+	class ArrayVectorBox(val vector : Vector) : Box() {
+		override fun getVal(): Double {
+			return vector.length()
+		}
 	}
 
 }
