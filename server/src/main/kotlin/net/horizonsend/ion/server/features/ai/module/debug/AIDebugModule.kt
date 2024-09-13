@@ -35,7 +35,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 		val output = mutableListOf<VectorDisplay>()
 		output.addAll(displayContext( mod.movementInterest, CustomItems.ENERGY_SWORD_GREEN.singleItem(),controller.starship))
 		output.addAll(displayContext( mod.danger, CustomItems.ENERGY_SWORD_RED.singleItem(),controller.starship))
-		output.add(VectorDisplay(mod.thrustOut,mod.thrustOut::length,CustomItems.ENERGY_SWORD_BLUE.singleItem(), controller.starship))
+		output.add(VectorDisplay(mod.thrustOut,CustomItems.ENERGY_SWORD_BLUE.singleItem(), controller.starship))
 		return output
 	}
 
