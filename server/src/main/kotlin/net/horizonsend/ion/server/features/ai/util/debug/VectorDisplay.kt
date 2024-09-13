@@ -53,6 +53,7 @@ class VectorDisplay private constructor(
 		dir,ArrayPositionDelegate(bins,binIndex), model, parent) {}
 
 	fun createEntity(): ItemDisplay {
+		println("boop2")
 		val entity = CraftItemDisplay(
 			IonServer.server as CraftServer,
 			ItemDisplay(EntityType.ITEM_DISPLAY, parent.world.minecraft)
