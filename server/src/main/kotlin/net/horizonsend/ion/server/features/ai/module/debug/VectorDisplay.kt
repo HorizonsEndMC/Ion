@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.ai.util.debug
+package net.horizonsend.ion.server.features.ai.module.debug
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
@@ -37,20 +37,20 @@ class VectorDisplay private constructor(
 				magSupp : KProperty0<Double>,
 				model : ItemStack,
 				parent: ActiveStarship) : this(
-		dir,DoubleDelegate(magSupp), model, parent) {}
+		dir, DoubleDelegate(magSupp), model, parent) {}
 
 	constructor(dir : Vector,
 				magSupp : () -> Double,
 				model : ItemStack,
 				parent: ActiveStarship) : this(
-		dir,FunctionDelegate(magSupp), model, parent) {}
+		dir, FunctionDelegate(magSupp), model, parent) {}
 
 	constructor(dir : Vector,
 				binIndex : Int,
 				bins : DoubleArray,
 				model : ItemStack,
 				parent: ActiveStarship) : this(
-		dir,ArrayPositionDelegate(bins,binIndex), model, parent) {}
+		dir, ArrayPositionDelegate(bins,binIndex), model, parent) {}
 
 	fun createEntity(): ItemDisplay {
 		println("boop2")
