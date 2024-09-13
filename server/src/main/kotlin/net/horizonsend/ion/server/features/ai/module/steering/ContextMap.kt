@@ -56,7 +56,9 @@ abstract class ContextMap {
         }
     }
 
-    open fun populateContext() {}
+    open fun populateContext() {
+        checkContext()
+    }
 
     /**
      * Sets all bins to 0.0
@@ -64,6 +66,12 @@ abstract class ContextMap {
     fun clearContext() {
         Arrays.fill(bins, 0.0)
         lincontext?.clearContext()
+    }
+
+    fun checkContext() {
+        for (i in 0 until NUMBINS) {
+            if (bins[i].isNaN()) throw IllegalStateException("$i index was NaN")
+        }
     }
 
     /**

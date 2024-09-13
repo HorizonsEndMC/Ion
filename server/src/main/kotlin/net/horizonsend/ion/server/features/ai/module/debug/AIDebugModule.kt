@@ -43,7 +43,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 							   model : ItemStack,
 							   identifier: ActiveStarship, ) : List<VectorDisplay>{
 
-		return (0..ContextMap.NUMBINS).map {i ->
+		return (0 until ContextMap.NUMBINS).map { i ->
 			val dir = ContextMap.bindir[i]
 			val display = VectorDisplay(dir, i, context.bins,model, identifier)
 			display
