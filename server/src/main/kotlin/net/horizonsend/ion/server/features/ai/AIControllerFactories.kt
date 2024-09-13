@@ -6,12 +6,14 @@ import net.horizonsend.ion.server.features.ai.module.combat.DefensiveCombatModul
 import net.horizonsend.ion.server.features.ai.module.combat.FrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.MultiTargetFrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.StarfighterCombatModule
+import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
 import net.horizonsend.ion.server.features.ai.module.misc.DirectControlWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.FleeModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.TrackingModule
 import net.horizonsend.ion.server.features.ai.module.movement.CruiseModule
+import net.horizonsend.ion.server.features.ai.module.movement.SteeringSolverModule
 import net.horizonsend.ion.server.features.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.module.positioning.BasicPositioningModule
@@ -97,7 +99,8 @@ object AIControllerFactories : IonServerComponent() {
 			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
 			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
 			val steering = builder.addModule("steering", BasicSteeringModule(it) {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()})
-
+			builder.addModule("movement", SteeringSolverModule(it, steering))
+			builder.addModule("debug", AIDebugModule(it))
 			builder
 		}
 		build()

@@ -63,6 +63,14 @@ class BasicSteeringModule(
 	var thrustOut = Vector(0.0,0.0,1.0)
 	var headingOut =  Vector(0.0,0.0,1.0)
 
+    override fun getThrust(): Vector {
+        return thrustOut
+    }
+
+    override fun getHeading(): Vector {
+        return headingOut
+    }
+
     /**
      * Master steering function
      *
@@ -70,7 +78,7 @@ class BasicSteeringModule(
      * Takes the current simulation sate and updates an agents heading and thrust using context
      * maps
      */
-    override fun steer() : SteeringOutput{
+    override fun steer() {
         movementInterest.clearContext()
         rotationInterest.clearContext()
         danger.clearContext()
@@ -159,7 +167,6 @@ class BasicSteeringModule(
         val thrust = movementInterest.interpolatedMaxDir().normalize().multiply(thrustmag)
 		thrustOut = thrust
 		headingOut = heading
-        return SteeringOutput(heading, thrust)
     }
 
     /**

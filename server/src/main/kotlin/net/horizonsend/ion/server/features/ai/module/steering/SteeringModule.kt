@@ -3,6 +3,9 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import org.bukkit.util.Vector
 
 abstract class SteeringModule(var controler: AIController) : AIModule(controler){
-    abstract fun steer() : SteeringOutput
-    data class SteeringOutput(val newHeading : Vector, val newThrust : Vector)
+    abstract fun steer()
+
+    abstract fun getThrust() : Vector
+
+    abstract fun getHeading() : Vector
 }
