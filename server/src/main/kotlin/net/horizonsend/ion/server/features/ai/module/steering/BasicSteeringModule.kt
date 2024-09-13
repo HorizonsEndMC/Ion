@@ -294,7 +294,9 @@ class BasicSteeringModule(
             val offset = center.add(shipPos.clone().multiply(-1.0))
             var dist = offset.length() + 1e-4
             val tetherl = dist / (ship.velocity.length() + 1e-5) * 2
-            val frowardTether = shipPos.clone().add(ship.velocity.clone().normalize().multiply(tetherl))
+            val shipvel = ship.velocity.clone()
+            if (shipvel.length() > 1e-5) shipvel.normalize()
+            val frowardTether = shipPos.clone().add(shipvel.multiply(tetherl))
             val tetherOffset = frowardTether.add(center.clone().multiply(-1.0)).normalize()
             val target = center.clone().add(tetherOffset.multiply(offsetDist))
             orbitTarget = target.clone()
@@ -546,7 +548,7 @@ class BasicSteeringModule(
                           futuremod : Double = 1.0, useMax : Boolean = false) : Vector {
         val offset = pos.add(ship.centerOfMass.toVector().multiply(-1.0))
         val dist = offset.length() + 1e-4
-        val vel = if (useMax) {MAXSPEED} else {ship.velocity.length()}
+        val vel = if (useMax) {MAXSPEED} else {ship.velocity.length() + 1e-5}
         val t = dist/(vel*futuremod)
         val lookAhead =  other.velocity.clone().multiply(t)
         return lookAhead
