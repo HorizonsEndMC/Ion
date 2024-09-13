@@ -220,6 +220,7 @@ class BasicSteeringModule(
             val desiredDir = Vector(0.0,0.0,1.0).rotateAroundY(theta)
             dotContext(desiredDir, dotShift, weight)
             lincontext!!.apply(lincontext!!.populatePeak(1.0, weight))
+            checkContext()
         }
     }
 
@@ -242,6 +243,7 @@ class BasicSteeringModule(
             for (i in 0 until NUMBINS) {
                 bins[i] *= headingHist.bins[i]
             }
+            checkContext()
         }
     }
 
@@ -261,6 +263,7 @@ class BasicSteeringModule(
                // Vector2D(1.0, Math.random() * Math.PI * 2).toCartesian()
             dotContext(velNorm, dotshift, (1 - mag).pow(falloff) * weight * (1- hist), clipZero =
             false)
+            checkContext()
         }
     }
 
@@ -299,6 +302,7 @@ class BasicSteeringModule(
             dist = targetOffset.length()
             targetOffset.normalize()
             dotContext(targetOffset, dotShift, weight)
+            checkContext()
         }
     }
 
@@ -330,6 +334,7 @@ class BasicSteeringModule(
             for (i in 0 until NUMBINS) {
                 bins[i] = min(bins[i], maxWeight)
             }
+            checkContext()
         }
     }
 
@@ -374,7 +379,7 @@ class BasicSteeringModule(
                 val center = shield.pos.toVector()
                 val offset = center.add(shipPos.clone().multiply(-1.0)).normalize()
                 incomingFire.dotContext(offset,-0.6,shield.recentDamage*(1-histDecay))
-
+                incomingFire.checkContext()
             }
             for (i in 0 until NUMBINS) {
                 val dir = bindir[i]
@@ -393,6 +398,7 @@ class BasicSteeringModule(
                 }
 
             }
+            checkContext()
         }
     }
 
@@ -436,6 +442,7 @@ class BasicSteeringModule(
                 targetOffset.normalize()
                 val dangerWeight = (otherShip.currentBlockCount / shipWeightSize) * (MAXSPEED /shipWeightSpeed)
                 dotContext(targetOffset,dotShift,(falloff*dangerWeight)/targetDist, power = 1.0, true)
+                checkContext()
             }
         }
     }
@@ -523,6 +530,7 @@ class BasicSteeringModule(
                 dir = Vector(1.0,0.0, 0.0)
                 bins[i] += calcDanger(bindir[i],dir,ship.centerOfMass.x.toDouble(),borderCenter.x	+ radius)
             }
+            checkContext()
         }
 
         private fun calcDanger(bindir: Vector, dir: Vector, val1: Double, val2: Double): Double {
