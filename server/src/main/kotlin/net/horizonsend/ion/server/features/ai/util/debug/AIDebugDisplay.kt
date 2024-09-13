@@ -61,6 +61,7 @@ object AIDebugDisplay : IonServerComponent() {
 		for (ship in ActiveStarships.all()) {
 			if (ship.controller !is AIController) continue
 			(ship.controller as AIController).getModuleByType<BasicSteeringModule>()?:continue
+			println("boop1")
 			if (ship !in registeredShips) {
 				registeredShips[ship] = createAIShipDebug(ship)
 			}
