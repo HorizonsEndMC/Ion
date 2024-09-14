@@ -15,7 +15,7 @@ class SpongeNode(network: PowerNodeManager) : JunctionNode<PowerNodeManager, Spo
 		positions.add(origin)
 	}
 
-	override suspend fun addBack(position: BlockKey) {
+	override fun addBack(position: BlockKey) {
 		manager.nodeFactory.addSponge(position, handleRelationships = false)
 	}
 
