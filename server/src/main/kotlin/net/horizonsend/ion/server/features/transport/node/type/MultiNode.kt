@@ -1,17 +1,17 @@
 package net.horizonsend.ion.server.features.transport.node.type
 
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * A transport node that may cover many blocks to avoid making unnecessary steps
  **/
 abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : TransportNode() {
 	/** The positions occupied by the node **/
-	val positions: MutableSet<BlockKey> = LongOpenHashSet()
+	val positions: MutableSet<BlockKey> = ConcurrentHashMap.newKeySet()
 
 	/**
 	 * Rebuild the node during the removal process
