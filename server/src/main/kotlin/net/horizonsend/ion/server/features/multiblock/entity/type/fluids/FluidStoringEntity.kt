@@ -126,7 +126,7 @@ interface FluidStoringEntity {
 		if (node != null) return node as? FluidInputNode
 
 		// Try to place unregistered node
-		manager.manager.processBlockAddition(world.getBlockAt(block.x, block.y, block.z))
+		manager.manager.processBlockChange(world.getBlockAt(block.x, block.y, block.z))
 		return manager.getInternalNode(toBlockKey(block)) as? FluidInputNode
 	}
 
