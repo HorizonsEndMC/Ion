@@ -22,7 +22,7 @@ data class NodeRelationship(
 	/**
 	 * Break the relation between the two nodes
 	 **/
-	suspend fun breakUp() {
+	fun breakUp() {
 		sideOne.node.removeRelationship(sideTwo.node)
 		sideTwo.node.removeRelationship(sideOne.node)
 	}
