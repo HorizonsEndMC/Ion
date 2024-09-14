@@ -1,9 +1,12 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
-import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.node.general.LinearNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.Axis
 import org.bukkit.block.data.Directional
 
@@ -13,9 +16,11 @@ class EndRodNode(network: PowerNodeManager) : LinearNode<PowerNodeManager, EndRo
 		this.axis = axis
 	}
 
-	override suspend fun addBack(position: BlockKey) {
+	override fun addBack(position: BlockKey) {
+		val data = getBlockDataSafe(manager.world, getX(position), getY(position), getZ(position)) as? Directional ?: return
+
 		manager.nodeFactory.addEndRod(
-			getBlockSnapshotAsync(manager.world, position)!!.data as Directional,
+			data,
 			position,
 			handleRelationships = false
 		)
