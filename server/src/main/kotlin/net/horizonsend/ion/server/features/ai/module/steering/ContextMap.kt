@@ -1,3 +1,4 @@
+import net.horizonsend.ion.server.miscellaneous.utils.isNan
 import org.bukkit.util.Vector
 import java.util.Arrays
 import kotlin.math.abs
@@ -89,7 +90,11 @@ abstract class ContextMap {
      */
     fun dotContext(direction: Vector, shift: Double, scale: Double,power: Double = 1.0, clipZero: Boolean = true) {
         for (i in 0 until NUMBINS) {
-            val value = (bindir[i].dot(direction) + shift).pow(power) * scale
+            require(!shift.isNaN()) {"Shift is NaN"}
+			require(!scale.isNaN()) {"Scale is NaN"}
+			require(!power.isNaN()) {"Power is NaN"}
+			require(!direction.isNan()) {"Direction is NaN"}
+			val value = (bindir[i].dot(direction) + shift).pow(power) * scale
             bins[i] += if (clipZero) max(0.0,value) else value
         }
     }

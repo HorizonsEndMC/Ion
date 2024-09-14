@@ -18,7 +18,7 @@ class SteeringSolverModule(
 
     override fun tick() {
         steeringModule.steer()
-        shiftFlyInDirection(steeringModule.getHeading())
+        shiftFlyInDirection(steeringModule.getThrust())
     }
 
     fun shiftFlyInDirection(

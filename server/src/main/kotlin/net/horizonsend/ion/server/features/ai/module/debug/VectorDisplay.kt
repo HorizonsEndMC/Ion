@@ -26,24 +26,28 @@ class VectorDisplay private constructor(
 	var dir: Vector,
 	val magDeg:Box,
 	val model: ItemStack,
-	val parent: ActiveStarship
+	val parent: ActiveStarship,
+	val offset : Vector = Vector(0.0,10.0,0.0)
 ){
 	val entity : ItemDisplay = createEntity()
 	val mag : Double get() = magDeg.getVal()
 
 	var shownPlayers = mutableSetOf<UUID>()
+	var transformation = com.mojang.math.Transformation(Vector3f(0f),Quaternionf(),Vector3f(0f),Quaternionf())
 
 	constructor(dir : Vector,
 				model : ItemStack,
-				parent: ActiveStarship) : this(
-		dir, ArrayVectorBox(dir), model, parent) {}
+				parent: ActiveStarship,
+				offset: Vector) : this(
+		dir, ArrayVectorBox(dir), model, parent, offset) {}
 
 	constructor(dir : Vector,
 				binIndex : Int,
 				bins : DoubleArray,
 				model : ItemStack,
-				parent: ActiveStarship) : this(
-		dir, ArrayPosBox(bins,binIndex), model, parent) {}
+				parent: ActiveStarship,
+				offset: Vector) : this(
+		dir, ArrayPosBox(bins,binIndex), model, parent, offset) {}
 
 	fun createEntity(): ItemDisplay {
 		println("boop2")
@@ -59,8 +63,8 @@ class VectorDisplay private constructor(
 
 			transformation = Transformation(
 				Vector3f(0f),
-				ClientDisplayEntities.rotateToFaceVector(dir.clone().normalize().toVector3f()),
-				Vector3f(mag.toFloat()),
+				ClientDisplayEntities.rotateToFaceVector(dir.clone().normalize().multiply(-1.0).toVector3f()),
+				Vector3f(1f,1f,mag.toFloat()),
 				Quaternionf()
 			)
 		}
@@ -74,11 +78,13 @@ class VectorDisplay private constructor(
 		val offset = calcOffset()
 		val transformation = com.mojang.math.Transformation(
 			Vector3f(0f),
-			ClientDisplayEntities.rotateToFaceVector(dir.clone().normalize().toVector3f()),
-			Vector3f(mag.toFloat()),
+			ClientDisplayEntities.rotateToFaceVector(dir.clone().normalize().multiply(-1.0).toVector3f()),
+			Vector3f(1f,1f,mag.toFloat()),
 			Quaternionf()
 		)
+		this.transformation = transformation
 		entity.teleportTo(offset.x, offset.y, offset.z)
+
 		entity.setTransformation(transformation)
 	}
 
@@ -104,6 +110,8 @@ class VectorDisplay private constructor(
 
 	private fun update(player: ServerPlayer) {
 		entity.entityData.refresh(player)
+		ClientDisplayEntities.moveDisplayEntityPacket(player,entity,entity.x, entity.y, entity.z)
+		ClientDisplayEntities.transformDisplayEntityPacket(player.bukkitEntity,entity, transformation)
 	}
 
 	private fun broadcast(player: ServerPlayer) {
@@ -113,7 +121,7 @@ class VectorDisplay private constructor(
 
 	private fun calcOffset(): Vector {
 		val com = parent.centerOfMass.toVector()
-		com.add(Vector(0.0,10.0,0.0))
+		com.add(offset)
 		return com
 	}
 
