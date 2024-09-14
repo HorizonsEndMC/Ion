@@ -19,7 +19,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Directional
 
 class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager>(network) {
-	override suspend fun create(key: BlockKey, data: BlockData): Boolean {
+	override fun create(key: BlockKey, data: BlockData): Boolean {
 		if (network.nodes.contains(key)) return false
 
 		println("data.material ${data.material}")
@@ -81,7 +81,7 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 		return true
 	}
 
-	suspend fun addSponge(position: BlockKey, handleRelationships: Boolean = true) {
+	fun addSponge(position: BlockKey, handleRelationships: Boolean = true) {
 		val neighbors = getNeighborNodes(position, network.nodes).values.filterIsInstanceTo<SpongeNode, MutableList<SpongeNode>>(mutableListOf())
 
 		val finalNode = when (neighbors.size) {
@@ -100,7 +100,7 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 		if (handleRelationships) finalNode.rebuildRelations()
 	}
 
-	suspend fun addEndRod(data: Directional, position: Long, handleRelationships: Boolean = true) {
+	fun addEndRod(data: Directional, position: Long, handleRelationships: Boolean = true) {
 		val axis = data.facing.axis
 
 		// The neighbors in the direction of the wire's facing, that are also facing that direction
@@ -125,19 +125,19 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 		if (handleRelationships) finalNode.rebuildRelations()
 	}
 
-	suspend fun addExtractor(position: BlockKey) {
+	fun addExtractor(position: BlockKey) {
 		network.nodes[position] = PowerExtractorNode(network, position).apply {
 			onPlace(position)
 		}
 	}
 
-	suspend fun addInput(position: BlockKey) {
+	fun addInput(position: BlockKey) {
 		network.nodes[position] = PowerInputNode(network, position).apply {
 			onPlace(position)
 		}
 	}
 
-	suspend fun addFlowMeter(data: Directional, position: BlockKey) {
+	fun addFlowMeter(data: Directional, position: BlockKey) {
 		network.nodes[position] = PowerFlowMeter(network, position, data.facing).apply {
 			onPlace(position)
 		}
@@ -146,7 +146,7 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 	/**
 	 * Provided the key of the extractor, create or combine solar panel nodes
 	 **/
-	suspend fun addSolarPanel(position: BlockKey, handleRelationships: Boolean = true) {
+	fun addSolarPanel(position: BlockKey, handleRelationships: Boolean = true) {
 		// The diamond and daylight detector
 		val diamondPosition = getRelative(position, UP, 1)
 		val detectorPosition = getRelative(position, UP, 2)
@@ -189,19 +189,19 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 		if (handleRelationships) node.rebuildRelations()
 	}
 
-	suspend fun addMergeNode(key: BlockKey, variant: Material) {
+	fun addMergeNode(key: BlockKey, variant: Material) {
 		network.nodes[key] = PowerDirectionalNode(network, key, variant).apply {
 			onPlace(position)
 		}
 	}
 
-	suspend fun addInvertedMergeNode(key: BlockKey) {
+	fun addInvertedMergeNode(key: BlockKey) {
 		network.nodes[key] = InvertedDirectionalNode(network, key).apply {
 			onPlace(position)
 		}
 	}
 
-	suspend fun addEqualSplitterNode(position: BlockKey) {
+	fun addEqualSplitterNode(position: BlockKey) {
 		network.nodes[position] = PowerEqualSplitterNode(network, position).apply {
 			onPlace(position)
 		}
