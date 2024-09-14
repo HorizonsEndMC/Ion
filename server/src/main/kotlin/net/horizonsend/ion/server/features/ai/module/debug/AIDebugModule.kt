@@ -4,12 +4,14 @@ import BasicSteeringModule
 import ContextMap
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Vector
 
 class AIDebugModule(controller : AIController ) : AIModule(controller) {
 
@@ -33,19 +35,22 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 	private fun createAIShipDebug () : MutableList<VectorDisplay> {
 		val mod = controller.getModuleByType<BasicSteeringModule>()?:return mutableListOf()
 		val output = mutableListOf<VectorDisplay>()
-		output.addAll(displayContext( mod.movementInterest, CustomItems.ENERGY_SWORD_GREEN.singleItem(),controller.starship))
-		output.addAll(displayContext( mod.danger, CustomItems.ENERGY_SWORD_RED.singleItem(),controller.starship))
-		output.add(VectorDisplay(mod.thrustOut,CustomItems.ENERGY_SWORD_BLUE.singleItem(), controller.starship))
+		output.addAll(displayContext( mod.movementInterest,
+			CustomItems.DEBUG_LINE_GREEN.constructItemStack(),controller.starship, Vector(0.0,10.2, 0.0)))
+		output.addAll(displayContext( mod.danger,
+			CustomItems.DEBUG_LINE_RED.constructItemStack(),controller.starship, Vector(0.0,10.0,0.0)))
+		output.add(VectorDisplay(mod.thrustOut,
+			CustomItems.DEBUG_LINE_BLUE.constructItemStack(), controller.starship, Vector(0.0,10.4,0.0)))
 		return output
 	}
 
 	private fun displayContext(context : ContextMap,
 							   model : ItemStack,
-							   identifier: ActiveStarship, ) : List<VectorDisplay>{
+							   identifier: ActiveStarship, offset : Vector) : List<VectorDisplay>{
 
 		return (0 until ContextMap.NUMBINS).map { i ->
 			val dir = ContextMap.bindir[i]
-			val display = VectorDisplay(dir, i, context.bins,model, identifier)
+			val display = VectorDisplay(dir, i, context.bins,model, identifier, offset)
 			display
 		}
 	}

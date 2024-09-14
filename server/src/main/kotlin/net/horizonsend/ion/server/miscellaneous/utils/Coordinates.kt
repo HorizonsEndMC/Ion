@@ -327,6 +327,10 @@ operator fun ChunkPos.component2(): Int = this.z
 
 fun Vector.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
 
+fun Vector.isNan() :Boolean {
+	return this.x.isNaN() || this.y.isNaN() || this.z.isNaN()
+}
+
 fun getChunkSection(minHeight: Int, maxHeight: Int, y: Int): Int {
 	check(y in minHeight..maxHeight)
 

@@ -58,8 +58,6 @@ class BasicSteeringModule(
 	val MAXSPEED : Double = 20.0
 	val offset = Math.random()
 
-	val seekPos = generalTarget.get()?.getLocation()?.toVector()
-
 	var thrustOut = Vector(0.0,0.0,1.0)
 	var headingOut =  Vector(0.0,0.0,1.0)
 
@@ -208,8 +206,8 @@ class BasicSteeringModule(
      */
     var wander: ContextMap = object : ContextMap(linearbins = true) {
         val weight = 1.0
-        val dotShift = 1.5
-        val jitterRate = 2e4
+        val dotShift = 1.0
+        val jitterRate = 1e3
         override fun populateContext() {
 			clearContext()
             val timeoffset = offset * jitterRate
@@ -287,6 +285,7 @@ class BasicSteeringModule(
         val weight = 0.0
         val dotShift = 0.0
         override fun populateContext() {
+			val seekPos =  generalTarget.get()?.getLocation()?.toVector()
 			seekPos ?: return
 			clearContext()
 			val shipPos = ship.centerOfMass.toVector()
@@ -320,10 +319,12 @@ class BasicSteeringModule(
      *
      */
     var faceSeek: ContextMap = object : ContextMap() {
-        val weight = 10.0
+        val faceweight = 10.0
+		val weight = 0.0
         val maxWeight = 0.0
         val falloff = 1500.0
         override fun populateContext() {
+			val seekPos =  generalTarget.get()?.getLocation()?.toVector()
 			seekPos ?: return
 			clearContext()
             val target= seekPos.clone()
@@ -331,8 +332,8 @@ class BasicSteeringModule(
             val offset = target.add(shipPos.clone().multiply(-1.0))
             val dist = offset.length() + 1e-4
 			offset.normalize()
-            offset.multiply(weight).add(ship.forward.direction).normalize()
-            dotContext(offset,0.0, dist / falloff)
+            offset.multiply(faceweight).add(ship.forward.direction).normalize()
+            dotContext(offset,0.0, dist / falloff * weight)
             for (i in 0 until NUMBINS) {
                 bins[i] = min(bins[i], maxWeight)
             }
