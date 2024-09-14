@@ -60,12 +60,12 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode() 
 		manager.extractors[position] = this
 	}
 
-	override suspend fun handleRemoval(position: BlockKey) {
+	override fun handleRemoval(position: BlockKey) {
 		manager.extractors.remove(position)
 		super.handleRemoval(position)
 	}
 
-	override suspend fun buildRelations(position: BlockKey) {
+	override fun buildRelations(position: BlockKey) {
 		for (offset in ADJACENT_BLOCK_FACES) {
 			val offsetKey = getRelative(position, offset, 1)
 			val neighborNode = manager.getNode(offsetKey) ?: continue

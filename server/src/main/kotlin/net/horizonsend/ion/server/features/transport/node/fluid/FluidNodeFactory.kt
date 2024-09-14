@@ -17,7 +17,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Directional
 
 class FluidNodeFactory(network: FluidNodeManager) : NodeFactory<FluidNodeManager>(network) {
-	override suspend fun create(key: BlockKey, data: BlockData): Boolean {
+	override fun create(key: BlockKey, data: BlockData): Boolean {
 		if (network.nodes.contains(key)) return false
 
 		when {
@@ -58,7 +58,7 @@ class FluidNodeFactory(network: FluidNodeManager) : NodeFactory<FluidNodeManager
 		return true
 	}
 
-	suspend fun addLightningRod(data: Directional, position: Long, handleRelationships: Boolean = true) {
+	fun addLightningRod(data: Directional, position: Long, handleRelationships: Boolean = true) {
 		val axis = data.facing.axis
 
 		// The neighbors in the direction of the wire's facing, that are also facing that direction
@@ -83,7 +83,7 @@ class FluidNodeFactory(network: FluidNodeManager) : NodeFactory<FluidNodeManager
 		if (handleRelationships) finalNode.rebuildRelations()
 	}
 
-	suspend fun addJunction(position: BlockKey, handleRelationships: Boolean = true) {
+	fun addJunction(position: BlockKey, handleRelationships: Boolean = true) {
 		val neighbors = getNeighborNodes(position, network.nodes).values.filterIsInstanceTo<SpongeNode, MutableList<SpongeNode>>(mutableListOf())
 
 		val finalNode = when (neighbors.size) {

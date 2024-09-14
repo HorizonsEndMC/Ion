@@ -19,7 +19,7 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 	 * When a position in a multi node is removed, the removed position is removed
 	 * from the list of contained positions, and the node is rebuilt using this method.
 	 **/
-	open suspend fun rebuildNode(position: BlockKey) {
+	open fun rebuildNode(position: BlockKey) {
 		// Create new nodes, automatically merging together
 		positions.forEach {
 			addBack(it)
@@ -31,12 +31,12 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 		}
 	}
 
-	abstract suspend fun addBack(position: BlockKey)
+	abstract fun addBack(position: BlockKey)
 
 	/**
 	 * Adds new a position to this node
 	 **/
-	suspend fun addPosition(position: BlockKey): Self {
+	fun addPosition(position: BlockKey): Self {
 		positions += position
 		manager.nodes[position] = this
 
@@ -49,7 +49,7 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 	/**
 	 * Adds multiple positions to this node
 	 **/
-	suspend fun addPositions(newPositions: Iterable<BlockKey>) {
+	fun addPositions(newPositions: Iterable<BlockKey>) {
 		for (position in newPositions) {
 			positions += position
 			manager.nodes[position] = this
@@ -61,7 +61,7 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 	/**
 	 * Drain all the positions and connections to the provided node
 	 **/
-	suspend fun drainTo(new: Self) {
+	 fun drainTo(new: Self) {
 		clearRelations()
 		new.clearRelations()
 
@@ -69,7 +69,7 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 		new.positions.forEach { new.buildRelations(it) }
 	}
 
-	override suspend fun buildRelations(position: BlockKey) {
+	override fun buildRelations(position: BlockKey) {
 		for (offset in ADJACENT_BLOCK_FACES) {
 			val offsetKey = getRelative(position, offset, 1)
 			val neighborNode = manager.getNode(offsetKey) ?: continue
@@ -80,7 +80,7 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 		}
 	}
 
-	suspend fun rebuildRelations() {
+	fun rebuildRelations() {
 		clearRelations()
 
 		positions.forEach {
@@ -88,7 +88,7 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 		}
 	}
 
-	override suspend fun handleRemoval(position: BlockKey) {
+	override fun handleRemoval(position: BlockKey) {
 		isDead = true
 
 		// Remove the position from the network
