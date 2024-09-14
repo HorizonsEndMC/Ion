@@ -26,7 +26,7 @@ abstract class TransportNode() : PDCSerializable<TransportNode, TransportNode.Co
 	/**
 	 * Break all relations between this node and others
 	 **/
-	suspend fun clearRelations() {
+	fun clearRelations() {
 		relationships.forEach {
 			it.breakUp()
 		}
@@ -37,7 +37,7 @@ abstract class TransportNode() : PDCSerializable<TransportNode, TransportNode.Co
 	 *
 	 * If neither side can transfer, a relation will not be created
 	 **/
-	suspend fun addRelationship(other: TransportNode, offset: BlockFace) {
+	fun addRelationship(other: TransportNode, offset: BlockFace) {
 		// Do not add duplicates
 		if (relationships.any { it.sideTwo.node == other }) return
 
@@ -45,7 +45,7 @@ abstract class TransportNode() : PDCSerializable<TransportNode, TransportNode.Co
 		other.neighborChanged(this)
 	}
 
-	suspend fun removeRelationship(other: TransportNode) {
+	fun removeRelationship(other: TransportNode) {
 		// Handle duplicate cases
 		val toOther = relationships.filterTo(mutableSetOf()) { it.sideTwo.node == other }
 
@@ -84,22 +84,22 @@ abstract class TransportNode() : PDCSerializable<TransportNode, TransportNode.Co
 	 *
 	 * Cleanup, splitting into multiple, etc
 	 **/
-	open suspend fun handleRemoval(position: BlockKey) {}
+	open fun handleRemoval(position: BlockKey) {}
 
 	/**
 	 * Builds relations between this node and transferrable nodes
 	 **/
-	abstract suspend fun buildRelations(position: BlockKey)
+	abstract fun buildRelations(position: BlockKey)
 
 	/**
 	 * Notify a node if a neighbor changed
 	 **/
-	open suspend fun neighborChanged(neighbor: TransportNode) {}
+	open fun neighborChanged(neighbor: TransportNode) {}
 
 	/**
 	 * Additional logic to be run once the node is placed
 	 **/
-	open suspend fun onPlace(position: BlockKey) {}
+	open fun onPlace(position: BlockKey) {}
 
 	companion object : PersistentDataType<PersistentDataContainer, TransportNode> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java

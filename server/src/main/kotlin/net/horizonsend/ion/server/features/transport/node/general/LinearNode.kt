@@ -22,7 +22,7 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 		return node !is PowerExtractorNode && node !is SolarPanelNode
 	}
 
-	override suspend fun buildRelations(position: BlockKey) {
+	override fun buildRelations(position: BlockKey) {
 		for (offset in axis.faces.toList()) {
 			val offsetKey = getRelative(position, offset, 1)
 			val neighborNode = manager.getNode(offsetKey) ?: continue

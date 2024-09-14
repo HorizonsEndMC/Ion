@@ -9,7 +9,7 @@ class GasJunctionNode(network: FluidNodeManager) : JunctionNode<FluidNodeManager
 		positions.add(origin)
 	}
 
-	override suspend fun addBack(position: BlockKey) {
+	override fun addBack(position: BlockKey) {
 		manager.nodeFactory.addJunction(position, handleRelationships = false)
 	}
 

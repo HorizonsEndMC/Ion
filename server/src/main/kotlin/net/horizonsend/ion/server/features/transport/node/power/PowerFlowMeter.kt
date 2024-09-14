@@ -104,13 +104,13 @@ class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode() {
 		super.loadIntoNetwork()
 	}
 
-	override suspend fun onPlace(position: BlockKey) {
+	override fun onPlace(position: BlockKey) {
 		setupDisplayEntity()
 
 		super.onPlace(position)
 	}
 
-	override suspend fun handleRemoval(position: BlockKey) {
+	override fun handleRemoval(position: BlockKey) {
 		if (::displayHandler.isInitialized) displayHandler.remove()
 
 		super.handleRemoval(position)

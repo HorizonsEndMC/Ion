@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node.manager
 
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
@@ -27,71 +26,71 @@ abstract class NodeManager(val holder: NetworkHolder<*>) {
 	abstract val nodeFactory: NodeFactory<*>
 	abstract val dataVersion: Int
 
-	open fun processBlockRemoval(key: BlockKey) { holder.scope.launch {
-		val previousNode = nodes[key] ?: return@launch
+	open fun processBlockRemoval(key: BlockKey) {
+		val previousNode = nodes[key] ?: return
 
 		previousNode.handleRemoval(key)
 		holder.markUnsaved()
-	}}
+	}
 
-	open fun processBlockRemovals(keys: Iterable<BlockKey>) { holder.scope.launch {
+	open fun processBlockRemovals(keys: Iterable<BlockKey>) {
 		var hits: Int = 0
 
 		for (key in keys) {
-			val previousNode = nodes[key] ?: return@launch
+			val previousNode = nodes[key] ?: return
 			hits++
 
 			previousNode.handleRemoval(key)
 		}
 
 		if (hits > 0) holder.markUnsaved()
-	}}
+	}
 
-	open fun processBlockChange(new: Block) { holder.scope.launch {
+	open fun processBlockChange(new: Block) {
 		if (new.type.isAir) {
 			processBlockRemoval(toBlockKey(new.x, new.y, new.z))
 
-			return@launch
+			return
 		}
 
 		if (createNodeFromBlock(new)) holder.markUnsaved()
-	}}
+	}
 
-	open fun processBlockChange(position: BlockKey) { holder.scope.launch {
+	open fun processBlockChange(position: BlockKey) {
 		val block = world.getBlockAt(getX(position), getY(position), getZ(position))
 
 		if (block.type.isAir) {
 			processBlockRemoval(position)
 
-			return@launch
+			return
 		}
 
 		if (createNodeFromBlock(block)) holder.markUnsaved()
-	}}
+	}
 
-	open fun processBlockChange(position: BlockKey, data: BlockData) { holder.scope.launch {
+	open fun processBlockChange(position: BlockKey, data: BlockData) {
 		if (data.material.isAir) {
 			processBlockRemoval(position)
 
-			return@launch
+			return
 		}
 
 		if (createNodeFromBlock(position, data)) holder.markUnsaved()
-	}}
+	}
 
-	open fun processBlockChanges(changeMap: Map<BlockKey, BlockData>) { holder.scope.launch {
+	open fun processBlockChanges(changeMap: Map<BlockKey, BlockData>) {
 		for ((position, data) in changeMap) {
 			if (data.material.isAir) {
 				processBlockRemoval(position)
 
-				return@launch
+				return
 			}
 
 			if (createNodeFromBlock(position, data)) holder.markUnsaved()
 		}
-	}}
+	}
 
-	open fun processBlockAdditions(changed: Iterable<Block>) { holder.scope.launch {
+	open fun processBlockAdditions(changed: Iterable<Block>) {
 		var hits = 0
 		for (new in changed) {
 			if (createNodeFromBlock(new)) {
@@ -100,18 +99,18 @@ abstract class NodeManager(val holder: NetworkHolder<*>) {
 		}
 
 		if (hits > 0) holder.markUnsaved()
-	}}
+	}
 
 	/**
 	 * Handle the creation / loading of the node into memory
 	 **/
-	suspend fun createNodeFromBlock(block: Block): Boolean {
+	fun createNodeFromBlock(block: Block): Boolean {
 		val key = toBlockKey(block.x, block.y, block.z)
 
 		return nodeFactory.create(key, block.blockData)
 	}
 
-	suspend fun createNodeFromBlock(position: BlockKey, data: BlockData): Boolean {
+	fun createNodeFromBlock(position: BlockKey, data: BlockData): Boolean {
 		return nodeFactory.create(position, data)
 	}
 
@@ -133,7 +132,7 @@ abstract class NodeManager(val holder: NetworkHolder<*>) {
 	/**
 	 * Get the neighbors of a node
 	 **/
-	suspend fun buildRelations() {
+	fun buildRelations() {
 		for ((key, node) in nodes) {
 			node.buildRelations(key)
 		}
