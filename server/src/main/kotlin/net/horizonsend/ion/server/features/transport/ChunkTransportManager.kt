@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.block.Block
+import org.bukkit.block.data.BlockData
 
 class ChunkTransportManager(
 	val chunk: IonChunk,
@@ -45,15 +46,35 @@ class ChunkTransportManager(
 		powerNodeManager.network.processBlockRemovals(keys)
 	}
 
-	fun processBlockAddition(new: Block) {
-		powerNodeManager.network.processBlockAddition(new)
+	fun processBlockChange(new: Block) {
+		powerNodeManager.network.processBlockChange(new)
 		// TODO
 		// TODO
 //		pipeGrid.processBlockAddition(key, new)
 //		gasGrid.processBlockAddition(key, new)
 	}
 
-	fun processBlockAddition(changed: Iterable<Block>) {
+	fun processBlockChange(position: BlockKey, data: BlockData) {
+		powerNodeManager.network.processBlockChange(position, data)
+		// TODO
+		// TODO
+//		pipeGrid.processBlockAddition(key, new)
+//		gasGrid.processBlockAddition(key, new)
+	}
+
+	fun processBlockChanges(changeMap: Map<BlockKey, BlockData>) {
+		powerNodeManager.network.processBlockChanges(changeMap)
+	}
+
+	fun refreshBlock(position: BlockKey) {
+		powerNodeManager.network.processBlockChange(position)
+		// TODO
+		// TODO
+//		pipeGrid.processBlockAddition(key, new)
+//		gasGrid.processBlockAddition(key, new)
+	}
+
+	fun processBlockChange(changed: Iterable<Block>) {
 		powerNodeManager.network.processBlockAdditions(changed)
 	}
 }
