@@ -2,12 +2,11 @@ package net.horizonsend.ion.server.listener.misc
 
 import com.sk89q.worldedit.EditSession
 import com.sk89q.worldedit.WorldEdit
-import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.event.Event
 import com.sk89q.worldedit.event.extent.EditSessionEvent
 import com.sk89q.worldedit.util.eventbus.Subscribe
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.transport.IonUpdateExtent
+import net.horizonsend.ion.server.features.transport.IonChangeSet
 import org.bukkit.Bukkit
 
 object WorldEditListener : IonServerComponent(true) {
@@ -22,15 +21,7 @@ object WorldEditListener : IonServerComponent(true) {
 		registerListener<EditSessionEvent>(worldEdit) { event ->
 			if (event.stage != EditSession.Stage.BEFORE_HISTORY) return@registerListener
 
-			println("Stage: ${event.stage}")
-
-			val world = BukkitAdapter.adapt(event.world)
-			println("Previous extent: ${event.extent}")
-			println("Actor: ${event.actor}")
-			println("event: $event")
-
-			event.extent = IonUpdateExtent(event.extent, world, event.stage)
-			println("after extent: ${event.extent}")
+			event.world?.let { event.extent.addPostProcessor(IonChangeSet(it)) }
 		}
 	}
 
@@ -39,6 +30,7 @@ object WorldEditListener : IonServerComponent(true) {
 			val eventClass = T::class.java
 
 			@Subscribe
+			@Suppress("unused") // entrypoint
 			fun onReceiveEvent(event: T) {
 				if (eventClass.isInstance(event)) block.invoke(event as? T ?: return)
 			}

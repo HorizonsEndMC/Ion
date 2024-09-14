@@ -22,6 +22,8 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 	override suspend fun create(key: BlockKey, data: BlockData): Boolean {
 		if (network.nodes.contains(key)) return false
 
+		println("data.material ${data.material}")
+
 		when {
 			// Straight wires
 			data.material == Material.END_ROD -> addEndRod(data as Directional, key)
