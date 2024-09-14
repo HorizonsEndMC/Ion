@@ -159,6 +159,13 @@ class IonChunk(
 			return world.ion.getChunk(x, z)
 		}
 
+		/**
+		 * Returns the chunk at the specified chunk coordinates in the world if it is loaded
+		 **/
+		operator fun get(world: World, key: Long): IonChunk? {
+			return world.ion.getChunk(getXFromKey(key), getZFromKey(key))
+		}
+
 		fun Chunk.ion(): IonChunk = this.world.ion.getChunk(chunkKey)!!
 
 		fun getXFromKey(key: Long): Int = key.toInt()
