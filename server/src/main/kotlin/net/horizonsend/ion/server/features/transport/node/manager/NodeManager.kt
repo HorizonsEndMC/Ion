@@ -7,9 +7,13 @@ import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
+import org.bukkit.block.data.BlockData
 import org.bukkit.persistence.PersistentDataContainer
 import java.util.concurrent.ConcurrentHashMap
 
@@ -43,7 +47,7 @@ abstract class NodeManager(val holder: NetworkHolder<*>) {
 		if (hits > 0) holder.markUnsaved()
 	}}
 
-	open fun processBlockAddition(new: Block) { holder.scope.launch {
+	open fun processBlockChange(new: Block) { holder.scope.launch {
 		if (new.type.isAir) {
 			processBlockRemoval(toBlockKey(new.x, new.y, new.z))
 
@@ -51,6 +55,40 @@ abstract class NodeManager(val holder: NetworkHolder<*>) {
 		}
 
 		if (createNodeFromBlock(new)) holder.markUnsaved()
+	}}
+
+	open fun processBlockChange(position: BlockKey) { holder.scope.launch {
+		val block = world.getBlockAt(getX(position), getY(position), getZ(position))
+
+		if (block.type.isAir) {
+			processBlockRemoval(position)
+
+			return@launch
+		}
+
+		if (createNodeFromBlock(block)) holder.markUnsaved()
+	}}
+
+	open fun processBlockChange(position: BlockKey, data: BlockData) { holder.scope.launch {
+		if (data.material.isAir) {
+			processBlockRemoval(position)
+
+			return@launch
+		}
+
+		if (createNodeFromBlock(position, data)) holder.markUnsaved()
+	}}
+
+	open fun processBlockChanges(changeMap: Map<BlockKey, BlockData>) { holder.scope.launch {
+		for ((position, data) in changeMap) {
+			if (data.material.isAir) {
+				processBlockRemoval(position)
+
+				return@launch
+			}
+
+			if (createNodeFromBlock(position, data)) holder.markUnsaved()
+		}
 	}}
 
 	open fun processBlockAdditions(changed: Iterable<Block>) { holder.scope.launch {
@@ -71,6 +109,10 @@ abstract class NodeManager(val holder: NetworkHolder<*>) {
 		val key = toBlockKey(block.x, block.y, block.z)
 
 		return nodeFactory.create(key, block.blockData)
+	}
+
+	suspend fun createNodeFromBlock(position: BlockKey, data: BlockData): Boolean {
+		return nodeFactory.create(position, data)
 	}
 
 	/**
