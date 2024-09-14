@@ -16,7 +16,7 @@ abstract class SingleNode : TransportNode() {
 		manager.nodes[position] = this
 	}
 
-	override suspend fun buildRelations(position: BlockKey) {
+	override fun buildRelations(position: BlockKey) {
 		for (offset in ADJACENT_BLOCK_FACES) {
 			val offsetKey = getRelative(position, offset, 1)
 			val neighborNode = manager.getNode(offsetKey) ?: continue
@@ -28,11 +28,11 @@ abstract class SingleNode : TransportNode() {
 		}
 	}
 
-	override suspend fun onPlace(position: BlockKey) {
+	override fun onPlace(position: BlockKey) {
 		buildRelations(position)
 	}
 
-	override suspend fun handleRemoval(position: BlockKey) {
+	override fun handleRemoval(position: BlockKey) {
 		isDead = true
 		manager.nodes.remove(position)
 		clearRelations()

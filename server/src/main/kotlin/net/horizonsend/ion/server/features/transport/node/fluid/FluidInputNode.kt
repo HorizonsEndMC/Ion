@@ -18,7 +18,7 @@ class FluidInputNode(override val manager: FluidNodeManager) : SingleNode() {
 		return false
 	}
 
-	override suspend fun buildRelations(position: BlockKey) {
+	override fun buildRelations(position: BlockKey) {
 		super.buildRelations(position)
 	}
 

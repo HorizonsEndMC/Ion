@@ -36,7 +36,7 @@ fun getNeighborNodes(position: BlockKey, nodes: Collection<BlockKey>, checkFaces
  *
  * @return the node that the provided were merged into
  **/
-suspend fun <Self: MultiNode<Self, Self>> handleMerges(neighbors: MutableCollection<Self>): Self {
+fun <Self: MultiNode<Self, Self>> handleMerges(neighbors: MutableCollection<Self>): Self {
 	// Get the largest neighbor
 	val largestNeighbor = neighbors.popMaxByOrNull {
 		it.positions.size

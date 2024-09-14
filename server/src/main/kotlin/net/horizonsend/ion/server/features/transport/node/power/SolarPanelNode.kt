@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
-import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
@@ -15,6 +14,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.firsts
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.World
@@ -142,12 +143,12 @@ class SolarPanelNode(
 	/**
 	 * Returns whether the individual solar panel from the extractor location is intact
 	 **/
-	suspend fun isIntact(world: World, extractorKey: BlockKey): Boolean {
+	fun isIntact(world: World, extractorKey: BlockKey): Boolean {
 		return matchesSolarPanelStructure(world, extractorKey)
 	}
 
 	// If relations have changed, update the exit distances of the whole field
-	override suspend fun buildRelations(position: BlockKey) {
+	override fun buildRelations(position: BlockKey) {
 		super.buildRelations(position)
 
 		// Calculate exit distance after relations have been built
@@ -157,11 +158,11 @@ class SolarPanelNode(
 	/*
 	 * When the neighbor changes, re-calculate the exit distances
 	 */
-	override suspend fun neighborChanged(neighbor: TransportNode) {
+	override fun neighborChanged(neighbor: TransportNode) {
 		traverseField { it.calculateExitDistance() }
 	}
 
-	override suspend fun handleRemoval(position: BlockKey) {
+	override fun handleRemoval(position: BlockKey) {
 		isDead = true
 
 		removePosition(position)
@@ -178,7 +179,7 @@ class SolarPanelNode(
 		rebuildNode(position)
 	}
 
-	suspend fun addPosition(extractorKey: BlockKey, diamondKey: BlockKey, detectorKey: BlockKey): SolarPanelNode {
+	fun addPosition(extractorKey: BlockKey, diamondKey: BlockKey, detectorKey: BlockKey): SolarPanelNode {
 		extractorPositions += extractorKey
 
 		// Make sure there isn't still an extractor
@@ -216,11 +217,11 @@ class SolarPanelNode(
 		}
 	}
 
-	override suspend fun addBack(position: BlockKey) {
+	override fun addBack(position: BlockKey) {
 		manager.nodeFactory.addSolarPanel(position, handleRelationships = false)
 	}
 
-	override suspend fun rebuildNode(position: BlockKey) {
+	override fun rebuildNode(position: BlockKey) {
 		manager.solarPanels.remove(this)
 		detectorPositions.clear()
 
@@ -252,14 +253,15 @@ class SolarPanelNode(
 	companion object {
 		const val POWER_PER_SECOND = 5
 
-		suspend fun matchesSolarPanelStructure(world: World, extractorPosition: BlockKey): Boolean {
-			if (getBlockSnapshotAsync(world, extractorPosition)?.type != Material.CRAFTING_TABLE) return false
-			val diamond = getRelative(extractorPosition, UP)
+		fun matchesSolarPanelStructure(world: World, extractorPosition: BlockKey): Boolean {
+			val extractorBlock = getBlockIfLoaded(world, getX(extractorPosition), getY(extractorPosition), getZ(extractorPosition))
+			if (extractorBlock?.type != Material.CRAFTING_TABLE) return false
 
-			if (getBlockSnapshotAsync(world, diamond)?.type != Material.DIAMOND_BLOCK) return false
-			val cell = getRelative(diamond, UP)
+			val diamond = extractorBlock.getRelativeIfLoaded(UP)
+			if (diamond?.type != Material.DIAMOND_BLOCK) return false
 
-			return getBlockSnapshotAsync(world, cell)?.type == Material.DAYLIGHT_DETECTOR
+			val cell = diamond.getRelativeIfLoaded(UP)
+			return cell?.type == Material.DAYLIGHT_DETECTOR
 		}
 	}
 
