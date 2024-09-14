@@ -8,5 +8,5 @@ abstract class NodeFactory<T: NodeManager>(val network: T) {
 	/**
 	 * Create and handle placement of a node at the position, if one should be created
 	 **/
-	abstract suspend fun create(key: BlockKey, data: BlockData): Boolean
+	abstract fun create(key: BlockKey, data: BlockData): Boolean
 }
