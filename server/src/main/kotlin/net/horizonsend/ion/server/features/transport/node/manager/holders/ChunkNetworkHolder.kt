@@ -160,7 +160,7 @@ class ChunkNetworkHolder<T: NodeManager> private constructor (val manager: Chunk
 	 *
 	 * Iterate the section for possible nodes, handle creation
 	 **/
-	private suspend fun collectSectionNodes(sectionY: Int) {
+	private fun collectSectionNodes(sectionY: Int) {
 		val originX = manager.chunk.originX
 		val originY = sectionY.shl(4) - manager.chunk.inner.world.minHeight
 		val originZ = manager.chunk.originZ

@@ -7,14 +7,12 @@ import com.sk89q.worldedit.history.change.Change
 import com.sk89q.worldedit.world.World
 import com.sk89q.worldedit.world.biome.BiomeType
 import com.sk89q.worldedit.world.block.BlockTypesCache
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import org.bukkit.block.data.BlockData
 import java.util.Collections
 
 class IonChangeSet(world: World) : AbstractChangeSet(world) {
 	private var counter: Int = 0
-	val bukkitWorld = BukkitAdapter.adapt(world)
+	private val bukkitWorld = BukkitAdapter.adapt(world)
 
 	override fun add(x: Int, y: Int, z: Int, combinedFrom: Int, combinedTo: Int) {
 		counter++
@@ -26,8 +24,6 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 			)
 		}
 	}
-
-	private val changes = mutableMapOf<BlockKey, BlockData>()
 
 	private var recording: Boolean = true
 
