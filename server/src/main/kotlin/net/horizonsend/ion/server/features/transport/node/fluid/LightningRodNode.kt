@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.transport.node.fluid
 
 import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.general.LinearNode
-import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.node.FluidNodeManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY

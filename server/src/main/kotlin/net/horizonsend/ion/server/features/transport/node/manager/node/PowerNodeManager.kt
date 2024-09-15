@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.node.manager
+package net.horizonsend.ion.server.features.transport.node.manager.node
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import kotlinx.coroutines.runBlocking

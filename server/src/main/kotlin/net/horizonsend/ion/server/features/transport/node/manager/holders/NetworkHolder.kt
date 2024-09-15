@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.transport.node.manager.holders
 
 import kotlinx.coroutines.CoroutineScope
 import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.node.NodeManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
 

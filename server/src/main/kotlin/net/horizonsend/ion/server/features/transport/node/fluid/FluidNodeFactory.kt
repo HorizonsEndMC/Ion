@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.transport.node.NodeFactory
 import net.horizonsend.ion.server.features.transport.node.getNeighborNodes
 import net.horizonsend.ion.server.features.transport.node.handleMerges
-import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.node.FluidNodeManager
 import net.horizonsend.ion.server.features.transport.node.power.SpongeNode
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey

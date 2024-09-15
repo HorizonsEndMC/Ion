@@ -1,24 +1,24 @@
 package net.horizonsend.ion.server.features.transport.node.manager.holders
 
 import kotlinx.coroutines.CoroutineScope
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.ShipTransportManager
+import net.horizonsend.ion.server.features.transport.node.manager.node.NodeManager
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
 import kotlin.properties.Delegates
 
-class ShipNetworkHolder<T: NodeManager>(val starship: ActiveStarship) : NetworkHolder<T> {
+class ShipNetworkHolder<T: NodeManager>(val manager: ShipTransportManager) : NetworkHolder<T> {
 	override var network: T by Delegates.notNull(); private set
 
-	constructor(manager: ActiveStarship, network: (ShipNetworkHolder<T>) -> T) : this(manager) {
+	constructor(manager: ShipTransportManager, network: (ShipNetworkHolder<T>) -> T) : this(manager) {
 		this.network = network(this)
 	}
 
 	override val scope: CoroutineScope = ChunkRegion.scope
 
-	override fun getWorld(): World = starship.world
+	override fun getWorld(): World = manager.starship.world
 
 	override fun handleLoad() {
 		captureNodes()
