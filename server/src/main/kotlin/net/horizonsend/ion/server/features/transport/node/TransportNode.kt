@@ -15,19 +15,21 @@ import java.util.concurrent.ThreadLocalRandom
 /**
  * Represents a single node, or step, in transport transportNetwork
  **/
-abstract class TransportNode() : PDCSerializable<TransportNode, TransportNode.Companion> {
+abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Companion> {
 	var isDead: Boolean = false
 	abstract val manager: NodeManager
 	override val persistentDataType: Companion get() = Companion
 
 	/** Stored relationships between nodes **/
-	val relationships: MutableSet<NodeRelationship> = ConcurrentHashMap.newKeySet()
+	val relationships: ConcurrentHashMap<BlockKey, NodeRelationship> = ConcurrentHashMap()
+
+	abstract val type: NodeType
 
 	/**
 	 * Break all relations between this node and others
 	 **/
 	fun clearRelations() {
-		relationships.forEach {
+		relationships.values.forEach {
 			it.breakUp()
 		}
 	}
@@ -37,20 +39,30 @@ abstract class TransportNode() : PDCSerializable<TransportNode, TransportNode.Co
 	 *
 	 * If neither side can transfer, a relation will not be created
 	 **/
-	fun addRelationship(other: TransportNode, offset: BlockFace) {
+	fun addRelationship(point: BlockKey, other: TransportNode, offset: BlockFace) {
 		// Do not add duplicates
-		if (relationships.any { it.sideTwo.node == other }) return
+		if (relationships.any { it.value.sideTwo.node == other }) return
 
-		NodeRelationship.create(this, other, offset)
+		NodeRelationship.create(point, this, other, offset)
 		other.neighborChanged(this)
 	}
 
 	fun removeRelationship(other: TransportNode) {
 		// Handle duplicate cases
-		val toOther = relationships.filterTo(mutableSetOf()) { it.sideTwo.node == other }
+		val toOther = relationships.filter { it.value.sideTwo.node == other }
 
-		relationships.removeAll(toOther)
+		toOther.keys.forEach {
+			relationships.remove(it)
+		}
 		other.neighborChanged(this)
+	}
+
+	fun removeRelationship(at: BlockKey) {
+		// Handle duplicate cases
+		val toOther = relationships[at]
+		relationships.remove(at)
+
+		toOther?.sideTwo?.node?.neighborChanged(this)
 	}
 
 	/**
@@ -61,8 +73,8 @@ abstract class TransportNode() : PDCSerializable<TransportNode, TransportNode.Co
 	/** Gets the nodes this can transfer to **/
 	fun getTransferableNodes(): Collection<Pair<TransportNode, BlockFace>> = relationships.filter {
 		// That this node can transfer to the other
-		it.sideOne.transferAllowed && !it.sideTwo.node.isDead
-	}.map { it.sideTwo.node to it.sideOne.offset }.shuffled(ThreadLocalRandom.current())
+		it.value.sideOne.transferAllowed && !it.value.sideTwo.node.isDead
+	}.map { it.value.sideTwo.node to it.value.sideOne.offset }.shuffled(ThreadLocalRandom.current())
 
 	/**
 	 * Store additional required data in the serialized container
@@ -84,7 +96,7 @@ abstract class TransportNode() : PDCSerializable<TransportNode, TransportNode.Co
 	 *
 	 * Cleanup, splitting into multiple, etc
 	 **/
-	open fun handleRemoval(position: BlockKey) {}
+	open fun handlePositionRemoval(position: BlockKey) {}
 
 	/**
 	 * Builds relations between this node and transferrable nodes
@@ -107,7 +119,7 @@ abstract class TransportNode() : PDCSerializable<TransportNode, TransportNode.Co
 
 		override fun toPrimitive(complex: TransportNode, context: PersistentDataAdapterContext): PersistentDataContainer {
 			val pdc = context.newPersistentDataContainer()
-			pdc.set(NODE_TYPE, NodeType.type, NodeType[complex])
+			pdc.set(NODE_TYPE, NodeType.type, complex.type)
 
 			complex.storeData(pdc)
 
