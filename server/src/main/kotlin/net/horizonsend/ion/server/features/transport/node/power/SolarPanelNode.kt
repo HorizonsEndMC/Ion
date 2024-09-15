@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
+import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
+import net.horizonsend.ion.server.features.transport.node.separateNode
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_DETECTORS
@@ -33,6 +35,7 @@ import java.util.function.Consumer
 class SolarPanelNode(
 	override val manager: PowerNodeManager
 ) : MultiNode<SolarPanelNode, SolarPanelNode>() {
+	override val type: NodeType = NodeType.SOLAR_PANEL_NODE
 	/** The positions of extractors in this solar panel */
 	private val extractorPositions = ConcurrentHashMap.newKeySet<BlockKey>()
 
@@ -162,21 +165,15 @@ class SolarPanelNode(
 		traverseField { it.calculateExitDistance() }
 	}
 
-	override fun handleRemoval(position: BlockKey) {
+	override fun handlePositionRemoval(position: BlockKey) {
 		isDead = true
 
 		removePosition(position)
 
-		// Remove all positions
-		positions.forEach {
-			manager.nodes.remove(it)
+		if (separateNode(this)) {
+			positions.clear()
+			clearRelations()
 		}
-
-		// Rebuild relations after cleared
-		clearRelations()
-
-		// Rebuild the node without the lost position
-		rebuildNode(position)
 	}
 
 	fun addPosition(extractorKey: BlockKey, diamondKey: BlockKey, detectorKey: BlockKey): SolarPanelNode {
