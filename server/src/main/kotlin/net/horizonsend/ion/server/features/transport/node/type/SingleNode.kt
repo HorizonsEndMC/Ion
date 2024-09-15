@@ -24,7 +24,7 @@ abstract class SingleNode : TransportNode() {
 			if (this == neighborNode) return
 
 			// Add a relationship, if one should be added
-			addRelationship(neighborNode, offset)
+			addRelationship(position, neighborNode, offset)
 		}
 	}
 
@@ -32,7 +32,7 @@ abstract class SingleNode : TransportNode() {
 		buildRelations(position)
 	}
 
-	override fun handleRemoval(position: BlockKey) {
+	override fun handlePositionRemoval(position: BlockKey) {
 		isDead = true
 		manager.nodes.remove(position)
 		clearRelations()
