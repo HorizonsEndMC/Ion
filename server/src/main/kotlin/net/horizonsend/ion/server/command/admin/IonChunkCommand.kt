@@ -13,7 +13,7 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.node.NetworkType
-import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.node.PowerNodeManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
