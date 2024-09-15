@@ -15,7 +15,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 
-object TransportManager : SLEventListener() {
+object GlobalNodeManager : SLEventListener() {
 	@EventHandler
 	fun onBlockBreak(event: BlockBreakEvent) {
 		val world = event.block.world
