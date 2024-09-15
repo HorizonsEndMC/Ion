@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -13,12 +14,13 @@ import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
 
 class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode() {
+	override val type: NodeType = NodeType.POWER_EXTRACTOR_NODE
 	constructor(network: PowerNodeManager, position: BlockKey) : this(network) {
 		this.position = position
 		network.extractors[position] = this
 	}
 
-	val extractableNodes: MutableSet<PowerInputNode> get() = relationships.mapNotNullTo(mutableSetOf()) { it.sideTwo.node as? PowerInputNode }
+	val extractableNodes: MutableSet<PowerInputNode> get() = relationships.mapNotNullTo(mutableSetOf()) { it.value.sideTwo.node as? PowerInputNode }
 
 	// Region transfer
 	/*
@@ -60,9 +62,9 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode() 
 		manager.extractors[position] = this
 	}
 
-	override fun handleRemoval(position: BlockKey) {
+	override fun handlePositionRemoval(position: BlockKey) {
 		manager.extractors.remove(position)
-		super.handleRemoval(position)
+		super.handlePositionRemoval(position)
 	}
 
 	override fun buildRelations(position: BlockKey) {
@@ -77,7 +79,7 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode() 
 			}
 
 			// Add a relationship, if one should be added
-			addRelationship(neighborNode, offset)
+			addRelationship(position, neighborNode, offset)
 		}
 	}
 

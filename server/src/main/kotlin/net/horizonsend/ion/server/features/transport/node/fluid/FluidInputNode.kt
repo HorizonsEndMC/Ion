@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.fluid
 
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
+import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -10,6 +11,8 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
 class FluidInputNode(override val manager: FluidNodeManager) : SingleNode() {
+	override val type: NodeType = NodeType.FLUID_INPUT
+
 	constructor(network: FluidNodeManager, position: BlockKey) : this(network) {
 		this.position = position
 	}
