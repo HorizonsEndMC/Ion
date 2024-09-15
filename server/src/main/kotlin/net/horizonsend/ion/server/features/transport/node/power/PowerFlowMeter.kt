@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerFlowMeterDisplay
+import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -24,6 +25,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
 class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode() {
+	override val type: NodeType = NodeType.POWER_FLOW_METER
 	constructor(network: PowerNodeManager, position: BlockKey, direction: BlockFace) : this(network) {
 		this.position = position
 		this.direction = direction
@@ -110,10 +112,10 @@ class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode() {
 		super.onPlace(position)
 	}
 
-	override fun handleRemoval(position: BlockKey) {
+	override fun handlePositionRemoval(position: BlockKey) {
 		if (::displayHandler.isInitialized) displayHandler.remove()
 
-		super.handleRemoval(position)
+		super.handlePositionRemoval(position)
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
