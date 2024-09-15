@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
+import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -9,6 +10,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
 class PowerEqualSplitterNode(override val manager: PowerNodeManager) : SingleNode() {
+	override val type: NodeType = NodeType.POWER_EQUAL_SPLITTER
 	constructor(network: PowerNodeManager, position: BlockKey) : this(network) {
 		this.position = position
 	}
