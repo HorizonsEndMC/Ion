@@ -1,10 +1,12 @@
 package net.horizonsend.ion.server.features.transport.node.fluid
 
+import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.general.JunctionNode
 import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 
-class GasJunctionNode(network: FluidNodeManager) : JunctionNode<FluidNodeManager, GasJunctionNode, GasJunctionNode>(network) {
+class FluidJunctionNode(network: FluidNodeManager) : JunctionNode<FluidNodeManager, FluidJunctionNode, FluidJunctionNode>(network) {
+	override val type: NodeType = NodeType.FLUID_JUNCTION
 	constructor(network: FluidNodeManager, origin: BlockKey) : this(network) {
 		positions.add(origin)
 	}
@@ -17,7 +19,7 @@ class GasJunctionNode(network: FluidNodeManager) : JunctionNode<FluidNodeManager
 		return """
 			[Gas Junction Node]
 			${positions.size} positions
-			Relationships: ${relationships.joinToString { it.sideTwo.toString() }}
+			Relationships: ${relationships.values.joinToString { it.sideTwo.toString() }}
 		""".trimIndent()
 	}
 }
