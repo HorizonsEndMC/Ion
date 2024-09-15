@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.node.manager
+package net.horizonsend.ion.server.features.transport.node.manager.node
 
 import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.features.transport.node.NetworkType
