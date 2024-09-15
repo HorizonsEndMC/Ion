@@ -87,7 +87,10 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 			0 -> SpongeNode(network, position).apply { loadIntoNetwork() }
 
 			// Consolidate into neighbor
-			1 ->  neighbors.firstOrNull()?.addPosition(position) ?: throw ConcurrentModificationException("Node removed during processing")
+			1 -> {
+				val adjacent = neighbors.firstOrNull()
+				adjacent?.addPosition(position) ?: SpongeNode(network, position).apply { loadIntoNetwork() }
+			}
 
 			// Join multiple neighbors together
 			in 2..6 -> handleMerges(neighbors).addPosition(position)

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node
 
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.block.BlockFace
 
 /**
@@ -28,15 +29,15 @@ data class NodeRelationship(
 	}
 
 	companion object {
-		fun create(nodeOne: TransportNode, nodeTwo: TransportNode, nodeTwoOffset: BlockFace) {
+		fun create(point: BlockKey, nodeOne: TransportNode, nodeTwo: TransportNode, nodeTwoOffset: BlockFace) {
 			val canTransferTo = nodeOne.isTransferableTo(nodeTwo)
 			val canTransferFrom = nodeTwo.isTransferableTo(nodeOne)
 
 			// Do not add the relationship if neither side can transfer
 			if (!canTransferFrom && !canTransferTo) return
 
-			nodeOne.relationships += NodeRelationship(RelationSide(nodeOne, canTransferTo, BlockFace.SELF), RelationSide(nodeTwo, canTransferFrom, nodeTwoOffset))
-			nodeTwo.relationships += NodeRelationship(RelationSide(nodeTwo, canTransferFrom, BlockFace.SELF), RelationSide(nodeOne, canTransferTo, nodeTwoOffset.oppositeFace))
+			nodeOne.relationships[point] = NodeRelationship(RelationSide(nodeOne, canTransferTo, BlockFace.SELF), RelationSide(nodeTwo, canTransferFrom, nodeTwoOffset))
+			nodeTwo.relationships[point] = NodeRelationship(RelationSide(nodeTwo, canTransferFrom, BlockFace.SELF), RelationSide(nodeOne, canTransferTo, nodeTwoOffset.oppositeFace))
 		}
 	}
 }

@@ -140,9 +140,9 @@ object IonChunkCommand : SLCommand() {
 
 	@Subcommand("get node look")
 	fun getNode(sender: Player, network: NetworkType) = CoroutineScope(Dispatchers.Default + Job()).launch {
-		val ionChunk = sender.chunk.ion()
-		val grid = network.get(ionChunk)
 		val targeted = sender.getTargetBlock(null, 10)
+		val ionChunk = targeted.chunk.ion()
+		val grid = network.get(ionChunk)
 		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
 
 		sender.information("Targeted node: ${grid.nodes[key]}")

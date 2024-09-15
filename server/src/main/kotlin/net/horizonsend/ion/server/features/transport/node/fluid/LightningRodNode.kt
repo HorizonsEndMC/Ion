@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.fluid
 
+import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.general.LinearNode
 import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -11,6 +12,8 @@ import org.bukkit.Axis
 import org.bukkit.block.data.Directional
 
 class LightningRodNode(network: FluidNodeManager) : LinearNode<FluidNodeManager, LightningRodNode, LightningRodNode>(network) {
+	override val type: NodeType = NodeType.LIGHTNING_ROD
+
 	constructor(network: FluidNodeManager, origin: Long, axis: Axis) : this(network) {
 		positions.add(origin)
 		this.axis = axis

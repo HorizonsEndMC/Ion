@@ -29,18 +29,18 @@ abstract class NodeManager(val holder: NetworkHolder<*>) {
 	open fun processBlockRemoval(key: BlockKey) {
 		val previousNode = nodes[key] ?: return
 
-		previousNode.handleRemoval(key)
+		previousNode.handlePositionRemoval(key)
 		holder.markUnsaved()
 	}
 
 	open fun processBlockRemovals(keys: Iterable<BlockKey>) {
-		var hits: Int = 0
+		var hits = 0
 
 		for (key in keys) {
 			val previousNode = nodes[key] ?: return
 			hits++
 
-			previousNode.handleRemoval(key)
+			previousNode.handlePositionRemoval(key)
 		}
 
 		if (hits > 0) holder.markUnsaved()
