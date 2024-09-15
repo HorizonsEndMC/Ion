@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -10,6 +11,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
 class PowerInputNode(override val manager: PowerNodeManager) : SingleNode() {
+	override val type: NodeType = NodeType.POWER_INPUT_NODE
 	constructor(network: PowerNodeManager, position: BlockKey) : this(network) {
 		this.position = position
 	}

@@ -1,6 +1,9 @@
 package net.horizonsend.ion.server.features.transport.node
 
 import com.manya.pdc.base.EnumDataType
+import net.horizonsend.ion.server.features.transport.node.fluid.FluidInputNode
+import net.horizonsend.ion.server.features.transport.node.fluid.FluidJunctionNode
+import net.horizonsend.ion.server.features.transport.node.fluid.LightningRodNode
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.power.EndRodNode
 import net.horizonsend.ion.server.features.transport.node.power.InvertedDirectionalNode
@@ -25,6 +28,9 @@ enum class NodeType(val clazz: Class<out TransportNode>) {
 	POWER_EQUAL_SPLITTER(PowerEqualSplitterNode::class.java),
 
 	//FLUID
+	FLUID_INPUT(FluidInputNode::class.java),
+	FLUID_JUNCTION(FluidJunctionNode::class.java),
+	LIGHTNING_ROD(LightningRodNode::class.java),
 
 	//ITEM
 	;

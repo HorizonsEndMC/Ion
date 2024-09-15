@@ -88,7 +88,7 @@ class FluidNodeFactory(network: FluidNodeManager) : NodeFactory<FluidNodeManager
 
 		val finalNode = when (neighbors.size) {
 			// New sponge node
-			0 -> GasJunctionNode(network, position).apply { loadIntoNetwork() }
+			0 -> FluidJunctionNode(network, position).apply { loadIntoNetwork() }
 
 			// Consolidate into neighbor
 			1 ->  neighbors.firstOrNull()?.addPosition(position) ?: throw ConcurrentModificationException("Node removed during processing")
