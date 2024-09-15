@@ -4,7 +4,7 @@ import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.features.transport.node.fluid.FluidInputNode
 import net.horizonsend.ion.server.features.transport.node.fluid.FluidJunctionNode
 import net.horizonsend.ion.server.features.transport.node.fluid.LightningRodNode
-import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.node.NodeManager
 import net.horizonsend.ion.server.features.transport.node.power.EndRodNode
 import net.horizonsend.ion.server.features.transport.node.power.InvertedDirectionalNode
 import net.horizonsend.ion.server.features.transport.node.power.PowerDirectionalNode
