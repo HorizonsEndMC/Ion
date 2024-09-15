@@ -17,7 +17,7 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 	override fun add(x: Int, y: Int, z: Int, combinedFrom: Int, combinedTo: Int) {
 		counter++
 		addWriteTask {
-			TransportManager.handleBlockChange(
+			GlobalNodeManager.handleBlockChange(
 				bukkitWorld,
 				toBlockKey(x, y, z),
 				BukkitAdapter.adapt(BlockTypesCache.states[combinedTo])
