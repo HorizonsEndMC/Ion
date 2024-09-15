@@ -12,8 +12,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.popMaxByOrNull
-import org.bukkit.World
 import org.bukkit.block.BlockFace
+import java.util.LinkedList
 
 fun getNeighborNodes(position: BlockKey, nodes: Map<BlockKey, TransportNode>, checkFaces: Collection<BlockFace> = ADJACENT_BLOCK_FACES) = checkFaces.associateWithNotNull {
 	val x = getX(position)
@@ -50,12 +50,60 @@ fun <Self: MultiNode<Self, Self>> handleMerges(neighbors: MutableCollection<Self
 	return largestNeighbor
 }
 
-fun getNode(world: World, key: BlockKey, networkType: NetworkType): TransportNode? {
-	val x = getX(key).shr(4)
-	val z = getZ(key).shr(4)
+fun <G : MultiNode<*, *>> separateNode(node: G): Boolean {
+	// Generate the grid nodes isolated from each other.
+	val splitGraphs: List<Set<BlockKey>> = separateNodePositions(node)
 
-	val chunk = IonChunk[world, x, z] ?: return null
-	return networkType.get(chunk).nodes[key]
+	if (splitGraphs.size <= 1) return false
+
+	// Create new nodes
+	splitGraphs.forEach { node.ofPositions(it) }
+
+	return true
+}
+
+/**
+ * Splits a multi node's positions into multiple nodes
+ * https://github.com/CoFH/ThermalDynamics/blob/1.20.x/src/main/java/cofh/thermal/dynamics/common/grid/GridContainer.java#L394
+ **/
+fun <T : MultiNode<*, *>> separateNodePositions(node: T): List<Set<BlockKey>> {
+	val seen: MutableSet<BlockKey> = HashSet()
+	val stack = LinkedList<BlockKey>()
+	val separated: MutableList<Set<BlockKey>> = LinkedList()
+
+	while (true) {
+		var first: BlockKey? = null
+
+		// Find next node in graph we haven't seen.
+		for (position in node.positions) {
+			if (!seen.contains(position)) {
+				first = position
+				break
+			}
+		}
+
+		// We have discovered all nodes, exit.
+		if (first == null) break
+
+		// Start recursively building out all nodes in this sub-graph
+		val subGraph: MutableSet<BlockKey> = HashSet()
+
+		stack.push(first)
+
+		while (!stack.isEmpty()) {
+			val entry = stack.pop()
+
+			if (seen.contains(entry)) continue
+
+			stack.addAll(node.adjacentPositions(entry))
+			seen.add(entry)
+			subGraph.add(entry)
+		}
+
+		separated.add(subGraph)
+	}
+
+	return separated
 }
 
 enum class NetworkType {

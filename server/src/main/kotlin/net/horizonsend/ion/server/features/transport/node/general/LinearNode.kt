@@ -29,7 +29,7 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 
 			if (this == neighborNode) continue
 
-			addRelationship(neighborNode, offset)
+			addRelationship(position, neighborNode, offset)
 		}
 	}
 

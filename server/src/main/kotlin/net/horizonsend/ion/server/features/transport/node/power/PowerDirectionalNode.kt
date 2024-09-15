@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import com.manya.pdc.base.EnumDataType
+import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
@@ -12,6 +13,7 @@ import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
 class PowerDirectionalNode(override val manager: PowerNodeManager) : SingleNode() {
+	override val type: NodeType = NodeType.POWER_DIRECTIONAL_NODE
 	private var variant: Material by Delegates.notNull()
 
 	constructor(network: PowerNodeManager, position: BlockKey, variant: Material) : this(network) {
