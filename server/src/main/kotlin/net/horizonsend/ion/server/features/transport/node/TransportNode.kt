@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.transport.node.manager.node.NodeManag
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -42,10 +41,7 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	fun addRelationship(point: BlockKey, other: TransportNode, offset: BlockFace) {
 		// Do not add duplicates
 		val existing = relationships[point]
-		if (existing?.other == other) {
-			println("Relationship from $this to $other already existed at ${toVec3i(point)}")
-			return
-		}
+		if (existing?.other == other) return
 
 		NodeRelationship.create(point, this, other, offset)
 		other.neighborChanged(this)
@@ -55,7 +51,9 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 		// Handle duplicate cases
 		val toOther = relationships.filter { it.value.other == other }
 
-		toOther.keys.forEach { relationships.remove(it) }
+		toOther.keys.forEach {
+			relationships[it]?.breakUp()
+		}
 
 		// Notify of neighbor change
 		other.neighborChanged(this)
@@ -64,7 +62,7 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	fun removeRelationship(at: BlockKey) {
 		// Handle duplicate cases
 		val toOther = relationships[at]
-		relationships.remove(at)
+		toOther?.breakUp()
 
 		// Notify of neighbor change
 		toOther?.other?.neighborChanged(this)
@@ -75,11 +73,11 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	 **/
 	abstract fun isTransferableTo(node: TransportNode): Boolean
 
-//	/** Gets the nodes this can transfer to **/
-//	fun getTransferableNodes(): Collection<Pair<TransportNode, BlockFace>> = relationships.filter {
-//		// That this node can transfer to the other
-//		it.value.holder.transferAllowed && !it.value.other.node.isDead
-//	}.map { it.value.other.node to it.value.holder.offset }.shuffled(ThreadLocalRandom.current())
+	var cachedTransferable: Collection<TransportNode> = ArrayDeque(getTransferableNodes())
+
+	fun refreshTransferCache() {
+		cachedTransferable = ArrayDeque(getTransferableNodes())
+	}
 
 	/**
 	 * Gets the distinct nodes this can transfer to

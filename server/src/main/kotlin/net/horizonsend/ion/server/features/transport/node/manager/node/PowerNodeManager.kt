@@ -16,10 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.NamespacedKey
-import java.util.LinkedList
-import java.util.Queue
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.system.measureNanoTime
 
 class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(holder) {
 	override val type: NetworkType = NetworkType.POWER
@@ -70,31 +67,22 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 	}
 
 	fun tickExtractor(extractorNode: PowerExtractorNode): Set<PowerInputNode> {
-		val visitQueue: Queue<TransportNode> = LinkedList()
+		val visitQueue = ArrayDeque<TransportNode>()
 		val visitedSet = ObjectOpenHashSet<TransportNode>()
-		val destinations = mutableSetOf<PowerInputNode>()
+		val destinations = ObjectOpenHashSet<PowerInputNode>()
 
 		visitQueue.addAll(extractorNode.getTransferableNodes())
 
-		var transferrable = 0L
+		while (visitQueue.isNotEmpty()) {
+			val currentNode = visitQueue.removeFirst()
+			visitedSet.add(currentNode)
 
-		val iterationTime = measureNanoTime {
-			while (visitQueue.isNotEmpty()) {
-				val currentNode = visitQueue.poll()
-				visitedSet.add(currentNode)
-
-				if (currentNode is PowerInputNode) {
-					destinations.add(currentNode)
-				}
-
-				transferrable += measureNanoTime {
-					visitQueue.addAll(currentNode.getTransferableNodes().filterNot { visitedSet.contains(it) || visitQueue.contains(it) })
-				}
+			if (currentNode is PowerInputNode) {
+				destinations.add(currentNode)
 			}
-		}
 
-		println("getting next nodes time: $transferrable")
-		println("iterationTime: $iterationTime")
+			visitQueue.addAll(currentNode.cachedTransferable.filterNot { visitedSet.contains(it) })
+		}
 
 		return destinations
 	}
