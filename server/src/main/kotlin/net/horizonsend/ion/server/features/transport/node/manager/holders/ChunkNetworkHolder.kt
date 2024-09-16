@@ -5,6 +5,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.node.manager.node.NodeManager
@@ -182,5 +183,9 @@ class ChunkNetworkHolder<T: NodeManager> private constructor (val manager: Chunk
 
 	override fun markUnsaved() {
 		manager.chunk.inner.minecraft.isUnsaved = true
+	}
+
+	override fun getMultiblockManager(): MultiblockManager {
+		return manager.chunk.multiblockManager
 	}
 }

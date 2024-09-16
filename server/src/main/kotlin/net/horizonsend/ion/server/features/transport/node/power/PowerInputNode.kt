@@ -30,5 +30,19 @@ class PowerInputNode(override val manager: PowerNodeManager) : SingleNode() {
 
 	var boundMultiblockEntity: PoweredMultiblockEntity? = null
 
+	fun isCalling(): Boolean = boundMultiblockEntity != null && !(boundMultiblockEntity?.storage?.isFull() ?: false)
+
+	override fun onPlace(position: BlockKey) {
+		super.onPlace(position)
+
+//		getNearbyPowerInputs().forEach { manager.tryBindPowerNode(it) }
+	}
+
+//	fun getNearbyPowerInputs(): Collection<PoweredMultiblockEntity> {
+//		return ADJACENT_BLOCK_FACES.mapNotNullTo(mutableSetOf()) {
+//			manager.holder.getMultiblockManager()[getRelative(position, it)] as? PoweredMultiblockEntity
+//		}
+//	}
+
 	override fun toString(): String = "POWER INPUT NODE. Bound to $boundMultiblockEntity"
 }

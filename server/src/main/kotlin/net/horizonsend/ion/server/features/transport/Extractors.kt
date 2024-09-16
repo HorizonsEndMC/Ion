@@ -50,6 +50,7 @@ object Extractors : IonServerComponent() {
 	val BUSY_PIPE_EXTRACTORS: MutableSet<Vec3i> = ConcurrentHashMap.newKeySet()
 
 	override fun onEnable() {
+		return
 		IonServer.server.worlds.forEach(Extractors::loadExtractors)
 
 		Tasks.asyncRepeat(20 * 2, 20 * 2) {
