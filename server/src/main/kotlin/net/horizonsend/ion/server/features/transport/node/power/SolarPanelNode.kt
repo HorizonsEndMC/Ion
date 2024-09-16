@@ -45,6 +45,8 @@ class SolarPanelNode(
 	private val cellNumber: Int get() = extractorPositions.size
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
+		if (node is SolarPanelNode && node.exitDistance > this.exitDistance) return false
+
 		// Solar panels should be able to transfer through extractors and other solar panels
 		return node !is PowerExtractorNode
 	}
