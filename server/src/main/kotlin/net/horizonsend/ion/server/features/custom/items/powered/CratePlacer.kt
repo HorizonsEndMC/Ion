@@ -20,7 +20,6 @@ import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
-import net.minecraft.nbt.NbtUtils
 import net.minecraft.nbt.StringTag
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.FluidCollisionMode
@@ -134,8 +133,6 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			items.add(itemNBT)
 
 			base.put("Items", items)
-
-			println(NbtUtils.structureToSnbt(base))
 
 			val blockPos = BlockPos(x, y, z)
 			// Remove old
