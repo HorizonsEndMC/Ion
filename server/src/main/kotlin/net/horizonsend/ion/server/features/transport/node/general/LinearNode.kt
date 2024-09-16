@@ -23,14 +23,11 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 	}
 
 	override fun buildRelations(position: BlockKey) {
-		println("${javaClass.simpleName} axis: $axis faces: ${axis.faces.toList()}")
 		for (offset in axis.faces.toList()) {
 			val offsetKey = getRelative(position, offset, 1)
 			val neighborNode = manager.getNode(offsetKey) ?: continue
-			println("neighbor: $offset ${neighborNode.javaClass.simpleName}")
 
 			if (this == neighborNode) continue
-			println("adding relationship")
 
 			addRelationship(position, neighborNode, offset)
 		}
