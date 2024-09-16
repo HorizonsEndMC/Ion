@@ -139,6 +139,7 @@ class Starship(
 	fun tick() {
 		controller.tick()
 		multiblockManager.tick()
+		transportManager.tick()
 
 		subsystems.forEach { it.tick() }
 	}
