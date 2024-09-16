@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.firsts
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -64,12 +63,12 @@ class SolarPanelNode(
 		val neighbors = getTransferableNodes()
 
 		// Transferable node provides an exit
-		if (neighbors.any { it.first !is SolarPanelNode }) {
+		if (neighbors.any { it !is SolarPanelNode }) {
 			exitDistance = 0
 			return
 		}
 
-		val solars = neighbors.firsts().filterIsInstance<SolarPanelNode>()
+		val solars = neighbors.filterIsInstance<SolarPanelNode>()
 		if (solars.isEmpty()) {
 			exitDistance = -1
 			return
@@ -262,5 +261,5 @@ class SolarPanelNode(
 		}
 	}
 
-	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().firsts().joinToString { it.javaClass.simpleName }} nodes, distance = $exitDistance, powerRatio = ${getPowerRatio()}, location = ${toVec3i(positions.random())}"
+	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes, distance = $exitDistance, powerRatio = ${getPowerRatio()}, location = ${toVec3i(positions.random())}"
 }

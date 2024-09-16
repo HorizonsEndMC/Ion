@@ -22,5 +22,5 @@ class SpongeNode(network: PowerNodeManager) : JunctionNode<PowerNodeManager, Spo
 		manager.nodeFactory.addSponge(position, handleRelationships = false)
 	}
 
-	override fun toString(): String = "(SPONGE NODE: ${positions.size} positions, Transferable to: ${getTransferableNodes().joinToString { it.first.javaClass.simpleName }} nodes) location = ${toVec3i(positions.random())}"
+	override fun toString(): String = "(SPONGE NODE: ${positions.size} positions, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes) location = ${toVec3i(positions.random())}"
 }
