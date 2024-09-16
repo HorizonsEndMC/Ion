@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.manager.node
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
@@ -17,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.NamespacedKey
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.roundToInt
 
 class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(holder) {
 	override val type: NetworkType = NetworkType.POWER
@@ -52,10 +52,8 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 		}
 
 		val (x, y, z) = inputVec
-		runBlocking {
-			val block = getBlockIfLoaded(world, x, y, z)
-			if (block != null) createNodeFromBlock(block)
-		}
+		val block = getBlockIfLoaded(world, x, y, z)
+		if (block != null) createNodeFromBlock(block)
 
 		val attemptTwo = getNode(inputKey) as? PowerInputNode ?: return
 
@@ -63,22 +61,50 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 	}
 
 	fun tick() {
-
+		extractors.values.forEach(::tickExtractor)
+		solarPanels.forEach(::tickSolarPanel)
 	}
 
-	fun tickExtractor(extractorNode: PowerExtractorNode): Set<PowerInputNode> {
+	fun tickExtractor(extractorNode: PowerExtractorNode) {
+		val availablePower = extractorNode.getTransferPower()
+		if (availablePower == 0) return
+
+		val destinations = getNetworkDestinations(extractorNode)
+		val share = availablePower.toDouble() / destinations.size.toDouble()
+
+		for (destination in destinations) {
+			destination.storage.addPower(share.roundToInt())
+		}
+	}
+
+	fun tickSolarPanel(panelNode: SolarPanelNode) {
+		val powerCheck = panelNode.getPower()
+		if (powerCheck == 0) return
+
+		val destinations = getNetworkDestinations(panelNode)
+		val realPower = panelNode.tickAndGetPower()
+		val share = realPower.toDouble() / destinations.size.toDouble()
+
+		println("Sending $realPower to ${destinations.size} destinations")
+
+		for (destination in destinations) {
+			destination.storage.addPower(share.roundToInt())
+		}
+	}
+
+	private fun getNetworkDestinations(origin: TransportNode): ObjectOpenHashSet<PoweredMultiblockEntity> {
 		val visitQueue = ArrayDeque<TransportNode>()
 		val visitedSet = ObjectOpenHashSet<TransportNode>()
-		val destinations = ObjectOpenHashSet<PowerInputNode>()
+		val destinations = ObjectOpenHashSet<PoweredMultiblockEntity>()
 
-		visitQueue.addAll(extractorNode.getTransferableNodes())
+		visitQueue.addAll(origin.getTransferableNodes())
 
 		while (visitQueue.isNotEmpty()) {
 			val currentNode = visitQueue.removeFirst()
 			visitedSet.add(currentNode)
 
-			if (currentNode is PowerInputNode) {
-				destinations.add(currentNode)
+			if (currentNode is PowerInputNode && currentNode.isCalling()) {
+				destinations.add(currentNode.boundMultiblockEntity)
 			}
 
 			visitQueue.addAll(currentNode.cachedTransferable.filterNot { visitedSet.contains(it) })
