@@ -19,7 +19,7 @@ class FluidJunctionNode(network: FluidNodeManager) : JunctionNode<FluidNodeManag
 		return """
 			[Gas Junction Node]
 			${positions.size} positions
-			Relationships: ${relationships.values.joinToString { it.sideTwo.toString() }}
+			Relationships: ${relationships.values.joinToString { it.other.toString() }}
 		""".trimIndent()
 	}
 }
