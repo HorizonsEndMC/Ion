@@ -7,4 +7,8 @@ import net.horizonsend.ion.server.features.transport.node.manager.node.PowerNode
 abstract class TransportManager {
 	abstract val powerNodeManager: NetworkHolder<PowerNodeManager>
 	abstract val fluidNodeManager: NetworkHolder<FluidNodeManager>
+
+	fun tick() {
+
+	}
 }
