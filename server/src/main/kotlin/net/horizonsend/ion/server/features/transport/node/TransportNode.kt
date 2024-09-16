@@ -5,12 +5,12 @@ import net.horizonsend.ion.server.features.transport.node.manager.node.NodeManag
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ThreadLocalRandom
 
 /**
  * Represents a single node, or step, in transport transportNetwork
@@ -41,7 +41,11 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	 **/
 	fun addRelationship(point: BlockKey, other: TransportNode, offset: BlockFace) {
 		// Do not add duplicates
-		if (relationships.any { it.value.sideTwo.node == other }) return
+		val existing = relationships[point]
+		if (existing?.other == other) {
+			println("Relationship from $this to $other already existed at ${toVec3i(point)}")
+			return
+		}
 
 		NodeRelationship.create(point, this, other, offset)
 		other.neighborChanged(this)
@@ -49,11 +53,11 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 
 	fun removeRelationship(other: TransportNode) {
 		// Handle duplicate cases
-		val toOther = relationships.filter { it.value.sideTwo.node == other }
+		val toOther = relationships.filter { it.value.other == other }
 
-		toOther.keys.forEach {
-			relationships.remove(it)
-		}
+		toOther.keys.forEach { relationships.remove(it) }
+
+		// Notify of neighbor change
 		other.neighborChanged(this)
 	}
 
@@ -62,7 +66,8 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 		val toOther = relationships[at]
 		relationships.remove(at)
 
-		toOther?.sideTwo?.node?.neighborChanged(this)
+		// Notify of neighbor change
+		toOther?.other?.neighborChanged(this)
 	}
 
 	/**
@@ -70,11 +75,22 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	 **/
 	abstract fun isTransferableTo(node: TransportNode): Boolean
 
-	/** Gets the nodes this can transfer to **/
-	fun getTransferableNodes(): Collection<Pair<TransportNode, BlockFace>> = relationships.filter {
-		// That this node can transfer to the other
-		it.value.sideOne.transferAllowed && !it.value.sideTwo.node.isDead
-	}.map { it.value.sideTwo.node to it.value.sideOne.offset }.shuffled(ThreadLocalRandom.current())
+//	/** Gets the nodes this can transfer to **/
+//	fun getTransferableNodes(): Collection<Pair<TransportNode, BlockFace>> = relationships.filter {
+//		// That this node can transfer to the other
+//		it.value.holder.transferAllowed && !it.value.other.node.isDead
+//	}.map { it.value.other.node to it.value.holder.offset }.shuffled(ThreadLocalRandom.current())
+
+	/**
+	 * Gets the distinct nodes this can transfer to
+	 **/
+	fun getTransferableNodes(): Collection<TransportNode> {
+		return relationships.mapNotNullTo(mutableSetOf()) { relation ->
+			// The other side of the relation, only if transfer is possible between this node and it. Double check if it is dead as well
+			relation.value.other.takeIf { other -> relation.value.canTransfer && !other.isDead }
+		}
+	}
+
 
 	/**
 	 * Store additional required data in the serialized container
