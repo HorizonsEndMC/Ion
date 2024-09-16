@@ -19,6 +19,8 @@ data class NodeRelationship(
 	fun breakUp() {
 		holder.removeRelationship(other)
 		other.removeRelationship(holder)
+		holder.refreshTransferCache()
+		other.refreshTransferCache()
 	}
 
 	companion object {
@@ -28,6 +30,8 @@ data class NodeRelationship(
 
 			holder.relationships[point] = NodeRelationship(holder, other, nodeTwoOffset, holderToOther)
 			other.relationships[point] = NodeRelationship(other, holder, nodeTwoOffset.oppositeFace, otherToHolder)
+			holder.refreshTransferCache()
+			other.refreshTransferCache()
 		}
 	}
 }
