@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.node.NetworkType
+import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.holders.ChunkNetworkHolder
 import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
@@ -15,7 +16,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.NamespacedKey
+import java.util.LinkedList
+import java.util.Queue
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.system.measureNanoTime
 
 class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(holder) {
 	override val type: NetworkType = NetworkType.POWER
@@ -59,6 +63,40 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 		val attemptTwo = getNode(inputKey) as? PowerInputNode ?: return
 
 		new.bindInputNode(attemptTwo)
+	}
+
+	fun tick() {
+
+	}
+
+	fun tickExtractor(extractorNode: PowerExtractorNode): Set<PowerInputNode> {
+		val visitQueue: Queue<TransportNode> = LinkedList()
+		val visitedSet = ObjectOpenHashSet<TransportNode>()
+		val destinations = mutableSetOf<PowerInputNode>()
+
+		visitQueue.addAll(extractorNode.getTransferableNodes())
+
+		var transferrable = 0L
+
+		val iterationTime = measureNanoTime {
+			while (visitQueue.isNotEmpty()) {
+				val currentNode = visitQueue.poll()
+				visitedSet.add(currentNode)
+
+				if (currentNode is PowerInputNode) {
+					destinations.add(currentNode)
+				}
+
+				transferrable += measureNanoTime {
+					visitQueue.addAll(currentNode.getTransferableNodes().filterNot { visitedSet.contains(it) || visitQueue.contains(it) })
+				}
+			}
+		}
+
+		println("getting next nodes time: $transferrable")
+		println("iterationTime: $iterationTime")
+
+		return destinations
 	}
 
 	override fun finalizeNodes() {
