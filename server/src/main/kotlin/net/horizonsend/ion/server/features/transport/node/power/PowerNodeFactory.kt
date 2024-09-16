@@ -84,7 +84,7 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 
 		val finalNode = when (neighbors.size) {
 			// New sponge node
-			0 -> SpongeNode(network, position).apply { loadIntoNetwork() }
+			0 -> SpongeNode(network, position).addPosition(position)
 
 			// Consolidate into neighbor
 			1 -> {
@@ -112,7 +112,7 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 
 		val finalNode = when (neighbors.size) {
 			// Disconnected
-			0 ->  EndRodNode(network, position, data.facing.axis).apply { loadIntoNetwork() }
+			0 ->  EndRodNode(network, position, data.facing.axis).addPosition(position)
 
 			// Consolidate into neighbor
 			1 -> neighbors.firstOrNull()?.addPosition(position) ?: throw ConcurrentModificationException("Node removed during processing")
