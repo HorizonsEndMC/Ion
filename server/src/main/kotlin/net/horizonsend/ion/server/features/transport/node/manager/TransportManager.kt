@@ -9,6 +9,6 @@ abstract class TransportManager {
 	abstract val fluidNodeManager: NetworkHolder<FluidNodeManager>
 
 	fun tick() {
-
+		powerNodeManager.network.tick()
 	}
 }

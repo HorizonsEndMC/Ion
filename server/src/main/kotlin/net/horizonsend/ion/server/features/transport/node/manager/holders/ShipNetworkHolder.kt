@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.manager.holders
 
 import kotlinx.coroutines.CoroutineScope
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.transport.node.manager.node.NodeManager
@@ -53,4 +54,8 @@ class ShipNetworkHolder<T: NodeManager>(val manager: ShipTransportManager) : Net
 	}
 
 	override fun markUnsaved() {/* Do nothing */}
+
+	override fun getMultiblockManager(): MultiblockManager {
+		return manager.starship.multiblockManager
+	}
 }
