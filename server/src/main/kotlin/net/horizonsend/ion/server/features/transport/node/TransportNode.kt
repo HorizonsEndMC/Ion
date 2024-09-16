@@ -51,9 +51,7 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 		// Handle duplicate cases
 		val toOther = relationships.filter { it.value.other == other }
 
-		toOther.keys.forEach {
-			relationships[it]?.breakUp()
-		}
+		toOther.keys.forEach { relationships.remove(it) }
 
 		// Notify of neighbor change
 		other.neighborChanged(this)
