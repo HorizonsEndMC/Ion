@@ -23,11 +23,14 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 	}
 
 	override fun buildRelations(position: BlockKey) {
+		println("${javaClass.simpleName} axis: $axis faces: ${axis.faces.toList()}")
 		for (offset in axis.faces.toList()) {
 			val offsetKey = getRelative(position, offset, 1)
 			val neighborNode = manager.getNode(offsetKey) ?: continue
+			println("neighbor: $offset ${neighborNode.javaClass.simpleName}")
 
 			if (this == neighborNode) continue
+			println("adding relationship")
 
 			addRelationship(position, neighborNode, offset)
 		}
@@ -45,5 +48,5 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 		persistentDataContainer.set(NamespacedKeys.AXIS, EnumDataType(Axis::class.java), axis)
 	}
 
-	override fun toString(): String = "(END ROD NODE: Axis: $axis; ${positions.size} positions; Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
+	override fun toString(): String = "(END ROD NODE: Axis: $axis; ${positions.size} positions; ${relationships.size} relations, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
 }
