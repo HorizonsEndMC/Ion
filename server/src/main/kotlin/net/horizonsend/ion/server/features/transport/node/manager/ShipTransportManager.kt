@@ -18,6 +18,10 @@ class ShipTransportManager(val starship: Starship) : TransportManager() {
 
 	}
 
+	fun release() {
+
+	}
+
 	fun displace(movement: StarshipMovement) {
 
 	}

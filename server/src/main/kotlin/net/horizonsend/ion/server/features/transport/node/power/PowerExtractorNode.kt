@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.power
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.node.PowerNodeManager
@@ -9,9 +10,12 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
+import kotlin.system.measureNanoTime
 
 class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode() {
 	override val type: NodeType = NodeType.POWER_EXTRACTOR_NODE
@@ -21,7 +25,7 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode() 
 		network.extractors[position] = this
 	}
 
-	val extractableNodes: MutableSet<PowerInputNode> get() = relationships.mapNotNullTo(mutableSetOf()) { it.value.sideTwo.node as? PowerInputNode }
+	val extractableNodes: MutableSet<PowerInputNode> get() = relationships.mapNotNullTo(mutableSetOf()) { it.value.other as? PowerInputNode }
 
 	// Region transfer
 	/*
@@ -84,6 +88,15 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode() 
 		}
 	}
 
-	override fun toString(): String = "POWER Extractor NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes"
+	override fun toString(): String {
+		val destinations: Set<PowerInputNode>
+		val time = measureNanoTime {
+			destinations = manager.tickExtractor(this)
+		}
+
+		debugAudience.highlightBlocks(destinations.map { toVec3i(it.position) }, 50L)
+
+		return "Extractor. found ${destinations.size} in $time ns"
+	}
 }
 
