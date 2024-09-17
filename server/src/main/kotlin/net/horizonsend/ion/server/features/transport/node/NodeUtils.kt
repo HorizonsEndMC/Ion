@@ -106,6 +106,7 @@ fun <T : MultiNode<*, *>> separateNodePositions(node: T): List<Set<BlockKey>> {
 	return separated
 }
 
+
 enum class NetworkType {
 	POWER {
 		override fun get(chunk: IonChunk): NodeManager {
