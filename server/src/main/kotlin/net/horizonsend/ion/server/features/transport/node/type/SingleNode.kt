@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.features.transport.node.type
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import kotlin.properties.Delegates
 
 /**
@@ -36,5 +38,9 @@ abstract class SingleNode : TransportNode() {
 		isDead = true
 		manager.nodes.remove(position)
 		clearRelations()
+	}
+
+	override fun getCenter(): Vec3i {
+		return toVec3i(position)
 	}
 }
