@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
-import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
@@ -22,7 +22,7 @@ import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
-import xyz.xenondevs.invui.item.impl.SimpleItem
+import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.window.AnvilWindow
 import xyz.xenondevs.invui.window.Window
@@ -76,7 +76,14 @@ class BazaarPurchaseMenuGui(
     }
 
     // Item being purchased
-    private inner class BazaarGuiItem(itemStack: ItemStack) : SimpleItem(itemStack)
+    private inner class BazaarGuiItem(val itemStack: ItemStack) : AbstractItem() {
+        override fun getItemProvider(): ItemProvider {
+            // make this item's name empty so that it does not populate anvil name field
+            return ItemBuilder(itemStack.updateMeta { it.displayName(empty()) })
+        }
+
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {}
+    }
 
     // Back button
     private inner class ReturnToItemMenuButton : ControlItem<Gui>() {
@@ -121,12 +128,12 @@ class BazaarPurchaseMenuGui(
                                 text("WARNING: Amount is larger than may fit in your inventory.", NamedTextColor.RED).decoration(ITALIC, false),
                                 text("Adding additional items may result in their stacks getting deleted.", NamedTextColor.RED).decoration(ITALIC, false)
                             )
-                        } else Component.empty(),
+                        } else empty(),
 
                         // Remote purchase warning
                         if (priceMult > 1) {
                             text("(Price multiplied x $priceMult due to browsing remotely)").decoration(ITALIC, false)
-                        } else Component.empty()
+                        } else empty()
                     ))
                 })
             }
