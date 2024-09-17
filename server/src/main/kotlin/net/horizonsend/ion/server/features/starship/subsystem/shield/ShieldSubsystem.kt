@@ -18,7 +18,7 @@ abstract class ShieldSubsystem(
 	val name: String = sign.getLine(2).stripColor()
 	val maxShields: Double = (0.00671215 * starship.initialBlockCount.toDouble().pow(0.836512) - 0.188437)
 		get() = if (starship.initialBlockCount < 500) (1 - field + (1)) else field
-	val maxPower: Int = (starship.initialBlockCount.coerceAtLeast(500).d().pow(3.0 / 5.0) * 10000.0).roundToInt()
+	val maxPower: Int = (starship.initialBlockCount.d().pow(3.0 / 5.0) * 10000.0).roundToInt()
 		get() = if (starship.shields.size > maxShields) {
 			(field * ((maxShields / starship.shields.size) * starship.balancing.shieldPowerMultiplier)).toInt()
 		}
