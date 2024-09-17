@@ -4,9 +4,12 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.holders.ChunkNetworkHolder
 import net.horizonsend.ion.server.features.transport.node.separateNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.averageBy
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import java.util.concurrent.ConcurrentHashMap
 
@@ -18,24 +21,6 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 	val positions: MutableSet<BlockKey> = ConcurrentHashMap.newKeySet()
 
 	/**
-	 * Rebuild the node during the removal process
-	 *
-	 * When a position in a multi node is removed, the removed position is removed
-	 * from the list of contained positions, and the node is rebuilt using this method.
-	 **/
-	open fun rebuildNode(position: BlockKey) {
-		// Create new nodes, automatically merging together
-		positions.forEach {
-			addBack(it)
-		}
-
-		// Handle relations once fully rebuilt
-		positions.forEach {
-			manager.nodes[it]?.buildRelations(it)
-		}
-	}
-
-	/**
 	 * Adds new a position to this node
 	 **/
 	fun addPosition(position: BlockKey): Self {
@@ -43,6 +28,8 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 		manager.nodes[position] = this
 
 		onPlace(position)
+
+		storedCenter = calculateCenter()
 
 		@Suppress("UNCHECKED_CAST")
 		return this as Self
@@ -58,6 +45,8 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 
 			onPlace(position)
 		}
+
+		storedCenter = calculateCenter()
 	}
 
 	/**
@@ -106,12 +95,16 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 			positions.clear()
 			clearRelations()
 		}
+
+		storedCenter = calculateCenter()
 	}
 
 	override fun loadIntoNetwork() {
 		for (key in positions) {
 			manager.nodes[key] = this
 		}
+
+		storedCenter = calculateCenter()
 	}
 
 	/**
@@ -150,7 +143,17 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 		return positions.size < maxPositions
 	}
 
-	fun removeFromNetwork() {
-		positions.forEach { manager.nodes.remove(it) }
+	var storedCenter: Vec3i = this.calculateCenter()
+
+	fun calculateCenter(): Vec3i {
+		val xAvg = positions.averageBy { getX(it).toDouble() }
+		val yAvg = positions.averageBy { getY(it).toDouble() }
+		val zAvg = positions.averageBy { getZ(it).toDouble() }
+
+		return Vec3i(xAvg.toInt(), yAvg.toInt(), zAvg.toInt())
+	}
+
+	override fun getCenter(): Vec3i {
+		return storedCenter
 	}
 }
