@@ -195,6 +195,8 @@ class SolarPanelNode(
 			buildRelations(position)
 		}
 
+		storedCenter = calculateCenter()
+
 		return this
 	}
 
@@ -213,17 +215,12 @@ class SolarPanelNode(
 			positions.remove(otherPos)
 			manager.nodes.remove(otherPos)
 		}
+
+		storedCenter = calculateCenter()
 	}
 
 	override fun addBack(position: BlockKey) {
 		manager.nodeFactory.addSolarPanel(position, handleRelationships = false)
-	}
-
-	override fun rebuildNode(position: BlockKey) {
-		manager.solarPanels.remove(this)
-		detectorPositions.clear()
-
-		super.rebuildNode(position)
 	}
 
 	override fun loadIntoNetwork() {
