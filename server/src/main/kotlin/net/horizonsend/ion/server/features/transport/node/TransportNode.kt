@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.transport.node.manager.node.NodeManag
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -71,7 +72,7 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	 **/
 	abstract fun isTransferableTo(node: TransportNode): Boolean
 
-	var cachedTransferable: Collection<TransportNode> = ArrayDeque(getTransferableNodes())
+	var cachedTransferable: ArrayDeque<TransportNode> = ArrayDeque(getTransferableNodes())
 
 	fun refreshTransferCache() {
 		cachedTransferable = ArrayDeque(getTransferableNodes())
@@ -87,6 +88,7 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 		}
 	}
 
+	abstract fun getCenter(): Vec3i
 
 	/**
 	 * Store additional required data in the serialized container
