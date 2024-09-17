@@ -18,10 +18,8 @@ class ChunkRegion(val world: IonWorld) {
 	val size get() = chunks.values.size
 
 	fun tickChunkTransport() {
-		scope.launch {
-			for ((_, chunk) in chunks) {
-				chunk.multiblockManager.tick()
-			}
+		for ((_, chunk) in chunks) {
+			chunk.multiblockManager.tick()
 		}
 	}
 
