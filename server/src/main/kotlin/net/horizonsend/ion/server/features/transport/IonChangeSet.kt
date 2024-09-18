@@ -7,7 +7,12 @@ import com.sk89q.worldedit.history.change.Change
 import com.sk89q.worldedit.world.World
 import com.sk89q.worldedit.world.biome.BiomeType
 import com.sk89q.worldedit.world.block.BlockTypesCache
+import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import org.bukkit.block.Sign
 import java.util.Collections
 
 class IonChangeSet(world: World) : AbstractChangeSet(world) {
@@ -17,12 +22,28 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 	override fun add(x: Int, y: Int, z: Int, combinedFrom: Int, combinedTo: Int) {
 		counter++
 		addWriteTask {
+			val data = BukkitAdapter.adapt(BlockTypesCache.states[combinedTo])
+			val type = BukkitAdapter.adapt(BlockTypesCache.states[combinedTo].blockType)
+
 			GlobalNodeManager.handleBlockChange(
 				bukkitWorld,
 				toBlockKey(x, y, z),
-				BukkitAdapter.adapt(BlockTypesCache.states[combinedTo])
+				data
 			)
+
+			if (type.isWallSign) {
+				val state = bukkitWorld.getBlockState(x, y, z) as? Sign
+				if (state != null) processMultiblock(state)
+			}
 		}
+	}
+
+	private fun processMultiblock(sign: Sign) {
+		val multiblockType = MultiblockAccess.getFast(sign) ?: return
+		val structureDirection = sign.getFacing().oppositeFace
+
+		val origin = MultiblockEntity.getOriginFromSign(sign)
+		MultiblockAccess.setMultiblock(null, bukkitWorld, origin.x, origin.y, origin.z, structureDirection, multiblockType)
 	}
 
 	private var recording: Boolean = true

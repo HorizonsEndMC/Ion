@@ -39,7 +39,7 @@ import kotlin.collections.set
 import kotlin.concurrent.fixedRateTimer
 
 object Extractors : IonServerComponent() {
-	private const val extractorTicksPerSecond = 1.0
+	const val extractorTicksPerSecond = 1.0
 
 	val EXTRACTOR_BLOCK = Material.CRAFTING_TABLE
 
