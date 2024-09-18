@@ -2,14 +2,16 @@ package net.horizonsend.ion.server.features.ai.module.debug
 
 import BasicSteeringModule
 import ContextMap
-import net.horizonsend.ion.server.IonServerComponent
+
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import org.bukkit.Color
+import org.bukkit.Particle
+
+
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 
@@ -39,7 +41,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 			CustomItems.DEBUG_LINE_GREEN.constructItemStack(),controller.starship, Vector(0.0,10.2, 0.0)))
 		output.addAll(displayContext( mod.danger,
 			CustomItems.DEBUG_LINE_RED.constructItemStack(),controller.starship, Vector(0.0,10.0,0.0)))
-		output.add(VectorDisplay(mod.thrustOut,
+		output.add(VectorDisplay(mod::getThrust,
 			CustomItems.DEBUG_LINE_BLUE.constructItemStack(), controller.starship, Vector(0.0,10.4,0.0)))
 		return output
 	}
@@ -50,7 +52,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 
 		return (0 until ContextMap.NUMBINS).map { i ->
 			val dir = ContextMap.bindir[i]
-			val display = VectorDisplay(dir, i, context.bins,model, identifier, offset)
+			val display = VectorDisplay(context, i,model, identifier, offset)
 			display
 		}
 	}
@@ -61,6 +63,17 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 			rendered =true
 		}
 		displayVectors.forEach { it.update() }
+		val mod = controller.getModuleByType<BasicSteeringModule>()?:return
+		for (player in controller.starship.world.players) {
+
+			val particle = Particle.REDSTONE
+			val dustOptions = Particle.DustOptions(Color.BLUE, 4f,)
+			val orbitTarget = mod.orbitTarget
+			if (orbitTarget != null) {
+				player.spawnParticle(particle, orbitTarget.x, orbitTarget.y, orbitTarget.z,
+					1, 0.0, 0.0, 0.0, 0.0, dustOptions)
+			}
+		}
 	}
 
 }
