@@ -26,6 +26,8 @@ abstract class NodeManager(val holder: NetworkHolder<*>) {
 	abstract val nodeFactory: NodeFactory<*>
 	abstract val dataVersion: Int
 
+	var ready: Boolean = false
+
 	open fun processBlockRemoval(key: BlockKey) {
 		val previousNode = nodes[key] ?: return
 
