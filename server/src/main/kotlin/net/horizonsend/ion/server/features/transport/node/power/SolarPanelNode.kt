@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -260,5 +259,9 @@ class SolarPanelNode(
 		}
 	}
 
-	override fun toString(): String = "(SOLAR PANEL NODE: Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes, distance = $exitDistance, powerRatio = ${getPowerRatio()}, location = ${toVec3i(positions.random())}"
+	override fun toString(): String = "(SOLAR PANEL NODE:" +
+		" Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes, " +
+		"distance = $exitDistance," +
+		" powerRatio = ${getPowerRatio()}, " +
+		"location = ${getCenter()}"
 }
