@@ -152,7 +152,7 @@ object MultiblockAccess : IonServerComponent() {
 	 *
 	 * @return if the multiblock could be created properly.
 	 **/
-	fun setMultiblock(detector: Player, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace, multiblock: Multiblock): Boolean {
+	fun setMultiblock(detector: Player?, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace, multiblock: Multiblock): Boolean {
 		val signBlock = MultiblockEntity.getSignFromOrigin(world, Vec3i(x, y, z), structureDirection)
 		val sign = signBlock.state as? Sign ?: return false
 
@@ -165,7 +165,7 @@ object MultiblockAccess : IonServerComponent() {
 
 			sign.isWaxed = true
 
-			multiblock.setupSign(detector, sign)
+			if (detector != null) multiblock.setupSign(detector, sign)
 
 			sign.update(false, false)
 		}
