@@ -82,9 +82,7 @@ class IonChunk(
 	/**
 	 * Logic upon world tick
 	 **/
-	fun tick() {
-		transportNetwork.tick()
-	}
+	fun tick() {}
 
 	/**
 	 * Gets the neighboring chunk in this direction
