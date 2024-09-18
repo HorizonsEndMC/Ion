@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node.manager
 
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.node.manager.holders.ChunkNetworkHolder
 import net.horizonsend.ion.server.features.transport.node.manager.node.FluidNodeManager
 import net.horizonsend.ion.server.features.transport.node.manager.node.PowerNodeManager
@@ -19,11 +20,13 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager() {
 	fun setup() {
 		powerNodeManager.handleLoad()
 		fluidNodeManager.handleLoad()
+		NewTransport.registerTransportManager(this)
 	}
 
 	fun onUnload() {
 		powerNodeManager.handleUnload()
 		fluidNodeManager.handleUnload()
+		NewTransport.removeTransportManager(this)
 	}
 
 	fun save() {

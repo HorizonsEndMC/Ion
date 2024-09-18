@@ -3,20 +3,36 @@ package net.horizonsend.ion.server.features.transport
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.transport.node.manager.TransportManager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import java.util.Timer
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.concurrent.fixedRateTimer
 
 object NewTransport : IonServerComponent() {
 	private val transportManagers = ConcurrentHashMap.newKeySet<TransportManager>()
-	lateinit var thread: ExecutorService
+
+	lateinit var monitorThread: Timer
+	lateinit var executor: ExecutorService
 
 	override fun onEnable() {
-		thread = Executors.newFixedThreadPool(128, Tasks.namedThreadFactory("wire-transport"))
+		executor = Executors.newFixedThreadPool(64, Tasks.namedThreadFactory("wire-transport"))
+
+		val interval: Long = (1000 / Extractors.extractorTicksPerSecond).toLong()
+		monitorThread = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) {
+			transportManagers.forEach {
+				try {
+					it.tick()
+				} catch (exception: Exception) {
+					exception.printStackTrace()
+				}
+			}
+		}
 	}
 
 	override fun onDisable() {
-		if (::thread.isInitialized) thread.shutdown()
+		if (::executor.isInitialized) executor.shutdown()
+		if (::monitorThread.isInitialized) executor.shutdown()
 	}
 
 	fun registerTransportManager(manager: TransportManager) {
