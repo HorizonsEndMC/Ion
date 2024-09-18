@@ -84,6 +84,8 @@ class ChunkNetworkHolder<T: NodeManager> private constructor (val manager: Chunk
 
 			network.buildRelations()
 			network.finalizeNodes()
+
+			network.ready = true
 		}
 	}
 
