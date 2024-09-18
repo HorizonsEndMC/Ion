@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsy
 import org.bukkit.util.Vector
 import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.util.function.Supplier
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -205,7 +206,7 @@ class BasicSteeringModule(
      *
      */
     var wander: ContextMap = object : ContextMap(linearbins = true) {
-        val weight = 1.0
+        val weight = 0.01
         val dotShift = 1.0
         val jitterRate = 1e3
         override fun populateContext() {
@@ -213,7 +214,8 @@ class BasicSteeringModule(
             val timeoffset = offset * jitterRate
             val generator = SimplexOctaveGenerator(1, 1)
             val theta =
-                generator.noise(System.currentTimeMillis() % 1000000 / jitterRate / (ship.currentBlockCount / 10.0) + timeoffset,
+                generator.noise(System.currentTimeMillis() % 1000000 / jitterRate
+					/ (ship.currentBlockCount.toDouble()).pow(1.0/3.0) + timeoffset,
                 1.0,1.0 ) * 2 * Math.PI
             val desiredDir = Vector(0.0,0.0,1.0).rotateAroundY(theta)
             dotContext(desiredDir, dotShift, weight)
@@ -281,26 +283,31 @@ class BasicSteeringModule(
      *
      */
     var offsetSeek: ContextMap = object : ContextMap() {
-        val offsetDist = 700.0
-        val weight = 0.0
+        val offsetDist = 70.0
+        val weight = 1.0
         val dotShift = 0.0
         override fun populateContext() {
 			val seekPos =  generalTarget.get()?.getLocation()?.toVector()
 			seekPos ?: return
 			clearContext()
+			println(seekPos)
 			val shipPos = ship.centerOfMass.toVector()
             val center = seekPos.clone()
-            val offset = center.add(shipPos.clone().multiply(-1.0))
-            var dist = offset.length() + 1e-4
-            val tetherl = dist / (ship.velocity.length() + 1e-5) * 2
+            val tetherl = offsetDist * PI * 2 * 0.1
             val shipvel = ship.velocity.clone()
+			shipvel.y = 0.0
             if (shipvel.length() > 1e-5) shipvel.normalize()
+			println(shipvel)
             val frowardTether = shipPos.clone().add(shipvel.multiply(tetherl))
-            val tetherOffset = frowardTether.add(center.clone().multiply(-1.0)).normalize()
+            val tetherOffset = frowardTether.add(center.clone().multiply(-1.0))
+			tetherOffset.y = 0.0
+			tetherOffset.normalize()
             val target = center.clone().add(tetherOffset.multiply(offsetDist))
+			println(target)
             orbitTarget = target.clone()
-            val targetOffset = target.add(shipPos.clone().multiply(-1.0))
-            dist = targetOffset.length()
+            val targetOffset = target.clone().add(shipPos.clone().multiply(-1.0))
+            val dist = targetOffset.length()
+			println(dist)
             targetOffset.normalize()
             dotContext(targetOffset, dotShift, weight)
             checkContext()
@@ -443,7 +450,8 @@ class BasicSteeringModule(
                     dangerTarget = target
                 }
                 targetOffset.normalize()
-                val dangerWeight = (otherShip.currentBlockCount / shipWeightSize) * (MAXSPEED /shipWeightSpeed)
+                val dangerWeight = (((otherShip.currentBlockCount.toDouble()).pow(1.0/3.0) / shipWeightSize)
+					* (MAXSPEED /shipWeightSpeed))
                 dotContext(targetOffset,dotShift,(falloff*dangerWeight)/targetDist, power = 1.0, true)
                 checkContext()
             }

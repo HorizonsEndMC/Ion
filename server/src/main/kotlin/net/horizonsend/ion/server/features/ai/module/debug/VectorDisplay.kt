@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ai.module.debug
 
+import ContextMap
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
@@ -18,36 +19,32 @@ import org.bukkit.util.Vector
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.util.UUID
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
-import kotlin.reflect.KProperty0
 
 class VectorDisplay private constructor(
-	var dir: Vector,
-	val magDeg:Box,
+	val vecDeg:Box,
 	val model: ItemStack,
 	val parent: ActiveStarship,
 	val offset : Vector = Vector(0.0,10.0,0.0)
 ){
 	val entity : ItemDisplay = createEntity()
-	val mag : Double get() = magDeg.getVal()
+	val mag : Double get() = vecDeg.getMag()
+	val dir : Vector get() = vecDeg.getDir()
 
 	var shownPlayers = mutableSetOf<UUID>()
 	var transformation = com.mojang.math.Transformation(Vector3f(0f),Quaternionf(),Vector3f(0f),Quaternionf())
 
-	constructor(dir : Vector,
+	constructor(dirSupp : () -> Vector,
 				model : ItemStack,
 				parent: ActiveStarship,
 				offset: Vector) : this(
-		dir, ArrayVectorBox(dir), model, parent, offset) {}
+		functionVectorBox(dirSupp), model, parent, offset) {}
 
-	constructor(dir : Vector,
+	constructor(map : ContextMap,
 				binIndex : Int,
-				bins : DoubleArray,
 				model : ItemStack,
 				parent: ActiveStarship,
 				offset: Vector) : this(
-		dir, ArrayPosBox(bins,binIndex), model, parent, offset) {}
+		ContextVectorBox(map,binIndex), model, parent, offset) {}
 
 	fun createEntity(): ItemDisplay {
 		println("boop2")
@@ -126,18 +123,28 @@ class VectorDisplay private constructor(
 	}
 
 	abstract class Box() {
-		abstract fun getVal() : Double
+		abstract fun getMag() : Double
+		abstract fun getDir() : Vector
 	}
 
-	class ArrayPosBox(val array: DoubleArray, val index: Int) : Box() {
-		override fun getVal(): Double {
-			return array[index]
+	class ContextVectorBox(val map: ContextMap, val index: Int) : Box() {
+		override fun getMag(): Double {
+			return map.bins[index]
 		}
+
+		override fun getDir(): Vector {
+			return ContextMap.bindir[index]
+		}
+
 	}
 
-	class ArrayVectorBox(val vector : Vector) : Box() {
-		override fun getVal(): Double {
-			return vector.length()
+	class functionVectorBox(val func : () -> Vector) : Box() {
+		override fun getMag(): Double {
+			return func().length()
+		}
+
+		override fun getDir(): Vector {
+			return func()
 		}
 	}
 
