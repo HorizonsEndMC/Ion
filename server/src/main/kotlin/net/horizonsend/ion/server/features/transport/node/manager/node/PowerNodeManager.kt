@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.node.manager.node
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.node.NetworkType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.holders.ChunkNetworkHolder
@@ -70,36 +71,40 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 	}
 
 	private fun tickExtractor(extractorNode: PowerExtractorNode) {
-		val powerCheck = extractorNode.getTransferPower()
-		if (powerCheck == 0) return
-		val destinations: ObjectOpenHashSet<PowerInputNode>
+		NewTransport.executor.submit {
+			val powerCheck = extractorNode.getTransferPower()
+			if (powerCheck == 0) return@submit
+			val destinations: ObjectOpenHashSet<PowerInputNode>
 
-		val floodFillTime: Long
-		val transferTime: Long
-		val fullTransferTime = measureNanoTime {
-			floodFillTime = measureNanoTime { destinations = getNetworkDestinations(extractorNode) }
+			val floodFillTime: Long
+			val transferTime: Long
+			val fullTransferTime = measureNanoTime {
+				floodFillTime = measureNanoTime { destinations = getNetworkDestinations(extractorNode) }
 
-			extractorNode.markTicked()
-			transferTime = measureNanoTime { runPowerTransfer(extractorNode, destinations.toList(), extractorNode.getTransferPower()) }
+				extractorNode.markTicked()
+				transferTime = measureNanoTime { runPowerTransfer(extractorNode, destinations.toList(), extractorNode.getTransferPower()) }
+			}
 		}
 
-		println("Extractor transfer took $fullTransferTime, flood fill took $floodFillTime, pathfind & transfer calcs took $transferTime")
+//		println("Extractor transfer took $fullTransferTime, flood fill took $floodFillTime, pathfind & transfer calcs took $transferTime")
 	}
 
 	private fun tickSolarPanel(solarPanelNode: SolarPanelNode) {
-		val powerCheck = solarPanelNode.getPower()
-		if (powerCheck == 0) return
-		val destinations: ObjectOpenHashSet<PowerInputNode>
+		NewTransport.executor.submit {
+			val powerCheck = solarPanelNode.getPower()
+			if (powerCheck == 0) return@submit
+			val destinations: ObjectOpenHashSet<PowerInputNode>
 
-		val floodFillTime: Long
-		val transferTime: Long
-		val fullTransferTime = measureNanoTime {
-			floodFillTime = measureNanoTime { destinations = getNetworkDestinations(solarPanelNode) }
+			val floodFillTime: Long
+			val transferTime: Long
+			val fullTransferTime = measureNanoTime {
+				floodFillTime = measureNanoTime { destinations = getNetworkDestinations(solarPanelNode) }
 
-			transferTime = measureNanoTime { runPowerTransfer(solarPanelNode, destinations.toList(), solarPanelNode.tickAndGetPower()) }
+				transferTime = measureNanoTime { runPowerTransfer(solarPanelNode, destinations.toList(), solarPanelNode.tickAndGetPower()) }
+			}
 		}
 
-		println("Solar panel transfer took $fullTransferTime, flood fill took $floodFillTime, pathfind & transfer calcs took $transferTime")
+//		println("Solar panel transfer took $fullTransferTime, flood fill took $floodFillTime, pathfind & transfer calcs took $transferTime")
 	}
 
 	private fun getNetworkDestinations(origin: TransportNode): ObjectOpenHashSet<PowerInputNode> {
@@ -128,7 +133,7 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 	 **/
 	fun runPowerTransfer(source: TransportNode, destinations: List<PowerInputNode>, availableTransferPower: Int) {
 		if (destinations.isEmpty()) return
-		println("Sending $availableTransferPower to ${destinations.size} destinations")
+//		println("Sending $availableTransferPower to ${destinations.size} destinations")
 
 		val numDestinations = destinations.size
 
