@@ -21,6 +21,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
+import org.bukkit.FluidCollisionMode
+import org.bukkit.Location
 import org.bukkit.util.Vector
 import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.util.function.Supplier
@@ -99,7 +101,9 @@ class BasicSteeringModule(
         shipDanger.clearContext()
         shipDanger.populateContext()
 
-        particleDanger.populateContext()
+        worldBlockDanger.populateContext()
+
+		particleDanger.populateContext()
 
         movementInterest.addContext(wander)
         movementInterest.addContext(offsetSeek)
@@ -122,6 +126,7 @@ class BasicSteeringModule(
         danger.addContext(shipDanger)
         danger.addContext(shieldAwareness, scale = 0.5)
         danger.addContext(particleDanger)
+		danger.addContext(worldBlockDanger)
 
         //There are no resources that talk about steering where the heading of a ship is
         // different from where its accelerating, enabling strafing and drifting, movement and
@@ -206,7 +211,7 @@ class BasicSteeringModule(
      *
      */
     var wander: ContextMap = object : ContextMap(linearbins = true) {
-        val weight = 0.01
+        val weight = 1.0
         val dotShift = 1.0
         val jitterRate = 1e3
         override fun populateContext() {
@@ -284,31 +289,26 @@ class BasicSteeringModule(
      */
     var offsetSeek: ContextMap = object : ContextMap() {
         val offsetDist = 70.0
-        val weight = 1.0
+        val weight = 0.0
         val dotShift = 0.0
         override fun populateContext() {
 			val seekPos =  generalTarget.get()?.getLocation()?.toVector()
 			seekPos ?: return
 			clearContext()
-			println(" seekPos $seekPos")
 			val shipPos = ship.centerOfMass.toVector()
             val center = seekPos.clone()
             val tetherl = offsetDist * PI * 2 * 0.1
             val shipvel = ship.velocity.clone()
 			shipvel.y = 0.0
             if (shipvel.length() > 1e-5) shipvel.normalize()
-			println("ship vel $shipvel")
             val frowardTether = shipPos.clone().add(shipvel.multiply(tetherl))
             val tetherOffset = frowardTether.add(center.clone().multiply(-1.0))
 			tetherOffset.y = 0.0
 			tetherOffset.normalize()
-			println("tetherOffset $tetherOffset")
             val target = center.clone().add(tetherOffset.multiply(offsetDist))
-			println("target $target")
             orbitTarget = target.clone()
             val targetOffset = target.clone().add(shipPos.clone().multiply(-1.0))
             val dist = targetOffset.length()
-			println("dist $dist")
             targetOffset.normalize()
             dotContext(targetOffset, dotShift, weight)
             checkContext()
@@ -552,6 +552,22 @@ class BasicSteeringModule(
             return mag
         }
     }
+
+	var worldBlockDanger: ContextMap = object : ContextMap() {
+		val falloff = 15.0
+		val dotpower = 3.0
+		val maxdist = 200.0
+		override fun populateContext() {
+			clearContext()
+			for (dir in bindir) {
+				val shipPos = ship.centerOfMass.toLocation(world)
+				val result = world.rayTraceBlocks(shipPos,dir, maxdist, FluidCollisionMode.ALWAYS, false) {
+					block -> !ship.contains(block.x, block.y, block.z)} ?: continue
+				val dist = result.hitPosition.add(shipPos.toVector().multiply(-1.0)).length()
+				dotContext(dir, 0.0, falloff/ dist, dotpower)
+			}
+		}
+	}
 
     private fun lookAhead(other: ActiveStarship,
                           pos : Vector = other.centerOfMass.toVector(),
