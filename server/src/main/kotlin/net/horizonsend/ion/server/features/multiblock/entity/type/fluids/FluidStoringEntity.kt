@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.InternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
-import net.horizonsend.ion.server.features.transport.node.fluid.FluidInputNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORAGES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -115,7 +114,7 @@ interface FluidStoringEntity {
 		)
 	}
 
-	fun getFluidInputNode(): FluidInputNode? {
+	fun getFluidInputNode(): net.horizonsend.ion.server.features.transport.node.type.fluid.FluidInputNode? {
 		this as MultiblockEntity
 		val block = getFluidInputLocation()
 
@@ -123,11 +122,11 @@ interface FluidStoringEntity {
 		val manager = chunk.transportNetwork.powerNodeManager
 		val node = manager.getInternalNode(toBlockKey(block))
 
-		if (node != null) return node as? FluidInputNode
+		if (node != null) return node as? net.horizonsend.ion.server.features.transport.node.type.fluid.FluidInputNode
 
 		// Try to place unregistered node
 		manager.manager.processBlockChange(world.getBlockAt(block.x, block.y, block.z))
-		return manager.getInternalNode(toBlockKey(block)) as? FluidInputNode
+		return manager.getInternalNode(toBlockKey(block)) as? net.horizonsend.ion.server.features.transport.node.type.fluid.FluidInputNode
 	}
 
 	fun bindFluidInput() {
