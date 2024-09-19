@@ -19,11 +19,10 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	var isDead: Boolean = false
 	abstract val manager: NodeManager
 	override val persistentDataType: Companion get() = Companion
+	abstract val type: NodeType
 
 	/** Stored relationships between nodes **/
 	val relationships: ConcurrentHashMap<BlockKey, NodeRelationship> = ConcurrentHashMap()
-
-	abstract val type: NodeType
 
 	/**
 	 * Break all relations between this node and others
@@ -72,6 +71,9 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	 **/
 	abstract fun isTransferableTo(node: TransportNode): Boolean
 
+	/**
+	 *
+	 **/
 	var cachedTransferable: ArrayDeque<TransportNode> = ArrayDeque(getTransferableNodes())
 
 	fun refreshTransferCache() {
@@ -87,8 +89,6 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 			relation.value.other.takeIf { other -> relation.value.canTransfer && !other.isDead }
 		}
 	}
-
-	abstract fun getCenter(): Vec3i
 
 	/**
 	 * Store additional required data in the serialized container
@@ -127,6 +127,28 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	 **/
 	open fun onPlace(position: BlockKey) {}
 
+	/**
+	 *
+	 **/
+	abstract fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int
+
+	fun getRelationshipWith(other: TransportNode): Map<BlockKey, NodeRelationship> {
+		return relationships.filter { it.value.other == other }
+	}
+
+	/**
+	 * Get the center of this node, for display and pathfinding.
+	 **/
+	abstract fun getCenter(): Vec3i
+
+	/**
+	 * Get the distance between the nodes by using their relative center.
+	 **/
+	fun getDistance(previous: TransportNode): Double {
+		return previous.getCenter().distance(getCenter())
+	}
+
+	//<editor-fold desc="PDC">
 	companion object : PersistentDataType<PersistentDataContainer, TransportNode> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
 		override fun getComplexType() = TransportNode::class.java
@@ -164,4 +186,5 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 			throw SerializationException("Error deserializing multiblock data!", e)
 		}
 	}
+	//</editor-fold>
 }
