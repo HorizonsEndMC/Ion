@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.entity.type.power
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
-import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
+import net.horizonsend.ion.server.features.transport.node.type.power.PowerInputNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
