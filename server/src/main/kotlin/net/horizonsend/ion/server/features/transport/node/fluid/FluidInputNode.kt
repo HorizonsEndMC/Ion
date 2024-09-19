@@ -34,4 +34,8 @@ class FluidInputNode(override val manager: FluidNodeManager) : SingleNode() {
 	}
 
 	var boundMultiblockEntity: FluidStoringEntity? = null
+
+	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
+		return 0
+	}
 }
