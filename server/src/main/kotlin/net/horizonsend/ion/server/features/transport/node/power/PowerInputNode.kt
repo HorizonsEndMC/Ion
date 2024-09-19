@@ -44,5 +44,9 @@ class PowerInputNode(override val manager: PowerNodeManager) : SingleNode() {
 //		}
 //	}
 
+	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
+		return 0
+	}
+
 	override fun toString(): String = "POWER INPUT NODE. Bound to $boundMultiblockEntity"
 }
