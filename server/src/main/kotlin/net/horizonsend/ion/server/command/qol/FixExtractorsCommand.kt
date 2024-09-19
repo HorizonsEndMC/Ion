@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.transport.Extractors
+import net.horizonsend.ion.server.features.transport.old.Extractors
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import org.bukkit.entity.Player
