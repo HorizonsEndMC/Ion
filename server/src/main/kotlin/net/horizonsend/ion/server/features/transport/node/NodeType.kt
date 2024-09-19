@@ -1,19 +1,17 @@
 package net.horizonsend.ion.server.features.transport.node
 
 import com.manya.pdc.base.EnumDataType
-import net.horizonsend.ion.server.features.transport.node.fluid.FluidInputNode
-import net.horizonsend.ion.server.features.transport.node.fluid.FluidJunctionNode
-import net.horizonsend.ion.server.features.transport.node.fluid.LightningRodNode
-import net.horizonsend.ion.server.features.transport.node.manager.node.NodeManager
-import net.horizonsend.ion.server.features.transport.node.power.EndRodNode
-import net.horizonsend.ion.server.features.transport.node.power.InvertedDirectionalNode
-import net.horizonsend.ion.server.features.transport.node.power.PowerDirectionalNode
-import net.horizonsend.ion.server.features.transport.node.power.PowerEqualSplitterNode
-import net.horizonsend.ion.server.features.transport.node.power.PowerExtractorNode
-import net.horizonsend.ion.server.features.transport.node.power.PowerFlowMeter
-import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
-import net.horizonsend.ion.server.features.transport.node.power.SolarPanelNode
-import net.horizonsend.ion.server.features.transport.node.power.SpongeNode
+import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
+import net.horizonsend.ion.server.features.transport.node.type.fluid.LightningRodNode
+import net.horizonsend.ion.server.features.transport.node.type.power.EndRodNode
+import net.horizonsend.ion.server.features.transport.node.type.power.InvertedDirectionalNode
+import net.horizonsend.ion.server.features.transport.node.type.power.PowerDirectionalNode
+import net.horizonsend.ion.server.features.transport.node.type.power.PowerEqualSplitterNode
+import net.horizonsend.ion.server.features.transport.node.type.power.PowerExtractorNode
+import net.horizonsend.ion.server.features.transport.node.type.power.PowerFlowMeter
+import net.horizonsend.ion.server.features.transport.node.type.power.PowerInputNode
+import net.horizonsend.ion.server.features.transport.node.type.power.SolarPanelNode
+import net.horizonsend.ion.server.features.transport.node.type.power.SpongeNode
 
 enum class NodeType(val clazz: Class<out TransportNode>) {
 	//POWER
@@ -28,8 +26,8 @@ enum class NodeType(val clazz: Class<out TransportNode>) {
 	POWER_EQUAL_SPLITTER(PowerEqualSplitterNode::class.java),
 
 	//FLUID
-	FLUID_INPUT(FluidInputNode::class.java),
-	FLUID_JUNCTION(FluidJunctionNode::class.java),
+	FLUID_INPUT(net.horizonsend.ion.server.features.transport.node.type.fluid.FluidInputNode::class.java),
+	FLUID_JUNCTION(net.horizonsend.ion.server.features.transport.node.type.fluid.FluidJunctionNode::class.java),
 	LIGHTNING_ROD(LightningRodNode::class.java),
 
 	//ITEM
