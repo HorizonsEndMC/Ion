@@ -76,6 +76,10 @@ class PowerStorage(val holder: PoweredMultiblockEntity, amount: Int, val capacit
 		return getPower() - amount > 0
 	}
 
+	fun getRemainingCapacity(): Int {
+		return capacity - getPower()
+	}
+
 	private val updateHandlers = ConcurrentHashMap.newKeySet<(PowerStorage) -> Unit>()
 
 	fun registerUpdateHandler(handler: (PowerStorage) -> Unit) {

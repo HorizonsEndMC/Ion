@@ -26,4 +26,8 @@ class PowerEqualSplitterNode(override val manager: PowerNodeManager) : SingleNod
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
 		position = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
 	}
+
+	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
+		return 1
+	}
 }

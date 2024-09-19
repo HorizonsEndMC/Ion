@@ -45,5 +45,9 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 		persistentDataContainer.set(NamespacedKeys.AXIS, EnumDataType(Axis::class.java), axis)
 	}
 
+	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
+		return positions.size // Always in one end and out the other
+	}
+
 	override fun toString(): String = "(END ROD NODE: Axis: $axis; ${positions.size} positions; ${relationships.size} relations, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
 }
