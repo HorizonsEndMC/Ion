@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.client.display.modular.display
 
-import net.horizonsend.ion.server.features.transport.node.power.PowerFlowMeter
+import net.horizonsend.ion.server.features.transport.node.type.power.PowerFlowMeter
 import net.kyori.adventure.text.Component
 
 class PowerFlowMeterDisplay(
