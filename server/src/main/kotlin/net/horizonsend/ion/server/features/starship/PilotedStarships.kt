@@ -39,7 +39,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSu
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
-import net.horizonsend.ion.server.features.transport.Extractors
+import net.horizonsend.ion.server.features.transport.old.Extractors
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks

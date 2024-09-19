@@ -26,7 +26,7 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.HYDROGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.OXYGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.WATER
-import net.horizonsend.ion.server.features.transport.node.power.PowerInputNode
+import net.horizonsend.ion.server.features.transport.node.type.power.PowerInputNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_3

@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.transport.node.type
 
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.holders.ChunkNetworkHolder
-import net.horizonsend.ion.server.features.transport.node.separateNode
+import net.horizonsend.ion.server.features.transport.node.util.separateNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.averageBy
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey

@@ -4,12 +4,10 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.transport.Extractors
-import net.horizonsend.ion.server.features.transport.TransportConfig
-import net.horizonsend.ion.server.features.transport.Wires
+import net.horizonsend.ion.server.features.transport.old.Extractors
+import net.horizonsend.ion.server.features.transport.old.TransportConfig
+import net.horizonsend.ion.server.features.transport.old.Wires
 import org.bukkit.command.CommandSender
 import java.util.concurrent.Executors
 
