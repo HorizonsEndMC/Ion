@@ -39,4 +39,8 @@ class PowerDirectionalNode(override val manager: PowerNodeManager) : SingleNode(
 	companion object {
 		val materialDataType = EnumDataType(Material::class.java)
 	}
+
+	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
+		return 1
+	}
 }
