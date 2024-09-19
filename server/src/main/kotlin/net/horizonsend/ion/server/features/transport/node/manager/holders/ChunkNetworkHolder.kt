@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.ChunkTransportManager
-import net.horizonsend.ion.server.features.transport.node.manager.node.NodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey

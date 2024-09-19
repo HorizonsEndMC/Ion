@@ -8,9 +8,9 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.CRUISER_RE
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_CASING
 import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
-import net.horizonsend.ion.server.features.transport.Extractors
-import net.horizonsend.ion.server.features.transport.Wires
-import net.horizonsend.ion.server.features.transport.pipe.Pipes
+import net.horizonsend.ion.server.features.transport.old.Extractors
+import net.horizonsend.ion.server.features.transport.old.Wires
+import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
