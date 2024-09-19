@@ -109,6 +109,7 @@ import org.bukkit.Material.BLACK_WOOL
 import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.BLUE_WOOL
 import org.bukkit.Material.BROWN_WOOL
+import org.bukkit.Material.CHERRY_LEAVES
 import org.bukkit.Material.COAL
 import org.bukkit.Material.COBWEB
 import org.bukkit.Material.COMPOSTER
@@ -155,6 +156,7 @@ import org.bukkit.Material.OCHRE_FROGLIGHT
 import org.bukkit.Material.ORANGE_WOOL
 import org.bukkit.Material.PAPER
 import org.bukkit.Material.PEARLESCENT_FROGLIGHT
+import org.bukkit.Material.PINK_PETALS
 import org.bukkit.Material.PINK_TULIP
 import org.bukkit.Material.PINK_WOOL
 import org.bukkit.Material.PISTON
@@ -321,6 +323,9 @@ object Crafting : IonServerComponent() {
 
 		// Prismarine Crystals
 		shapelessRecipe("prismarine_crystals", ItemStack(PRISMARINE_CRYSTALS, 4), arrayOf(SEA_LANTERN))
+
+		// Pink Petals
+		shapelessRecipe("pink_petals", ItemStack(PINK_PETALS, 4), arrayOf(CHERRY_LEAVES))
 
 		// Nether Wart Block -> Nether Warts
 		shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
