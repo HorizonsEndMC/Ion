@@ -47,6 +47,7 @@ class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode() {
 
 	fun onCompleteChain(transferred: Int) {
 		addTransferred(TransferredPower(transferred, System.currentTimeMillis()))
+		if (::displayHandler.isInitialized) displayHandler.update()
 	}
 
 	companion object {
@@ -129,4 +130,8 @@ class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode() {
 	}
 
 	private data class TransferredPower(val transferred: Int, val time: Long)
+
+	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
+		return 1
+	}
 }

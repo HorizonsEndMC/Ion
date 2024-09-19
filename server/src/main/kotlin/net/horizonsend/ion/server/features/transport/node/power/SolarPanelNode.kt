@@ -61,7 +61,7 @@ class SolarPanelNode(
 	 * This method is run upon neighbor unloads
 	 **/
 	private fun calculateExitDistance() {
-		val neighbors = getTransferableNodes()
+		val neighbors = cachedTransferable
 
 		// Transferable node provides an exit
 		if (neighbors.any { it !is SolarPanelNode }) {
@@ -242,6 +242,11 @@ class SolarPanelNode(
 
 		val detectors = persistentDataContainer.get(SOLAR_CELL_DETECTORS, LONG_ARRAY)
 		detectors?.let { detectorPositions.addAll(it.asIterable()) }
+	}
+
+	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
+		// Further encourage the way out
+		return 1000 - exitDistance
 	}
 
 	companion object {
