@@ -6,8 +6,8 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTi
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.transport.node.NetworkType
-import net.horizonsend.ion.server.features.transport.node.manager.node.NodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
+import net.horizonsend.ion.server.features.transport.node.util.NetworkType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
