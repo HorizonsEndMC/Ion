@@ -198,11 +198,6 @@ class IonWorld private constructor(
 					val result = runCatching(starship::tick).exceptionOrNull() ?: continue
 					log.warn("Exception while ticking starship!", result)
 				}
-
-				for (region in ionWorld.chunkRegions) {
-					val result = runCatching { region.tick() }.exceptionOrNull() ?: continue
-					log.warn("Exception while ticking chunk region!", result)
-				}
 			}
 		}
 
