@@ -22,7 +22,6 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import org.bukkit.FluidCollisionMode
-import org.bukkit.Location
 import org.bukkit.util.Vector
 import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.util.function.Supplier
@@ -114,9 +113,6 @@ class BasicSteeringModule(
         rotationInterest.addContext(movementInterest)
         rotationInterest.multScalar(0.2)
         rotationInterest.addContext(faceSeek)
-        var temp : ContextMap = object : ContextMap() {}
-        temp.addScalar(1.0)
-        temp.maskContext(shieldAwareness, threshold = 1.0)
         //rotationInterest.addContext(temp)
         rotationInterest.softMaskContext(shieldAwareness,threshold = 1.0)
         rotationInterest.clipZero()
@@ -144,7 +140,7 @@ class BasicSteeringModule(
             max(min(ship.velocity.length() / MAXSPEED*2, 1.0), 0.0).pow(1.0)
         //println(rotationMovementPrior)
         //\rotationMovementPrior = 0.0;
-        temp = object : ContextMap(movementInterest) {}
+        val temp = object : ContextMap(movementInterest) {}
         val movementWeight = (1 - rotationMovementPrior).pow(0.5)
         movementInterest.multScalar(movementWeight)
         movementInterest.addContext(
@@ -165,10 +161,10 @@ class BasicSteeringModule(
 
 
         //decision time
-        val heading = ship.forward.direction.multiply(2.0).add(rotationInterest.interpolatedMaxDir())
+        val heading = ship.forward.direction.multiply(2.0).add(rotationInterest.maxDir())
 			.normalize()
         val thrustmag = movementInterest.lincontext!!.interpolotedMax()
-        val thrust = movementInterest.interpolatedMaxDir().normalize().multiply(thrustmag)
+        val thrust = movementInterest.maxDir().normalize().multiply(thrustmag)
 		thrustOut = thrust
 		headingOut = heading
     }
@@ -221,8 +217,11 @@ class BasicSteeringModule(
             val theta =
                 generator.noise(System.currentTimeMillis() % 1000000 / jitterRate
 					/ (ship.currentBlockCount.toDouble()).pow(1.0/3.0) + timeoffset,
-                1.0,1.0 ) * 2 * Math.PI
-            val desiredDir = Vector(0.0,0.0,1.0).rotateAroundY(theta)
+                1.0,1.0 ) * Math.PI
+			val phi = generator.noise(System.currentTimeMillis() % 1000000 / (jitterRate* 10)
+				/ (ship.currentBlockCount.toDouble()).pow(1.0/3.0) + timeoffset,
+				1.0,1.0 ) * Math.PI / 2
+            val desiredDir = Vector(0.0,0.0,1.0).rotateAroundX(phi).rotateAroundY(theta)
             dotContext(desiredDir, dotShift, weight)
             lincontext!!.apply(lincontext!!.populatePeak(1.0, weight))
             checkContext()
@@ -417,7 +416,9 @@ class BasicSteeringModule(
 		val shipPos = ship.centerOfMass.toVector()
 		val center = shield.pos.toVector()
 		center.add(shipPos.clone().multiply(-1.0))
-		return center.rotateAroundY(heading.angle(Vector(0.0, 0.0, 1.0)).toDouble())
+		val headingPlane = heading.clone()
+		headingPlane.y = 0.0
+		return center.rotateAroundY(headingPlane.angle(Vector(0.0, 0.0, 1.0)).toDouble())
 	}
 
     /**
@@ -522,8 +523,9 @@ class BasicSteeringModule(
      *
      */
     var borderDanger: ContextMap = object : ContextMap() {
-        var falloff = 100
-        var dotShift = 0.2
+        val falloff = 100.0
+		val verticalFalloff = 10.0
+        val dotShift = 0.2
         override fun populateContext() {
 			val worldborder = ship.world.worldBorder
 			val borderCenter = worldborder.center.toVector()
@@ -531,21 +533,29 @@ class BasicSteeringModule(
             for (i in 0 until NUMBINS) {
                 //north border
                 var dir = Vector(0.0,0.0, -1.0)
-                bins[i] += calcDanger(bindir[i], dir, ship.centerOfMass.z.toDouble(), borderCenter.z - radius)
+                bins[i] += calcDanger(bindir[i], dir, ship.centerOfMass.z.toDouble(), borderCenter.z - radius, falloff)
                 //south border
                 dir = Vector(0.0,0.0, 1.0)
-                bins[i] += calcDanger(bindir[i],dir,ship.centerOfMass.z.toDouble(), borderCenter.z + radius)
+                bins[i] += calcDanger(bindir[i],dir,ship.centerOfMass.z.toDouble(), borderCenter.z + radius, falloff)
                 //west border
                 dir = Vector(-1.0,0.0, 0.0)
-                bins[i] += calcDanger(bindir[i], dir, ship.centerOfMass.x.toDouble(), 	borderCenter.x - radius)
+                bins[i] += calcDanger(bindir[i], dir, ship.centerOfMass.x.toDouble(), 	borderCenter.x - radius, falloff)
                 //east border
                 dir = Vector(1.0,0.0, 0.0)
-                bins[i] += calcDanger(bindir[i],dir,ship.centerOfMass.x.toDouble(),borderCenter.x	+ radius)
+                bins[i] += calcDanger(bindir[i],dir,ship.centerOfMass.x.toDouble(),borderCenter.x	+ radius, falloff)
+
+				//up border
+				dir = Vector(0.0,1.0, 0.0)
+				bins[i] += calcDanger(bindir[i],dir,ship.centerOfMass.y.toDouble(),383.0, verticalFalloff)
+
+				//down border
+				dir = Vector(0.0,-1.0, 0.0)
+				bins[i] += calcDanger(bindir[i],dir,ship.centerOfMass.y.toDouble(),0.0, verticalFalloff)
             }
             checkContext()
         }
 
-        private fun calcDanger(bindir: Vector, dir: Vector, val1: Double, val2: Double): Double {
+        private fun calcDanger(bindir: Vector, dir: Vector, val1: Double, val2: Double, falloff : Double): Double {
             val proximity = (abs(val1 - val2) + 1e-4)
             var mag = (bindir.dot(dir) + dotShift) * falloff / proximity
             mag = if (mag < 0) 0.0 else mag
