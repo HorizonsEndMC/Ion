@@ -1,6 +1,7 @@
 import net.horizonsend.ion.server.miscellaneous.utils.isNan
 import org.bukkit.util.Vector
 import java.util.Arrays
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.max
@@ -20,15 +21,28 @@ import kotlin.math.pow
 abstract class ContextMap {
 
     companion object {
-        const val NUMBINS = 16
+        val NUMBINSLIST = listOf(1, 8, 8, 8, 1)
+		val PHILIST = listOf(-PI/4, -PI/8, 0.0, PI/8, PI/4)
+		val NUMBINS = NUMBINSLIST.sum()
         const val NUMLINBINS = 12
-        val bindir = Array(NUMBINS) {
-                i ->
-            val theta = (2.0 * Math.PI / NUMBINS * i)
-            val vec = Vector(0.0,0.0,1.0)
-			vec.rotateAroundY(theta)
-			vec
-        }
+        val bindir = Array(NUMBINS) {Vector(0.0,0.0,1.0)}
+		init {
+		    constructbindir()
+		}
+
+		private fun constructbindir() {
+			var ind = 0
+			for (j in PHILIST.indices) {
+				for (i in 0 until NUMBINSLIST[j]) {
+					val theta = (2.0 * PI / NUMBINSLIST[j] * i)
+					val vec = Vector(0.0,0.0,1.0)
+					vec.rotateAroundX(PHILIST[j])
+					vec.rotateAroundY(theta)
+					bindir[ind] = vec
+					ind++
+				}
+			}
+		}
 
         fun scaled(map: ContextMap, `val`: Double): ContextMap {
             val output: ContextMap = object : ContextMap(map) {}
@@ -178,11 +192,15 @@ abstract class ContextMap {
 
     /**
      * Using the bin information, outputs a proposed direction (a decision) by finding the
-     * direction with the maximum weight, and interpolating with adjacent directions
+     * direction with the maximum weight, and ,if interpolating, with adjacent directions
      * negative weights are ignored
      * @return The proposed interpolated decision (in cartesian cords)
      */
-    fun interpolatedMaxDir(): Vector {
+    fun maxDir(interpolate : Boolean = false): Vector {
+		if (interpolate) {
+			val i = bins.indices.maxBy { bins[it] }
+			return bindir[i].clone().multiply(bins[i])
+		}
         val indices = maxAdjacent()
         val vals = doubleArrayOf(bins[indices[0]], bins[indices[1]], bins[indices[2]])
         val dirs = arrayOf(bindir[indices[0]], bindir[indices[1]], bindir[indices[2]])
@@ -207,6 +225,7 @@ abstract class ContextMap {
         if (output.length() < 1e-5) output = Vector(0.0,0.0,1.0)
         return output
     }
+
 
     inner class LinearContext {
         val bins = DoubleArray(NUMLINBINS)
