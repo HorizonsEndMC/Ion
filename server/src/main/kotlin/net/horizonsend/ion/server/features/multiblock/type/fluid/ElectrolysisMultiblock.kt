@@ -241,7 +241,7 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 			ComplexFluidDisplay(oxygenStorage, text("Oxygen"), -1.0, +0.0, +0.0, 0.5f)
 		).register()
 
-		override suspend fun tickAsync() {
+		override fun tickAsync() {
 			val remainder = waterStorage.storage.remove(WATER_INCREMENT)
 			val removed = WATER_INCREMENT - remainder
 

@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.manager
 
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
@@ -14,7 +12,6 @@ import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManag
 import net.horizonsend.ion.server.features.transport.node.util.NetworkType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -35,13 +32,6 @@ abstract class MultiblockManager(val log: Logger) {
 	abstract fun save()
 
 	abstract fun markChanged()
-
-	/**
-	 * Logic upon the chunk being ticked
-	 **/
-	fun tick() {
-		tickAllMultiblocks()
-	}
 
 	fun getAllMultiblockEntities() = multiblockEntities
 
@@ -85,24 +75,6 @@ abstract class MultiblockManager(val log: Logger) {
 		entity?.handleRemoval()
 
 		return entity
-	}
-
-	private fun tickAllMultiblocks() {
-		for ((key, syncTicking) in syncTickingMultiblockEntities) runCatching {
-			if (SyncTickingMultiblockEntity.preTick(syncTicking as MultiblockEntity)) syncTicking.tick()
-		}.onFailure { e ->
-			log.warn("Exception ticking multiblock ${syncTicking.javaClass.simpleName} at ${toVec3i(key)}: ${e.message}")
-			e.printStackTrace()
-		}
-
-		for ((key, asyncTicking) in asyncTickingMultiblockEntities) runCatching {
-			MultiblockAccess.multiblockCoroutineScope.launch {
-				if (SyncTickingMultiblockEntity.preTick(asyncTicking as MultiblockEntity)) asyncTicking.tickAsync()
-			}
-		}.onFailure { e ->
-			log.warn("Exception ticking async multiblock ${asyncTicking.javaClass.simpleName} at ${toVec3i(key)}: ${e.message}")
-			e.printStackTrace()
-		}
 	}
 
 	/**
