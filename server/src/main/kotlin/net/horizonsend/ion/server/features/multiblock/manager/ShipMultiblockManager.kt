@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.manager
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
@@ -34,6 +35,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 
 	init {
 	    loadEntities()
+		MultiblockTicking.registerMultiblockManager(this)
 	}
 
 	fun loadEntities() {
@@ -61,11 +63,15 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 		}
 	}
 
+	fun release() {
+		MultiblockTicking.removeMultiblockManager(this)
+	}
+
 	fun releaseEntities() {
-		val manager = world.ion.multiblockManager
+		val worldManager = world.ion.multiblockManager
 
 		for ((key, multiblockEntity) in multiblockEntities) {
-			val network = manager.getChunkManager(key) ?: continue
+			val network = worldManager.getChunkManager(key) ?: continue
 
 			// If it was lost, don't place it back
 			if (!multiblockEntity.isIntact(checkSign = true)) {
@@ -78,7 +84,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 		}
 
 		for ((key, multiblockEntity) in syncTickingMultiblockEntities) {
-			val network = manager.getChunkManager(key) ?: continue
+			val network = worldManager.getChunkManager(key) ?: continue
 
 			// If it was lost, don't place it back
 			if (!(multiblockEntity as MultiblockEntity).isIntact(checkSign = true)) {
@@ -90,7 +96,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 		}
 
 		for ((key, multiblockEntity) in asyncTickingMultiblockEntities) {
-			val network = manager.getChunkManager(key) ?: continue
+			val network = worldManager.getChunkManager(key) ?: continue
 
 			// If it was lost, don't place it back
 			if (!(multiblockEntity as MultiblockEntity).isIntact(checkSign = true)) {

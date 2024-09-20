@@ -140,7 +140,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 
 		private val worldConfig get() = world.ion.configuration.gasConfiguration
 
-		override suspend fun tickAsync() {
+		override fun tickAsync() {
 			val amounts = worldConfig.gasses.associate { it.gas to it.factorStack.getAmount(location) }
 
 			val deltaT = deltaTMS / 1000.0
