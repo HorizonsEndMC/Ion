@@ -33,7 +33,7 @@ object SetFluidCommand : SLCommand() {
 	}
 
 	@Default
-	@CommandCompletion("0|1000|500000|2147483647 true|false")
+	@CommandCompletion("@fluids 0|1000|500000|2147483647 main")
 	@Suppress("unused")
 	fun onSetFluid(sender: Player, fluid: PipedFluid, amount: Int, storeName: String) {
 		val selection = runCatching { sender.getSelection() }.getOrNull() ?: fail { "You must make a selection!" }
