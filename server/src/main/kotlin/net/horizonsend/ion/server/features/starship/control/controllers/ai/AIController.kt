@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
+import net.horizonsend.ion.server.features.ai.module.movement.SteeringSolverModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
@@ -19,7 +20,9 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
+import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 /**
@@ -173,5 +176,10 @@ class AIController private constructor(
 
 	override fun toString(): String {
 		return "AI Controller[Display Name: ${pilotName.plainText()} Starship: ${starship.identifier}]"
+	}
+
+	override fun directControlMovementVector(direction: BlockFace): Vector {
+		return getModuleByType<SteeringSolverModule>()?.let {
+			it.directControlMovementVector(direction) } ?: Vector(0.0,0.0,0.0)
 	}
 }

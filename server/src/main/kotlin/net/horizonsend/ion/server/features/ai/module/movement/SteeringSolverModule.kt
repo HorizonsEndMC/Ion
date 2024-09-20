@@ -18,7 +18,7 @@ class SteeringSolverModule(
 
     override fun tick() {
         steeringModule.steer()
-        shiftFlyInDirection(steeringModule.getThrust())
+        //shiftFlyInDirection(steeringModule.getThrust())
     }
 
     fun shiftFlyInDirection(
@@ -30,4 +30,13 @@ class SteeringSolverModule(
 
         AIControlUtils.shiftFlyInDirection(controller, direction)
     }
+
+	fun updateDirectControl(direction: Vector) {
+		if (controller.starship.isDirectControlEnabled)	controller.starship.setDirectControlEnabled(true)
+
+	}
+
+	fun directControlMovementVector(direction: BlockFace) : Vector {
+		return Vector(0.0,0.0,0.0)
+	}
 }
