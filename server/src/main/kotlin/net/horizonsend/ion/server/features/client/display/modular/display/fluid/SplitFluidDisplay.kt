@@ -1,14 +1,12 @@
 package net.horizonsend.ion.server.features.client.display.modular.display.fluid
 
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplay.Companion.empty
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.space
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.Component.newline
 
-class SimpleFluidDisplay(
+class SplitFluidDisplay(
 	storage: StorageContainer,
 	offsetLeft: Double,
 	offsetUp: Double,
@@ -16,10 +14,6 @@ class SimpleFluidDisplay(
 	scale: Float
 ) : FluidDisplay(storage, offsetLeft, offsetUp, offsetBack, scale) {
 	override fun getText(): Component {
-		return ofChildren(formatFluid(), space(), container.storage.getStoredFluid()?.displayName ?: empty)
-	}
-
-	companion object {
-		val empty = text("Empty", NamedTextColor.GRAY, TextDecoration.ITALIC)
+		return ofChildren(container.storage.getStoredFluid()?.displayName ?: empty, newline(), formatFluid())
 	}
 }
