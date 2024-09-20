@@ -62,6 +62,7 @@ class BasicSteeringModule(
 
 	var thrustOut = Vector(0.0,0.0,1.0)
 	var headingOut =  Vector(0.0,0.0,1.0)
+	var throttleOut = 0.0
 
     override fun getThrust(): Vector {
         return thrustOut
@@ -70,6 +71,10 @@ class BasicSteeringModule(
     override fun getHeading(): Vector {
         return headingOut
     }
+
+	override fun getThrottle(): Double {
+		return throttleOut
+	}
 
     /**
      * Master steering function
@@ -161,12 +166,13 @@ class BasicSteeringModule(
 
 
         //decision time
-        val heading = ship.forward.direction.multiply(2.0).add(rotationInterest.maxDir())
-			.normalize()
+        val heading = rotationInterest.maxDir().setY(0)
+		heading.normalize()
         val thrustmag = movementInterest.lincontext!!.interpolotedMax()
-        val thrust = movementInterest.maxDir().normalize().multiply(thrustmag)
+        val thrust = movementInterest.maxDir().normalize()
 		thrustOut = thrust
 		headingOut = heading
+		throttleOut = thrustmag
     }
 
     /**
@@ -287,8 +293,8 @@ class BasicSteeringModule(
      *
      */
     var offsetSeek: ContextMap = object : ContextMap() {
-        val offsetDist = 70.0
-        val weight = 0.0
+        val offsetDist = 100.0
+        val weight = 1.0
         val dotShift = 0.0
         override fun populateContext() {
 			val seekPos =  generalTarget.get()?.getLocation()?.toVector()

@@ -4,6 +4,7 @@ import BasicSteeringModule
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.module.combat.DefensiveCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.FrigateCombatModule
+import net.horizonsend.ion.server.features.ai.module.combat.GoonCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.MultiTargetFrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.StarfighterCombatModule
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
@@ -94,7 +95,7 @@ object AIControllerFactories : IonServerComponent() {
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
 			builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
-			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			builder.addModule("combat", GoonCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 			val steering = builder.addModule("steering", BasicSteeringModule(it) {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()})
 			builder.addModule("movement", SteeringSolverModule(it, steering))
 			builder.addModule("debug", AIDebugModule(it))

@@ -382,6 +382,7 @@ class Starship (
 
 	fun setDirectControlEnabled(enabled: Boolean) {
 		isDirectControlEnabled = enabled
+		println("now $enabled")
 		if (enabled) {
 			val dcMessage = text()
 				.append(text("Direct Control: ", NamedTextColor.GRAY))

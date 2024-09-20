@@ -8,4 +8,6 @@ abstract class SteeringModule(var controler: AIController) : AIModule(controler)
     abstract fun getThrust() : Vector
 
     abstract fun getHeading() : Vector
+
+	abstract fun  getThrottle() : Double
 }
