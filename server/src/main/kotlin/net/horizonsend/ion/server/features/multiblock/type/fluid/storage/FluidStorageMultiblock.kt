@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.storage
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
-import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplay
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SplitFluidDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.BasicFluidStoringEntity
@@ -46,7 +46,7 @@ abstract class FluidStorageMultiblock(val capacity: Int) : Multiblock(), EntityM
 		override val fluidInputOffset: Vec3i = Vec3i(0, -1, 0)
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			SimpleFluidDisplay(mainStorage, +0.0, -0.0, +0.0, 0.45f),
+			SplitFluidDisplay(mainStorage, +0.0, -0.0, +0.0, 0.45f),
 		).register()
 
 		override fun onLoad() {
