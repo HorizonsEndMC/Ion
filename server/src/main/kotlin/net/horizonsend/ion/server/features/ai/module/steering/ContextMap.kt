@@ -22,7 +22,7 @@ abstract class ContextMap {
 
     companion object {
         val NUMBINSLIST = listOf(1, 8, 8, 8, 1)
-		val PHILIST = listOf(-PI/4, -PI/8, 0.0, PI/8, PI/4)
+		val PHILIST = listOf(-PI/2, -PI/4, 0.0, PI/4, PI/2)
 		val NUMBINS = NUMBINSLIST.sum()
         const val NUMLINBINS = 12
         val bindir = Array(NUMBINS) {Vector(0.0,0.0,1.0)}
@@ -199,7 +199,7 @@ abstract class ContextMap {
     fun maxDir(interpolate : Boolean = false): Vector {
 		if (interpolate) {
 			val i = bins.indices.maxBy { bins[it] }
-			return bindir[i].clone().multiply(bins[i])
+			return bindir[i].clone()
 		}
         val indices = maxAdjacent()
         val vals = doubleArrayOf(bins[indices[0]], bins[indices[1]], bins[indices[2]])
