@@ -1,16 +1,18 @@
 package net.horizonsend.ion.server.features.custom.items.misc
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.PrePackaged
 import net.horizonsend.ion.server.features.multiblock.PrePackaged.getPackagedData
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -34,6 +36,13 @@ object PackagedMultiblockItem : CustomItem("PACKAGED_MULTIBLOCK") {
 
 		return base.updateMeta {
 			PrePackaged.packageData(PrePackaged.PackagedMultiblockData(multiblock), it.persistentDataContainer)
+			it.displayName(text()
+				.decoration(ITALIC, false)
+				.color(WHITE)
+				.append(text("Pre-packaged "))
+				.append(multiblock.getDisplayName())
+				.build()
+			)
 			it.lore(listOf(
 				text("Multiblock: ${multiblock.name.replaceFirstChar { char -> char.uppercase(Locale.getDefault()) }}", GRAY).decoration(ITALIC, false),
 				text("Variant: ${multiblock.javaClass.simpleName}", GRAY).decoration(ITALIC, false)
