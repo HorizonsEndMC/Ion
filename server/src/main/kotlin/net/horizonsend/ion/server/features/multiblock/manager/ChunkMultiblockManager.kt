@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.manager
 
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
@@ -35,6 +36,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 
 	init {
 		loadMultiblocks()
+		MultiblockTicking.registerMultiblockManager(this)
 	}
 
 	/**
@@ -92,5 +94,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 		multiblockEntities.values.forEach {
 			it.onUnload()
 		}
+
+		MultiblockTicking.removeMultiblockManager(this)
 	}
 }
