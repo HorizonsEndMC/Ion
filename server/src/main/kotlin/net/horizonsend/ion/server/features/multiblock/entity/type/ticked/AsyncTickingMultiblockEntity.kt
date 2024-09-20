@@ -7,10 +7,5 @@ interface AsyncTickingMultiblockEntity : TickedMultiblockEntityParent {
 	/**
 	 * The logic that is run upon world tick
 	 **/
-	suspend fun tickAsync()
-
-	/**
-	 *
-	 **/
-	fun shouldAsyncCheckIntegrity(): Boolean = true
+	fun tickAsync()
 }
