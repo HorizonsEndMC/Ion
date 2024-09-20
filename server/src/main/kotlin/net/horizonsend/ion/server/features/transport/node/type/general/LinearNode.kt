@@ -49,5 +49,11 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 		return positions.size // Always in one end and out the other
 	}
 
+	override fun ofPositions(positions: Set<BlockKey>): B {
+		val new = super.ofPositions(positions)
+		new.axis = axis
+		return new
+	}
+
 	override fun toString(): String = "(END ROD NODE: Axis: $axis; ${positions.size} positions; ${relationships.size} relations, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
 }
