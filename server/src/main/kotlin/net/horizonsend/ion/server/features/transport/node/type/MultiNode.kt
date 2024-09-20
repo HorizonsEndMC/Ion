@@ -119,7 +119,7 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 	/**
 	 * Places the set of positions into the network as this type of node.
 	 **/
-	fun ofPositions(positions: Set<BlockKey>) {
+	open fun ofPositions(positions: Set<BlockKey>): Self {
 		@Suppress("UNCHECKED_CAST")
 		val newNode = type.newInstance(manager) as Self
 
@@ -127,6 +127,8 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 			newNode.addPosition(it)
 			newNode.buildRelations(it)
 		}
+
+		return newNode
 	}
 
 	abstract fun addBack(position: BlockKey)
