@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid
 
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
@@ -18,6 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredM
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.pane
@@ -38,7 +40,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -48,13 +51,15 @@ import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 
-object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisMultiblock.ElectrolysisMultiblockEntity>, InteractableMultiblock {
+object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisMultiblock.ElectrolysisMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	override val name: String = "ElectrolysisMultiblock"
 	override val alternativeDetectionNames: Array<String> = arrayOf("Electrolysis")
 
+	override val displayName: Component = ofChildren(text("Electrolysis ", GOLD), text("Machine", RED))
+
 	override val signText: Array<Component?> = arrayOf(
-		text("Electrolysis", NamedTextColor.GOLD),
-		text("Machine", NamedTextColor.RED),
+		text("Electrolysis", GOLD),
+		text("Machine", RED),
 		null,
 		null
 	)
