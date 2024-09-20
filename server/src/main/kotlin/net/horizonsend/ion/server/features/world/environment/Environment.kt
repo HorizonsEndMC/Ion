@@ -25,6 +25,8 @@ enum class Environment {
 			if (isWearingSpaceSuit(player)) return
 			if (checkPressureField(player)) return
 
+			if (isInside(player.eyeLocation, 1)) return
+
 			player.damage(0.5)
 		}
 
