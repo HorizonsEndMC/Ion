@@ -121,27 +121,7 @@ object StarshipControl : IonServerComponent() {
 			starship.directControlCenter = center
 		}
 
-		// Calculate the movement vector
-		var vector = pilotLocation.toVector().subtract(center.toVector())
-		vector.setY(0)
-		vector.normalize()
-
-		// Clone the vector to do some additional math
-		val directionWrapper = center.clone()
-		directionWrapper.direction = Vector(direction.modX, direction.modY, direction.modZ)
-
-		val playerDirectionWrapper = center.clone()
-		playerPilot?.let { playerDirectionWrapper.direction = it.location.direction }
-
-		val vectorWrapper = center.clone()
-		vectorWrapper.direction = vector
-
-		vectorWrapper.yaw = vectorWrapper.yaw - (playerDirectionWrapper.yaw - directionWrapper.yaw)
-		vector = vectorWrapper.direction
-
-		vector.x = round(vector.x)
-		vector.setY(0)
-		vector.z = round(vector.z)
+		var vector = controller.directControlMovementVector(direction)
 
 		val vectors = starship.directControlPreviousVectors
 		if (vectors.size > 3) {
