@@ -102,7 +102,6 @@ object IonChunkCommand : SLCommand() {
 		val ionChunk = sender.chunk.ion()
 
 		sender.information("Chunk: $ionChunk")
-		sender.information("Region: ${ionChunk.region}, last ticked: ${ionChunk.region.lastTicked}")
 		sender.information("World has: ${ionChunk.world.ion.regionPositions.values.distinct().size} unique regions")
 	}
 
