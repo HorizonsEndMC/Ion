@@ -17,22 +17,6 @@ class ChunkRegion(val world: IonWorld) {
 
 	val size get() = chunks.values.size
 
-	fun tickChunkTransport() {
-		for ((_, chunk) in chunks) {
-			chunk.multiblockManager.tick()
-		}
-	}
-
-	var lastTicked: Long = 0
-
-	fun tick() {
-		lastTicked = System.currentTimeMillis()
-
-		tickChunkTransport()
-
-		for ((key, chunk) in chunks) chunk.tick()
-	}
-
 	fun removeChunk(chunk: IonChunk) {
 		chunks.remove(chunk.locationKey)
 	}

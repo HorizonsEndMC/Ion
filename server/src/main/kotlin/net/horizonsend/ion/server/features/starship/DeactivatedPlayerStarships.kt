@@ -314,7 +314,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 
 			starship.subsystems.forEach { it.handleRelease() }
 
-			starship.multiblockManager.releaseEntities()
+			starship.multiblockManager.release()
 			starship.transportManager.release()
 
 			for ((ship: StarshipData, blocks: Set<Long>) in starship.carriedShips) {
