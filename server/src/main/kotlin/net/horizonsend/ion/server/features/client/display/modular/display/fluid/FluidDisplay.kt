@@ -9,7 +9,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 
 abstract class FluidDisplay(
-	val storage: StorageContainer,
+	val container: StorageContainer,
 	offsetLeft: Double,
 	offsetUp: Double,
 	offsetBack: Double,
@@ -20,15 +20,15 @@ abstract class FluidDisplay(
 	}
 
 	override fun register() {
-		storage.storage.registerUpdateHandler(updateHandler)
+		container.storage.registerUpdateHandler(updateHandler)
 	}
 
 	override fun deRegister() {
-		storage.storage.removeUpdateHandler(updateHandler)
+		container.storage.removeUpdateHandler(updateHandler)
 	}
 
 	protected fun formatFluid(): Component {
-		val amount = storage.storage.getAmount()
+		val amount = container.storage.getAmount()
 		return ofChildren(text(amount, NamedTextColor.GOLD), text("L", NamedTextColor.DARK_GRAY))
 	}
 }
