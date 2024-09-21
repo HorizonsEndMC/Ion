@@ -19,7 +19,7 @@ open class CustomBlockItem(
 	private val customBlockSupplier: Supplier<CustomBlock>
 ) : CustomItem(identifier) {
 
-    fun getCustomBlock(): CustomBlock? {
+    fun getCustomBlock(): CustomBlock {
         return customBlockSupplier.get()
     }
 
