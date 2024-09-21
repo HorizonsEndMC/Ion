@@ -1,18 +1,18 @@
 package net.horizonsend.ion.server.features.transport.node.type.power
 
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.transport.node.NodeType
+import net.horizonsend.ion.server.features.transport.node.NodeType.POWER_EXTRACTOR_NODE
+import net.horizonsend.ion.server.features.transport.node.NodeType.POWER_INPUT_NODE
+import net.horizonsend.ion.server.features.transport.node.NodeType.POWER_INVERSE_DIRECTIONAL_NODE
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.power.SolarPanelNode.Companion.matchesSolarPanelStructure
 import net.horizonsend.ion.server.features.transport.node.util.NodeFactory
-import net.horizonsend.ion.server.features.transport.node.util.getNeighborNodes
 import net.horizonsend.ion.server.features.transport.node.util.handleMerges
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.faces
 import org.bukkit.Material
-import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.data.BlockData
@@ -22,123 +22,31 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 	override fun create(key: BlockKey, data: BlockData): Boolean {
 		if (network.nodes.contains(key)) return false
 
-		when {
-			// Straight wires
-			data.material == Material.END_ROD -> addEndRod(data as Directional, key)
+		when (data.material) {
+			Material.END_ROD -> addLinearNode<EndRodNode>(key, (data as Directional).facing.axis, NodeType.END_ROD_NODE)
+			Material.SPONGE -> addJunctionNode<SpongeNode>(key, NodeType.SPONGE_NODE)
 
-			// Omnidirectional wires
-			data.material == Material.SPONGE -> addSponge(key)
+			// If a solar panel is not created, add an extractor
+			Material.CRAFTING_TABLE -> if (!checkSolarPanels(key, 1)) addSimpleSingleNode(key, POWER_EXTRACTOR_NODE)
+			Material.DIAMOND_BLOCK -> checkSolarPanels(key, 1)
+			Material.DAYLIGHT_DETECTOR -> checkSolarPanels(key, 2)
 
-			// Extract power from storage
-			data.material == Material.CRAFTING_TABLE -> {
-				if (matchesSolarPanelStructure(network.world, key)) {
-					addSolarPanel(key)
-				} else {
-					addExtractor(key)
-				}
-			}
+			Material.NOTE_BLOCK -> addSimpleSingleNode(key, POWER_INPUT_NODE)
+			Material.OBSERVER -> addFlowMeter(data as Directional, key)
 
-			// Check for extractor beneath
-			data.material == Material.DIAMOND_BLOCK -> {
-				val extractorKey = getRelative(key, DOWN, 1)
-
-				if (matchesSolarPanelStructure(network.world, extractorKey)) {
-					network.nodes.remove(extractorKey)
-					addSolarPanel(extractorKey)
-				}
-			}
-
-			data.material == Material.DAYLIGHT_DETECTOR -> {
-				val extractorKey = getRelative(key, DOWN, 2)
-
-				if (matchesSolarPanelStructure(network.world, extractorKey)) {
-					network.nodes.remove(extractorKey)
-					addSolarPanel(extractorKey)
-				}
-			}
-
-			// Add power to storage
-			data.material == Material.NOTE_BLOCK -> addInput(key)
-
-			// Power flow meter
-			data.material == Material.OBSERVER -> addFlowMeter(data as Directional, key)
-
-			// Merge node behavior
-			data.material == Material.IRON_BLOCK -> addMergeNode(key, Material.IRON_BLOCK)
-			data.material == Material.REDSTONE_BLOCK -> addMergeNode(key, Material.REDSTONE_BLOCK)
-
-			// Split power evenly
-			CustomBlocks.getByBlockData(data) == CustomBlocks.ALUMINUM_BLOCK -> addEqualSplitterNode(key)
+			Material.IRON_BLOCK -> addMergeNode(key, Material.IRON_BLOCK)
+			Material.REDSTONE_BLOCK -> addMergeNode(key, Material.REDSTONE_BLOCK)
+			Material.LAPIS_BLOCK -> addSimpleSingleNode(key, POWER_INVERSE_DIRECTIONAL_NODE)
 
 			// Redstone controlled gate
-//			block.type.isRedstoneLamp -> GateNode(this, x, y, z)
-
+			//			block.type.isRedstoneLamp -> GateNode(this, x, y, z)
 			else -> return false
 		}
 
 		return true
 	}
 
-	fun addSponge(position: BlockKey, handleRelationships: Boolean = true) {
-		val neighbors = getNeighborNodes(position, network.nodes).values.filterIsInstanceTo<SpongeNode, MutableList<SpongeNode>>(mutableListOf())
-
-		val finalNode = when (neighbors.size) {
-			// New sponge node
-			0 -> SpongeNode(network, position).addPosition(position)
-
-			// Consolidate into neighbor
-			1 -> {
-				val adjacent = neighbors.firstOrNull()
-				adjacent?.addPosition(position) ?: SpongeNode(network, position).apply { loadIntoNetwork() }
-			}
-
-			// Join multiple neighbors together
-			in 2..6 -> handleMerges(neighbors).addPosition(position)
-
-			else -> throw NotImplementedError()
-		}
-
-		if (handleRelationships) finalNode.rebuildRelations()
-	}
-
-	fun addEndRod(data: Directional, position: Long, handleRelationships: Boolean = true) {
-		val axis = data.facing.axis
-
-		// The neighbors in the direction of the wire's facing, that are also facing that direction
-		val neighbors = getNeighborNodes(position, network.nodes, axis.faces.toList())
-			.values
-			.filterIsInstance<EndRodNode>()
-			.filterTo(mutableListOf()) { it.axis == axis }
-
-		val finalNode = when (neighbors.size) {
-			// Disconnected
-			0 ->  EndRodNode(network, position, data.facing.axis).addPosition(position)
-
-			// Consolidate into neighbor
-			1 -> neighbors.firstOrNull()?.addPosition(position) ?: throw ConcurrentModificationException("Node removed during processing")
-
-			// Should be a max of 2
-			2 -> handleMerges(neighbors).addPosition(position)
-
-			else -> throw IllegalArgumentException("Linear node had more than 2 neighbors")
-		}
-
-		if (handleRelationships) finalNode.rebuildRelations()
-	}
-
-	fun addExtractor(position: BlockKey) {
-		network.nodes[position] = PowerExtractorNode(network, position).apply {
-			onPlace(position)
-		}
-	}
-
-	fun addInput(position: BlockKey) {
-		network.nodes[position] = PowerInputNode(network, position).apply {
-			onPlace(position)
-		}
-	}
-
-	fun addFlowMeter(data: Directional, position: BlockKey) {
+	private fun addFlowMeter(data: Directional, position: BlockKey) {
 		network.nodes[position] = PowerFlowMeter(network, position, data.facing).apply {
 			onPlace(position)
 		}
@@ -166,7 +74,7 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 			val relativeSide = getRelative(position, direction)
 
 			(-1..3).firstNotNullOfOrNull {
-				val neighborKey = getRelative(relativeSide, BlockFace.UP, it)
+				val neighborKey = getRelative(relativeSide, UP, it)
 				val node = network.nodes[neighborKey]
 				if (node !is SolarPanelNode) return@firstNotNullOfOrNull null
 
@@ -190,21 +98,22 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 		if (handleRelationships) node.rebuildRelations()
 	}
 
-	fun addMergeNode(key: BlockKey, variant: Material) {
+	private fun addMergeNode(key: BlockKey, variant: Material) {
 		network.nodes[key] = PowerDirectionalNode(network, key, variant).apply {
 			onPlace(position)
 		}
 	}
 
-	fun addInvertedMergeNode(key: BlockKey) {
-		network.nodes[key] = InvertedDirectionalNode(network, key).apply {
-			onPlace(position)
-		}
-	}
+	private fun checkSolarPanels(position: BlockKey, extractorDistance: Int): Boolean {
+		val extractorKey = getRelative(position, DOWN, extractorDistance)
 
-	fun addEqualSplitterNode(position: BlockKey) {
-		network.nodes[position] = PowerEqualSplitterNode(network, position).apply {
-			onPlace(position)
+		val check = matchesSolarPanelStructure(network.world, extractorKey)
+
+		if (check) {
+			network.nodes.remove(extractorKey)
+			addSolarPanel(extractorKey)
 		}
+
+		return check
 	}
 }
