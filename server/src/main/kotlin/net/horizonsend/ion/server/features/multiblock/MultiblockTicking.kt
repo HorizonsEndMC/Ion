@@ -25,7 +25,7 @@ object MultiblockTicking : IonServerComponent() {
 		if (::executor.isInitialized) executor.shutdown()
 	}
 
-	private fun tickSyncMultiblocks() = managers.forEach { manager ->
+	private fun tickSyncMultiblocks() = iterateManagers { manager ->
 		for ((key, syncTicking) in manager.syncTickingMultiblockEntities) runCatching {
 			if (SyncTickingMultiblockEntity.preTick(syncTicking as MultiblockEntity)) syncTicking.tick()
 		}.onFailure { e ->
@@ -34,13 +34,20 @@ object MultiblockTicking : IonServerComponent() {
 		}
 	}
 
-	private fun tickAsyncMultiblocks() = managers.forEach { manager ->
+	private fun tickAsyncMultiblocks() = iterateManagers { manager ->
 		for ((key, asyncTicking) in manager.asyncTickingMultiblockEntities) runCatching {
 			if (SyncTickingMultiblockEntity.preTick(asyncTicking as MultiblockEntity)) asyncTicking.tickAsync()
 		}.onFailure { e ->
 			log.warn("Exception ticking async multiblock ${asyncTicking.javaClass.simpleName} at ${toVec3i(key)}: ${e.message}")
 			e.printStackTrace()
 		}
+	}
+
+	fun iterateManagers(task: (MultiblockManager) -> Unit) {
+		@Suppress("UNCHECKED_CAST")
+		val clone = managers.clone() as ArrayList<MultiblockManager>
+
+		clone.forEach(task)
 	}
 
 	fun registerMultiblockManager(manager: MultiblockManager) {
@@ -50,4 +57,6 @@ object MultiblockTicking : IonServerComponent() {
 	fun removeMultiblockManager(manager: MultiblockManager) {
 		managers.remove(manager)
 	}
+
+	fun getAllMultiblockManagers() = managers
 }
