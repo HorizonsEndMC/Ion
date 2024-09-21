@@ -26,7 +26,7 @@ object CustomBlockListeners : SLEventListener() {
         val hand = event.hand
         val itemStack = player.inventory.getItem(hand).clone()
         val item: CustomBlockItem = itemStack.customItem as? CustomBlockItem ?: return
-        val blockData: BlockData = item.getCustomBlock()?.blockData ?: return
+        val blockData: BlockData = item.getCustomBlock().blockData
 
         event.block.location.block.setBlockData(blockData, true)
     }
