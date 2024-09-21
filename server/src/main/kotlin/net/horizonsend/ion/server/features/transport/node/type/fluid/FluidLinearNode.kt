@@ -10,17 +10,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
-import org.bukkit.Axis
 import org.bukkit.block.data.Directional
 
 // Aka lightning rod
 class FluidLinearNode(network: FluidNodeManager) : LinearNode<FluidNodeManager, FluidLinearNode, FluidLinearNode>(network) {
 	override val type: NodeType = LIGHTNING_ROD
-
-	constructor(network: FluidNodeManager, origin: Long, axis: Axis) : this(network) {
-		positions.add(origin)
-		this.axis = axis
-	}
 
 	override fun addBack(position: BlockKey) {
 		val data = getBlockDataSafe(manager.world, getX(position), getY(position), getZ(position)) as? Directional ?: return
