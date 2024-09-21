@@ -138,6 +138,7 @@ object PrePackaged {
 		val type = itemStack.type
 		if (!type.isBlock) return  false
 
+		//TODO something with double slabs
 		return requirement.checkBlockData(type.createBlockData())
 	}
 }
