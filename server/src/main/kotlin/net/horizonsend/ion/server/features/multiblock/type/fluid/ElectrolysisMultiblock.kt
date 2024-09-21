@@ -50,6 +50,7 @@ import org.bukkit.block.data.Bisected.Half.TOP
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.persistence.PersistentDataAdapterContext
 
 object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisMultiblock.ElectrolysisMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	override val name: String = "ElectrolysisMultiblock"
@@ -254,9 +255,8 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 			hydrogenStorage.storage.addAmount(6 * removed)
 		}
 
-		override fun storeAdditionalData(store: PersistentMultiblockData) {
-			val rawStorage = store.getAdditionalDataRaw()
-			storeFluidData(rawStorage, rawStorage.adapterContext)
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			storeFluidData(store, adapterContext)
 			savePowerData(store)
 		}
 

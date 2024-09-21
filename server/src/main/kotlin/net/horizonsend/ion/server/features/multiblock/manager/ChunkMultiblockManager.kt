@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.manager
 
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
@@ -24,6 +25,15 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 	 **/
 	override fun save() {
 		saveMultiblocks(chunk.inner.persistentDataContainer.adapterContext)
+	}
+
+	private var lastSaved = System.currentTimeMillis()
+	override fun getSignUnsavedTime(): Long {
+		return System.currentTimeMillis() - lastSaved
+	}
+
+	override fun markSignSaved() {
+		lastSaved = System.currentTimeMillis()
 	}
 
 	override fun markChanged() {
@@ -83,7 +93,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 
 			val multiblock = stored.type as EntityMultiblock<*>
 
-			val entity = multiblock.createEntity(this, stored, chunk.inner.world, stored.x, stored.y, stored.z, stored.signOffset)
+			val entity = MultiblockEntities.loadFromData(multiblock, this, stored)
 
 			// No need to save a load
 			addMultiblockEntity(entity, save = false)
