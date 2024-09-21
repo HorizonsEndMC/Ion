@@ -50,9 +50,18 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 	}
 
 	override fun ofPositions(positions: Set<BlockKey>): B {
-		val new = super.ofPositions(positions)
-		new.axis = axis
-		return new
+		@Suppress("UNCHECKED_CAST")
+		val newNode = type.newInstance(manager) as B
+
+		// Need to set the axis before the rebuild, hence the override
+		newNode.axis = axis
+
+		positions.forEach {
+			newNode.addPosition(it)
+			newNode.buildRelations(it)
+		}
+
+		return newNode
 	}
 
 	fun setAxis(axis: Axis): LinearNode<T, *, *> {
