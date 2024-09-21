@@ -32,6 +32,7 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 			)
 
 			if (type.isWallSign) processMultiblock(x, y, z)
+			if (type.isAir) removeMultiblock(x, y, z)
 		}
 	}
 
@@ -40,6 +41,10 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 			val state = bukkitWorld.getBlockState(x, y, z) as? Sign ?: return@sync
 			MultiblockEntities.loadFromSign(state)
 		}
+	}
+
+	private fun removeMultiblock(x: Int, y: Int, z: Int) {
+		MultiblockEntities.removeMultiblockEntity(bukkitWorld, x, y, z)
 	}
 
 	private var recording: Boolean = true
