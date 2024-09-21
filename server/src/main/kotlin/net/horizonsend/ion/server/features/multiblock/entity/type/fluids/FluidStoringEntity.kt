@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataAdapterContext
-import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER
 
 interface FluidStoringEntity {
@@ -67,14 +66,10 @@ interface FluidStoringEntity {
 
 	fun getStorage(key: NamespacedKey): StorageContainer = capacities.first { it.namespacedKey == key }
 
-	fun storeFluidData(destination: PersistentDataContainer, context: PersistentDataAdapterContext) {
+	fun storeFluidData(destination: PersistentMultiblockData, context: PersistentDataAdapterContext) {
 		val storages = context.newPersistentDataContainer()
-
-		capacities.forEach {
-			it.save(storages)
-		}
-
-		destination.set(STORAGES, TAG_CONTAINER, storages)
+		capacities.forEach { it.save(storages) }
+		destination.addAdditionalData(STORAGES, TAG_CONTAINER, storages)
 	}
 
 	/**
