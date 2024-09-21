@@ -12,7 +12,7 @@ class FluidJunctionNode(network: FluidNodeManager) : JunctionNode<FluidNodeManag
 	}
 
 	override fun addBack(position: BlockKey) {
-		manager.nodeFactory.addJunction(position, handleRelationships = false)
+		manager.nodeFactory.addJunctionNode<FluidJunctionNode>(position, type, handleRelationships = false)
 	}
 
 	override fun toString(): String {
