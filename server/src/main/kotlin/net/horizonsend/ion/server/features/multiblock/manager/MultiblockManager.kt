@@ -37,6 +37,9 @@ abstract class MultiblockManager(val log: Logger) {
 
 	abstract fun getNetwork(type: NetworkType): NodeManager
 
+	abstract fun getSignUnsavedTime(): Long
+	open fun markSignSaved() {}
+
 	/**
 	 * Handles the addition of a multiblock entity
 	 **/
@@ -80,8 +83,7 @@ abstract class MultiblockManager(val log: Logger) {
 	/**
 	 * Add a new multiblock to the chunk data
 	 **/
-	suspend fun handleNewMultiblockEntity(multiblock: EntityMultiblock<*>, x: Int, y: Int, z: Int, face: BlockFace) {
-		// Allow smart cast
+	fun handleNewMultiblockEntity(multiblock: EntityMultiblock<*>, x: Int, y: Int, z: Int, face: BlockFace) {
 		multiblock as Multiblock
 
 		// Abort process if one already exists, so it's not overwritten
