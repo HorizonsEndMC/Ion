@@ -55,5 +55,10 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 		return new
 	}
 
+	fun setAxis(axis: Axis): LinearNode<T, *, *> {
+		this.axis = axis
+		return this
+	}
+
 	override fun toString(): String = "(END ROD NODE: Axis: $axis; ${positions.size} positions; ${relationships.size} relations, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
 }
