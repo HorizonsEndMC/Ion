@@ -20,7 +20,7 @@ import org.bukkit.persistence.PersistentDataType.INTEGER
 import org.bukkit.persistence.PersistentDataType.STRING
 import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER
 
-class PersistentMultiblockData(val x: Int, val y: Int, val z: Int, val type: Multiblock, val signOffset: BlockFace) {
+class PersistentMultiblockData(var x: Int, var y: Int, var z: Int, val type: Multiblock, var signOffset: BlockFace) {
 	constructor(x: Int, y: Int, z: Int, type: Multiblock, signOffset: BlockFace, additionalData: PersistentDataContainer) : this(x, y, z, type, signOffset) {
 		this.additionalData = additionalData
 	}
