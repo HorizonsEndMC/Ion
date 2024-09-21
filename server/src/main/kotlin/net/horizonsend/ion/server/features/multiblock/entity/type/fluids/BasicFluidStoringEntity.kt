@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.kyori.adventure.text.Component
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.persistence.PersistentDataAdapterContext
 
 /**
  * A simple fluid storing entity with a single main storage
@@ -32,8 +33,7 @@ abstract class BasicFluidStoringEntity(
 
 	val mainStorage by lazy { getStorage(NamespacedKeys.MAIN_STORAGE) }
 
-	override fun storeAdditionalData(store: PersistentMultiblockData) {
-		val rawStorage = store.getAdditionalDataRaw()
-		storeFluidData(rawStorage, rawStorage.adapterContext)
+	override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+		storeFluidData(store, adapterContext)
 	}
 }

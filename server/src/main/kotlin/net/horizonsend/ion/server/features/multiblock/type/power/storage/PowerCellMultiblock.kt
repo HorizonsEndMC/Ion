@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.transport.node.type.power.PowerInputN
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.persistence.PersistentDataAdapterContext
 
 object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultiblock.PowerCellEntity> {
 	override val name = "powercell"
@@ -95,7 +96,7 @@ object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultibl
 			displayHandler.displace(movement)
 		}
 
-		override fun storeAdditionalData(store: PersistentMultiblockData) {
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 			savePowerData(store)
 		}
 
