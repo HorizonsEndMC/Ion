@@ -71,7 +71,7 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode() 
 	 * Returns the amount that couldn't be removed.
 	 **/
 	fun drawPower(amount: Int): Int {
-		val entities = relationships.mapNotNull { (it.value.other as? PowerInputNode)?.boundMultiblockEntity }
+		val entities = relationships.mapNotNull { (it.value.other as? PowerInputNode)?.getPoweredEntities()?.randomOrNull() } //TODO
 
 		var remaining = amount
 

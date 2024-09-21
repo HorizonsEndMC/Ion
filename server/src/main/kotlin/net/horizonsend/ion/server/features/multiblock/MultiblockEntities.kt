@@ -9,6 +9,10 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -23,6 +27,18 @@ object MultiblockEntities : SLEventListener() {
 	 *
 	 **/
 	fun getMultiblockEntity(world: World, x: Int, y: Int, z: Int): MultiblockEntity? {
+		val ionChunk = getIonChunk(world, x, z) ?: return null
+
+		return ionChunk.multiblockManager[x, y, z]
+	}
+
+	/**
+	 *
+	 **/
+	fun getMultiblockEntity(world: World, key: BlockKey): MultiblockEntity? {
+		val x = getX(key)
+		val y = getY(key)
+		val z = getZ(key)
 		val ionChunk = getIonChunk(world, x, z) ?: return null
 
 		return ionChunk.multiblockManager[x, y, z]

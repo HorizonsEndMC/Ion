@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.manager.holders.ChunkNetworkHolder
 import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerFlowMeter
@@ -17,8 +16,6 @@ import net.horizonsend.ion.server.features.transport.node.util.getIdealPath
 import net.horizonsend.ion.server.features.transport.node.util.getNetworkDestinations
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER_TRANSPORT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.NamespacedKey
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
@@ -109,13 +106,7 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 			val shareFactor = shareFactors[index] ?: continue
 			val share = shareFactor / shareFactorSum
 
-			val recipient = destination.boundMultiblockEntity
-
-			if (recipient == null) {
-				// Remove this share factor from the sum, since it is not taking up any power
-				shareFactorSum -= shareFactor
-				continue
-			}
+			val recipient = destination.getPoweredEntities().randomOrNull() ?: continue
 
 			val idealSend = (availableTransferPower * share).roundToInt()
 			val toSend = minOf(idealSend, recipient.storage.getRemainingCapacity())
@@ -142,33 +133,7 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 		return remainingPower
 	}
 
-	override fun finalizeNodes() {
-		@Suppress("UNCHECKED_CAST")
-		val chunk = (holder as? ChunkNetworkHolder<PowerNodeManager>)?.manager?.chunk ?: return
-		chunk.multiblockManager.getAllMultiblockEntities().values.filterIsInstance<PoweredMultiblockEntity>().forEach(::tryBindPowerNode)
-	}
-
-	/**
-	 * Handle the addition of a new powered multiblock entity
-	 **/
-	fun tryBindPowerNode(new: PoweredMultiblockEntity) {
-		// All directions
-		val inputVec = new.getRealInputLocation()
-		val inputKey = toBlockKey(inputVec)
-
-		val inputNode = getNode(inputKey) as? PowerInputNode
-
-		if (inputNode != null) {
-			new.bindInputNode(inputNode)
-			return
-		}
-
-		val (x, y, z) = inputVec
-		val block = getBlockIfLoaded(world, x, y, z)
-		if (block != null) createNodeFromBlock(block)
-
-		val attemptTwo = getNode(inputKey) as? PowerInputNode ?: return
-
-		new.bindInputNode(attemptTwo)
+	fun addPower(recipients: Collection<PoweredMultiblockEntity>): Int {
+		TODO("")
 	}
 }
