@@ -2,11 +2,10 @@ package net.horizonsend.ion.server.features.transport.node
 
 import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
-import net.horizonsend.ion.server.features.transport.node.type.fluid.LightningRodNode
+import net.horizonsend.ion.server.features.transport.node.type.fluid.FluidLinearNode
 import net.horizonsend.ion.server.features.transport.node.type.power.EndRodNode
 import net.horizonsend.ion.server.features.transport.node.type.power.InvertedDirectionalNode
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerDirectionalNode
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerEqualSplitterNode
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerInputNode
@@ -23,12 +22,11 @@ enum class NodeType(val clazz: Class<out TransportNode>) {
 	POWER_FLOW_METER(PowerFlowMeter::class.java),
 	POWER_DIRECTIONAL_NODE(PowerDirectionalNode::class.java),
 	POWER_INVERSE_DIRECTIONAL_NODE(InvertedDirectionalNode::class.java),
-	POWER_EQUAL_SPLITTER(PowerEqualSplitterNode::class.java),
 
 	//FLUID
 	FLUID_INPUT(net.horizonsend.ion.server.features.transport.node.type.fluid.FluidInputNode::class.java),
 	FLUID_JUNCTION(net.horizonsend.ion.server.features.transport.node.type.fluid.FluidJunctionNode::class.java),
-	LIGHTNING_ROD(LightningRodNode::class.java),
+	LIGHTNING_ROD(FluidLinearNode::class.java),
 
 	//ITEM
 	;
