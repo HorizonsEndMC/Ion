@@ -31,6 +31,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.persistence.PersistentDataAdapterContext
 import kotlin.math.roundToInt
 
 object PipedGasCollectorMultiblock : Multiblock(),
@@ -155,9 +156,8 @@ object PipedGasCollectorMultiblock : Multiblock(),
 
 		override val fluidInputOffset: Vec3i = Vec3i(0, -1, 0)
 
-		override fun storeAdditionalData(store: PersistentMultiblockData) {
-			val rawStorage = store.getAdditionalDataRaw()
-			storeFluidData(rawStorage, rawStorage.adapterContext)
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			storeFluidData(store, adapterContext)
 		}
 
 		override fun toString(): String {

@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
 
 /**
@@ -45,7 +46,7 @@ abstract class ProcessingMultiblockEntity(
 		currentProgress++
 	}
 
-	override fun storeAdditionalData(store: PersistentMultiblockData) {
+	override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 		store.addAdditionalData(NamespacedKeys.PROCESSING_PROGRESS, PersistentDataType.INTEGER, currentProgress)
 	}
 }
