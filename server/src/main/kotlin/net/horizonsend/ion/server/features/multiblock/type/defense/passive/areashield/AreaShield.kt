@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerInputNode
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -99,7 +98,6 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 		world: World,
 		signDirection: BlockFace,
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity {
-		override var inputNode: PowerInputNode? = null
 		override val storage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
