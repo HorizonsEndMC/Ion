@@ -25,6 +25,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.persistence.PersistentDataAdapterContext
 import java.util.concurrent.TimeUnit
 
 abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<AreaShield.AreaShieldEntity>, InteractableMultiblock {
@@ -128,7 +129,7 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 			displayHandler.displace(movement)
 		}
 
-		override fun storeAdditionalData(store: PersistentMultiblockData) {
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 			savePowerData(store)
 		}
 
