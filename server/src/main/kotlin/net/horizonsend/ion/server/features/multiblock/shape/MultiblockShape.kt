@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isSlab
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
+import net.horizonsend.ion.server.miscellaneous.utils.isTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
 import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.isWool
@@ -48,6 +49,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Furnace
 import org.bukkit.block.data.type.Slab
+import org.bukkit.block.data.type.Slab.Type.DOUBLE
 import java.util.EnumSet
 
 class MultiblockShape {
@@ -267,7 +269,8 @@ class MultiblockShape {
 				alias = type.toString(),
 				example = { type.createBlockData() },
 				syncCheck = { block, _, loadChunks -> if (loadChunks) block.type == type else block.getTypeSafe() == type },
-				asyncCheck = { block, _, loadChunks -> getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.type == type }
+				asyncCheck = { block, _, loadChunks -> getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.type == type },
+				dataCheck = { type == it.material }
 			)
 
 			complete(requirement)
@@ -286,7 +289,8 @@ class MultiblockShape {
 					val type = getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.type
 
 					typeSet.contains(type)
-				}
+				},
+				dataCheck = { typeSet.contains(it.material) }
 			)
 
 			complete(requirement)
@@ -305,7 +309,8 @@ class MultiblockShape {
 				},
 				asyncCheck = { block, _, loadChunks ->
 					getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.let { CustomBlocks.getByBlockData(it.data) } === customBlock
-				}
+				},
+				dataCheck = { CustomBlocks.getByBlockData(it) == customBlock }
 			)
 
 			complete(requirement)
@@ -355,17 +360,18 @@ class MultiblockShape {
 				example = {
 					Material.STONE_BRICK_SLAB.createBlockData().apply {
 						this as Slab
-						this.type = Slab.Type.DOUBLE
+						this.type = DOUBLE
 					}
 				},
 				syncCheck = { block, _, loadChunks ->
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
-					blockData is Slab && blockData.type == Slab.Type.DOUBLE
+					blockData is Slab && blockData.type == DOUBLE
 				},
 				asyncCheck = { block, _, loadChunks ->
 					val blockData: BlockData? = getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.data
-					blockData is Slab && blockData.type == Slab.Type.DOUBLE
-				}
+					blockData is Slab && blockData.type == DOUBLE
+				},
+				dataCheck = { it is Slab && it.type == DOUBLE }
 			)
 		)
 		fun anySlabOrStairs() = filteredTypes("any slab or stairs") { it.isSlab || it.isStairs }
@@ -378,15 +384,16 @@ class MultiblockShape {
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 					val blockType = if (loadChunks) block.type else block.getTypeSafe()
 
-					(blockData is Slab && blockData.type == Slab.Type.DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
+					(blockData is Slab && blockData.type == DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
 				},
 				asyncCheck = { block, _, loadChunks ->
 					val blockSnapshot = getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)
 					val blockData = blockSnapshot?.data
 					val blockType = blockSnapshot?.type
 
-					(blockData is Slab && blockData.type == Slab.Type.DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
-				}
+					(blockData is Slab && blockData.type == DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
+				},
+				dataCheck = { (it is Slab && it.type == DOUBLE) || it.material.isTerracotta }
 			)
 		}
 
@@ -526,7 +533,8 @@ class MultiblockShape {
 				if (blockData.material != Material.FURNACE) return@asyncCheck false
 				val facing = blockData.facing
 				return@asyncCheck facing == inward.oppositeFace
-			}
+			},
+			dataCheck = { it is Furnace }
 		))
 
 		fun solidBlock() = anyType(
