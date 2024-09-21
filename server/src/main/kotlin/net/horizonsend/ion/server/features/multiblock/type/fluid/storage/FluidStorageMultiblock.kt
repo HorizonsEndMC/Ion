@@ -17,6 +17,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.persistence.PersistentDataAdapterContext
 
 abstract class FluidStorageMultiblock(val capacity: Int) : Multiblock(), EntityMultiblock<FluidStorageMultiblock.FluidStorageMultiblockEntity> {
 	override val name: String = "tank"
@@ -65,9 +66,8 @@ abstract class FluidStorageMultiblock(val capacity: Int) : Multiblock(), EntityM
 			displayHandler.displace(movement)
 		}
 
-		override fun storeAdditionalData(store: PersistentMultiblockData) {
-			val rawStorage = store.getAdditionalDataRaw()
-			storeFluidData(rawStorage, rawStorage.adapterContext)
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			storeFluidData(store, adapterContext)
 		}
 	}
 }

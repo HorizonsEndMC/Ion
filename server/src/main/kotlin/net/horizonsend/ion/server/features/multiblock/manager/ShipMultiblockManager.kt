@@ -27,6 +27,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	override val world get() = starship.world
 
 	override fun save() {}
+	override fun getSignUnsavedTime(): Long = 0
 	override fun markChanged() {}
 
 	override fun getNetwork(type: NetworkType): NodeManager {

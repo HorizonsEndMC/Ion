@@ -26,6 +26,7 @@ import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataAdapterContext
 
 abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPoweredMultiblock<ChargerMultiblock.ChargerEntity>, FurnaceMultiblock {
 	protected abstract val tierMaterial: Material
@@ -178,7 +179,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 			displayHandler.displace(movement)
 		}
 
-		override fun storeAdditionalData(store: PersistentMultiblockData) {
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 			savePowerData(store)
 		}
 
