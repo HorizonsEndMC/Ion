@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.node.type.power
 import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.general.LinearNode
+import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
@@ -22,10 +23,6 @@ class EndRodNode(network: PowerNodeManager) : LinearNode<PowerNodeManager, EndRo
 	override fun addBack(position: BlockKey) {
 		val data = getBlockDataSafe(manager.world, getX(position), getY(position), getZ(position)) as? Directional ?: return
 
-		manager.nodeFactory.addEndRod(
-			data,
-			position,
-			handleRelationships = false
-		)
+		manager.nodeFactory.addLinearNode<EndRodNode>(position, data.facing.axis, type, handleRelationships = false)
 	}
 }

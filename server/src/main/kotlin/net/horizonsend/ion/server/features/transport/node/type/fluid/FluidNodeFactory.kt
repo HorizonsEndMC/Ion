@@ -1,14 +1,12 @@
 package net.horizonsend.ion.server.features.transport.node.type.fluid
 
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.transport.node.NodeType.FLUID_INPUT
+import net.horizonsend.ion.server.features.transport.node.NodeType.FLUID_JUNCTION
+import net.horizonsend.ion.server.features.transport.node.NodeType.LIGHTNING_ROD
 import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
-import net.horizonsend.ion.server.features.transport.node.type.power.SpongeNode
 import net.horizonsend.ion.server.features.transport.node.util.NodeFactory
-import net.horizonsend.ion.server.features.transport.node.util.getNeighborNodes
-import net.horizonsend.ion.server.features.transport.node.util.handleMerges
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.faces
 import net.horizonsend.ion.server.miscellaneous.utils.isChiseledCopper
 import net.horizonsend.ion.server.miscellaneous.utils.isCopperBlock
 import net.horizonsend.ion.server.miscellaneous.utils.isCopperBulb
@@ -21,84 +19,25 @@ class FluidNodeFactory(network: FluidNodeManager) : NodeFactory<FluidNodeManager
 		if (network.nodes.contains(key)) return false
 
 		when {
-			// Straight wires
-			data.material == Material.LIGHTNING_ROD -> addLightningRod(data as Directional, key)
+			data.material == Material.LIGHTNING_ROD -> addLinearNode<FluidLinearNode>(key, (data as Directional).facing.axis, LIGHTNING_ROD)
+			data.material.isCopperBlock -> addJunctionNode<FluidJunctionNode>(key, FLUID_JUNCTION)
 
-			// Omnidirectional wires
-			data.material.isCopperBlock -> addJunction(key)
+//			data.material == Material.CRAFTING_TABLE -> addSimpleSingleNode(key, FLUID_EXTRACOTR_NODE)
+			data.material == Material.FLETCHING_TABLE -> addSimpleSingleNode(key, FLUID_INPUT)
 
-			// Extractor
-			data.material == Material.CRAFTING_TABLE -> println("TODO")
-
-			// Input
-			data.material == Material.FLETCHING_TABLE -> println("TODO")
-
-			// Flow meter
 			data.material == Material.OBSERVER -> println("TODO")
 
-			// Merge
 			data.material == Material.REDSTONE_BLOCK -> println("TODO")
 			data.material == Material.IRON_BLOCK -> println("TODO")
+//			data.material == Material.LAPIS_BLOCK -> addSimpleSingleNode(key, FLUID_INVERTED_DIRECTIONAL_NODE)
 
-			// Inverted Merge
-			data.material == Material.LAPIS_BLOCK -> println("TODO")
-
-			// Splitter
-			CustomBlocks.getByBlockData(data) == CustomBlocks.ALUMINUM_BLOCK -> println("TODO")
-
-			// Valve
 			data.material.isChiseledCopper -> println("TODO")
 
-			// Filter
 			data.material.isCopperBulb -> println("TODO")
 
 			else -> return false
 		}
 
 		return true
-	}
-
-	fun addLightningRod(data: Directional, position: Long, handleRelationships: Boolean = true) {
-		val axis = data.facing.axis
-
-		// The neighbors in the direction of the wire's facing, that are also facing that direction
-		val neighbors = getNeighborNodes(position, network.nodes, axis.faces.toList())
-			.values
-			.filterIsInstance<LightningRodNode>()
-			.filterTo(mutableListOf()) { it.axis == axis }
-
-		val finalNode = when (neighbors.size) {
-			// Disconnected
-			0 ->  LightningRodNode(network, position, data.facing.axis).apply { loadIntoNetwork() }
-
-			// Consolidate into neighbor
-			1 -> neighbors.firstOrNull()?.addPosition(position) ?: throw ConcurrentModificationException("Node removed during processing")
-
-			// Should be a max of 2
-			2 -> handleMerges(neighbors).addPosition(position)
-
-			else -> throw IllegalArgumentException("Linear node had more than 2 neighbors")
-		}
-
-		if (handleRelationships) finalNode.rebuildRelations()
-	}
-
-	fun addJunction(position: BlockKey, handleRelationships: Boolean = true) {
-		val neighbors = getNeighborNodes(position, network.nodes).values.filterIsInstanceTo<SpongeNode, MutableList<SpongeNode>>(mutableListOf())
-
-		val finalNode = when (neighbors.size) {
-			// New sponge node
-			0 -> net.horizonsend.ion.server.features.transport.node.type.fluid.FluidJunctionNode(network, position).apply { loadIntoNetwork() }
-
-			// Consolidate into neighbor
-			1 ->  neighbors.firstOrNull()?.addPosition(position) ?: throw ConcurrentModificationException("Node removed during processing")
-
-			// Join multiple neighbors together
-			in 2..6 -> handleMerges(neighbors).addPosition(position)
-
-			else -> throw NotImplementedError()
-		}
-
-		if (handleRelationships) finalNode.rebuildRelations()
 	}
 }
