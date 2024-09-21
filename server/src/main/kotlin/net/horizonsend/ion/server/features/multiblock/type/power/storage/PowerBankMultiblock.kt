@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.persistence.PersistentDataAdapterContext
 
 abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredMultiblock<PowerBankMultiblock.PowerBankEntity> {
 	abstract val tierMaterial: Material
@@ -137,7 +138,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 			displayHandler.displace(movement)
 		}
 
-		override fun storeAdditionalData(store: PersistentMultiblockData) {
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 			savePowerData(store)
 		}
 

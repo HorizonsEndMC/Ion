@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.custom.items.mods.ToolModMenu
 import net.horizonsend.ion.server.features.machine.CryoPods
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
@@ -85,6 +86,7 @@ val listeners: List<Listener> = listOf(
 	ToolModMenu,
 	RecipeModifications,
 	GlobalNodeManager,
+	MultiblockEntities,
 
 	// Achievement Listeners
 	AchievementListeners(),
