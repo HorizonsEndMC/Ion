@@ -9,11 +9,14 @@ class BlockRequirement(
 	val alias: String,
 	var example: (BlockFace) -> BlockData,
 	private val syncCheck: (Block, BlockFace, Boolean) -> Boolean,
-	private val asyncCheck: suspend (Block, BlockFace, Boolean) -> Boolean
+	private val asyncCheck: suspend (Block, BlockFace, Boolean) -> Boolean,
+	private val dataCheck: (BlockData) -> Boolean
 ) {
 	operator fun invoke(block: Block, inward: BlockFace, loadChunks: Boolean) = syncCheck.invoke(block, inward, loadChunks)
 
 	suspend fun checkAsync(block: Block, inward: BlockFace, loadChunks: Boolean) = asyncCheck.invoke(block, inward, loadChunks)
+
+	fun checkBlockData(data: BlockData) = dataCheck.invoke(data)
 
 	fun setExample(blockData: BlockData): BlockRequirement {
 		this.example = { blockData }
