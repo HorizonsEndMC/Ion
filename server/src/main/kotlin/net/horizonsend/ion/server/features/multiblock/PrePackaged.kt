@@ -1,6 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.multiblock.shape.BlockRequirement
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -123,5 +126,18 @@ object PrePackaged {
 		pdc.set(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING, data.multiblock.javaClass.simpleName)
 
 		destination.set(NamespacedKeys.MULTIBLOCK, PersistentDataType.TAG_CONTAINER, pdc)
+	}
+
+	fun itemMatchesRequirement(itemStack: ItemStack, requirement: BlockRequirement): Boolean {
+		val customBlock = itemStack.customItem as? CustomBlockItem
+
+		if (customBlock != null) {
+			return requirement.checkBlockData(customBlock.getCustomBlock().blockData)
+		}
+
+		val type = itemStack.type
+		if (!type.isBlock) return  false
+
+		return requirement.checkBlockData(type.createBlockData())
 	}
 }
