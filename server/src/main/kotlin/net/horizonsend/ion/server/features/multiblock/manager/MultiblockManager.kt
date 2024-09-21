@@ -3,12 +3,10 @@ package net.horizonsend.ion.server.features.multiblock.manager
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
-import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.util.NetworkType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -54,10 +52,6 @@ abstract class MultiblockManager(val log: Logger) {
 
 		if (entity is AsyncTickingMultiblockEntity) {
 			asyncTickingMultiblockEntities[entity.locationKey] = entity
-		}
-
-		if (entity is PoweredMultiblockEntity) {
-			(getNetwork(NetworkType.POWER) as PowerNodeManager).tryBindPowerNode(entity)
 		}
 
 		if (save) save()
