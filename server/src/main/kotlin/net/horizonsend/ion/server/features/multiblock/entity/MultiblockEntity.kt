@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.entity
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -15,6 +16,7 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.persistence.PersistentDataAdapterContext
 
 /**
  * @param manager The multiblock manager that this is registered to
@@ -86,7 +88,7 @@ abstract class MultiblockEntity(
 	/**
 	 * Stores any additional data for this multiblock (e.g. power, owner, etc)
 	 **/
-	protected open fun storeAdditionalData(store: PersistentMultiblockData) {}
+	protected open fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {}
 
 	/**
 	 * Returns the serializable data for this multiblock entity
@@ -97,9 +99,18 @@ abstract class MultiblockEntity(
 	 **/
 	fun store(): PersistentMultiblockData {
 		val store = PersistentMultiblockData(x, y, z, multiblock, structureDirection)
-		storeAdditionalData(store)
+		storeAdditionalData(store, store.getAdditionalDataRaw().adapterContext)
 
 		return store
+	}
+
+	fun saveToSign() {
+		val sign = getSign() ?: return
+		val pdc = sign.persistentDataContainer
+
+		val data = store()
+		pdc.set(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData, data)
+		sign.update()
 	}
 
 	fun isSignLoaded(): Boolean {
