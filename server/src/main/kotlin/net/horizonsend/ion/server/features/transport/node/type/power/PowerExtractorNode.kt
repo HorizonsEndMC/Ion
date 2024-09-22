@@ -96,6 +96,8 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode() 
 		return 0
 	}
 
+	fun getSourcePool() = relationships.mapNotNull { it.value.other as? PowerInputNode }.flatMap { it.getPoweredEntities() }
+
 	override fun toString(): String {
 		return "Extractor. found, can trasnsfer: ${getTransferPower()}"
 	}
