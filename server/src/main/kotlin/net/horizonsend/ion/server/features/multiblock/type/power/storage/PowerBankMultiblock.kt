@@ -5,17 +5,23 @@ import net.horizonsend.ion.server.features.client.display.modular.display.PowerE
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.front
+import net.kyori.adventure.text.Component.empty
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
 import org.bukkit.persistence.PersistentDataAdapterContext
+import org.bukkit.persistence.PersistentDataType
 
 abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredMultiblock<PowerBankMultiblock.PowerBankEntity> {
 	abstract val tierMaterial: Material
@@ -110,7 +116,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 		z: Int,
 		world: World,
 		structureDirection: BlockFace
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity {
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
 		override val storage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = newMultiblockSignOverlay(
@@ -139,5 +145,15 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 		}
 
 		override val powerInputOffset: Vec3i = Vec3i(0, -1, 0)
+
+		override fun loadFromSign(sign: Sign) {
+			val oldPower = sign.persistentDataContainer.get(NamespacedKeys.POWER, PersistentDataType.INTEGER) ?: return
+
+			storage.setPower(oldPower)
+
+			sign.persistentDataContainer.remove(NamespacedKeys.POWER)
+			sign.front().line(2, empty())
+			sign.update()
+		}
 	}
 }
