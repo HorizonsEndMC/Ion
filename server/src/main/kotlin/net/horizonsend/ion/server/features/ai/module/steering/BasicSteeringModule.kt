@@ -16,14 +16,19 @@ The strategy for implementing context steering is as follows:
 3. Make a decision based on the final interest and danger context maps, importantly decision-making
 should be the LAST step.
  */
+import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.FluidCollisionMode
 import org.bukkit.util.Vector
 import org.bukkit.util.noise.SimplexOctaveGenerator
+import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Supplier
 import kotlin.math.PI
 import kotlin.math.abs
@@ -59,6 +64,7 @@ class BasicSteeringModule(
 	val ship : ActiveStarship get() = controler.starship
 	val MAXSPEED : Double = 20.0
 	val offset = Math.random()
+	val obstructions = ConcurrentHashMap<Vec3i, Long>()
 
 	var thrustOut = Vector(0.0,0.0,1.0)
 	var headingOut =  Vector(0.0,0.0,1.0)
@@ -106,6 +112,7 @@ class BasicSteeringModule(
         shipDanger.populateContext()
 
         worldBlockDanger.populateContext()
+		obstructionDanger.populateContext()
 
 		particleDanger.populateContext()
 
@@ -128,6 +135,7 @@ class BasicSteeringModule(
         danger.addContext(shieldAwareness, scale = 0.5)
         danger.addContext(particleDanger)
 		danger.addContext(worldBlockDanger)
+		danger.addContext(obstructionDanger)
 
         //There are no resources that talk about steering where the heading of a ship is
         // different from where its accelerating, enabling strafing and drifting, movement and
@@ -215,18 +223,23 @@ class BasicSteeringModule(
     var wander: ContextMap = object : ContextMap(linearbins = true) {
         val weight = 1.0
         val dotShift = 1.0
-        val jitterRate = 1e3
+        val jitterRate = 2e2
+		val maxChange = PI/30
+		var theta = randomDouble(0.0, PI*2)
         override fun populateContext() {
 			clearContext()
             val timeoffset = offset * jitterRate
             val generator = SimplexOctaveGenerator(1, 1)
-            val theta =
+            val deltatheta =
                 generator.noise(System.currentTimeMillis() % 1000000 / jitterRate
-					/ (ship.currentBlockCount.toDouble()).pow(1.0/3.0) + timeoffset,
-                1.0,1.0 ) * Math.PI
+					/ (ship.currentBlockCount.toDouble()).pow(0.5) + timeoffset,
+                1.0,1.0 ).pow(3) * maxChange
 			val phi = generator.noise(System.currentTimeMillis() % 1000000 / (jitterRate* 10)
-				/ (ship.currentBlockCount.toDouble()).pow(1.0/3.0) + timeoffset,
+				/ (ship.currentBlockCount.toDouble()).pow(0.5) + timeoffset,
 				1.0,1.0 ) * Math.PI / 2
+			theta += deltatheta
+			theta += PI*2
+			theta %= PI*2
             val desiredDir = Vector(0.0,0.0,1.0).rotateAroundX(phi).rotateAroundY(theta)
             dotContext(desiredDir, dotShift, weight)
             lincontext!!.apply(lincontext!!.populatePeak(1.0, weight))
@@ -246,7 +259,7 @@ class BasicSteeringModule(
         override fun populateContext() {
             clearContext()
             headingHist.multScalar(hist)
-            val velNorm = ship.forward.direction
+            val velNorm = ship.getTargetForward().direction
             headingHist.dotContext(velNorm,1.0,(1-hist))
             dotContext(velNorm.multiply(-1.0),0.0,weight, clipZero = true)
             multScalar(-1.0)
@@ -267,7 +280,7 @@ class BasicSteeringModule(
         val hist = 0.8
         override fun populateContext() {
             multScalar(hist)
-            var velNorm = ship.forward.direction
+            var velNorm = ship.getTargetForward().direction
             val mag = ship.velocity.length() / MAXSPEED
             //velNorm = if (mag > 1e-4) velNorm.normal() else
                // Vector2D(1.0, Math.random() * Math.PI * 2).toCartesian()
@@ -345,7 +358,7 @@ class BasicSteeringModule(
             val offset = target.add(shipPos.clone().multiply(-1.0))
             val dist = offset.length() + 1e-4
 			offset.normalize()
-            offset.multiply(faceweight).add(ship.forward.direction).normalize()
+            offset.multiply(faceweight).add(ship.getTargetForward().direction).normalize()
             dotContext(offset,0.0, dist / falloff * weight)
             for (i in 0 until NUMBINS) {
                 bins[i] = min(bins[i], maxWeight)
@@ -530,7 +543,7 @@ class BasicSteeringModule(
      */
     var borderDanger: ContextMap = object : ContextMap() {
         val falloff = 100.0
-		val verticalFalloff = 10.0
+		val verticalFalloff = 20.0
         val dotShift = 0.2
         override fun populateContext() {
 			val worldborder = ship.world.worldBorder
@@ -575,12 +588,33 @@ class BasicSteeringModule(
 		val maxdist = 200.0
 		override fun populateContext() {
 			clearContext()
+			val shipPos = ship.centerOfMass.toLocation(world)
 			for (dir in bindir) {
-				val shipPos = ship.centerOfMass.toLocation(world)
 				val result = world.rayTraceBlocks(shipPos,dir, maxdist, FluidCollisionMode.ALWAYS, false) {
 					block -> !ship.contains(block.x, block.y, block.z)} ?: continue
 				val dist = result.hitPosition.add(shipPos.toVector().multiply(-1.0)).length()
 				dotContext(dir, 0.0, falloff/ dist, dotpower)
+			}
+		}
+	}
+
+	var obstructionDanger: ContextMap = object : ContextMap() {
+		val falloff = 30.0
+		val dotpower = 3.0
+		val expireTime = 5 * 1000
+		override fun populateContext() {
+			clearContext()
+			val time = System.currentTimeMillis()
+			val shipPos = ship.centerOfMass.toVector()
+			for (obstruction in obstructions.keys()) {
+				if (time - obstructions[obstruction]!! > expireTime) {
+					obstructions.remove(obstruction)
+					continue
+				}
+				val offset = obstruction.toVector().add(shipPos.clone().multiply(-1.0))
+				val dist = offset.length()
+				offset.normalize()
+				dotContext(offset, 0.0, falloff/ dist, dotpower)
 			}
 		}
 	}
@@ -608,5 +642,12 @@ class BasicSteeringModule(
     }
     /
 	 */
+
+	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
+		val time = System.currentTimeMillis()
+		location?.let {
+			obstructions[location] = time
+		}
+	}
 
 }
