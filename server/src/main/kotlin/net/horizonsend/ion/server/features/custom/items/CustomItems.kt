@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.minerals.MineralItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
+import net.horizonsend.ion.server.features.custom.items.misc.MultimeterItem
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblockItem
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.misc.ShellItem
@@ -864,6 +865,8 @@ object CustomItems {
 		text("Power ", GOLD),
 		text(toolName, GRAY)
 	).decoration(ITALIC, false)
+
+	val MULTIMETER = register(MultimeterItem)
 
 	val POWER_DRILL_BASIC = register(PowerDrill(
 		identifier = "POWER_DRILL_BASIC",
