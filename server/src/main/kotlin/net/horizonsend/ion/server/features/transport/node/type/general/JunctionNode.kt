@@ -34,7 +34,7 @@ abstract class JunctionNode<T: NodeManager, A: JunctionNode<T, B, A>, B: Junctio
 			if (nextNode != null) {
 				// Provided both means it needs to be more precise for an accurate distribution of resources. Get in / out locations via relations
 				val relationPrevious = getRelationshipWith(previousNode)
-				val relationNext = getRelationshipWith(previousNode)
+				val relationNext = getRelationshipWith(nextNode)
 
 				val previousVec = Vec3i(
 					relationPrevious.keys.averageBy { getX(it).toDouble() }.roundToInt(),
@@ -48,7 +48,7 @@ abstract class JunctionNode<T: NodeManager, A: JunctionNode<T, B, A>, B: Junctio
 					relationNext.keys.averageBy { getZ(it).toDouble() }.roundToInt()
 				)
 
-				return previousVec.distance(nextVec).roundToInt()
+				return maxOf(1, previousVec.distance(nextVec).roundToInt())
 			}
 
 			// Rough distance
