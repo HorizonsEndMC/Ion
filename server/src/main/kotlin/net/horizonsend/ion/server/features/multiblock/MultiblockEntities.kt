@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock
 import com.destroystokyo.paper.event.server.ServerTickEndEvent
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -83,9 +84,11 @@ object MultiblockEntities : SLEventListener() {
 	}
 
 	fun loadFromSign(sign: Sign) {
-		val data = sign.persistentDataContainer.get(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData) ?: return
-		val origin = MultiblockEntity.getOriginFromSign(sign)
 		val multiblockType = MultiblockAccess.getFast(sign) as? EntityMultiblock<*> ?: return
+
+		val data = sign.persistentDataContainer.get(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData) ?: return migrateFromSign(sign, multiblockType)
+
+		val origin = MultiblockEntity.getOriginFromSign(sign)
 
 		// In case it moved
 		data.x = origin.x
@@ -94,8 +97,20 @@ object MultiblockEntities : SLEventListener() {
 		data.signOffset = sign.getFacing().oppositeFace
 
 		setMultiblockEntity(sign.world, origin.x, origin.y, origin.z) { manager ->
-			loadFromData(multiblockType, manager, data)
+			val new = loadFromData(multiblockType, manager, data)
+			if (new is LegacyMultiblockEntity) new.loadFromSign(sign)
+
+			new
 		}
+	}
+
+	private fun migrateFromSign(sign: Sign, type: EntityMultiblock<*>) {
+		val origin = MultiblockEntity.getOriginFromSign(sign)
+
+		val ionChunk = getIonChunk(sign.world, origin.x, origin.z) ?: return
+		val new = ionChunk.multiblockManager.handleNewMultiblockEntity(type, origin.x, origin.y, origin.z, sign.getFacing().oppositeFace)
+
+		if (new is LegacyMultiblockEntity) new.loadFromSign(sign)
 	}
 
 	@EventHandler
