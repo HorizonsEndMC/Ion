@@ -197,7 +197,7 @@ abstract class ContextMap {
      * @return The proposed interpolated decision (in cartesian cords)
      */
     fun maxDir(interpolate : Boolean = false): Vector {
-		if (interpolate) {
+		if (!interpolate) {
 			val i = bins.indices.maxBy { bins[it] }
 			return bindir[i].clone()
 		}
