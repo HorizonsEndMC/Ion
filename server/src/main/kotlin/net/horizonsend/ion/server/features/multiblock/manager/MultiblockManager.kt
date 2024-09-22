@@ -77,13 +77,13 @@ abstract class MultiblockManager(val log: Logger) {
 	/**
 	 * Add a new multiblock to the chunk data
 	 **/
-	fun handleNewMultiblockEntity(multiblock: EntityMultiblock<*>, x: Int, y: Int, z: Int, face: BlockFace) {
+	fun handleNewMultiblockEntity(multiblock: EntityMultiblock<*>, x: Int, y: Int, z: Int, face: BlockFace): MultiblockEntity? {
 		multiblock as Multiblock
 
 		// Abort process if one already exists, so it's not overwritten
 		if (isOccupied(x, y, z)) {
 			log.warn("Attempted to place a multiblock where one already existed!")
-			return
+			return null
 		}
 
 		// Create new empty data
@@ -97,6 +97,8 @@ abstract class MultiblockManager(val log: Logger) {
 
 		// Place the entity into the chunk
 		addMultiblockEntity(entity)
+
+		return entity
 	}
 
 	/**
