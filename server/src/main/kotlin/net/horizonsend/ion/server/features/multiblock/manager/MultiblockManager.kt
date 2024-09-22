@@ -98,6 +98,8 @@ abstract class MultiblockManager(val log: Logger) {
 		// Place the entity into the chunk
 		addMultiblockEntity(entity)
 
+		entity.saveToSign()
+
 		return entity
 	}
 
