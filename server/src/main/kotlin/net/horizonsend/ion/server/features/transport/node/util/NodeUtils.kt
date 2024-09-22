@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.popMaxByOrNull
+import org.bukkit.NamespacedKey
 import org.bukkit.block.BlockFace
 import java.util.LinkedList
 
@@ -108,8 +110,8 @@ fun <T : MultiNode<*, *>> separateNodePositions(node: T): List<Set<BlockKey>> {
 }
 
 
-enum class NetworkType {
-	POWER {
+enum class NetworkType(val namespacedKey: NamespacedKey) {
+	POWER(NamespacedKeys.POWER_TRANSPORT) {
 		override fun get(chunk: IonChunk): NodeManager {
 			return chunk.transportNetwork.powerNodeManager.network
 		}
@@ -118,7 +120,7 @@ enum class NetworkType {
 			TODO("Not yet implemented")
 		}
 	},
-	FLUID {
+	FLUID(NamespacedKeys.FLUID_TRANSPORT) {
 		override fun get(chunk: IonChunk): NodeManager {
 			return chunk.transportNetwork.powerNodeManager.network
 		}
@@ -133,4 +135,9 @@ enum class NetworkType {
 
 	abstract fun get(chunk: IonChunk): NodeManager
 	abstract fun get(ship: ActiveStarship): NodeManager
+
+	companion object {
+		private val byKey = entries.associateBy { it.namespacedKey }
+		operator fun get(key: NamespacedKey): NetworkType = byKey[key]!!
+	}
 }
