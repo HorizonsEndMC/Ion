@@ -58,6 +58,36 @@ class PowerInputNode(override val manager: PowerNodeManager) : SingleNode() {
 		}
 	}
 
+	fun distributePower(power: Int): Int {
+		val entities = getPoweredEntities().filterTo(mutableListOf()) { !it.storage.isFull() }
+		if (entities.isEmpty()) return power
+
+		// Skip math for most scenarios
+		if (entities.size == 1) { return entities.first().storage.addPower(power) }
+
+		var remainingPower = power
+
+		while (remainingPower > 0) {
+			if (entities.isEmpty()) break
+
+			val share = remainingPower / entities.size
+			val minRemaining = entities.minOf { it.storage.getRemainingCapacity() }
+			val distributed = minOf(minRemaining, share)
+
+			val iterator = entities.iterator()
+			while (iterator.hasNext()) {
+				val entity = iterator.next()
+
+				val r = entity.storage.addPower(distributed)
+				if (entity.storage.isFull()) iterator.remove()
+
+				remainingPower -= (distributed - r)
+			}
+		}
+
+		return remainingPower
+	}
+
 	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
 		return 0
 	}
