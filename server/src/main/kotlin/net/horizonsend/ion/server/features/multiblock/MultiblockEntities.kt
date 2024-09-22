@@ -111,6 +111,7 @@ object MultiblockEntities : SLEventListener() {
 		val new = ionChunk.multiblockManager.handleNewMultiblockEntity(type, origin.x, origin.y, origin.z, sign.getFacing().oppositeFace)
 
 		if (new is LegacyMultiblockEntity) new.loadFromSign(sign)
+		new?.saveToSign()
 	}
 
 	@EventHandler
