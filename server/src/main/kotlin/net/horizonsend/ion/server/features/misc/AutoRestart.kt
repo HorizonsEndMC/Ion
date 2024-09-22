@@ -39,7 +39,19 @@ object AutoRestart : IonServerComponent() {
 				sleep(1, TimeUnit.MINUTES)
 			}
 
-			for (i in 60 downTo 2) {
+			Bukkit.broadcast(ofChildren(text("The server is rebooting in ", YELLOW, BOLD), text("60", WHITE, BOLD), text(" seconds", YELLOW, BOLD)))
+			sleep(15, TimeUnit.SECONDS)
+
+			Bukkit.broadcast(ofChildren(text("The server is rebooting in ", YELLOW, BOLD), text("45", WHITE, BOLD), text(" seconds", YELLOW, BOLD)))
+			sleep(15, TimeUnit.SECONDS)
+
+			Bukkit.broadcast(ofChildren(text("The server is rebooting in ", YELLOW, BOLD), text("30", WHITE, BOLD), text(" seconds", YELLOW, BOLD)))
+			sleep(15, TimeUnit.SECONDS)
+
+			Bukkit.broadcast(ofChildren(text("The server is rebooting in ", YELLOW, BOLD), text("15", WHITE, BOLD), text(" seconds", YELLOW, BOLD)))
+			sleep(5, TimeUnit.SECONDS)
+
+			for (i in 10 downTo 2) {
 				Bukkit.broadcast(template(text("The server is rebooting in {0} seconds", YELLOW, BOLD), i))
 				sleep(1, TimeUnit.SECONDS)
 			}
