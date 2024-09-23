@@ -61,12 +61,12 @@ object GuiItems {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) = item.handleClick(clickType, player, event)
     }
 
-    open class PlayerHeadItem(val uuid: UUID, val name: String) : ControlItem<Gui>() {
+    open class PlayerHeadItem(val uuid: UUID, val name: String, val callback: () -> Unit = {}) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(skullItem(uuid, name))
         }
 
-        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) { }
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) { callback() }
     }
 }
 

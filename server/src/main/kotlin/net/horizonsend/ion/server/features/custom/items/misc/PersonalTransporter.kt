@@ -34,7 +34,6 @@ open class PersonalTransporter(
         event: PlayerInteractEvent?
     ) {
         if (livingEntity is Player) {
-            println("Attempting to open menu")
             openTeleportMenu(livingEntity)
         }
     }

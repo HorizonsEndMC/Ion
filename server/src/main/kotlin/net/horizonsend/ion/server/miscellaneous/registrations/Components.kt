@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.client.networking.serverbound.PacketHandler
+import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporterManager
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateRestrictions
@@ -208,4 +209,5 @@ val components: List<IonComponent> = listOf(
 	ClientDisplayEntities,
 	HudIcons,
 	Fleets,
+	PersonalTransporterManager,
 )
