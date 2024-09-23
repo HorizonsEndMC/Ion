@@ -24,7 +24,7 @@ import org.bukkit.block.BlockFace.NORTH
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode() {
+class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode(), PowerPathfindingNode {
 	override val type: NodeType = NodeType.POWER_FLOW_METER
 	constructor(network: PowerNodeManager, position: BlockKey, direction: BlockFace) : this(network) {
 		this.position = position
@@ -108,7 +108,7 @@ class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode() {
 	}
 
 	override fun onPlace(position: BlockKey) {
-		setupDisplayEntity()
+		runCatching { setupDisplayEntity() }
 
 		super.onPlace(position)
 	}
@@ -134,4 +134,6 @@ class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode() {
 	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
 		return 1
 	}
+
+	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> = cachedTransferable
 }
