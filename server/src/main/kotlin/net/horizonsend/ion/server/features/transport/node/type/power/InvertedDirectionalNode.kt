@@ -5,16 +5,12 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-class InvertedDirectionalNode(override val manager: PowerNodeManager) : SingleNode() {
+class InvertedDirectionalNode(override val manager: PowerNodeManager) : SingleNode(), PowerPathfindingNode {
 	override val type: NodeType = NodeType.POWER_INVERSE_DIRECTIONAL_NODE
-
-	constructor(network: PowerNodeManager, position: BlockKey) : this(network) {
-		this.position = position
-	}
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		if (node is EndRodNode) return false
@@ -32,4 +28,18 @@ class InvertedDirectionalNode(override val manager: PowerNodeManager) : SingleNo
 	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
 		return 1
 	}
+
+	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> {
+		// Since this is a single node, and the previous node must be transferable to this, it can't be a sponge.
+		// So there will likely only be a single relation to this
+		val direction = previous.getRelationshipWith(this).values
+		if (direction.isEmpty()) return cachedTransferable // just in case
+		val face = direction.first().offset
+
+		getForwardTransferable(face)?.let { return ArrayDeque(listOf(it)) }
+
+		return cachedTransferable
+	}
+
+	fun getForwardTransferable(incoming: BlockFace): TransportNode? = relationships.values.firstOrNull { it.offset == incoming.oppositeFace && it.canTransfer }?.other
 }

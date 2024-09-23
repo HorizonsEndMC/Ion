@@ -30,9 +30,7 @@ import java.util.function.Consumer
 /**
  * Represents a solar panel, or multiple
  **/
-class SolarPanelNode(
-	override val manager: PowerNodeManager
-) : MultiNode<SolarPanelNode, SolarPanelNode>() {
+class SolarPanelNode(override val manager: PowerNodeManager) : MultiNode<SolarPanelNode, SolarPanelNode>(), PowerPathfindingNode {
 	override val type: NodeType = NodeType.SOLAR_PANEL_NODE
 	/** The positions of extractors in this solar panel */
 	private val extractorPositions = ConcurrentHashMap.newKeySet<BlockKey>()
@@ -263,6 +261,8 @@ class SolarPanelNode(
 			return cell?.type == Material.DAYLIGHT_DETECTOR
 		}
 	}
+
+	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> = cachedTransferable
 
 	override fun toString(): String = "(SOLAR PANEL NODE:" +
 		" Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes, " +

@@ -53,11 +53,8 @@ object DataFixers: IonServerComponent() {
 			chunk.dataVersion = chunkDataFixer.dataVersion
 		}
 
+		return
 		SignFixerEntrance.iterateChunk(chunk)
-	}
-
-	fun handleMultiblockEntityLoad() {
-		//TODO
 	}
 
 	fun handleMultiblockSignLoad(sign: Sign) {
