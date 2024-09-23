@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManag
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
@@ -19,15 +18,8 @@ import org.bukkit.block.data.type.WallSign
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-class PowerInputNode(override val manager: PowerNodeManager) : SingleNode() {
+class PowerInputNode(override val manager: PowerNodeManager) : SingleNode(), PowerPathfindingNode {
 	override val type: NodeType = NodeType.POWER_INPUT_NODE
-	constructor(network: PowerNodeManager, position: BlockKey) : this(network) {
-		this.position = position
-	}
-
-	override fun isTransferableTo(node: TransportNode): Boolean {
-		return false
-	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
 		persistentDataContainer.set(NODE_COVERED_POSITIONS, PersistentDataType.LONG, position)
@@ -90,6 +82,14 @@ class PowerInputNode(override val manager: PowerNodeManager) : SingleNode() {
 
 	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
 		return 0
+	}
+
+	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> {
+		return ArrayDeque(0) // Can't transfer to anything
+	}
+
+	override fun isTransferableTo(node: TransportNode): Boolean {
+		return false
 	}
 
 	override fun toString(): String = "POWER INPUT NODE. Bound to ${getPoweredEntities().joinToString { it.toString() }}"
