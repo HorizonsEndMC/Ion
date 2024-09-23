@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.node.util
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.type.power.PowerPathfindingNode
 import kotlin.math.roundToInt
 
 inline fun <reified T: TransportNode> getNetworkDestinations(origin: TransportNode, check: (T) -> Boolean): ObjectOpenHashSet<T> {
@@ -40,9 +41,7 @@ fun getIdealPath(from: TransportNode, to: TransportNode): Array<TransportNode>? 
 		iterations++
 		val current = queue.minBy { it.f }
 
-		if (current.node == to) {
-			return current.buildPath()
-		}
+		if (current.node == to) return current.buildPath()
 
 		queue.remove(current)
 		visited.add(current)
@@ -68,7 +67,11 @@ fun getIdealPath(from: TransportNode, to: TransportNode): Array<TransportNode>? 
 
 // Wraps neighbor nodes in a data class to store G and F values for pathfinding. Should probably find a better solution
 private fun getNeighbors(parent: PathfindingNodeWrapper): Array<PathfindingNodeWrapper> {
-	val transferable = parent.node.cachedTransferable
+	val parentParent = parent.parent
+	val transferable = if (parentParent != null && parent.node is PowerPathfindingNode) {
+		parent.node.getNextNodes(parentParent.node)
+	} else parent.node.cachedTransferable
+
 	return Array(transferable.size) {
 		val neighbor = transferable[it]
 
