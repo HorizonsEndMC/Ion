@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.gui.custom.item
 
+import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporterManager
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -44,8 +45,10 @@ class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
         // populate player list cache
         playerList.addAll(Bukkit.getOnlinePlayers())
 
-        for (player in playerList) {
-            val button = GuiItems.PlayerHeadItem(player.uniqueId, player.name)
+        for (otherPlayer in playerList) {
+            val button = GuiItems.PlayerHeadItem(otherPlayer.uniqueId, otherPlayer.name) {
+                PersonalTransporterManager.addTpRequest(player, otherPlayer)
+            }
             gui.addContent(button)
 
             for (i in 1..8) {
