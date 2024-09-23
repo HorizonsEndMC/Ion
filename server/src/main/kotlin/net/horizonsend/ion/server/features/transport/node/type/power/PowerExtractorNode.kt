@@ -11,7 +11,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
 
-class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode() {
+class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(), PowerPathfindingNode {
 	override val type: NodeType = NodeType.POWER_EXTRACTOR_NODE
 
 	constructor(network: PowerNodeManager, position: BlockKey) : this(network) {
@@ -101,5 +101,7 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode() 
 	override fun toString(): String {
 		return "Extractor. found, can trasnsfer: ${getTransferPower()}"
 	}
+
+	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> = cachedTransferable
 }
 
