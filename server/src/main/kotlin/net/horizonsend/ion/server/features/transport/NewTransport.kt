@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.concurrent.fixedRateTimer
 
-object NewTransport : IonServerComponent() {
+object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick to wait on the full server startup. */) {
 	private val transportManagers = ConcurrentHashMap.newKeySet<TransportManager>()
 
 	lateinit var monitorThread: Timer
