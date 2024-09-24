@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
+import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -14,9 +15,11 @@ import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Display.TextDisplay
 import net.minecraft.world.entity.EntityType
+import org.bukkit.Axis.Y
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.Color
+import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.v1_20_R3.CraftServer
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
 import org.bukkit.util.Transformation
@@ -73,7 +76,7 @@ abstract class Display(
 	}
 
 	fun resetPosition(parent: TextDisplayHandler) {
-		val rightFace = parent.facing.rightFace
+		val rightFace = if (parent.facing.axis == Y) BlockFace.NORTH else parent.facing.rightFace
 
 		val offsetX = rightFace.modX * offsetRight + parent.facing.modX * offsetBack
 		val offsetY = offsetUp
