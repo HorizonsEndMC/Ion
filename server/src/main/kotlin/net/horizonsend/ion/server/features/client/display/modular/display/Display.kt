@@ -60,7 +60,7 @@ abstract class Display(
 	fun setParent(parent: TextDisplayHandler) {
 		this.handler = parent
 
-		val rightFace = parent.facing.rightFace
+		val rightFace = if (parent.facing.axis == Y) BlockFace.NORTH else parent.facing.rightFace
 
 		val offsetX = rightFace.modX * offsetRight + parent.facing.modX * offsetBack
 		val offsetY = offsetUp
