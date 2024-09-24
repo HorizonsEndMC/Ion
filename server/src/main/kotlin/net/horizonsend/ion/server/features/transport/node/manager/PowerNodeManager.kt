@@ -48,7 +48,12 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 
 		val destinations: ObjectOpenHashSet<PowerInputNode> = getPowerInputs(extractorNode)
 		val transferred = extractorNode.getTransferPower()
-		runPowerTransfer(extractorNode, destinations.toList(), transferred)
+
+		val remainder = runPowerTransfer(extractorNode, destinations.toMutableList(), transferred)
+		if (transferred == remainder) {
+
+		}
+
 		extractorNode.markTicked()
 	}
 
@@ -57,19 +62,21 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 		if (powerCheck == 0) return@submit
 
 		val destinations: ObjectOpenHashSet<PowerInputNode> = getPowerInputs(solarPanelNode)
-		runPowerTransfer(solarPanelNode, destinations.toList(), powerCheck)
+		runPowerTransfer(solarPanelNode, destinations.toMutableList(), powerCheck)
 	}
 }
 
 // These methods are outside the class for speed
 
-private fun getPowerInputs(origin: TransportNode) = getNetworkDestinations<PowerInputNode>(origin) { it.isCalling() }
+fun getPowerInputs(origin: TransportNode) = getNetworkDestinations<PowerInputNode>(origin) { it.isCalling() }
 
 /**
  * Runs the power transfer from the source to the destinations. pending rewrite
  **/
-private fun runPowerTransfer(source: TransportNode, destinations: List<PowerInputNode>, availableTransferPower: Int): Int {
+private fun runPowerTransfer(source: TransportNode, destinations: MutableList<PowerInputNode>, availableTransferPower: Int): Int {
+	destinations.removeAll(source.getTransferableNodes().toSet())
 	if (destinations.isEmpty()) return availableTransferPower
+
 	val numDestinations = destinations.size
 
 	var maximumResistance: Double = -1.0
