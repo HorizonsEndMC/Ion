@@ -49,7 +49,7 @@ fun getIdealPath(from: TransportNode, to: TransportNode): Array<TransportNode>? 
 
 	queueAdd(PathfindingNodeWrapper(from, null, 0, 0))
 
-	val visited = ObjectOpenHashSet<PathfindingNodeWrapper>()
+	val visited = IntOpenHashSet()
 
 	// Safeguard
 	var iterations = 0
@@ -61,10 +61,10 @@ fun getIdealPath(from: TransportNode, to: TransportNode): Array<TransportNode>? 
 		if (current.node == to) return current.buildPath()
 
 		queueRemove(current)
-		visited.add(current)
+		visited.add(current.node.hashCode())
 
 		for (neighbor in getNeighbors(current)) {
-			if (visited.contains(neighbor)) continue
+			if (visited.contains(neighbor.node.hashCode())) continue
 			neighbor.f = (neighbor.g + getHeuristic(neighbor, to))
 
 			if (queueSet.contains(neighbor.node.hashCode())) {
@@ -83,7 +83,7 @@ fun getIdealPath(from: TransportNode, to: TransportNode): Array<TransportNode>? 
 }
 
 // Wraps neighbor nodes in a data class to store G and F values for pathfinding. Should probably find a better solution
-private fun getNeighbors(parent: PathfindingNodeWrapper): Array<PathfindingNodeWrapper> {
+fun getNeighbors(parent: PathfindingNodeWrapper): Array<PathfindingNodeWrapper> {
 	val parentParent = parent.parent
 	val transferable = if (parentParent != null && parent.node is PowerPathfindingNode) {
 		parent.node.getNextNodes(parentParent.node)
