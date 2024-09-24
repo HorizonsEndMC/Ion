@@ -123,6 +123,8 @@ abstract class Display(
 		update()
 	}
 
+	private val distSquared = (50.0 * 50.0)
+
 	fun update() {
 		setText(getText())
 

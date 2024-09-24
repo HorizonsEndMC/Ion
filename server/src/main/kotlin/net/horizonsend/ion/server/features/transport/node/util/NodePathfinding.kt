@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.transport.node.util
 
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerPathfindingNode
+import java.util.PriorityQueue
 import kotlin.math.roundToInt
 
 inline fun <reified T: TransportNode> getNetworkDestinations(origin: TransportNode, check: (T) -> Boolean): ObjectOpenHashSet<T> {
@@ -30,11 +32,26 @@ inline fun <reified T: TransportNode> getNetworkDestinations(origin: TransportNo
  * Uses the A* algorithm to find the shortest available path between these two nodes.
  **/
 fun getIdealPath(from: TransportNode, to: TransportNode): Array<TransportNode>? {
-	val queue = ArrayDeque<PathfindingNodeWrapper>(1)
-	queue.add(PathfindingNodeWrapper(from, null, 0, 0))
+	// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
+	val queue = PriorityQueue<PathfindingNodeWrapper> { o1, o2 -> o2.f.compareTo(o1.f) }
+	// The hash set here is to speed up the .contains() check further down the road, which is slow with the queue.
+	val queueSet = IntOpenHashSet()
 
-	val visited = ArrayDeque<PathfindingNodeWrapper>()
+	fun queueAdd(wrapper: PathfindingNodeWrapper) {
+		queue.add(wrapper)
+		queueSet.add(wrapper.node.hashCode())
+	}
 
+	fun queueRemove(wrapper: PathfindingNodeWrapper) {
+		queue.remove(wrapper)
+		queueSet.remove(wrapper.node.hashCode())
+	}
+
+	queueAdd(PathfindingNodeWrapper(from, null, 0, 0))
+
+	val visited = ObjectOpenHashSet<PathfindingNodeWrapper>()
+
+	// Safeguard
 	var iterations = 0
 
 	while (queue.isNotEmpty() && iterations < 150) {
@@ -43,21 +60,21 @@ fun getIdealPath(from: TransportNode, to: TransportNode): Array<TransportNode>? 
 
 		if (current.node == to) return current.buildPath()
 
-		queue.remove(current)
+		queueRemove(current)
 		visited.add(current)
 
 		for (neighbor in getNeighbors(current)) {
 			if (visited.contains(neighbor)) continue
 			neighbor.f = (neighbor.g + getHeuristic(neighbor, to))
 
-			val existingNeighbor = queue.firstOrNull { it.node === neighbor.node }
-			if (existingNeighbor != null) {
+			if (queueSet.contains(neighbor.node.hashCode())) {
+				val existingNeighbor = queue.first { it.node === neighbor.node }
 				if (neighbor.g < existingNeighbor.g) {
 					existingNeighbor.g = neighbor.g
 					existingNeighbor.parent = neighbor.parent
 				}
 			} else {
-				queue.add(neighbor)
+				queueAdd(neighbor)
 			}
 		}
 	}
@@ -78,7 +95,7 @@ private fun getNeighbors(parent: PathfindingNodeWrapper): Array<PathfindingNodeW
 		PathfindingNodeWrapper(
 			node = neighbor,
 			parent = parent,
-			g = parent.g + parent.node.getDistance(neighbor).roundToInt(),
+			g = parent.g + parent.node.getDistance(neighbor).toInt(),
 			f = 1
 		)
 	}
