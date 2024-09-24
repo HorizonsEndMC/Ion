@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.features.client.display.modular
 import net.horizonsend.ion.server.features.client.display.modular.display.Display
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import org.bukkit.Axis
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -48,7 +50,7 @@ class TextDisplayHandler(
 	}
 
 	fun getLocation(): Location {
-		val rightFace = facing.rightFace
+		val rightFace = if (facing.axis == Axis.Y) BlockFace.NORTH else facing.rightFace
 
 		val offsetX = rightFace.modX * offsetRight + facing.modX * offsetForward
 		val offsetY = offsetUp
