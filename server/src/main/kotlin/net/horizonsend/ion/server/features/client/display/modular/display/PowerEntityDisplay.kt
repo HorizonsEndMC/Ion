@@ -22,11 +22,11 @@ class PowerEntityDisplay(
 	}
 
 	override fun register() {
-		multiblockEntity.storage.registerUpdateHandler(updateHandler)
+//		multiblockEntity.storage.registerUpdateHandler(updateHandler)
 	}
 
 	override fun deRegister() {
-		multiblockEntity.storage.removeUpdateHandler(updateHandler)
+//		multiblockEntity.storage.removeUpdateHandler(updateHandler)
 	}
 
 	override fun getText(): Component {
