@@ -78,6 +78,7 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 
 	fun refreshTransferCache() {
 		cachedTransferable = ArrayDeque(getTransferableNodes())
+		relationCache.clear()
 	}
 
 	/**
@@ -132,8 +133,10 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	 **/
 	abstract fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int
 
+	private val relationCache = mutableMapOf<TransportNode, Map<BlockKey, NodeRelationship>>()
+
 	fun getRelationshipWith(other: TransportNode): Map<BlockKey, NodeRelationship> {
-		return relationships.filter { it.value.other == other }
+		return relationCache.getOrPut(other) { relationships.filter { it.value.other == other } }
 	}
 
 	/**

@@ -1,12 +1,16 @@
 package net.horizonsend.ion.server.features.transport.node.type.power
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.getPowerInputs
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
@@ -14,10 +18,8 @@ import kotlin.math.roundToInt
 class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(), PowerPathfindingNode {
 	override val type: NodeType = NodeType.POWER_EXTRACTOR_NODE
 
-	constructor(network: PowerNodeManager, position: BlockKey) : this(network) {
-		this.position = position
-		network.extractors[position] = this
-	}
+	var tickNumber: Int = 0
+	var tickInterval: Int = 1
 
 	/*
 	 * The extractor node should be allowed to transfer into any regular node.
@@ -71,8 +73,15 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(),
 	 * Returns the amount that couldn't be removed.
 	 **/
 	fun drawPower(amount: Int): Int {
-		val entities = relationships.mapNotNull { (it.value.other as? PowerInputNode)?.getPoweredEntities()?.randomOrNull() } //TODO
+		val entities = mutableListOf<PoweredMultiblockEntity>()
 
+		for (relation in relationships) {
+			val node = relation.value.other
+			if (node !is PowerInputNode) continue
+			entities.addAll(node.getPoweredEntities())
+		}
+
+		/*
 		var remaining = amount
 
 		while (remaining > 0) {
@@ -89,6 +98,11 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(),
 			}
 		}
 
+		*/
+
+		val entity = entities.randomOrNull() ?: return amount
+		val remaining = entity.storage.removePower(amount)
+
 		return remaining
 	}
 
@@ -99,7 +113,9 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(),
 	fun getSourcePool() = relationships.mapNotNull { it.value.other as? PowerInputNode }.flatMap { it.getPoweredEntities() }
 
 	override fun toString(): String {
-		return "Extractor. found, can trasnsfer: ${getTransferPower()}"
+		val destinations = getPowerInputs(this)
+		debugAudience.highlightBlocks(destinations.map { it.getCenter() }, 30L)
+		return "Extractor. found, can trasnsfer: ${getTransferPower()}, numDestinations ${destinations.size}"
 	}
 
 	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> = cachedTransferable

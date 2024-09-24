@@ -4,6 +4,7 @@ import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
+import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.type.power.SolarPanelNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -19,6 +20,16 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 	var axis by Delegates.notNull<Axis>()
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
+		// This is probably very laggy
+		val endPoints = positions.flatMap { pos ->
+			axis.faces.toList().map { face -> getRelative(pos, face) }
+		}.filterNot { positions.contains(it) }
+
+		when (node) {
+			is MultiNode<*, *> -> if (endPoints.none { node.positions.contains(it) }) return false
+			is SingleNode -> if (!endPoints.contains(node.position)) return false
+		}
+
 		return node !is PowerExtractorNode && node !is SolarPanelNode
 	}
 
