@@ -12,12 +12,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.faces
 import org.bukkit.Axis
+import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
 abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<T, A, B>>(override val manager: T) : MultiNode<B, A>() {
 	var axis by Delegates.notNull<Axis>()
+	override val relationOffsets: Set<BlockFace> get() = axis.faces.toList().toSet()
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		// This is probably very laggy
@@ -31,17 +33,6 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 		}
 
 		return node !is PowerExtractorNode && node !is SolarPanelNode
-	}
-
-	override fun buildRelations(position: BlockKey) {
-		for (offset in axis.faces.toList()) {
-			val offsetKey = getRelative(position, offset, 1)
-			val neighborNode = manager.getNode(offsetKey) ?: continue
-
-			if (this == neighborNode) continue
-
-			addRelationship(position, neighborNode, offset)
-		}
 	}
 
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
@@ -80,5 +71,5 @@ abstract class LinearNode<T: NodeManager, A: LinearNode<T, B, A>, B: LinearNode<
 		return this
 	}
 
-	override fun toString(): String = "(END ROD NODE: Axis: $axis; ${positions.size} positions; ${relationships.size} relations, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
+	override fun toString(): String = "(END ROD NODE: Axis: $axis; ${positions.size} positions; ${relationHolder.getAllOthers().size} relations, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes)"
 }
