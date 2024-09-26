@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.transport.node.type.power.PowerExtrac
 import net.horizonsend.ion.server.features.transport.node.util.NetworkType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component.text
@@ -106,21 +107,24 @@ object IonChunkCommand : SLCommand() {
 	@CommandCompletion("power") /* |item|gas") */
 	fun rebuildNodes(sender: Player, network: NetworkType) {
 		val ionChunk = sender.chunk.ion()
-		val grid = network.get(ionChunk)
 
-		grid.nodes.clear()
+		Tasks.async {
+			val grid = network.get(ionChunk)
 
-		when (grid) {
-			is PowerNodeManager -> {
-				grid.extractors.clear()
-				grid.solarPanels.clear()
+			grid.nodes.clear()
+
+			when (grid) {
+				is PowerNodeManager -> {
+					grid.extractors.clear()
+					grid.solarPanels.clear()
+				}
 			}
-		}
 
-		for (x in ionChunk.originX ..ionChunk.originX + 15) {
-			for (z in ionChunk.originZ..ionChunk.originZ + 15) {
-				for (y in ionChunk.world.minHeight until ionChunk.world.maxHeight) {
-					grid.createNodeFromBlock(sender.world.getBlockAt(x, y, z))
+			for (x in ionChunk.originX ..ionChunk.originX + 15) {
+				for (z in ionChunk.originZ..ionChunk.originZ + 15) {
+					for (y in ionChunk.world.minHeight until ionChunk.world.maxHeight) {
+						grid.createNodeFromBlock(sender.world.getBlockAt(x, y, z))
+					}
 				}
 			}
 		}
