@@ -85,7 +85,7 @@ class PowerInputNode(override val manager: PowerNodeManager) : SingleNode(), Pow
 		return 0
 	}
 
-	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> {
+	override fun getNextNodes(previous: TransportNode, destination: TransportNode?): ArrayDeque<TransportNode> {
 		return ArrayDeque(0) // Can't transfer to anything
 	}
 

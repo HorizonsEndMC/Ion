@@ -6,5 +6,5 @@ interface PowerPathfindingNode {
 	/**
 	 * For use in pathfinding. When entering from previous node, get the list of available next nodes. Mostly used by the flood fill.
 	 **/
-	fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode>
+	fun getNextNodes(previous: TransportNode, destination: TransportNode?): ArrayDeque<TransportNode>
 }
