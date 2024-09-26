@@ -4,13 +4,14 @@ import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
+import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Represents a single node, or step, in transport transportNetwork
@@ -21,50 +22,19 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	override val persistentDataType: Companion get() = Companion
 	abstract val type: NodeType
 
-	/** Stored relationships between nodes **/
-	val relationships: ConcurrentHashMap<BlockKey, NodeRelationship> = ConcurrentHashMap()
+	val relationHolder = RelationHolder(this)
 
 	/**
 	 * Break all relations between this node and others
 	 **/
-	fun clearRelations() {
-		relationships.values.forEach {
-			it.breakUp()
-		}
-	}
+	fun clearRelations() = relationHolder.clear()
 
-	/**
-	 * Create a relationship between this node and the provided node
-	 *
-	 * If neither side can transfer, a relation will not be created
-	 **/
-	fun addRelationship(point: BlockKey, other: TransportNode, offset: BlockFace) {
-		// Do not add duplicates
-		val existing = relationships[point]
-		if (existing?.other == other) return
+	fun removeRelationship(other: TransportNode) = relationHolder.removeRelationship(other)
 
-		NodeRelationship.create(point, this, other, offset)
-		other.neighborChanged(this)
-	}
+	fun removeRelationships(at: BlockKey) = relationHolder.removeAll(at)
 
-	fun removeRelationship(other: TransportNode) {
-		// Handle duplicate cases
-		val toOther = relationships.filter { it.value.other == other }
-
-		toOther.keys.forEach { relationships.remove(it) }
-
-		// Notify of neighbor change
-		other.neighborChanged(this)
-	}
-
-	fun removeRelationship(at: BlockKey) {
-		// Handle duplicate cases
-		val toOther = relationships[at]
-		toOther?.breakUp()
-
-		// Notify of neighbor change
-		toOther?.other?.neighborChanged(this)
-	}
+	fun addRelationship(other: TransportNode, holderPosition: BlockKey, otherPosition: BlockKey, nodeTwoOffset: BlockFace) =
+		relationHolder.addRelationship(other, holderPosition, otherPosition, nodeTwoOffset)
 
 	/**
 	 * Returns whether this node may transport to the provided node
@@ -85,9 +55,9 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	 * Gets the distinct nodes this can transfer to
 	 **/
 	fun getTransferableNodes(): Collection<TransportNode> {
-		return relationships.mapNotNullTo(mutableSetOf()) { relation ->
+		return relationHolder.getAllOthers().mapNotNullTo(mutableSetOf()) { relation ->
 			// The other side of the relation, only if transfer is possible between this node and it. Double check if it is dead as well
-			relation.value.other.takeIf { other -> relation.value.canTransfer && !other.isDead }
+			relation.other.takeIf { relation.canTransfer && !it.isDead }
 		}
 	}
 
@@ -114,9 +84,24 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	open fun handlePositionRemoval(position: BlockKey) {}
 
 	/**
+	 * The directions in which to try ro build relations
+	 **/
+	protected open val relationOffsets = ADJACENT_BLOCK_FACES
+
+	/**
 	 * Builds relations between this node and transferrable nodes
 	 **/
-	abstract fun buildRelations(position: BlockKey)
+	open fun buildRelations(position: BlockKey) {
+		for (offset in relationOffsets) {
+			val offsetKey = getRelative(position, offset, 1)
+			val neighborNode = manager.getNode(offsetKey) ?: continue
+
+			if (this == neighborNode) continue
+
+			// Add a relationship, if one should be added
+			addRelationship(neighborNode, position, offsetKey, offset)
+		}
+	}
 
 	/**
 	 * Notify a node if a neighbor changed
@@ -136,7 +121,15 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 	private val relationCache = mutableMapOf<TransportNode, Map<BlockKey, NodeRelationship>>()
 
 	fun getRelationshipWith(other: TransportNode): Map<BlockKey, NodeRelationship> {
-		return relationCache.getOrPut(other) { relationships.filter { it.value.other == other } }
+		return relationCache.getOrPut(other) {
+			val cache = mutableMapOf<BlockKey, NodeRelationship>()
+			for ((key, relations) in relationHolder.raw()) {
+				if (!relationHolder.hasRelationAtWith(key, other)) continue
+				cache[key] = relations.firstOrNull { it.other == other } ?: continue
+			}
+
+			cache
+		}
 	}
 
 	/**
