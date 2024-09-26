@@ -60,17 +60,6 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 		new.positions.forEach { new.buildRelations(it) }
 	}
 
-	override fun buildRelations(position: BlockKey) {
-		for (offset in ADJACENT_BLOCK_FACES) {
-			val offsetKey = getRelative(position, offset, 1)
-			val neighborNode = manager.getNode(offsetKey) ?: continue
-
-			if (this == neighborNode) continue
-
-			addRelationship(position, neighborNode, offset)
-		}
-	}
-
 	fun rebuildRelations() {
 		clearRelations()
 
@@ -89,7 +78,7 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 
 		// Remove the position from this node
 		positions.remove(position)
-		removeRelationship(position)
+		removeRelationships(position)
 
 		if (separateNode(this)) {
 			positions.clear()
@@ -125,8 +114,9 @@ abstract class MultiNode<Self: MultiNode<Self, Z>, Z: MultiNode<Z, Self>> : Tran
 
 		positions.forEach {
 			newNode.addPosition(it)
-			newNode.buildRelations(it)
 		}
+
+		newNode.rebuildRelations()
 
 		return newNode
 	}

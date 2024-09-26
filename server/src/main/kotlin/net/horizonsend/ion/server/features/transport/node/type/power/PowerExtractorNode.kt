@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.transport.node.type.power
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
@@ -68,49 +67,49 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(),
 		super.handlePositionRemoval(position)
 	}
 
-	/**
-	 * Attempts to draw power from connected inputs.
-	 * Returns the amount that couldn't be removed.
-	 **/
-	fun drawPower(amount: Int): Int {
-		val entities = mutableListOf<PoweredMultiblockEntity>()
-
-		for (relation in relationships) {
-			val node = relation.value.other
-			if (node !is PowerInputNode) continue
-			entities.addAll(node.getPoweredEntities())
-		}
-
-		/*
-		var remaining = amount
-
-		while (remaining > 0) {
-			val available = entities.filterNot { it.storage.isEmpty() }
-			if (available.isEmpty()) break
-
-			val minPower = entities.minOf { it.storage.getPower() }
-			val idealShare = remaining / available.size
-			val toRemove = minOf(idealShare, minPower)
-
-			available.forEach {
-				val r = it.storage.removePower(toRemove)
-				remaining -= (toRemove - r)
-			}
-		}
-
-		*/
-
-		val entity = entities.randomOrNull() ?: return amount
-		val remaining = entity.storage.removePower(amount)
-
-		return remaining
-	}
+//	/**
+//	 * Attempts to draw power from connected inputs.
+//	 * Returns the amount that couldn't be removed.
+//	 **/
+//	fun drawPower(amount: Int): Int {
+//		val entities = mutableListOf<PoweredMultiblockEntity>()
+//
+//		for (relation in relationships) {
+//			val node = relation.value.other
+//			if (node !is PowerInputNode) continue
+//			entities.addAll(node.getPoweredEntities())
+//		}
+//
+//		/*
+//		var remaining = amount
+//
+//		while (remaining > 0) {
+//			val available = entities.filterNot { it.storage.isEmpty() }
+//			if (available.isEmpty()) break
+//
+//			val minPower = entities.minOf { it.storage.getPower() }
+//			val idealShare = remaining / available.size
+//			val toRemove = minOf(idealShare, minPower)
+//
+//			available.forEach {
+//				val r = it.storage.removePower(toRemove)
+//				remaining -= (toRemove - r)
+//			}
+//		}
+//
+//		*/
+//
+//		val entity = entities.randomOrNull() ?: return amount
+//		val remaining = entity.storage.removePower(amount)
+//
+//		return remaining
+//	}
 
 	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
 		return 0
 	}
 
-	fun getSourcePool() = relationships.mapNotNull { it.value.other as? PowerInputNode }.flatMap { it.getPoweredEntities() }
+	fun getSourcePool() = relationHolder.getAllOthers().mapNotNull { it.other as? PowerInputNode }.flatMap { it.getPoweredEntities() }
 
 	override fun toString(): String {
 		val destinations = getPowerInputs(this)

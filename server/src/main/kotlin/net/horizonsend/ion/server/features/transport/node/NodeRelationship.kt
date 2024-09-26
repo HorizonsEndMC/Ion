@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node
 
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.block.BlockFace
 
 /**
@@ -21,18 +20,6 @@ data class NodeRelationship(
 		other.removeRelationship(holder)
 		holder.refreshTransferCache()
 		other.refreshTransferCache()
-	}
-
-	companion object {
-		fun create(point: BlockKey, holder: TransportNode, other: TransportNode, nodeTwoOffset: BlockFace) {
-			val holderToOther = holder.isTransferableTo(other)
-			val otherToHolder = other.isTransferableTo(holder)
-
-			holder.relationships[point] = NodeRelationship(holder, other, nodeTwoOffset, holderToOther)
-			other.relationships[point] = NodeRelationship(other, holder, nodeTwoOffset.oppositeFace, otherToHolder)
-			holder.refreshTransferCache()
-			other.refreshTransferCache()
-		}
 	}
 }
 

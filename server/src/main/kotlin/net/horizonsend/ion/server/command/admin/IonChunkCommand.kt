@@ -144,6 +144,16 @@ object IonChunkCommand : SLCommand() {
 		sender.information("Targeted node: ${grid.nodes[key]}")
 	}
 
+	@Subcommand("get node look relations")
+	fun getNodeRelations(sender: Player, network: NetworkType) {
+		val targeted = sender.getTargetBlock(null, 10)
+		val ionChunk = targeted.chunk.ion()
+		val grid = network.get(ionChunk)
+		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
+
+		sender.information("${grid.nodes[key]?.getTransferableNodes()?.joinToString { it.javaClass.simpleName }}")
+	}
+
 	@Subcommand("tick extractor")
 	fun onTick(sender: Player) {
 		val targeted = sender.getTargetBlock(null, 10)
