@@ -52,10 +52,11 @@ class PowerInputNode(override val manager: PowerNodeManager) : SingleNode(), Pow
 
 	fun distributePower(power: Int): Int {
 		val entities = getPoweredEntities().filterTo(mutableListOf()) { !it.storage.isFull() }
+
 		if (entities.isEmpty()) return power
 
 		// Skip math for most scenarios
-		if (entities.size == 1) { return entities.first().storage.addPower(power) }
+		if (entities.size == 1) return entities.first().storage.addPower(power)
 
 		var remainingPower = power
 

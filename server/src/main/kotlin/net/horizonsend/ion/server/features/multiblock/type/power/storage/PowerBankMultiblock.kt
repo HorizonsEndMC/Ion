@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.power.storage
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers.newMultiblockSignOverlay
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
@@ -10,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerSto
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -20,10 +22,12 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
 
-abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredMultiblock<PowerBankMultiblock.PowerBankEntity> {
+abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredMultiblock<PowerBankMultiblock.PowerBankEntity>, InteractableMultiblock {
 	abstract val tierMaterial: Material
 	override val name = "powerbank"
 
@@ -84,6 +88,11 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 				x(+1).anyGlassPane()
 			}
 		}
+	}
+
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		val b = getMultiblockEntity(sign) ?: return
+		player.information("b: ${b.storage.getPower()}")
 	}
 
 	override fun createEntity(
