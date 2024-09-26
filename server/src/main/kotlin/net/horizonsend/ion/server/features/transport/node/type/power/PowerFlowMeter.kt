@@ -135,5 +135,5 @@ class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode(), Pow
 		return 1
 	}
 
-	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> = cachedTransferable
+	override fun getNextNodes(previous: TransportNode, destination: TransportNode?): ArrayDeque<TransportNode> = cachedTransferable
 }
