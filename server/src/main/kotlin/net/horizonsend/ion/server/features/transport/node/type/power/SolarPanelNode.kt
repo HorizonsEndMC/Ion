@@ -262,7 +262,7 @@ class SolarPanelNode(override val manager: PowerNodeManager) : MultiNode<SolarPa
 		}
 	}
 
-	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> = cachedTransferable
+	override fun getNextNodes(previous: TransportNode, destination: TransportNode?): ArrayDeque<TransportNode> = cachedTransferable
 
 	override fun toString(): String = "(SOLAR PANEL NODE:" +
 		" Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes, " +
