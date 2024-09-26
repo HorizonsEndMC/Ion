@@ -20,7 +20,7 @@ class SpongeNode(network: PowerNodeManager) : JunctionNode<PowerNodeManager, Spo
 		manager.nodeFactory.addJunctionNode<SpongeNode>(position, type, handleRelationships = false)
 	}
 
-	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> = cachedTransferable
+	override fun getNextNodes(previous: TransportNode, destination: TransportNode?): ArrayDeque<TransportNode> = cachedTransferable
 
 	override fun toString(): String = "(SPONGE NODE: ${positions.size} positions, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }} nodes) location = ${toVec3i(positions.random())}"
 }
