@@ -4,8 +4,10 @@ import java.util.concurrent.ConcurrentHashMap
 
 class PowerStorage(val holder: PoweredMultiblockEntity, amount: Int, val capacity: Int) {
 	private var backingPower = amount
+		@Synchronized get
+		@Synchronized set
 
-	val mutex = Any()
+	private val mutex = Any()
 
 	fun isEmpty() = getPower() <= 0
 	fun isFull() = getPower() >= capacity
@@ -29,7 +31,7 @@ class PowerStorage(val holder: PoweredMultiblockEntity, amount: Int, val capacit
 	 **/
 	fun addPower(amount: Int): Int {
 		val newAmount = synchronized(mutex) {
-			val newAmount = getPower() + amount
+			val newAmount = backingPower + amount
 			val corrected = newAmount.coerceIn(0, capacity)
 
 			backingPower = corrected
@@ -46,7 +48,7 @@ class PowerStorage(val holder: PoweredMultiblockEntity, amount: Int, val capacit
 	 **/
 	fun removePower(amount: Int): Int {
 		val newAmount = synchronized(mutex) {
-			val newAmount = getPower() - amount
+			val newAmount = backingPower - amount
 			val corrected = newAmount.coerceIn(0, capacity)
 
 			backingPower = corrected
