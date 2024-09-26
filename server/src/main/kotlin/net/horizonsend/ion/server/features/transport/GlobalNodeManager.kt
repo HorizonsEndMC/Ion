@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
@@ -13,6 +14,8 @@ import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockPistonExtendEvent
+import org.bukkit.event.block.BlockPistonRetractEvent
 import org.bukkit.event.block.BlockPlaceEvent
 
 object GlobalNodeManager : SLEventListener() {
@@ -26,16 +29,32 @@ object GlobalNodeManager : SLEventListener() {
 
 	@EventHandler
 	fun onBlockPlace(event: BlockPlaceEvent) {
-		val world = event.block.world
-
-		handleBlockChange(world, event.block)
+		handleBlockChange(event.block)
 	}
 
-	fun handleBlockChange(world: World, new: Block) {
+	@EventHandler
+	fun onPistonExtend(event: BlockPistonExtendEvent) {
+		// Delay 1 tick
+		Tasks.sync { event.blocks.forEach {
+			handleBlockRemoval(it.world, toBlockKey(it.x, it.y, it.z))
+			handleBlockChange(it)
+		}}
+	}
+
+	@EventHandler
+	fun onPistonRetract(event: BlockPistonRetractEvent) {
+		// Delay 1 tick
+		Tasks.sync { event.blocks.forEach {
+			handleBlockRemoval(it.world, toBlockKey(it.x, it.y, it.z))
+			handleBlockChange(it)
+		}}
+	}
+
+	fun handleBlockChange(new: Block) {
 		val chunkX = new.x.shr(4)
 		val chunkZ = new.z.shr(4)
 
-		val chunk = world.ion.getChunk(chunkX, chunkZ) ?: return
+		val chunk = new.world.ion.getChunk(chunkX, chunkZ) ?: return
 		chunk.transportNetwork.processBlockChange(new)
 	}
 
@@ -69,9 +88,9 @@ object GlobalNodeManager : SLEventListener() {
 		chunk.transportNetwork.refreshBlock(position)
 	}
 
-	fun handleBlockAdditions(world: World, newBlocks: Iterable<Block>) {
+	fun handleBlockAdditions(newBlocks: Iterable<Block>) {
 		for (new in newBlocks) {
-			handleBlockChange(world, new)
+			handleBlockChange(new)
 		}
 	}
 
