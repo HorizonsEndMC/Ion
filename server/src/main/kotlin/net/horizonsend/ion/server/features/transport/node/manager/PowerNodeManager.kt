@@ -42,19 +42,30 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 		solarPanels.forEach(::tickSolarPanel)
 	}
 
-	private fun tickExtractor(extractorNode: PowerExtractorNode) = NewTransport.executor.submit {
+	fun tickExtractor(extractorNode: PowerExtractorNode) = NewTransport.executor.submit {
 		val powerCheck = extractorNode.getTransferPower()
 		if (powerCheck == 0) return@submit
 
+		extractorNode.markTicked()
+
+		val source = extractorNode.getSourcePool().filterNot { it.storage.isEmpty() }.randomOrNull() ?: return@submit
+
 		val destinations: ObjectOpenHashSet<PowerInputNode> = getPowerInputs(extractorNode)
-		val transferred = extractorNode.getTransferPower()
+		destinations.removeAll(extractorNode.getTransferableNodes().filterIsInstanceTo(ObjectOpenHashSet()))
 
-		val remainder = runPowerTransfer(extractorNode, destinations.toMutableList(), transferred)
+		if (destinations.isEmpty()) return@submit
+
+		val transferred = minOf(source.storage.getPower(), powerCheck)
+		val notRemoved = source.storage.removePower(transferred)
+		val remainder = runPowerTransfer(extractorNode, destinations.toMutableList(), (transferred - notRemoved))
+
 		if (transferred == remainder) {
-
+			//TODO skip growing number of ticks if nothing to do
 		}
 
-		extractorNode.markTicked()
+		if (remainder > 0) {
+			source.storage.addPower(remainder)
+		}
 	}
 
 	private fun tickSolarPanel(solarPanelNode: SolarPanelNode) = NewTransport.executor.submit {
@@ -73,17 +84,16 @@ fun getPowerInputs(origin: TransportNode) = getNetworkDestinations<PowerInputNod
 /**
  * Runs the power transfer from the source to the destinations. pending rewrite
  **/
-private fun runPowerTransfer(source: TransportNode, destinations: MutableList<PowerInputNode>, availableTransferPower: Int): Int {
-	destinations.removeAll(source.getTransferableNodes().toSet())
+private fun runPowerTransfer(source: TransportNode, destinations: List<PowerInputNode>, availableTransferPower: Int): Int {
 	if (destinations.isEmpty()) return availableTransferPower
 
 	val numDestinations = destinations.size
 
-	var maximumResistance: Double = -1.0
-
 	val paths: Array<Array<TransportNode>?> = Array(numDestinations) { runCatching {
 		getIdealPath(source, destinations[it])
 	}.getOrNull() }
+
+	var maximumResistance: Double = -1.0
 
 	// Perform the calc & max find in the same loop
 	val pathResistance: Array<Double?> = Array(numDestinations) {
@@ -111,23 +121,16 @@ private fun runPowerTransfer(source: TransportNode, destinations: MutableList<Po
 
 	var remainingPower = availableTransferPower
 
-	// Just cast once
-	val powerSource = (source as? PowerExtractorNode)
-
 	for ((index, destination) in destinations.withIndex()) {
 		val shareFactor = shareFactors[index] ?: continue
 		val share = shareFactor / shareFactorSum
 
 		val idealSend = (availableTransferPower * share).roundToInt()
 		val toSend = minOf(idealSend, getRemainingCapacity(destination))
-		val couldNotRemove = powerSource?.drawPower(toSend) ?: 0 // If null, source is a solar panel, and can't be removed from.
-
-		// Following the power distribution
-		val realAdd = toSend - couldNotRemove
 
 		// Amount of power that didn't fit
-		val remainder = destination.distributePower(realAdd)
-		val realTaken = realAdd - remainder
+		val remainder = destination.distributePower(toSend)
+		val realTaken = toSend - remainder
 
 		remainingPower -= realTaken
 		completeChain(paths[index], realTaken)
