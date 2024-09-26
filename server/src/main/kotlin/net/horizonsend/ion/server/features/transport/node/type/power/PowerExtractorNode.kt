@@ -117,6 +117,6 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(),
 		return "Extractor. found, can trasnsfer: ${getTransferPower()}, numDestinations ${destinations.size}"
 	}
 
-	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> = cachedTransferable
+	override fun getNextNodes(previous: TransportNode, destination: TransportNode?): ArrayDeque<TransportNode> = cachedTransferable
 }
 

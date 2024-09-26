@@ -29,7 +29,9 @@ class InvertedDirectionalNode(override val manager: PowerNodeManager) : SingleNo
 		return 1
 	}
 
-	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> {
+	override fun getNextNodes(previous: TransportNode, destination: TransportNode?): ArrayDeque<TransportNode> {
+		if (destination != null && relationHolder.hasRelationAtWith(position, destination)) return ArrayDeque(listOf(destination))
+
 		// Since this is a single node, and the previous node must be transferable to this, it can't be a sponge.
 		// So there will likely only be a single relation to this
 		val direction = previous.getRelationshipWith(this).values

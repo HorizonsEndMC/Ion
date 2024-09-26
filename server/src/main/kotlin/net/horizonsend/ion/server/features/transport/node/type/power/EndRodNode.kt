@@ -21,5 +21,5 @@ class EndRodNode(network: PowerNodeManager) : LinearNode<PowerNodeManager, EndRo
 		manager.nodeFactory.addLinearNode<EndRodNode>(position, data.facing.axis, type, handleRelationships = false)
 	}
 
-	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> = cachedTransferable
+	override fun getNextNodes(previous: TransportNode, destination: TransportNode?): ArrayDeque<TransportNode> = cachedTransferable
 }
