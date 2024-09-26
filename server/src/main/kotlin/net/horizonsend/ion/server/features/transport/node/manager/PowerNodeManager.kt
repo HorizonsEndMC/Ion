@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.NamespacedKey
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Future
 import kotlin.math.roundToInt
 
 class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(holder) {
@@ -42,7 +43,7 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 		solarPanels.forEach(::tickSolarPanel)
 	}
 
-	fun tickExtractor(extractorNode: PowerExtractorNode) = NewTransport.executor.submit {
+	fun tickExtractor(extractorNode: PowerExtractorNode): Future<*> = NewTransport.executor.submit {
 		val powerCheck = extractorNode.getTransferPower()
 		if (powerCheck == 0) return@submit
 
