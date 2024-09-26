@@ -4,15 +4,12 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
+import net.horizonsend.ion.server.features.transport.node.type.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.util.NetworkType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
@@ -107,7 +104,7 @@ object IonChunkCommand : SLCommand() {
 
 	@Subcommand("rebuild nodes")
 	@CommandCompletion("power") /* |item|gas") */
-	fun rebuildNodes(sender: Player, network: NetworkType) = CoroutineScope(Dispatchers.Default + Job()).launch {
+	fun rebuildNodes(sender: Player, network: NetworkType) {
 		val ionChunk = sender.chunk.ion()
 		val grid = network.get(ionChunk)
 
@@ -130,7 +127,7 @@ object IonChunkCommand : SLCommand() {
 	}
 
 	@Subcommand("get node key")
-	fun getNode(sender: Player, key: Long, network: NetworkType) = CoroutineScope(Dispatchers.Default + Job()).launch {
+	fun getNode(sender: Player, key: Long, network: NetworkType) {
 		val ionChunk = sender.chunk.ion()
 		val grid = network.get(ionChunk)
 
@@ -138,12 +135,24 @@ object IonChunkCommand : SLCommand() {
 	}
 
 	@Subcommand("get node look")
-	fun getNode(sender: Player, network: NetworkType) = CoroutineScope(Dispatchers.Default + Job()).launch {
+	fun getNode(sender: Player, network: NetworkType) {
 		val targeted = sender.getTargetBlock(null, 10)
 		val ionChunk = targeted.chunk.ion()
 		val grid = network.get(ionChunk)
 		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
 
 		sender.information("Targeted node: ${grid.nodes[key]}")
+	}
+
+	@Subcommand("tick extractor")
+	fun onTick(sender: Player) {
+		val targeted = sender.getTargetBlock(null, 10)
+		val ionChunk = targeted.chunk.ion()
+		val grid = NetworkType.POWER.get(ionChunk) as PowerNodeManager
+		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
+
+		val node = grid.nodes[key]
+		if (node !is PowerExtractorNode) return
+		grid.tickExtractor(node)
 	}
 }
