@@ -32,8 +32,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	}
 
 	override fun onDisable() {
+		if (::monitorThread.isInitialized) monitorThread.cancel()
 		if (::executor.isInitialized) executor.shutdown()
-		if (::monitorThread.isInitialized) executor.shutdown()
 	}
 
 	fun registerTransportManager(manager: TransportManager) {
