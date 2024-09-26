@@ -21,10 +21,6 @@ class FluidInputNode(override val manager: FluidNodeManager) : SingleNode() {
 		return false
 	}
 
-	override fun buildRelations(position: BlockKey) {
-		super.buildRelations(position)
-	}
-
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
 		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG, position)
 	}

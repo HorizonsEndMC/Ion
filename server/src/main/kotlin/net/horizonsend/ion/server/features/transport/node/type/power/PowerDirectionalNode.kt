@@ -58,10 +58,12 @@ class PowerDirectionalNode(override val manager: PowerNodeManager) : SingleNode(
 		return cachedTransferable
 	}
 
-	fun getForwardTransferable(incoming: BlockFace): TransportNode? = relationships.values.firstOrNull { it.offset == incoming.oppositeFace && it.canTransfer }?.other
+	fun getForwardTransferable(incoming: BlockFace): TransportNode? = relationHolder.getAllOthers().firstOrNull {
+		it.offset == incoming.oppositeFace && it.canTransfer
+	}?.other
 
 	override fun toString(): String {
 		val face = ADJACENT_BLOCK_FACES.random()
-		return "${relationships.size} relations, Transferable to: ${getTransferableNodes()} directional: $face is ${getForwardTransferable(face)}, $cachedTransferable"
+		return "${relationHolder.getAllOthers().size} relations, Transferable to: ${getTransferableNodes()} directional: $face is ${getForwardTransferable(face)}, $cachedTransferable"
 	}
 }
