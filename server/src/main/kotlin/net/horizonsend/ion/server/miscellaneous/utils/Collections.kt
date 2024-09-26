@@ -130,6 +130,7 @@ inline fun <reified T, K, V> Map<K, V>.filterKeysIsInstance(): Map<T, V> {
 }
 
 inline fun <T: Any> Collection<T>.averageBy(transform: (T) -> Double): Double {
+	if (isEmpty()) return 0.0
 	if (size == 1) { return transform(first()) }
 
 	var total = 0.0
