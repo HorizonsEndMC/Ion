@@ -41,7 +41,7 @@ class InvertedDirectionalNode(override val manager: PowerNodeManager) : SingleNo
 		return cachedTransferable
 	}
 
-	fun getForwardTransferable(incoming: BlockFace): TransportNode? = relationships.entries.firstOrNull {
-		it.value.offset == incoming.oppositeFace && it.value.canTransfer
-	}?.value?.other
+	fun getForwardTransferable(incoming: BlockFace): TransportNode? = relationHolder.getAllOthers().firstOrNull {
+		it.offset == incoming.oppositeFace && it.canTransfer
+	}?.other
 }
