@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -46,7 +45,9 @@ class PowerDirectionalNode(override val manager: PowerNodeManager) : SingleNode(
 		return 1
 	}
 
-	override fun getNextNodes(previous: TransportNode): ArrayDeque<TransportNode> {
+	override fun getNextNodes(previous: TransportNode, destination: TransportNode?): ArrayDeque<TransportNode> {
+		if (destination != null && relationHolder.hasRelationAtWith(position, destination)) return ArrayDeque(listOf(destination))
+
 		// Since this is a single node, and the previous node must be transferable to this, it can't be a sponge.
 		// So there will likely only be a single relation to this
 		val direction = previous.getRelationshipWith(this).values
@@ -59,11 +60,10 @@ class PowerDirectionalNode(override val manager: PowerNodeManager) : SingleNode(
 	}
 
 	fun getForwardTransferable(incoming: BlockFace): TransportNode? = relationHolder.getAllOthers().firstOrNull {
-		it.offset == incoming.oppositeFace && it.canTransfer
+		it.offset == incoming && it.canTransfer
 	}?.other
 
 	override fun toString(): String {
-		val face = ADJACENT_BLOCK_FACES.random()
-		return "${relationHolder.getAllOthers().size} relations, Transferable to: ${getTransferableNodes()} directional: $face is ${getForwardTransferable(face)}, $cachedTransferable"
+		return "${relationHolder.getAllOthers().size} relations, Transferable to: ${getTransferableNodes().joinToString { it.javaClass.simpleName }}"
 	}
 }
