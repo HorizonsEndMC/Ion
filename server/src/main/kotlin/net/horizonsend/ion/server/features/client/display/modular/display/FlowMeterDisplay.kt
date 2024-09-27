@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.client.display.modular.display
 
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerFlowMeter
+import net.horizonsend.ion.server.features.transport.node.type.general.FlowMeter
 import net.kyori.adventure.text.Component
 
-class PowerFlowMeterDisplay(
-	private val meter: PowerFlowMeter,
+class FlowMeterDisplay(
+	private val meter: FlowMeter,
 	offsetLeft: Double,
 	offsetUp: Double,
 	offsetBack: Double,
@@ -14,6 +14,6 @@ class PowerFlowMeterDisplay(
 	override fun deRegister() {}
 
 	override fun getText(): Component {
-		return meter.formatPower()
+		return meter.formatFlow()
 	}
 }
