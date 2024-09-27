@@ -4,11 +4,13 @@ import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
+import net.horizonsend.ion.server.features.transport.node.type.general.DirectionalNode
 import net.horizonsend.ion.server.features.transport.node.type.general.JunctionNode
 import net.horizonsend.ion.server.features.transport.node.type.general.LinearNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.faces
 import org.bukkit.Axis
+import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 
 abstract class NodeFactory<T: NodeManager>(val network: T) {
@@ -52,6 +54,16 @@ abstract class NodeFactory<T: NodeManager>(val network: T) {
 		val new = type.newInstance(network) as SingleNode
 
 		new.position = position
+		new.onPlace(position)
+
+		network.nodes[position] = new
+	}
+
+	fun addDirectionalNode(position: BlockKey, direction: BlockFace, type: NodeType) {
+		val new = type.newInstance(network) as DirectionalNode
+
+		new.position = position
+		new.direction = direction
 		new.onPlace(position)
 
 		network.nodes[position] = new
