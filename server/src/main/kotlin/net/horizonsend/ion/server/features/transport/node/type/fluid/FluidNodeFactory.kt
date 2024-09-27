@@ -1,6 +1,9 @@
 package net.horizonsend.ion.server.features.transport.node.type.fluid
 
+import net.horizonsend.ion.server.features.transport.node.NodeType.FLUID_EXTRACTOR_NODE
+import net.horizonsend.ion.server.features.transport.node.NodeType.FLUID_FLOW_METER
 import net.horizonsend.ion.server.features.transport.node.NodeType.FLUID_INPUT
+import net.horizonsend.ion.server.features.transport.node.NodeType.FLUID_INVERTED_DIRECTIONAL_NODE
 import net.horizonsend.ion.server.features.transport.node.NodeType.FLUID_JUNCTION
 import net.horizonsend.ion.server.features.transport.node.NodeType.LIGHTNING_ROD
 import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
@@ -26,14 +29,14 @@ class FluidNodeFactory(network: FluidNodeManager) : NodeFactory<FluidNodeManager
 			data.material == Material.LIGHTNING_ROD -> addLinearNode<FluidLinearNode>(key, (data as Directional).facing.axis, LIGHTNING_ROD)
 			data.material.isCopperBlock -> addJunctionNode<FluidJunctionNode>(key, FLUID_JUNCTION)
 
-//			data.material == Material.CRAFTING_TABLE -> addSimpleSingleNode(key, FLUID_EXTRACOTR_NODE)
+			data.material == Material.CRAFTING_TABLE -> addSimpleSingleNode(key, FLUID_EXTRACTOR_NODE)
 			data.material == FLETCHING_TABLE -> addSimpleSingleNode(key, FLUID_INPUT)
 
-			data.material == OBSERVER -> println("TODO")
+			data.material == OBSERVER -> addDirectionalNode(key, (data as Directional).facing, FLUID_FLOW_METER)
 
-			data.material == REDSTONE_BLOCK -> println("TODO")
-			data.material == IRON_BLOCK -> println("TODO")
-//			data.material == Material.LAPIS_BLOCK -> addSimpleSingleNode(key, FLUID_INVERTED_DIRECTIONAL_NODE)
+			data.material == REDSTONE_BLOCK -> addMergeNode(key, REDSTONE_BLOCK)
+			data.material == IRON_BLOCK -> addMergeNode(key, IRON_BLOCK)
+			data.material == Material.LAPIS_BLOCK -> addSimpleSingleNode(key, FLUID_INVERTED_DIRECTIONAL_NODE)
 
 			data.material.isChiseledCopper -> println("TODO")
 
@@ -43,5 +46,11 @@ class FluidNodeFactory(network: FluidNodeManager) : NodeFactory<FluidNodeManager
 		}
 
 		return true
+	}
+
+	private fun addMergeNode(key: BlockKey, variant: Material) {
+		network.nodes[key] = FluidDirectionalNode(network, key, variant).apply {
+			onPlace(position)
+		}
 	}
 }
