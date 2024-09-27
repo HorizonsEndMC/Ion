@@ -3,12 +3,11 @@ package net.horizonsend.ion.server.features.transport.node.type.general
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplay
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerPathfindingNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component
 
-abstract class FlowMeter : DirectionalNode(), PowerPathfindingNode {
+abstract class FlowMeter : DirectionalNode() {
 	private val STORED_AVERAGES = 20
 	protected val averages = mutableListOf<TransferredPower>()
 

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.node.type.general
 
 import com.manya.pdc.base.EnumDataType
+import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.AXIS
 import org.bukkit.block.BlockFace
@@ -23,4 +24,8 @@ abstract class DirectionalNode : SingleNode() {
 	companion object {
 		private val directionPDC = EnumDataType(BlockFace::class.java)
 	}
+
+	fun getForwardTransferable(incoming: BlockFace): TransportNode? = relationHolder.getAllOthers().firstOrNull {
+		it.offset == incoming.oppositeFace && it.canTransfer
+	}?.other
 }
