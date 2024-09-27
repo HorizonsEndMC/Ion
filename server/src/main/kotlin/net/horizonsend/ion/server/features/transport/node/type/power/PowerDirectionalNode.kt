@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
 class PowerDirectionalNode(override val manager: PowerNodeManager) : SingleNode(), PowerPathfindingNode {
@@ -28,12 +27,12 @@ class PowerDirectionalNode(override val manager: PowerNodeManager) : SingleNode(
 	}
 
 	override fun storeData(persistentDataContainer: PersistentDataContainer) {
-		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG, position)
+		super.storeData(persistentDataContainer)
 		persistentDataContainer.set(NamespacedKeys.NODE_VARIANT, materialDataType, variant)
 	}
 
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
-		position = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
+		super.loadData(persistentDataContainer)
 		variant = persistentDataContainer.get(NamespacedKeys.NODE_VARIANT, materialDataType)!!
 	}
 
