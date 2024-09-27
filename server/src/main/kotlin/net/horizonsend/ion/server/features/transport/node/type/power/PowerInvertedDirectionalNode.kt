@@ -3,10 +3,9 @@ package net.horizonsend.ion.server.features.transport.node.type.power
 import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
-import net.horizonsend.ion.server.features.transport.node.type.SingleNode
-import org.bukkit.block.BlockFace
+import net.horizonsend.ion.server.features.transport.node.type.general.DirectionalNode
 
-class InvertedDirectionalNode(override val manager: PowerNodeManager) : SingleNode(), PowerPathfindingNode {
+class PowerInvertedDirectionalNode(override val manager: PowerNodeManager) : DirectionalNode(), PowerPathfindingNode {
 	override val type: NodeType = NodeType.POWER_INVERSE_DIRECTIONAL_NODE
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
@@ -31,8 +30,4 @@ class InvertedDirectionalNode(override val manager: PowerNodeManager) : SingleNo
 
 		return cachedTransferable
 	}
-
-	fun getForwardTransferable(incoming: BlockFace): TransportNode? = relationHolder.getAllOthers().firstOrNull {
-		it.offset == incoming.oppositeFace && it.canTransfer
-	}?.other
 }
