@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node.type.power
 
-import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -10,8 +9,7 @@ import net.horizonsend.ion.server.features.client.display.modular.display.PowerF
 import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
-import net.horizonsend.ion.server.features.transport.node.type.SingleNode
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.features.transport.node.type.general.DirectionalNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component
@@ -20,18 +18,14 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.block.BlockFace
-import org.bukkit.block.BlockFace.NORTH
-import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.persistence.PersistentDataType
 
-class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode(), PowerPathfindingNode {
+class PowerFlowMeter(override val manager: PowerNodeManager) : DirectionalNode(), PowerPathfindingNode {
 	override val type: NodeType = NodeType.POWER_FLOW_METER
+
 	constructor(network: PowerNodeManager, position: BlockKey, direction: BlockFace) : this(network) {
 		this.position = position
 		this.direction = direction
 	}
-
-	lateinit var direction: BlockFace
 
 	/*
 	 * Should transfer power like any normal node.
@@ -90,7 +84,7 @@ class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode(), Pow
 		return sum / timeDiff
 	}
 
-	lateinit var displayHandler: TextDisplayHandler
+	private lateinit var displayHandler: TextDisplayHandler
 
 	private fun setupDisplayEntity() {
 		displayHandler = DisplayHandlers.newBlockOverlay(
@@ -117,16 +111,6 @@ class PowerFlowMeter(override val manager: PowerNodeManager) : SingleNode(), Pow
 		if (::displayHandler.isInitialized) displayHandler.remove()
 
 		super.handlePositionRemoval(position)
-	}
-
-	override fun storeData(persistentDataContainer: PersistentDataContainer) {
-		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG, position)
-		persistentDataContainer.set(NamespacedKeys.AXIS, EnumDataType(BlockFace::class.java), direction)
-	}
-
-	override fun loadData(persistentDataContainer: PersistentDataContainer) {
-		position = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
-		direction = persistentDataContainer.getOrDefault(NamespacedKeys.AXIS, EnumDataType(BlockFace::class.java), NORTH)
 	}
 
 	private data class TransferredPower(val transferred: Int, val time: Long)
