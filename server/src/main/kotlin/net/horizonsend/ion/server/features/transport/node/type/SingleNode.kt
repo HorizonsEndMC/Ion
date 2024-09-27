@@ -1,9 +1,12 @@
 package net.horizonsend.ion.server.features.transport.node.type
 
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import org.bukkit.persistence.PersistentDataContainer
+import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
 /**
@@ -28,5 +31,13 @@ abstract class SingleNode : TransportNode() {
 
 	override fun getCenter(): Vec3i {
 		return toVec3i(position)
+	}
+
+	override fun storeData(persistentDataContainer: PersistentDataContainer) {
+		persistentDataContainer.set(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG, position)
+	}
+
+	override fun loadData(persistentDataContainer: PersistentDataContainer) {
+		position = persistentDataContainer.get(NamespacedKeys.NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
 	}
 }
