@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.node.type.power
 
 import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.NodeType.POWER_EXTRACTOR_NODE
+import net.horizonsend.ion.server.features.transport.node.NodeType.POWER_FLOW_METER
 import net.horizonsend.ion.server.features.transport.node.NodeType.POWER_INPUT_NODE
 import net.horizonsend.ion.server.features.transport.node.NodeType.POWER_INVERSE_DIRECTIONAL_NODE
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
@@ -32,7 +33,7 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 			Material.DAYLIGHT_DETECTOR -> checkSolarPanels(key, 2)
 
 			Material.NOTE_BLOCK -> addSimpleSingleNode(key, POWER_INPUT_NODE)
-			Material.OBSERVER -> addFlowMeter(data as Directional, key)
+			Material.OBSERVER -> addDirectionalNode(key, (data as Directional).facing, POWER_FLOW_METER)
 
 			Material.IRON_BLOCK -> addMergeNode(key, Material.IRON_BLOCK)
 			Material.REDSTONE_BLOCK -> addMergeNode(key, Material.REDSTONE_BLOCK)
@@ -44,12 +45,6 @@ class PowerNodeFactory(network: PowerNodeManager) : NodeFactory<PowerNodeManager
 		}
 
 		return true
-	}
-
-	private fun addFlowMeter(data: Directional, position: BlockKey) {
-		network.nodes[position] = PowerFlowMeter(network, position, data.facing).apply {
-			onPlace(position)
-		}
 	}
 
 	/**
