@@ -7,11 +7,8 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.manager.getPowerInputs
 import net.horizonsend.ion.server.features.transport.node.type.SingleNode
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
 
 class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(), PowerPathfindingNode {
@@ -42,14 +39,6 @@ class PowerExtractorNode(override val manager: PowerNodeManager) : SingleNode(),
 		val interval = IonServer.transportSettings.extractorTickIntervalMS.toDouble()
 
 		return (IonServer.transportSettings.maxPowerRemovedPerExtractorTick * ((System.currentTimeMillis() - lastTicked) / interval)).roundToInt()
-	}
-
-	override fun storeData(persistentDataContainer: PersistentDataContainer) {
-		persistentDataContainer.set(NODE_COVERED_POSITIONS, PersistentDataType.LONG, position)
-	}
-
-	override fun loadData(persistentDataContainer: PersistentDataContainer) {
-		position = persistentDataContainer.get(NODE_COVERED_POSITIONS, PersistentDataType.LONG)!!
 	}
 
 	override fun loadIntoNetwork() {
