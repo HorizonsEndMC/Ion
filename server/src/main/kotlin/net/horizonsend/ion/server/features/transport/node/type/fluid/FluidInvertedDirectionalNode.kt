@@ -5,14 +5,10 @@ import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.general.DirectionalNode
+import net.horizonsend.ion.server.features.transport.node.type.general.UnTransferableNode
 
 class FluidInvertedDirectionalNode(override val manager: FluidNodeManager) : DirectionalNode(), FluidPathfindingNode {
 	override val type: NodeType = NodeType.FLUID_INVERTED_DIRECTIONAL_NODE
-
-	override fun isTransferableTo(node: TransportNode): Boolean {
-		if (node is FluidLinearNode) return false
-		return node !is FluidExtractorNode
-	}
 
 	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
 		return 1
@@ -30,5 +26,14 @@ class FluidInvertedDirectionalNode(override val manager: FluidNodeManager) : Dir
 		getForwardTransferable(face)?.let { return ArrayDeque(listOf(it)) }
 
 		return cachedTransferable
+	}
+
+	override fun isTransferableTo(node: TransportNode): Boolean {
+		if (node is UnTransferableNode) return false
+		return node !is FluidLinearNode
+	}
+
+	override fun canTransfer(resource: PipedFluid): Boolean {
+		return true
 	}
 }
