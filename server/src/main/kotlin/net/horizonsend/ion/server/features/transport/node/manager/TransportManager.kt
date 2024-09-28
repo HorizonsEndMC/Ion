@@ -8,5 +8,6 @@ abstract class TransportManager {
 
 	fun tick() {
 		powerNodeManager.network.tickTransport()
+		fluidNodeManager.network.tickTransport()
 	}
 }
