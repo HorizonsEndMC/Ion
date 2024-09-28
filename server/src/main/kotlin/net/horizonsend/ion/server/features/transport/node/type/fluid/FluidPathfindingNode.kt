@@ -5,4 +5,6 @@ import net.horizonsend.ion.server.features.transport.node.TransportNode
 
 interface FluidPathfindingNode {
 	fun getNextNodes(previous: TransportNode, destination: TransportNode?, resource: PipedFluid): ArrayDeque<TransportNode>
+
+	fun canTransfer(resource: PipedFluid): Boolean
 }
