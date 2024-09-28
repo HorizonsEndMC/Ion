@@ -18,7 +18,7 @@ import org.bukkit.persistence.PersistentDataType
  **/
 abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Companion> {
 	var isDead: Boolean = false
-	abstract val manager: NodeManager
+	abstract val manager: NodeManager<*>
 	override val persistentDataType: Companion get() = Companion
 	abstract val type: NodeType
 
@@ -170,7 +170,7 @@ abstract class TransportNode : PDCSerializable<TransportNode, TransportNode.Comp
 			throw SerializationException("Error deserializing multiblock data!", e)
 		}
 
-		fun load(primitive: PersistentDataContainer, network: NodeManager): TransportNode = try {
+		fun load(primitive: PersistentDataContainer, network: NodeManager<*>): TransportNode = try {
 			val type = primitive.get(NODE_TYPE, NodeType.type)!!
 
 			val instance = type.newInstance(network)

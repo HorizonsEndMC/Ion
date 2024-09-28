@@ -21,7 +21,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
-class ChunkNetworkHolder<T: NodeManager> private constructor (val manager: ChunkTransportManager) : NetworkHolder<T> {
+class ChunkNetworkHolder<T: NodeManager<*>> private constructor (val manager: ChunkTransportManager) : NetworkHolder<T> {
 	override var network: T by Delegates.notNull(); private set
 
 	constructor(manager: ChunkTransportManager, network: (ChunkNetworkHolder<T>) -> T) : this(manager) {

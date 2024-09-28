@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.node.manager
 import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
+import net.horizonsend.ion.server.features.transport.node.type.general.ExtractorNode
 import net.horizonsend.ion.server.features.transport.node.util.NetworkType
 import net.horizonsend.ion.server.features.transport.node.util.NodeFactory
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -16,8 +17,9 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.persistence.PersistentDataContainer
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class NodeManager(val holder: NetworkHolder<*>) {
+abstract class NodeManager<T: ExtractorNode>(val holder: NetworkHolder<*>) {
 	val nodes: ConcurrentHashMap<Long, TransportNode> = ConcurrentHashMap()
+	val extractors: ConcurrentHashMap<BlockKey, T> = ConcurrentHashMap()
 
 	val world get() = holder.getWorld()
 

@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.general.FlowMeter
+import net.horizonsend.ion.server.features.transport.node.type.general.UnTransferableNode
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -22,7 +23,7 @@ class PowerFlowMeter(override val manager: PowerNodeManager) : FlowMeter(), Powe
 	 * And it cannot transfer into a source
 	 */
 	override fun isTransferableTo(node: TransportNode): Boolean {
-		return node !is PowerExtractorNode && node !is SolarPanelNode
+		return node !is UnTransferableNode && node !is SolarPanelNode
 	}
 
 	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
