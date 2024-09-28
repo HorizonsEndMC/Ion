@@ -52,7 +52,7 @@ object SetFluidCommand : SLCommand() {
 			val entity = MultiblockEntities.getMultiblockEntity(sender.world, x, y ,z)
 			if (entity !is FluidStoringEntity) continue
 
-			entity.getNamedStorage(storeName).storage.setContents(fluid, amount)
+			entity.getNamedStorage(storeName).internalStorage.setContents(fluid, amount)
 			hits++
 
 			sender.debug("power sent")

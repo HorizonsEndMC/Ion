@@ -21,12 +21,14 @@ interface FluidStoringEntity {
 	/**
 	 * Returns whether any of the internal storages can store the amount of the fluid provided
 	 **/
-	fun canStore(fluid: PipedFluid, amount: Int) = capacities.any { it.storage.canStore(fluid, amount) }
+	fun canStore(fluid: PipedFluid, amount: Int) = capacities.any { it.internalStorage.canStore(fluid, amount) }
 
 	/**
 	 * Returns the first internal storage that can contain the amount of the fluid provided.
 	 **/
-	fun firstCasStore(fluid: PipedFluid, amount: Int): StorageContainer? = capacities.firstOrNull { it.storage.canStore(fluid, amount) }
+	fun firstCasStore(fluid: PipedFluid, amount: Int): StorageContainer? = capacities.firstOrNull { it.internalStorage.canStore(fluid, amount) }
+
+	fun isFull(): Boolean = capacities.all { it.internalStorage.isFull() }
 
 	/**
 	 * Adds the amount of the fluid to the first available internal storage
@@ -34,8 +36,8 @@ interface FluidStoringEntity {
 	fun addFirstAvailable(fluid: PipedFluid, amount: Int): Int {
 		var remaining = amount
 
-		for (container in capacities.filter { it.storage.getStoredFluid() == fluid || it.storage.getStoredFluid() == null }) {
-			val unfit = container.storage.addAmount(fluid, remaining)
+		for (container in capacities.filter { it.internalStorage.getStoredFluid() == fluid || it.internalStorage.getStoredFluid() == null }) {
+			val unfit = container.internalStorage.addAmount(fluid, remaining)
 			remaining -= (remaining - unfit)
 
 			if (remaining <= 0) break
@@ -50,8 +52,8 @@ interface FluidStoringEntity {
 	fun removeFirstAvailable(fluid: PipedFluid, amount: Int): Int {
 		var remaining = amount
 
-		for (container in capacities.filter { it.storage.getStoredFluid() == fluid }) {
-			val unRemoved = container.storage.remove(fluid, remaining)
+		for (container in capacities.filter { it.internalStorage.getStoredFluid() == fluid }) {
+			val unRemoved = container.internalStorage.remove(fluid, remaining)
 			remaining -= (remaining - unRemoved)
 
 			if (remaining <= 0) break
@@ -60,7 +62,7 @@ interface FluidStoringEntity {
 		return remaining
 	}
 
-	fun getStoredResources() : Map<PipedFluid?, Int> = capacities.associate { it.storage.getStoredFluid() to it.storage.getAmount() }
+	fun getStoredResources() : Map<PipedFluid?, Int> = capacities.associate { it.internalStorage.getStoredFluid() to it.internalStorage.getAmount() }
 
 	fun getNamedStorage(name: String): StorageContainer = capacities.first { it.name == name }
 
@@ -122,19 +124,5 @@ interface FluidStoringEntity {
 		// Try to place unregistered node
 		manager.manager.processBlockChange(world.getBlockAt(block.x, block.y, block.z))
 		return manager.getInternalNode(toBlockKey(block)) as? net.horizonsend.ion.server.features.transport.node.type.fluid.FluidInputNode
-	}
-
-	fun bindFluidInput() {
-		val existing = getFluidInputNode() ?: return
-		if (existing.boundMultiblockEntity != null) return
-
-		existing.boundMultiblockEntity = this
-	}
-
-	fun releaseFluidInput() {
-		val existing = getFluidInputNode() ?: return
-		if (existing.boundMultiblockEntity != this) return
-
-		existing.boundMultiblockEntity = null
 	}
 }

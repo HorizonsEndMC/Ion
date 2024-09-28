@@ -41,7 +41,7 @@ enum class NodeType(val clazz: Class<out TransportNode>) {
 	//ITEM
 	;
 
-	fun newInstance(network: NodeManager): TransportNode {
+	fun newInstance(network: NodeManager<*>): TransportNode {
 		return clazz.getDeclaredConstructor(network::class.java).newInstance(network)
 	}
 

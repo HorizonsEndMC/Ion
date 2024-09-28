@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.transport.node.type.general
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.type.power.SolarPanelNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.averageBy
@@ -15,9 +14,9 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
 
-abstract class JunctionNode<T: NodeManager, A: JunctionNode<T, B, A>, B: JunctionNode<T, A, B>>(override val manager: T) : MultiNode<B, A>() {
+abstract class JunctionNode<T: NodeManager<*>, A: JunctionNode<T, B, A>, B: JunctionNode<T, A, B>>(override val manager: T) : MultiNode<B, A>() {
 	override fun isTransferableTo(node: TransportNode): Boolean {
-		return node !is PowerExtractorNode && node !is SolarPanelNode
+		return node !is UnTransferableNode && node !is SolarPanelNode
 	}
 
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {

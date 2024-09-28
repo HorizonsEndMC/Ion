@@ -2,7 +2,9 @@ package net.horizonsend.ion.server.features.transport.node.util
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.transport.node.TransportNode
+import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
+import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -112,29 +114,29 @@ fun <T : MultiNode<*, *>> separateNodePositions(node: T): List<Set<BlockKey>> {
 
 enum class NetworkType(val namespacedKey: NamespacedKey) {
 	POWER(NamespacedKeys.POWER_TRANSPORT) {
-		override fun get(chunk: IonChunk): NodeManager {
+		override fun get(chunk: IonChunk): PowerNodeManager {
 			return chunk.transportNetwork.powerNodeManager.network
 		}
 
-		override fun get(ship: ActiveStarship): NodeManager {
-			TODO("Not yet implemented")
+		override fun get(ship: ActiveStarship): PowerNodeManager {
+			return ship.transportManager.powerNodeManager.network
 		}
 	},
 	FLUID(NamespacedKeys.FLUID_TRANSPORT) {
-		override fun get(chunk: IonChunk): NodeManager {
-			return chunk.transportNetwork.powerNodeManager.network
+		override fun get(chunk: IonChunk): FluidNodeManager {
+			return chunk.transportNetwork.fluidNodeManager.network
 		}
 
-		override fun get(ship: ActiveStarship): NodeManager {
-			TODO("Not yet implemented")
+		override fun get(ship: ActiveStarship): FluidNodeManager {
+			return ship.transportManager.fluidNodeManager.network
 		}
 	},
 
 
 	;
 
-	abstract fun get(chunk: IonChunk): NodeManager
-	abstract fun get(ship: ActiveStarship): NodeManager
+	abstract fun get(chunk: IonChunk): NodeManager<*>
+	abstract fun get(ship: ActiveStarship): NodeManager<*>
 
 	companion object {
 		private val byKey = entries.associateBy { it.namespacedKey }
