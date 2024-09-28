@@ -245,11 +245,11 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 		).register()
 
 		override fun tickAsync() {
-			val remainder = waterStorage.storage.remove(WATER_INCREMENT)
+			val remainder = waterStorage.internalStorage.remove(WATER_INCREMENT)
 			val removed = WATER_INCREMENT - remainder
 
-			oxygenStorage.storage.addAmount(3 * removed)
-			hydrogenStorage.storage.addAmount(6 * removed)
+			oxygenStorage.internalStorage.addAmount(3 * removed)
+			hydrogenStorage.internalStorage.addAmount(6 * removed)
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
