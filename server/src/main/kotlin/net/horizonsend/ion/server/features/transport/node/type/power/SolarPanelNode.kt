@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.MultiNode
+import net.horizonsend.ion.server.features.transport.node.type.general.UnTransferableNode
 import net.horizonsend.ion.server.features.transport.node.util.separateNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_COVERED_POSITIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SOLAR_CELL_DETECTORS
@@ -45,7 +46,7 @@ class SolarPanelNode(override val manager: PowerNodeManager) : MultiNode<SolarPa
 		if (node is SolarPanelNode && node.exitDistance > this.exitDistance) return false
 
 		// Solar panels should be able to transfer through extractors and other solar panels
-		return node !is PowerExtractorNode
+		return node !is UnTransferableNode
 	}
 
 	/**

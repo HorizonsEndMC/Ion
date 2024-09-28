@@ -14,18 +14,14 @@ import net.horizonsend.ion.server.features.transport.node.util.calculatePathResi
 import net.horizonsend.ion.server.features.transport.node.util.getIdealPath
 import net.horizonsend.ion.server.features.transport.node.util.getNetworkDestinations
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.POWER_TRANSPORT
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.NamespacedKey
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Future
 import kotlin.math.roundToInt
 
-class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(holder) {
+class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager<PowerExtractorNode>(holder) {
 	override val type: NetworkType = NetworkType.POWER
 	override val namespacedKey: NamespacedKey = POWER_TRANSPORT
 	override val nodeFactory: PowerNodeFactory = PowerNodeFactory(this)
-
-	val extractors: ConcurrentHashMap<BlockKey, PowerExtractorNode> = ConcurrentHashMap()
 
 	/** Store solar panels for ticking */
 	val solarPanels: ObjectOpenHashSet<SolarPanelNode> = ObjectOpenHashSet()
@@ -44,7 +40,7 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager(ho
 	}
 
 	fun tickExtractor(extractorNode: PowerExtractorNode): Future<*> = NewTransport.executor.submit {
-		val powerCheck = extractorNode.getTransferPower()
+		val powerCheck = extractorNode.getTransferAmount()
 		if (powerCheck == 0) return@submit
 
 		extractorNode.markTicked()
