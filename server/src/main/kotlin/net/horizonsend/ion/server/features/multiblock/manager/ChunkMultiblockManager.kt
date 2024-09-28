@@ -40,7 +40,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 		chunk.inner.minecraft.isUnsaved = true
 	}
 
-	override fun getNetwork(type: NetworkType): NodeManager {
+	override fun getNetwork(type: NetworkType): NodeManager<*> {
 		return type.get(chunk)
 	}
 

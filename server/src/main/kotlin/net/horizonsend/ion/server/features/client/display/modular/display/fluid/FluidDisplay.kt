@@ -20,15 +20,15 @@ abstract class FluidDisplay(
 	}
 
 	override fun register() {
-		container.storage.registerUpdateHandler(updateHandler)
+		container.internalStorage.registerUpdateHandler(updateHandler)
 	}
 
 	override fun deRegister() {
-		container.storage.removeUpdateHandler(updateHandler)
+		container.internalStorage.removeUpdateHandler(updateHandler)
 	}
 
 	protected fun formatFluid(): Component {
-		val amount = container.storage.getAmount()
+		val amount = container.internalStorage.getAmount()
 		return ofChildren(text(amount, NamedTextColor.GOLD), text("L", NamedTextColor.DARK_GRAY))
 	}
 }

@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.general.FlowMeter
+import net.horizonsend.ion.server.features.transport.node.type.general.UnTransferableNode
 import net.kyori.adventure.text.Component
 
 class FluidFlowMeter(override val manager: FluidNodeManager) : FlowMeter(), FluidPathfindingNode {
@@ -21,6 +22,10 @@ class FluidFlowMeter(override val manager: FluidNodeManager) : FlowMeter(), Flui
 	}
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
+		return node !is UnTransferableNode
+	}
+
+	override fun canTransfer(resource: PipedFluid): Boolean {
 		return true
 	}
 }
