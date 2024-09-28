@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.transport.node.NodeType.FLUID_DIRECTI
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.general.DirectionalNode
+import net.horizonsend.ion.server.features.transport.node.type.general.UnTransferableNode
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerDirectionalNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -23,8 +24,8 @@ class FluidDirectionalNode(override val manager: FluidNodeManager) : Directional
 	}
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
-		if (node is FluidJunctionNode) return false
-		return node !is FluidExtractorNode
+		if (node is UnTransferableNode) return false
+		return node !is FluidJunctionNode
 	}
 
 	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
@@ -53,5 +54,9 @@ class FluidDirectionalNode(override val manager: FluidNodeManager) : Directional
 	override fun loadData(persistentDataContainer: PersistentDataContainer) {
 		super.loadData(persistentDataContainer)
 		variant = persistentDataContainer.get(NamespacedKeys.NODE_VARIANT, PowerDirectionalNode.materialDataType)!!
+	}
+
+	override fun canTransfer(resource: PipedFluid): Boolean {
+		return true
 	}
 }
