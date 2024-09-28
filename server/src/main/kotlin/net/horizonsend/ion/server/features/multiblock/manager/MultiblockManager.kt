@@ -33,7 +33,7 @@ abstract class MultiblockManager(val log: Logger) {
 
 	fun getAllMultiblockEntities() = multiblockEntities
 
-	abstract fun getNetwork(type: NetworkType): NodeManager
+	abstract fun getNetwork(type: NetworkType): NodeManager<*>
 
 	abstract fun getSignUnsavedTime(): Long
 	open fun markSignSaved() {}
