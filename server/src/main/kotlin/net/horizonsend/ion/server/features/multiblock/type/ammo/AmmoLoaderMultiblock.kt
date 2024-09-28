@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.ammo
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import org.bukkit.Material
@@ -44,9 +44,9 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+2) {
 			y(-1) {
 				x(-2).ironBlock()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).ironBlock()
 			}
 
@@ -62,9 +62,9 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+3) {
 			y(-1) {
 				x(-2).anyGlassPane()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).aluminumBlock()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).anyGlassPane()
 			}
 
@@ -80,9 +80,9 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+4) {
 			y(-1) {
 				x(-2).ironBlock()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).ironBlock()
 			}
 

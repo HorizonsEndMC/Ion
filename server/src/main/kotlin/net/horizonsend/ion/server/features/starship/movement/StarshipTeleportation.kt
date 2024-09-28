@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Location
 import org.bukkit.World
 import java.util.concurrent.CompletableFuture
@@ -80,7 +80,6 @@ object StarshipTeleportation {
 				starship.information("Adjusting position...")
 
 				val tries = previousTries + 1
-				println(14)
 				return@thenComposeAsync tryTeleport(starship, dx, dy, dz, newWorld, tries, adjustX, adjustZ)
 			}
 	}

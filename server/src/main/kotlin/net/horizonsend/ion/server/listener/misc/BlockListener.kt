@@ -1,12 +1,10 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.stripColor
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.block.SignChangeEvent
 import org.bukkit.event.world.StructureGrowEvent
@@ -24,13 +22,6 @@ object BlockListener : SLEventListener() {
 	fun onStructureGrowEvent(event: StructureGrowEvent) {
 		if (!event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK }) return
 		event.isCancelled = true
-	}
-
-	// Attempt to remove mob defenders at the location of blocks broken
-	@EventHandler(priority = EventPriority.MONITOR)
-	fun onBlockBreakEvent(event: BlockBreakEvent) {
-		if (event.isCancelled) return
-		MobDefender.removeDefender(event.block.location)
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

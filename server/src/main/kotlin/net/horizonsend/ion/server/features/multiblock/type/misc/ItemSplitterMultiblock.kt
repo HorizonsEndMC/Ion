@@ -3,11 +3,11 @@ package net.horizonsend.ion.server.features.multiblock.type.misc
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SPLITTER_DIRECTION
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SPLITTER_DIRECTION
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getStateSafe
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace

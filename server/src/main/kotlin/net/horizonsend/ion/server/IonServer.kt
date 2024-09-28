@@ -18,7 +18,9 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.TradeConfiguration
 import net.horizonsend.ion.server.features.ai.configuration.AISpawningConfiguration
+import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
+import net.horizonsend.ion.server.features.transport.configuration.TransportConfiguration
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.EmptyChunkGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.SpaceBiomeProvider
@@ -27,7 +29,6 @@ import net.horizonsend.ion.server.miscellaneous.LegacyConfig
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.miscellaneous.registrations.listeners
-import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import org.bukkit.Bukkit
@@ -56,6 +57,7 @@ object IonServer : JavaPlugin() {
 	var tradeConfiguration: TradeConfiguration = Configuration.load(configurationFolder, "trade.json")
 	var aiSpawningConfiguration: AISpawningConfiguration = Configuration.load(configurationFolder, "aiSpawning.json")
 	var discordSettings: DiscordConfiguration = Configuration.load(configurationFolder, "discord.json")
+	var transportSettings: TransportConfiguration = Configuration.load(configurationFolder, "transport.json")
 	var legacySettings: LegacyConfig = loadConfig(configurationFolder, "config") // Setting
 
 	override fun onEnable(): Unit =
@@ -147,6 +149,7 @@ object IonServer : JavaPlugin() {
 
 		for (component in components.asReversed()) try {
 			component.onDisable()
+			slF4JLogger.info("Disabled ${component.javaClass.simpleName}")
 		} catch (e: Exception) {
 			slF4JLogger.error("There was an error shutting down ${component.javaClass.simpleName}! ${e.message}")
 			e.printStackTrace()

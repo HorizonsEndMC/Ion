@@ -77,13 +77,6 @@ open class PoweredCustomItem(
 	}
 }
 
-class CustomBlockItem(id: String, displayName: String, material: Material, model: Int, val customBlockId: String) :
-	CustomItem(id, displayName, material, model, false) {
-
-	val customBlock: CustomBlock
-		get() = CustomBlocks[customBlockId] ?: error("Custom block $customBlockId not found for custom item $id")
-}
-
 @Suppress("unused")
 object CustomItems {
 	private val idMap = mutableMapOf<String, CustomItem>()
@@ -111,14 +104,6 @@ object CustomItems {
 		maxPower: Int,
 		unbreakable: Boolean = false
 	): PoweredCustomItem = register(PoweredCustomItem(id, displayName, material, model, unbreakable, maxPower))
-
-	private fun makeBlockItem(
-		id: String,
-		displayName: String,
-		material: Material,
-		model: Int,
-		blockId: String
-	): CustomBlockItem = register(CustomBlockItem(id, displayName, material, model, blockId))
 
 	operator fun get(id: String?): CustomItem? = idMap[id]
 

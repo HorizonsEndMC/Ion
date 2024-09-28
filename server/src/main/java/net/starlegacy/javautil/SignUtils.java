@@ -5,7 +5,7 @@ import com.sk89q.worldedit.util.nbt.StringBinaryTag;
 import com.sk89q.worldedit.util.nbt.TagStringIO;
 import net.horizonsend.ion.server.IonServer;
 import net.horizonsend.ion.server.features.machine.PowerMachines;
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys;
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.nbt.CompoundTag;

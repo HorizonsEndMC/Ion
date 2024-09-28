@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.particleshield
 
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.kyori.adventure.text.Component
 
 object ShieldMultiblockClass20 : SphereShieldMultiblock() {
@@ -13,8 +13,8 @@ object ShieldMultiblockClass20 : SphereShieldMultiblock() {
 	)
 
 	// particle shields in 1.12 are broken and have 2.0 instead of the correct line 2, this is to automatically replace it
-	override fun matchesSign(lines: Array<Component>): Boolean {
-		val modified = lines.clone()
+	override fun matchesSign(lines: List<Component>): Boolean {
+		val modified = lines.toMutableList()
 		modified[1] = signText[1]!!
 		return super.matchesSign(modified)
 	}

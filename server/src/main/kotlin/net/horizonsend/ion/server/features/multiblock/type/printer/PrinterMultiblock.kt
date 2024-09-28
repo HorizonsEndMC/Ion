@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.printer
 
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
@@ -41,7 +41,7 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 
 		z(+1) {
 			y(-1) {
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).printerMachineryBlock()
 				x(+1).ironBlock()
 			}
@@ -55,7 +55,7 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 
 		z(+2) {
 			y(-1) {
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).printerCoreBlock()
 				x(+1).anyGlass()
 			}
@@ -69,7 +69,7 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 
 		z(+3) {
 			y(-1) {
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).printerMachineryBlock()
 				x(+1).ironBlock()
 			}

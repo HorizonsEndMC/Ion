@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.machine
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.old.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -14,7 +14,6 @@ import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import java.util.concurrent.atomic.AtomicInteger
 
 object PowerMachines : IonServerComponent() {
 	override fun onEnable() {
@@ -61,14 +60,6 @@ object PowerMachines : IonServerComponent() {
 
 	val prefixComponent = Component.text("E: ", NamedTextColor.YELLOW)
 
-	val traceTrack = mutableMapOf<StackTraceElement, AtomicInteger>()
-
-	fun report(trace: Array<StackTraceElement>) {
-		for (element in trace) {
-			traceTrack.getOrPut(element) { AtomicInteger() }.getAndIncrement()
-		}
-	}
-
 	@JvmOverloads
 	fun setPower(sign: Sign, power: Int, fast: Boolean = true): Int {
 		val correctedPower: Int = if (!fast) {
@@ -81,11 +72,8 @@ object PowerMachines : IonServerComponent() {
 		if (!sign.persistentDataContainer.has(NamespacedKeys.MULTIBLOCK)) return power
 
 		sign.persistentDataContainer.set(NamespacedKeys.POWER, PersistentDataType.INTEGER, correctedPower)
-		sign.line(2, Component.text().append(prefixComponent, Component.text(correctedPower, NamedTextColor.GREEN)).build())
-		sign.update(false, false)
-
-		report(Throwable().stackTrace)
-
+//		sign.line(2, Component.text().append(prefixComponent, Component.text(correctedPower, NamedTextColor.GREEN)).build())
+//		sign.update(false, false)
 		return power
 	}
 

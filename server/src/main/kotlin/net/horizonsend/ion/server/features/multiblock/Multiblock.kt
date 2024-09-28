@@ -1,25 +1,34 @@
 package net.horizonsend.ion.server.features.multiblock
 
+import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot
+import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isValidYLevel
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.isValidYLevel
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.block.data.type.WallSign
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 
 abstract class Multiblock {
 	abstract val name: String
+	open val alternativeDetectionNames: Array<String> = arrayOf()
 
 	abstract val signText: Array<Component?>
 
 	open val requiredPermission: String? = null
 
-	open fun matchesSign(lines: Array<Component>): Boolean {
+	open fun matchesSign(lines: List<Component>): Boolean {
 		for (i in 0..3) {
 			if (signText[i] != null && signText[i] != lines[i]) {
 				return false
@@ -64,13 +73,51 @@ abstract class Multiblock {
 		originBlock: Block,
 		inward: BlockFace,
 		loadChunks: Boolean = true,
-		particles: Boolean = false
+		particles: Boolean = false,
 	): Boolean {
 		return shape.checkRequirements(originBlock, inward, loadChunks, particles)
 	}
 
+	suspend fun signMatchesStructureAsync(sign: Sign, loadChunks: Boolean = true) = signMatchesStructureAsync(sign.location, loadChunks)
+	suspend fun signMatchesStructureAsync(signLocation: Location, loadChunks: Boolean = true) =
+		signMatchesStructureAsync(signLocation.world, Vec3i(signLocation), loadChunks)
+
+	suspend fun signMatchesStructureAsync(
+		world: World,
+		origin: Vec3i,
+		loadChunks: Boolean = true
+	): Boolean {
+		val block = world.getBlockAt(origin.x, origin.y, origin.z)
+		val sign = (getBukkitBlockState(block, loadChunks) as? Sign) ?: return false
+		val inward = sign.getFacing().oppositeFace
+
+		val x = origin.x + inward.modX
+		val y = origin.y + inward.modY
+		val z = origin.z + inward.modZ
+
+		if (!isValidYLevel(y)) return false
+
+		return blockMatchesStructureAsync(world, Vec3i(x, y, z), inward, loadChunks)
+	}
+
+	suspend fun blockMatchesStructureAsync(
+		originWorld: World,
+		origin: Vec3i,
+		inward: BlockFace,
+		loadChunks: Boolean = true
+	): Boolean {
+		return shape.checkRequirementsAsync(originWorld, origin, inward, loadChunks)
+	}
+
 	open fun matchesUndetectedSign(sign: Sign): Boolean {
-		return (sign.line(0) as TextComponent).content().equals("[$name]", ignoreCase = true)
+		val line = sign.getSide(Side.FRONT).line(0)
+		val content = (line as? TextComponent)?.content() ?: line.plainText()
+
+		return alternativeDetectionNames
+			.toMutableList()
+			.plus(name)
+			.map { "[$it]" }
+			.any { it.equals(content, ignoreCase = true) }
 	}
 
 	open fun setupSign(player: Player, sign: Sign) {
@@ -99,4 +146,25 @@ abstract class Multiblock {
 	}
 
 	protected open fun onTransformSign(player: Player, sign: Sign) {}
+
+	companion object {
+		fun getOrigin(sign: Sign): Vec3i {
+			val face = sign.getFacing()
+
+			return Vec3i(sign.location).minus(Vec3i(face.modX, 0, face.modZ))
+		}
+
+		/**
+		 * Gets a multiblock's origin from a possible sign
+		 *
+		 * Returns null if the provided block snapshot is not a sign
+		 **/
+		fun getOrigin(sign: BlockSnapshot): Vec3i? {
+			val data = sign.data as? WallSign ?: return null
+
+			val face = data.facing
+
+			return Vec3i(sign.x, sign.y, sign.z).minus(Vec3i(face.modX, 0, face.modZ))
+		}
+	}
 }

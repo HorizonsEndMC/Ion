@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.helixAroundVector
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle

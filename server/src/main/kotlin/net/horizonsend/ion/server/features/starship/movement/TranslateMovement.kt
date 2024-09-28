@@ -3,11 +3,12 @@ package net.horizonsend.ion.server.features.starship.movement
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.add
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.add
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.util.Vector
@@ -71,6 +72,14 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 	override fun displaceY(oldY: Int): Int = oldY + dy
 
 	override fun displaceZ(oldZ: Int, oldX: Int): Int = oldZ + dz
+
+	override fun displaceFace(face: BlockFace): BlockFace {
+		return face
+	}
+
+	override fun displaceVector(vector: Vector): Vector = vector
+		.clone()
+		.add(Vector(dx.toDouble(), dy.toDouble(), dz.toDouble()))
 
 	override fun displaceLocation(oldLocation: Location): Location {
 		val newLocation = oldLocation.clone().add(dx, dy, dz)

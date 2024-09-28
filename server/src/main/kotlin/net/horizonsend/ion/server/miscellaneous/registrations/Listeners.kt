@@ -4,16 +4,19 @@ import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.horizonsend.ion.server.features.custom.ItemConverters
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
+import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.custom.items.mods.ToolModMenu
-import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
+import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
+import net.horizonsend.ion.server.features.transport.GlobalNodeManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
-import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.listener.fixers.BiomeFixer9001
 import net.horizonsend.ion.server.listener.fixers.CancelListeners
@@ -29,7 +32,6 @@ import net.horizonsend.ion.server.listener.misc.ChatListener
 import net.horizonsend.ion.server.listener.misc.EntityListener
 import net.horizonsend.ion.server.listener.misc.FurnaceListener
 import net.horizonsend.ion.server.listener.misc.HeadListener
-import net.horizonsend.ion.server.listener.misc.InteractListener
 import net.horizonsend.ion.server.listener.misc.InventoryListener
 import net.horizonsend.ion.server.listener.misc.JoinLeaveListener
 import net.horizonsend.ion.server.listener.misc.MiscListeners
@@ -52,7 +54,7 @@ val listeners: List<Listener> = listOf(
 	BlockListener,
 	EntityListener,
 	FurnaceListener,
-	InteractListener,
+	NewPoweredMultiblock.Companion,
 	InventoryListener,
 	BowHitListener,
 
@@ -71,7 +73,7 @@ val listeners: List<Listener> = listOf(
 	GameplayTweaksListeners(),
 	HeadListener(),
 	HyperspaceBeaconManager,
-	IonWorld,
+	IonChunk,
 	MiscListeners(),
 	WorldGenerationManager,
 	EncounterManager(),
@@ -83,6 +85,8 @@ val listeners: List<Listener> = listOf(
 	PlayerDeathListener,
 	ToolModMenu,
 	RecipeModifications,
+	GlobalNodeManager,
+	MultiblockEntities,
 
 	// Achievement Listeners
 	AchievementListeners(),

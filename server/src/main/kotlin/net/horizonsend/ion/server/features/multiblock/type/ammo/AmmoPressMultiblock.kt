@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.objects.AmmunitionHoldingItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -48,9 +48,9 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 
 		z(+2) {
 			y(-1) {
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 			}
 
 			y(+0) {
@@ -76,9 +76,9 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 
 		z(+4) {
 			y(-1) {
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 			}
 
 			y(+0) {
