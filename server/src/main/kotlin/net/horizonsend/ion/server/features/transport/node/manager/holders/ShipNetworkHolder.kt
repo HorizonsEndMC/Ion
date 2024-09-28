@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
 import kotlin.properties.Delegates
 
-class ShipNetworkHolder<T: NodeManager>(val manager: ShipTransportManager) : NetworkHolder<T> {
+class ShipNetworkHolder<T: NodeManager<*>>(val manager: ShipTransportManager) : NetworkHolder<T> {
 	override var network: T by Delegates.notNull(); private set
 
 	constructor(manager: ShipTransportManager, network: (ShipNetworkHolder<T>) -> T) : this(manager) {
