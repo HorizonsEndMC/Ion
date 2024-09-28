@@ -13,7 +13,7 @@ import org.bukkit.Axis
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 
-abstract class NodeFactory<T: NodeManager>(val network: T) {
+abstract class NodeFactory<T: NodeManager<*>>(val network: T) {
 	/**
 	 * Create and handle placement of a node at the position, if one should be created
 	 **/
