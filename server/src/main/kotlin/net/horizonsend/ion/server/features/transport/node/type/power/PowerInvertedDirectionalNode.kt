@@ -4,13 +4,14 @@ import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
 import net.horizonsend.ion.server.features.transport.node.type.general.DirectionalNode
+import net.horizonsend.ion.server.features.transport.node.type.general.UnTransferableNode
 
 class PowerInvertedDirectionalNode(override val manager: PowerNodeManager) : DirectionalNode(), PowerPathfindingNode {
 	override val type: NodeType = NodeType.POWER_INVERSE_DIRECTIONAL_NODE
 
 	override fun isTransferableTo(node: TransportNode): Boolean {
 		if (node is EndRodNode) return false
-		return node !is PowerExtractorNode && node !is SolarPanelNode
+		return node !is UnTransferableNode && node !is SolarPanelNode
 	}
 
 	override fun getPathfindingResistance(previousNode: TransportNode?, nextNode: TransportNode?): Int {
