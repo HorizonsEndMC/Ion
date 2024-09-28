@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
 
-interface NetworkHolder <T: NodeManager> {
+interface NetworkHolder <T: NodeManager<*>> {
 	val network: T
 	val scope: CoroutineScope
 
