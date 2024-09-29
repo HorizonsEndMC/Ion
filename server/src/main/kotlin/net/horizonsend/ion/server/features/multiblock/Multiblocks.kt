@@ -13,9 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.Cthul
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockTop
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomIonTurretMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomLogisticTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopIonTurretMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopLogisticTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
@@ -139,7 +137,6 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.AIHeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.AIPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.BottomArsenalStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.DoomsdayDeviceWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.DownwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.HeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.HorizontalRocketStarshipWeaponMultiblock
@@ -150,14 +147,10 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockTop
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.BottomCycleTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.BottomHeavyTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.BottomLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.BottomQuadTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.BottomTriTurretMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.DisintegratorBeamWeaponMultiblockBottom
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.DisintegratorBeamWeaponMultiblockTop
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopCycleTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopHeavyTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopQuadTurretMultiblock
@@ -294,13 +287,6 @@ object Multiblocks : IonServerComponent() {
 			BottomIonTurretMultiblock,
 			TopQuadTurretMultiblock,
 			BottomQuadTurretMultiblock,
-			DoomsdayDeviceWeaponMultiblock,
-			DisintegratorBeamWeaponMultiblockTop,
-			DisintegratorBeamWeaponMultiblockBottom,
-			TopLogisticTurretMultiblock,
-			BottomLogisticTurretMultiblock,
-			TopCycleTurretMultiblock,
-			BottomCycleTurretMultiblock,
 			HorizontalRocketStarshipWeaponMultiblock,
 			UpwardRocketStarshipWeaponMultiblock,
 			DownwardRocketStarshipWeaponMultiblock,

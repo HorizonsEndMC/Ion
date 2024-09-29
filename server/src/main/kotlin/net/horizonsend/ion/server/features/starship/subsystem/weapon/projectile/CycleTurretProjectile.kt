@@ -4,7 +4,8 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.CycleTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.CycleTurretMultiblock
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -49,16 +50,18 @@ class CycleTurretProjectile(
     }
 
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-        multiblock.slowedStarships[starship] = System.currentTimeMillis() + 3000
-        starship.userErrorAction("Direct Control speed slowed by 80%!")
-        starship.directControlCooldown = starship.initialDirectControlCooldown * 5
+        if (starship is ActiveControlledStarship) {
+            multiblock.slowedStarships[starship] = System.currentTimeMillis() + 3000
+            starship.userErrorAction("Direct Control speed slowed by 80%!")
+            starship.directControlCooldown = starship.initialDirectControlCooldown * 5
 
-        Tasks.syncDelay(3 * 20L) {
-            val unslowTime = multiblock.slowedStarships[starship]?.minus(100) ?: 0 // 100 buffer
-            if (ActiveStarships.isActive(starship) && unslowTime < System.currentTimeMillis()) {
-                multiblock.slowedStarships[starship]?.let { multiblock.slowedStarships.remove(starship) }
-                starship.directControlCooldown = starship.initialDirectControlCooldown
-                starship.informationAction("Direct Control speed restored")
+            Tasks.syncDelay(3 * 20L) {
+                val unslowTime = multiblock.slowedStarships[starship]?.minus(100) ?: 0 // 100 buffer
+                if (ActiveStarships.isActive(starship) && unslowTime < System.currentTimeMillis()) {
+                    multiblock.slowedStarships[starship]?.let { multiblock.slowedStarships.remove(starship) }
+                    starship.directControlCooldown = starship.initialDirectControlCooldown
+                    starship.informationAction("Direct Control speed restored")
+                }
             }
         }
     }

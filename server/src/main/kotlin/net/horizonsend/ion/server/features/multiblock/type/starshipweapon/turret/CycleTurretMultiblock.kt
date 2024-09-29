@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret
+package net.horizonsend.ion.server.features.multiblock.starshipweapon.turret
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape

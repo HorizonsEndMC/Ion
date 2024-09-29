@@ -1,7 +1,7 @@
-package net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy
+package net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy
 
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.SignlessStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DoomsdayDeviceWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
