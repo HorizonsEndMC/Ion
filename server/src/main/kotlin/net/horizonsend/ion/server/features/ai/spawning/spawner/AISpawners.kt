@@ -29,9 +29,13 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.GroupSp
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWARK
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MALINGSHU_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBAO_REINFORCED
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PATROLLER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TERALITH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_BATTLECRUISER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_CYCLE
@@ -40,6 +44,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_J
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_LOGISTIC
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOLITH_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOLITH_REINFORCEMENT
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERAN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.spawnChance
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import org.bukkit.World
@@ -166,6 +171,27 @@ object AISpawners : IonServerComponent(true) {
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					VariableIntegerAmount(3, 5),
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1)
+				)
+			)
+		}
+
+		registerSingleWorldSpawner("Trench", "AU-0821") {
+			SingleWorldSpawner(
+				"PRIVATEER_ASSAULT_FORCE",
+				it,
+				AISpawnerTicker(
+					pointChance = 0.5,
+					pointThreshold = 20 * 60 * 7 * 10
+				),
+				BagSpawner(
+					formatLocationSupplier(it, 1500.0, 2500.0),
+					VariableIntegerAmount(30, 50),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 5),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 10),
 				)
 			)
 		}
@@ -625,9 +651,9 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.PROTECTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.FURIOUS), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.INFLICT), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.VETERAN), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.PATROLLER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.TENETA), 0.12)
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 0.12)
 					)
 				),
 				WorldSettings(
@@ -639,11 +665,11 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.PROTECTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.FURIOUS), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.INFLICT), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.VETERAN), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.PATROLLER), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.TENETA), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.CONTRACTOR), 0.05)
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.05)
 					)
 				),
 				WorldSettings(
@@ -653,12 +679,12 @@ object AISpawners : IonServerComponent(true) {
 					maxDistanceFromPlayer = 2500.0,
 					templates = listOf(
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.INFLICT), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.VETERAN), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.PATROLLER), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.TENETA), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.BULWARK), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.CONTRACTOR), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 0.12)
 					)
 				),
@@ -669,10 +695,10 @@ object AISpawners : IonServerComponent(true) {
 					maxDistanceFromPlayer = 2500.0,
 					templates = listOf(
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.INFLICT), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.VETERAN), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.PATROLLER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.TENETA), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.CONTRACTOR), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12)
 					)
 				),
@@ -682,11 +708,11 @@ object AISpawners : IonServerComponent(true) {
 					minDistanceFromPlayer = 1000.0,
 					maxDistanceFromPlayer = 2500.0,
 					templates = listOf(
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.VETERAN), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.PATROLLER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.TENETA), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.BULWARK), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.CONTRACTOR), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12)
 					)
@@ -696,11 +722,11 @@ object AISpawners : IonServerComponent(true) {
 					minDistanceFromPlayer = 1000.0,
 					maxDistanceFromPlayer = 2500.0,
 					templates = listOf(
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.VETERAN), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.PATROLLER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.TENETA), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.BULWARK), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.CONTRACTOR), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12)
 					)
@@ -711,11 +737,11 @@ object AISpawners : IonServerComponent(true) {
 					minDistanceFromPlayer = 1000.0,
 					maxDistanceFromPlayer = 2500.0,
 					templates = listOf(
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.VETERAN), 0.10),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.PATROLLER), 0.10),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.TENETA), 0.10),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.BULWARK), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.CONTRACTOR), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN), 0.10),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER), 0.10),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 0.10),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12)
 					)
