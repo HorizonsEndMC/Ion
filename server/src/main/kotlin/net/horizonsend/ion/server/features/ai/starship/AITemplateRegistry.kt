@@ -72,7 +72,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.frigate,
 		engagementRange = 2500.0
 	)
-		.addFactionConfiguration(AIFaction.WATCHERS)
+		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
@@ -89,7 +89,7 @@ object AITemplateRegistry {
 			controllerFactory = AIControllerFactories.frigate,
 			engagementRange = 2500.0
 		)
-		.addFactionConfiguration(AIFaction.WATCHERS)
+		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
@@ -112,7 +112,7 @@ object AITemplateRegistry {
 			controllerFactory = AIControllerFactories.frigate,
 			engagementRange = 2500.0
 		)
-		.addFactionConfiguration(AIFaction.WATCHERS)
+		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(18000.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
@@ -405,7 +405,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.corvette,
 		engagementRange = 1250.0,
 	)
-		.addFactionConfiguration(AIFaction.SYSTEM_DEFENSE_FORCES)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(5750.0))
 		.build()
@@ -417,7 +417,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.gunship_pulse,
 		engagementRange = 1250.0,
 	)
-		.addFactionConfiguration(AIFaction.SYSTEM_DEFENSE_FORCES)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(3750.0))
 		.build()
@@ -429,7 +429,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.starfighter,
 		engagementRange = 1250.0,
 	)
-		.addFactionConfiguration(AIFaction.SYSTEM_DEFENSE_FORCES)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2650.0))
 		.build()
@@ -441,7 +441,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.corvette,
 		engagementRange = 1250.0,
 	)
-		.addFactionConfiguration(AIFaction.SYSTEM_DEFENSE_FORCES)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2650.0))
 		.build()
@@ -453,7 +453,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.gunship_pulse,
 		engagementRange = 650.0,
 	)
-		.addFactionConfiguration(AIFaction.SYSTEM_DEFENSE_FORCES)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1850.0))
 		.build()
@@ -465,7 +465,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.gunship_pulse,
 		engagementRange = 650.0,
 	)
-		.addFactionConfiguration(AIFaction.SYSTEM_DEFENSE_FORCES)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(950.0))
 		.build()
@@ -477,7 +477,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.gunship_pulse,
 		engagementRange = 650.0,
 	)
-		.addFactionConfiguration(AIFaction.SYSTEM_DEFENSE_FORCES)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1850.0))
 		.build()
@@ -489,7 +489,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.starfighter,
 		engagementRange = 650.0,
 	)
-		.addFactionConfiguration(AIFaction.SYSTEM_DEFENSE_FORCES)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(950.0))
 		.build()
@@ -501,7 +501,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.starfighter,
 		engagementRange = 650.0,
 	)
-		.addFactionConfiguration(AIFaction.SYSTEM_DEFENSE_FORCES)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(950.0))
 		.build()
@@ -513,7 +513,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.starfighter,
 		engagementRange = 650.0,
 	)
-		.addFactionConfiguration(AIFaction.SYSTEM_DEFENSE_FORCES)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(950.0))
 		.build()

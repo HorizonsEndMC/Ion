@@ -106,7 +106,10 @@ object AISpawners : IonServerComponent(true) {
 	fun onWorldInitialize(event: WorldInitEvent) {
 		val name = event.world.name
 
-		spawners.addAll(singleWorldSpawners[name].map { it.invoke(event.world) })
+		val new = singleWorldSpawners[name].map { it.invoke(event.world) }
+		new.mapNotNullTo(tickedAISpawners) { it.scheduler as? AISpawnerTicker }
+
+		spawners.addAll(new)
 	}
 
 	init {
