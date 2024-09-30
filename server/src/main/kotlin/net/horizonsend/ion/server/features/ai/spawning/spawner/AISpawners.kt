@@ -52,6 +52,7 @@ object AISpawners : IonServerComponent(true) {
 	 * For variety, the spawners are defined in the code, but they get their ship configuration and spawn rates, etc. from configuration files.
 	 **/
 	private val spawners = mutableListOf<AISpawner>()
+	val tickedAISpawners = mutableListOf<AISpawnerTicker>()
 
 	fun getAllSpawners(): List<AISpawner> = spawners
 
@@ -103,9 +104,10 @@ object AISpawners : IonServerComponent(true) {
 		spawners.addAll(singleWorldSpawners[name].map { it.invoke(event.world) })
 	}
 
-	// Register spawners before enable
 	init {
 		registerSpawners()
+
+		spawners.mapNotNullTo(tickedAISpawners) { it.scheduler as? AISpawnerTicker }
 	}
 
 	// Run after tick is true
@@ -121,8 +123,10 @@ object AISpawners : IonServerComponent(true) {
 			SingleWorldSpawner(
 				"WATCHER_SPAWNER",
 				it,
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7,
+				AISpawnerTicker(
+					0.5,
+					pointThreshold = 20 * 60 * 7
+				),
 				SingleSpawn(
 					WeightedShipSupplier(
 						spawnChance(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), 0.75),
@@ -137,8 +141,10 @@ object AISpawners : IonServerComponent(true) {
 			SingleWorldSpawner(
 				"WATCHER_BAG_SPAWNER",
 				it,
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7,
+				AISpawnerTicker(
+					pointChance = 0.5,
+					pointThreshold = 20 * 60 * 7
+				),
 				BagSpawner(
 					formatLocationSupplier(it, 2500.0, 4500.0),
 					StaticIntegerAmount(100),
@@ -152,8 +158,10 @@ object AISpawners : IonServerComponent(true) {
 			SingleWorldSpawner(
 				"DAGGER_SWARM",
 				it,
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7,
+				AISpawnerTicker(
+					pointChance = 0.5,
+					pointThreshold = 20 * 60 * 7
+				),
 				BagSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					VariableIntegerAmount(3, 5),
@@ -166,8 +174,10 @@ object AISpawners : IonServerComponent(true) {
 			SingleWorldSpawner(
 				"AI_2_BC_JAM_TEST_SPAWNER",
 				it,
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7,
+				AISpawnerTicker(
+					pointChance = 0.5,
+					pointThreshold = 20 * 60 * 7
+				),
 				GroupSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					mutableListOf(
@@ -185,8 +195,10 @@ object AISpawners : IonServerComponent(true) {
 			SingleWorldSpawner(
 				"AI_2_BC_CYCLE_TEST_SPAWNER",
 				it,
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7,
+				AISpawnerTicker(
+					pointChance = 0.5,
+					pointThreshold = 20 * 60 * 7
+				),
 				GroupSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					mutableListOf(
@@ -203,8 +215,10 @@ object AISpawners : IonServerComponent(true) {
 			SingleWorldSpawner(
 				"AI_2_DESTROYER_JAM_TEST_SPAWNER",
 				it,
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7,
+				AISpawnerTicker(
+					pointChance = 0.5,
+					pointThreshold = 20 * 60 * 7
+				),
 				GroupSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					mutableListOf(
@@ -223,8 +237,10 @@ object AISpawners : IonServerComponent(true) {
 			SingleWorldSpawner(
 				"AI_2_DESTROYER_CYCLE_TEST_SPAWNER",
 				it,
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7,
+				AISpawnerTicker(
+					pointChance = 0.5,
+					pointThreshold = 20 * 60 * 7,
+				),
 				GroupSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					mutableListOf(
@@ -243,8 +259,8 @@ object AISpawners : IonServerComponent(true) {
 			SingleWorldSpawner(
 				"AI_2_CYCLE_DESTROYER_JAM_TEST_SPAWNER",
 				it,
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7,
+				AISpawnerTicker( pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7),
 				GroupSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					mutableListOf(
@@ -263,8 +279,8 @@ object AISpawners : IonServerComponent(true) {
 			SingleWorldSpawner(
 				"AI_2_GIGA_FLEET_TEST_SPAWNER",
 				it,
-				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7,
+				AISpawnerTicker( pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7),
 				GroupSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					mutableListOf(
@@ -289,9 +305,11 @@ object AISpawners : IonServerComponent(true) {
 		registerGlobalSpawner(StandardFactionSpawner(
 			"吃饭人_BASIC",
 			faction = 吃饭人,
+			AISpawnerTicker(
+				pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7,
+			),
 			spawnMessage = "<${吃饭人_STANDARD}>An unknown starship signature is being broadcast in {4} at {1}, {3}".miniMessage(),
-			pointChance = 0.5,
-			pointThreshold = 20 * 60 * 7,
 			worlds = listOf(
 				WorldSettings(
 					worldName = "Trench",
@@ -319,9 +337,11 @@ object AISpawners : IonServerComponent(true) {
 		registerGlobalSpawner(StandardFactionSpawner(
 			"PIRATE_BASIC",
 			faction = PIRATES,
+			AISpawnerTicker(
+				pointChance = 0.5,
+				pointThreshold = 10000
+			),
 			spawnMessage = "<${HE_MEDIUM_GRAY}>A pirate {0} has been identified in the area of {1}, {3}, in {4}. <$PIRATE_SATURATED_RED>Please avoid the sector until the threat has been cleared.".miniMessage(),
-			pointChance = 0.5,
-			pointThreshold = 10000,
 			worlds = listOf(
 				WorldSettings(
 					worldName = "Asteri",
@@ -461,9 +481,11 @@ object AISpawners : IonServerComponent(true) {
 		registerGlobalSpawner(StandardFactionSpawner(
 			"EXPLORER_BASIC",
 			PERSEUS_EXPLORERS,
+			AISpawnerTicker(
+				pointChance = 0.75,
+				pointThreshold = 20 * 60 * 10
+			),
 			spawnMessage = "<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage(),
-			pointChance = 0.75,
-			pointThreshold = 20 * 60 * 10,
 			worlds = listOf(
 				explorerWorld("Asteri", 0.2),
 				explorerWorld("Sirius", 0.11),
@@ -478,9 +500,11 @@ object AISpawners : IonServerComponent(true) {
 		registerGlobalSpawner(StandardFactionSpawner(
 			"MINING_GUILD_BASIC",
 			MINING_GUILD,
+			AISpawnerTicker(
+				pointChance = 0.8,
+				pointThreshold = 8400
+			),
 			spawnMessage = "$miningGuildMini <${HE_MEDIUM_GRAY}>extraction vessel {0} spawned at {1}, {3}, in {4}".miniMessage(),
-			pointChance = 0.8,
-			pointThreshold = 8400,
 			worlds = listOf(
 				WorldSettings(
 					worldName = "Asteri",
@@ -586,9 +610,11 @@ object AISpawners : IonServerComponent(true) {
 		registerGlobalSpawner(StandardFactionSpawner(
 			"PRIVATEER_BASIC",
 			faction = SYSTEM_DEFENSE_FORCES,
+			AISpawnerTicker(
+				pointChance = 0.5,
+				pointThreshold = 12000
+			),
 			spawnMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {3}, in {4}".miniMessage(),
-			pointChance = 0.5,
-			pointThreshold = 12000,
 			worlds = listOf(
 				WorldSettings(
 					worldName = "Asteri",
@@ -700,9 +726,11 @@ object AISpawners : IonServerComponent(true) {
 		registerGlobalSpawner(StandardFactionSpawner(
 			"TSAII_BASIC",
 			faction = TSAII_RAIDERS,
+			AISpawnerTicker(
+				pointThreshold = 30 * 20 * 60,
+				pointChance = 0.5
+			),
 			spawnMessage = "<${TSAII_DARK_ORANGE}>Dangerous Tsaii Raiders {0} has been reported in the area of {1}, {3}, in {4}. <$TSAII_MEDIUM_ORANGE>Please avoid the sector until the threat has been cleared!".miniMessage(),
-			pointThreshold = 30 * 20 * 60,
-			pointChance = 0.5,
 			worlds = listOf(
 				WorldSettings(
 					worldName = "Horizon",

@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPos
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
+import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawnerTicker
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.kyori.adventure.text.Component.text
 import org.bukkit.command.CommandSender
@@ -105,12 +106,11 @@ object AIDebugCommand : SLCommand() {
 
 		for (spawner in AISpawners.getAllSpawners()) {
 			val line = template(
-				message = text("{0}: {1} points, {2} threshold", HEColorScheme.HE_MEDIUM_GRAY),
+				message = text("{0}: {1}", HEColorScheme.HE_MEDIUM_GRAY),
 				paramColor = HEColorScheme.HE_LIGHT_GRAY,
 				useQuotesAroundObjects = false,
 				spawner.identifier,
-				spawner.points,
-				spawner.pointThreshold
+				spawner.scheduler.getTickInfo()
 			)
 
 			sender.sendMessage(line)
@@ -122,15 +122,17 @@ object AIDebugCommand : SLCommand() {
 	@Subcommand("spawner points set")
 	@Suppress("unused")
 	fun setPoints(sender: Player, spawner: AISpawner, value: Int) {
-		spawner.points = value
-		sender.success("Set points of ${spawner.identifier} to ${spawner.points}")
+		val scheduler = spawner.scheduler as? AISpawnerTicker ?: fail { "Spawner is not ticked!" }
+		scheduler.points = value
+		sender.success("Set points of ${spawner.identifier} to ${scheduler.points}")
 	}
 
 	@Subcommand("spawner points add")
 	@Suppress("unused")
 	fun addPoints(sender: Player, spawner: AISpawner, value: Int) {
-		spawner.points = (spawner.points + value)
-		sender.success("Set points of ${spawner.identifier} to ${spawner.points}")
+		val scheduler = spawner.scheduler as? AISpawnerTicker ?: fail { "Spawner is not ticked!" }
+		scheduler.points = (scheduler.points + value)
+		sender.success("Set points of ${spawner.identifier} to ${scheduler.points}")
 	}
 
 	@Serializable

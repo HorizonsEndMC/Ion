@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestTargetingModule
-import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.ai.spawning.SpawnerScheduler
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.ai.spawning.handleException
@@ -20,35 +20,12 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Location
 import org.slf4j.Logger
-import kotlin.random.Random
 
 abstract class AISpawner(
 	val identifier: String,
 	private val mechanic: SpawnerMechanic,
 ) {
-	abstract val pointChance: Double
-	abstract val pointThreshold: Int
-
-	var points: Int = 0
-	var lastTriggered: Long = 0
-
-	/** Tick points, possibly trigger a spawn */
-	open fun tickPoints(logger: Logger) {
-		handleSuccess(logger)
-
-		if (Random.nextDouble() >= pointChance) return
-
-		points++
-	}
-
-	private fun handleSuccess(logger: Logger) {
-		if (points < pointThreshold) return
-
-		points = 0
-
-		lastTriggered = System.currentTimeMillis()
-		trigger(logger, AISpawningManager.context)
-	}
+	abstract val scheduler: SpawnerScheduler
 
 	fun AIStarshipTemplate.getName(): Component = miniMessage().deserialize(miniMessageName)
 
