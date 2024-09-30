@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
 import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.common.utils.text.colors.TSAII_DARK_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.TSAII_MEDIUM_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.WATCHER_ACCENT
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.IonServer
@@ -18,7 +19,6 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
-import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_RAIDERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
@@ -47,6 +47,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOL
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERAN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.spawnChance
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
+import net.kyori.adventure.text.Component.text
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
@@ -141,6 +142,7 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(WATCHERS.asSpawnedShip(TERALITH), 0.25)
 					),
 					formatLocationSupplier(it, 2500.0, 4500.0),
+					"<$WATCHER_ACCENT>An unknown starship signature is being broadcast in {3} at {0}, {2}".miniMessage()
 				)
 			)
 		}
@@ -156,6 +158,8 @@ object AISpawners : IonServerComponent(true) {
 				BagSpawner(
 					formatLocationSupplier(it, 2500.0, 4500.0),
 					StaticIntegerAmount(100),
+					null,
+					text("An unusually strong alien signature has been detected in {3} at {0}, {2}", WATCHER_ACCENT),
 					asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 5),
 					asBagSpawned(WATCHERS.asSpawnedShip(TERALITH), 10)
 				)
@@ -173,6 +177,8 @@ object AISpawners : IonServerComponent(true) {
 				BagSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					VariableIntegerAmount(3, 5),
+					"<$PRIVATEER_LIGHT_TEAL>Privateer Dagger <${HE_MEDIUM_GRAY}>Flight Squadron has spawned at {0}, {2}, in {3}".miniMessage(),
+					null,
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1)
 				)
 			)
@@ -189,6 +195,8 @@ object AISpawners : IonServerComponent(true) {
 				BagSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					VariableIntegerAmount(30, 50),
+					"<$PRIVATEER_LIGHT_TEAL>Privateer <${HE_MEDIUM_GRAY}>Assault Force has spawned at {0}, {2}, in {3}".miniMessage(),
+					null,
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
@@ -215,7 +223,9 @@ object AISpawners : IonServerComponent(true) {
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.EAST.direction, 60.0),
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.WEST.direction, 60.0),
 						吃饭人.asSpawnedShip(TEST_JAMMER).withRandomRadialOffset(180.0, 181.0, 0.0, 192.0),
-					)
+					),
+					null,
+					null
 				)
 			)
 		}
@@ -235,7 +245,9 @@ object AISpawners : IonServerComponent(true) {
 						吃饭人.asSpawnedShip(TEST_CYCLE).withDirectionalOffset(1.0, BlockFace.NORTH.direction, 100.0),
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.SOUTH.direction, 60.0),
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.EAST.direction, 60.0),
-					)
+					),
+					null,
+					null
 				)
 			)
 		}
@@ -257,7 +269,9 @@ object AISpawners : IonServerComponent(true) {
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.EAST.direction, 60.0),
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.WEST.direction, 60.0),
 						吃饭人.asSpawnedShip(TEST_JAMMER).withRandomRadialOffset(180.0, 181.0, 0.0, 192.0),
-					)
+					),
+					null,
+					null
 				)
 			)
 		}
@@ -279,7 +293,9 @@ object AISpawners : IonServerComponent(true) {
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.SOUTH.direction, 60.0),
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.EAST.direction, 60.0),
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.WEST.direction, 60.0),
-					)
+					),
+					null,
+					null
 				)
 			)
 		}
@@ -299,7 +315,9 @@ object AISpawners : IonServerComponent(true) {
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.SOUTH.direction, 60.0),
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(120.0, BlockFace.EAST.direction, 60.0),
 						吃饭人.asSpawnedShip(TEST_JAMMER).withRandomRadialOffset(180.0, 181.0, 0.0, 192.0),
-					)
+					),
+					null,
+					null
 				)
 			)
 		}
@@ -326,14 +344,15 @@ object AISpawners : IonServerComponent(true) {
 						吃饭人.asSpawnedShip(TEST_LOGISTIC).withDirectionalOffset(500.0, BlockFace.NORTH.direction, 192.0),
 						吃饭人.asSpawnedShip(TEST_JAMMER).withRandomRadialOffset(400.0, 401.0, 0.0, 250.0),
 						吃饭人.asSpawnedShip(TEST_JAMMER).withRandomRadialOffset(400.0, 401.0, 0.0, 250.0),
-					)
+					),
+					null,
+					null
 				)
 			)
 		}
 
 		registerGlobalSpawner(StandardFactionSpawner(
 			"吃饭人_BASIC",
-			faction = 吃饭人,
 			AISpawnerTicker(
 				pointChance = 0.5,
 				pointThreshold = 20 * 60 * 7,
@@ -365,7 +384,6 @@ object AISpawners : IonServerComponent(true) {
 
 		registerGlobalSpawner(StandardFactionSpawner(
 			"PIRATE_BASIC",
-			faction = PIRATES,
 			AISpawnerTicker(
 				pointChance = 0.5,
 				pointThreshold = 10000
@@ -509,7 +527,6 @@ object AISpawners : IonServerComponent(true) {
 
 		registerGlobalSpawner(StandardFactionSpawner(
 			"EXPLORER_BASIC",
-			PERSEUS_EXPLORERS,
 			AISpawnerTicker(
 				pointChance = 0.75,
 				pointThreshold = 20 * 60 * 10
@@ -528,7 +545,6 @@ object AISpawners : IonServerComponent(true) {
 
 		registerGlobalSpawner(StandardFactionSpawner(
 			"MINING_GUILD_BASIC",
-			MINING_GUILD,
 			AISpawnerTicker(
 				pointChance = 0.8,
 				pointThreshold = 8400
@@ -638,7 +654,6 @@ object AISpawners : IonServerComponent(true) {
 
 		registerGlobalSpawner(StandardFactionSpawner(
 			"PRIVATEER_BASIC",
-			faction = SYSTEM_DEFENSE_FORCES,
 			AISpawnerTicker(
 				pointChance = 0.5,
 				pointThreshold = 12000
@@ -754,7 +769,6 @@ object AISpawners : IonServerComponent(true) {
 
 		registerGlobalSpawner(StandardFactionSpawner(
 			"TSAII_BASIC",
-			faction = TSAII_RAIDERS,
 			AISpawnerTicker(
 				pointThreshold = 30 * 20 * 60,
 				pointChance = 0.5

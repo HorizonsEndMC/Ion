@@ -17,6 +17,8 @@ class AIFleetManageModule(controller: AIController, val fleet: AIFleet) : AIModu
 		fleet.members.removeAll { (it.get() ?: return@removeAll true) == this.starship }
 	}
 
+	fun size(): Int = fleet.members.size
+
 	class AIFleet {
 		val members: MutableSet<WeakReference<Starship>> = mutableSetOf()
 	}

@@ -19,7 +19,8 @@ class ReinforcementSpawner(
 	"NULL",
 	SingleSpawn(
 		WeightedShipSupplier(*reinforcementPool.toTypedArray()),
-		formatLocationSupplier(reinforced.getWorld(), 250.0, 500.0),
+		formatLocationSupplier({ reinforced.getCenter().toLocation(reinforced.starship.world) }, 250.0, 500.0),
+		null, // Calling module handles this
 		::setupReinforcementShip
 	)
 ) {

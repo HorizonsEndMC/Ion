@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
 import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
-import net.horizonsend.ion.server.features.ai.faction.AIFaction
 import net.horizonsend.ion.server.features.ai.spawning.SpawnerScheduler
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.isSystemOccupied
@@ -16,12 +15,8 @@ import java.util.function.Supplier
  **/
 class StandardFactionSpawner(
 	identifier: String,
-	val faction: AIFaction,
 	override val scheduler: SpawnerScheduler,
-
-	/** 0: x, 1: y, 2: z, 3: world name, */
-	private val spawnMessage: Component,
-
+	spawnMessage: Component,
 	val worlds: List<WorldSettings>,
 ) : AISpawner(
 	identifier,
@@ -33,7 +28,8 @@ class StandardFactionSpawner(
 			val bukkitWorld = worldConfig.getWorld()
 
 			return@Supplier formatLocationSupplier(bukkitWorld, worldConfig.minDistanceFromPlayer, worldConfig.maxDistanceFromPlayer).get()
-		}
+		},
+		spawnMessage
 	)
 ) {
 	init {

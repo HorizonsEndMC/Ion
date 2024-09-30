@@ -33,8 +33,6 @@ data class StarshipTemplate(
 
 	fun getSchematic(): Clipboard? = AISpawningManager.schematicCache[schematicFile].getOrNull()
 
-
-
 	fun componentName(): Component = miniMessage.deserialize(miniMessageName)
 
 	fun spawn(

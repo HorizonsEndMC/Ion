@@ -209,3 +209,41 @@ fun formatLocationSupplier(world: World, minDistance: Double, maxDistance: Doubl
 
 	return@Supplier null
 }
+
+/**
+ * Returns a location within the min to max distance of the provided center point
+ **/
+fun formatLocationSupplier(centerSupplier: Supplier<Location>, minDistance: Double, maxDistance: Double): Supplier<Location?> = Supplier {
+	val center = centerSupplier.get()
+	val world = center.world
+	var iterations = 0
+
+	val border = world.worldBorder
+
+	val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+
+	// max 10 iterations
+	while (iterations <= 15) {
+		iterations++
+
+		val loc = center.getLocationNear(minDistance, maxDistance)
+
+		if (!border.isInside(loc)) {
+			debugAudience.debug("Outside worldborder!")
+			continue
+		}
+
+		if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) {
+			debugAudience.debug("Too close to planet!")
+			continue
+		}
+
+		loc.y = 192.0
+
+		return@Supplier loc
+	}
+
+	debugAudience.debug("Too many attempts to find location")
+
+	return@Supplier null
+}

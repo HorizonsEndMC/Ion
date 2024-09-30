@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.W
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -149,10 +148,10 @@ class AIController private constructor(
 	}
 
 	/** Checks whether the ship's movement has been blocked within the specified time */
-	fun hasBeenBlockedWithin(millis: Long = TimeUnit.SECONDS.toMillis(5)) = (starship as ActiveControlledStarship).lastBlockedTime > (System.currentTimeMillis() - millis)
+	fun hasBeenBlockedWithin(millis: Long = TimeUnit.SECONDS.toMillis(5)) = starship.lastBlockedTime > (System.currentTimeMillis() - millis)
 
 	/** Gets and filters targets within the starship's world in the specified radius */
-	fun getNearbyTargetsInRadius(minRange: Double, maxRange: Double, playerRange: Double = 50.0, filter: (AITarget) -> Boolean): Set<AITarget> {
+	fun getNearbyTargetsInRadius(minRange: Double, maxRange: Double, playerRange: Double = 750.0, filter: (AITarget) -> Boolean): Set<AITarget> {
 		val targets = mutableSetOf<AITarget>()
 
 		targets += ActiveStarships.getInWorld(starship.world).map { StarshipTarget(it) }
