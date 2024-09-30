@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.utils.text.colors.TSAII_MEDIUM_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_ACCENT
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.StaticIntegerAmount
@@ -19,6 +20,7 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_RAIDERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
@@ -35,6 +37,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MALINGSHU_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBAO_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PATROLLER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.SWARMER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TERALITH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_BATTLECRUISER
@@ -783,7 +786,7 @@ object AISpawners : IonServerComponent(true) {
 					templates = listOf(
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.SWARMER), 0.25),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(SWARMER), 0.25),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
 					)
 				),
@@ -795,7 +798,7 @@ object AISpawners : IonServerComponent(true) {
 					templates = listOf(
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.SWARMER), 0.25),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(SWARMER), 0.25),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
 					)
 				),
@@ -807,11 +810,29 @@ object AISpawners : IonServerComponent(true) {
 					templates = listOf(
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.SWARMER), 0.25),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(SWARMER), 0.25),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
 					)
 				)
 			)
 		))
+
+		registerSingleWorldSpawner("Trench", "AU-0821", "Horizon") {
+			SingleWorldSpawner(
+				"SWARMER_SWARM",
+				it,
+				AISpawnerTicker(
+					pointChance = 0.5,
+					pointThreshold = 20 * 60 * 7
+				),
+				BagSpawner(
+					formatLocationSupplier(it, 1500.0, 2500.0),
+					VariableIntegerAmount(5, 15),
+					"Uh oh".toComponent(TSAII_DARK_ORANGE),
+					text("+1 {0} at {1}, {3}, in {4}", TSAII_DARK_ORANGE),
+					asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1)
+				)
+			)
+		}
 	}
 }
