@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.ai.starship
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
+import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
@@ -10,10 +12,8 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
-import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHER_STANDARD
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
-import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人_STANDARD
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 
 /**

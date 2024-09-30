@@ -1,8 +1,20 @@
 package net.horizonsend.ion.server.features.ai.faction
 
+import net.horizonsend.ion.common.utils.text.colors.EXPLORER_LIGHT_CYAN
+import net.horizonsend.ion.common.utils.text.colors.EXPLORER_MEDIUM_CYAN
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.MINING_CORP_DARK_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.MINING_CORP_LIGHT_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.PIRATE_LIGHT_RED
+import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
+import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
+import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_MEDIUM_TEAL
+import net.horizonsend.ion.common.utils.text.colors.TSAII_DARK_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.TSAII_MEDIUM_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.WATCHER_ACCENT
+import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
+import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.misc.FactionManagerModule
@@ -118,9 +130,6 @@ class AIFaction private constructor(
 		fun builder(identifier: String, color: Int): Builder = Builder(identifier, color)
 		fun builder(identifier: String, color: String): Builder = Builder(identifier, Integer.parseInt(color.removePrefix("#"), 16))
 
-		val WATCHER_STANDARD = TextColor.fromHexString("#6DCCA3")!!
-		val WATCHER_ACCENT = TextColor.fromHexString("#16A124")!!
-
 		val WATCHERS = builder("WATCHERS", WATCHER_ACCENT.value())
 			.addNames(listOf(
 				"Dimidium Hivecraft", "Dimidium Swarm", "Dimidium Nest", "Dimidium Cluster", "Dimidium Commune", "Dimidium Brood", "Harriot Hivecraft", "Harriot Swarm", "Harriot Nest", "Harriot Cluster", "Harriot Commune", "Harriot Brood", "Dagon Hivecraft", "Dagon Swarm", "Dagon Nest", "Dagon Cluster", "Dagon Commune", "Dagon Brood", "Tadmor Hivecraft", "Tadmor Swarm",
@@ -146,8 +155,6 @@ class AIFaction private constructor(
 			.addRadiusMessages(2500.0 to "<$WATCHER_STANDARD>Hostile vessel subsystem lock-on confirmed. Engaging.")
 			.build()
 
-		val 吃饭人_STANDARD = TextColor.fromHexString("#FFC11A")!!
-
 		val 吃饭人 = builder("吃饭人", 吃饭人_STANDARD.value())
 			.addNames(
 				text("飞行员", 吃饭人_STANDARD),
@@ -161,13 +168,7 @@ class AIFaction private constructor(
 			)
 			.build()
 
-		val MINING_CORP_LIGHT_ORANGE = HEColorScheme.HE_LIGHT_ORANGE
-		val MINING_CORP_DARK_ORANGE = TextColor.fromHexString("#D98507")!!
-
-		val miningGuild = ofChildren(text("Mining ", MINING_CORP_LIGHT_ORANGE), text("Guild", MINING_CORP_DARK_ORANGE))
 		val miningGuildMini = "<$MINING_CORP_LIGHT_ORANGE>Mining <$MINING_CORP_DARK_ORANGE>Guild"
-
-		val reinforcementMiniMessage = "$miningGuildMini <${HEColorScheme.HE_MEDIUM_GRAY}>vessel {5} in distress, requesting immediate reinforcements."
 
 		val MINING_GUILD = builder("MINING_GUILD", MINING_CORP_LIGHT_ORANGE.value())
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from $miningGuildMini <${HEColorScheme.HE_MEDIUM_GRAY}>vessel")
@@ -190,10 +191,6 @@ class AIFaction private constructor(
 			)
 			.build()
 
-		val EXPLORER_LIGHT_CYAN = TextColor.fromHexString("#59E3D7")!!
-		val EXPLORER_MEDIUM_CYAN = TextColor.fromHexString("#3AA198")!!
-		val EXPLORER_DARK_CYAN = TextColor.fromHexString("#1F5651")!!
-
 		val PERSEUS_EXPLORERS = builder("PERSEUS_EXPLORERS", EXPLORER_LIGHT_CYAN.value())
 			.setMessagePrefix("<$EXPLORER_LIGHT_CYAN>Receiving transmission from civilian vessel")
 			.addNames(
@@ -213,11 +210,6 @@ class AIFaction private constructor(
 				"<white>Engines compromised!"
 			)
 			.build()
-
-		val PRIVATEER_LIGHTER_TEAL = TextColor.fromHexString("#48e596")!!
-		val PRIVATEER_LIGHT_TEAL = TextColor.fromHexString("#5DD097")!!
-		val PRIVATEER_MEDIUM_TEAL = TextColor.fromHexString("#79B698")!!
-		val PRIVATEER_DARK_TEAL = TextColor.fromHexString("#639f77")!!
 
 		val SYSTEM_DEFENSE_FORCES = builder("SYSTEM_DEFENSE_FORCES", PRIVATEER_LIGHT_TEAL.value())
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from <$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> vessel")
@@ -242,11 +234,6 @@ class AIFaction private constructor(
 			)
 			.build()
 
-		val TSAII_LIGHT_ORANGE = TextColor.fromHexString("#F37F58")!!
-		val TSAII_MEDIUM_ORANGE = TextColor.fromHexString("#E56034")!!
-		val TSAII_DARK_ORANGE = TextColor.fromHexString("#A1543A")!!
-		val TSAII_VERY_DARK_ORANGE = TextColor.fromHexString("#9C3614")!!
-
 		val TSAII_RAIDERS = builder("TSAII_RAIDERS", TSAII_MEDIUM_ORANGE.value())
 			.addNames(
 				text("Dhagdagar", TSAII_DARK_ORANGE),
@@ -267,10 +254,6 @@ class AIFaction private constructor(
 				1500.0 to "Get off our turf!"
 			)
 			.build()
-
-		val PIRATE_LIGHT_RED = TextColor.fromHexString("#A06363")!!
-		val PIRATE_SATURATED_RED = TextColor.fromHexString("#C63F3F")!!
-		val PIRATE_DARK_RED = TextColor.fromHexString("#732525")!!
 
 		val PIRATES = builder("PIRATES", PIRATE_SATURATED_RED.value())
 			.setMessagePrefix("<$PIRATE_SATURATED_RED>Receiving transmission from pirate vessel")
