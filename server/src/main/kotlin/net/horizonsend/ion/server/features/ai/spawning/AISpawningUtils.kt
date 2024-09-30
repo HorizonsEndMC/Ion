@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.ai.spawning
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.misc.GlowModule
 import net.horizonsend.ion.server.features.ai.starship.StarshipTemplate
@@ -165,10 +166,17 @@ fun isSystemOccupied(world: World): Boolean {
 }
 
 fun formatLocationSupplier(world: World, minDistance: Double, maxDistance: Double, playerFilter: (Player) -> Boolean = { true }): Supplier<Location?> = Supplier {
+	debugAudience.debug("World: $world")
+
 	val player = world.players
 		.filter { player -> PilotedStarships.isPiloting(player) }
 		.filter(playerFilter)
-		.randomOrNull() ?: return@Supplier null
+		.randomOrNull()
+
+	if (player == null) {
+		debugAudience.debug("No player in world")
+		return@Supplier null
+	}
 
 	var iterations = 0
 
@@ -182,13 +190,22 @@ fun formatLocationSupplier(world: World, minDistance: Double, maxDistance: Doubl
 
 		val loc = player.location.getLocationNear(minDistance, maxDistance)
 
-		if (!border.isInside(loc)) continue
-		if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) continue
+		if (!border.isInside(loc)) {
+			debugAudience.debug("Outside worldborder!")
+			continue
+		}
+
+		if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) {
+			debugAudience.debug("Too close to planet!")
+			continue
+		}
 
 		loc.y = 192.0
 
 		return@Supplier loc
 	}
+
+	debugAudience.debug("Too many attempts to find location")
 
 	return@Supplier null
 }

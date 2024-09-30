@@ -153,9 +153,11 @@ object AISpawners : IonServerComponent(true) {
 				"DAGGER_SWARM",
 				it,
 				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7, BagSpawner( formatLocationSupplier(it, 1500.0, 2500.0),
+				pointThreshold = 20 * 60 * 7,
+				BagSpawner(
+					formatLocationSupplier(it, 1500.0, 2500.0),
 					VariableIntegerAmount(3, 5),
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 1)
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1)
 				)
 			)
 		}

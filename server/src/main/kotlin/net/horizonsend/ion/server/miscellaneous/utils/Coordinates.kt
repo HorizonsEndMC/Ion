@@ -510,7 +510,7 @@ fun Collection<Vector>.average(): Vector {
 	return Vector(sumX, sumY, sumZ)
 }
 
-/** Returns <x, y> pair */
+/** Returns <x, z> pair */
 fun getRadialRandomPoint(minimumDistance: Double, maximumDistance: Double): Pair<Double, Double> {
 	// Get a random radian for a polar position
 	val radians = ThreadLocalRandom.current().nextDouble(0.0, 2 * PI)
