@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
+import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import org.bukkit.Location
 import org.slf4j.Logger
@@ -11,6 +12,8 @@ abstract class MultiSpawner(private val locationProvider: Supplier<Location?>) :
 	override suspend fun trigger(logger: Logger) {
 		val ships = getShips()
 		val spawnOrigin = locationProvider.get() ?: return
+
+		val aiFleet = AIFleetManageModule.AIFleet()
 
 		for (ship in ships) {
 			val offset = ship.offset
@@ -24,8 +27,7 @@ abstract class MultiSpawner(private val locationProvider: Supplier<Location?>) :
 			} else spawnOrigin
 
 			@Suppress("DeferredResultUnused")
-			ship.spawn(logger, spawnPoint)
+			ship.spawn(logger, spawnPoint) { modules["fleet"] = AIFleetManageModule(this, aiFleet) }
 		}
 	}
-
 }

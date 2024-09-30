@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
+import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import org.bukkit.Location
 import org.slf4j.Logger
 import java.util.function.Supplier
@@ -12,7 +13,10 @@ class SingleSpawn(
 		val template = shipPool.get()
 		val spawnPoint = locationProvider.get() ?: return
 
-		@Suppress("DeferredResultUnused")
 		template.spawn(logger, spawnPoint)
+	}
+
+	override fun getAvailableShips(): Collection<SpawnedShip> {
+		return shipPool.getAllAvailable()
 	}
 }

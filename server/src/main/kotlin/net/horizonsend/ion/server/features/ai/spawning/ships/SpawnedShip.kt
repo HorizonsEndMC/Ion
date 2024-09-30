@@ -1,9 +1,7 @@
 package net.horizonsend.ion.server.features.ai.spawning.ships
 
-import kotlinx.coroutines.Deferred
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.spawning.spawner.spawnAIStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.getRadialRandomPoint
@@ -22,13 +20,18 @@ interface SpawnedShip {
 
 	fun spawn(
 		logger: Logger,
-		location: Location
-	): Deferred<ActiveControlledStarship> {
-		return spawnAIStarship(
+		location: Location,
+		modifyController: AIController.() -> Unit = {}
+	) {
+		spawnAIStarship(
 			logger,
 			template,
 			location,
-			{ createController(logger, it) }
+			{
+				val controller = createController(logger, it)
+				modifyController.invoke(controller)
+				controller
+			}
 		)
 	}
 

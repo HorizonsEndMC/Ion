@@ -30,7 +30,10 @@ data class StarshipTemplate(
 ) {
 	@Transient
 	val schematicFile: File = IonServer.dataFolder.resolve("aiShips").resolve("$schematicName.schem")
+
 	fun getSchematic(): Clipboard? = AISpawningManager.schematicCache[schematicFile].getOrNull()
+
+
 
 	fun componentName(): Component = miniMessage.deserialize(miniMessageName)
 

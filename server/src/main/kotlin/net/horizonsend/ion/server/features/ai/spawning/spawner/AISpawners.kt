@@ -55,6 +55,8 @@ object AISpawners : IonServerComponent(true) {
 
 	fun getAllSpawners(): List<AISpawner> = spawners
 
+	operator fun get(identifier: String): AISpawner? = spawners.firstOrNull { it.identifier == identifier }
+
 	/**
 	 * Registers a spawner that has a single instance for every world
 	 *

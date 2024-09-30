@@ -37,4 +37,8 @@ class BagSpawner(
 	companion object {
 		fun asBagSpawned(ship: SpawnedShip, cost: Int) = BagSpawnShip(ship, cost)
 	}
+
+	override fun getAvailableShips(): Collection<SpawnedShip> {
+		return bagSpawnedShips.map { it.ship }
+	}
 }

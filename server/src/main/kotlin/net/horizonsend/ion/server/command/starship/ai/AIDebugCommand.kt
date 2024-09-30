@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.kyori.adventure.text.Component.text
@@ -29,33 +30,43 @@ import org.bukkit.entity.Player
 @CommandAlias("aidebug")
 object AIDebugCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
+		// Spawners
+		manager.commandCompletions.registerAsyncCompletion("aiSpawners") { _ ->
+			AISpawners.getAllSpawners().map { it.identifier }
+		}
+
+		manager.commandCompletions.setDefaultCompletion("aiSpawners", AISpawner::class.java)
+
+
 		manager.commandContexts.registerContext(AISpawner::class.java) { context ->
 			val arg = context.popFirstArg()
 			AISpawners.getAllSpawners().firstOrNull { it.identifier == arg } ?: throw InvalidCommandArgument("No such spawner: $arg")
 		}
 
-		manager.commandCompletions.registerAsyncCompletion("aiSpawners") { _ ->
-			AISpawners.getAllSpawners().map { it.identifier }
+		// Templates
+		manager.commandCompletions.registerAsyncCompletion("spawnerTemplates") { c ->
+			val spawner = c.getContextValue(AISpawner::class.java)
+			spawner.getAvailableShips().map { it.template.identifier }
 		}
+
+		manager.commandCompletions.setDefaultCompletion("spawnerTemplates", AISpawner::class.java)
+
+		manager.commandContexts.registerContext(SpawnedShip::class.java) { c ->
+			val arg = c.popFirstArg()
+			val spawner = c.passedArgs["spawner"] as? AISpawner ?: throw InvalidCommandArgument("No spawner specified")
+			spawner.getAvailableShips().firstOrNull { it.template.identifier == arg } ?: throw InvalidCommandArgument("No template $arg")
+		}
+
+		// Control factories
+		manager.commandContexts.registerContext(AIControllerFactory::class.java) { AIControllerFactories[it.popFirstArg()] }
 
 		manager.commandCompletions.registerAsyncCompletion("controllerFactories") { _ ->
 			AIControllerFactories.presetControllers.keys
 		}
-
-//		manager.commandCompletions.registerAsyncCompletion("spawnerTemplates") { c ->
-//			val spawner = c.getContextValue(AISpawner::class.java)
-//			if (spawner !is StandardFactionSpawner) return@registerAsyncCompletion listOf()
-//			spawner.worlds.flatMapTo(mutableListOf()) {  world ->
-//				world.templates.map { it.template }
-//			}.mapTo(mutableSetOf()) { it.identifier }
-//		}
-
-		manager.commandContexts.registerContext(AIControllerFactory::class.java) { AIControllerFactories[it.popFirstArg()] }
 	}
 
 	@Suppress("Unused")
 	@Subcommand("spawner trigger")
-	@CommandCompletion("@aiSpawners")
 	fun triggerSpawn(sender: Player, spawner: AISpawner) {
 		sender.success("Triggered spawn for ${spawner.identifier}")
 		spawner.trigger(log, AISpawningManager.context)
@@ -125,18 +136,12 @@ object AIDebugCommand : SLCommand() {
 	@Serializable
 	data class WeaponSetsCollection(val sets: MutableSet<AIStarshipTemplate.WeaponSet> = mutableSetOf())
 
-//	@Subcommand("spawn")
-//	@Suppress("unused")
-//	@CommandCompletion("@aiSpawners @spawnerTemplates")
-//	fun spawn(sender: Player, spawner: AISpawner, identifier: String) {
-//		require(spawner is StandardFactionSpawner)
-//
-//		val templates = spawner.worlds.flatMapTo(mutableSetOf()) { world -> world.templates.map { it.template } }
-//		val template = templates.first { it.identifier == identifier }
-//
-//		@Suppress("DeferredResultUnused")
-//		spawner.spawnAIStarship(log, template, sender.location, spawner.createController(template, text("Player Created AI Ship")))
-//
-//		sender.success("Spawned ship")
-//	}
+	@Subcommand("spawn")
+	@Suppress("unused")
+	@CommandCompletion("@spawnerTemplates")
+	fun spawn(sender: Player, spawner: AISpawner, template: SpawnedShip) {
+		template.spawn(log, sender.location)
+
+		sender.success("Spawned ship")
+	}
 }

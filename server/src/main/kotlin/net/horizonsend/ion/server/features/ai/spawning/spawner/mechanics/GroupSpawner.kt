@@ -14,4 +14,8 @@ class GroupSpawner(
 	override fun getShips(): List<SpawnedShip> {
 		return ships
 	}
+
+	override fun getAvailableShips(): Collection<SpawnedShip> {
+		return ships
+	}
 }

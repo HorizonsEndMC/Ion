@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
@@ -12,6 +10,7 @@ import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.ai.spawning.handleException
+import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -62,6 +61,8 @@ abstract class AISpawner(
 			e.printStackTrace()
 		}
 	}
+
+	fun getAvailableShips(): Collection<SpawnedShip> = mechanic.getAvailableShips()
 }
 
 /**
@@ -79,18 +80,13 @@ fun spawnAIStarship(
 	location: Location,
 	controller: (ActiveStarship) -> Controller,
 	callback: (ActiveControlledStarship) -> Unit = {}
-) : Deferred<ActiveControlledStarship> {
-	val deferred = CompletableDeferred<ActiveControlledStarship>()
-
+) {
 	logger.info("Attempting to spawn AI starship ${template.identifier}")
 
 	// Use the template to populate as much information as possible
 	createAIShipFromTemplate(logger, template, location, controller) {
-		deferred.complete(it)
 		callback(it)
 	}
-
-	return deferred
 }
 
 fun createController(template: AITemplate, pilotName: Component): (ActiveStarship) -> AIController {
