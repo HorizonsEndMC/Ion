@@ -6,7 +6,7 @@ import org.slf4j.Logger
 import kotlin.random.Random
 
 class AISpawnerTicker(
-	private val pointChance: Double,
+	private val pointChance: Double = 1.0,
 	private val pointThreshold: Int
 ) : SpawnerScheduler {
 	private lateinit var spawner: AISpawner

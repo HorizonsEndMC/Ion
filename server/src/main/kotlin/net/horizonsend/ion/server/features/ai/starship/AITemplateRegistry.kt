@@ -5,16 +5,21 @@ import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.configuration.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.faction.AIFaction
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_RAIDERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
+import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
 
 /**
  * Fully realized, spawnable, AI templates
@@ -97,7 +102,7 @@ object AITemplateRegistry {
 			dropChance = 1.0f,
 			amount = 1,
 		))))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
 			broadcastMessage = "<italic><$WATCHER_STANDARD>You cannot decipher the transmission from the incoming alien ship",
@@ -120,13 +125,13 @@ object AITemplateRegistry {
 			dropChance = 1.0f,
 			amount = 1,
 		))))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
 			broadcastMessage = "<italic><$WATCHER_STANDARD>You cannot decipher the transmission from the incoming alien ship",
 			reinforcementShips = listOf(spawnChance(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 1.0))
 		))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.25,
 			delay = 100L,
 			broadcastMessage = "<italic><$WATCHER_STANDARD>You cannot decipher the transmission from the incoming alien ship",
@@ -179,7 +184,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
 			broadcastMessage = "<italic><$吃饭人_STANDARD>You cannot decipher the transmission from the incoming alien ship",
@@ -197,7 +202,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
 			broadcastMessage = "<italic><$吃饭人_STANDARD>You cannot decipher the transmission from the incoming alien ship",
@@ -385,7 +390,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2650.0))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
 			broadcastMessage = "<italic><red>Did you really think we would risk this ship without an escort fleet? We'll enjoy looting your corpse!",
@@ -666,7 +671,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2650.0))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
@@ -684,7 +689,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(650.0))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.65,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
@@ -702,7 +707,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1850.0))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.5,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
@@ -720,7 +725,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2560.0))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
@@ -738,7 +743,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(650.0))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.55,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
@@ -756,7 +761,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(650.0))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.55,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
@@ -774,7 +779,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(650.0))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.55,
 			delay = 100L,
 			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
@@ -792,7 +797,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.starfighter,
 		engagementRange = 1000.0
 	)
-		.addFactionConfiguration(AIFaction.TSAII_RAIDERS)
+		.addFactionConfiguration(TSAII_RAIDERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.7))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1550.0))
 		.build()
@@ -804,7 +809,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.starfighter,
 		engagementRange = 1000.0
 	)
-		.addFactionConfiguration(AIFaction.TSAII_RAIDERS)
+		.addFactionConfiguration(TSAII_RAIDERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.7))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1550.0))
 		.build()
@@ -816,7 +821,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.gunship_pulse,
 		engagementRange = 1000.0
 	)
-		.addFactionConfiguration(AIFaction.TSAII_RAIDERS)
+		.addFactionConfiguration(TSAII_RAIDERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.7))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2500.0))
 		.build()
@@ -828,15 +833,100 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.frigate,
 		engagementRange = 1000.0
 	)
-		.addFactionConfiguration(AIFaction.TSAII_RAIDERS)
+		.addFactionConfiguration(TSAII_RAIDERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.7))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(6500.0))
-		.addAdditionalModule(BehaviorConfiguration.ReinforcementInformation(
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
 			broadcastMessage = "<italic><red>Did you really think we would risk this ship without an escort fleet? We'll enjoy looting your corpse!",
 			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RAIDER), 1.0))
 		))
+		.build()
+	)
+
+	// Baits
+	val BAIT_WAYFINDER = registerTemplate(builder(
+		identifier = "BAIT_WAYFINDER",
+		template = StarshipTemplateRegistry.WAYFINDER,
+		controllerFactory = AIControllerFactories.passive_cruise,
+		engagementRange = 750.0
+	)
+//		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(400.0))
+		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
+			activationThreshold = 0.85,
+			delay = 5L,
+			broadcastMessage = "<italic><red>Gotcha! You hoomies always fall for the bait!",
+		) {
+			BagSpawner(
+				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+				VariableIntegerAmount(10, 15),
+				null,
+				null,
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+			)
+		})
+		.build()
+	)
+
+	val BAIT_STRIKER = registerTemplate(builder(
+		identifier = "BAIT_STRIKER",
+		template = StarshipTemplateRegistry.STRIKER,
+		controllerFactory = AIControllerFactories.passive_cruise,
+		engagementRange = 750.0
+	)
+		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(250.0))
+		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
+			activationThreshold = 0.85,
+			delay = 5L,
+			broadcastMessage = "<italic><red>Gotcha! You hoomies always fall for the bait!",
+		) {
+			BagSpawner(
+				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+				VariableIntegerAmount(10, 15),
+				null,
+				null,
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+			)
+		})
+		.build()
+	)
+
+	val BAIT_NIMBLE = registerTemplate(builder(
+		identifier = "BAIT_NIMBLE",
+		template = StarshipTemplateRegistry.NIMBLE,
+		controllerFactory = AIControllerFactories.passive_cruise,
+		engagementRange = 750.0
+	)
+		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(250.0))
+		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
+			activationThreshold = 0.85,
+			delay = 5L,
+			broadcastMessage = "<italic><red>Gotcha! You hoomies always fall for the bait!",
+		) {
+			BagSpawner(
+				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+				VariableIntegerAmount(11, 15),
+				null,
+				null,
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(150.0, 200.0, 0.0), 1),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(75.0, 150.0, 0.0), 3),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 0.0, 0.0), 10)
+			)
+		})
 		.build()
 	)
 
@@ -849,7 +939,7 @@ object AITemplateRegistry {
 
 	private fun builder(identifier: String, template: StarshipTemplate, controllerFactory: AIControllerFactory, engagementRange: Double): Builder = Builder(identifier, controllerFactory, template, engagementRange)
 
-	class Builder(val identifier: String, val controllerFactory: AIControllerFactory, val template: StarshipTemplate, val engagementRange: Double) {
+	class Builder(val identifier: String, private val controllerFactory: AIControllerFactory, val template: StarshipTemplate, val engagementRange: Double) {
 		private val additionalModules: MutableList<BehaviorConfiguration.AdditionalModule> = mutableListOf()
 		private val rewardProviders: MutableList<AITemplate.AIRewardsProviderConfiguration> = mutableListOf()
 

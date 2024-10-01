@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.ai.module.misc.RadiusMessageModule
 import net.horizonsend.ion.server.features.ai.module.misc.ReinforcementSpawnerModule
 import net.horizonsend.ion.server.features.ai.module.misc.SmackTalkModule
 import net.horizonsend.ion.server.features.ai.spawning.spawner.ReinforcementSpawner
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.kyori.adventure.text.minimessage.MiniMessage
 
@@ -64,7 +65,7 @@ class BehaviorConfiguration(
 	}
 
 	@Serializable
-	data class ReinforcementInformation(
+	data class BasicReinforcementInformation(
 		val activationThreshold: Double,
 		val delay: Long,
 		val broadcastMessage: String?,
@@ -75,6 +76,27 @@ class BehaviorConfiguration(
 
 		override fun createModule(controller: AIController): ReinforcementSpawnerModule {
 			val spawner = ReinforcementSpawner(controller, reinforcementShips)
+
+			return ReinforcementSpawnerModule(
+				controller,
+				spawner,
+				activationThreshold,
+				broadcastMessage?.let { message -> MiniMessage.miniMessage().deserialize(message) },
+				delay = delay,
+			)
+		}
+	}
+
+	data class AdvancedReinforcementInformation(
+		val activationThreshold: Double,
+		val delay: Long,
+		val broadcastMessage: String?,
+		val providedSpawner: (AIController) -> SpawnerMechanic
+	) : AdditionalModule {
+		override val name: String = "reinforcement"
+
+		override fun createModule(controller: AIController): ReinforcementSpawnerModule {
+			val spawner = ReinforcementSpawner(controller, providedSpawner.invoke(controller))
 
 			return ReinforcementSpawnerModule(
 				controller,

@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.spawning.SpawnerScheduler
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 
@@ -14,16 +15,21 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
  **/
 class ReinforcementSpawner(
 	private val reinforced: AIController,
-	reinforcementPool: List<AITemplate.SpawningInformationHolder>
+	mechanic: SpawnerMechanic
 ) : AISpawner(
 	"NULL",
-	SingleSpawn(
-		WeightedShipSupplier(*reinforcementPool.toTypedArray()),
-		formatLocationSupplier({ reinforced.getCenter().toLocation(reinforced.starship.world) }, 250.0, 500.0),
-		null, // Calling module handles this
-		::setupReinforcementShip
-	)
+	mechanic
 ) {
+	constructor(reinforced: AIController, reinforcementPool: List<AITemplate.SpawningInformationHolder>) : this(
+		reinforced,
+		SingleSpawn(
+			WeightedShipSupplier(*reinforcementPool.toTypedArray()),
+			formatLocationSupplier({ reinforced.getCenter().toLocation(reinforced.starship.world) }, 250.0, 500.0),
+			null, // Calling module handles this
+			::setupReinforcementShip
+		)
+	)
+
 	override val scheduler: SpawnerScheduler = SpawnerScheduler.DummyScheduler(this)
 
 	companion object {

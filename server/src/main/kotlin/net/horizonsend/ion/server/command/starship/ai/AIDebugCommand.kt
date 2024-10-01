@@ -8,7 +8,9 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
@@ -23,6 +25,8 @@ import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawnerTicker
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.kyori.adventure.text.Component.text
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -68,6 +72,7 @@ object AIDebugCommand : SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("spawner trigger")
+	@CommandCompletion("@aiSpawners")
 	fun triggerSpawn(sender: Player, spawner: AISpawner) {
 		sender.success("Triggered spawn for ${spawner.identifier}")
 		spawner.trigger(log, AISpawningManager.context)
@@ -140,10 +145,23 @@ object AIDebugCommand : SLCommand() {
 
 	@Subcommand("spawn")
 	@Suppress("unused")
-	@CommandCompletion("@spawnerTemplates")
 	fun spawn(sender: Player, spawner: AISpawner, template: SpawnedShip) {
 		template.spawn(log, sender.location)
 
 		sender.success("Spawned ship")
+	}
+
+	@Suppress("Unused")
+	@Subcommand("dump controller")
+	@CommandCompletion("@autoTurretTargets")
+	fun listController(sender: Player, shipIdentifier: String) {
+		val formatted = if (shipIdentifier.contains(":".toRegex())) shipIdentifier.substringAfter(":") else shipIdentifier
+
+		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
+		sender.information(ship.controller.toString())
+
+		(ship.controller as? AIController)?.let { sender.userError(it.modules.entries.joinToString(separator = "\n") { mod ->
+			"[${mod.key}] = ${mod.value}" })
+		}
 	}
 }

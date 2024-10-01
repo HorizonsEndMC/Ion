@@ -179,7 +179,7 @@ object StarshipDebugCommand : SLCommand() {
 	}
 
 	@Suppress("Unused")
-	@Subcommand("dumpcontroller")
+	@Subcommand("dump controller")
 	@CommandCompletion("@autoTurretTargets")
 	fun listController(sender: Player, shipIdentifier: String) {
 		val formatted = if (shipIdentifier.contains(":".toRegex())) shipIdentifier.substringAfter(":") else shipIdentifier

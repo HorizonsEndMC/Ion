@@ -25,9 +25,11 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHE
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
+import net.horizonsend.ion.server.features.ai.spawning.isSystemOccupied
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.GroupSpawner
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.RandomShipSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
@@ -49,12 +51,15 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOL
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOLITH_REINFORCEMENT
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERAN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.spawnChance
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag.ALLOW_AI_SPAWNS
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.text.Component.text
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
+import java.util.function.Supplier
 
 object AISpawners : IonServerComponent(true) {
 	/**
@@ -161,8 +166,8 @@ object AISpawners : IonServerComponent(true) {
 				BagSpawner(
 					formatLocationSupplier(it, 2500.0, 4500.0),
 					StaticIntegerAmount(100),
-					null,
 					text("An unusually strong alien signature has been detected in {3} at {0}, {2}", WATCHER_ACCENT),
+					null,
 					asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 5),
 					asBagSpawned(WATCHERS.asSpawnedShip(TERALITH), 10)
 				)
@@ -784,10 +789,10 @@ object AISpawners : IonServerComponent(true) {
 					maxDistanceFromPlayer = 4500.0,
 					probability = 0.4,
 					templates = listOf(
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(SWARMER), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(SWARMER), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
 					)
 				),
 				WorldSettings(
@@ -796,10 +801,10 @@ object AISpawners : IonServerComponent(true) {
 					maxDistanceFromPlayer = 4500.0,
 					probability = 0.3,
 					templates = listOf(
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(SWARMER), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(SWARMER), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
 					)
 				),
 				WorldSettings(
@@ -808,10 +813,10 @@ object AISpawners : IonServerComponent(true) {
 					maxDistanceFromPlayer = 4500.0,
 					probability = 0.3,
 					templates = listOf(
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(SWARMER), 0.25),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(SWARMER), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
 					)
 				)
 			)
@@ -834,5 +839,26 @@ object AISpawners : IonServerComponent(true) {
 				)
 			)
 		}
+
+		registerGlobalSpawner(GlobalWorldSpawner(
+				"BAIT_SHIP",
+				AISpawnerTicker(
+					pointChance = 0.5,
+					pointThreshold = 20 * 60 * 7 * 20
+				),
+				SingleSpawn(
+					RandomShipSupplier(
+						TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_NIMBLE),
+						TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_STRIKER),
+						TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_WAYFINDER)
+					),
+					Supplier {
+						val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
+						return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
+					},
+					spawnMessage = "<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage()
+				)
+			)
+		)
 	}
 }

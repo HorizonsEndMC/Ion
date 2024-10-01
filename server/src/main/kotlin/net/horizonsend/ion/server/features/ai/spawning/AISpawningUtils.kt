@@ -57,6 +57,12 @@ fun createAIShipFromTemplate(
 	callback: (ActiveControlledStarship) -> Unit = {}
 ) = createShipFromTemplate(logger, template.starshipInfo, location, createController) { starship ->
 	starship.rewardsProviders.addAll(template.rewardProviders.map { it.createRewardsProvider(starship, template) })
+
+	val controller = starship.controller
+	if (controller is AIController) template.behaviorInformation.additionalModules.forEach {
+		controller.modules[it.name] = it.createModule(controller)
+	}
+
 	starship.sinkMessageFactory = AISinkMessageFactory(starship)
 	(starship.controller as AIController).modules["Glow"] = GlowModule(starship.controller as AIController)
 
