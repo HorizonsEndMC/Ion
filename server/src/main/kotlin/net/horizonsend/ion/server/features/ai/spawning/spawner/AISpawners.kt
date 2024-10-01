@@ -354,7 +354,7 @@ object AISpawners : IonServerComponent(true) {
 			)
 		}
 
-		registerGlobalSpawner(StandardFactionSpawner(
+		registerGlobalSpawner(LegacyFactionSpawner(
 			"吃饭人_BASIC",
 			AISpawnerTicker(
 				pointChance = 0.5,
@@ -385,7 +385,7 @@ object AISpawners : IonServerComponent(true) {
 			)
 		))
 
-		registerGlobalSpawner(StandardFactionSpawner(
+		registerGlobalSpawner(LegacyFactionSpawner(
 			"PIRATE_BASIC",
 			AISpawnerTicker(
 				pointChance = 0.5,
@@ -528,7 +528,7 @@ object AISpawners : IonServerComponent(true) {
 			)
 		)
 
-		registerGlobalSpawner(StandardFactionSpawner(
+		registerGlobalSpawner(LegacyFactionSpawner(
 			"EXPLORER_BASIC",
 			AISpawnerTicker(
 				pointChance = 0.75,
@@ -546,7 +546,7 @@ object AISpawners : IonServerComponent(true) {
 			)
 		))
 
-		registerGlobalSpawner(StandardFactionSpawner(
+		registerGlobalSpawner(LegacyFactionSpawner(
 			"MINING_GUILD_BASIC",
 			AISpawnerTicker(
 				pointChance = 0.8,
@@ -655,7 +655,7 @@ object AISpawners : IonServerComponent(true) {
 			)
 		))
 
-		registerGlobalSpawner(StandardFactionSpawner(
+		registerGlobalSpawner(LegacyFactionSpawner(
 			"PRIVATEER_BASIC",
 			AISpawnerTicker(
 				pointChance = 0.5,
@@ -770,7 +770,7 @@ object AISpawners : IonServerComponent(true) {
 			)
 		))
 
-		registerGlobalSpawner(StandardFactionSpawner(
+		registerGlobalSpawner(LegacyFactionSpawner(
 			"TSAII_BASIC",
 			AISpawnerTicker(
 				pointThreshold = 30 * 20 * 60,

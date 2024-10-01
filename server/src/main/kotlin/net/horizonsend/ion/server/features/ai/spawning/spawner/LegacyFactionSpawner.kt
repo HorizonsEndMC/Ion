@@ -13,7 +13,7 @@ import java.util.function.Supplier
 /**
  * A standard AI spawner, spawns ships one at a time
  **/
-class StandardFactionSpawner(
+class LegacyFactionSpawner(
 	identifier: String,
 	override val scheduler: SpawnerScheduler,
 	spawnMessage: Component,
