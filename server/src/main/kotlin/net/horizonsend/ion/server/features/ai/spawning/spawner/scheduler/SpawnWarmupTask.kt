@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.ai.spawning
+package net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner

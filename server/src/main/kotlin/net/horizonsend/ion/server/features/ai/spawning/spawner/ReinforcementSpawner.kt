@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
-import net.horizonsend.ion.server.features.ai.spawning.SpawnerScheduler
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.SpawnerScheduler
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 
 /**

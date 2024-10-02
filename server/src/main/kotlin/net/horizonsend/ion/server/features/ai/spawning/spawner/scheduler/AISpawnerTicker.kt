@@ -1,7 +1,7 @@
-package net.horizonsend.ion.server.features.ai.spawning.spawner
+package net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler
 
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
-import net.horizonsend.ion.server.features.ai.spawning.SpawnerScheduler
+import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import org.slf4j.Logger
 import kotlin.random.Random
 

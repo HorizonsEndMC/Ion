@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
 import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
-import net.horizonsend.ion.server.features.ai.spawning.SpawnerScheduler
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.isSystemOccupied
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.SpawnerScheduler
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandomOrNull
 import net.kyori.adventure.text.Component
 import java.util.function.Supplier

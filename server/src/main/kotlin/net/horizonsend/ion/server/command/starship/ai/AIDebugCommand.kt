@@ -23,8 +23,8 @@ import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPos
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
-import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawnerTicker
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.kyori.adventure.text.Component.text

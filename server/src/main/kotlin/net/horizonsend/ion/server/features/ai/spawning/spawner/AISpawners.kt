@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.GroupSp
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.RandomShipSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWARK
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
