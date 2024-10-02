@@ -30,17 +30,14 @@ object StarshipDestruction {
 			Tasks.syncBlocking {
 				vanishShip(starship)
 			}
+
 			return
 		}
 
-		if (starship is ActiveControlledStarship) {
-			DeactivatedPlayerStarships.deactivateAsync(starship) {
-				DeactivatedPlayerStarships.destroyAsync(starship.data) {
-					vanishShip(starship)
-				}
+		DeactivatedPlayerStarships.deactivateAsync(starship) {
+			DeactivatedPlayerStarships.destroyAsync(starship.data) {
+				vanishShip(starship)
 			}
-		} else {
-			vanishShip(starship)
 		}
 	}
 

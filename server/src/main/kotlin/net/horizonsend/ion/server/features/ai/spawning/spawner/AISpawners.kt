@@ -10,10 +10,8 @@ import net.horizonsend.ion.common.utils.text.colors.TSAII_MEDIUM_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_ACCENT
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.configuration.StaticIntegerAmount
 import net.horizonsend.ion.server.configuration.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING_GUILD
@@ -161,56 +159,15 @@ object AISpawners : IonServerComponent(true) {
 				it,
 				AISpawnerTicker(
 					pointChance = 0.5,
-					pointThreshold = 20 * 60 * 7
+					pointThreshold = 20 * 60 * 7 * 5
 				),
 				BagSpawner(
 					formatLocationSupplier(it, 2500.0, 4500.0),
-					StaticIntegerAmount(100),
+					VariableIntegerAmount(20, 30),
 					text("An unusually strong alien signature has been detected in {3} at {0}, {2}", WATCHER_ACCENT),
 					null,
 					asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 5),
 					asBagSpawned(WATCHERS.asSpawnedShip(TERALITH), 10)
-				)
-			)
-		}
-
-		registerSingleWorldSpawner("Trench", "AU-0821") {
-			SingleWorldSpawner(
-				"DAGGER_SWARM",
-				it,
-				AISpawnerTicker(
-					pointChance = 0.5,
-					pointThreshold = 20 * 60 * 7
-				),
-				BagSpawner(
-					formatLocationSupplier(it, 1500.0, 2500.0),
-					VariableIntegerAmount(3, 5),
-					"<$PRIVATEER_LIGHT_TEAL>Privateer Dagger <${HE_MEDIUM_GRAY}>Flight Squadron has spawned at {0}, {2}, in {3}".miniMessage(),
-					null,
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1)
-				)
-			)
-		}
-
-		registerSingleWorldSpawner("Trench", "AU-0821") {
-			SingleWorldSpawner(
-				"PRIVATEER_ASSAULT_FORCE",
-				it,
-				AISpawnerTicker(
-					pointChance = 0.5,
-					pointThreshold = 20 * 60 * 7 * 10
-				),
-				BagSpawner(
-					formatLocationSupplier(it, 1500.0, 2500.0),
-					VariableIntegerAmount(30, 50),
-					"<$PRIVATEER_LIGHT_TEAL>Privateer <${HE_MEDIUM_GRAY}>Assault Force has spawned at {0}, {2}, in {3}".miniMessage(),
-					null,
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 5),
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 10),
 				)
 			)
 		}
@@ -775,6 +732,47 @@ object AISpawners : IonServerComponent(true) {
 			)
 		))
 
+		registerSingleWorldSpawner("Trench", "AU-0821") {
+			SingleWorldSpawner(
+				"DAGGER_SWARM",
+				it,
+				AISpawnerTicker(
+					pointChance = 0.5,
+					pointThreshold = 20 * 60 * 7
+				),
+				BagSpawner(
+					formatLocationSupplier(it, 1500.0, 2500.0),
+					VariableIntegerAmount(3, 5),
+					"<$PRIVATEER_LIGHT_TEAL>Privateer Dagger <${HE_MEDIUM_GRAY}>Flight Squadron has spawned at {0}, {2}, in {3}".miniMessage(),
+					null,
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1)
+				)
+			)
+		}
+
+		registerSingleWorldSpawner("Trench", "AU-0821") {
+			SingleWorldSpawner(
+				"PRIVATEER_ASSAULT_FORCE",
+				it,
+				AISpawnerTicker(
+					pointChance = 0.5,
+					pointThreshold = 20 * 60 * 7 * 10
+				),
+				BagSpawner(
+					formatLocationSupplier(it, 1500.0, 2500.0),
+					VariableIntegerAmount(30, 50),
+					"<$PRIVATEER_LIGHT_TEAL>Privateer <${HE_MEDIUM_GRAY}>Assault Force has spawned at {0}, {2}, in {3}".miniMessage(),
+					null,
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 5),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 10),
+				)
+			)
+		}
+
 		registerGlobalSpawner(LegacyFactionSpawner(
 			"TSAII_BASIC",
 			AISpawnerTicker(
@@ -833,14 +831,15 @@ object AISpawners : IonServerComponent(true) {
 				BagSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					VariableIntegerAmount(5, 15),
-					"Uh oh".toComponent(TSAII_DARK_ORANGE),
-					text("+1 {0} at {1}, {3}, in {4}", TSAII_DARK_ORANGE),
+					null,
+					null,
 					asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1)
 				)
 			)
 		}
 
-		registerGlobalSpawner(GlobalWorldSpawner(
+		registerGlobalSpawner(
+			GlobalWorldSpawner(
 				"BAIT_SHIP",
 				AISpawnerTicker(
 					pointChance = 0.5,

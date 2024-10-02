@@ -6,7 +6,8 @@ import org.bukkit.event.HandlerList
 
 class StarshipUnpilotedEvent(
 	ship: ActiveControlledStarship,
-	val controller: Controller
+	val oldController: Controller,
+	val newController: Controller
 ) : ControlledStarshipEvent(ship) {
 	override fun getHandlers(): HandlerList {
 		return handlerList

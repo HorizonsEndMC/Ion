@@ -248,9 +248,10 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	fun onAIUnpilot(event: StarshipUnpilotedEvent) {
 		val starship = event.starship
 
-		if (starship.controller !is AIController && !starship.isExploding) return
+		if (event.oldController !is AIController) return
+		if (starship.isExploding) return
 
-		StarshipDestruction.vanish(starship)
+		StarshipDestruction.vanish(starship, urgent = true)
 	}
 
 	private fun tickPlayers() {

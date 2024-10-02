@@ -232,7 +232,7 @@ object PilotedStarships : IonServerComponent() {
 			}
 		}
 
-		StarshipUnpilotedEvent(starship, controller).callEvent()
+		StarshipUnpilotedEvent(starship, controller, unpilotedController).callEvent()
 	}
 
 	operator fun get(player: Player): ActiveControlledStarship? = get(player.uniqueId)

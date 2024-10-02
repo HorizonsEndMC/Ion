@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
@@ -76,7 +75,7 @@ object StarshipDebugCommand : SLCommand() {
 		val formatted = if (identifier.contains(":".toRegex())) identifier.substringAfter(":") else identifier
 		val starship = ActiveStarships[formatted] ?: fail { "Could not find target $identifier" }
 
-		DeactivatedPlayerStarships.deactivateNow(starship as ActiveControlledStarship)
+		DeactivatedPlayerStarships.deactivateNow(starship)
 		sender.success("Released $identifier")
 	}
 
