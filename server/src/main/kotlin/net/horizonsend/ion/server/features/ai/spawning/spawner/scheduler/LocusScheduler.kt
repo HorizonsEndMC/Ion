@@ -199,7 +199,7 @@ class LocusScheduler(
 			marker.setLineStyle(5, 0.8, locus.dynmapColor.value())
 
 			marker.description = """
-				<p><h2>${locus.displayName.plainText()} Locus</h2></p><p>
+				<p><h2>${locus.displayName.plainText()}</h2></p><p>
 			""".trimIndent()
 		}
 
