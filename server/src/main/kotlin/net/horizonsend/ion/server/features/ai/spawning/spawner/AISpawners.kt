@@ -31,6 +31,8 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.RandomS
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.TickedScheduler
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWARK
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
@@ -58,6 +60,7 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
+import java.time.Duration
 import java.util.function.Supplier
 
 object AISpawners : IonServerComponent(true) {
@@ -65,7 +68,7 @@ object AISpawners : IonServerComponent(true) {
 	 * For variety, the spawners are defined in the code, but they get their ship configuration and spawn rates, etc. from configuration files.
 	 **/
 	private val spawners = mutableListOf<AISpawner>()
-	val tickedAISpawners = mutableListOf<AISpawnerTicker>()
+	val tickedAISpawners = mutableListOf<TickedScheduler>()
 
 	fun getAllSpawners(): List<AISpawner> = spawners
 
@@ -115,7 +118,7 @@ object AISpawners : IonServerComponent(true) {
 		val name = event.world.name
 
 		val new = singleWorldSpawners[name].map { it.invoke(event.world) }
-		new.mapNotNullTo(tickedAISpawners) { it.scheduler as? AISpawnerTicker }
+		new.mapNotNullTo(tickedAISpawners) { it.scheduler as? TickedScheduler }
 
 		spawners.addAll(new)
 	}
@@ -123,7 +126,7 @@ object AISpawners : IonServerComponent(true) {
 	init {
 		registerSpawners()
 
-		spawners.mapNotNullTo(tickedAISpawners) { it.scheduler as? AISpawnerTicker }
+		spawners.mapNotNullTo(tickedAISpawners) { it.scheduler as? TickedScheduler }
 	}
 
 	// Run after tick is true
@@ -750,6 +753,32 @@ object AISpawners : IonServerComponent(true) {
 				)
 			)
 		}
+
+		val daggerLocusScheduler = LocusScheduler(
+			"<$PRIVATEER_LIGHT_TEAL>Dagger Swarm<${HE_MEDIUM_GRAY}> locus".miniMessage(),
+			PRIVATEER_LIGHT_TEAL,
+			duration = { Duration.ofMinutes(2) },
+			separation = { Duration.ofMinutes(2) },
+			"<$PRIVATEER_LIGHT_TEAL>Dagger Swarm<${HE_MEDIUM_GRAY}> locus has started in {0} at {1} {2} {3}".miniMessage(),
+			"<$PRIVATEER_LIGHT_TEAL>Dagger Swarm<${HE_MEDIUM_GRAY}> locus has ended".miniMessage(),
+			radius = 300.0,
+			spawnSeparation = { Duration.ofSeconds(30) },
+			listOf("Trench", "AU-0821")
+		)
+
+		registerGlobalSpawner(
+			GlobalWorldSpawner(
+				"DAGGER_SWARM_LOCUS",
+				daggerLocusScheduler,
+				BagSpawner(
+					daggerLocusScheduler.spawnLocationProvider,
+					VariableIntegerAmount(3, 5),
+					"<$PRIVATEER_LIGHT_TEAL>Privateer Dagger <${HE_MEDIUM_GRAY}>Flight Squadron has spawned at {0}, {2}, in {3}".miniMessage(),
+					null,
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1)
+				)
+			)
+		)
 
 		registerSingleWorldSpawner("Trench", "AU-0821") {
 			SingleWorldSpawner(

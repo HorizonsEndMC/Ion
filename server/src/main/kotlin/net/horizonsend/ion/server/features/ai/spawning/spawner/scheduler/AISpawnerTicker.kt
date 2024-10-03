@@ -8,7 +8,7 @@ import kotlin.random.Random
 class AISpawnerTicker(
 	private val pointChance: Double = 1.0,
 	private val pointThreshold: Int
-) : SpawnerScheduler {
+) : SpawnerScheduler, TickedScheduler {
 	private lateinit var spawner: AISpawner
 
 	override fun getSpawner(): AISpawner {
@@ -24,7 +24,7 @@ class AISpawnerTicker(
 	private var lastTriggered: Long = 0
 
 	/** Tick points, possibly trigger a spawn */
-	fun tickPoints(logger: Logger) {
+	override fun tick(logger: Logger) {
 		handleSuccess(logger)
 
 		if (Random.nextDouble() >= pointChance) return

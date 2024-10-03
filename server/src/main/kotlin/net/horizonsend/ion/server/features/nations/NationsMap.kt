@@ -29,7 +29,7 @@ object NationsMap : IonServerComponent(true) {
 		else -> Tasks.sync(block)
 	}
 
-	private val dynmapLoaded by lazy { Bukkit.getPluginManager().isPluginEnabled("dynmap") }
+	val dynmapLoaded by lazy { Bukkit.getPluginManager().isPluginEnabled("dynmap") }
 
 	private val markerAPI: MarkerAPI get() = DynmapPlugin.plugin.markerAPI
 

@@ -54,7 +54,7 @@ object AISpawningManager : IonServerComponent(true) {
 
 	/** Ticks all the spawners, increasing points and maybe triggering an execution */
 	private fun tickSpawners() {
-		for (scheduler in AISpawners.tickedAISpawners) scheduler.tickPoints(log)
+		for (scheduler in AISpawners.tickedAISpawners) scheduler.tick(log)
 	}
 
 	private fun despawnOldAIShips() {
