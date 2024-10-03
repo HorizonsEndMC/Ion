@@ -54,6 +54,7 @@ import net.horizonsend.ion.server.command.qol.CheckCryoCommand
 import net.horizonsend.ion.server.command.qol.CheckProtectionCommand
 import net.horizonsend.ion.server.command.qol.ContainerCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
+import net.horizonsend.ion.server.command.qol.PersonalTransporterCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
@@ -175,4 +176,5 @@ val commands: List<SLCommand> = listOf(
 //	TutorialAdminCommand,
 //	TutorialCommand,
 	CheckCryoCommand,
+	PersonalTransporterCommand
 )
