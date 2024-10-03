@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
+import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -15,7 +16,7 @@ import java.util.function.Supplier
 abstract class MultiSpawner(
 	private val locationProvider: Supplier<Location?>,
 	private val groupMessage: Component?,
-	private val individualSpawnMessage: Component?
+	private val individualSpawnMessage: SpawnMessage?
 ) : SpawnerMechanic() {
 	abstract fun getShips(): List<SpawnedShip>
 
@@ -56,9 +57,7 @@ abstract class MultiSpawner(
 				modules["fleet"] = AIFleetManageModule(this, aiFleet)
 			}
 
-			if (individualSpawnMessage != null) {
-				IonServer.server.sendMessage(formatShipSpawnMessage(individualSpawnMessage, spawnedShip.template, spawnPoint.blockX, spawnPoint.blockY, spawnPoint.blockZ, spawnPoint.world.name))
-			}
+			individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
 		}
 
 		if (aiFleet.members.isNotEmpty() && groupMessage != null) {

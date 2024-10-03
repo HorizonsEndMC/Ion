@@ -57,6 +57,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOL
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOLITH_REINFORCEMENT
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERAN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.spawnChance
+import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag.ALLOW_AI_SPAWNS
 import net.horizonsend.ion.server.miscellaneous.utils.getRandomDuration
@@ -158,7 +159,7 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(WATCHERS.asSpawnedShip(TERALITH), 0.25)
 					),
 					formatLocationSupplier(it, 2500.0, 4500.0),
-					"<$WATCHER_ACCENT>An unknown starship signature is being broadcast in {3} at {0}, {2}".miniMessage()
+					SpawnMessage.WorldMessage("<$WATCHER_ACCENT>An unknown starship signature is being broadcast in {3} at {0}, {2}".miniMessage())
 				)
 			)
 		}
@@ -181,7 +182,7 @@ object AISpawners : IonServerComponent(true) {
 			SingleSpawn(
 				RandomShipSupplier(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), WATCHERS.asSpawnedShip(TERALITH)),
 				watcherLocusScheduler.spawnLocationProvider,
-				null
+				SpawnMessage.WorldMessage("<${HE_MEDIUM_GRAY}> A <$WATCHER_ACCENT>{0} responds to the signal.".miniMessage())
 			)
 		))
 
@@ -528,7 +529,7 @@ object AISpawners : IonServerComponent(true) {
 					PIRATES.asSpawnedShip(AITemplateRegistry.BLOODSTAR)
 				),
 				pirateLocusScheduler.spawnLocationProvider,
-				null
+				SpawnMessage.WorldMessage("<$WATCHER_ACCENT>Watcher Vessels<$HE_MEDIUM_GRAY> answer the call of the signal.".miniMessage())
 			)
 		))
 
@@ -838,7 +839,7 @@ object AISpawners : IonServerComponent(true) {
 					SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK)
 				),
 				daggerLocusScheduler.spawnLocationProvider,
-				null
+				SpawnMessage.WorldMessage("<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {3}, in {4}".miniMessage())
 			)
 		))
 
@@ -935,7 +936,7 @@ object AISpawners : IonServerComponent(true) {
 					TSAII_RAIDERS.asSpawnedShip(REAVER)
 				),
 				tsaiiLocusScheduler.spawnLocationProvider,
-				null
+				SpawnMessage.WorldMessage("<${TSAII_DARK_ORANGE}>{0} has joined the raid {1}, {3}, in {4}.".miniMessage())
 			)
 		))
 
@@ -956,7 +957,7 @@ object AISpawners : IonServerComponent(true) {
 						val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
 						return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
 					},
-					spawnMessage = "<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage()
+					spawnMessage = SpawnMessage.WorldMessage("<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage())
 				)
 			)
 		)
