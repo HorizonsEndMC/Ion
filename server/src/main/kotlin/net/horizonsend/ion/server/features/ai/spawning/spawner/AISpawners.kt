@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.common.utils.text.colors.TSAII_DARK_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.TSAII_MEDIUM_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_ACCENT
+import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.IonServer
@@ -37,9 +38,13 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWARK
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAYBREAK
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MALINGSHU_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBAO_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PATROLLER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.RAIDER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.REAVER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.SCYTHE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.SWARMER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TERALITH
@@ -54,6 +59,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.spawnChance
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag.ALLOW_AI_SPAWNS
+import net.horizonsend.ion.server.miscellaneous.utils.getRandomDuration
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.text.Component.text
 import org.bukkit.World
@@ -156,6 +162,28 @@ object AISpawners : IonServerComponent(true) {
 				)
 			)
 		}
+
+		val watcherLocusScheduler = LocusScheduler(
+			"<$WATCHER_STANDARD>Unknown Signal Locus".miniMessage(),
+			WATCHER_STANDARD,
+			duration = { Duration.ofMinutes(30) },
+			separation = { getRandomDuration(Duration.ofHours(3), Duration.ofHours(5)) },
+			"<${HE_MEDIUM_GRAY}>An <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has been detected in {0} at {1} {3}. <$WATCHER_ACCENT>Alien starships patrol the area.".miniMessage(),
+			"<${HE_MEDIUM_GRAY}>The <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has disappeared".miniMessage(),
+			radius = 500.0,
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(30), Duration.ofSeconds(90)) },
+			listOf("Trench", "AU-0821", "Horizon")
+		)
+
+		registerGlobalSpawner(GlobalWorldSpawner(
+			"WATCHER_LOCUS",
+			watcherLocusScheduler,
+			SingleSpawn(
+				RandomShipSupplier(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), WATCHERS.asSpawnedShip(TERALITH)),
+				watcherLocusScheduler.spawnLocationProvider,
+				null
+			)
+		))
 
 		registerSingleWorldSpawner("Trench", "AU-0821") {
 			SingleWorldSpawner(
@@ -474,6 +502,36 @@ object AISpawners : IonServerComponent(true) {
 			)
 		))
 
+		val pirateLocusScheduler = LocusScheduler(
+			"<${HE_MEDIUM_GRAY}>Increased <$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> Activity".miniMessage(),
+			PIRATE_SATURATED_RED,
+			duration = { Duration.ofMinutes(30) },
+			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(4)) },
+			"<${HE_MEDIUM_GRAY}>Increased <$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> activity has been noted in {0} at {1} {3}. <$PIRATE_SATURATED_RED>Please avoid the area.".miniMessage(),
+			"<$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> activity has waned".miniMessage(),
+			radius = 300.0,
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(30), Duration.ofSeconds(90)) },
+			listOf("Trench", "AU-0821", "Horizon")
+		)
+
+		registerGlobalSpawner(GlobalWorldSpawner(
+			"PIRATE_LOCUS",
+			pirateLocusScheduler,
+			SingleSpawn(
+				RandomShipSupplier(
+					PIRATES.asSpawnedShip(AITemplateRegistry.VENDETTA),
+					PIRATES.asSpawnedShip(AITemplateRegistry.ANAAN),
+					PIRATES.asSpawnedShip(AITemplateRegistry.CORMORANT),
+					PIRATES.asSpawnedShip(AITemplateRegistry.MANTIS),
+					PIRATES.asSpawnedShip(AITemplateRegistry.HERNSTEIN),
+					PIRATES.asSpawnedShip(AITemplateRegistry.FYR),
+					PIRATES.asSpawnedShip(AITemplateRegistry.BLOODSTAR)
+				),
+				pirateLocusScheduler.spawnLocationProvider,
+				null
+			)
+		))
+
 		fun explorerWorld(worldName: String, probability: Double): WorldSettings = WorldSettings(
 			worldName = worldName,
 			probability = probability,
@@ -654,7 +712,7 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.INFLICT), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.05)
 					)
@@ -668,7 +726,7 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.INFLICT), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
@@ -686,7 +744,7 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12)
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12)
 					)
 				),
 				WorldSettings(
@@ -701,7 +759,7 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12)
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12)
 					)
 				),
 				WorldSettings(worldName = "Trench",
@@ -715,7 +773,7 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12)
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12)
 					)
 				),
 				WorldSettings(
@@ -730,7 +788,7 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(AITemplateRegistry.DAYBREAK), 0.12)
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12)
 					)
 				)
 			)
@@ -755,30 +813,34 @@ object AISpawners : IonServerComponent(true) {
 		}
 
 		val daggerLocusScheduler = LocusScheduler(
-			"<$PRIVATEER_LIGHT_TEAL>Dagger Swarm<${HE_MEDIUM_GRAY}> locus".miniMessage(),
+			"<$PRIVATEER_LIGHT_TEAL>Privateer<${HE_MEDIUM_GRAY}> Naval Drills".miniMessage(),
 			PRIVATEER_LIGHT_TEAL,
-			duration = { Duration.ofMinutes(2) },
-			separation = { Duration.ofMinutes(2) },
-			"<$PRIVATEER_LIGHT_TEAL>Dagger Swarm<${HE_MEDIUM_GRAY}> locus has started in {0} at {1} {2} {3}".miniMessage(),
-			"<$PRIVATEER_LIGHT_TEAL>Dagger Swarm<${HE_MEDIUM_GRAY}> locus has ended".miniMessage(),
+			duration = { Duration.ofMinutes(30) },
+			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(4)) },
+			"<$PRIVATEER_LIGHT_TEAL>Privateer Naval Drills<${HE_MEDIUM_GRAY}> will be conducted in {0} at {1} {3}. Please avoid the area.".miniMessage(),
+			"<$PRIVATEER_LIGHT_TEAL>Privateer Naval Drills<${HE_MEDIUM_GRAY}> have ended".miniMessage(),
 			radius = 300.0,
-			spawnSeparation = { Duration.ofSeconds(30) },
-			listOf("Trench", "AU-0821")
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(30), Duration.ofSeconds(90)) },
+			listOf("Trench", "AU-0821", "Horizon")
 		)
 
-		registerGlobalSpawner(
-			GlobalWorldSpawner(
-				"DAGGER_SWARM_LOCUS",
-				daggerLocusScheduler,
-				BagSpawner(
-					daggerLocusScheduler.spawnLocationProvider,
-					VariableIntegerAmount(3, 5),
-					"<$PRIVATEER_LIGHT_TEAL>Privateer Dagger <${HE_MEDIUM_GRAY}>Flight Squadron has spawned at {0}, {2}, in {3}".miniMessage(),
-					null,
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1)
-				)
+		registerGlobalSpawner(GlobalWorldSpawner(
+			"PRIVATEER_LOCUS",
+			daggerLocusScheduler,
+			SingleSpawn(
+				RandomShipSupplier(
+					SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN),
+					SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER),
+					SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA),
+					SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK),
+					SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR),
+					SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER),
+					SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK)
+				),
+				daggerLocusScheduler.spawnLocationProvider,
+				null
 			)
-		)
+		))
 
 		registerSingleWorldSpawner("Trench", "AU-0821") {
 			SingleWorldSpawner(
@@ -791,7 +853,7 @@ object AISpawners : IonServerComponent(true) {
 				BagSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
 					VariableIntegerAmount(30, 50),
-					"<$PRIVATEER_LIGHT_TEAL>Privateer <${HE_MEDIUM_GRAY}>Assault Force has spawned at {0}, {2}, in {3}".miniMessage(),
+					"<$PRIVATEER_LIGHT_TEAL>Privateer <${HE_MEDIUM_GRAY}>Assault Force has been spotted engaging a target in {3}, at {0} {2}".miniMessage(),
 					null,
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
@@ -817,10 +879,10 @@ object AISpawners : IonServerComponent(true) {
 					maxDistanceFromPlayer = 4500.0,
 					probability = 0.4,
 					templates = listOf(
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(RAIDER), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 0.25),
 						spawnChance(TSAII_RAIDERS.asSpawnedShip(SWARMER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(REAVER), 0.25)
 					)
 				),
 				WorldSettings(
@@ -829,10 +891,10 @@ object AISpawners : IonServerComponent(true) {
 					maxDistanceFromPlayer = 4500.0,
 					probability = 0.3,
 					templates = listOf(
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(RAIDER), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 0.25),
 						spawnChance(TSAII_RAIDERS.asSpawnedShip(SWARMER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(REAVER), 0.25)
 					)
 				),
 				WorldSettings(
@@ -841,32 +903,41 @@ object AISpawners : IonServerComponent(true) {
 					maxDistanceFromPlayer = 4500.0,
 					probability = 0.3,
 					templates = listOf(
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.RAIDER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.SCYTHE), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(RAIDER), 0.25),
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 0.25),
 						spawnChance(TSAII_RAIDERS.asSpawnedShip(SWARMER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.REAVER), 0.25)
+						spawnChance(TSAII_RAIDERS.asSpawnedShip(REAVER), 0.25)
 					)
 				)
 			)
 		))
 
-		registerSingleWorldSpawner("Trench", "AU-0821", "Horizon") {
-			SingleWorldSpawner(
-				"SWARMER_SWARM",
-				it,
-				AISpawnerTicker(
-					pointChance = 0.5,
-					pointThreshold = 20 * 60 * 7
+		val tsaiiLocusScheduler = LocusScheduler(
+			"<$TSAII_DARK_ORANGE>Tsaii Warband".miniMessage(),
+			PIRATE_SATURATED_RED,
+			duration = { Duration.ofMinutes(30) },
+			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(4)) },
+			"<${HE_MEDIUM_GRAY}>A <$TSAII_DARK_ORANGE>Tsaii Warband<${HE_MEDIUM_GRAY}> has been spotted in {0} at {1} {3}. <$TSAII_MEDIUM_ORANGE>Please avoid the area.".miniMessage(),
+			"<${HE_MEDIUM_GRAY}>The <$TSAII_DARK_ORANGE>Tsaii Warband<${HE_MEDIUM_GRAY}> has departed".miniMessage(),
+			radius = 300.0,
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(30), Duration.ofSeconds(90)) },
+			listOf("Trench", "AU-0821", "Horizon")
+		)
+
+		registerGlobalSpawner(GlobalWorldSpawner(
+			"TSAII_LOCUS",
+			tsaiiLocusScheduler,
+			SingleSpawn(
+				RandomShipSupplier(
+					TSAII_RAIDERS.asSpawnedShip(RAIDER),
+					TSAII_RAIDERS.asSpawnedShip(SCYTHE),
+					TSAII_RAIDERS.asSpawnedShip(SWARMER),
+					TSAII_RAIDERS.asSpawnedShip(REAVER)
 				),
-				BagSpawner(
-					formatLocationSupplier(it, 1500.0, 2500.0),
-					VariableIntegerAmount(5, 15),
-					null,
-					null,
-					asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1)
-				)
+				tsaiiLocusScheduler.spawnLocationProvider,
+				null
 			)
-		}
+		))
 
 		registerGlobalSpawner(
 			GlobalWorldSpawner(

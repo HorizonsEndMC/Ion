@@ -39,6 +39,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.scheduler.BukkitRunnable
 import java.time.Duration
+import kotlin.random.Random
 import kotlin.reflect.jvm.isAccessible
 
 val vaultEconomy = try {
@@ -190,3 +191,8 @@ fun regeneratingBlockChange(source: Entity?, origin: Block, changedBlocks: Mutab
 }
 
 fun Long.ticks(): Duration = Duration.of(this, Tick.tick())
+
+fun getRandomDuration(minimum: Duration, maximum: Duration): Duration {
+	val diff = maximum.toMillis() - minimum.toMillis()
+	return Duration.ofMillis(minimum.toMillis() + Random.nextLong(0, diff))
+}
