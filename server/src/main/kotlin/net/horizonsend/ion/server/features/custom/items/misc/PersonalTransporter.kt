@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.custom.items.misc
 
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.gui.custom.item.PersonalTransporterGui
+import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
@@ -39,6 +41,12 @@ open class PersonalTransporter(
     }
 
     private fun openTeleportMenu(player: Player) {
-        PersonalTransporterGui(player).openMainWindow()
+        if (Levels[player] > 10) {
+            player.userError("Personal transporters can only be used by players that are level 10 or lower!")
+            PersonalTransporterManager.removeItemFromPlayer(player)
+            return
+        } else {
+            PersonalTransporterGui(player).openMainWindow()
+        }
     }
 }
