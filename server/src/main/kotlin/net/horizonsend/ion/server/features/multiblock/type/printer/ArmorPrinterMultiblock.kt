@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isStainedTerracotta
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-object ArmorPrinterMultiblock : PrinterMultiblock() {
+abstract class AbstractArmorPrinterMultiblock : PrinterMultiblock() {
 	override val signText = createSignText(
 		line1 = "&6Armor",
 		line2 = "&fPrinter",
@@ -19,4 +19,12 @@ object ArmorPrinterMultiblock : PrinterMultiblock() {
 	override fun MultiblockShape.RequirementBuilder.printerCoreBlock() = type(Material.ANVIL)
 	override fun MultiblockShape.RequirementBuilder.printerProductBlock() =
 		filteredTypes { it == Material.TERRACOTTA || it.isStainedTerracotta }
+}
+
+object ArmorPrinterMultiblock : AbstractArmorPrinterMultiblock() {
+	override val mirrored = false
+}
+
+object ArmorPrinterMultiblockMirrored : AbstractArmorPrinterMultiblock() {
+	override val mirrored = true
 }

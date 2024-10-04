@@ -118,10 +118,14 @@ import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFur
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.powerfurnace.PowerFurnaceMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.printer.ArmorPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.ArmorPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
@@ -221,9 +225,13 @@ object Multiblocks : IonServerComponent() {
 			CarbonProcessorMultiblock,
 
 			CarbonPrinterMultiblock,
+			CarbonPrinterMultiblockMirrored,
 			TechnicalPrinterMultiblock,
+			TechnicalPrinterMultiblockMirrored,
 			GlassPrinterMultiblock,
+			GlassPrinterMultiblockMirrored,
 			ArmorPrinterMultiblock,
+			ArmorPrinterMultiblockMirrored,
 
 			DisconnectedDockingTubeMultiblock,
 			ConnectedDockingTubeMultiblock,

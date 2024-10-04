@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-object GlassPrinterMultiblock : PrinterMultiblock() {
+abstract class AbstractGlassPrinterMultiblock : PrinterMultiblock() {
 	override val signText = createSignText(
 		line1 = "&8Glass",
 		line2 = "&fPrinter",
@@ -16,4 +16,12 @@ object GlassPrinterMultiblock : PrinterMultiblock() {
 	override fun MultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
 	override fun MultiblockShape.RequirementBuilder.printerCoreBlock() = endRod()
 	override fun MultiblockShape.RequirementBuilder.printerProductBlock() = anyGlass()
+}
+
+object GlassPrinterMultiblock : AbstractGlassPrinterMultiblock() {
+	override val mirrored = false
+}
+
+object GlassPrinterMultiblockMirrored : AbstractGlassPrinterMultiblock() {
+	override val mirrored = true
 }

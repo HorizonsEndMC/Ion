@@ -18,6 +18,7 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 	override val name: String = "printer"
 	override val maxPower: Int = 50_000
 	abstract fun getOutput(product: Material): ItemStack
+	abstract val mirrored: Boolean
 
 	protected abstract fun MultiblockShape.RequirementBuilder.printerCoreBlock()
 	protected abstract fun MultiblockShape.RequirementBuilder.printerMachineryBlock()
@@ -41,9 +42,15 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 
 		z(+1) {
 			y(-1) {
-				x(-1).copperBlock()
-				x(+0).printerMachineryBlock()
-				x(+1).ironBlock()
+				if (!mirrored) {
+					x(-1).copperBlock()
+					x(+0).printerMachineryBlock()
+					x(+1).ironBlock()
+				} else {
+					x(-1).ironBlock()
+					x(+0).printerMachineryBlock()
+					x(+1).copperBlock()
+				}
 			}
 
 			y(+0) {
@@ -55,9 +62,15 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 
 		z(+2) {
 			y(-1) {
-				x(-1).copperBlock()
-				x(+0).printerCoreBlock()
-				x(+1).anyGlass()
+				if (!mirrored) {
+					x(-1).copperBlock()
+					x(+0).printerCoreBlock()
+					x(+1).anyGlass()
+				} else {
+					x(-1).anyGlass()
+					x(+0).printerCoreBlock()
+					x(+1).copperBlock()
+				}
 			}
 
 			y(+0) {
@@ -69,9 +82,15 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 
 		z(+3) {
 			y(-1) {
-				x(-1).copperBlock()
-				x(+0).printerMachineryBlock()
-				x(+1).ironBlock()
+				if (!mirrored) {
+					x(-1).copperBlock()
+					x(+0).printerMachineryBlock()
+					x(+1).ironBlock()
+				} else {
+					x(-1).ironBlock()
+					x(+0).printerMachineryBlock()
+					x(+1).copperBlock()
+				}
 			}
 
 			y(+0) {
