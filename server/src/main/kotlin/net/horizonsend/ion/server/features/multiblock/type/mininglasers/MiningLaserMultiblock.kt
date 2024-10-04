@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSu
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
+import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
@@ -25,16 +26,23 @@ abstract class MiningLaserMultiblock : Multiblock(), SubsystemMultiblock<MiningL
 	abstract val sound: String
 	abstract val side: BlockFace
 	abstract val tier: Int
+	abstract val mirrored: Boolean
 
 	fun getOutput(sign: Sign): Inventory {
 		val direction = sign.getFacing().oppositeFace
 
-		return (
-			sign.block.getRelative(direction)
+		return if (!mirrored)
+			(sign.block.getRelative(direction)
 				.getRelative(side.oppositeFace)
 				.getRelative(direction.leftFace)
 				.getState(false) as InventoryHolder
-			).inventory
+					).inventory
+		else
+			(sign.block.getRelative(direction)
+				.getRelative(side.oppositeFace)
+				.getRelative(direction.rightFace)
+				.getState(false) as InventoryHolder
+					).inventory
 	}
 
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): MiningLaserSubsystem {

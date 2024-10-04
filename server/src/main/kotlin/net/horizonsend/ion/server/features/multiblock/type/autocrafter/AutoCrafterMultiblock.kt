@@ -41,6 +41,7 @@ abstract class AutoCrafterMultiblock(
 ) : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val name = "autocrafter"
 	override val requiredPermission: String? = "ion.multiblock.autocrafter"
+	open val mirrored: Boolean = false
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -107,7 +108,7 @@ abstract class AutoCrafterMultiblock(
 
 	private fun getInput(sign: Sign): InventoryHolder? {
 		val forward = sign.getFacing().oppositeFace
-		val left = forward.rightFace.oppositeFace
+		val left = if (!mirrored) forward.rightFace.oppositeFace else forward.rightFace
 		val x = sign.x + forward.modX * 2 + left.modX * 2
 		val y = sign.y + forward.modY * 2 + left.modY * 2
 		val z = sign.z + forward.modZ * 2 + left.modZ * 2
@@ -124,7 +125,7 @@ abstract class AutoCrafterMultiblock(
 
 	private fun getOutput(sign: Sign): InventoryHolder? {
 		val forward = sign.getFacing().oppositeFace
-		val right = forward.rightFace
+		val right = if (!mirrored) forward.rightFace else forward.rightFace.oppositeFace
 		val x = sign.x + forward.modX * 2 + right.modX * 2
 		val y = sign.y + forward.modY * 2 + right.modY * 2
 		val z = sign.z + forward.modZ * 2 + right.modZ * 2
@@ -287,5 +288,68 @@ abstract class AutoCrafterMultiblock(
 				}
 			}
 		)
+	}
+}
+
+abstract class AutoCrafterMultiblockMirrored(
+	tierText: String,
+	private val tierMaterial: Material,
+	iterations: Int,
+) : AutoCrafterMultiblock(tierText, tierMaterial, iterations) {
+	override val mirrored = true
+	override fun MultiblockShape.buildStructure() {
+		z(+0) {
+			y(-1) {
+				x(-2).type(tierMaterial)
+				x(-1).anyGlassPane()
+				x(+0).wireInputComputer()
+				x(+1).anyGlassPane()
+				x(+2).type(tierMaterial)
+			}
+
+			y(+0) {
+				x(-2).type(tierMaterial)
+				x(-1).anyGlassPane()
+				x(+0).machineFurnace()
+				x(+1).anyGlassPane()
+				x(+2).type(tierMaterial)
+			}
+		}
+
+		z(+1) {
+			y(-1) {
+				x(-2).extractor()
+				x(-1).titaniumBlock()
+				x(+0).craftingTable()
+				x(+1).titaniumBlock()
+				x(+2).anyGlass() // input pipe
+			}
+
+			y(+0) {
+				x(-2).anyPipedInventory()
+				x(-1).endRod()
+				x(+0).anyType(Material.DISPENSER, Material.DROPPER)
+				x(+1).endRod()
+				x(+2).anyPipedInventory()
+			}
+		}
+
+		z(+2) {
+			y(-1) {
+				x(-2).type(tierMaterial)
+				x(-1).anyGlassPane()
+				x(+0).anyGlass()
+				x(+1).anyGlassPane()
+				x(+2).type(tierMaterial)
+			}
+
+			y(+0) {
+				x(-2).type(tierMaterial)
+				x(-1).anyGlassPane()
+				x(+0).anyGlass()
+				x(+1).anyGlassPane()
+				x(+2).type(tierMaterial)
+			}
+		}
 	}
 }

@@ -1,16 +1,17 @@
 package net.horizonsend.ion.server.features.starship.subsystem.misc
 
-import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractMagazineMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
+import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 
-class MagazineSubsystem(starship: ActiveStarship, sign: Sign, multiblock: MagazineMultiblock) :
-	AbstractMultiblockSubsystem<MagazineMultiblock>(starship, sign, multiblock) {
+class MagazineSubsystem(starship: ActiveStarship, sign: Sign, multiblock: AbstractMagazineMultiblock) :
+	AbstractMultiblockSubsystem<AbstractMagazineMultiblock>(starship, sign, multiblock) {
 	fun isAmmoAvailable(itemStack: ItemStack): Boolean {
 		val inventory = getInventory()
 			?: return false
@@ -39,12 +40,21 @@ class MagazineSubsystem(starship: ActiveStarship, sign: Sign, multiblock: Magazi
 			return null
 		}
 
-		val inventoryHolder = starship.world
-			.getBlockAtKey(pos.toBlockKey())
-			.getRelative(face)
-			.getRelative(face.rightFace)
-			.state as? InventoryHolder
-			?: return null
+		val inventoryHolder = if (!multiblock.mirrored) {
+			starship.world
+				.getBlockAtKey(pos.toBlockKey())
+				.getRelative(face)
+				.getRelative(face.rightFace)
+				.state as? InventoryHolder
+				?: return null
+		} else {
+			starship.world
+				.getBlockAtKey(pos.toBlockKey())
+				.getRelative(face)
+				.getRelative(face.leftFace)
+				.state as? InventoryHolder
+				?: return null
+		}
 
 		return inventoryHolder.inventory
 	}
