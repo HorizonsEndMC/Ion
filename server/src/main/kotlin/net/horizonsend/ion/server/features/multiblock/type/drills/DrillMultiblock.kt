@@ -80,15 +80,6 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			return blacklist.contains(block.type)
 		}
 
-		fun getOutput(sign: Block): Inventory {
-			val direction = (sign.getState(false) as Sign).getFacing().oppositeFace
-			return (
-				sign.getRelative(direction)
-					.getRelative(direction.leftFace)
-					.getState(false) as InventoryHolder
-				)
-				.inventory
-		}
 
 		fun breakBlocks(
 			sign: Sign,
@@ -140,6 +131,8 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 	abstract val coolDown: Int
 
+	abstract val mirrored: Boolean
+
 	override val name = "drill"
 
 	override val signText = createSignText(
@@ -148,6 +141,23 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		line3 = null,
 		line4 = null
 	)
+
+	fun getOutput(sign: Block): Inventory {
+		val direction = (sign.getState(false) as Sign).getFacing().oppositeFace
+		return if (!mirrored) {
+			(sign.getRelative(direction)
+				.getRelative(direction.leftFace)
+				.getState(false) as InventoryHolder
+					)
+				.inventory
+		} else {
+			(sign.getRelative(direction)
+				.getRelative(direction.rightFace)
+				.getState(false) as InventoryHolder
+					)
+				.inventory
+		}
+	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
@@ -172,10 +182,18 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
-			y(+0) {
-				x(-1).anyPipedInventory()
-				x(+0).machineFurnace()
-				x(+1).wireInputComputer()
+			if (!mirrored) {
+				y(+0) {
+					x(-1).anyPipedInventory()
+					x(+0).machineFurnace()
+					x(+1).wireInputComputer()
+				}
+			} else {
+				y(+0) {
+					x(-1).wireInputComputer()
+					x(+0).machineFurnace()
+					x(+1).anyPipedInventory()
+				}
 			}
 		}
 

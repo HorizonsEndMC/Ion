@@ -9,10 +9,10 @@ import net.horizonsend.ion.server.features.multiblock.type.checklist.CruiserReac
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractMagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.LandingGearMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
@@ -168,7 +168,7 @@ object SubsystemDetector {
 				starship.subsystems += NavCompSubsystem(starship, sign, multiblock)
 			}
 
-			is MagazineMultiblock -> {
+			is AbstractMagazineMultiblock -> {
 				starship.subsystems += MagazineSubsystem(starship, sign, multiblock)
 			}
 
