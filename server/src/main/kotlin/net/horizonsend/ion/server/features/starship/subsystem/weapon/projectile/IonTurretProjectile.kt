@@ -1,8 +1,12 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.common.extensions.informationAction
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
 import org.bukkit.Color
 import org.bukkit.Location
@@ -57,6 +61,17 @@ class IonTurretProjectile(
 			if (impactLocation.distance(thruster.pos.toLocation(starship.world)) > 8) continue
 
 			thruster.lastIonTurretLimited = System.currentTimeMillis()
+		}
+
+		starship.userErrorAction("Direct Control speed slowed by 75%!")
+		starship.directControlSpeedModifier = 0.25
+		starship.lastDirectControlSpeedSlowed = System.currentTimeMillis() + 5000
+
+		Tasks.syncDelay(5 * 20L) {
+			if (ActiveStarships.isActive(starship) && starship.lastDirectControlSpeedSlowed - 100 < System.currentTimeMillis()) {
+				starship.directControlSpeedModifier = 1.0
+				starship.informationAction("Direct Control speed restored")
+			}
 		}
 	}
 }

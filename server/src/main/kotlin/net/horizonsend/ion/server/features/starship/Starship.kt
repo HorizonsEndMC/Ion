@@ -369,6 +369,8 @@ class Starship (
 	//region Direct Control
 	val initialDirectControlCooldown get() = 300L + (initialBlockCount / 700) * 30
 	var directControlCooldown = initialDirectControlCooldown
+	var directControlSpeedModifier = 1.0
+	var lastDirectControlSpeedSlowed = 0L
 	var isDirectControlEnabled: Boolean = false
 		private set
 	val directControlPreviousVectors = LinkedBlockingQueue<Vector>(4)
