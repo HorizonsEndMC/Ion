@@ -27,7 +27,7 @@ object PersonalTransporterCommand : SLCommand() {
         {
             sender.userError("No teleport request found from $requesterName")
             return
-        } else if (PersonalTransporterManager.checkItemFromPlayer(requester)) {
+        } else if (!PersonalTransporterManager.checkItemFromPlayer(requester)) {
             sender.userError("$requesterName does not have a Personal Transporter")
             requester.userError("${sender.name} accepted your request, but you do not have a Personal Transporter")
             return

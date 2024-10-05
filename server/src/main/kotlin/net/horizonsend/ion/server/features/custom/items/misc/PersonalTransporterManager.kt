@@ -33,7 +33,7 @@ object PersonalTransporterManager : IonServerComponent() {
             "<gold><italic><hover:show_text:'<gray>/personaltransporter cancel'><click:run_command:/personaltransporter cancel>[Cancel]</click>"
         )
         target.information("${requester.name} has sent a request to teleport to you (expires in 120 seconds)")
-        requester.sendRichMessage(
+        target.sendRichMessage(
             "<green><italic><hover:show_text:'<gray>/personaltransporter accept'><click:run_command:/personaltransporter accept ${requester.name}>[Accept]</click> " +
                     "<red><italic><hover:show_text:'<gray>/personaltransporter deny'><click:run_command:/personaltransporter deny ${requester.name}>[Deny]</click>"
         )
@@ -48,8 +48,8 @@ object PersonalTransporterManager : IonServerComponent() {
         if (targetId != null) {
             val target = Bukkit.getPlayer(targetId)
             if (target != null) {
-                requester.information("Teleport request to ${target.name} has expired or was cancelled.")
-                target.information("Teleport request from ${requester.name} has expired or was cancelled.")
+                requester.information("Teleport request to ${target.name} was removed.")
+                target.information("Teleport request from ${requester.name} was removed.")
             } else {
                 requester.information("Teleport request to an offline player was removed.")
             }
