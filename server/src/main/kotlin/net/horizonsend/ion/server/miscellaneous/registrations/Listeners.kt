@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.custom.items.mods.ToolModMenu
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
+import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporterManager
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
@@ -83,6 +84,7 @@ val listeners: List<Listener> = listOf(
 	PlayerDeathListener,
 	ToolModMenu,
 	RecipeModifications,
+	PersonalTransporterManager,
 
 	// Achievement Listeners
 	AchievementListeners(),

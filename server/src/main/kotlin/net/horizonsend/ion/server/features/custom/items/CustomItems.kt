@@ -789,13 +789,7 @@ object CustomItems {
 		}
 	)
 
-	val PERSONAL_TRANSPORTER = register(
-		object : PersonalTransporter(
-			identifier = "PERSONAL_TRANSPORTER",
-			customModelData = 1103,
-			text("Personal Transporter", GOLD).decoration(ITALIC, false)
-		) {}
-	)
+	val PERSONAL_TRANSPORTER = register(object : PersonalTransporter(identifier = "PERSONAL_TRANSPORTER") {})
 
 	val PUMPKIN_GRENADE = register(
 		object : ThrowableCustomItem(
