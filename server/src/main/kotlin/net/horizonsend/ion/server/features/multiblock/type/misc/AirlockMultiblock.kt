@@ -14,6 +14,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.MultipleFacing
 import org.bukkit.block.data.Orientable
+import org.bukkit.block.sign.Side
 import org.bukkit.block.sign.Side.FRONT
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -77,7 +78,7 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 
 		val component = if (enabled) { ON } else { OFF }
 
-		sign.line(1, component)
+		sign.getSide(Side.FRONT).line(1, component)
 		sign.update()
 	}
 }

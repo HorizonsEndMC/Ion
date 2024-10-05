@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import org.bukkit.Material
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 
 object BattleCruiserReactorMultiblock : Multiblock() {
 	override val name: String = "bcreactor"
@@ -16,7 +17,7 @@ object BattleCruiserReactorMultiblock : Multiblock() {
 	)
 
 	override fun matchesUndetectedSign(sign: Sign): Boolean {
-		return super.matchesUndetectedSign(sign) || sign.line(0).plainText().equals("[reactor]", ignoreCase = true)
+		return super.matchesUndetectedSign(sign) || sign.getSide(Side.FRONT).line(0).plainText().equals("[reactor]", ignoreCase = true)
 	}
 
 	override fun MultiblockShape.buildStructure() {

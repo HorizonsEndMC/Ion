@@ -12,6 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Hopper
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 
 abstract class HyperdriveMultiblock : Multiblock() {
@@ -46,7 +47,7 @@ abstract class HyperdriveMultiblock : Multiblock() {
 
 	override fun onTransformSign(player: Player, sign: Sign) {
 		super.onTransformSign(player, sign)
-		sign.line(3, text("/jump <planet>", NamedTextColor.RED))
+		sign.getSide(Side.FRONT).line(3, text("/jump <planet>", NamedTextColor.RED))
 		sign.update()
 	}
 }

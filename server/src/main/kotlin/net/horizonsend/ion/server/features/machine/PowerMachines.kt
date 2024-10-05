@@ -11,6 +11,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -81,7 +82,7 @@ object PowerMachines : IonServerComponent() {
 		if (!sign.persistentDataContainer.has(NamespacedKeys.MULTIBLOCK)) return power
 
 		sign.persistentDataContainer.set(NamespacedKeys.POWER, PersistentDataType.INTEGER, correctedPower)
-		sign.line(2, Component.text().append(prefixComponent, Component.text(correctedPower, NamedTextColor.GREEN)).build())
+		sign.getSide(Side.FRONT).line(2, Component.text().append(prefixComponent, Component.text(correctedPower, NamedTextColor.GREEN)).build())
 		sign.update(false, false)
 
 		report(Throwable().stackTrace)

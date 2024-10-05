@@ -20,6 +20,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.block.Container
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -92,11 +93,11 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		if (isBlacklist(sign)) {
 			player.success("Switched sorter to whitelist!")
 			pdc.set(SPLITTER_DIRECTION, PersistentDataType.BOOLEAN, false)
-			sign.line(3, LEFT)
+			sign.getSide(Side.FRONT).line(3, LEFT)
 		} else {
 			player.success("Switched sorter to blacklist!")
 			pdc.set(SPLITTER_DIRECTION, PersistentDataType.BOOLEAN, true)
-			sign.line(3, RIGHT)
+			sign.getSide(Side.FRONT).line(3, RIGHT)
 		}
 
 		sign.update()
@@ -210,15 +211,15 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		val pdc = sign.persistentDataContainer
 		if (pdc.keys.contains(SPLITTER_DIRECTION)) return
 
-		val line3 = sign.line(3)
+		val line3 = sign.getSide(Side.FRONT).line(3)
 
 		if (previousBlacklistText.contains(line3)) {
 			pdc.set(SPLITTER_DIRECTION, PersistentDataType.BOOLEAN, true)
-			sign.line(3, RIGHT)
+			sign.getSide(Side.FRONT).line(3, RIGHT)
 			return
 		}
 
 		pdc.set(SPLITTER_DIRECTION, PersistentDataType.BOOLEAN, false)
-		sign.line(3, LEFT)
+		sign.getSide(Side.FRONT).line(3, LEFT)
 	}
 }

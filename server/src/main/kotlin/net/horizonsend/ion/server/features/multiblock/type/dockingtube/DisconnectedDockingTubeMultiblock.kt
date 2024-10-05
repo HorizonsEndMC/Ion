@@ -16,6 +16,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
 
@@ -136,11 +137,11 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 						ConnectedDockingTubeMultiblock::class.simpleName!!
 					)
 
-					otherSign.line(3, ConnectedDockingTubeMultiblock.stateText)
+					otherSign.getSide(Side.FRONT).line(3, ConnectedDockingTubeMultiblock.stateText)
 					otherSign.update(false, false)
 				}
 
-				sign.line(3, ConnectedDockingTubeMultiblock.stateText)
+				sign.getSide(Side.FRONT).line(3, ConnectedDockingTubeMultiblock.stateText)
 				sign.update(false, false)
 
 				sign.world.playSound(sign.location, Sound.BLOCK_PISTON_EXTEND, 1.0f, 1.5f)

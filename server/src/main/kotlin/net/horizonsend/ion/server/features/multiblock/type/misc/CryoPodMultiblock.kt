@@ -11,6 +11,7 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 
@@ -79,12 +80,12 @@ object CryoPodMultiblock : Multiblock(), InteractableMultiblock {
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		sign.line(1, text("[PASSIVE]").color(NamedTextColor.GREEN))
-		sign.line(2, text(player.uniqueId.toString()).decorate(TextDecoration.OBFUSCATED))
-		sign.line(3, text(player.name))
+		sign.getSide(Side.FRONT).line(1, text("[PASSIVE]").color(NamedTextColor.GREEN))
+		sign.getSide(Side.FRONT).line(2, text(player.uniqueId.toString()).decorate(TextDecoration.OBFUSCATED))
+		sign.getSide(Side.FRONT).line(3, text(player.name))
 	}
 
 	fun isOwner(sign: Sign, player: Player): Boolean {
-		return (sign.line(2) as TextComponent).content() == player.uniqueId.toString()
+		return (sign.getSide(Side.FRONT).line(2) as TextComponent).content() == player.uniqueId.toString()
 	}
 }

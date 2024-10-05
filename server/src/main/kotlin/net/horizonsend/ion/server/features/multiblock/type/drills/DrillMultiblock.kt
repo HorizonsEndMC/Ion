@@ -27,6 +27,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
@@ -65,11 +66,11 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		}
 
 		fun isEnabled(sign: Sign): Boolean {
-			return sign.line(3) != DISABLED
+			return sign.getSide(Side.FRONT).line(3) != DISABLED
 		}
 
 		fun setUser(sign: Sign, player: String?) {
-			sign.line(3, player?.let { text(it) } ?: DISABLED)
+			sign.getSide(Side.FRONT).line(3, player?.let { text(it) } ?: DISABLED)
 
 			if (player == null) sign.persistentDataContainer.remove(DRILL_USER) else sign.persistentDataContainer.set(DRILL_USER, PersistentDataType.STRING, player)
 
@@ -222,7 +223,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		sign.line(3, DISABLED)
+		sign.getSide(Side.FRONT).line(3, DISABLED)
 	}
 
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {

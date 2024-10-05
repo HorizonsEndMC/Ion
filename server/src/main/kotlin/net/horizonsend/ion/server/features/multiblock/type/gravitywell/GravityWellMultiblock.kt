@@ -6,13 +6,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.ChatColor
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
 abstract class GravityWellMultiblock : Multiblock() {
 	override fun matchesUndetectedSign(sign: Sign): Boolean {
-		return super.matchesUndetectedSign(sign) || sign.line(0).plainText().equals("[gravwell]", ignoreCase = true)
+		return super.matchesUndetectedSign(sign) || sign.getSide(Side.FRONT).line(0).plainText().equals("[gravwell]", ignoreCase = true)
 	}
 
 	companion object {

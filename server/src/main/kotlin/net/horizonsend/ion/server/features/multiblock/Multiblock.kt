@@ -10,6 +10,7 @@ import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 
 abstract class Multiblock {
@@ -70,7 +71,7 @@ abstract class Multiblock {
 	}
 
 	open fun matchesUndetectedSign(sign: Sign): Boolean {
-		return (sign.line(0) as TextComponent).content().equals("[$name]", ignoreCase = true)
+		return (sign.getSide(Side.FRONT).line(0) as TextComponent).content().equals("[$name]", ignoreCase = true)
 	}
 
 	open fun setupSign(player: Player, sign: Sign) {
@@ -79,7 +80,7 @@ abstract class Multiblock {
 		for (i in 0..3) {
 			val text = signText[i]
 			if (text != null) {
-				sign.line(i, text)
+				sign.getSide(Side.FRONT).line(i, text)
 			}
 		}
 

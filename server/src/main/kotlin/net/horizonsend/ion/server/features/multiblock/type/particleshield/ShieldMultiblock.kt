@@ -13,6 +13,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import java.util.UUID
@@ -25,15 +26,15 @@ abstract class ShieldMultiblock : Multiblock(), InteractableMultiblock {
 
 	// let people use [particleshield] if they want
 	override fun matchesUndetectedSign(sign: Sign): Boolean {
-		return super.matchesUndetectedSign(sign) || sign.line(0).plainText().equals("[particleshield]", ignoreCase = true)
+		return super.matchesUndetectedSign(sign) || sign.getSide(Side.FRONT).line(0).plainText().equals("[particleshield]", ignoreCase = true)
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		sign.line(2, sign.line(1))
+		sign.getSide(Side.FRONT).line(2, sign.getSide(Side.FRONT).line(1))
 	}
 
 	override fun setupSign(player: Player, sign: Sign) {
-		if (sign.line(1).plainText().isEmpty()) {
+		if (sign.getSide(Side.FRONT).line(1).plainText().isEmpty()) {
 			player.userError("The second line must be the shield's name.")
 			return
 		}

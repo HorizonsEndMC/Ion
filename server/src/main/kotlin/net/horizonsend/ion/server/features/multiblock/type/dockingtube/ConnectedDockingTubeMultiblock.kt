@@ -20,6 +20,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.type.Switch
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
 
@@ -135,11 +136,11 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 				DisconnectedDockingTubeMultiblock::class.simpleName!!
 			)
 
-			sign.line(3, DisconnectedDockingTubeMultiblock.stateText)
+			sign.getSide(Side.FRONT).line(3, DisconnectedDockingTubeMultiblock.stateText)
 			sign.update(false, false)
 
 			otherSign?.let {
-				otherSign.line(3, DisconnectedDockingTubeMultiblock.stateText)
+				otherSign.getSide(Side.FRONT).line(3, DisconnectedDockingTubeMultiblock.stateText)
 
 				otherSign.persistentDataContainer.set(
 					NamespacedKeys.MULTIBLOCK,
