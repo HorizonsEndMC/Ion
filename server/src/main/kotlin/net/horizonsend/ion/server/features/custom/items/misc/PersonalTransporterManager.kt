@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.custom.items.misc
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -11,7 +11,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.UUID
 
-object PersonalTransporterManager : IonServerComponent() {
+object PersonalTransporterManager : SLEventListener() {
     // key = requester, value = target
     private val inviteList = mutableMapOf<UUID, UUID>()
 

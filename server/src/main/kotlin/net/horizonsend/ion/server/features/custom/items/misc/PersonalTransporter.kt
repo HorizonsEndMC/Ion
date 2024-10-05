@@ -6,7 +6,8 @@ import net.horizonsend.ion.server.features.gui.custom.item.PersonalTransporterGu
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
-import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
@@ -15,17 +16,16 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
 
-open class PersonalTransporter(
-    identifier: String,
-    val customModelData: Int,
-    val displayName: Component,
-) : CustomItem(identifier) {
-    val material = Material.WARPED_FUNGUS_ON_A_STICK
+open class PersonalTransporter(identifier: String) : CustomItem(identifier) {
+    companion object {
+        const val CUSTOM_MODEL_DATA = 1103
+        val NAME = text("Personal Transporter", GOLD).decoration(ITALIC, false)
+    }
 
     override fun constructItemStack(): ItemStack {
         return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-            it.setCustomModelData(customModelData)
-            it.displayName(displayName.decoration(ITALIC, false))
+            it.setCustomModelData(CUSTOM_MODEL_DATA)
+            it.displayName(NAME)
             it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
         }.apply { amount = 1 }
     }
