@@ -1,9 +1,7 @@
 package net.horizonsend.ion.server.features.ai.configuration
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
-import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import org.bukkit.Bukkit
 import org.bukkit.World
 
@@ -28,12 +26,7 @@ class AISpawningConfiguration {
 		val tiers: List<AISpawnerTier> = listOf(AISpawnerTier()),
 		val worldSettings: List<AIWorldSettings> = listOf(AIWorldSettings())
 	) {
-		@Transient
-		val worldWeightedRandomList = WeightedRandomList(worldSettings.associateWith { it.rolls })
-
 		fun getWorld(world: World) = worldSettings.firstOrNull { it.world == world.name }
-
-		fun getTier(identifier: String) = tiers.firstOrNull { it.identifier == identifier } ?: throw NoSuchElementException("Tier $identifier not found!")
 	}
 
 	/**
@@ -50,13 +43,7 @@ class AISpawningConfiguration {
 		val identifier: String = "BASIC",
 		val nameList: Map<String, Int> = mapOf("<Red><Bold>Level 1 thug" to 1),
 		val ships: Map<String, Int> = mapOf("VESTA" to 1),
-	) {
-		@Transient
-		val shipsWeightedList: WeightedRandomList<String> = WeightedRandomList(ships)
-
-		@Transient
-		val namesWeightedList: WeightedRandomList<String> = WeightedRandomList(nameList)
-	}
+	)
 
 	/**
 	 * Each world has a number of rolls for selection when a ship spawns
@@ -75,8 +62,5 @@ class AISpawningConfiguration {
 		val tiers: Map<String, Int> = mapOf("BASIC" to 1),
 	) {
 		fun getWorld(): World = Bukkit.getWorld(world) ?: throw NullPointerException("World $world not found!")
-
-		@Transient
-		val tierWeightedRandomList: WeightedRandomList<String> = WeightedRandomList(tiers)
 	}
 }

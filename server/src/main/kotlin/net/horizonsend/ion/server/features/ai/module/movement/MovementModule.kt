@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.ai.module.movement
 
 import net.horizonsend.ion.server.features.ai.module.pathfinding.PathfindingModule
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -35,7 +34,7 @@ abstract class MovementModule(
 		origin: Location,
 		stopCruising: Boolean = false
 	) = Tasks.sync {
-		val starship = controller.starship as ActiveControlledStarship
+		val starship = controller.starship
 		if (stopCruising) StarshipCruising.stopCruising(controller, starship)
 
 		val direction = directionSupplier.getMovementVector()
@@ -50,7 +49,7 @@ abstract class MovementModule(
 		blockFace: BlockFace,
 		stopCruising: Boolean = false
 	) = Tasks.sync {
-		val starship = controller.starship as ActiveControlledStarship
+		val starship = controller.starship
 		if (stopCruising) StarshipCruising.stopCruising(controller, starship)
 
 		AIControlUtils.shiftFlyInDirection(controller, blockFace.direction)
@@ -60,7 +59,7 @@ abstract class MovementModule(
 		direction: Vector,
 		stopCruising: Boolean = false
 	) = Tasks.sync {
-		val starship = controller.starship as ActiveControlledStarship
+		val starship = controller.starship
 		if (stopCruising) StarshipCruising.stopCruising(controller, starship)
 
 		AIControlUtils.shiftFlyInDirection(controller, direction)
@@ -71,7 +70,7 @@ abstract class MovementModule(
 		destination: Vec3i?,
 		stopCruising: Boolean = false
 	) = Tasks.sync {
-		val starship = controller.starship as ActiveControlledStarship
+		val starship = controller.starship
 		if (stopCruising) StarshipCruising.forceStopCruising(starship)
 
 		AIControlUtils.shiftFlyToLocation(controller, Vec3i(origin), destination)
@@ -104,12 +103,12 @@ abstract class MovementModule(
 	}
 
 	fun cruiseForward() = Tasks.sync {
-		val starship = controller.starship as ActiveControlledStarship
+		val starship = controller.starship
 		StarshipCruising.startCruising(controller, starship, starship.forward.direction)
 	}
 
 	fun cruiseForward(diagonal: StarshipCruising.Diagonal) = Tasks.sync {
-		val starship = controller.starship as ActiveControlledStarship
+		val starship = controller.starship
 		StarshipCruising.startCruising(controller, starship, diagonal.vector(starship.forward))
 	}
 
@@ -126,7 +125,7 @@ abstract class MovementModule(
 	}
 
 	fun cruiseInDirection(direction: Vector, faceDirection: Boolean = true) {
-		val starship = controller.starship as ActiveControlledStarship
+		val starship = controller.starship
 		val facing = starship.forward
 
 		val blockFace = vectorToBlockFace(direction)
@@ -142,7 +141,7 @@ abstract class MovementModule(
 	}
 
 	fun stopCruising(immediate: Boolean = false) {
-		val starship = controller.starship as ActiveControlledStarship
+		val starship = controller.starship
 
 		val isCruising = StarshipCruising.isCruising(starship)
 

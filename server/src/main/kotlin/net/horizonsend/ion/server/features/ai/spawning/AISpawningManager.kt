@@ -59,7 +59,7 @@ object AISpawningManager : IonServerComponent(true) {
 
 	private fun despawnOldAIShips() {
 		for (starship in ActiveStarships.all()) {
-			starship as ActiveControlledStarship
+			starship
 
 			if (meetsDespawnCriteria(starship)) {
 				despawn(starship)

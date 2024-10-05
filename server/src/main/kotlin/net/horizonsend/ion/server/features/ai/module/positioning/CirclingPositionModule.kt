@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.ai.module.positioning
 
 import net.horizonsend.ion.server.features.ai.util.AITarget
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -45,10 +44,9 @@ class CirclingPositionModule(
 		val radians = 2 * PI * (ticks / moveTicks)
 
 		val x = ((cos(radians) * standoffDistance) + targetX).toInt()
-		val y = targetY
 		val z = ((sin(radians) * standoffDistance) + targetZ).toInt()
 
-		internalDestination = Vec3i(x, y, z)
+		internalDestination = Vec3i(x, targetY, z)
 	}
 
 	private fun circleCircumference() = 2 * PI * standoffDistance
@@ -57,7 +55,7 @@ class CirclingPositionModule(
 	private fun getMovePercent(): Double {
 		val circumference = circleCircumference()
 
-		val cruiseSpeed = (starship as ActiveControlledStarship).cruiseData.targetSpeed.toDouble()
+		val cruiseSpeed = starship.cruiseData.targetSpeed.toDouble()
 		val blocksPerTick = cruiseSpeed / ticksPerCruise
 
 		return blocksPerTick/ circumference

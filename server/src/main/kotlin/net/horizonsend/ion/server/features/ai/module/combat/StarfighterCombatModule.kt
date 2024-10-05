@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.ai.module.combat
 
 import net.horizonsend.ion.server.features.ai.util.AITarget
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getDirection
@@ -15,7 +14,7 @@ class StarfighterCombatModule(controller: AIController, targetingSupplier: Suppl
 		val target = targetingSupplier.get() ?: return
 
 		// Get the closest axis
-		(starship as ActiveControlledStarship).speedLimit = -1
+		starship.speedLimit = -1
 
 		val faceDirection = vectorToBlockFace(getDirection(Vec3i(getCenter()), target.getVec3i(true)), includeVertical = false)
 

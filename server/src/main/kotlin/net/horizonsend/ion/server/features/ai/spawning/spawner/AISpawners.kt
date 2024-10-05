@@ -140,6 +140,8 @@ object AISpawners : IonServerComponent(true) {
 	override fun onEnable() {
 		// Initialize all the per world spawners, after the worlds have all initialized
 		for (world in IonServer.server.worlds) {
+			if (!world.ion.hasFlag(ALLOW_AI_SPAWNS)) continue
+
 			spawners.addAll(perWorldSpawners.map { it.invoke(world) })
 		}
 	}
@@ -940,26 +942,24 @@ object AISpawners : IonServerComponent(true) {
 			)
 		))
 
-		registerGlobalSpawner(
-			GlobalWorldSpawner(
-				"BAIT_SHIP",
-				AISpawnerTicker(
-					pointChance = 0.5,
-					pointThreshold = 20 * 60 * 7 * 20
+		registerGlobalSpawner(GlobalWorldSpawner(
+			"BAIT_SHIP",
+			AISpawnerTicker(
+				pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7 * 20
+			),
+			SingleSpawn(
+				RandomShipSupplier(
+					TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_NIMBLE),
+					TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_STRIKER),
+					TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_WAYFINDER)
 				),
-				SingleSpawn(
-					RandomShipSupplier(
-						TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_NIMBLE),
-						TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_STRIKER),
-						TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_WAYFINDER)
-					),
-					Supplier {
-						val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
-						return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
-					},
-					spawnMessage = SpawnMessage.WorldMessage("<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage())
-				)
+				Supplier {
+					val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
+					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
+				},
+				spawnMessage = SpawnMessage.WorldMessage("<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage())
 			)
-		)
+		))
 	}
 }

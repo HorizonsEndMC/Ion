@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.ai.spawning.ships
 
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
-import net.horizonsend.ion.server.features.ai.spawning.spawner.spawnAIStarship
+import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.getRadialRandomPoint
@@ -17,24 +17,19 @@ interface SpawnedShip {
 	var absoluteHeight: Double?
 
 	fun createController(logger: Logger, starship: ActiveStarship): AIController
-	fun getName(logger: Logger): Component
 
-	fun spawn(
-		logger: Logger,
-		location: Location,
-		modifyController: AIController.() -> Unit = {}
-	) {
-		spawnAIStarship(
-			logger,
-			template,
-			location,
-			{
-				val controller = createController(logger, it)
-				modifyController.invoke(controller)
-				controller
-			}
-		)
-	}
+	fun getName(): Component
+
+	fun spawn(logger: Logger, location: Location, modifyController: AIController.() -> Unit = {}) = createAIShipFromTemplate(
+		logger,
+		template,
+		location,
+		{
+			val controller = createController(logger, it)
+			modifyController.invoke(controller)
+			controller
+		}
+	)
 
 	fun withRandomRadialOffset(minDistance: Double, maxDistance: Double, y: Double, absoluteHeight: Double? = null): SpawnedShip {
 		this.absoluteHeight = absoluteHeight

@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.misc.GlowModule
 import net.horizonsend.ion.server.features.ai.starship.StarshipTemplate
 import net.horizonsend.ion.server.features.npcs.StarshipDealers
-import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -49,6 +48,15 @@ fun handleException(logger: Logger, exception: SpawningException) {
 	}
 }
 
+/**
+ * Spawns the specified at the provided location
+ *
+ * @param template, The template for the starship it will attempt to place
+ * @param location, The location where it will attempt to place the starship, may vary if obstructed
+ * @param createController, The provided function to create the controller from the active starship
+ *
+ * The returned deferred is completed once the ship has been piloted.
+ **/
 fun createAIShipFromTemplate(
 	logger: Logger,
 	template: AITemplate,
@@ -56,6 +64,7 @@ fun createAIShipFromTemplate(
 	createController: (ActiveControlledStarship) -> Controller,
 	callback: (ActiveControlledStarship) -> Unit = {}
 ) = createShipFromTemplate(logger, template.starshipInfo, location, createController) { starship ->
+	logger.info("Attempting to spawn AI starship ${template.identifier}")
 	starship.rewardsProviders.addAll(template.rewardProviders.map { it.createRewardsProvider(starship, template) })
 
 	val controller = starship.controller
@@ -157,8 +166,6 @@ private fun tryPilotWithController(
 		}
 	}
 }
-
-fun getNonProtectedPlayer(world: World): Player? = world.players.filter { !it.hasProtection() }.randomOrNull()
 
 fun isSystemOccupied(world: World): Boolean {
 	// Ensure that it is a system with a star and planets

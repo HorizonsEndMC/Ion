@@ -18,7 +18,7 @@ class GravityWellModule(
     override fun tick() {
         val target = targetingSupplier.get()
 
-        if (!canWellWhileCruising && (starship !is ActiveControlledStarship || StarshipCruising.isCruising(starship as ActiveControlledStarship))) {
+        if (!canWellWhileCruising && (starship !is ActiveControlledStarship || StarshipCruising.isCruising(starship))) {
             starship.setIsInterdicting(false)
             return
         }

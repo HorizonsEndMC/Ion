@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.ai.starship
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.configuration.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
@@ -29,7 +28,6 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpaw
  * These are applied to the starship once it is spawned using info from the starship template
  **/
 object AITemplateRegistry {
-	private val TEMPLATE_DIRECTORY = IonServer.configurationFolder.resolve("ai_templates").apply { mkdirs() }
 
 	private val templates = mutableMapOf<String, AITemplate>()
 

@@ -20,13 +20,13 @@ class FactionShip(
 	override fun createController(logger: Logger, starship: ActiveStarship): AIController {
 		val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
 
-		val controller = factory.invoke(starship, getName(logger))
+		val controller = factory.invoke(starship, getName())
 		faction.controllerModifier.invoke(controller)
 
 		return controller
 	}
 
-	override fun getName(logger: Logger): Component {
+	override fun getName(): Component {
 		return faction.getAvailableName()
 	}
 }

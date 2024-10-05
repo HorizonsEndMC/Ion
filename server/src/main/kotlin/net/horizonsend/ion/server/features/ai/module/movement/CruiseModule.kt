@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.ai.module.movement
 
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.module.pathfinding.PathfindingModule
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
@@ -32,7 +31,7 @@ class CruiseModule(
 	var speedLimit = -1
 
 	override fun tick() {
-		(starship as ActiveControlledStarship).speedLimit = speedLimit
+		starship.speedLimit = speedLimit
 
 		val origin = starshipLocation.toLocation(world)
 

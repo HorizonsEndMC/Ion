@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.ai.module.combat
 
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.util.AITarget
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -25,7 +24,7 @@ class MultiTargetFrigateCombatModule(controller: AIController, private val toggl
 		val target = targets[ticks % numTargets]
 
 		// Get the closest axis
-		(starship as ActiveControlledStarship).speedLimit = -1
+		starship.speedLimit = -1
 
 		if (shouldFaceTarget) handleRotation(target)
 
