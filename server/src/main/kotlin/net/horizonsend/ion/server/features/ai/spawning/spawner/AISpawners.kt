@@ -27,7 +27,6 @@ import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.isSystemOccupied
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
-import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.GroupSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.RandomShipSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
@@ -48,11 +47,6 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.SCYTHE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.SWARMER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TERALITH
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_BATTLECRUISER
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_CYCLE
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_DISINTEGRATOR
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_JAMMER
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TEST_LOGISTIC
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOLITH_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOLITH_REINFORCEMENT
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERAN
@@ -64,7 +58,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.getRandomDuration
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.text.Component.text
 import org.bukkit.World
-import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
 import java.time.Duration
@@ -206,7 +199,7 @@ object AISpawners : IonServerComponent(true) {
 				)
 			)
 		}
-
+		/*
 		registerSingleWorldSpawner("Space") {
 			SingleWorldSpawner(
 				"AI_2_BC_JAM_TEST_SPAWNER",
@@ -350,7 +343,7 @@ object AISpawners : IonServerComponent(true) {
 				)
 			)
 		}
-
+		*/
 		registerGlobalSpawner(LegacyFactionSpawner(
 			"吃饭人_BASIC",
 			AISpawnerTicker(
