@@ -868,52 +868,24 @@ object AISpawners : IonServerComponent(true) {
 			)
 		}
 
-		registerGlobalSpawner(LegacyFactionSpawner(
+		registerSingleWorldSpawner("AU-0821", "Horizon", "Trench") { SingleWorldSpawner(
 			"TSAII_BASIC",
+			it,
 			AISpawnerTicker(
 				pointThreshold = 30 * 20 * 60,
 				pointChance = 0.5
 			),
-			spawnMessage = "<${TSAII_DARK_ORANGE}>Dangerous Tsaii Raiders {0} has been reported in the area of {1}, {3}, in {4}. <$TSAII_MEDIUM_ORANGE>Please avoid the sector until the threat has been cleared!".miniMessage(),
-			worlds = listOf(
-				WorldSettings(
-					worldName = "Horizon",
-					minDistanceFromPlayer = 2500.0,
-					maxDistanceFromPlayer = 4500.0,
-					probability = 0.4,
-					templates = listOf(
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(RAIDER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(SWARMER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(REAVER), 0.25)
-					)
-				),
-				WorldSettings(
-					worldName = "Trench",
-					minDistanceFromPlayer = 2500.0,
-					maxDistanceFromPlayer = 4500.0,
-					probability = 0.3,
-					templates = listOf(
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(RAIDER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(SWARMER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(REAVER), 0.25)
-					)
-				),
-				WorldSettings(
-					worldName = "AU-0821",
-					minDistanceFromPlayer = 2500.0,
-					maxDistanceFromPlayer = 4500.0,
-					probability = 0.3,
-					templates = listOf(
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(RAIDER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(SWARMER), 0.25),
-						spawnChance(TSAII_RAIDERS.asSpawnedShip(REAVER), 0.25)
-					)
-				)
+			BagSpawner(
+				formatLocationSupplier(it, 1000.0, 2000.0),
+				VariableIntegerAmount(10, 15),
+				"<${TSAII_DARK_ORANGE}>Dangerous Tsaii Raiders have been reported in the area of {0}, {2}, in {3}. <$TSAII_MEDIUM_ORANGE>Please avoid the sector until the threat has been cleared!".miniMessage(),
+				null,
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(150.0, 200.0, 0.0), 1),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(75.0, 150.0, 0.0), 3),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 0.0, 0.0), 10)
 			)
-		))
+		) }
 
 		val tsaiiLocusScheduler = LocusScheduler(
 			"<$TSAII_DARK_ORANGE>Tsaii Warband".miniMessage(),
