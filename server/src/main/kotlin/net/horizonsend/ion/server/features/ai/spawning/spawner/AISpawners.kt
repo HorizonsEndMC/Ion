@@ -184,7 +184,7 @@ object AISpawners : IonServerComponent(true) {
 			SingleSpawn(
 				RandomShipSupplier(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), WATCHERS.asSpawnedShip(TERALITH)),
 				watcherLocusScheduler.spawnLocationProvider,
-				SpawnMessage.WorldMessage("<${HE_MEDIUM_GRAY}> A <$WATCHER_ACCENT>{0} responds to the signal.".miniMessage())
+				SpawnMessage.WorldMessage("<$WATCHER_ACCENT>Watcher Vessels<$HE_MEDIUM_GRAY> answer the call of the signal.".miniMessage())
 			)
 		))
 
@@ -531,7 +531,7 @@ object AISpawners : IonServerComponent(true) {
 					PIRATES.asSpawnedShip(AITemplateRegistry.BLOODSTAR)
 				),
 				pirateLocusScheduler.spawnLocationProvider,
-				SpawnMessage.WorldMessage("<$WATCHER_ACCENT>Watcher Vessels<$HE_MEDIUM_GRAY> answer the call of the signal.".miniMessage())
+				SpawnMessage.WorldMessage("<$PIRATE_SATURATED_RED>More pirates spotted!".miniMessage())
 			)
 		))
 
