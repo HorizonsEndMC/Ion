@@ -13,9 +13,9 @@ object NationsBalancing : IonServerComponent() {
 		val capturableStation: Stations = Stations()
 	) {
 		data class Settlements(
-			val activityDays: Int = 6,
+			val activityDays: Int = 14,
 			val cityHourlyTax: Int = 125,
-			val cityMinActive: Int = 1,
+			val cityMinActive: Int = 3,
 			val hourlyActivityCredits: Int = 1,
 			val inactivityDays: Int = 30,
 			val minCreateLevel: Int = 3,
