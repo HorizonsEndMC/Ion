@@ -53,7 +53,7 @@ object MultiblockRecipes : IonServerComponent() {
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.URANIUM_CORE, 1), progressHolderResult = CustomItems.URANIUM_ROD),
 		resources = listOf(power(100)),
 		result = MultiRecipeResult(
-			ProgressItemResult(CustomItems.URANIUM_ROD, 15L * 60L * 20L, SoundResult("horizonsend:industry.compress", SoundCategory.BLOCKS, 1.0f, 1.0f))
+			ProgressItemResult(CustomItems.URANIUM_ROD, 30L * 60L * 20L, SoundResult("horizonsend:industry.compress", SoundCategory.BLOCKS, 1.0f, 1.0f))
 		)
 	)
 	)
@@ -73,7 +73,7 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = PlatePressMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.REACTIVE_PLATING, 1), progressHolderResult = CustomItems.REACTIVE_CHASSIS),
 		resources = listOf(power(100)),
-		result = ProgressItemResult(CustomItems.REACTIVE_CHASSIS, 15L * 60L * 20L, SoundResult("horizonsend:industry.press", SoundCategory.BLOCKS, 1.0f, 1.0f))
+		result = ProgressItemResult(CustomItems.REACTIVE_CHASSIS, 30L * 60L * 20L, SoundResult("horizonsend:industry.press", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	)
 	)
 
@@ -82,7 +82,7 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = PlatePressMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.STEEL_PLATE, 1), progressHolderResult = CustomItems.STEEL_CHASSIS),
 		resources = listOf(power(100)),
-		result = ProgressItemResult(CustomItems.STEEL_CHASSIS, 15L * 60L * 20L, SoundResult("horizonsend:industry.press", SoundCategory.BLOCKS, 1.0f, 1.0f))
+		result = ProgressItemResult(CustomItems.STEEL_CHASSIS, 30L * 60L * 20L, SoundResult("horizonsend:industry.press", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	)
 	)
 
@@ -91,7 +91,7 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = FabricatorMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.FUEL_ROD_CORE, 1), progressHolderResult = CustomItems.FUEL_CELL),
 		resources = listOf(power(100)),
-		result = ProgressItemResult(CustomItems.FUEL_CELL, 15L * 60L * 20L * 2L, SoundResult("horizonsend:industry.fabricate", SoundCategory.BLOCKS, 1.0f, 1.0f))
+		result = ProgressItemResult(CustomItems.FUEL_CELL, 30L * 60L * 20L * 2L, SoundResult("horizonsend:industry.fabricate", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	)
 	)
 
@@ -100,7 +100,7 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = FabricatorMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.REACTIVE_ASSEMBLY, 1), progressHolderResult = CustomItems.FABRICATED_ASSEMBLY),
 		resources = listOf(power(100)),
-		result = ProgressItemResult(CustomItems.FABRICATED_ASSEMBLY, 15L * 60L * 20L * 2L, SoundResult("horizonsend:industry.fabricate", SoundCategory.BLOCKS, 1.0f, 1.0f))
+		result = ProgressItemResult(CustomItems.FABRICATED_ASSEMBLY, 30L * 60L * 20L * 2L, SoundResult("horizonsend:industry.fabricate", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	)
 	)
 
@@ -109,7 +109,7 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = FabricatorMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.STEEL_ASSEMBLY, 1), progressHolderResult = CustomItems.REINFORCED_FRAME),
 		resources = listOf(power(100)),
-		result = ProgressItemResult(CustomItems.REINFORCED_FRAME, 15L * 60L * 20L * 2L, SoundResult("horizonsend:industry.fabricate", SoundCategory.BLOCKS, 1.0f, 1.0f))
+		result = ProgressItemResult(CustomItems.REINFORCED_FRAME, 30L * 60L * 20L * 2L, SoundResult("horizonsend:industry.fabricate", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	)
 	)
 
@@ -118,7 +118,7 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = CircuitfabMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.CIRCUITRY, 1), progressHolderResult = CustomItems.CIRCUIT_BOARD),
 		resources = listOf(power(100)),
-		result = ProgressItemResult(CustomItems.CIRCUIT_BOARD, 15L * 60L * 20L, SoundResult("horizonsend:industry.cirfab", SoundCategory.BLOCKS, 1.0f, 1.0f))
+		result = ProgressItemResult(CustomItems.CIRCUIT_BOARD, 30L * 60L * 20L, SoundResult("horizonsend:industry.cirfab", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	)
 	)
 
@@ -127,7 +127,7 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = AmmoLoaderMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNLOADED_SHELL, 1), progressHolderResult = CustomItems.LOADED_SHELL),
 		resources = listOf(power(100)),
-		result = MultiRecipeResult(ProgressItemResult(CustomItems.LOADED_SHELL, 20L * 20L, SoundResult("horizonsend:industry.load", SoundCategory.BLOCKS, 1.0f, 1.0f)))
+		result = MultiRecipeResult(ProgressItemResult(CustomItems.LOADED_SHELL, 45L * 20L, SoundResult("horizonsend:industry.load", SoundCategory.BLOCKS, 1.0f, 1.0f)))
 	)
 	)
 
@@ -136,7 +136,7 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = AmmoLoaderMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNCHARGED_SHELL, 1), progressHolderResult = CustomItems.CHARGED_SHELL),
 		resources = listOf(power(100)),
-		result = ProgressItemResult(CustomItems.CHARGED_SHELL, 20L * 20L, SoundResult("horizonsend:industry.load", SoundCategory.BLOCKS, 1.0f, 1.0f))
+		result = ProgressItemResult(CustomItems.CHARGED_SHELL, 45L * 20L, SoundResult("horizonsend:industry.load", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	)
 	)
 
@@ -145,7 +145,7 @@ object MultiblockRecipes : IonServerComponent() {
 		multiblock = MissileLoaderMultiblock,
 		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.UNLOADED_ARSENAL_MISSILE, 1), progressHolderResult = CustomItems.ARSENAL_MISSILE),
 		resources = listOf(power(100)),
-		result = ProgressItemResult(CustomItems.ARSENAL_MISSILE, 15L * 60L * 20L, SoundResult("horizonsend:industry.mload", SoundCategory.BLOCKS, 1.0f, 1.0f))
+		result = ProgressItemResult(CustomItems.ARSENAL_MISSILE, 30L * 60L * 20L, SoundResult("horizonsend:industry.mload", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	)
 	)
 
