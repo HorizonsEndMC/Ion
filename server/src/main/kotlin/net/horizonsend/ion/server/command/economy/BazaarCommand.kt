@@ -52,7 +52,6 @@ import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.Bukkit
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -232,34 +231,6 @@ object BazaarCommand : SLCommand() {
 		sender.success(
 			"Removed listing for $itemString at $cityName"
 		)
-	}
-
-	@Suppress("Unused")
-	@Subcommand("forcewithdraw")
-	@Description("Forcibly withdraw another player's listing from the bazaar at this city")
-	@CommandCompletion("@bazaarItemStrings")
-	fun onForceRemove(sender: Player, target: String, itemString: String) = asyncCommand(sender) {
-		val territory = requireTerritoryIn(sender)
-		val settlement = territory.settlement ?: fail { "You are not in a trade city" }
-		requireSettlementLeader(sender, settlement)
-
-		val cityName = cityName(territory)
-		val itemStack: ItemStack = validateItemString(itemString)
-
-		val targetPlayer = Bukkit.getPlayer(resolveOfflinePlayer(target))!! // resolveOfflinePlayer will exit this function prematurely if UUID is not found
-		val item: BazaarItem = requireSelling(territory, targetPlayer, itemString)
-
-		val amount = item.stock
-		BazaarItem.removeStock(item._id, amount)
-
-		Tasks.sync {
-			val (fullStacks, remainder) = Bazaars.dropItems(itemStack, amount, sender)
-
-			sender.success(
-				"Withdraw $amount of ${targetPlayer.name}'s $itemString at $cityName" +
-						"($fullStacks stack(s) and $remainder item(s))"
-			)
-		}
 	}
 
 	@Suppress("Unused")
