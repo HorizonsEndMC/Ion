@@ -235,30 +235,27 @@ object BazaarCommand : SLCommand() {
 	}
 
 	@Suppress("Unused")
-	@Subcommand("forcewithdraw")
-	@Description("Forcibly withdraw another player's listing from the bazaar at this city")
-	@CommandCompletion("@bazaarItemStrings")
-	fun onForceRemove(sender: Player, target: String, itemString: String) = asyncCommand(sender) {
+	@Subcommand("embargo")
+	@Description("Prevent a player's bazaar listing from appearing in this trade city")
+	@CommandCompletion("@nothing @bazaarItemStrings")
+	fun onEmbargo(sender: Player, target: String, itemString: String, @Optional embargo: Boolean = true) = asyncCommand(sender) {
 		val territory = requireTerritoryIn(sender)
 		val settlement = territory.settlement ?: fail { "You are not in a trade city" }
 		requireSettlementLeader(sender, settlement)
 
 		val cityName = cityName(territory)
-		val itemStack: ItemStack = validateItemString(itemString)
 
 		val targetPlayer = Bukkit.getPlayer(resolveOfflinePlayer(target))!! // resolveOfflinePlayer will exit this function prematurely if UUID is not found
 		val item: BazaarItem = requireSelling(territory, targetPlayer, itemString)
 
-		val amount = item.stock
-		BazaarItem.removeStock(item._id, amount)
+		BazaarItem.embargo(item._id, embargo)
 
 		Tasks.sync {
-			val (fullStacks, remainder) = Bazaars.dropItems(itemStack, amount, sender)
-
-			sender.success(
-				"Withdraw $amount of ${targetPlayer.name}'s $itemString at $cityName" +
-						"($fullStacks stack(s) and $remainder item(s))"
-			)
+			if (embargo) {
+				sender.success("Embargoed ${targetPlayer.name}'s $itemString at $cityName")
+			} else {
+				sender.success("Lifted embargo on ${targetPlayer.name}'s $itemString at $cityName")
+			}
 		}
 	}
 
@@ -307,6 +304,7 @@ object BazaarCommand : SLCommand() {
 			val stock = item.stock
 			val uncollected = item.balance.toCreditComponent()
 			val price = item.price.toCreditComponent()
+			val embargoed = item.embargoed
 
 			totalBalance += item.balance
 
@@ -314,7 +312,7 @@ object BazaarCommand : SLCommand() {
 				itemDisplayName,
 				text(" @ ", DARK_PURPLE),
 				text(city, LIGHT_PURPLE),
-				bracketed(template(text("stock: {0}, balance: {1}, price: {2}", GRAY), stock, uncollected, price))
+				bracketed(template(text("stock: {0}, balance: {1}, price: {2}, embargoed: {3}", GRAY), stock, uncollected, price, embargoed))
 			)
 		}
 
