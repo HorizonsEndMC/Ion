@@ -7,6 +7,7 @@ enum class WorldFlag {
     HYPERSPACE_WORLD,
     ALLOW_SPACE_STATIONS,
     ALLOW_AI_SPAWNS,
+	AI_ARENA,
 	ARENA,
 	NO_SHIP_LOCKS
 }

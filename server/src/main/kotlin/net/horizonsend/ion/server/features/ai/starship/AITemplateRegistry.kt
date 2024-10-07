@@ -28,8 +28,9 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpaw
  * These are applied to the starship once it is spawned using info from the starship template
  **/
 object AITemplateRegistry {
-
 	private val templates = mutableMapOf<String, AITemplate>()
+
+	fun all(): Map<String, AITemplate> = templates
 
 	// START_TEST_FACTION
 	val TEST_JAMMER = registerTemplate(builder(

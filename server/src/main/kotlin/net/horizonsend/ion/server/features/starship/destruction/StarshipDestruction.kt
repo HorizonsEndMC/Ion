@@ -28,6 +28,8 @@ object StarshipDestruction {
 
 		if (urgent) {
 			Tasks.syncBlocking {
+				DeactivatedPlayerStarships.deactivateNow(starship)
+
 				vanishShip(starship)
 			}
 
