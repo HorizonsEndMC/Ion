@@ -15,7 +15,7 @@ object NationsBalancing : IonServerComponent() {
 		data class Settlements(
 			val activityDays: Int = 6,
 			val cityHourlyTax: Int = 125,
-			val cityMinActive: Int = 4,
+			val cityMinActive: Int = 1,
 			val hourlyActivityCredits: Int = 1,
 			val inactivityDays: Int = 30,
 			val minCreateLevel: Int = 3,
