@@ -28,7 +28,8 @@ data class BazaarItem(
     var price: Double,
     var stock: Int,
     var lastUpdated: Date,
-    var balance: Double
+    var balance: Double,
+	var embargoed: Boolean = false
 ) : DbObject {
 	companion object : OidDbObjectCompanion<BazaarItem>(BazaarItem::class, setup = {
 		ensureIndex(BazaarItem::cityTerritory)
@@ -55,7 +56,7 @@ data class BazaarItem(
 			}
 
 			val id = objId<BazaarItem>()
-			val item = BazaarItem(id, cityTerritory, seller, itemString, price, 0, Date.from(Instant.now()), 0.0)
+			val item = BazaarItem(id, cityTerritory, seller, itemString, price, 0, Date.from(Instant.now()), 0.0, false)
 			col.insertOne(sess, item)
 			return@trx id
 		}
@@ -106,6 +107,10 @@ data class BazaarItem(
 			val total = col.find(sess, BazaarItem::seller eq seller).sumByDouble { it.balance }
 			col.updateMany(sess, BazaarItem::seller eq seller, org.litote.kmongo.setValue(BazaarItem::balance, 0.0))
 			return@trx total
+		}
+
+		fun embargo(itemId: Oid<BazaarItem>, embargoed: Boolean = true): Unit = trx { sess ->
+			col.updateOneById(sess, itemId, org.litote.kmongo.setValue(BazaarItem::embargoed, embargoed))
 		}
 
 		fun replaceLegacyMinerals(): Unit = trx { sess ->
