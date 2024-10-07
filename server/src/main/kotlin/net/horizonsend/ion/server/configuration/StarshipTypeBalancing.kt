@@ -881,7 +881,7 @@ class StarshipWeapons(
 				volume = 10,
 				pitch = 2.0f,
 				soundName = "entity.firework_rocket.blast_far",
-				powerUsage = 1600,
+				powerUsage = 160,
 				length = 2,
 				angleRadiansHorizontal = 17.0,
 				angleRadiansVertical = 17.0,
