@@ -298,7 +298,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	))
 
 	val NIMBLE = registerTemplate(StarshipTemplate(
-		schematicName = "Striker",
+		schematicName = "Nimble",
 		type = AI_SHUTTLE,
 		miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Nimble",
 	))
