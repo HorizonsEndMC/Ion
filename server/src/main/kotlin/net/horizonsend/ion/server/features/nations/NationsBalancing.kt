@@ -17,7 +17,7 @@ object NationsBalancing : IonServerComponent() {
 			val cityHourlyTax: Int = 125,
 			val cityMinActive: Int = 4,
 			val hourlyActivityCredits: Int = 1,
-			val inactivityDays: Int = 30,
+			val inactivityDays: Int = 90,
 			val minCreateLevel: Int = 3,
 			val renameCost: Int = 1500,
 			val maxTaxPercent: Int = 12
