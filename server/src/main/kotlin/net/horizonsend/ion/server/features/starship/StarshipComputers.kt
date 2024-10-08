@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer.Companion.isMemberOfSettlement
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
@@ -203,7 +204,7 @@ object StarshipComputers : IonServerComponent() {
 					1, 0
 				)
 
-				if (player.isTerritoryOwner()) {
+				if (player.isMemberOfTerritory()) {
 					pane.addItem(
 						guiButton(Material.RECOVERY_COMPASS) {
 							takeOwnership(player, data)
@@ -427,5 +428,14 @@ object StarshipComputers : IonServerComponent() {
 		val settlementId = territory.settlement ?: Nation.findById(territory.nation?: return false)?.capital ?: return false
 		val settlement = Settlement.findById(settlementId) ?: return false
 		return settlement.leader.uuid == uniqueId
+	}
+
+	fun Player.isMemberOfTerritory(): Boolean {
+		val territoryId = Regions.find(this.location)
+			.filterIsInstance<RegionTerritory>()
+			.firstOrNull() ?: return false
+		val territory = Territory.findById(territoryId.id) ?: return false
+		val settlementId = territory.settlement ?: Nation.findById(territory.nation?: return false)?.capital ?: return false
+		return isMemberOfSettlement(this.slPlayerId, settlementId)
 	}
 }
