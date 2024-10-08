@@ -22,6 +22,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
@@ -42,6 +43,7 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotat
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.modules.PlayerShipSinkMessageFactory
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
+import net.horizonsend.ion.server.features.starship.movement.DynamicEstimator
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -141,6 +143,14 @@ class Starship (
 		controller.tick()
 
 		subsystems.forEach { it.tick() }
+		shiftDynamicEstimator.removeData()
+		cruiseDynamicEstimator.removeData()
+		if (statsEnabled) {
+			logStatistics()
+		}
+		if (forecastEnabled) {
+			displayForecast()
+		}
 	}
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
@@ -303,11 +313,32 @@ class Starship (
 	var lastManualMove = System.nanoTime() / 1_000_000
 	var sneakMovements = 0
 
+
+	val shiftDynamicEstimator = DynamicEstimator(this, manualMoveCooldownMillis * 10)
+	val cruiseDynamicEstimator = DynamicEstimator(this, 20000L)
+
+	/** used for estimating a ships pos, vel and accel at any time t*/
+	fun forecast(time : Long, order : Int) : Vector{
+		val shiftForecast = shiftDynamicEstimator.getDerivative(time,order)
+		val cruiseForecast = cruiseDynamicEstimator.getDerivative(time,order)
+
+		if (order == 0) {
+			shiftForecast.add(shiftDynamicEstimator.referncePos)
+			val offsetPos = cruiseDynamicEstimator.referncePos.clone().add(
+				shiftDynamicEstimator.referncePos.clone().multiply(-1))
+			cruiseForecast.add(offsetPos)
+		}
+		val forecast = shiftForecast.clone().add(cruiseForecast)
+		return forecast
+	}
+
 	/**
 	 * Non-normalized vector containing the ships velocity
 	 * Used for target lead / speed estimations
 	 */
-	var velocity: Vector = Vector(0.0, 0.0, 0.0)
+	val velocity: Vector get() = forecast(System.currentTimeMillis(), 1)
+
+	val accel : Vector get() = forecast(System.currentTimeMillis(), 2)
 
 	fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean> {
 		if (!ActiveStarships.isActive(this)) {
@@ -644,6 +675,30 @@ class Starship (
 	/** Gets the plain text serialized version of this starship's display name */
 	fun getDisplayNamePlain(): String = getDisplayName().plainText()
 	//endregion
+
+	//Debugging tools
+	var statsEnabled = true
+	private fun logStatistics() {
+		println("---Stats for ${getDisplayNamePlain()}---")
+		println("Current CoM : $centerOfMass")
+		println("Estimated CoM : ${forecast(System.currentTimeMillis(), 0)}")
+		println("Estimated velocity : $velocity")
+		println("Estimated accel : $accel")
+		println("Estimated Pos in 2 seconds : ${forecast(System.currentTimeMillis() + 2000, 0)}")
+	}
+
+	var forecastEnabled = false
+
+	private fun displayForecast() {
+		val endpoint = 5000
+		val interval = 1000
+		for (t in 0 .. endpoint step interval) {
+			val pos = forecast(System.currentTimeMillis() + t, 0)
+			ClientDisplayEntities.debugHighlightBlock(Vec3i(pos), duration = 50)
+		}
+	}
+	//end Debug
+
 
 	init {
 		IonWorld[world].starships.add(this)
