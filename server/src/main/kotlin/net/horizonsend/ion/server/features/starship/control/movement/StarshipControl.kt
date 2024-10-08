@@ -203,7 +203,7 @@ object StarshipControl : IonServerComponent() {
 		}
 
 		playerPilot?.walkSpeed = 0.009f
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
+		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementType.DC)
 	}
 
 	fun calculateSpeed(selectedSlot: Int) = if (selectedSlot == 0) -1 else (selectedSlot / DIRECT_CONTROL_DIVISOR).toInt()
@@ -246,7 +246,7 @@ object StarshipControl : IonServerComponent() {
 
 		if (locationCheck(starship, dx, dy, dz)) return
 
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
+		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementType.MANUAL)
 	}
 
 	fun locationCheck(starship: ActiveControlledStarship, dx: Int, dy: Int, dz: Int): Boolean {
