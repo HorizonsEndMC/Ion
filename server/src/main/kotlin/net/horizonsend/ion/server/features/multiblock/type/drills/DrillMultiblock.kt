@@ -5,131 +5,49 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity.UserManager
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DRILL_USER
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
-import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.RED
-import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.UP
-import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
-import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
-import org.bukkit.persistence.PersistentDataType
+import org.bukkit.persistence.PersistentDataAdapterContext
 import java.util.EnumSet
 import java.util.UUID
 import kotlin.math.max
 
-abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
-	Multiblock(),
-	PowerStoringMultiblock,
-	FurnaceMultiblock,
-	InteractableMultiblock {
-
-	companion object {
-		private val DISABLED = text("[DISABLED]", RED)
-		private val blacklist = EnumSet.of(
-			Material.BARRIER,
-			Material.BEDROCK,
-			Material.VOID_AIR
-		)
-
-		private var lastDrillCount: Map<UUID, Int> = mutableMapOf()
-		private var drillCount: MutableMap<UUID, Int> = mutableMapOf()
-
-		init {
-			// TODO: do something less stupid for this
-			Tasks.syncRepeat(delay = 1, interval = 1) {
-				lastDrillCount = drillCount
-				drillCount = mutableMapOf()
-			}
-		}
-
-		fun isEnabled(sign: Sign): Boolean {
-			return sign.getSide(Side.FRONT).line(3) != DISABLED
-		}
-
-		fun setUser(sign: Sign, player: String?) {
-			sign.getSide(Side.FRONT).line(3, player?.let { text(it) } ?: DISABLED)
-
-			if (player == null) sign.persistentDataContainer.remove(DRILL_USER) else sign.persistentDataContainer.set(DRILL_USER, PersistentDataType.STRING, player)
-
-			sign.update(false, false)
-		}
-
-		fun isBlacklisted(block: Block): Boolean {
-			return blacklist.contains(block.type)
-		}
-
-
-		fun breakBlocks(
-			sign: Sign,
-			maxBroken: Int,
-			toDestroy: MutableList<Block>,
-			output: Inventory,
-			canBuild: (Block) -> Boolean,
-			cancel: (Sign) -> Unit
-		): Int {
-			var broken = 0
-
-			for (block in toDestroy) {
-				if (isBlacklisted(block)) {
-					continue
-				}
-
-				val customBlock = CustomBlocks.getByBlock(block)
-				var drops = customBlock?.drops?.getDrops(null, false) ?: if (block.type == Material.SNOW_BLOCK) listOf() else block.drops
-
-				if (block.type.isShulkerBox) drops = listOf()
-
-				if (!canBuild(block)) {
-					continue
-				}
-
-				for (item in drops) {
-					if (!LegacyItemUtils.canFit(output, item)) {
-						cancel(sign)
-
-						return broken
-					}
-
-					LegacyItemUtils.addToInventory(output, item)
-				}
-
-				val applyPhysics = block.type == Material.COBBLESTONE
-				block.setType(Material.AIR, applyPhysics)
-
-				broken++
-				if (broken >= maxBroken) {
-					break
-				}
-			}
-			return broken
-		}
-	}
-
+abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : Multiblock(), NewPoweredMultiblock<DrillMultiblock.DrillMultiblockEntity>, InteractableMultiblock {
 	abstract val radius: Int
 
 	abstract val coolDown: Int
@@ -145,38 +63,14 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		line4 = null
 	)
 
-	fun getOutput(sign: Block): Inventory {
-		val direction = (sign.getState(false) as Sign).getFacing().oppositeFace
-		return if (!mirrored) {
-			(sign.getRelative(direction)
-				.getRelative(direction.leftFace)
-				.getState(false) as InventoryHolder
-					)
-				.inventory
-		} else {
-			(sign.getRelative(direction)
-				.getRelative(direction.rightFace)
-				.getState(false) as InventoryHolder
-					)
-				.inventory
-		}
-	}
-
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
-
-		val furnace = event.clickedBlock!!.getRelative(sign.getFacing().oppositeFace).getState(false) as? Furnace
-			?: return
+		val entity = getMultiblockEntity(sign) ?: return
 
 		if (furnace.inventory.let { it.fuel == null || it.smelting?.type != Material.PRISMARINE_CRYSTALS }) {
 			event.player.userErrorAction(
 				"You need Prismarine Crystals in both slots of the furnace!"
 			)
-			return
-		}
-
-		if (CombatTimer.isPvpCombatTagged(player)) {
-			player.userError("Cannot enable drills while in combat")
 			return
 		}
 
@@ -230,108 +124,208 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		sign.getSide(Side.FRONT).line(3, DISABLED)
+		sign.front().line(3, DISABLED)
 	}
 
-	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-		event.isBurning = false
-		event.burnTime = 0
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): DrillMultiblockEntity {
+		return DrillMultiblockEntity(data, manager, this, x, y, z, world, structureDirection)
+	}
 
-		val fuel = furnace.inventory.fuel
-		val smelting = furnace.inventory.smelting
-		if (fuel == null || smelting == null) return
+	class DrillMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		override val multiblock: DrillMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		signDirection: BlockFace,
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity, UserManagedMultiblockEntity, SyncTickingMultiblockEntity {
+		override val storage: PowerStorage = loadStoredPower(data)
+		override val tickingManager: TickingManager = TickingManager(interval = 5)
+		override val userManager: UserManager = UserManager(data, persistent = true)
 
-		val pdcUser = sign.persistentDataContainer.get(DRILL_USER, PersistentDataType.STRING) ?: return
-		val player = Bukkit.getPlayer(pdcUser)
+		override fun tick() {
+			val player = userManager.getUserPlayer() ?: return disable()
 
-		if (player == null) {
-			setUser(sign, null)
-			return
-		}
-
-		/*
-		if (SpaceWorlds.contains(furnace.world) && !furnace.world.name.contains("plots", ignoreCase = true)) {
-			player.userError("Starship drills are not optimized for use in outer space! The starship drill was not enabled.")
-			setUser(sign, null)
-			return
-		}
-		 */
-
-		drillCount[player.uniqueId] = drillCount.getOrDefault(player.uniqueId, 0) + 1
-		val drills = lastDrillCount.getOrDefault(player.uniqueId, 1)
-
-		if (drills > 16) {
-			player.userErrorAction("You cannot use more than 16 drills at once!")
-			return
-		}
-
-		if (!isEnabled(sign) || smelting.type != Material.PRISMARINE_CRYSTALS) {
-			return
-		}
-
-		event.isCancelled = true
-		val power = PowerMachines.getPower(sign, true)
-		if (power == 0) {
-			setUser(sign, null)
-			player.alertSubtitle("Your drill at ${sign.location.toVector()} ran out of power! It was disabled.")
-			return
-		}
-
-		val inSpace = furnace.world.ion.hasFlag(WorldFlag.SPACE_WORLD)
-
-		event.isBurning = false
-		event.burnTime = if (!inSpace) 5 else 20
-		furnace.cookTime = (-1000).toShort()
-		event.isCancelled = false
-
-		val toDestroy = getBlocksToDestroy(sign)
-
-		// set to 1 block broken per furnace tick in space
-		val maxBroken = if (!inSpace) {
-			max(1, if (drills > 5) (5 + drills) / drills + 15 / drills else 10 - drills)
-		} else 1
-
-		val broken = breakBlocks(
-			sign,
-			maxBroken,
-			toDestroy,
-			getOutput(sign.block),
-			{
-				val testEvent = BlockBreakEvent(it, player)
-				testEvent.isDropItems = false
-
-				return@breakBlocks testEvent.callEvent()
-			},
-			{
-				player.userErrorSubtitle("Not enough space.")
-
-				setUser(sign, null)
+			if (CombatTimer.isPvpCombatTagged(player)) {
+				player.userError("Cannot enable drills while in combat")
+				return
 			}
+
+			/*
+			if (SpaceWorlds.contains(furnace.world) && !furnace.world.name.contains("plots", ignoreCase = true)) {
+				player.userError("Starship drills are not optimized for use in outer space! The starship drill was not enabled.")
+				setUser(sign, null)
+				return
+			}
+			 */
+
+			drillCount[player.uniqueId] = drillCount.getOrDefault(player.uniqueId, 0) + 1
+			val drills = lastDrillCount.getOrDefault(player.uniqueId, 1)
+
+			if (drills > 16) return player.userErrorAction("You cannot use more than 16 drills at once!")
+			if (!isEnabled()) return
+
+			val power = storage.getPower()
+			if (power == 0) {
+				disable()
+				return player.alertSubtitle("Your drill at $vec3i ran out of power! It was disabled.")
+			}
+
+			val inSpace = world.ion.hasFlag(WorldFlag.SPACE_WORLD)
+			if (inSpace) tickingManager.sleep(15)
+
+			val toDestroy = getBlocksToDestroy()
+
+			// set to 1 block broken per furnace tick in space
+			val maxBroken = if (!inSpace) {
+				max(1, if (drills > 5) (5 + drills) / drills + 15 / drills else 10 - drills)
+			} else 1
+
+			val broken = breakBlocks(
+				maxBroken,
+				toDestroy,
+				getOutput(),
+				{
+					val testEvent = BlockBreakEvent(it, player)
+					testEvent.isDropItems = false
+
+					return@breakBlocks testEvent.callEvent()
+				},
+				{
+					player.userErrorSubtitle("Not enough space.")
+					disable()
+				}
+			)
+
+			val powerUsage = broken * 50
+			storage.setPower(power - powerUsage)
+		}
+
+		fun handleClick(sign: Sign, player: Player) {
+			val previousUser = userManager.getUserId()
+			if (previousUser == null) {
+				// Toggle on
+				enable(player, sign)
+				return
+			}
+
+			// Toggle off
+			disable()
+		}
+
+		fun enable(player: Player, sign: Sign) {
+			userManager.setUser(player)
+			sign.front().line(3, text(player.name))
+			sign.update(false, false)
+		}
+
+		fun disable() {
+			val sign = getSign() ?: return
+
+			userManager.clear()
+			sign.front().line(3, empty())
+			sign.update(false, false)
+		}
+
+		private fun isEnabled(): Boolean {
+			return userManager.currentlyUsed()
+		}
+
+		private fun getBlocksToDestroy(): MutableList<Block> {
+			val center = getBlockRelative(4, 0, 0)
+			val right = structureDirection.rightFace
+
+			val toDestroy = mutableListOf<Block>()
+
+			for (h in -multiblock.radius..multiblock.radius) {
+				for (v in -multiblock.radius..multiblock.radius) {
+					val block = center.getRelative(right, h).getRelative(UP, v)
+					if (block.type == Material.AIR) continue
+					if (block.type == Material.BEDROCK) continue
+					toDestroy.add(block)
+				}
+			}
+
+			toDestroy.sortBy { it.location.distanceSquared(center.location) }
+
+			return toDestroy
+		}
+
+		fun getOutput(): Inventory {
+			return (getBlockRelative(0, -1, 0).getState(false) as InventoryHolder).inventory
+		}
+
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			userManager.saveUserData(store)
+			savePowerData(store)
+		}
+
+		override val powerInputOffset: Vec3i = Vec3i(0, 0, 0)
+	}
+
+	companion object {
+		private val DISABLED = text("[DISABLED]", RED)
+		private val blacklist = EnumSet.of(
+			Material.BARRIER,
+			Material.BEDROCK,
+			Material.VOID_AIR
 		)
 
-		val powerUsage = broken * 50
-		PowerMachines.setPower(sign, power - powerUsage, true)
-	}
+		private var lastDrillCount: Map<UUID, Int> = mutableMapOf()
+		private var drillCount: MutableMap<UUID, Int> = mutableMapOf()
 
-	private fun getBlocksToDestroy(sign: Sign): MutableList<Block> {
-		val direction = sign.getFacing().oppositeFace
-
-		val right = direction.rightFace
-		val center = sign.block.getRelative(direction, 5)
-
-		val toDestroy = mutableListOf<Block>()
-
-		for (h in -this.radius..this.radius) {
-			for (v in -this.radius..this.radius) {
-				val block = center.getRelative(right, h).getRelative(UP, v)
-				if (block.type == Material.AIR) continue
-				if (block.type == Material.BEDROCK) continue
-				toDestroy.add(block)
+		init {
+			// TODO: do something less stupid for this
+			Tasks.syncRepeat(delay = 1, interval = 1) {
+				lastDrillCount = drillCount
+				drillCount = mutableMapOf()
 			}
 		}
 
-		toDestroy.sortBy { it.location.distanceSquared(center.location) }
+		fun isBlacklisted(block: Block): Boolean {
+			return blacklist.contains(block.type)
+		}
 
-		return toDestroy
+		fun breakBlocks(
+			maxBroken: Int,
+			toDestroy: MutableList<Block>,
+			output: Inventory,
+			canBuild: (Block) -> Boolean,
+			cancel: () -> Unit
+		): Int {
+			var broken = 0
+
+			for (block in toDestroy) {
+				if (isBlacklisted(block)) {
+					continue
+				}
+
+				val customBlock = CustomBlocks.getByBlock(block)
+				var drops = customBlock?.drops?.getDrops(null, false) ?: if (block.type == Material.SNOW_BLOCK) listOf() else block.drops
+
+				if (block.type.isShulkerBox) drops = listOf()
+
+				if (!canBuild(block)) {
+					continue
+				}
+
+				for (item in drops) {
+					if (!LegacyItemUtils.canFit(output, item)) return broken
+
+					LegacyItemUtils.addToInventory(output, item)
+				}
+
+				val applyPhysics = block.type == Material.COBBLESTONE
+				block.setType(Material.AIR, applyPhysics)
+
+				broken++
+				if (broken >= maxBroken) {
+					break
+				}
+			}
+			return broken
+		}
 	}
 }
