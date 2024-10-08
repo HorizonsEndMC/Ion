@@ -269,7 +269,6 @@ class MiningLaserSubsystem(
 		}
 
 		val blocksBroken = DrillMultiblock.breakBlocks(
-			sign = sign,
 			maxBroken = multiblock.maxBroken,
 			toDestroy = blocks,
 			output = multiblock.getOutput(sign),
