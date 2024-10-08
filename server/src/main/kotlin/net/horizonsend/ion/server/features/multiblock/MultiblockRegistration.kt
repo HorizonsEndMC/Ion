@@ -11,6 +11,9 @@ import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areas
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield5
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.ConnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.DisconnectedDockingTubeMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.fluid.ElectrolysisMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.PipedGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankMedium
@@ -114,6 +117,10 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(ChargerMultiblockTier1)
 		registerMultiblock(ChargerMultiblockTier2)
 		registerMultiblock(ChargerMultiblockTier3)
+
+		registerMultiblock(DrillMultiblockTier1)
+		registerMultiblock(DrillMultiblockTier2)
+		registerMultiblock(DrillMultiblockTier3)
 
 		// Gas
 		registerMultiblock(PipedGasCollectorMultiblock)
