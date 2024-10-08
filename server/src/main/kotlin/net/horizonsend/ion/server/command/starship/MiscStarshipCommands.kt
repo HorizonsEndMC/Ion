@@ -36,7 +36,6 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.NavigationComputerMultiblockBasic
-import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
@@ -80,7 +79,6 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.block.Sign
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -89,7 +87,6 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -693,16 +690,13 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onToggleDrills(sender: Player, enabled: Boolean) {
 		val starship = getStarshipPiloting(sender)
 
-		val signs = starship.drills.mapNotNull {
-			val (x, y, z) = it.pos
+		val entities = starship.multiblockManager.getAllMultiblockEntities().values.filterIsInstance<DrillMultiblock.DrillMultiblockEntity>()
 
-			starship.world.getBlockAt(x, y, z).state as? Sign
-		}
-
-		val user = if (enabled) sender.name else null
-
-		for (sign in signs) {
-			DrillMultiblock.setUser(sign, user)
+		for (entity in entities) {
+			if (enabled) {
+				val sign = entity.getSign() ?: continue
+				entity.enable(sender, sign)
+			} else entity.disable()
 		}
 	}
 
