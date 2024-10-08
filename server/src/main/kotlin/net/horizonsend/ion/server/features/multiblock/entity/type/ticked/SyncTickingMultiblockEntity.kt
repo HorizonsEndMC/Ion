@@ -19,7 +19,7 @@ interface SyncTickingMultiblockEntity : TickedMultiblockEntityParent {
 			if (multiblockEntity !is TickedMultiblockEntityParent) return false
 			if (multiblockEntity.shouldCheckIntegrity() && !multiblockEntity.isIntact(false)) return false
 
-			return multiblockEntity.checkTickInterval()
+			return multiblockEntity.tickingManager.checkTickInterval()
 		}
 	}
 }

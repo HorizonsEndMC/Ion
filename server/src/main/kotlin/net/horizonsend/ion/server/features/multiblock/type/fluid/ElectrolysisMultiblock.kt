@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
@@ -220,9 +221,7 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 		structureDirection
 	), AsyncTickingMultiblockEntity, FluidStoringEntity, PoweredMultiblockEntity {
 		override val multiblock = ElectrolysisMultiblock
-		override val tickInterval: Int = 4
-		override var currentTick: Int = 0
-		override var sleepTicks: Int = 0
+		override val tickingManager: TickingManager = TickingManager(interval = 4)
 
 		override val storage: PowerStorage = loadStoredPower(data)
 
