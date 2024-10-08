@@ -18,9 +18,6 @@ import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCraft
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonBaseMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier3
@@ -112,10 +109,6 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(TechnicalPrinterMultiblock)
 		registerMultiblock(GlassPrinterMultiblock)
 		registerMultiblock(ArmorPrinterMultiblock)
-
-		registerMultiblock(DrillMultiblockTier1)
-		registerMultiblock(DrillMultiblockTier2)
-		registerMultiblock(DrillMultiblockTier3)
 
 		registerMultiblock(StandardGravityWellMultiblock)
 		registerMultiblock(AmplifiedGravityWellMultiblock)
