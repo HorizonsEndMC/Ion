@@ -74,7 +74,6 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.block.Sign
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -675,16 +674,13 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onToggleDrills(sender: Player, enabled: Boolean) {
 		val starship = getStarshipPiloting(sender)
 
-		val signs = starship.drills.mapNotNull {
-			val (x, y, z) = it.pos
+		val entities = starship.multiblockManager.getAllMultiblockEntities().values.filterIsInstance<DrillMultiblock.DrillMultiblockEntity>()
 
-			starship.world.getBlockAt(x, y, z).state as? Sign
-		}
-
-		val user = if (enabled) sender.name else null
-
-		for (sign in signs) {
-			DrillMultiblock.setUser(sign, user)
+		for (entity in entities) {
+			if (enabled) {
+				val sign = entity.getSign() ?: continue
+				entity.enable(sender, sign)
+			} else entity.disable()
 		}
 	}
 
