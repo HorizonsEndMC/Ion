@@ -38,6 +38,8 @@ interface UserManagedMultiblockEntity {
 		 **/
 		fun getUserPlayer(): Player? = user?.let(::getPlayer)
 
+		fun getUserId(): UUID? = user
+
 		fun saveUserData(store: PersistentMultiblockData) {
 			if (!persistent) return
 			user?.let { store.addAdditionalData(NamespacedKeys.DRILL_USER, UuidDataType(), it) }
