@@ -52,6 +52,7 @@ object NamespacedKeys {
 
 	val SPLITTER_DIRECTION = key("splitter_direction")
 	val DRILL_USER = key("drill_user")
+	val DRILL_USER_NAME = key("drill_user_name")
 
 	@Deprecated("") val ORE_CHECK = key("oreCheck")
 
