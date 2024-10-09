@@ -3,13 +3,16 @@ package net.horizonsend.ion.server.command.starship
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -24,6 +27,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.helixAroundVector
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -226,5 +231,34 @@ object StarshipDebugCommand : SLCommand() {
 		;
 
 		abstract fun apply(controller: ActivePlayerController)
+	}
+
+	@Subcommand("dumpEntities")
+	fun onDumpEntities(sender: Player, @Optional visual: Boolean?, @Optional page: Int?) {
+		val manager = getStarshipRiding(sender).multiblockManager
+		val entities = manager.getAllMultiblockEntities().toList()
+
+		sender.sendMessage(formatPaginatedMenu(
+			entities.size,
+			"/ionchunk dumpentities ${visual ?: false}",
+			page ?: 1,
+		) { index ->
+			val (key, entity) = entities[index]
+
+			val vec = toVec3i(key)
+
+			Component.text("$vec : $entity")
+		})
+
+		if (visual == true) {
+			for ((key, _) in entities) {
+				val vec = toVec3i(key)
+
+				sender.highlightBlock(vec, 30L)
+			}
+		}
+
+		sender.information("Sync Ticked: ${manager.syncTickingMultiblockEntities}")
+		sender.information("Async Ticked: ${manager.asyncTickingMultiblockEntities}")
 	}
 }
