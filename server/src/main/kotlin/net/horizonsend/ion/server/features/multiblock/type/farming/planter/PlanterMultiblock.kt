@@ -1,78 +1,45 @@
 package net.horizonsend.ion.server.features.multiblock.type.farming.planter
 
-import net.horizonsend.ion.server.features.machine.PowerMachines
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
-import net.horizonsend.ion.server.features.multiblock.type.farming.CropMultiblock
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import org.bukkit.Material
-import org.bukkit.block.Furnace
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.inventory.FurnaceInventory
+import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class PlanterMultiblock(val tierMaterial: Material, tierNumber: Int) : CropMultiblock() {
+abstract class PlanterMultiblock(val tierMaterial: Material, tierNumber: Int) : Multiblock(), NewPoweredMultiblock<PlanterMultiblock.PlanterEntity> {
 	override val name: String = "planter"
 	override val signText: Array<Component?> = arrayOf(
-		text().append(text("Auto ", NamedTextColor.GRAY), text("Planter", NamedTextColor.GREEN)).build(),
-		text().append(text("Tier ", NamedTextColor.DARK_AQUA), text(tierNumber, NamedTextColor.AQUA)).build(),
+		ofChildren(text("Auto ", GRAY), text("Planter", GREEN)),
+		ofChildren(text("Tier ", DARK_AQUA), text(tierNumber, AQUA)),
 		null,
 		null
 	)
 
-	override val regionRadius: Int = 1
-	override val regionHeight: Int = 0
-
-	override fun getOriginOffset(): Vec3i = Vec3i(0, -1, -5)
-
+	abstract val regionDepth: Int
 	private val powerPerCrop: Int = 10
-
-	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-		event.isCancelled = true
-
-		var planted = 0
-		val initialPower = PowerMachines.getPower(sign)
-
-		event.isCancelled = true
-		val smelting = furnace.inventory.smelting
-
-		if (PowerMachines.getPower(sign) == 0 || smelting?.type != Material.PRISMARINE_CRYSTALS) {
-			return
-		}
-
-		val seedItem = furnace.inventory.fuel ?: return
-		val crop = Crop.findBySeed(seedItem.type) ?: return
-
-		event.isCancelled = false
-		event.isBurning = false
-		event.burnTime = 20
-
-		for (block in regionIterable(sign)) {
-			if (block.type != Material.AIR) continue
-			if (seedItem.amount <= 0) break
-			if (!crop.canBePlanted(block)) continue
-			if (block.lightLevel < 7) continue
-
-			if ((planted + 1) * powerPerCrop > initialPower) {
-				event.burnTime = 500
-				break
-			}
-
-			planted++
-			seedItem.amount--
-
-			crop.plant(block)
-		}
-
-		if (planted == 0) {
-			event.burnTime = 500
-			return
-		}
-
-		PowerMachines.removePower(sign, planted * powerPerCrop)
-	}
 
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
@@ -122,6 +89,86 @@ abstract class PlanterMultiblock(val tierMaterial: Material, tierNumber: Int) : 
 				x(0).anyStairs()
 				x(+1).anyStairs()
 			}
+		}
+	}
+
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): PlanterEntity {
+		return PlanterEntity(data, manager, this, x, y, z, world, structureDirection)
+	}
+
+	class PlanterEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		override val multiblock: PlanterMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace,
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
+		override val storage: PowerStorage = loadStoredPower(data)
+		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
+
+		override fun tick() {
+			var planted = 0
+			val initialPower = storage.getPower()
+
+			val inventory: FurnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return tickingManager.sleep(800)
+
+			val seedItem = inventory.fuel ?: return tickingManager.sleep(500)
+			val crop = Crop.findBySeed(seedItem.type) ?: return tickingManager.sleep(1000)
+
+			val region = getRegionWithDimensions(-1 ,-1 ,4, 3, 1, multiblock.regionDepth)
+
+			for (block in region) {
+				if (block.type != Material.AIR) continue
+				if (seedItem.amount <= 0) break
+				if (!crop.canBePlanted(block)) continue
+				if (block.lightLevel < 7) continue
+
+				if ((planted + 1) * multiblock.powerPerCrop > initialPower) {
+					tickingManager.sleep(500)
+					break
+				}
+
+				planted++
+				seedItem.amount--
+
+				crop.plant(block)
+			}
+
+			if (planted == 0) return tickingManager.sleep(300)
+
+			storage.removePower(planted * multiblock.powerPerCrop)
+		}
+
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			savePowerData(store)
+		}
+
+		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
+		).register()
+
+		override fun onLoad() {
+			displayHandler.update()
+		}
+
+		override fun onUnload() {
+			displayHandler.remove()
+		}
+
+		override fun handleRemoval() {
+			displayHandler.remove()
+		}
+
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
+		}
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
 		}
 	}
 }
