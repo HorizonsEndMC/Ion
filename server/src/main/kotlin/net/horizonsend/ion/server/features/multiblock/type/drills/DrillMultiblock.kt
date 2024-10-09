@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.drills
 
 import net.horizonsend.ion.common.extensions.alertSubtitle
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
@@ -124,14 +125,6 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		override fun tick() {
 			val player = userManager.getUserPlayer() ?: return disable()
 
-			/*
-			if (SpaceWorlds.contains(furnace.world) && !furnace.world.name.contains("plots", ignoreCase = true)) {
-				player.userError("Starship drills are not optimized for use in outer space! The starship drill was not enabled.")
-				setUser(sign, null)
-				return
-			}
-			 */
-
 			drillCount[player.uniqueId] = drillCount.getOrDefault(player.uniqueId, 0) + 1
 			val drills = lastDrillCount.getOrDefault(player.uniqueId, 1)
 
@@ -157,7 +150,10 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 			val broken = breakBlocks(
 				maxBroken,
 				toDestroy,
-				getOutput(),
+				getInventory(0, -1, 0) ?: return run {
+					player.userError("Drill output inventory destroyed")
+					disable()
+				},
 				{
 					val testEvent = BlockBreakEvent(it, player)
 					testEvent.isDropItems = false
