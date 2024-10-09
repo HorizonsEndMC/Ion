@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.multiblock.type.InteractableMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.kyori.adventure.text.Component.empty
 import org.bukkit.Material
@@ -153,9 +152,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 			savePowerData(store)
 		}
 
-		override val powerInputOffset: Vec3i = Vec3i(0, -1, 0)
-
-		override fun loadFromSign(sign: Sign) {
+        override fun loadFromSign(sign: Sign) {
 			val oldPower = sign.persistentDataContainer.get(NamespacedKeys.POWER, PersistentDataType.INTEGER) ?: return
 
 			storage.setPower(oldPower)

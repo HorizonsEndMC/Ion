@@ -1,21 +1,22 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.leftFace
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryHolder
+import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class MiningLaserMultiblock : Multiblock(), SubsystemMultiblock<MiningLaserSubsystem>, PowerStoringMultiblock {
+abstract class MiningLaserMultiblock : Multiblock(), NewPoweredMultiblock<MiningLaserMultiblock.MiningLaserMultiblockEntity> {
 	override val name = "mininglaser"
 	abstract val range: Double
 
@@ -28,31 +29,64 @@ abstract class MiningLaserMultiblock : Multiblock(), SubsystemMultiblock<MiningL
 	abstract val tier: Int
 	abstract val mirrored: Boolean
 
-	fun getOutput(sign: Sign): Inventory {
-		val direction = sign.getFacing().oppositeFace
-
-		return if (!mirrored)
-			(sign.block.getRelative(direction)
-				.getRelative(side.oppositeFace)
-				.getRelative(direction.leftFace)
-				.getState(false) as InventoryHolder
-					).inventory
-		else
-			(sign.block.getRelative(direction)
-				.getRelative(side.oppositeFace)
-				.getRelative(direction.rightFace)
-				.getState(false) as InventoryHolder
-					).inventory
-	}
-
-	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): MiningLaserSubsystem {
-		if (starship is ActiveControlledStarship) {
-			return MiningLaserSubsystem(starship, pos, face, this)
-		} else {
-			throw IllegalStateException("Mining lasers can be only used on Player starships")
-		}
-	}
-
+	abstract val outputOffset: Vec3i
 
 	abstract fun getFirePointOffset(): Vec3i
+
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): MiningLaserMultiblockEntity {
+		return MiningLaserMultiblockEntity(data, manager, this, x, y, z, world, structureDirection)
+	}
+
+	class MiningLaserMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		override val multiblock: MiningLaserMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace,
+	) : MultiblockEntity(manager, multiblock, x ,y ,z, world, structureDirection), PoweredMultiblockEntity {
+		override val storage: PowerStorage = loadStoredPower(data)
+
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			savePowerData(store)
+		}
+
+		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
+		).register()
+
+		fun getFirePos(): Vec3i {
+			val (right, up, forward) = multiblock.getFirePointOffset()
+			return getPosRelative(
+				leftRight = right,
+				upDown = up,
+				backFourth = forward
+			)
+		}
+
+		override fun onLoad() {
+			displayHandler.update()
+		}
+
+		override fun onUnload() {
+			displayHandler.remove()
+		}
+
+		override fun handleRemoval() {
+			displayHandler.remove()
+		}
+
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
+		}
+
+		fun getOutput(): Inventory? = getInventory(
+			leftRight = multiblock.outputOffset.x,
+			upDown = multiblock.outputOffset.y,
+			backFourth = multiblock.outputOffset.z,
+		)
+	}
 }
