@@ -16,6 +16,8 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.persistence.PersistentDataAdapterContext
 
 /**
@@ -155,6 +157,10 @@ abstract class MultiblockEntity(
 		val (x, y, z) = getRelative(vec3i, structureDirection, backFourth, leftRight, upDown)
 
 		return world.getBlockAt(x, y, z)
+	}
+
+	fun getInventory(backFourth: Int, leftRight: Int, upDown: Int): Inventory? {
+		return (getBlockRelative(backFourth, leftRight, upDown).getState(false) as? InventoryHolder)?.inventory
 	}
 
 	fun displace(movement: StarshipMovement) {
