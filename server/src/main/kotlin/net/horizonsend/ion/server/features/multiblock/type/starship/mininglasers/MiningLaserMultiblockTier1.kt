@@ -30,7 +30,8 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 	override val side = BlockFace.UP
 	override val mirrored = false
 
-	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +3, -2)
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +3, +1)
+	override val outputOffset: Vec3i = Vec3i(-1, -1, 0)
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -192,7 +193,8 @@ object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 	override val side = BlockFace.DOWN
 	override val mirrored = false
 
-	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -3, -2)
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -3, +1)
+	override val outputOffset: Vec3i = Vec3i(-1, +1, 0)
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -354,7 +356,8 @@ object MiningLaserMultiblockTier1Side : MiningLaserMultiblockTier1() {
 	override val side = BlockFace.UP
 	override val mirrored = false
 
-	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, -5)
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, +5)
+	override val outputOffset: Vec3i = Vec3i(-1, -1, 0)
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
