@@ -27,9 +27,9 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -37,7 +37,6 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -220,21 +219,12 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		}
 
 		private fun getBlocksToDestroy(): MutableList<Block> {
-			val center = getBlockRelative(4, 0, 0)
-			val right = structureDirection.rightFace
-
-			val toDestroy = mutableListOf<Block>()
-
-			for (h in -multiblock.radius..multiblock.radius) {
-				for (v in -multiblock.radius..multiblock.radius) {
-					val block = center.getRelative(right, h).getRelative(UP, v)
-					if (block.type == Material.AIR) continue
-					if (block.type == Material.BEDROCK) continue
-					toDestroy.add(block)
-				}
+			val toDestroy = getSquareRegion(4, 0, 0, multiblock.radius, 1) {
+				it.type == Material.AIR || it.type == Material.BEDROCK
 			}
 
-			toDestroy.sortBy { it.location.distanceSquared(center.location) }
+			val origin = getBlockRelative(4, 0, 0)
+			toDestroy.sortBy { distanceSquared(it.x, it.y, it.z, origin.x, origin.y, origin.z) }
 
 			return toDestroy
 		}
@@ -321,7 +311,10 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 				}
 
 				for (item in drops) {
-					if (!LegacyItemUtils.canFit(output, item)) return broken
+					if (!LegacyItemUtils.canFit(output, item)) {
+						cancel()
+						return broken
+					}
 
 					LegacyItemUtils.addToInventory(output, item)
 				}
