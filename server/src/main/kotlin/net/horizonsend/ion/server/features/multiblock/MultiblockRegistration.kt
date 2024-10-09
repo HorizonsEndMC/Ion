@@ -2,9 +2,13 @@ package net.horizonsend.ion.server.features.multiblock
 
 import com.google.common.collect.Multimap
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Bottom
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Side
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Top
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockTop
+import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield10
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield20
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield30
@@ -51,6 +55,15 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.H
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass2
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass3
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass4
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1Bottom
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1Side
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1Top
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2Bottom
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2Side
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2Top
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3Bottom
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3Side
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3Top
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
@@ -121,6 +134,19 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(DrillMultiblockTier1)
 		registerMultiblock(DrillMultiblockTier2)
 		registerMultiblock(DrillMultiblockTier3)
+
+		registerMultiblock(MiningLaserMultiblockTier1Top)
+		registerMultiblock(MiningLaserMultiblockTier1Bottom)
+		registerMultiblock(MiningLaserMultiblockTier1Side)
+		registerMultiblock(MiningLaserMultiblockTier2Top)
+		registerMultiblock(MiningLaserMultiblockTier2Bottom)
+		registerMultiblock(MiningLaserMultiblockTier2Side)
+		registerMultiblock(MiningLaserMultiblockTier3Top)
+		registerMultiblock(MiningLaserMultiblockTier3Bottom)
+		registerMultiblock(MiningLaserMultiblockTier3Side)
+		registerMultiblock(MiningLaserMultiblockTier4Top)
+		registerMultiblock(MiningLaserMultiblockTier4Bottom)
+		registerMultiblock(MiningLaserMultiblockTier4Side)
 
 		// Gas
 		registerMultiblock(PipedGasCollectorMultiblock)
@@ -217,6 +243,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(AirlockMultiblock)
 		registerMultiblock(ExpandableAirlock)
 		registerMultiblock(TractorBeamMultiblock)
+
+		registerMultiblock(AntiAirCannonBaseMultiblock)
 	}
 
 	private fun sortMultiblocks() {

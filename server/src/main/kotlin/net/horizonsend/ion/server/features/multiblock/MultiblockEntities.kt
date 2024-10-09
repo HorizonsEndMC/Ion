@@ -104,7 +104,7 @@ object MultiblockEntities : SLEventListener() {
 		}
 	}
 
-	private fun migrateFromSign(sign: Sign, type: EntityMultiblock<*>) {
+	fun migrateFromSign(sign: Sign, type: EntityMultiblock<*>) {
 		val origin = MultiblockEntity.getOriginFromSign(sign)
 
 		val ionChunk = getIonChunk(sign.world, origin.x, origin.z) ?: return
