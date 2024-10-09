@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -150,23 +151,6 @@ abstract class MultiblockEntity(
 		)
 	}
 
-	/**
-	 *
-	 **/
-	fun getBlockRelative(backFourth: Int, leftRight: Int, upDown: Int): Block {
-		val (x, y, z) = getRelative(vec3i, structureDirection, backFourth, leftRight, upDown)
-
-		return world.getBlockAt(x, y, z)
-	}
-
-	fun getPosRelative(backFourth: Int, leftRight: Int, upDown: Int): Vec3i {
-		return getRelative(vec3i, structureDirection, backFourth, leftRight, upDown)
-	}
-
-	fun getInventory(backFourth: Int, leftRight: Int, upDown: Int): Inventory? {
-		return (getBlockRelative(backFourth, leftRight, upDown).getState(false) as? InventoryHolder)?.inventory
-	}
-
 	fun displace(movement: StarshipMovement) {
 		val newX = movement.displaceX(x, z)
 		val newY = movement.displaceY(y)
@@ -184,6 +168,93 @@ abstract class MultiblockEntity(
 		this.structureDirection = movement.displaceFace(structureDirection)
 
 		displaceAdditional(movement)
+	}
+
+	/**
+	 *
+	 **/
+	fun getBlockRelative(backFourth: Int, leftRight: Int, upDown: Int): Block {
+		val (x, y, z) = getRelative(vec3i, structureDirection, backFourth, leftRight, upDown)
+
+		return world.getBlockAt(x, y, z)
+	}
+
+	fun getPosRelative(backFourth: Int, leftRight: Int, upDown: Int): Vec3i {
+		return getRelative(vec3i, structureDirection, backFourth, leftRight, upDown)
+	}
+
+	fun getInventory(backFourth: Int, leftRight: Int, upDown: Int): Inventory? {
+		return (getBlockRelative(backFourth, leftRight, upDown).getState(false) as? InventoryHolder)?.inventory
+	}
+
+	fun getSquareRegion(offsetRight: Int, offsetUp: Int, offsetForward: Int, radius: Int, depth: Int, filter: (Block) -> Boolean = { true }): MutableList<Block> {
+		val center = getBlockRelative(leftRight = offsetRight, upDown = offsetUp, backFourth = offsetForward)
+		val right = structureDirection.rightFace
+
+		val blocks = mutableListOf<Block>()
+
+		for (h in -radius .. radius) {
+			for (v in -radius .. radius) {
+				for (d in 0..depth) {
+					val block = center.getRelative(right, h).getRelative(BlockFace.UP, v)
+					if (filter(block)) continue
+					blocks.add(block)
+				}
+			}
+		}
+
+		return blocks
+	}
+
+	fun getRegionWithPoints(
+		minOffsetRight: Int,
+		minOffsetUp: Int,
+		minOffsetForward: Int,
+		maxOffsetRight: Int,
+		maxOffsetUp: Int,
+		maxOffsetForward: Int,
+		predicate: (Block) -> Boolean = { true }
+	): MutableList<Block> {
+		val right = structureDirection.rightFace
+
+		val width = maxOffsetRight - minOffsetRight
+		val height = maxOffsetUp - minOffsetUp
+		val depth = maxOffsetForward - minOffsetForward
+
+		val origin = getBlockRelative(leftRight = minOffsetRight, upDown = minOffsetUp, backFourth = minOffsetForward)
+
+		val blocks = mutableListOf<Block>()
+
+		for (w in 0..width) for (h in 0..height) for (d in 0..depth) {
+			val block = origin
+				.getRelative(right, w)
+				.getRelative(BlockFace.UP, h)
+				.getRelative(structureDirection, d)
+
+			if (predicate(block)) blocks.add(block)
+		}
+
+		return blocks
+	}
+
+	fun getRegionWithDimensions(
+		originRightOffset: Int,
+		originUpOffset: Int,
+		originForwardOffset: Int,
+		width: Int,
+		height: Int,
+		depth: Int,
+		predicate: (Block) -> Boolean = { true }
+	): MutableList<Block> {
+		return getRegionWithPoints(
+			originRightOffset,
+			originUpOffset,
+			originForwardOffset,
+			originRightOffset + width,
+			originUpOffset + height,
+			originForwardOffset + depth,
+			predicate
+		)
 	}
 
 	companion object {
