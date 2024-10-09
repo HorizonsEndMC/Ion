@@ -37,15 +37,16 @@ interface EntityMultiblock<T : MultiblockEntity> {
 		return world.ion.getChunk(chunkX, chunkZ)?.multiblockManager?.get(x, y, z) as T?
 	}
 
-	fun getMultiblockEntity(sign: Sign): T? {
+	fun getMultiblockEntity(sign: Sign, ignoreShips: Boolean = false): T? {
 		val origin = MultiblockEntity.getOriginFromSign(sign)
 
 		val world = sign.world
 		val ship = ActiveStarships.getInWorld(world).firstOrNull { it.contains(origin.x, origin.y, origin.z) }
 
-		if (ship != null) {
+		if (ship != null && !ignoreShips) {
 			@Suppress("UNCHECKED_CAST")
-			return ship.multiblockManager[origin.x, origin.y, origin.z] as T?
+			val multi = ship.multiblockManager[origin.x, origin.y, origin.z] as T?
+			if (multi != null) return multi
 		}
 
 		@Suppress("UNCHECKED_CAST")
