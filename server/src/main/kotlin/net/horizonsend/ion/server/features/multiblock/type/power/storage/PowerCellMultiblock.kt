@@ -70,7 +70,7 @@ object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultibl
 		world: World,
 		structureDirection: BlockFace
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
-		override val storage: PowerStorage = loadStoredPower(data)
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,

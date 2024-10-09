@@ -24,7 +24,6 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier2
@@ -37,8 +36,6 @@ import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonPrinter
 import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.AmplifiedGravityWellMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.StandardGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
@@ -91,15 +88,11 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(GlassPrinterMultiblock)
 		registerMultiblock(ArmorPrinterMultiblock)
 
-		registerMultiblock(StandardGravityWellMultiblock)
-		registerMultiblock(AmplifiedGravityWellMultiblock)
-
 		registerMultiblock(StandardAmmoPressMultiblock)
 		registerMultiblock(AmmoLoaderMultiblock)
 		registerMultiblock(MissileLoaderMultiblock)
 
 		registerMultiblock(DecomposerMultiblock)
-		registerMultiblock(DisposalMultiblock)
 
 		registerMultiblock(ItemSplitterMultiblock)
 		registerMultiblock(GasCollectorMultiblock)

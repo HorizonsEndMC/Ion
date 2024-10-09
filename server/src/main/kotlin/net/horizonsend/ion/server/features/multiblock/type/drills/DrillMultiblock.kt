@@ -120,7 +120,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		world: World,
 		signDirection: BlockFace,
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity, UserManagedMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
-		override val storage: PowerStorage = loadStoredPower(data)
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val tickingManager: TickingManager = TickingManager(interval = 5)
 		override val userManager: UserManager = UserManager(data, persistent = true)
 
@@ -133,7 +133,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 			if (drills > 16) return player.userErrorAction("You cannot use more than 16 drills at once!")
 			if (!isEnabled()) return
 
-			val power = storage.getPower()
+			val power = powerStorage.getPower()
 			if (power == 0) {
 				disable()
 				return player.alertSubtitle("Your drill at $vec3i ran out of power! It was disabled.")
@@ -152,7 +152,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 			val broken = breakBlocks(
 				maxBroken,
 				toDestroy,
-				getInventory(0, -1, 0) ?: return run {
+				getInventory(-1, 0, 0) ?: return run {
 					player.userError("Drill output inventory destroyed")
 					disable()
 				},
@@ -169,7 +169,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 			)
 
 			val powerUsage = broken * 50
-			storage.setPower(power - powerUsage)
+			powerStorage.setPower(power - powerUsage)
 		}
 
 		fun handleClick(sign: Sign, player: Player) {
@@ -207,7 +207,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 				it.type == Material.AIR || it.type == Material.BEDROCK
 			}
 
-			val origin = getBlockRelative(4, 0, 0)
+			val origin = getBlockRelative(0, 0, 4)
 			toDestroy.sortBy { distanceSquared(it.x, it.y, it.z, origin.x, origin.y, origin.z) }
 
 			return toDestroy

@@ -105,7 +105,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 		world: World,
 		signDirection: BlockFace,
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
-		override val storage: PowerStorage = loadStoredPower(data)
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
@@ -113,7 +113,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 		).register()
 
 		fun handleCharging(event: FurnaceBurnEvent, furnace: Furnace) {
-			val availablePower = storage.getPower()
+			val availablePower = powerStorage.getPower()
 			if (availablePower == 0) return
 
 			val item = event.fuel
@@ -152,7 +152,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 
 			addPower(item, multiplier)
 
-			storage.setPower(power - multiplier * item.amount)
+			powerStorage.setPower(power - multiplier * item.amount)
 
 			furnace.cookTime = 20.toShort()
 
@@ -187,7 +187,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 
 			customItem.addPower(item, multiplier)
 
-			storage.setPower(power - multiplier * item.amount)
+			powerStorage.setPower(power - multiplier * item.amount)
 
 			furnace.cookTime = 20.toShort()
 
