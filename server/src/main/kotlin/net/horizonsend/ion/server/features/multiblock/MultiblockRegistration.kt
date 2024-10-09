@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTa
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankSmall
 import net.horizonsend.ion.server.features.multiblock.type.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableAirlock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
@@ -57,6 +58,8 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.OdometerMult
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BattleCruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.AmplifiedGravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.StandardGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass1
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass2
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass3
@@ -148,6 +151,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(HarvesterMultiblockTier2)
 		registerMultiblock(HarvesterMultiblockTier3)
 
+		registerMultiblock(DisposalMultiblock)
+
+		// Moreso powered multis than ship multis, could go in either spot tbh
 		registerMultiblock(MiningLaserMultiblockTier1Top)
 		registerMultiblock(MiningLaserMultiblockTier1Bottom)
 		registerMultiblock(MiningLaserMultiblockTier1Side)
@@ -245,6 +251,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(ShieldMultiblockClass08i)
 		registerMultiblock(BoxShieldMultiblock)
 		registerMultiblock(EventShieldMultiblock)
+
+		registerMultiblock(StandardGravityWellMultiblock)
+		registerMultiblock(AmplifiedGravityWellMultiblock)
 
 		// Machine
 		registerMultiblock(ShipFactoryMultiblock)
