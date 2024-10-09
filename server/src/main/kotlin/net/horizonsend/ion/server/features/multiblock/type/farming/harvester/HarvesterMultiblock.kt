@@ -121,7 +121,7 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 		structureDirection: BlockFace,
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity, StatusMultiblock {
 		override val statusManager: StatusMultiblock.StatusManager = StatusMultiblock.StatusManager()
-		override val storage: PowerStorage = loadStoredPower(data)
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val tickingManager: TickingManager = TickingManager(interval = 20)
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
@@ -136,10 +136,10 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 		}
 
 		override fun tick() {
-			val inventory = getInventory(leftRight = 0, upDown = 0, backFourth = 2) ?: return tickingManager.sleep(1000)
+			val inventory = getInventory(right = 0, up = 0, forward = 2) ?: return tickingManager.sleep(1000)
 			var broken = 0
 
-			val initialPower = storage.getPower()
+			val initialPower = powerStorage.getPower()
 			if (initialPower == 0) return cancelWithStatus(text("No Power", RED), 500)
 
 			val region = getRegionWithDimensions(-1 ,-1 ,4, 3, 1, multiblock.regionDepth)
@@ -180,7 +180,7 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 
 			if (broken == 0) return cancelWithStatus(text("Sleeping", BLUE, ITALIC), 100)
 
-			storage.removePower(broken * multiblock.powerPerCrop)
+			powerStorage.removePower(broken * multiblock.powerPerCrop)
 			setStatus(text("Working", GREEN))
 		}
 
