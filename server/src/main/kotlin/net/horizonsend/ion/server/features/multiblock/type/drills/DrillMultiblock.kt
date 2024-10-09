@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity.UserManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
@@ -130,7 +131,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		z: Int,
 		world: World,
 		signDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity, UserManagedMultiblockEntity, SyncTickingMultiblockEntity {
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity, UserManagedMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
 		override val storage: PowerStorage = loadStoredPower(data)
 		override val tickingManager: TickingManager = TickingManager(interval = 5)
 		override val userManager: UserManager = UserManager(data, persistent = true)
@@ -266,6 +267,10 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 
 		override fun displaceAdditional(movement: StarshipMovement) {
 			displayHandler.displace(movement)
+		}
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
 		}
 	}
 

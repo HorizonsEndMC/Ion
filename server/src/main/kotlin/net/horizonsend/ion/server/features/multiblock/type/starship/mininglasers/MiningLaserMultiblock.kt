@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.client.display.modular.display.PowerE
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 import org.bukkit.persistence.PersistentDataAdapterContext
 
@@ -46,7 +48,7 @@ abstract class MiningLaserMultiblock : Multiblock(), NewPoweredMultiblock<Mining
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock, x ,y ,z, world, structureDirection), PoweredMultiblockEntity {
+	) : MultiblockEntity(manager, multiblock, x ,y ,z, world, structureDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
 		override val storage: PowerStorage = loadStoredPower(data)
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
@@ -88,5 +90,9 @@ abstract class MiningLaserMultiblock : Multiblock(), NewPoweredMultiblock<Mining
 			upDown = multiblock.outputOffset.y,
 			backFourth = multiblock.outputOffset.z,
 		)
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
 	}
 }
