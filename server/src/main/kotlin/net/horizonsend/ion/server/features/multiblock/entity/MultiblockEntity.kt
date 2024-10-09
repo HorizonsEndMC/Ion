@@ -173,22 +173,22 @@ abstract class MultiblockEntity(
 	/**
 	 *
 	 **/
-	fun getBlockRelative(backFourth: Int, leftRight: Int, upDown: Int): Block {
-		val (x, y, z) = getRelative(vec3i, structureDirection, backFourth, leftRight, upDown)
+	fun getBlockRelative(right: Int, up: Int, forward: Int): Block {
+		val (x, y, z) = getRelative(vec3i, structureDirection, right = right, up = up, forward = forward)
 
 		return world.getBlockAt(x, y, z)
 	}
 
-	fun getPosRelative(backFourth: Int, leftRight: Int, upDown: Int): Vec3i {
-		return getRelative(vec3i, structureDirection, backFourth, leftRight, upDown)
+	fun getPosRelative(forward: Int, right: Int, up: Int): Vec3i {
+		return getRelative(vec3i, structureDirection, right = right, up = up, forward = forward)
 	}
 
-	fun getInventory(backFourth: Int, leftRight: Int, upDown: Int): Inventory? {
-		return (getBlockRelative(backFourth, leftRight, upDown).getState(false) as? InventoryHolder)?.inventory
+	fun getInventory(right: Int, up: Int, forward: Int): Inventory? {
+		return (getBlockRelative( right = right, up = up, forward = forward).getState(false) as? InventoryHolder)?.inventory
 	}
 
 	fun getSquareRegion(offsetRight: Int, offsetUp: Int, offsetForward: Int, radius: Int, depth: Int, filter: (Block) -> Boolean = { true }): MutableList<Block> {
-		val center = getBlockRelative(leftRight = offsetRight, upDown = offsetUp, backFourth = offsetForward)
+		val center = getBlockRelative(right = offsetRight, up = offsetUp, forward = offsetForward)
 		val right = structureDirection.rightFace
 
 		val blocks = mutableListOf<Block>()
@@ -221,7 +221,7 @@ abstract class MultiblockEntity(
 		val height = maxOffsetUp - minOffsetUp
 		val depth = maxOffsetForward - minOffsetForward
 
-		val origin = getBlockRelative(leftRight = minOffsetRight, upDown = minOffsetUp, backFourth = minOffsetForward)
+		val origin = getBlockRelative(right = minOffsetRight, up = minOffsetUp, forward = minOffsetForward)
 
 		val blocks = mutableListOf<Block>()
 

@@ -111,7 +111,7 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 		world: World,
 		structureDirection: BlockFace,
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity, StatusMultiblock {
-		override val storage: PowerStorage = loadStoredPower(data)
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val tickingManager: TickingManager = TickingManager(interval = 20)
 		override val statusManager: StatusMultiblock.StatusManager = StatusMultiblock.StatusManager()
 
@@ -128,7 +128,7 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 
 		override fun tick() {
 			var planted = 0
-			val initialPower = storage.getPower()
+			val initialPower = powerStorage.getPower()
 			if (initialPower == 0) return cancelWithStatus(text("No Power", RED), 500)
 
 			val inventory: FurnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return tickingManager.sleep(800)
@@ -159,7 +159,7 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 
 			if (planted == 0) return cancelWithStatus(text("Sleeping", BLUE, ITALIC), 100)
 
-			storage.removePower(planted * multiblock.powerPerCrop)
+			powerStorage.removePower(planted * multiblock.powerPerCrop)
 			setStatus(text("Working", GREEN))
 		}
 

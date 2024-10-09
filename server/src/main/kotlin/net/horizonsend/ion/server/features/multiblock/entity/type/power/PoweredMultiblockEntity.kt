@@ -7,13 +7,13 @@ import org.bukkit.persistence.PersistentDataType
 
 interface PoweredMultiblockEntity {
 	val multiblock: NewPoweredMultiblock<*>
-	val storage: PowerStorage
+	val powerStorage: PowerStorage
 
 	fun loadStoredPower(data: PersistentMultiblockData): PowerStorage {
 		return PowerStorage(this, data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0), multiblock.maxPower)
 	}
 
 	fun savePowerData(store: PersistentMultiblockData) {
-		store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, storage.getPower())
+		store.addAdditionalData(NamespacedKeys.POWER, PersistentDataType.INTEGER, powerStorage.getPower())
 	}
 }
