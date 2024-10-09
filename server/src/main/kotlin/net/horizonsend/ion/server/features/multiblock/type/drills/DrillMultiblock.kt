@@ -67,19 +67,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 		val entity = getMultiblockEntity(sign) ?: return
 
-		if (furnace.inventory.let { it.fuel == null || it.smelting?.type != Material.PRISMARINE_CRYSTALS }) {
-			event.player.userErrorAction(
-				"You need Prismarine Crystals in both slots of the furnace!"
-			)
-			return
-		}
-
-		val user = when {
-			isEnabled(sign) -> null
-			else -> event.player.name
-		}
-
-		setUser(sign, user)
+		entity.handleClick(sign, player)
 	}
 
 	override fun MultiblockShape.buildStructure() {
@@ -186,7 +174,10 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 			val broken = breakBlocks(
 				maxBroken,
 				toDestroy,
-				getOutput(),
+				getInventory(0, -1, 0) ?: return run {
+					player.userError("Drill output inventory destroyed")
+					disable()
+				},
 				{
 					val testEvent = BlockBreakEvent(it, player)
 					testEvent.isDropItems = false
