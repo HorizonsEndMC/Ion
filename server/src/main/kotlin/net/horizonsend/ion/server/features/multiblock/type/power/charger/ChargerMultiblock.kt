@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -102,7 +103,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 		z: Int,
 		world: World,
 		signDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity {
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
 		override val storage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
@@ -180,5 +181,8 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 			savePowerData(store)
 		}
 
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
     }
 }
