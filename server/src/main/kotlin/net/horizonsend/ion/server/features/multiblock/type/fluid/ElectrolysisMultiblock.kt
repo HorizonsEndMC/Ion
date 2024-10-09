@@ -223,7 +223,7 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 		override val multiblock = ElectrolysisMultiblock
 		override val tickingManager: TickingManager = TickingManager(interval = 4)
 
-		override val storage: PowerStorage = loadStoredPower(data)
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 
 		override val capacities: Array<StorageContainer> = arrayOf(
 			loadStoredResource(data, "water_tank", text("Water Tank"), TANK_1, SingleFluidStorage(1000, WATER)),
