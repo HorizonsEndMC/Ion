@@ -274,9 +274,7 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 
 		override fun toString(): String = "Structure direction $structureDirection, display direction ${displayHandler.facing}"
 
-		override val powerInputOffset: Vec3i = Vec3i(0, -2, 0)
-
-		override val fluidInputOffset: Vec3i = Vec3i(0, -1, 0)
+        override val fluidInputOffset: Vec3i = Vec3i(0, -1, 0)
 
 		companion object {
 			const val WATER_INCREMENT = 5
