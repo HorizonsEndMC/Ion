@@ -14,9 +14,6 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.front
-import net.kyori.adventure.text.Component.empty
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -24,7 +21,6 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataAdapterContext
-import org.bukkit.persistence.PersistentDataType
 
 abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredMultiblock<PowerBankMultiblock.PowerBankEntity>, InteractableMultiblock {
 	abstract val tierMaterial: Material
@@ -152,14 +148,8 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 			savePowerData(store)
 		}
 
-        override fun loadFromSign(sign: Sign) {
-			val oldPower = sign.persistentDataContainer.get(NamespacedKeys.POWER, PersistentDataType.INTEGER) ?: return
-
-			storage.setPower(oldPower)
-
-			sign.persistentDataContainer.remove(NamespacedKeys.POWER)
-			sign.front().line(2, empty())
-			sign.update()
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
 		}
 	}
 }
