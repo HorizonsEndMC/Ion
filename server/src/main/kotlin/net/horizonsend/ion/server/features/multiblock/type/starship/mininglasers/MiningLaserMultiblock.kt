@@ -49,7 +49,7 @@ abstract class MiningLaserMultiblock : Multiblock(), NewPoweredMultiblock<Mining
 		world: World,
 		structureDirection: BlockFace,
 	) : MultiblockEntity(manager, multiblock, x ,y ,z, world, structureDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
-		override val storage: PowerStorage = loadStoredPower(data)
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 			savePowerData(store)
@@ -63,9 +63,9 @@ abstract class MiningLaserMultiblock : Multiblock(), NewPoweredMultiblock<Mining
 		fun getFirePos(): Vec3i {
 			val (right, up, forward) = multiblock.getFirePointOffset()
 			return getPosRelative(
-				leftRight = right,
-				upDown = up,
-				backFourth = forward
+				right = right,
+				up = up,
+				forward = forward
 			)
 		}
 
@@ -86,9 +86,9 @@ abstract class MiningLaserMultiblock : Multiblock(), NewPoweredMultiblock<Mining
 		}
 
 		fun getOutput(): Inventory? = getInventory(
-			leftRight = multiblock.outputOffset.x,
-			upDown = multiblock.outputOffset.y,
-			backFourth = multiblock.outputOffset.z,
+			right = multiblock.outputOffset.x,
+			up = multiblock.outputOffset.y,
+			forward = multiblock.outputOffset.z,
 		)
 
 		override fun loadFromSign(sign: Sign) {

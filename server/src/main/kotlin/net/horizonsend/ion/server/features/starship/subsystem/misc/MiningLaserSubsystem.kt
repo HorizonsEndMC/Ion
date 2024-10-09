@@ -186,7 +186,7 @@ class MiningLaserSubsystem(
 			return setFiring(false)
 		}
 
-		val power = entity.storage.getPower()
+		val power = entity.powerStorage.getPower()
 
 		if (power == 0) {
 			starship.alertSubtitle("Mining Laser at $pos ran out of power and was disabled!")
@@ -236,7 +236,7 @@ class MiningLaserSubsystem(
 		)
 
 		if (blocksBroken > 0) {
-			entity.storage.removePower((blockBreakPowerUsage * blocksBroken).toInt())
+			entity.powerStorage.removePower((blockBreakPowerUsage * blocksBroken).toInt())
 			laserEnd.world.spawnParticle(Particle.EXPLOSION, laserEnd, 1)
 		} else {
 			starship.sendActionBar(text("Mining laser is trying to break air!", NamedTextColor.RED))
