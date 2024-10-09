@@ -42,7 +42,7 @@ object SetPowerCommand : SLCommand() {
 			val entity = MultiblockEntities.getMultiblockEntity(sender.world, x, y ,z)
 			if (entity !is PoweredMultiblockEntity) continue
 
-			entity.storage.setPower(amount)
+			entity.powerStorage.setPower(amount)
 			hits++
 
 			sender.debug("power sent")
