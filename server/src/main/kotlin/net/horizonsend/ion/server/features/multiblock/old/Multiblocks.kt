@@ -14,12 +14,6 @@ import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPres
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.VentMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.GasCollectorMultiblock
@@ -115,13 +109,6 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(AutoCrafterMultiblockTier1)
 		registerMultiblock(AutoCrafterMultiblockTier2)
 		registerMultiblock(AutoCrafterMultiblockTier3)
-
-		registerMultiblock(PlanterMultiblockTier1)
-		registerMultiblock(PlanterMultiblockTier2)
-		registerMultiblock(PlanterMultiblockTier3)
-		registerMultiblock(HarvesterMultiblockTier1)
-		registerMultiblock(HarvesterMultiblockTier2)
-		registerMultiblock(HarvesterMultiblockTier3)
 	}
 
 	private fun registerMultiblock(multiblock: Multiblock) {
