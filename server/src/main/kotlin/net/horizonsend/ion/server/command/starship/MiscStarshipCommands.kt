@@ -221,6 +221,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
 	fun onJump(sender: Player, destination: String, @Optional hyperdriveTier: Int?) {
+		val separated = destination.split(",")
+		if (separated.size == 2 && separated.all { runCatching { it.toInt() }.isSuccess }) {
+			onJump(sender, separated[0], separated[1], hyperdriveTier)
+			return
+		}
+
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
