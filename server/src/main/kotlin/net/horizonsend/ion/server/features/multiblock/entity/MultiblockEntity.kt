@@ -159,6 +159,10 @@ abstract class MultiblockEntity(
 		return world.getBlockAt(x, y, z)
 	}
 
+	fun getPosRelative(backFourth: Int, leftRight: Int, upDown: Int): Vec3i {
+		return getRelative(vec3i, structureDirection, backFourth, leftRight, upDown)
+	}
+
 	fun getInventory(backFourth: Int, leftRight: Int, upDown: Int): Inventory? {
 		return (getBlockRelative(backFourth, leftRight, upDown).getState(false) as? InventoryHolder)?.inventory
 	}
