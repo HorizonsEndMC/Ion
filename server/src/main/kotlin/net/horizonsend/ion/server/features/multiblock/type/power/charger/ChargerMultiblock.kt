@@ -17,7 +17,6 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -181,6 +180,5 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 			savePowerData(store)
 		}
 
-		override val powerInputOffset: Vec3i = Vec3i(0, -1, 0)
-	}
+    }
 }

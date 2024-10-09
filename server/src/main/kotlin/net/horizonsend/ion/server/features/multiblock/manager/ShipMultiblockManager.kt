@@ -1,20 +1,30 @@
 package net.horizonsend.ion.server.features.multiblock.manager
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.util.NetworkType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import org.bukkit.block.Sign
 import java.util.concurrent.ConcurrentHashMap
 
 class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServer.slF4JLogger) {
@@ -37,6 +47,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	init {
 	    loadEntities()
 		MultiblockTicking.registerMultiblockManager(this)
+		tryFixEntities()
 	}
 
 	fun loadEntities() {
@@ -66,6 +77,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 
 	fun release() {
 		MultiblockTicking.removeMultiblockManager(this)
+		releaseEntities()
 	}
 
 	fun releaseEntities() {
@@ -148,5 +160,34 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 		}
 
 		asyncTickingMultiblockEntities = newAsyncTicking
+	}
+
+	/** Mostly to be used with blueprint load or loadship, loads entities from their sign data */
+	private fun tryFixEntities() {
+		starship.iterateBlocks { x, y, z ->
+			if (isOccupied(x, y, z)) return@iterateBlocks
+
+			val type = getBlockTypeSafe(world, x, y, z)
+			if (type?.isWallSign != true) return@iterateBlocks
+
+			val state = world.getBlockState(x, y, z) as? Sign ?: return@iterateBlocks
+			val multiblock = MultiblockAccess.getFast(state)
+			if (multiblock !is EntityMultiblock<*>) return@iterateBlocks
+
+			val data = state.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData) ?: return MultiblockEntities.migrateFromSign(state, multiblock)
+
+			val origin = MultiblockEntity.getOriginFromSign(state)
+
+			// In case it moved
+			data.x = origin.x
+			data.y = origin.y
+			data.z = origin.z
+			data.signOffset = state.getFacing().oppositeFace
+
+			val new = MultiblockEntities.loadFromData(multiblock, this, data)
+			if (new is LegacyMultiblockEntity) new.loadFromSign(state)
+
+			addMultiblockEntity(new)
+		}
 	}
 }
