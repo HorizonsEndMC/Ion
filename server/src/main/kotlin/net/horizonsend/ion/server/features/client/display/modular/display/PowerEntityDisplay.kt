@@ -33,5 +33,5 @@ class PowerEntityDisplay(
 		return title?.let { ofChildren(it, newline(), formatPower()) } ?: formatPower()
 	}
 
-	private fun formatPower(): Component = ofChildren(prefixComponent, text(multiblockEntity.storage.getPower(), NamedTextColor.GREEN))
+	private fun formatPower(): Component = ofChildren(prefixComponent, text(multiblockEntity.powerStorage.getPower(), NamedTextColor.GREEN))
 }

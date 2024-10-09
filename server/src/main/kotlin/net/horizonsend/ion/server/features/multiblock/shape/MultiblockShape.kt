@@ -252,7 +252,7 @@ class MultiblockShape {
 		}
 
 		CARDINAL_BLOCK_FACES.forEach { inwardFace ->
-			val vec = toAbsolute(inwardFace, inward, right, upward)
+			val vec = toAbsolute(inwardFace, right, upward, inward)
 
 			val requirementMap = getRequirementMap(inwardFace)
 
