@@ -87,7 +87,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		val b = getMultiblockEntity(sign) ?: return
-		player.information("b: ${b.storage.getPower()}")
+		player.information("b: ${b.powerStorage.getPower()}")
 	}
 
 	override fun createEntity(
@@ -121,7 +121,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 		world: World,
 		structureDirection: BlockFace
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
-		override val storage: PowerStorage = loadStoredPower(data)
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = newMultiblockSignOverlay(
 			this,
