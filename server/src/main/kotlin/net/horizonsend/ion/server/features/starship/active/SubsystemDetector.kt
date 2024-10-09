@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.Ba
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.CruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TurretBaseMultiblock
@@ -34,6 +35,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsys
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
@@ -215,12 +217,18 @@ object SubsystemDetector {
 			is GravityWellMultiblock -> {
 				starship.subsystems += GravityWellSubsystem(starship, sign, multiblock)
 			}
+
+			is MiningLaserMultiblock -> {
+				// Multiblocks are loaded onto ships before his step
+				val entity = starship.multiblockManager[sign] as? MiningLaserMultiblock.MiningLaserMultiblockEntity ?: return
+				starship.subsystems += MiningLaserSubsystem(starship, entity)
+			}
 		}
 	}
 
 	private fun detectThruster(starship: ActiveControlledStarship, block: Block) {
 		for (face in CARDINAL_BLOCK_FACES) {
-			val thrusterType: ThrusterType = ThrusterType.values()
+			val thrusterType: ThrusterType = ThrusterType.entries
 				.firstOrNull { it.matchesStructure(starship, block.x, block.y, block.z, face) }
 				?: continue
 			val pos = Vec3i(block.blockKey)
