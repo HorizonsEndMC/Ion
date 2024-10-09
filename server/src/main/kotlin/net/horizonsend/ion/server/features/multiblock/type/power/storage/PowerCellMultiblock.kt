@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.client.display.modular.display.PowerE
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
 import org.bukkit.persistence.PersistentDataAdapterContext
 
 object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultiblock.PowerCellEntity> {
@@ -67,7 +69,7 @@ object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultibl
 		z: Int,
 		world: World,
 		structureDirection: BlockFace
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity {
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
 		override val storage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
@@ -95,5 +97,8 @@ object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultibl
 			savePowerData(store)
 		}
 
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
 	}
 }
