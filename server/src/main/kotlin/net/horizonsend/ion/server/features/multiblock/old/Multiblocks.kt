@@ -8,16 +8,12 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.misc.MultiblockCommand.setupCommand
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess.multiblockCoroutineScope
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Bottom
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Side
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Top
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier3
@@ -49,15 +45,6 @@ import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterM
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.AmplifiedGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.StandardGravityWellMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1Bottom
-import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1Side
-import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1Top
-import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2Bottom
-import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2Side
-import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2Top
-import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3Bottom
-import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3Side
-import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3Top
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
@@ -119,18 +106,6 @@ object Multiblocks : IonServerComponent() {
 
 		registerMultiblock(DecomposerMultiblock)
 		registerMultiblock(DisposalMultiblock)
-		registerMultiblock(MiningLaserMultiblockTier1Top)
-		registerMultiblock(MiningLaserMultiblockTier1Bottom)
-		registerMultiblock(MiningLaserMultiblockTier1Side)
-		registerMultiblock(MiningLaserMultiblockTier2Top)
-		registerMultiblock(MiningLaserMultiblockTier2Bottom)
-		registerMultiblock(MiningLaserMultiblockTier2Side)
-		registerMultiblock(MiningLaserMultiblockTier3Top)
-		registerMultiblock(MiningLaserMultiblockTier3Bottom)
-		registerMultiblock(MiningLaserMultiblockTier3Side)
-		registerMultiblock(MiningLaserMultiblockTier4Top)
-		registerMultiblock(MiningLaserMultiblockTier4Bottom)
-		registerMultiblock(MiningLaserMultiblockTier4Side)
 
 		registerMultiblock(ItemSplitterMultiblock)
 		registerMultiblock(GasCollectorMultiblock)
@@ -147,8 +122,6 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(HarvesterMultiblockTier1)
 		registerMultiblock(HarvesterMultiblockTier2)
 		registerMultiblock(HarvesterMultiblockTier3)
-
-		registerMultiblock(AntiAirCannonBaseMultiblock)
 	}
 
 	private fun registerMultiblock(multiblock: Multiblock) {
