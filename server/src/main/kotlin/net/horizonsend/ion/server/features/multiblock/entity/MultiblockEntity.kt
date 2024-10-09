@@ -250,9 +250,9 @@ abstract class MultiblockEntity(
 			originRightOffset,
 			originUpOffset,
 			originForwardOffset,
-			originRightOffset + width,
-			originUpOffset + height,
-			originForwardOffset + depth,
+			originRightOffset + (width - 1),
+			originUpOffset + (height - 1),
+			originForwardOffset + (depth - 1),
 			predicate
 		)
 	}

@@ -18,6 +18,12 @@ import net.horizonsend.ion.server.features.multiblock.type.dockingtube.Disconnec
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.fluid.ElectrolysisMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.PipedGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankMedium
@@ -134,6 +140,13 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(DrillMultiblockTier1)
 		registerMultiblock(DrillMultiblockTier2)
 		registerMultiblock(DrillMultiblockTier3)
+
+		registerMultiblock(PlanterMultiblockTier1)
+		registerMultiblock(PlanterMultiblockTier2)
+		registerMultiblock(PlanterMultiblockTier3)
+		registerMultiblock(HarvesterMultiblockTier1)
+		registerMultiblock(HarvesterMultiblockTier2)
+		registerMultiblock(HarvesterMultiblockTier3)
 
 		registerMultiblock(MiningLaserMultiblockTier1Top)
 		registerMultiblock(MiningLaserMultiblockTier1Bottom)
