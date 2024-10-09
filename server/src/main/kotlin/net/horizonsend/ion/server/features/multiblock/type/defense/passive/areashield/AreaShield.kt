@@ -99,7 +99,7 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 		world: World,
 		signDirection: BlockFace,
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
-		override val storage: PowerStorage = loadStoredPower(data)
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 
 		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,

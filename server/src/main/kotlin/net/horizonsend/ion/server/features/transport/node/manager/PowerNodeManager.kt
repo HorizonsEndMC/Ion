@@ -45,15 +45,15 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager<Po
 
 		extractorNode.markTicked()
 
-		val source = extractorNode.getSourcePool().filterNot { it.storage.isEmpty() }.randomOrNull() ?: return@submit
+		val source = extractorNode.getSourcePool().filterNot { it.powerStorage.isEmpty() }.randomOrNull() ?: return@submit
 
 		val destinations: ObjectOpenHashSet<PowerInputNode> = getPowerInputs(extractorNode)
 		destinations.removeAll(extractorNode.getTransferableNodes().filterIsInstanceTo(ObjectOpenHashSet()))
 
 		if (destinations.isEmpty()) return@submit
 
-		val transferred = minOf(source.storage.getPower(), powerCheck)
-		val notRemoved = source.storage.removePower(transferred)
+		val transferred = minOf(source.powerStorage.getPower(), powerCheck)
+		val notRemoved = source.powerStorage.removePower(transferred)
 		val remainder = runPowerTransfer(extractorNode, destinations.toMutableList(), (transferred - notRemoved))
 
 		if (transferred == remainder) {
@@ -61,7 +61,7 @@ class PowerNodeManager(holder: NetworkHolder<PowerNodeManager>) : NodeManager<Po
 		}
 
 		if (remainder > 0) {
-			source.storage.addPower(remainder)
+			source.powerStorage.addPower(remainder)
 		}
 	}
 
@@ -145,7 +145,7 @@ private fun runPowerTransfer(source: TransportNode, destinations: List<PowerInpu
 }
 
 private fun getRemainingCapacity(destination: PowerInputNode): Int {
-	return destination.getPoweredEntities().sumOf { it.storage.getRemainingCapacity() }
+	return destination.getPoweredEntities().sumOf { it.powerStorage.getRemainingCapacity() }
 }
 
 private fun completeChain(path: Array<TransportNode>?, transferred: Int) {

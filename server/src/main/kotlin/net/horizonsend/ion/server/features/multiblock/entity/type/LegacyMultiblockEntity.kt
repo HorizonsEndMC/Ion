@@ -14,7 +14,7 @@ interface LegacyMultiblockEntity {
 		this as PoweredMultiblockEntity
 		val oldPower = sign.persistentDataContainer.get(NamespacedKeys.POWER, PersistentDataType.INTEGER) ?: return
 
-		storage.setPower(oldPower)
+		powerStorage.setPower(oldPower)
 
 		sign.persistentDataContainer.remove(NamespacedKeys.POWER)
 		sign.front().line(2, Component.empty())
