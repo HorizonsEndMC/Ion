@@ -31,11 +31,7 @@ import net.horizonsend.ion.server.features.multiblock.type.power.generator.Gener
 import net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace.PowerFurnaceMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace.PowerFurnaceMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace.PowerFurnaceMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.type.printer.ArmorPrinterMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonProcessorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.getBukkitBlockState
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
@@ -66,6 +62,7 @@ object Multiblocks : IonServerComponent() {
 	}
 
 	private fun initMultiblocks() {
+		// Furnace start
 		registerMultiblock(CentrifugeMultiblock)
 		registerMultiblock(CompressorMultiblock)
 		registerMultiblock(FabricatorMultiblock)
@@ -83,21 +80,18 @@ object Multiblocks : IonServerComponent() {
 
 		registerMultiblock(CarbonProcessorMultiblock)
 
-		registerMultiblock(CarbonPrinterMultiblock)
-		registerMultiblock(TechnicalPrinterMultiblock)
-		registerMultiblock(GlassPrinterMultiblock)
-		registerMultiblock(ArmorPrinterMultiblock)
-
 		registerMultiblock(StandardAmmoPressMultiblock)
 		registerMultiblock(AmmoLoaderMultiblock)
 		registerMultiblock(MissileLoaderMultiblock)
 
+		registerMultiblock(GasCollectorMultiblock)
+		registerMultiblock(VentMultiblock)
+		registerMultiblock(GasPowerPlantMultiblock)
+		// Furnace end
+
 		registerMultiblock(DecomposerMultiblock)
 
 		registerMultiblock(ItemSplitterMultiblock)
-		registerMultiblock(GasCollectorMultiblock)
-		registerMultiblock(GasPowerPlantMultiblock)
-		registerMultiblock(VentMultiblock)
 
 		registerMultiblock(AutoCrafterMultiblockTier1)
 		registerMultiblock(AutoCrafterMultiblockTier2)
