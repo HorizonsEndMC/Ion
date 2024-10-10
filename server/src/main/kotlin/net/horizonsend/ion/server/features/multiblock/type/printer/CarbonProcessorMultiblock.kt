@@ -110,30 +110,30 @@ object CarbonProcessorMultiblock : Multiblock(), NewPoweredMultiblock<CarbonProc
 			StatusDisplay(statusManager, +0.0, -0.10, +0.0, 0.45f)
 		).register()
 
-		private fun cancelWithStatus(status: Component, sleepTicks: Int) {
+		private fun sleepWithStatus(status: Component, sleepTicks: Int) {
 			setStatus(status)
 			tickingManager.sleep(sleepTicks)
 		}
 
 		override fun tick() {
-			val furnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return cancelWithStatus(text("No Furnace"), 250)
-			val outputInventory = getInventory(0, 0, 2) ?: return cancelWithStatus(text("No Output Inventory", NamedTextColor.RED), 250)
+			val furnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return sleepWithStatus(text("No Furnace"), 250)
+			val outputInventory = getInventory(0, 0, 2) ?: return sleepWithStatus(text("No Output Inventory", NamedTextColor.RED), 250)
 
 			val fuel = furnaceInventory.fuel
 
-			if (powerStorage.getPower() < 250) return cancelWithStatus(text("No Power", NamedTextColor.RED), 100)
-			if (fuel?.type?.isConcretePowder != true) return cancelWithStatus(text("Out of Powder", NamedTextColor.RED), 100)
+			if (powerStorage.getPower() < 250) return sleepWithStatus(text("No Power", NamedTextColor.RED), 100)
+			if (fuel?.type?.isConcretePowder != true) return sleepWithStatus(text("Out of Powder", NamedTextColor.RED), 100)
 
 			val output = getOutput(fuel)
 
-			if (!LegacyItemUtils.canFit(outputInventory, output)) return cancelWithStatus(text("No Space", NamedTextColor.RED), 100)
+			if (!LegacyItemUtils.canFit(outputInventory, output)) return sleepWithStatus(text("No Space", NamedTextColor.RED), 100)
 			LegacyItemUtils.addToInventory(outputInventory, output)
 
 			fuel.amount--
 
 			powerStorage.removePower(250)
 
-			cancelWithStatus(text("Working", GREEN), 50)
+			sleepWithStatus(text("Working", GREEN), 50)
 
 			val furnace = furnaceInventory.holder ?: return
 
