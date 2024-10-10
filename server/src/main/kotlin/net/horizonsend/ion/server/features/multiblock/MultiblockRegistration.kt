@@ -8,6 +8,9 @@ import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMu
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockTop
+import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield10
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield20
@@ -158,7 +161,10 @@ object MultiblockRegistration : IonServerComponent() {
 
 		registerMultiblock(DisposalMultiblock)
 
-		// Furnace powered multis
+		registerMultiblock(AutoCrafterMultiblockTier1)
+		registerMultiblock(AutoCrafterMultiblockTier2)
+		registerMultiblock(AutoCrafterMultiblockTier3)
+
 		registerMultiblock(CarbonPrinterMultiblock)
 		registerMultiblock(TechnicalPrinterMultiblock)
 		registerMultiblock(GlassPrinterMultiblock)
