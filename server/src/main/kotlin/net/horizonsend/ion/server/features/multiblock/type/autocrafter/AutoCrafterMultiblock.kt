@@ -221,7 +221,7 @@ abstract class AutoCrafterMultiblock(
 
 					if (added > 0) output.removeItem(result.clone().apply { amount = added })
 
-					return
+					return sleepWithStatus(text("Output Full", RED), 100)
 				}
 
 				power -= powerUsage
