@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.Material
 import org.bukkit.World
@@ -176,10 +177,10 @@ abstract class PrinterMultiblock : Multiblock(), NewPoweredMultiblock<PrinterMul
 			fuel.amount--
 
 			powerStorage.removePower(250)
-			tickingManager.sleep(100)
+
+			cancelWithStatus(text("Working", GREEN), 100)
 
 			val furnace = furnaceInventory.holder ?: return
-
 			furnace.burnTime = Short.MAX_VALUE
 			furnace.cookTime = 100
 
