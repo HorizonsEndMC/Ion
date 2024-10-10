@@ -11,9 +11,6 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockAccess.multibloc
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.VentMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.GasCollectorMultiblock
@@ -90,10 +87,6 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(DecomposerMultiblock)
 
 		registerMultiblock(ItemSplitterMultiblock)
-
-		registerMultiblock(AutoCrafterMultiblockTier1)
-		registerMultiblock(AutoCrafterMultiblockTier2)
-		registerMultiblock(AutoCrafterMultiblockTier3)
 	}
 
 	private fun registerMultiblock(multiblock: Multiblock) {
@@ -148,12 +141,12 @@ object Multiblocks : IonServerComponent() {
 				}
 			}
 
-			if (!multiblock.signMatchesStructureAsync(world, Vec3i(x, y, z), loadChunks)) continue;
+			if (!multiblock.signMatchesStructureAsync(world, Vec3i(x, y, z), loadChunks)) continue
 
 			return multiblock
 		}
 
-		return null;
+		return null
 	}
 
 	/**
