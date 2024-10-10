@@ -61,14 +61,17 @@ object Multiblocks : IonServerComponent() {
 	}
 
 	private fun initMultiblocks() {
-		// Furnace start
+		// Recipe system multis
 		registerMultiblock(CentrifugeMultiblock)
 		registerMultiblock(CompressorMultiblock)
 		registerMultiblock(FabricatorMultiblock)
 		registerMultiblock(CircuitfabMultiblock)
 		registerMultiblock(PlatePressMultiblock)
 		registerMultiblock(GasFurnaceMultiblock)
+		registerMultiblock(MissileLoaderMultiblock)
+		registerMultiblock(AmmoLoaderMultiblock)
 
+		// Furnace start
 		registerMultiblock(GeneratorMultiblockTier1)
 		registerMultiblock(GeneratorMultiblockTier2)
 		registerMultiblock(GeneratorMultiblockTier3)
@@ -78,8 +81,6 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(PowerFurnaceMultiblockTier3)
 
 		registerMultiblock(StandardAmmoPressMultiblock)
-		registerMultiblock(AmmoLoaderMultiblock)
-		registerMultiblock(MissileLoaderMultiblock)
 
 		registerMultiblock(GasCollectorMultiblock)
 		registerMultiblock(VentMultiblock)
