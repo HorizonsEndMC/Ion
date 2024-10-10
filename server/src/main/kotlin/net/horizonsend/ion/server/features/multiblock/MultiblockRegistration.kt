@@ -53,6 +53,10 @@ import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBa
 import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerCellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.ArmorPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.OdometerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
@@ -152,6 +156,12 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(HarvesterMultiblockTier3)
 
 		registerMultiblock(DisposalMultiblock)
+
+		// Furnace powered multis
+		registerMultiblock(CarbonPrinterMultiblock)
+		registerMultiblock(TechnicalPrinterMultiblock)
+		registerMultiblock(GlassPrinterMultiblock)
+		registerMultiblock(ArmorPrinterMultiblock)
 
 		// Moreso powered multis than ship multis, could go in either spot tbh
 		registerMultiblock(MiningLaserMultiblockTier1Top)
