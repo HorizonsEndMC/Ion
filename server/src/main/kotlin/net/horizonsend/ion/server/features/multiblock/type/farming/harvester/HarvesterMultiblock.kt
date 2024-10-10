@@ -21,12 +21,12 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.World
@@ -35,11 +35,11 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.Ageable
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: Int) : Multiblock(), NewPoweredMultiblock<HarvesterMultiblock.HarvesterEntity> {
+abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), NewPoweredMultiblock<HarvesterMultiblock.HarvesterEntity> {
 	override val name: String = "harvester"
 	override val signText: Array<Component?> = arrayOf(
 		ofChildren(text("Auto ", GRAY), text("Harvester", GREEN)),
-		ofChildren(text("Tier ", DARK_AQUA), text(tierNumber, AQUA)),
+		ofChildren(text("Tier ", DARK_AQUA), text(tierNumber, tierColor)),
 		null,
 		null
 	)
