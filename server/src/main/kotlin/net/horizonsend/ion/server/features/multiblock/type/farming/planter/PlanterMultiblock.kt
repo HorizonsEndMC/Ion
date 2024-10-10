@@ -20,12 +20,12 @@ import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.World
@@ -34,11 +34,11 @@ import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int) : Multiblock(), NewPoweredMultiblock<PlanterMultiblock.PlanterEntity> {
+abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), NewPoweredMultiblock<PlanterMultiblock.PlanterEntity> {
 	override val name: String = "planter"
 	override val signText: Array<Component?> = arrayOf(
 		ofChildren(text("Auto ", GRAY), text("Planter", GREEN)),
-		ofChildren(text("Tier ", DARK_AQUA), text(tierNumber, AQUA)),
+		ofChildren(text("Tier ", DARK_AQUA), text(tierNumber, tierColor)),
 		null,
 		null
 	)
