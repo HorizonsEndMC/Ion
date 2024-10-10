@@ -130,7 +130,7 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 			StatusDisplay(statusManager, +0.0, -0.10, +0.0, 0.45f)
 		).register()
 
-		private fun cancelWithStatus(status: Component, sleepTicks: Int) {
+		private fun sleepWithStatus(status: Component, sleepTicks: Int) {
 			setStatus(status)
 			tickingManager.sleep(sleepTicks)
 		}
@@ -140,7 +140,7 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 			var broken = 0
 
 			val initialPower = powerStorage.getPower()
-			if (initialPower == 0) return cancelWithStatus(text("No Power", RED), 500)
+			if (initialPower == 0) return sleepWithStatus(text("No Power", RED), 500)
 
 			val region = getRegionWithDimensions(-1 ,-1 ,4, 3, 1, multiblock.regionDepth)
 
@@ -171,14 +171,14 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 				val didNotFit = inventory.addItem(*drops)
 
 				if (didNotFit.isNotEmpty()) {
-					cancelWithStatus(text("No Space", RED), 500)
+					sleepWithStatus(text("No Space", RED), 500)
 					break
 				}
 
 				if (broken >= multiblock.tierNumber) break
 			}
 
-			if (broken == 0) return cancelWithStatus(text("Sleeping", BLUE, ITALIC), 100)
+			if (broken == 0) return sleepWithStatus(text("Sleeping", BLUE, ITALIC), 100)
 
 			powerStorage.removePower(broken * multiblock.powerPerCrop)
 			setStatus(text("Working", GREEN))
