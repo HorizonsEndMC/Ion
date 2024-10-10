@@ -129,8 +129,8 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		y: Int,
 		z: Int,
 		world: World,
-		signDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity, UserManagedMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
+		structureDirection: BlockFace,
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, UserManagedMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
 		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val tickingManager: TickingManager = TickingManager(interval = 5)
 		override val userManager: UserManager = UserManager(data, persistent = true)
