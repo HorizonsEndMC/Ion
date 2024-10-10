@@ -154,31 +154,31 @@ abstract class PrinterMultiblock : Multiblock(), NewPoweredMultiblock<PrinterMul
 			StatusDisplay(statusManager, +0.0, -0.10, +0.0, 0.45f)
 		).register()
 
-		private fun cancelWithStatus(status: Component, sleepTicks: Int) {
+		private fun sleepWithStatus(status: Component, sleepTicks: Int) {
 			setStatus(status)
 			tickingManager.sleep(sleepTicks)
 		}
 
 		override fun tick() {
-			val furnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return cancelWithStatus(text("No Furnace"), 250)
-			val outputInventory = getInventory(0, 0, 4) ?: return cancelWithStatus(text("No Output Inventory", RED), 250)
+			val furnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return sleepWithStatus(text("No Furnace"), 250)
+			val outputInventory = getInventory(0, 0, 4) ?: return sleepWithStatus(text("No Output Inventory", RED), 250)
 
 			val fuel = furnaceInventory.fuel
 
-			if (powerStorage.getPower() < 250) return cancelWithStatus(text("No Power", RED), 100)
-			if (fuel?.type != Material.COBBLESTONE) return cancelWithStatus(text("Out of Cobblestone", RED), 100)
+			if (powerStorage.getPower() < 250) return sleepWithStatus(text("No Power", RED), 100)
+			if (fuel?.type != Material.COBBLESTONE) return sleepWithStatus(text("Out of Cobblestone", RED), 100)
 
 			val product = getBlockRelative(0, 0, 2).type
 			val output = multiblock.getOutput(product)
 
-			if (!LegacyItemUtils.canFit(outputInventory, output)) return cancelWithStatus(text("No Space", RED), 100)
+			if (!LegacyItemUtils.canFit(outputInventory, output)) return sleepWithStatus(text("No Space", RED), 100)
 			LegacyItemUtils.addToInventory(outputInventory, output)
 
 			fuel.amount--
 
 			powerStorage.removePower(250)
 
-			cancelWithStatus(text("Working", GREEN), 100)
+			sleepWithStatus(text("Working", GREEN), 100)
 
 			val furnace = furnaceInventory.holder ?: return
 			furnace.burnTime = Short.MAX_VALUE
