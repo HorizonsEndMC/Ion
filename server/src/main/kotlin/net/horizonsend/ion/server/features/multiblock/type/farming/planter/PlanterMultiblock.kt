@@ -121,7 +121,7 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 			StatusDisplay(statusManager, +0.0, -0.10, +0.0, 0.45f)
 		).register()
 
-		private fun cancelWithStatus(status: Component, sleepTicks: Int) {
+		private fun sleepWithStatus(status: Component, sleepTicks: Int) {
 			setStatus(status)
 			tickingManager.sleep(sleepTicks)
 		}
@@ -129,12 +129,12 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 		override fun tick() {
 			var planted = 0
 			val initialPower = powerStorage.getPower()
-			if (initialPower == 0) return cancelWithStatus(text("No Power", RED), 500)
+			if (initialPower == 0) return sleepWithStatus(text("No Power", RED), 500)
 
 			val inventory: FurnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return tickingManager.sleep(800)
 
-			val seedItem = inventory.fuel ?: return cancelWithStatus(text("No Seeds", RED), 500)
-			val crop = Crop.findBySeed(seedItem.type) ?: return  cancelWithStatus( text("Unknown Crop", RED), 1000)
+			val seedItem = inventory.fuel ?: return sleepWithStatus(text("No Seeds", RED), 500)
+			val crop = Crop.findBySeed(seedItem.type) ?: return  sleepWithStatus( text("Unknown Crop", RED), 1000)
 
 			val region = getRegionWithDimensions(-1 ,-1 ,4, 3, 1, multiblock.regionDepth)
 
@@ -157,7 +157,7 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 				if (planted >= multiblock.tierNumber) break
 			}
 
-			if (planted == 0) return cancelWithStatus(text("Sleeping", BLUE, ITALIC), 100)
+			if (planted == 0) return sleepWithStatus(text("Sleeping", BLUE, ITALIC), 100)
 
 			powerStorage.removePower(planted * multiblock.powerPerCrop)
 			setStatus(text("Working", GREEN))
