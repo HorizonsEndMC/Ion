@@ -5,19 +5,17 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblock
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
@@ -32,7 +30,6 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
-import org.bukkit.persistence.PersistentDataAdapterContext
 
 abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), NewPoweredMultiblock<PlanterMultiblock.PlanterEntity> {
 	override val name: String = "planter"
@@ -104,27 +101,21 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 	class PlanterEntity(
 		data: PersistentMultiblockData,
 		manager: MultiblockManager,
-		override val multiblock: PlanterMultiblock,
+		override val poweredMultiblock: PlanterMultiblock,
 		x: Int,
 		y: Int,
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity, StatusMultiblock {
-		override val powerStorage: PowerStorage = loadStoredPower(data)
+	) : SimplePoweredMultiblockEntity(data, manager, poweredMultiblock, x, y, z, world, structureDirection), StatusTickedMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
 		override val tickingManager: TickingManager = TickingManager(interval = 20)
-		override val statusManager: StatusMultiblock.StatusManager = StatusMultiblock.StatusManager()
+		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
-		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
 			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.45f),
 			StatusDisplay(statusManager, +0.0, -0.10, +0.0, 0.45f)
 		).register()
-
-		private fun sleepWithStatus(status: Component, sleepTicks: Int) {
-			setStatus(status)
-			tickingManager.sleep(sleepTicks)
-		}
 
 		override fun tick() {
 			var planted = 0
@@ -136,7 +127,7 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 			val seedItem = inventory.fuel ?: return sleepWithStatus(text("No Seeds", RED), 500)
 			val crop = Crop.findBySeed(seedItem.type) ?: return  sleepWithStatus( text("Unknown Crop", RED), 1000)
 
-			val region = getRegionWithDimensions(-1 ,-1 ,4, 3, 1, multiblock.regionDepth)
+			val region = getRegionWithDimensions(-1 ,-1 ,4, 3, 1, poweredMultiblock.regionDepth)
 
 			for (block in region) {
 				if (block.type != Material.AIR) continue
@@ -144,7 +135,7 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 				if (!crop.canBePlanted(block)) continue
 				if (block.lightFromBlocks < 7 && block.lightFromSky < 7) continue
 
-				if ((planted + 1) * multiblock.powerPerCrop > initialPower) {
+				if ((planted + 1) * poweredMultiblock.powerPerCrop > initialPower) {
 					tickingManager.sleep(500)
 					break
 				}
@@ -154,33 +145,13 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 
 				crop.plant(block)
 
-				if (planted >= multiblock.tierNumber) break
+				if (planted >= poweredMultiblock.tierNumber) break
 			}
 
 			if (planted == 0) return sleepWithStatus(text("Sleeping", BLUE, ITALIC), 100)
 
-			powerStorage.removePower(planted * multiblock.powerPerCrop)
+			powerStorage.removePower(planted * poweredMultiblock.powerPerCrop)
 			setStatus(text("Working", GREEN))
-		}
-
-		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			savePowerData(store)
-		}
-
-		override fun onLoad() {
-			displayHandler.update()
-		}
-
-		override fun onUnload() {
-			displayHandler.remove()
-		}
-
-		override fun handleRemoval() {
-			displayHandler.remove()
-		}
-
-		override fun displaceAdditional(movement: StarshipMovement) {
-			displayHandler.displace(movement)
 		}
 
 		override fun loadFromSign(sign: Sign) {

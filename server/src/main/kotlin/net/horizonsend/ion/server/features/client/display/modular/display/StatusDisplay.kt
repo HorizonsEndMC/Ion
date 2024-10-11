@@ -1,14 +1,14 @@
 package net.horizonsend.ion.server.features.client.display.modular.display
 
-import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.kyori.adventure.text.Component
 
 class StatusDisplay(
-	private val statusSupplier: StatusMultiblock.StatusManager,
-	offsetLeft: Double,
-	offsetUp: Double,
-	offsetBack: Double,
-	scale: Float,
+    private val statusSupplier: StatusMultiblockEntity.StatusManager,
+    offsetLeft: Double,
+    offsetUp: Double,
+    offsetBack: Double,
+    scale: Float,
 ) : Display(offsetLeft, offsetUp, offsetBack, scale) {
 	private val updateHandler: Runnable = Runnable { display() }
 

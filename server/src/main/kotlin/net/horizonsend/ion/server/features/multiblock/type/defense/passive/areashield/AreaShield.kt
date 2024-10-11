@@ -5,15 +5,12 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -25,7 +22,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.persistence.PersistentDataAdapterContext
 import java.util.concurrent.TimeUnit
 
 abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<AreaShield.AreaShieldEntity>, InteractableMultiblock {
@@ -90,46 +86,33 @@ abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<
 	}
 
 	class AreaShieldEntity(
-		data: PersistentMultiblockData,
-		manager: MultiblockManager,
-		override val multiblock: AreaShield,
-		x: Int,
-		y: Int,
-		z: Int,
-		world: World,
-		signDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
-		override val powerStorage: PowerStorage = loadStoredPower(data)
-
-		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+        data: PersistentMultiblockData,
+        manager: MultiblockManager,
+        override val poweredMultiblock: AreaShield,
+        x: Int,
+        y: Int,
+        z: Int,
+        world: World,
+        signDirection: BlockFace,
+	) : SimplePoweredMultiblockEntity(data, manager, poweredMultiblock, x, y, z, world, signDirection), LegacyMultiblockEntity {
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
 			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
 		).register()
 
 		override fun onLoad() {
 			world.ion.multiblockManager.register(this)
-
-			displayHandler.update()
+			super.onLoad()
 		}
 
 		override fun handleRemoval() {
 			world.ion.multiblockManager.deregister(this)
-
-			displayHandler.remove()
+			super.handleRemoval()
 		}
 
 		override fun onUnload() {
 			world.ion.multiblockManager.deregister(this)
-
-			displayHandler.remove()
-		}
-
-		override fun displaceAdditional(movement: StarshipMovement) {
-			displayHandler.displace(movement)
-		}
-
-		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			savePowerData(store)
+			super.onUnload()
 		}
 
 		override fun loadFromSign(sign: Sign) {
