@@ -97,7 +97,8 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
 			builder.addModule("combat", GoonCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 			val steering = builder.addModule("steering", BasicSteeringModule(it) {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()})
-			builder.addModule("movement", SteeringSolverModule(it, steering))
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
 			builder.addModule("debug", AIDebugModule(it))
 			builder
 		}

@@ -49,6 +49,22 @@ abstract class ContextMap {
             output.multScalar(`val`)
             return output
         }
+
+		inline fun <reified A : ContextMap,reified B : ContextMap>
+			mix(first : A, second : B, ratio : Double, power : Double) :Pair<A,B>{
+			val temp = object : ContextMap(first) {}
+			val firstWeight = (1 - ratio).pow(power)
+			first.multScalar(firstWeight)
+			first.addContext(
+				scaled(second,1 - firstWeight)
+			)
+			val secondWeight = ratio.pow(0.5)
+			if (secondWeight < 0) throw RuntimeException()
+			second.multScalar(secondWeight)
+			second.addContext(scaled(temp, 1 - secondWeight))
+
+			return first to second
+		}
     }
 
     val bins = DoubleArray(NUMBINS)
@@ -120,6 +136,10 @@ abstract class ContextMap {
         other.lincontext?.let { lincontext?.addContext(it)}
     }
 
+	fun addAll(vararg others: ContextMap, scale: Double = 1.0) {
+		others.forEach { addContext(it, scale) }
+	}
+
     fun addScalar(`val`: Double) {
         require(!`val`.isNaN()) { "scalar value is Nan" }
         for (i in 0 until NUMBINS) {
@@ -166,6 +186,10 @@ abstract class ContextMap {
             bins[i] *= sigmoid
         }
     }
+
+	fun softMaskAll(vararg others: ContextMap, threshold: Double) {
+		others.forEach { softMaskContext(it, threshold) }
+	}
 
     /**
      * Finds the argmax and adjacent bins, because context maps are circular, indices wrap around
