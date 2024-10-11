@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier2
@@ -83,8 +82,6 @@ object Multiblocks : IonServerComponent() {
 		registerMultiblock(VentMultiblock)
 		registerMultiblock(GasPowerPlantMultiblock)
 		// Furnace end
-
-		registerMultiblock(DecomposerMultiblock)
 
 		registerMultiblock(ItemSplitterMultiblock)
 	}

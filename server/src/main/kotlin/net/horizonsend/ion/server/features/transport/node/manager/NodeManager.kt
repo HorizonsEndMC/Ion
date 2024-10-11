@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.transport.node.manager
 
-import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.type.general.ExtractorNode
 import net.horizonsend.ion.server.features.transport.node.util.NetworkType
 import net.horizonsend.ion.server.features.transport.node.util.NodeFactory
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
@@ -130,7 +130,7 @@ abstract class NodeManager<T: ExtractorNode>(val holder: NetworkHolder<*>) {
 	 **/
 	fun onUnload() {
 		// Break cross chunk relations
-		breakAllRelations()
+		Tasks.async { breakAllRelations() }
 	}
 
 	/**
@@ -147,8 +147,8 @@ abstract class NodeManager<T: ExtractorNode>(val holder: NetworkHolder<*>) {
 	 **/
 	open fun finalizeNodes() {}
 
-	fun breakAllRelations() {
-		runBlocking { nodes.values.forEach { it.clearRelations() } }
+	private fun breakAllRelations() {
+		nodes.values.forEach { it.clearRelations() }
 	}
 
 	fun getNode(x: Int, y: Int, z: Int, allowNeighborChunks: Boolean = true): TransportNode? {
