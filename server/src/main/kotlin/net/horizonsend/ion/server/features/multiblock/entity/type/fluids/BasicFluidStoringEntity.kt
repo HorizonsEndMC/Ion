@@ -17,7 +17,7 @@ import org.bukkit.persistence.PersistentDataAdapterContext
  **/
 abstract class BasicFluidStoringEntity(
 	manager: MultiblockManager,
-	multiblock: Multiblock,
+	override val multiblock: Multiblock,
 	data: PersistentMultiblockData,
 	x: Int,
 	y: Int,
@@ -25,7 +25,7 @@ abstract class BasicFluidStoringEntity(
 	world: World,
 	structureDirection: BlockFace,
 	storage: InternalStorage
-) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), FluidStoringEntity {
+) : MultiblockEntity(manager, x, y, z, world, structureDirection), FluidStoringEntity {
 	@Suppress("LeakingThis")
 	override val capacities: Array<StorageContainer> = arrayOf(
 		loadStoredResource(data, "main", Component.text("Main Storage"), NamespacedKeys.MAIN_STORAGE, storage)
