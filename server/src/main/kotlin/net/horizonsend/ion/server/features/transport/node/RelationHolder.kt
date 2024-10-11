@@ -37,9 +37,9 @@ class RelationHolder(val node: TransportNode) {
 		val otherToHolder = other.isTransferableTo(node)
 
 		// Add relation from this node to the other
-		add(holderPosition, NodeRelationship(node, other, nodeTwoOffset, holderToOther))
+		add(holderPosition, NodeRelationship(holderPosition, otherPosition, node, other, nodeTwoOffset, holderToOther))
 		// Add relation from the other to this
-		other.relationHolder.add(otherPosition, NodeRelationship(other, node, nodeTwoOffset.oppositeFace, otherToHolder))
+		other.relationHolder.add(otherPosition, NodeRelationship(otherPosition, holderPosition, other, node, nodeTwoOffset.oppositeFace, otherToHolder))
 
 		node.refreshTransferCache()
 		other.refreshTransferCache()
