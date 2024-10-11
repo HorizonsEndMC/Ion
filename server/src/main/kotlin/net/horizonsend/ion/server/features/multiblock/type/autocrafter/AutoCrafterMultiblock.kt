@@ -208,7 +208,7 @@ abstract class AutoCrafterMultiblock(
 			var power = basePower
 
 			// result item of this recipe
-			val result: ItemStack = recipeCache[grid].orElse(null)?.clone() ?: return sleepWithStatus(text("No Such Recipe", RED), 200)
+			val result: ItemStack = recipeCache[grid].orElse(null)?.clone() ?: return sleepWithStatus(text("Invalid Recipe", RED), 200)
 
 			val powerUsage = grid.filterNotNull().distinct().count() * POWER_USAGE_PER_INGREDIENT
 

@@ -27,7 +27,6 @@ import net.horizonsend.ion.server.features.gear.Gear
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.machine.decomposer.Decomposers
 import net.horizonsend.ion.server.features.misc.AutoRestart
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
@@ -192,7 +191,6 @@ val components: List<IonComponent> = listOf(
 	StarshipDealers,
 	TutorialNPCs,
 	ShipKillXP,
-	Decomposers,
 
 	ChatChannel.ChannelActions,
 	ChannelSelections,
