@@ -1,52 +1,37 @@
 package net.horizonsend.ion.server.features.multiblock.type.power.generator
 
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
+import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplay
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
-import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.Effect
 import org.bukkit.Material
-import org.bukkit.block.Furnace
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.inventory.FurnaceInventory
+import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: Material) :
-	Multiblock(),
-	PowerStoringMultiblock,
-	FurnaceMultiblock {
-	abstract val speed: Double
-
-	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-		event.isBurning = false
-		event.burnTime = 0
-		val inventory = furnace.inventory
-
-		val smelting = inventory.smelting
-
-		if (smelting != null && smelting.type != Material.PRISMARINE_CRYSTALS) {
-			return
-		}
-
-		if (PowerMachines.getPower(sign) < this.maxPower) {
-			val fuelItem = inventory.fuel ?: return
-			val fuel = GeneratorFuel.getFuel(fuelItem) ?: return
-
-			event.isBurning = true
-			event.burnTime = (fuel.cooldown / speed).toInt()
-			furnace.cookTime = (-1000).toShort()
-
-			PowerMachines.addPower(sign, fuel.power)
-
-			return
-		} else {
-			furnace.world.playEffect(furnace.location.add(0.5, 0.5, 0.5), Effect.SMOKE, 4)
-		}
-		event.isCancelled = true
-	}
-
+abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: Material) : Multiblock(), NewPoweredMultiblock<GeneratorMultiblock.GeneratorMultiblockEntity> {
 	override val name = "generator"
+	abstract val speed: Double
 
 	override val signText = createSignText(
 		line1 = "&2Power",
@@ -69,5 +54,84 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 		at(x = -1, y = +0, z = +1).anyGlassPane()
 		at(x = +0, y = +0, z = +1).redstoneBlock()
 		at(x = +1, y = +0, z = +1).anyGlassPane()
+	}
+
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): GeneratorMultiblockEntity {
+		return GeneratorMultiblockEntity(data, manager, this, x, y, z, world, structureDirection)
+	}
+
+	class GeneratorMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		override val multiblock: GeneratorMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace,
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, PoweredMultiblockEntity, StatusMultiblock, LegacyMultiblockEntity {
+		override val powerStorage: PowerStorage = loadStoredPower(data)
+		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
+		override val statusManager: StatusMultiblock.StatusManager = StatusMultiblock.StatusManager()
+
+		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.45f),
+			StatusDisplay(statusManager, +0.0, -0.10, +0.0, 0.45f)
+		).register()
+
+		private fun sleepWithStatus(status: Component, sleepTicks: Int) {
+			setStatus(status)
+			tickingManager.sleep(sleepTicks)
+		}
+
+		override fun tick() {
+			val furnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return sleepWithStatus(text("No Furnace"), 250)
+
+			if (powerStorage.getPower() >= powerStorage.capacity) {
+				world.playEffect(getOrigin().location.add(0.5, 0.5, 0.5), Effect.SMOKE, 4)
+				sleepWithStatus(text("Power Full", RED), 200)
+				return
+			}
+
+			val fuelItem = furnaceInventory.fuel ?: return sleepWithStatus(text("No Fuel", RED), 100)
+			val fuel = GeneratorFuel.getFuel(fuelItem) ?: return sleepWithStatus(text("Invalid Fuel", RED), 100)
+
+			val sleepTicks = (fuel.cooldown / multiblock.speed).toInt()
+			sleepWithStatus(text("Working", GREEN), sleepTicks)
+
+			fuelItem.amount--
+
+			val furnace = furnaceInventory.holder
+
+			furnace?.burnTime = sleepTicks.toShort()
+			furnace?.update()
+
+			powerStorage.addPower(fuel.power)
+		}
+
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			savePowerData(store)
+		}
+
+		override fun onLoad() {
+			displayHandler.update()
+		}
+
+		override fun onUnload() {
+			displayHandler.remove()
+		}
+
+		override fun handleRemoval() {
+			displayHandler.remove()
+		}
+
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
+		}
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
 	}
 }
