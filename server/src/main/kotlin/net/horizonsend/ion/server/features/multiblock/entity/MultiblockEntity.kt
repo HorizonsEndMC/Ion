@@ -127,8 +127,10 @@ abstract class MultiblockEntity(
 	 * Gets the sign of this multiblock
 	 **/
 	fun getSign(): Sign? {
-		return getSignFromOrigin(world ,vec3i, structureDirection).state as? Sign
+		return getSignFromOrigin(world, vec3i, structureDirection).state as? Sign
 	}
+
+	fun getSignLocation() = getSignFromOrigin(world, vec3i, structureDirection).location
 
 	/**
 	 * Gets the origin block of this multiblock
