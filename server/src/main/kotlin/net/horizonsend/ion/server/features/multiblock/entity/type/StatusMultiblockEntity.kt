@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.entity.type
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 
-interface StatusMultiblock {
+interface StatusMultiblockEntity {
 	val statusManager: StatusManager
 
 	fun setStatus(status: Component) {
