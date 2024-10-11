@@ -3,24 +3,21 @@ package net.horizonsend.ion.server.features.multiblock.type.misc
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.persistence.PersistentDataAdapterContext
 import kotlin.math.roundToInt
 
 object AbstractDisposalMultiblock : Multiblock(), NewPoweredMultiblock<DisposalMultiblock.DisposalMultiblockEntity> {
@@ -100,10 +97,13 @@ object AbstractDisposalMultiblock : Multiblock(), NewPoweredMultiblock<DisposalM
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, DisposalMultiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
-		override val multiblock: DisposalMultiblock = DisposalMultiblock
-		override val powerStorage: PowerStorage = loadStoredPower(data)
+	) : SimplePoweredMultiblockEntity(data, manager, DisposalMultiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
+		override val poweredMultiblock: DisposalMultiblock = DisposalMultiblock
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
+		).register()
 
 		override fun tick() {
 			val inventory = getInventory(if (multiblock.mirrored) 1 else -1, -1, 0) ?: return
@@ -123,31 +123,6 @@ object AbstractDisposalMultiblock : Multiblock(), NewPoweredMultiblock<DisposalM
 			}
 
 			powerStorage.removePower((powerConsumed * amountToClear).roundToInt())
-		}
-
-		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			savePowerData(store)
-		}
-
-		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
-			this,
-			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
-		).register()
-
-		override fun onLoad() {
-			displayHandler.update()
-		}
-
-		override fun onUnload() {
-			displayHandler.remove()
-		}
-
-		override fun handleRemoval() {
-			displayHandler.remove()
-		}
-
-		override fun displaceAdditional(movement: StarshipMovement) {
-			displayHandler.displace(movement)
 		}
 
 		override fun loadFromSign(sign: Sign) {

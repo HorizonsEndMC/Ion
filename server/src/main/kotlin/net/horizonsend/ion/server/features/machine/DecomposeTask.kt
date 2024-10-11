@@ -24,7 +24,7 @@ class DecomposeTask(
 ) : BukkitRunnable() {
 	private var totalBlocksBroken = 0
 
-	private var currentBlock: Block = entity.regionOrigin
+	private var currentBlock: Block = entity.getOrigin()
 
 	override fun run() {
 		try {
@@ -145,7 +145,7 @@ class DecomposeTask(
 	}
 
 	private fun getNextBlock(block: Block): Block? {
-		val origin = entity.regionOrigin
+		val origin = entity.getOrigin()
 		val right = entity.structureDirection.rightFace
 
 		// + 1 to get one block inside the frame
