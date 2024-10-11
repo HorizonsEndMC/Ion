@@ -12,10 +12,10 @@ import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.MultiBlockDisplay
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.SwordListener
-import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateRestrictions
@@ -30,7 +30,6 @@ import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.machine.decomposer.Decomposers
 import net.horizonsend.ion.server.features.misc.AutoRestart
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
@@ -41,9 +40,6 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipes
-import net.horizonsend.ion.server.features.multiblock.newer.MultiblockAccess
-import net.horizonsend.ion.server.features.multiblock.newer.MultiblockRegistration
-import net.horizonsend.ion.server.features.multiblock.type.crafting.MultiblockRecipes
 import net.horizonsend.ion.server.features.multiblock.type.misc.Halloweeeeeen
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
@@ -103,7 +99,6 @@ import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.data.DataFixers
-import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawning
 import net.horizonsend.ion.server.listener.misc.WorldEditListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -202,7 +197,6 @@ val components: List<IonComponent> = listOf(
 	StarshipDealers,
 	TutorialNPCs,
 	ShipKillXP,
-	Decomposers,
 
 	ChatChannel.ChannelActions,
 	ChannelSelections,
