@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.listener.misc
 import net.horizonsend.ion.server.features.custom.ItemConverters
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
+import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
-import net.horizonsend.ion.server.features.multiblock.old.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -69,7 +69,7 @@ object FurnaceListener : SLEventListener() {
 		}
 
 		val sign = signBlock.getState(false) as Sign
-		val multiblock = Multiblocks[sign, false]
+		val multiblock: Multiblock? = null
 
 		if (multiblock != null && !multiblock.name.contains("furnace")) {
 			event.isCancelled = true
