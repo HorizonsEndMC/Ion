@@ -213,14 +213,14 @@ object ElectrolysisMultiblock : Multiblock(), NewPoweredMultiblock<ElectrolysisM
 		structureDirection: BlockFace
 	) : MultiblockEntity(
 		manager,
-		ElectrolysisMultiblock,
 		x,
 		y,
 		z,
 		world,
 		structureDirection
 	), AsyncTickingMultiblockEntity, FluidStoringEntity, PoweredMultiblockEntity {
-		override val multiblock = ElectrolysisMultiblock
+		override val multiblock: Multiblock = ElectrolysisMultiblock
+		override val poweredMultiblock = ElectrolysisMultiblock
 		override val tickingManager: TickingManager = TickingManager(interval = 4)
 
 		override val powerStorage: PowerStorage = loadStoredPower(data)
