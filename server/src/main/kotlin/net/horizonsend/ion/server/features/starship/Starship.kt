@@ -677,7 +677,7 @@ class Starship (
 	//endregion
 
 	//Debugging tools
-	var statsEnabled = true
+	var statsEnabled = false
 	private fun logStatistics() {
 		println("---Stats for ${getDisplayNamePlain()}---")
 		println("Current CoM : $centerOfMass")

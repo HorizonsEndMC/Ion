@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.ai.module.movement
 
 import SteeringModule
-import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.util.AITarget
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
@@ -10,45 +11,56 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToPitchYaw
-import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
+import java.util.function.Supplier
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.round
 import kotlin.math.sign
 
 class SteeringSolverModule(
-    controller: AIController,
-    val steeringModule: SteeringModule,
+	controller: AIController,
+	val steeringModule: SteeringModule,
+	val target: Supplier<AITarget?>,
+	val type : MovementType = MovementType.CRUISE
 ) : AIModule(controller) {
+
+	val ship : Starship get() = controller.starship
+	private var thrust = Vector()
+	private var throttle = 0.0
+	private var heading = Vector()
 
     override fun tick() {
         steeringModule.steer()
-        //shiftFlyInDirection(steeringModule.getThrust())
-		//updateDirectControl()
-		handleCruise()
+		thrust = steeringModule.getThrust()
+		heading = diagonalFixed(steeringModule.getHeading())
+		throttle = steeringModule.getThrottle()
+
+		val targetVec = target.get()?.getLocation()?.toVector()
+		val targetDist = targetVec?.add(ship.centerOfMass.toVector().multiply(-1.0))?.length() ?: 1e10
+
+		if (type == MovementType.DC && targetDist < 700.0) {
+			updateDirectControl()
+		} else {
+			handleCruise()
+		}
     }
 
     fun shiftFlyInDirection(
-        direction: Vector,
-        stopCruising: Boolean = false
+        direction: Vector
     ) = Tasks.sync {
         val starship = controller.starship as ActiveControlledStarship
-        if (stopCruising) StarshipCruising.stopCruising(controller, starship)
 
         AIControlUtils.shiftFlyInDirection(controller, direction)
     }
 
 	fun updateDirectControl() {
 		if (!controller.starship.isDirectControlEnabled)	controller.starship.setDirectControlEnabled(true)
-		val thrust = steeringModule.getThrust()
-		val heading = diagonalFixed(steeringModule.getHeading())
-		val throttle = steeringModule.getThrottle()
+
 		//map onto player slots
-		controller.selectedDirectControlSpeed = 9//round(throttle * 8.0).toInt() + 1
+		controller.selectedDirectControlSpeed = round(throttle * 8.0).toInt() + 1
 		if (thrust.dot(heading) < 0.0) controller.selectedDirectControlSpeed = 0 //ship wants to go backwards
 		AIControlUtils.faceDirection(controller, vectorToBlockFace(heading))
 	}
@@ -81,10 +93,9 @@ class SteeringSolverModule(
 	}
 
 	fun handleCruise() {
-		val direction = steeringModule.getThrust()
-		val throttle = steeringModule.getThrottle()
-		val heading = diagonalFixed(steeringModule.getHeading())
-		var onPlane = direction.clone()
+		if (controller.starship.isDirectControlEnabled)	controller.starship.setDirectControlEnabled(false)
+
+		var onPlane = thrust.clone()
 		onPlane.setY(0)
 		onPlane.normalize()
 
@@ -92,12 +103,12 @@ class SteeringSolverModule(
 
 		AIControlUtils.faceDirection(controller, vectorToBlockFace(heading))
 
-		val dx = if (abs(onPlane.x) >= 0.5) sign(direction.x).toInt() else 0
-		val dz = if (abs(onPlane.z) > 0.5) sign(direction.z).toInt() else 0
+		val dx = if (abs(onPlane.x) >= 0.5) sign(thrust.x).toInt() else 0
+		val dz = if (abs(onPlane.z) > 0.5) sign(thrust.z).toInt() else 0
 
-		if (dx == 0 && dz == 0) {
+		if (dx == 0 && dz == 0) { // moving up or down
 			StarshipCruising.stopCruising(controller,starship)
-			if (throttle > 0.5) shiftFlyInDirection(direction)
+			if (throttle > 0.5) shiftFlyInDirection(thrust)
 			return
 		}
 
@@ -110,7 +121,7 @@ class SteeringSolverModule(
 
 		StarshipCruising.startCruising(controller, starship,onPlane)
 
-		if (finalSpeed > starship.balancing.maxSneakFlyAccel) shiftFlyInDirection(direction)
+		if (finalSpeed > starship.balancing.maxSneakFlyAccel) shiftFlyInDirection(thrust)
 	}
 
 	/** to prevent overloading the rotation queue on diagonals fix the diagonal slightly
@@ -127,4 +138,6 @@ class SteeringSolverModule(
 		}
 		return heading
 	}
+
+	enum class MovementType {DC, CRUISE}
 }
