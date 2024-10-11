@@ -34,7 +34,6 @@ import org.bukkit.persistence.PersistentDataAdapterContext
  **/
 abstract class MultiblockEntity(
     var manager: MultiblockManager,
-    open val multiblock: Multiblock,
 
     var x: Int,
     var y: Int,
@@ -43,6 +42,7 @@ abstract class MultiblockEntity(
 
     var structureDirection: BlockFace
 ): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion> {
+	abstract val multiblock: Multiblock
 	private var lastRetrieved = System.currentTimeMillis()
 
 	/** Gets the time since this value was last retrieved */
