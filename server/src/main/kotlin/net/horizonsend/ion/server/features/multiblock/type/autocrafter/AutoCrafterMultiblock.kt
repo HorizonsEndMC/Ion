@@ -24,12 +24,11 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
-import net.minecraft.world.item.crafting.CraftingInput
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.crafting.CraftingInput
 import net.minecraft.world.level.block.CrafterBlock
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -37,8 +36,6 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.craftbukkit.inventory.CraftItemStack as CBItemStack
-import org.bukkit.event.inventory.FurnaceBurnEvent
-import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
 
@@ -176,7 +173,7 @@ abstract class AutoCrafterMultiblock(
 			var power = basePower
 
 			// result item of this recipe
-			val result: ItemStack = recipeCache[grid].orElse(null)?.clone() ?: return sleepWithStatus(text("No Such Recipe", RED), 200)
+			val result: ItemStack = recipeCache[grid].orElse(null)?.clone() ?: return sleepWithStatus(text("Invalid Recipe", RED), 200)
 
 			val powerUsage = grid.filterNotNull().distinct().count() * POWER_USAGE_PER_INGREDIENT
 
