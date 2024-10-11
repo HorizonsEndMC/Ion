@@ -2,8 +2,6 @@ package net.horizonsend.ion.server.features.machine
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.multiblock.old.Multiblocks
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -62,13 +60,7 @@ object PowerMachines : IonServerComponent() {
 
 	@JvmOverloads
 	fun setPower(sign: Sign, power: Int, fast: Boolean = true): Int {
-		val correctedPower: Int = if (!fast) {
-			val multiblock = (Multiblocks[sign] ?: return 0) as? PowerStoringMultiblock ?: return 0
-			power.coerceIn(0, multiblock.maxPower)
-		} else {
-			power.coerceAtLeast(0)
-		}
-
+		val correctedPower: Int = power.coerceAtLeast(0)
 		if (!sign.persistentDataContainer.has(NamespacedKeys.MULTIBLOCK)) return power
 
 		sign.persistentDataContainer.set(NamespacedKeys.POWER, PersistentDataType.INTEGER, correctedPower)
@@ -79,10 +71,6 @@ object PowerMachines : IonServerComponent() {
 
 	@JvmOverloads
 	fun getPower(sign: Sign, fast: Boolean = true): Int {
-		if (!fast && Multiblocks[sign] !is PowerStoringMultiblock) {
-			return 0
-		}
-
 		return sign.persistentDataContainer.get(NamespacedKeys.POWER, PersistentDataType.INTEGER)
 			?: return setPower(sign, 0)
 	}
