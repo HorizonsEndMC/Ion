@@ -5,7 +5,6 @@ import com.google.common.cache.CacheLoader
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.debugHighlightBlock
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.multiblock.old.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -61,8 +60,7 @@ object Wires : IonServerComponent() {
 				for ((x, y, z) in offsets) {
 					val state = getStateIfLoaded(loc.world, loc.blockX + x, loc.blockY + y, loc.blockZ + z)
 					val sign = state as? Sign ?: continue
-					val multiblock = Multiblocks[sign, true, false] as? PowerStoringMultiblock
-						?: continue
+					val multiblock = null ?: continue
 					return@from Optional.of(CachedPowerStore(multiblock, sign))
 				}
 				return@from Optional.empty()
