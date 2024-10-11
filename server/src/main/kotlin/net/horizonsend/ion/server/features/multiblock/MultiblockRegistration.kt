@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTa
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankSmall
 import net.horizonsend.ion.server.features.multiblock.type.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableAirlock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
@@ -276,6 +277,8 @@ object MultiblockRegistration : IonServerComponent() {
 
 		// Machine
 		registerMultiblock(ShipFactoryMultiblock)
+
+		registerMultiblock(DecomposerMultiblock)
 
 		// Misc
 		registerMultiblock(DisconnectedDockingTubeMultiblock)

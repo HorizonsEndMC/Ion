@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.node
 
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.block.BlockFace
 
 /**
@@ -7,6 +8,8 @@ import org.bukkit.block.BlockFace
  * The information contains whether they may transfer to / from each other, from each side
  **/
 data class NodeRelationship(
+	val position: BlockKey,
+	val otherPosition: BlockKey,
 	val holder: TransportNode,
 	val other: TransportNode,
 	val offset: BlockFace,
@@ -16,8 +19,8 @@ data class NodeRelationship(
 	 * Break the relation between the two nodes
 	 **/
 	fun breakUp() {
-		holder.removeRelationship(other)
-		other.removeRelationship(holder)
+		holder.relationHolder.raw()[position]?.remove(this)
+		other.relationHolder.raw()[otherPosition]?.remove(this)
 		holder.refreshTransferCache()
 		other.refreshTransferCache()
 	}
