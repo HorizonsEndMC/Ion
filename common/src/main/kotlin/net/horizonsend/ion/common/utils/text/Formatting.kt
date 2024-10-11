@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
@@ -304,3 +305,5 @@ fun formatException(throwable: Throwable): Component {
 		.hoverEvent(text(stackTrace))
 		.clickEvent(ClickEvent.copyToClipboard(stackTrace))
 }
+
+fun button(text: Component, onClick: (Audience) -> Unit): Component = bracketed(text).clickEvent(ClickEvent.callback(onClick))
