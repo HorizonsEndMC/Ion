@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.FaceAttachable
@@ -43,7 +44,7 @@ class AIPhaserWeaponSystem(
 		}
 
 		fixDirections(loc)
-		PhaserProjectile(starship, loc, dir, shooter).fire()
+		PhaserProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 
 	private fun fixDirections(loc: Location) {
@@ -65,5 +66,9 @@ class AIPhaserWeaponSystem(
 		hopperData.isEnabled = false
 		hopperData.facing = face
 		hopper.setBlockData(hopperData, false)
+	}
+
+	override fun getName(): Component {
+		return Component.text("Phaser")
 	}
 }

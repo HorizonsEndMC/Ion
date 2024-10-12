@@ -140,6 +140,7 @@ sealed class CycleTurretMultiblock : TurretMultiblock() {
         dir: Vector,
         starship: ActiveStarship,
         shooter: Damager,
+		subSystem: TurretWeaponSubsystem,
         isAuto: Boolean
     ) {
         val speed = getProjectileSpeed(starship)
@@ -151,6 +152,7 @@ sealed class CycleTurretMultiblock : TurretMultiblock() {
 
             CycleTurretProjectile(
                 starship,
+				subSystem.getName(),
                 loc,
                 dir,
                 speed,

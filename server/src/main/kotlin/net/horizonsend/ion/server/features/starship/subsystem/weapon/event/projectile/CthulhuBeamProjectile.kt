@@ -6,15 +6,17 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HitscanProjectile
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.util.Vector
 
 class CthulhuBeamProjectile(
 	starship: ActiveStarship?,
+	name: Component,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager,
-) : HitscanProjectile(starship, loc, dir, shooter) {
+) : HitscanProjectile(starship, name, loc, dir, shooter) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.cthulhuBeam ?: IonServer.starshipBalancing.nonStarshipFired.cthulhuBeam
 	override val range: Double = balancing.range
 	override var speed: Double = balancing.speed

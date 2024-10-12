@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.damager.damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ParticleProjectile
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -20,6 +21,7 @@ class AntiAirCannonProjectile(
 	private val playerShooter: Player
 ): ParticleProjectile(
 	null,
+	Component.text("Anti Air Cannon"),
 	loc,
 	dir,
 	playerShooter.damager()

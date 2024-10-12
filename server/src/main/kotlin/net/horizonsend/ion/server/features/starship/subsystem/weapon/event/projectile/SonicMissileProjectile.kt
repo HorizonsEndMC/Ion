@@ -5,16 +5,18 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ParticleProjectile
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector
 
 class SonicMissileProjectile(
 	starship: ActiveStarship?,
+	name: Component,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : ParticleProjectile(starship, loc, dir, shooter) {
+) : ParticleProjectile(starship, name, loc, dir, shooter) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.sonicMissile ?: IonServer.starshipBalancing.nonStarshipFired.sonicMissile
 	override val range: Double = balancing.range
 	override var speed: Double = balancing.speed
