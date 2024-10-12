@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Color
@@ -306,8 +307,27 @@ class AIFaction private constructor(
 
 		val PUMPKINS = builder("PUMPKINS", TextColor.fromHexString("#FFA500")!!.value())
 			.addNames(listOf("Kin", "Matriarch").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.setMessagePrefix("<#FFA500>OY! Hey!")
+			.build()
+
+		val SKELETONS = builder("SKELETONS", DARK_RED.value())
+			.addNames(listOf("Minion").map { it.toComponent(DARK_RED) })
 			.setMessagePrefix("")
-			.addSmackMessages()
+			.addSmackMessages(
+				"YOU WILL SOON JOIN THE DEAD, MORTAL!",
+				"FEAR THE COMING OF THE DEADNOUGHT!",
+				"COWER IN FEAR, MEATSACK!",
+				"{0}, PREPARE TO MEET YOUR DOOM!",
+				"TODAY IS A GOOD DAY FOR YOU TO DIE!",
+				"YOUR BONES WILL BE OURS!",
+				"HE HE HE HAW!",
+				"MWA HA HA HA!",
+				"FOOLISH MORTAL!",
+				"YOU CANNOT KILL THE DEAD!",
+				"<i>ominous rattling",
+				"BURN, MORTAL!",
+				"<i>incomprehensible gibberish"
+			)
 			.build()
 	}
 }
