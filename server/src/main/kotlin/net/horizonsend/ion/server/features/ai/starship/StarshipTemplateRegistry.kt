@@ -515,6 +515,11 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	))
 
 	// END_TSAII
+	val SKUTTLE = registerTemplate(StarshipTemplate(
+		schematicName = "Skuttle",
+		type = AI_SHUTTLE,
+		miniMessageName = "<dark_reg>Skuttle",
+	))
 
 	private fun registerTemplate(default: StarshipTemplate): StarshipTemplate {
 		return Configuration.loadOrDefault(TEMPLATE_DIRECTORY, "${default.schematicName}.json", default)
