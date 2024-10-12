@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.Component
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.world.entity.Display.ItemDisplay
 import net.minecraft.world.entity.EntityType
@@ -34,11 +35,12 @@ import org.joml.Vector3f
 
 class ArsenalRocketProjectile(
 	starship: ActiveStarship?,
+	name: Component,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager,
 	var face: BlockFace //Up = true, down = false
-) : SimpleProjectile(starship, loc, dir, shooter), DisplayEntityProjectile {
+) : SimpleProjectile(starship, name, loc, dir, shooter), DisplayEntityProjectile {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.arsenalMissile!!
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed

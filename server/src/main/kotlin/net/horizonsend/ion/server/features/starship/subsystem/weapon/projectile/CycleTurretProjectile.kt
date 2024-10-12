@@ -10,28 +10,30 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class CycleTurretProjectile(
-    ship: ActiveStarship?,
-    loc: Location,
-    dir: Vector,
-    override var speed: Double,
-    override val color: Color,
-    override val range: Double,
-    override val particleThickness: Double,
-    override val explosionPower: Float,
-    override val starshipShieldDamageMultiplier: Double,
-    override val areaShieldDamageMultiplier: Double,
-    override val soundName: String,
-    override val balancing: StarshipWeapons.ProjectileBalancing = ship?.balancing?.weapons?.cycleTurret ?: IonServer.starshipBalancing.nonStarshipFired.cycleTurret,
-    shooter: Damager,
-    private val shotIndex: Int,
-    private val multiblock: CycleTurretMultiblock
-) : LaserProjectile(ship, loc, dir, shooter) {
+	ship: ActiveStarship?,
+	name: Component,
+	loc: Location,
+	dir: Vector,
+	override var speed: Double,
+	override val color: Color,
+	override val range: Double,
+	override val particleThickness: Double,
+	override val explosionPower: Float,
+	override val starshipShieldDamageMultiplier: Double,
+	override val areaShieldDamageMultiplier: Double,
+	override val soundName: String,
+	override val balancing: StarshipWeapons.ProjectileBalancing = ship?.balancing?.weapons?.cycleTurret ?: IonServer.starshipBalancing.nonStarshipFired.cycleTurret,
+	shooter: Damager,
+	private val shotIndex: Int,
+	private val multiblock: CycleTurretMultiblock
+) : LaserProjectile(ship, name, loc, dir, shooter) {
 
     override val volume: Int = (range / 16).toInt()
 

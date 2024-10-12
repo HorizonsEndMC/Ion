@@ -7,10 +7,11 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
-
 
 class LightTurretWeaponSubsystem(
     ship: ActiveStarship,
@@ -27,6 +28,10 @@ class LightTurretWeaponSubsystem(
 	override val range: Double get() = multiblock.getRange(starship)
 
 	override fun autoFire(target: AutoTurretTarget<*>, dir: Vector) {
-		multiblock.shoot(starship.world, pos, face, dir, starship, starship.controller.damager)
+		multiblock.shoot(starship.world, pos, face, dir, starship, starship.controller.damager, this)
+	}
+
+	override fun getName(): Component {
+		return text("Light Turret")
 	}
 }

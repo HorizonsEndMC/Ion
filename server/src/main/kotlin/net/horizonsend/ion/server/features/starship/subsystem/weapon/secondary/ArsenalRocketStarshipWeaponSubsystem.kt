@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
@@ -76,9 +77,13 @@ class ArsenalRocketStarshipWeaponSubsystem(
 	}
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.world)
-		val projectile = ArsenalRocketProjectile(starship, origin, dir, shooter, upOrDown)
+		val projectile = ArsenalRocketProjectile(starship, getName(), origin, dir, shooter, upOrDown)
 		projectile.fire()
 	}
 
 	override fun getRequiredAmmo(): ItemStack = CustomItems.ARSENAL_MISSILE.constructItemStack()
+
+	override fun getName(): Component {
+		return Component.text("Arsenal Rocket")
+	}
 }

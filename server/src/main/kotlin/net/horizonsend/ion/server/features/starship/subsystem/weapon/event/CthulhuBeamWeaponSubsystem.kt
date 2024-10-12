@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.proje
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
@@ -69,11 +70,15 @@ class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var fa
 
 		val shooter = (starship as? ActiveControlledStarship)?.controller ?: return
 		val loc = getFirePos().toCenterVector().toLocation(world)
-		CthulhuBeamProjectile(starship, loc, dir, shooter.damager).fire()
+		CthulhuBeamProjectile(starship, getName(), loc, dir, shooter.damager).fire()
 	}
 
 	override fun shouldTargetRandomBlock(target: Player): Boolean {
 		// TODO: only return false if there's a clear path
 		return true
+	}
+
+	override fun getName(): Component {
+		return Component.text("Cthulhu Beam")
 	}
 }

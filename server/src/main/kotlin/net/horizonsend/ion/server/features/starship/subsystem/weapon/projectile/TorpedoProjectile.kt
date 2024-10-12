@@ -4,18 +4,20 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.util.Vector
 
 class TorpedoProjectile(
-    starship: ActiveStarship?,
-    loc: Location,
-    dir: Vector,
-    shooter: Damager,
-    originalTarget: Vector,
-    baseAimDistance: Int
-) : TrackingLaserProjectile(starship, loc, dir, shooter, originalTarget, baseAimDistance) {
+	starship: ActiveStarship?,
+	name: Component,
+	loc: Location,
+	dir: Vector,
+	shooter: Damager,
+	originalTarget: Vector,
+	baseAimDistance: Int
+) : TrackingLaserProjectile(starship, name, loc, dir, shooter, originalTarget, baseAimDistance) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.protonTorpedo ?: IonServer.starshipBalancing.nonStarshipFired.protonTorpedo
 
 	override val range: Double = balancing.range

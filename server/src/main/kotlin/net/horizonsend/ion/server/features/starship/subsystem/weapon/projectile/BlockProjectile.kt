@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.kyori.adventure.text.Component
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import org.bukkit.Location
@@ -19,11 +20,12 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.util.Vector
 
 abstract class BlockProjectile(
-    starship: ActiveStarship?,
-    loc: Location,
-    dir: Vector,
-    shooter: Damager
-) : SimpleProjectile(starship, loc, dir, shooter) {
+	starship: ActiveStarship?,
+	name: Component,
+	loc: Location,
+	dir: Vector,
+	shooter: Damager
+) : SimpleProjectile(starship, name, loc, dir, shooter) {
 	abstract val blockMap: Map<Vec3i, BlockData>
 	private val refreshedBlocks = LongOpenHashSet()
 

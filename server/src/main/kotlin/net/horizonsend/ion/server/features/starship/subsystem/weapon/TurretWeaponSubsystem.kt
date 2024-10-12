@@ -67,6 +67,6 @@ abstract class TurretWeaponSubsystem(
         dir: Vector,
         target: Vector
 	) {
-		multiblock.shoot(starship.world, pos, face, dir, starship, shooter, false)
+		multiblock.shoot(starship.world, pos, face, dir, starship, shooter, this, false)
 	}
 }

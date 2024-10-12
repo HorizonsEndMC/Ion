@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DisintegratorBeamProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.util.Vector
@@ -69,7 +70,7 @@ class DisintegratorBeamWeaponSubsystem(
         lastFire = System.nanoTime()
 
         val loc = getFirePos().toCenterVector().toLocation(starship.world)
-        DisintegratorBeamProjectile(starship, loc, dir, range, starship.controller.damager, this, damageCalculation()).fire()
+        DisintegratorBeamProjectile(starship, getName(), loc, dir, range, starship.controller.damager, this, damageCalculation()).fire()
     }
 
     override fun getMaxPerShot(): Int = balancing.maxPerShot
@@ -84,4 +85,8 @@ class DisintegratorBeamWeaponSubsystem(
             else -> 0.5
         }
     }
+
+	override fun getName(): Component {
+		return Component.text("Disintegratior Beam")
+	}
 }
