@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING_GUILD
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SKELETONS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_RAIDERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
@@ -924,6 +925,24 @@ object AISpawners : IonServerComponent(true) {
 					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
 				},
 				spawnMessage = SpawnMessage.WorldMessage("<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage())
+			)
+		))
+
+		registerGlobalSpawner(GlobalWorldSpawner(
+			"SKUTTLE_SWARM",
+			AISpawnerTicker(
+				pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7
+			),
+			BagSpawner(
+				Supplier {
+					val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
+					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
+				},
+				VariableIntegerAmount(3, 5),
+				groupMessage = "<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage(),
+				individualSpawnMessage = null,
+				asBagSpawned(SKELETONS.asSpawnedShip(AITemplateRegistry.SKUTTLE), 1)
 			)
 		))
 	}
