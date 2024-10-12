@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TestAOEProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
@@ -47,4 +48,8 @@ class FireWaveWeaponSubsystem(
 	}
 
 	override val permission: String = "ioncore.eventweapon"
+
+	override fun getName(): Component {
+		return Component.text("Abyssal Wave")
+	}
 }

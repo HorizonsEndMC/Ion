@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
@@ -26,6 +27,10 @@ class TriTurretWeaponSubsystem(
 	override val range: Double get() = multiblock.getRange(starship)
 
 	override fun autoFire(target: AutoTurretTarget<*>, dir: Vector) {
-		multiblock.shoot(starship.world, pos, face, dir, starship, starship.controller.damager)
+		multiblock.shoot(starship.world, pos, face, dir, starship, starship.controller.damager, this)
+	}
+
+	override fun getName(): Component {
+		return Component.text("Tri Turret")
 	}
 }

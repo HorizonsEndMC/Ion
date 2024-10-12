@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PulseLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Location
@@ -48,6 +49,10 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
         shooter: Damager,
         target: Vector?
 	) {
-		PulseLaserProjectile(starship, loc, dir, color, shooter).fire()
+		PulseLaserProjectile(starship, getName(), loc, dir, color, shooter).fire()
+	}
+
+	override fun getName(): Component {
+		return Component.text("Pulse Cannon")
 	}
 }

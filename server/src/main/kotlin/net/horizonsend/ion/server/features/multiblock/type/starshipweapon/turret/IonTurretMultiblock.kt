@@ -137,7 +137,7 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 		}
 	}
 
-	override fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, isAuto: Boolean) {
+	override fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, subSystem: TurretWeaponSubsystem, isAuto: Boolean) {
 		val speed = getProjectileSpeed(starship)
 
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
@@ -147,6 +147,7 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 
 			IonTurretProjectile(
 				starship,
+				subSystem.getName(),
 				loc,
 				dir,
 				speed,

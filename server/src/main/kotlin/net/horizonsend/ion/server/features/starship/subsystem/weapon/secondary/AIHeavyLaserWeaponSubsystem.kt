@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -31,6 +32,10 @@ class AIHeavyLaserWeaponSubsystem(
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
 		checkNotNull(target)
-		HeavyLaserProjectile(starship, loc, dir, shooter, target, aimDistance, sound).fire()
+		HeavyLaserProjectile(starship, getName(), loc, dir, shooter, target, aimDistance, sound).fire()
+	}
+
+	override fun getName(): Component {
+		return Component.text("Heavy Laser")
 	}
 }

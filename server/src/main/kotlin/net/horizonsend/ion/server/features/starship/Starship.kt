@@ -574,6 +574,8 @@ class Starship (
 	val rewardsProviders: LinkedList<RewardsProvider> = LinkedList<RewardsProvider>()
 	var sinkMessageFactory: MessageFactory = SinkMessageFactory(this)
 
+	var lastWeaponName: Component? = null
+
 	val damagers = mutableMapOf<Damager, ShipKillXP.ShipDamageData>()
 	fun lastDamagedOrNull(): Long? = damagers.maxOfOrNull { it.value.lastDamaged }
 

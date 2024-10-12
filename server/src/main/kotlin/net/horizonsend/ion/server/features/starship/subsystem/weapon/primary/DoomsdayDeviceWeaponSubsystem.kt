@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -73,7 +74,11 @@ class DoomsdayDeviceWeaponSubsystem(
 
         Tasks.syncDelay(20 * WARM_UP_TIME_SECONDS.toLong()) {
             val newFirePos = getFirePos()
-            DoomsdayDeviceProjectile(starship, newFirePos.toLocation(loc.world), dir, shooter).fire()
+            DoomsdayDeviceProjectile(starship, getName(), newFirePos.toLocation(loc.world), dir, shooter).fire()
         }
     }
+
+	override fun getName(): Component {
+		return Component.text("Doomsday Device")
+	}
 }

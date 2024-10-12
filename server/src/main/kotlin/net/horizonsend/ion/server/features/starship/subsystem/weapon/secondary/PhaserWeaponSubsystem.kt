@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -44,7 +45,7 @@ class PhaserWeaponSubsystem(
 		}
 
 		fixDirections(loc)
-		PhaserProjectile(starship, loc, dir, shooter).fire()
+		PhaserProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 
 	private fun fixDirections(loc: Location) {
@@ -70,5 +71,9 @@ class PhaserWeaponSubsystem(
 
 	override fun getRequiredAmmo(): ItemStack {
 		return ItemStack(Material.PRISMARINE_CRYSTALS, 4)
+	}
+
+	override fun getName(): Component {
+		return Component.text("Phaser")
 	}
 }

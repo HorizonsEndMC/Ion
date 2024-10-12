@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.damager.EntityDamager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.kyori.adventure.text.Component
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
@@ -30,6 +31,7 @@ import kotlin.math.roundToInt
 
 abstract class SimpleProjectile(
 	starship: ActiveStarship?,
+	val name: Component,
 	var loc: Location,
 	var dir: Vector,
 	shooter: Damager
@@ -198,6 +200,8 @@ abstract class SimpleProjectile(
 			otherStarship.damagers.getOrPut(shooter) {
 				ShipKillXP.ShipDamageData()
 			}.incrementPoints(points)
+
+			otherStarship.lastWeaponName = name
 
 			onImpactStarship(otherStarship, block.location)
 

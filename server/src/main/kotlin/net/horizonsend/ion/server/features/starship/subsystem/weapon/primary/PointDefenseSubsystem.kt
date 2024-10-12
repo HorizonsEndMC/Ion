@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PointDefenseLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
@@ -61,11 +62,15 @@ class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var f
 		lastFire = System.nanoTime()
 
 		val loc = getFirePos().toCenterVector().toLocation(starship.world)
-		PointDefenseLaserProjectile(starship, loc, dir, range, starship.controller.damager).fire()
+		PointDefenseLaserProjectile(starship, getName(), loc, dir, range, starship.controller.damager).fire()
 	}
 
 	override fun shouldTargetRandomBlock(target: Player): Boolean {
 		// TODO: only return false if there's a clear path
 		return false
+	}
+
+	override fun getName(): Component {
+		return Component.text("Point Defense")
 	}
 }

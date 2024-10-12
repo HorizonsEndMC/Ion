@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.StickyParticleProjectile
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -16,7 +17,7 @@ class PlagueCannonProjectile(
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : StickyParticleProjectile(starship, loc, dir, shooter) {
+) : StickyParticleProjectile(starship, Component.text("Plague Cannon"), loc, dir, shooter) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.plagueCannon ?: IonServer.starshipBalancing.nonStarshipFired.plagueCannon
 	override val range: Double = balancing.range
 	override var speed: Double = balancing.speed
