@@ -290,7 +290,7 @@ class AIFaction private constructor(
 			)
 			.build()
 
-		val ABYSALL = builder("PIRATES", ABYSSAL_LIGHT_RED.value())
+		val ABYSALL = builder("ABYSALL", ABYSSAL_LIGHT_RED.value())
 			.addNames(listOf("Spectre", "Nebuchadnezzar", "Balthazar", "Salmanazar", "Jeroboam", "The Pale One").map { it.toComponent(ABYSSAL_DARK_RED) })
 			.setMessagePrefix("")
 			.addSmackMessages(
@@ -302,7 +302,12 @@ class AIFaction private constructor(
 				"<$ABYSSAL_DESATURATED_RED>The hole where hope drains out.",
 				"<$ABYSSAL_DESATURATED_RED>Your fear is branded deep.",
 			)
-			.addRadiusMessages(750.0 to "<$ABYSSAL_LIGHT_RED>Witness the death of all things.")
+			.build()
+
+		val PUMPKINS = builder("PUMPKINS", TextColor.fromHexString("#FFA500")!!.value())
+			.addNames(listOf("Kin", "Matriarch").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.setMessagePrefix("")
+			.addSmackMessages()
 			.build()
 	}
 }
