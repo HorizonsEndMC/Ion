@@ -83,7 +83,6 @@ object AIControlUtils {
 
 			else -> return
 		}
-		println("rotated to $direction")
 
 		controller.lastRotation = System.currentTimeMillis()
 	}

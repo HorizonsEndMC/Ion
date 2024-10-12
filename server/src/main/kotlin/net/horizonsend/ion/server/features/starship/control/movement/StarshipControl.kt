@@ -121,9 +121,7 @@ object StarshipControl : IonServerComponent() {
 			starship.directControlCenter = center
 		}
 
-		println("selectedspeed $selectedSpeed")
 		var vector = controller.directControlMovementVector(direction)
-		println("vector $vector")
 
 		val vectors = starship.directControlPreviousVectors
 		if (vectors.size > 3) {
@@ -157,7 +155,6 @@ object StarshipControl : IonServerComponent() {
 		}
 
 		val forwardZ = direction.modZ != 0
-		println("direction $direction")
 		val strafeAxis = if (forwardZ) vector.x else vector.z
 		val strafe = sign(strafeAxis).toInt() * abs(targetSpeed)
 		val ascensionAxis = if (forwardZ) vector.z * -direction.modZ else vector.x * -direction.modX
@@ -182,7 +179,6 @@ object StarshipControl : IonServerComponent() {
 		dy *= speedFac
 		dz *= speedFac
 
-		println("dx $dx dy $dy dz $dz")
 
 		when {
 			dy < 0 && starship.min.y + dy < 0 -> {
