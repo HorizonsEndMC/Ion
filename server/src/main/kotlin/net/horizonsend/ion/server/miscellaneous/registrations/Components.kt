@@ -35,6 +35,7 @@ import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.crafting.MultiblockRecipes
+import net.horizonsend.ion.server.features.multiblock.type.misc.Halloweeeeeen
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
@@ -210,4 +211,5 @@ val components: List<IonComponent> = listOf(
 	HudIcons,
 	Fleets,
 	ContactsJammingSidebar,
+	Halloweeeeeen,
 )
