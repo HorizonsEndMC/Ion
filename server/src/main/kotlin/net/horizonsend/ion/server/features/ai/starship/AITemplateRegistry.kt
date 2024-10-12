@@ -930,6 +930,13 @@ object AITemplateRegistry {
 	)
 
 	// END_TSAII
+
+	// Dredge
+	// Charm
+	// Guard
+	// Emperor
+	// High Priest
+
 	fun registerTemplate(template: AITemplate): AITemplate {
 		templates[template.identifier] = template
 
