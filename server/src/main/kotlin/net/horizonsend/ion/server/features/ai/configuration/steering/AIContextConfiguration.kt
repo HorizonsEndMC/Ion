@@ -71,7 +71,7 @@ data class AIContextConfiguration(
 	@Serializable
 	data class FaceSeekContextConfiguration(
 		val weight: Double = 0.0,
-		val faceWeight: Double = 1.0,
+		val faceWeight: Double = 2.0,
 		val maxWeight: Double = 0.0,
 		val falloff: Double = 300.0
 	)
