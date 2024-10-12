@@ -32,3 +32,7 @@ val TSAII_VERY_DARK_ORANGE = TextColor.fromHexString("#9C3614")!!
 val PIRATE_LIGHT_RED = TextColor.fromHexString("#A06363")!!
 val PIRATE_SATURATED_RED = TextColor.fromHexString("#C63F3F")!!
 val PIRATE_DARK_RED = TextColor.fromHexString("#732525")!!
+
+val ABYSSAL_LIGHT_RED = TextColor.fromHexString("#C63F70")!!
+val ABYSSAL_DESATURATED_RED = TextColor.fromHexString("#784E5D")!!
+val ABYSSAL_DARK_RED = TextColor.fromHexString("#6E1535")!!
