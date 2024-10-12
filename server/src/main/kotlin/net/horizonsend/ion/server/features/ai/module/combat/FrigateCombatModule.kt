@@ -23,7 +23,7 @@ class FrigateCombatModule(controller: AIController, private val toggleRandomTarg
 		// Get the closest axis
 		starship.speedLimit = -1
 
-		if (shouldFaceTarget) handleRotation(target)
+		if (false) handleRotation(target)
 
 		val direction = getDirection(Vec3i(getCenter()), target.getVec3i(false)).normalize()
 

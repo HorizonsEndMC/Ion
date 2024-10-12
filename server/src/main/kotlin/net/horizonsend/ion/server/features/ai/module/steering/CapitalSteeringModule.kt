@@ -42,7 +42,7 @@ class CapitalSteeringModule(
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this, aiContextConfig.capitalOffsetSeekContextConfiguration, offsetSupplier = orbitDist)
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship, aiContextConfig.capitalShieldAwarenessContextConfiguration)
-		contexts["shipDanger"] = ShipDangerContext(ship, { MAXSPEED },this)
+		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
 		contexts["worldBlockDanger"]=WorldBlockDangerContext(ship)
 		contexts["obstructionDanger"] = ObstructionDangerContext(ship,obstructions)

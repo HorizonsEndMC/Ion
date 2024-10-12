@@ -336,7 +336,7 @@ class Starship (
 	 * Non-normalized vector containing the ships velocity
 	 * Used for target lead / speed estimations
 	 */
-	val velocity: Vector get() = forecast(System.currentTimeMillis(), 1)
+	var velocity: Vector = Vector()//get() = forecast(System.currentTimeMillis(), 1)
 
 	val accel : Vector get() = forecast(System.currentTimeMillis(), 2)
 

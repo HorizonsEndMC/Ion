@@ -4,6 +4,7 @@ import BasicSteeringModule
 import ContextMap
 
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.steering.ShieldAwarenessContext
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 
@@ -37,7 +38,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 	private fun createAIShipDebug () : MutableList<VectorDisplay> {
 		val mod = controller.getModuleByType<BasicSteeringModule>()?:return mutableListOf()
 		val output = mutableListOf<VectorDisplay>()
-		output.addAll(displayContext( mod.contexts["movementInterest"]!!,
+		output.addAll(displayContext( (mod.contexts["shieldAwareness"]!! as ShieldAwarenessContext).incomingFire,
 			CustomItems.DEBUG_LINE_GREEN.constructItemStack(),controller.starship, Vector(0.0,10.2, 0.0)))
 		output.addAll(displayContext( mod.contexts["shieldAwareness"]!!,
 			CustomItems.DEBUG_LINE_RED.constructItemStack(),controller.starship, Vector(0.0,10.0,0.0)))

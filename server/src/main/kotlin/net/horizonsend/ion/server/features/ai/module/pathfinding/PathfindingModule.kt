@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.util.Vector
 import java.util.function.Supplier
-
+@Deprecated("Outdated movement strategy use Steering instead")
 abstract class PathfindingModule(
 	controller: AIController,
 	protected val positioningSupplier: Supplier<Vec3i?>

@@ -20,6 +20,7 @@ import kotlin.math.abs
  * @param shiftFlightType Condition on when to use shift flight
  * @param maximumCruiseDistanceSquared Does not cruise if the target is within this distance (squared).
  **/
+@Deprecated("Outdated movement strategy use Steering instead")
 class CruiseModule(
 	controller: AIController,
 	pathfindingModule: PathfindingModule,

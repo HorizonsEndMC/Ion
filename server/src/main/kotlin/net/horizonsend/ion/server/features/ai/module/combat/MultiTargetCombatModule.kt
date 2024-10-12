@@ -23,7 +23,7 @@ abstract class MultiTargetCombatModule(controller: AIController, val targetingSu
 
     /** Rotate to face a specified blockface */
     protected fun rotateToFace(faceDirection: BlockFace) {
-        if (!shouldFaceTarget) return
+        if (!false) return
         if (!CARDINAL_BLOCK_FACES.contains(faceDirection)) throw IllegalArgumentException("Ships can only face cardinal directions!")
 
         if (turnTicks >= turnCooldown) {

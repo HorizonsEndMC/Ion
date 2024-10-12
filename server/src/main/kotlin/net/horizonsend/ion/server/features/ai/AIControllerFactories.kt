@@ -11,15 +11,10 @@ import net.horizonsend.ion.server.features.ai.module.combat.MultiTargetFrigateCo
 import net.horizonsend.ion.server.features.ai.module.combat.StarfighterCombatModule
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
-import net.horizonsend.ion.server.features.ai.module.misc.FleeModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.TrackingModule
-import net.horizonsend.ion.server.features.ai.module.movement.CruiseModule
 import net.horizonsend.ion.server.features.ai.module.movement.SteeringSolverModule
-import net.horizonsend.ion.server.features.ai.module.pathfinding.SteeringPathfindingModule
-import net.horizonsend.ion.server.features.ai.module.positioning.BasicPositioningModule
 import net.horizonsend.ion.server.features.ai.module.positioning.DistancePositioningModule
-import net.horizonsend.ion.server.features.ai.module.positioning.StandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.module.steering.CapitalSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.GunshipSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.StarfighterSteeringModule

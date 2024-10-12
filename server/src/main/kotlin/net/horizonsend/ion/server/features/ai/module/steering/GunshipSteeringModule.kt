@@ -42,7 +42,7 @@ class GunshipSteeringModule(
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this, offsetSupplier = orbitDist)
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget, aiContextConfig.gunshipFaceSeekContextConfiguration)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship, aiContextConfig.gunshipShieldAwarenessContextConfiguration)
-		contexts["shipDanger"] = ShipDangerContext(ship, { MAXSPEED },this)
+		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
 		contexts["worldBlockDanger"]=WorldBlockDangerContext(ship)
 		contexts["obstructionDanger"] = ObstructionDangerContext(ship,obstructions)

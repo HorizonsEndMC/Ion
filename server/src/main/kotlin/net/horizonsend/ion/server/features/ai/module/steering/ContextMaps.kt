@@ -301,6 +301,24 @@ class ShieldAwarenessContext(
 	val config : AIContextConfiguration.ShieldAwarenessContextConfiguration = aiContextConfig.defaultShieldAwarenessContextConfiguration,
 )  : ContextMap() {
 	val incomingFire : ContextMap = object : ContextMap() {}
+	val verticalDamp : ContextMap = object : ContextMap() {
+		override fun populateContext() {
+			dotContext(Vector(0.0,1.0,0.0),0.0,1.0, clipZero = false)
+			for (i in 0 until NUMBINS) {
+				bins[i] = 1 - abs(bins[i])
+				bins[i] = bins[i].pow(config.verticalDamp)
+			}
+		}
+	}
+	init {
+	    verticalDamp.populateContext()
+		val previousCenters = ship.shields.map {it.pos.toVector().add(ship.centerOfMass.toVector().multiply(-1.0))}
+		var rotatedCenters = ship.shields.map {transformCords(ship,it,Vector(0.0,0.0,1.0))}
+		println("previous centers: $previousCenters")
+		println("rotated centers around ${Vector(0.0,0.0,1.0)} : $rotatedCenters")
+		rotatedCenters = ship.shields.map {transformCords(ship,it,Vector(1.0,0.0,0.0))}
+		println("rotated centers around ${Vector(1.0,0.0,0.0)} : $rotatedCenters")
+	}
 	override fun populateContext() {
 		clearContext()
 		val shipPos = ship.centerOfMass.toVector()
@@ -309,11 +327,12 @@ class ShieldAwarenessContext(
 			if (ship.shields.size <= 1) return
 			val center = shield.pos.toVector()
 			val offset = center.add(shipPos.clone().multiply(-1.0)).normalize()
-			incomingFire.dotContext(offset,-0.6,shield.recentDamage*(1-config.histDecay))
+			incomingFire.dotContext(offset,-0.6,shield.recentDamage * config.damageSensitivity)
 			incomingFire.checkContext()
 		}
 		for (i in 0 until NUMBINS) {
 			val dir = bindir[i]
+			if (abs(dir.dot(Vector(0.0,1.0,0.0))) >= 0.9 ) continue //skip vertical directions
 			val rotatedCenters = ship.shields.map {transformCords(ship,it,dir)}
 			for (j in 0 until ship.shields.size) {
 				val shield = ship.shields[j]
@@ -326,6 +345,7 @@ class ShieldAwarenessContext(
 					response.bins[k] *= incomingFire.bins[k]
 				}
 				bins[i] += response.bins.sum()
+				bins[i] *= verticalDamp.bins[i]
 			}
 
 		}
@@ -336,11 +356,16 @@ class ShieldAwarenessContext(
 private fun transformCords(ship : Starship,shield: ShieldSubsystem, heading: Vector): Vector {
 	val shipPos = ship.centerOfMass.toVector()
 	val center = shield.pos.toVector()
+	//first transform centers from absoluate cords to relative cords (including from ships orientation)
 	center.add(shipPos.clone().multiply(-1.0))
+	val shipHeading = ship.forward.direction
+	val (_,shipYaw) = vectorToPitchYaw(shipHeading, radians = true)
+	center.rotateAroundY(-shipYaw.toDouble())
+	//then take those relative cords and rotate then towards the heading direction
 	val headingPlane = heading.clone()
 	headingPlane.y = 0.0
-	val (_,yaw) = vectorToPitchYaw(headingPlane)
-	return center.rotateAroundY(yaw.toDouble())//TODO fix angle calc
+	val (_,yaw) = vectorToPitchYaw(headingPlane, radians = true)
+	return center.rotateAroundY(yaw.toDouble())
 }
 
 /**

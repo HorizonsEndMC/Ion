@@ -40,7 +40,6 @@ open class TravelSteeringModule(
 	val goalPoint : Vec3i) : SteeringModule(controller) {
 
 	open val config = aiSteeringConfig.gunshipBasicSteeringConfiguration
-	val MAXSPEED : Double = config.defaultMaxSpeed
 
 	init {
 		/**
@@ -69,7 +68,7 @@ open class TravelSteeringModule(
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget)
 		contexts["goalSeek"] = GoalSeekContext(ship,goalPoint)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship)
-		contexts["shipDanger"] = ShipDangerContext(ship, { MAXSPEED },this)
+		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
 		contexts["worldBlockDanger"]=WorldBlockDangerContext(ship)
 		contexts["obstructionDanger"] = ObstructionDangerContext(ship,obstructions)
@@ -101,7 +100,6 @@ open class TravelSteeringModule(
 			contexts["borderDanger"]!!,
 			contexts["shipDanger"]!!,
 			contexts["worldBlockDanger"]!!,
-			contexts["obstructionDanger"]!!,
 			ContextMap.scaled(contexts["shieldAwareness"]!!, 0.5)
 		)
 
@@ -126,6 +124,7 @@ open class TravelSteeringModule(
         //masking, if the danger for a certain direction is greater than the threshold then it is
         // masked out
 		contexts["movementInterest"]!!.softMaskContext(contexts["danger"]!!, 1.0)
+		contexts["movementInterest"]!!.softMaskContext(contexts["obstructionDanger"]!!,1.0)
 		contexts["rotationInterest"]!!.softMaskContext(contexts["danger"]!!, 1.0)
 
 

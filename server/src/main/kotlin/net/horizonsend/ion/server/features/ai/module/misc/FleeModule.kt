@@ -10,6 +10,7 @@ import java.util.function.Supplier
  * @param standardPosition, the positioning supplier to use if it is not fleeing
  * @param selector, if the average shield health reaches this value, it will flee from that target
  **/
+@Deprecated("Outdated movement strategy use Steering instead")
 class FleeModule(
 	controller: AIController,
 	private val standardPosition: Supplier<Vec3i?>,

@@ -71,7 +71,7 @@ data class AIContextConfiguration(
 	@Serializable
 	data class FaceSeekContextConfiguration(
 		val weight: Double = 0.0,
-		val faceWeight: Double = 10.0,
+		val faceWeight: Double = 1.0,
 		val maxWeight: Double = 0.0,
 		val falloff: Double = 300.0
 	)
@@ -86,9 +86,11 @@ data class AIContextConfiguration(
 	@Serializable
 	data class ShieldAwarenessContextConfiguration(
 		val weight: Double = 1.0,
-		val criticalPoint: Double = 0.1,
-		val power: Double = 2.0,
-		val histDecay: Double = 0.99
+		val criticalPoint: Double = 0.15,
+		val power: Double = 1.5,
+		val histDecay: Double = 0.95,
+		val verticalDamp :Double = 1.0,
+		val damageSensitivity : Double = 100.0,
 	)
 
 	@Serializable
@@ -117,6 +119,6 @@ data class AIContextConfiguration(
 	data class ObstructionDangerContextConfiguration(
 		val falloff: Double = 30.0,
 		val dotPower: Double = 3.0,
-		val expireTime: Int = 5 * 1000
+		val expireTime: Int = 5 * 1000,
 	)
 }

@@ -42,7 +42,7 @@ class StarfighterSteeringModule(
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,aiContextConfig.starfighterOffsetSeekContextConfiguration, offsetSupplier = orbitDist)
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget, aiContextConfig.starfighterFaceSeekContextConfiguration)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship)
-		contexts["shipDanger"] = ShipDangerContext(ship, { MAXSPEED },this)
+		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
 		contexts["worldBlockDanger"]=WorldBlockDangerContext(ship)
 		contexts["obstructionDanger"] = ObstructionDangerContext(ship,obstructions)
