@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.faction.AIFaction
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SKELETONS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_RAIDERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
@@ -936,6 +937,20 @@ object AITemplateRegistry {
 	// Guard
 	// Emperor
 	// High Priest
+
+	// Big, medium pumpkin
+
+	val SKUTTLE = registerTemplate(builder(
+		identifier = "SKUTTLE",
+		template = StarshipTemplateRegistry.SKUTTLE,
+		controllerFactory = AIControllerFactories.starfighter,
+		engagementRange = 1000.0
+	)
+		.addFactionConfiguration(SKELETONS)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.35))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(300.0))
+		.build()
+	)
 
 	fun registerTemplate(template: AITemplate): AITemplate {
 		templates[template.identifier] = template

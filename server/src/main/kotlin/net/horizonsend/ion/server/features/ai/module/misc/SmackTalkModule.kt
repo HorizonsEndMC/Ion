@@ -41,6 +41,6 @@ class SmackTalkModule(
 			message
 		)
 
-		for (player in players) player.sendMessage(text)
+		for (player in players) player.sendMessage(template(text, player.name))
 	}
 }
