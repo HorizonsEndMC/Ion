@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.CannonLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -29,8 +30,12 @@ class LaserCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 	}
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
-		CannonLaserProjectile(starship, loc, dir, shooter).fire()
+		CannonLaserProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 
 	override val extraDistance: Int = balancing.extraDistance
+
+	override fun getName(): Component {
+		return Component.text("Laser Cannon")
+	}
 }

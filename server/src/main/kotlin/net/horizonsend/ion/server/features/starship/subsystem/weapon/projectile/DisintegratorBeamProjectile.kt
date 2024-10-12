@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DisintegratorBeamWeaponSubsystem
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -15,14 +16,15 @@ import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class DisintegratorBeamProjectile(
-    starship: ActiveStarship?,
-    loc: Location,
-    dir: Vector,
-    override val range: Double,
-    shooter: Damager,
-    private val subsystem: DisintegratorBeamWeaponSubsystem,
-    damage: Double
-) : LaserProjectile(starship, loc, dir, shooter) {
+	starship: ActiveStarship?,
+	name: Component,
+	loc: Location,
+	dir: Vector,
+	override val range: Double,
+	shooter: Damager,
+	private val subsystem: DisintegratorBeamWeaponSubsystem,
+	damage: Double
+) : LaserProjectile(starship, name, loc, dir, shooter) {
 
     companion object {
         private const val RESET_STACK_TIME_MILLIS = 4000L

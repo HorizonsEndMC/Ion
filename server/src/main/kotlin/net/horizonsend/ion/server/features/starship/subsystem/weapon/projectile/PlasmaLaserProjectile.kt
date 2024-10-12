@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.gayColors
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.util.Vector
@@ -12,10 +13,11 @@ import org.bukkit.util.Vector
 // from left to right red - orange - yellow - green - blue - purple
 class PlasmaLaserProjectile(
 	starship: ActiveStarship?,
+	name: Component,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : LaserProjectile(starship, loc, dir, shooter) {
+) : LaserProjectile(starship, name, loc, dir, shooter) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.plasmaCannon ?: IonServer.starshipBalancing.nonStarshipFired.plasmaCannon
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed

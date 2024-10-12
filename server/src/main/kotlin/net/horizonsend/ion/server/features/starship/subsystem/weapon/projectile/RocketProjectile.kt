@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -15,10 +16,11 @@ import org.bukkit.entity.Entity
 
 class RocketProjectile(
 	starship: ActiveStarship?,
+	name: Component,
 	loc: Location,
 	face: BlockFace,
 	shooter: Damager
-) : BlockProjectile(starship, loc, face.direction, shooter) {
+) : BlockProjectile(starship, name, loc, face.direction, shooter) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.heavyLaser ?: IonServer.starshipBalancing.nonStarshipFired.heavyLaser
 
 	companion object {

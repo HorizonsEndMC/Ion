@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -15,21 +16,22 @@ import org.bukkit.util.Vector
 import java.time.Duration
 
 class IonTurretProjectile(
-		ship: ActiveStarship?,
-		loc: Location,
-		dir: Vector,
-		override val speed: Double,
-		override val color: Color,
-		override val range: Double,
-		override val particleThickness: Double,
-		override val explosionPower: Float,
-		override val starshipShieldDamageMultiplier: Double,
-		override val areaShieldDamageMultiplier: Double,
-		override val soundName: String,
-		override val balancing: StarshipWeapons.ProjectileBalancing?,
-		shooter: Damager
+	ship: ActiveStarship?,
+	name: Component,
+	loc: Location,
+	dir: Vector,
+	override val speed: Double,
+	override val color: Color,
+	override val range: Double,
+	override val particleThickness: Double,
+	override val explosionPower: Float,
+	override val starshipShieldDamageMultiplier: Double,
+	override val areaShieldDamageMultiplier: Double,
+	override val soundName: String,
+	override val balancing: StarshipWeapons.ProjectileBalancing?,
+	shooter: Damager
 
-): LaserProjectile(ship, loc, dir, shooter) {
+): LaserProjectile(ship, name, loc, dir, shooter) {
 
 	override val volume: Int = (range / 16).toInt()
 

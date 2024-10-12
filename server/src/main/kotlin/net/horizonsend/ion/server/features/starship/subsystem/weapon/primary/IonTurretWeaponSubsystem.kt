@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
@@ -31,9 +32,13 @@ class IonTurretWeaponSubsystem(
 			dir: Vector,
 			target: Vector
 	) {
-		multiblock.shoot(starship.world, pos, face, dir, starship, shooter, false)
+		multiblock.shoot(starship.world, pos, face, dir, starship, shooter, this, false)
 	}
 	override fun getRequiredAmmo(): ItemStack {
 		return CustomItems.CHARGED_SHELL.constructItemStack()
+	}
+
+	override fun getName(): Component {
+		return Component.text("Ion Turret")
 	}
 }

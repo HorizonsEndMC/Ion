@@ -245,8 +245,8 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 	protected fun getAdjustedFirePoints(pos: Vec3i, face: BlockFace) = getFirePoints(face)
 		.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
 
-	open fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, isAuto: Boolean = true) {
-		val speed = getProjectileSpeed(starship).toDouble()
+	open fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, subSystem: TurretWeaponSubsystem, isAuto: Boolean = true) {
+		val speed = getProjectileSpeed(starship)
 
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
 			if (starship.isInternallyObstructed(point, dir)) continue
@@ -255,6 +255,7 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 
 			TurretLaserProjectile(
 				starship,
+				subSystem.getName(),
 				loc,
 				dir,
 				speed,

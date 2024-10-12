@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArcedParticleProjectile
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
@@ -13,10 +14,11 @@ import org.bukkit.util.Vector
 
 class FlamethrowerProjectile(
 	starship: ActiveStarship?,
+	name: Component,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : ArcedParticleProjectile(starship, loc, dir, shooter) {
+) : ArcedParticleProjectile(starship, name, loc, dir, shooter) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.flameThrower ?: IonServer.starshipBalancing.nonStarshipFired.flameThrower
 	override val range: Double = balancing.range
 	override var speed: Double = balancing.speed

@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.TimeUnit
@@ -28,5 +29,9 @@ class QuadTurretWeaponSubsystem(
 
 	override fun getRequiredAmmo(): ItemStack {
 		return CustomItems.LOADED_SHELL.constructItemStack()
+	}
+
+	override fun getName(): Component {
+		return Component.text("Quad Turret")
 	}
 }

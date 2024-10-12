@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
+import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
@@ -81,11 +82,15 @@ class RocketWeaponSubsystem(
 
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.world)
-		val projectile = RocketProjectile(starship, origin, this.face, shooter)
+		val projectile = RocketProjectile(starship, getName(), origin, this.face, shooter)
 		projectile.fire()
 	}
 
 	override fun getRequiredAmmo(): ItemStack {
 		return CustomItems.ROCKET_ORIOMIUM.singleItem()
+	}
+
+	override fun getName(): Component {
+		return Component.text("Rocket Turret")
 	}
 }

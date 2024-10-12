@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
@@ -44,7 +45,7 @@ class CapitalBeamWeaponSubsystem(
 		return dir
 	}
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
-		CapitalBeamCannonProjectile(starship, getFirePos().toLocation(starship.world), dir, shooter).fire()
+		CapitalBeamCannonProjectile(starship, getName(), getFirePos().toLocation(starship.world), dir, shooter).fire()
 	}
 
 	override fun isIntact(): Boolean {
@@ -55,5 +56,9 @@ class CapitalBeamWeaponSubsystem(
 			loadChunks = true,
 			particles = false
 		)
+	}
+
+	override fun getName(): Component {
+		return Component.text("Capital Beam")
 	}
 }

@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.proje
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -34,10 +35,14 @@ class MiniPhaserWeaponSubsystem(
 	override fun isAcceptableDirection(face: BlockFace) = true
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
-		MiniPhaserProjectile(starship, loc, dir, shooter).fire()
+		MiniPhaserProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 
 	override fun getRequiredAmmo(): ItemStack {
 		return ItemStack(Material.EMERALD, 1)
+	}
+
+	override fun getName(): Component {
+		return Component.text("Mini Phaser")
 	}
 }

@@ -2,15 +2,17 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.util.Vector
 
 abstract class ArcedProjectile(
 	starship: ActiveStarship?,
+	name: Component,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : SimpleProjectile(starship, loc, dir, shooter) {
+) : SimpleProjectile(starship, name, loc, dir, shooter) {
 	abstract val gravityMultiplier: Double
 	abstract val decelerationAmount: Double
 	abstract override var speed: Double
