@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextCo
 import net.horizonsend.ion.server.features.ai.module.steering.BlankContext
 import net.horizonsend.ion.server.features.ai.module.steering.BorderDangerContext
 import net.horizonsend.ion.server.features.ai.module.steering.FaceSeekContext
+import net.horizonsend.ion.server.features.ai.module.steering.GoalSeekContext
 import net.horizonsend.ion.server.features.ai.module.steering.MovementInterestContext
 import net.horizonsend.ion.server.features.ai.module.steering.ObstructionDangerContext
 import net.horizonsend.ion.server.features.ai.module.steering.OffsetSeekContext
@@ -31,12 +32,14 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
-/** Basic implementation of a Steering Module, showcasing all the different modulues for */
-open class BasicSteeringModule(
+/** Steering Module that can travel though space */
+open class TravelSteeringModule(
 	controller: AIController,
-	val generalTarget : Supplier<AITarget?>) : SteeringModule(controller) {
+	val generalTarget : Supplier<AITarget?>,
+	orbitDist : Supplier<Double>,
+	val goalPoint : Vec3i) : SteeringModule(controller) {
 
-	open val config = aiSteeringConfig.defaultBasicSteeringConfiguration
+	open val config = aiSteeringConfig.gunshipBasicSteeringConfiguration
 	val MAXSPEED : Double = config.defaultMaxSpeed
 
 	init {
@@ -64,6 +67,7 @@ open class BasicSteeringModule(
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this)
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget)
+		contexts["goalSeek"] = GoalSeekContext(ship,goalPoint)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship)
 		contexts["shipDanger"] = ShipDangerContext(ship, { MAXSPEED },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
@@ -83,7 +87,8 @@ open class BasicSteeringModule(
 
 		contexts["movementInterest"]!!.addAll(
 			contexts["wander"]!!,
-			contexts["offsetSeek"]!!
+			contexts["offsetSeek"]!!,
+			contexts["goalSeek"]!!
 		)
 		contexts["movementInterest"]!!.clipZero()//safeguard against neg weights
 

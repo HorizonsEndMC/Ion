@@ -39,7 +39,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 		val output = mutableListOf<VectorDisplay>()
 		output.addAll(displayContext( mod.contexts["movementInterest"]!!,
 			CustomItems.DEBUG_LINE_GREEN.constructItemStack(),controller.starship, Vector(0.0,10.2, 0.0)))
-		output.addAll(displayContext( mod.contexts["danger"]!!,
+		output.addAll(displayContext( mod.contexts["shieldAwareness"]!!,
 			CustomItems.DEBUG_LINE_RED.constructItemStack(),controller.starship, Vector(0.0,10.0,0.0)))
 		output.add(VectorDisplay(mod::getThrust,
 			CustomItems.DEBUG_LINE_BLUE.constructItemStack(), controller.starship, Vector(0.0,10.4,0.0)))

@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 import kotlin.math.pow
-
+@Deprecated("Outdated movement strategy use Steering instead")
 class StandoffPositioningModule(
 	controller: AIController,
 	var targetSupplier: Supplier<AITarget?>,
