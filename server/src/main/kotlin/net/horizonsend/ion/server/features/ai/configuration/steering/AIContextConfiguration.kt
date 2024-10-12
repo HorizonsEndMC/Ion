@@ -6,15 +6,37 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AIContextConfiguration(
 	val defaultWanderContext: WanderContextConfiguration = WanderContextConfiguration(),
+
 	val defaultCommitmentContext: CommitmentContextConfiguration = CommitmentContextConfiguration(),
+
 	val defaultMomentumContextConfiguration: MomentumContextConfiguration = MomentumContextConfiguration(),
+
 	val defaultOffsetSeekContextConfiguration: OffsetSeekContextConfiguration = OffsetSeekContextConfiguration(),
+	val starfighterOffsetSeekContextConfiguration: OffsetSeekContextConfiguration =
+		OffsetSeekContextConfiguration(maxHeightDiff = 10.0),
+	val capitalOffsetSeekContextConfiguration: OffsetSeekContextConfiguration =
+		OffsetSeekContextConfiguration(maxHeightDiff = 40.0),
+
 	val defaultFaceSeekContextConfiguration: FaceSeekContextConfiguration = FaceSeekContextConfiguration(),
+	val starfighterFaceSeekContextConfiguration: FaceSeekContextConfiguration =
+		FaceSeekContextConfiguration(weight = 1.0, maxWeight = 2.0),
+	val gunshipFaceSeekContextConfiguration: FaceSeekContextConfiguration =
+		FaceSeekContextConfiguration(weight = 0.5, maxWeight = 1.0),
+
+	val defaultGoalSeekContextConfiguration: GoalSeekContextConfiguration = GoalSeekContextConfiguration(),
+
 	val defaultShieldAwarenessContextConfiguration: ShieldAwarenessContextConfiguration = ShieldAwarenessContextConfiguration(),
+	val gunshipShieldAwarenessContextConfiguration: ShieldAwarenessContextConfiguration = ShieldAwarenessContextConfiguration(weight = 0.5),
+	val capitalShieldAwarenessContextConfiguration: ShieldAwarenessContextConfiguration = ShieldAwarenessContextConfiguration(weight = 1.0),
+
 	val defaultShipDangerContextConfiguration: ShipDangerContextConfiguration = ShipDangerContextConfiguration(),
+
 	val defaultBorderDangerContextConfiguration: BorderDangerContextConfiguration = BorderDangerContextConfiguration(),
+
 	val defaultWorldBlockDangerContextConfiguration: WorldBlockDangerContextConfiguration = WorldBlockDangerContextConfiguration(),
-	val defaultObstructionDangerContextConfiguration: ObstructionDangerContextConfiguration = ObstructionDangerContextConfiguration()
+
+	val defaultObstructionDangerContextConfiguration: ObstructionDangerContextConfiguration = ObstructionDangerContextConfiguration(),
+
 ) {
 	@Serializable
 	data class WanderContextConfiguration(
@@ -42,7 +64,8 @@ data class AIContextConfiguration(
 	data class OffsetSeekContextConfiguration(
 		val weight: Double = 1.0,
 		val dotShift: Double = 0.0,
-		val defaultOffsetDist : Double = 100.0
+		val defaultOffsetDist : Double = 100.0,
+		val maxHeightDiff : Double= 20.0
 	)
 
 	@Serializable
@@ -54,8 +77,15 @@ data class AIContextConfiguration(
 	)
 
 	@Serializable
+	data class GoalSeekContextConfiguration(
+		val weight: Double = 1.0,
+		val maxWeight: Double = 2.0,
+		val falloff: Double = 1000.0
+	)
+
+	@Serializable
 	data class ShieldAwarenessContextConfiguration(
-		val weight: Double = 0.0,
+		val weight: Double = 1.0,
 		val criticalPoint: Double = 0.1,
 		val power: Double = 2.0,
 		val histDecay: Double = 0.99

@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.vectorToPitchYaw
 import org.bukkit.FluidCollisionMode
 import org.bukkit.util.Vector
 import org.bukkit.util.noise.SimplexOctaveGenerator
@@ -19,6 +20,7 @@ import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.sign
 
 class MovementInterestContext() : ContextMap(linearbins = true) {
 	override fun populateContext() {
@@ -151,11 +153,13 @@ class OffsetSeekContext(
 ): ContextMap() {
 	private val offsetDist get() =  offsetSupplier.get()
 	override fun populateContext() {
+		clearContext()
 		val seekPos =  generalTarget.get()?.getLocation()?.toVector()
 		seekPos ?: return
-		clearContext()
 		val shipPos = ship.centerOfMass.toVector()
 		val center = seekPos.clone()
+		val yDiff = shipPos.clone().add(center.clone().multiply(-1.0)).y
+		center.y = sign(yDiff) * min(abs(yDiff),config.maxHeightDiff)//adjust center to account for height diff
 		val tetherl = offsetDist * PI * 2 * 0.1
 		val shipvel = ship.velocity.clone()
 		shipvel.y = 0.0
@@ -192,15 +196,53 @@ class FaceSeekContext(
 	val config : AIContextConfiguration.FaceSeekContextConfiguration = aiContextConfig.defaultFaceSeekContextConfiguration,
 ) : ContextMap() {
 	override fun populateContext() {
+		clearContext()
 		val seekPos =  generalTarget.get()?.getLocation()?.toVector()
 		seekPos ?: return
-		clearContext()
 		val target= seekPos.clone()
 		val shipPos = ship.centerOfMass.toVector()
 		val offset = target.add(shipPos.clone().multiply(-1.0))
 		val dist = offset.length() + 1e-4
 		offset.normalize()
 		offset.multiply(config.faceWeight).add(ship.getTargetForward().direction).normalize()
+		dotContext(offset,0.0, dist / config.falloff * config.weight)
+		for (i in 0 until NUMBINS) {
+			bins[i] = min(bins[i], config.maxWeight)
+		}
+		checkContext()
+	}
+}
+
+/**
+ * Makes the agent face the target
+ *
+ * This Context is meant for **`rotationInterest`**
+ *
+ *  * **`weight`** controls how strong this behavior is
+ *  * **`faceWeight`** controls how strongly to pull the facing vector relative to current velocity
+ *  * **`maxWeight`** caps the maximum weight for a particular direction
+ *  * **`falloff`** controls how this behavior scales with distance, higher
+ * values will cause a lower weight (ie agent will only look at target from further away)
+ *
+ */
+class GoalSeekContext(
+	val ship : Starship,
+	val goalPoint : Vec3i,
+	val config : AIContextConfiguration.GoalSeekContextConfiguration = aiContextConfig.defaultGoalSeekContextConfiguration,
+) : ContextMap() {
+	var reached = false
+	override fun populateContext() {
+		clearContext()
+		if (reached) return
+		val seekPos =  goalPoint.toVector()
+		val target= seekPos.clone()
+		val shipPos = ship.centerOfMass.toVector()
+		val offset = target.add(shipPos.clone().multiply(-1.0))
+		val dist = offset.length() + 1e-4
+		if (dist < 100.0) {
+			reached = true
+		}
+		offset.normalize()
 		dotContext(offset,0.0, dist / config.falloff * config.weight)
 		for (i in 0 until NUMBINS) {
 			bins[i] = min(bins[i], config.maxWeight)
@@ -297,7 +339,8 @@ private fun transformCords(ship : Starship,shield: ShieldSubsystem, heading: Vec
 	center.add(shipPos.clone().multiply(-1.0))
 	val headingPlane = heading.clone()
 	headingPlane.y = 0.0
-	return center.rotateAroundY(headingPlane.angle(Vector(0.0, 0.0, 1.0)).toDouble())//TODO fix angle calc
+	val (_,yaw) = vectorToPitchYaw(headingPlane)
+	return center.rotateAroundY(yaw.toDouble())//TODO fix angle calc
 }
 
 /**
