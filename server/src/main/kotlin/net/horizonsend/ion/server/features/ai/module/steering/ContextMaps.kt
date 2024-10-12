@@ -312,12 +312,12 @@ class ShieldAwarenessContext(
 	}
 	init {
 	    verticalDamp.populateContext()
-		val previousCenters = ship.shields.map {it.pos.toVector().add(ship.centerOfMass.toVector().multiply(-1.0))}
-		var rotatedCenters = ship.shields.map {transformCords(ship,it,Vector(0.0,0.0,1.0))}
-		println("previous centers: $previousCenters")
-		println("rotated centers around ${Vector(0.0,0.0,1.0)} : $rotatedCenters")
-		rotatedCenters = ship.shields.map {transformCords(ship,it,Vector(1.0,0.0,0.0))}
-		println("rotated centers around ${Vector(1.0,0.0,0.0)} : $rotatedCenters")
+		//val previousCenters = ship.shields.map {it.pos.toVector().add(ship.centerOfMass.toVector().multiply(-1.0))}
+		//var rotatedCenters = ship.shields.map {transformCords(ship,it,Vector(0.0,0.0,1.0))}
+		//println("previous centers: $previousCenters")
+		//println("rotated centers around ${Vector(0.0,0.0,1.0)} : $rotatedCenters")
+		//rotatedCenters = ship.shields.map {transformCords(ship,it,Vector(1.0,0.0,0.0))}
+		//("rotated centers around ${Vector(1.0,0.0,0.0)} : $rotatedCenters")
 	}
 	override fun populateContext() {
 		clearContext()
