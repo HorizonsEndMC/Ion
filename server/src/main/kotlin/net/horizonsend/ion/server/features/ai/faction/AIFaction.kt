@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.ai.faction
 
+import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_DARK_RED
+import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_DESATURATED_RED
+import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_LIGHT_RED
 import net.horizonsend.ion.common.utils.text.colors.EXPLORER_LIGHT_CYAN
 import net.horizonsend.ion.common.utils.text.colors.EXPLORER_MEDIUM_CYAN
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
@@ -285,6 +288,21 @@ class AIFaction private constructor(
 				750.0 * 1.5 to "<#FFA500>Back off!.",
 				750.0 to "<RED>I'll make an example of you!."
 			)
+			.build()
+
+		val ABYSALL = builder("PIRATES", ABYSSAL_LIGHT_RED.value())
+			.addNames(listOf("Spectre", "Nebuchadnezzar", "Balthazar", "Salmanazar", "Jeroboam", "The Pale One").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.setMessagePrefix("")
+			.addSmackMessages(
+				"<$ABYSSAL_DESATURATED_RED>Why do you hide your bones?",
+				"<$ABYSSAL_DESATURATED_RED>The sand and the bones.",
+				"<$ABYSSAL_DESATURATED_RED>Oh you fool.",
+				"<$ABYSSAL_DESATURATED_RED>Do you see the wings?",
+				"<$ABYSSAL_DESATURATED_RED>Only in darkness does the flower take hold.",
+				"<$ABYSSAL_DESATURATED_RED>The hole where hope drains out.",
+				"<$ABYSSAL_DESATURATED_RED>Your fear is branded deep.",
+			)
+			.addRadiusMessages(750.0 to "<$ABYSSAL_LIGHT_RED>Witness the death of all things.")
 			.build()
 	}
 }
