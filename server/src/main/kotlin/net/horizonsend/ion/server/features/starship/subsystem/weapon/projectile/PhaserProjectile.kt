@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector
@@ -11,10 +12,11 @@ import java.util.concurrent.TimeUnit
 
 class PhaserProjectile(
 	starship: ActiveStarship?,
+	name: Component,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : ParticleProjectile(starship, loc, dir, shooter) {
+) : ParticleProjectile(starship, name, loc, dir, shooter) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.phaser ?: IonServer.starshipBalancing.nonStarshipFired.phaser
 	override val range: Double = balancing.range
 	override var speed: Double = balancing.speed

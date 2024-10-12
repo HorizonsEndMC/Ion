@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.FlamethrowerProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -31,8 +32,12 @@ class FlamethrowerWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 	}
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
-		FlamethrowerProjectile(starship, loc, dir, shooter).fire()
+		FlamethrowerProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 
 	override val extraDistance: Int = 3
+
+	override fun getName(): Component {
+		return Component.text("Abyssal Flamer")
+	}
 }

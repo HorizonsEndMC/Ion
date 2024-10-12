@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
+import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
@@ -77,7 +78,11 @@ class PumpkinCannonWeaponSubsystem(
 
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.world)
-		val projectile = PumpkinCannonProjectile(starship, origin, dir, shooter)
+		val projectile = PumpkinCannonProjectile(starship, getName(), origin, dir, shooter)
 		projectile.fire()
+	}
+
+	override fun getName(): Component {
+		return Component.text("Pumpkin Cannon")
 	}
 }

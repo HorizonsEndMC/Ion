@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.iterateVector
 import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -21,11 +22,12 @@ import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 
 class DoomsdayDeviceProjectile(
-    starship: ActiveStarship?,
-    loc: Location,
-    dir: Vector,
-    shooter: Damager
-) : ParticleProjectile(starship, loc, dir, shooter) {
+	starship: ActiveStarship?,
+	name: Component,
+	loc: Location,
+	dir: Vector,
+	shooter: Damager
+) : ParticleProjectile(starship, name, loc, dir, shooter) {
     override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.doomsdayDevice ?: IonServer.starshipBalancing.nonStarshipFired.doomsdayDevice
     override val range: Double = balancing.range
     override var speed: Double = balancing.speed

@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -94,14 +95,13 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 	}
 
 	private fun getSinkMessage(arena: Boolean, killerDamager: Damager): Component {
-		val killedShipText = formatName(sunkShip)
-
-		val killerName = formatName(killerDamager)
-		val sunkMessage = ofChildren(text(" was sunk by ", RED), killerName)
-
-		val arenaText = if (arena) SPACE_ARENA else empty()
-
-		return ofChildren(arenaText, killedShipText, sunkMessage)
+		return template(
+			text("{0}{1} was sunk by {2} using {3}", RED),
+			if (arena) SPACE_ARENA else empty(),
+			formatName(sunkShip),
+			formatName(killerDamager),
+			sunkShip.lastWeaponName
+		)
 	}
 
 	private fun getAssists(sortedByTime: Iterator<Pair<Damager, ShipKillXP.ShipDamageData>>) : Map<Damager, Component> {

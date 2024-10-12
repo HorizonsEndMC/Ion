@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.BalancingSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
@@ -41,4 +42,6 @@ abstract class WeaponSubsystem(
 	fun postFire() {
 		lastFire = System.nanoTime()
 	}
+
+	abstract fun getName(): Component
 }

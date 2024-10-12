@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PlasmaLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -39,6 +40,10 @@ class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
         shooter: Damager,
         target: Vector?
 	) {
-		PlasmaLaserProjectile(starship, loc, dir, shooter).fire()
+		PlasmaLaserProjectile(starship, getName(), loc, dir, shooter).fire()
+	}
+
+	override fun getName(): Component {
+		return Component.text("Plasma Cannon")
 	}
 }

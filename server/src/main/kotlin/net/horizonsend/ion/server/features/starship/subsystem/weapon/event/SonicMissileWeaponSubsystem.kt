@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -38,10 +39,14 @@ class SonicMissileWeaponSubsystem(
 	override fun isAcceptableDirection(face: BlockFace) = true
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
-		SonicMissileProjectile(starship, loc, dir, shooter).fire()
+		SonicMissileProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 
 	override fun getRequiredAmmo(): ItemStack {
 		return ItemStack(Material.ECHO_SHARD, 2)
+	}
+
+	override fun getName(): Component {
+		return Component.text("Foul Trumpets")
 	}
 }
