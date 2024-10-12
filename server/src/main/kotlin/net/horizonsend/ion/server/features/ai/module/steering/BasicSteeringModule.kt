@@ -37,7 +37,6 @@ open class BasicSteeringModule(
 	val generalTarget : Supplier<AITarget?>) : SteeringModule(controller) {
 
 	open val config = aiSteeringConfig.defaultBasicSteeringConfiguration
-	val MAXSPEED : Double = config.defaultMaxSpeed
 
 	init {
 		/**
@@ -65,7 +64,7 @@ open class BasicSteeringModule(
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this)
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship)
-		contexts["shipDanger"] = ShipDangerContext(ship, { MAXSPEED },this)
+		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
 		contexts["worldBlockDanger"]=WorldBlockDangerContext(ship)
 		contexts["obstructionDanger"] = ObstructionDangerContext(ship,obstructions)
@@ -96,7 +95,6 @@ open class BasicSteeringModule(
 			contexts["borderDanger"]!!,
 			contexts["shipDanger"]!!,
 			contexts["worldBlockDanger"]!!,
-			contexts["obstructionDanger"]!!,
 			ContextMap.scaled(contexts["shieldAwareness"]!!, 0.5)
 		)
 
@@ -121,6 +119,7 @@ open class BasicSteeringModule(
         //masking, if the danger for a certain direction is greater than the threshold then it is
         // masked out
 		contexts["movementInterest"]!!.softMaskContext(contexts["danger"]!!, 1.0)
+		contexts["movementInterest"]!!.softMaskContext(contexts["obstructionDanger"]!!,1.0)
 		contexts["rotationInterest"]!!.softMaskContext(contexts["danger"]!!, 1.0)
 
 

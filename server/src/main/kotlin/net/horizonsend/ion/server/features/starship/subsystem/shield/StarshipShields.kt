@@ -323,7 +323,7 @@ object StarshipShields : IonServerComponent() {
 
 		starship.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
 		shield.power -= usage
-		shield.recentDamage += usage
+		//shield.recentDamage += usage / shield.maxPower
 
 		// do not protect blocks if shield power is lowered to 0
 		if (shield.power <= 0) {

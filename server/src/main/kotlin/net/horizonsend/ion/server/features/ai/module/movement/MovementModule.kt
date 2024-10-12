@@ -12,6 +12,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 /** Controlling the movement of the starship */
+@Deprecated("Outdated movement strategy use Steering instead")
 abstract class MovementModule(
 	controller: AIController,
 	protected val directionSupplier: PathfindingModule

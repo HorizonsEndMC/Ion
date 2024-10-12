@@ -18,7 +18,7 @@ class StarfighterCombatModule(controller: AIController, targetingSupplier: Suppl
 
 		val faceDirection = vectorToBlockFace(getDirection(Vec3i(getCenter()), target.getVec3i(true)), includeVertical = false)
 
-		rotateToFace(faceDirection)
+		//rotateToFace(faceDirection)
 
 		val direction = getDirection(Vec3i(getCenter()), target.getVec3i(false)).normalize()
 

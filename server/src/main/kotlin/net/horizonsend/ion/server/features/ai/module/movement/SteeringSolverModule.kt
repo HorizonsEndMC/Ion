@@ -58,6 +58,7 @@ class SteeringSolverModule(
 
 	fun updateDirectControl() {
 		if (!controller.starship.isDirectControlEnabled)	controller.starship.setDirectControlEnabled(true)
+		controller.setShiftFlying(true)
 
 		//map onto player slots
 		controller.selectedDirectControlSpeed = round(throttle * 8.0).toInt() + 1
@@ -67,7 +68,6 @@ class SteeringSolverModule(
 
 	fun directControlMovementVector(direction: BlockFace) : Vector {
 		val thrust = steeringModule.getThrust()
-		println("thrust $thrust")
 
 		val forwardX = direction.modZ == 0
 		val rotated = thrust.clone()//.multiply(-1.0)
@@ -108,7 +108,7 @@ class SteeringSolverModule(
 
 		if (dx == 0 && dz == 0) { // moving up or down
 			StarshipCruising.stopCruising(controller,starship)
-			if (throttle > 0.5) shiftFlyInDirection(thrust)
+			if (throttle > 0.5) shiftFlyInDirection(thrust) else AIControlUtils.shiftFlyInDirection(controller,null)
 			return
 		}
 
@@ -134,7 +134,6 @@ class SteeringSolverModule(
 		if ( ((PI/4)*0.8 < abs(angle)) && (abs(angle) < (PI/4)*1.2 )) {
 			heading.rotateAroundY(sign(angle)*max(0.0, abs(angle) - (PI/4)*0.8))
 			val (_, newYaw) = vectorToPitchYaw(heading, true)
-			println("Old yaw $headingYaw,ship yaw $shipYaw, newYaw $newYaw")
 		}
 		return heading
 	}

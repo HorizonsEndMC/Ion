@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.reactor
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import kotlin.math.min
@@ -38,7 +39,11 @@ class ReactorSubsystem(
 
 		for (shield in starship.shields) {
 			val missing = shield.maxPower - shield.power
-			shield.recentDamage *= 0.9
+			shield.recentDamage = ((shield.pastPower - shield.power).toDouble() / shield.maxPower)
+			//if (starship.controller is AIController) {
+			//	println(shield.recentDamage)
+			//}
+			shield.pastPower = shield.power
 
 			if (missing == 0) {
 				continue

@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.average
 import org.bukkit.util.Vector
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.function.Supplier
-
+@Deprecated("Outdated movement strategy use Steering instead")
 open class SteeringPathfindingModule(
 	controller: AIController,
 	positioningSupplier: Supplier<Vec3i?>

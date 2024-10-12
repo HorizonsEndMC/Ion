@@ -28,7 +28,7 @@ class TranslateMovement(starship: ActiveStarship,
 			newWorld: World? = null,
 			type: MovementType = MovementType.OTHER
 		): CompletableFuture<Boolean> {
-
+			starship.velocity = Vector(dx.toDouble(), dy.toDouble(), dz.toDouble())
 			val world = newWorld ?: starship.world
 
 			val toLoad = this.getChunkLoadTasks(starship, world, dx, dz)
