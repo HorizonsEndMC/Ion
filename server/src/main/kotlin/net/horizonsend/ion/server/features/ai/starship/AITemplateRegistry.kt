@@ -932,11 +932,12 @@ object AITemplateRegistry {
 
 	// END_TSAII
 
-	// Dredge
-	// Charm
-	// Guard
-	// Emperor
-	// High Priest
+	// Abyssal
+	// Dredge // Tentacle Blob thing
+	// Charm // Biblically accurate angel
+	// Graft // Tree monster?
+	// Emperor // Worm
+	// High Priest // Deer tentacles
 
 	// Big, medium pumpkin
 
