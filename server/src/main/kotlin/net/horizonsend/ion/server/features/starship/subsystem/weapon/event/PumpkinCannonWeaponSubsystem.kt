@@ -20,8 +20,7 @@ import org.bukkit.util.Vector
 class PumpkinCannonWeaponSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
-	override var face: BlockFace,
-	private val multiblock: PumpkinCannonStarshipWeaponMultiblock
+	override var face: BlockFace
 ) : WeaponSubsystem(starship, pos),
 	ManualWeaponSubsystem,
 	DirectionalSubsystem,
@@ -73,7 +72,7 @@ class PumpkinCannonWeaponSubsystem(
 	override fun isIntact(): Boolean {
 		val block = pos.toLocation(starship.world).block
 		val inward = if (face in arrayOf(BlockFace.UP, BlockFace.DOWN)) BlockFace.NORTH else face
-		return multiblock.blockMatchesStructure(block, inward)
+		return PumpkinCannonStarshipWeaponMultiblock.blockMatchesStructure(block, inward)
 	}
 
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
