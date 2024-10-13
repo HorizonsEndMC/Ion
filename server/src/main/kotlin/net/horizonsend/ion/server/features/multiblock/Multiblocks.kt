@@ -133,8 +133,8 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.CapitalBeamStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.FireWaveWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.FlamethrowerStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.HorizontalPumpkinCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.MiniPhaserStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.PumpkinCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.AIHeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.AIPhaserStarshipWeaponMultiblock
@@ -340,7 +340,7 @@ object Multiblocks : IonServerComponent() {
 			AutoCrafterMultiblockTier3,
 			AutoCrafterMultiblockTier3Mirrored,
 
-			HorizontalPumpkinCannonStarshipWeaponMultiblock,
+			PumpkinCannonStarshipWeaponMultiblock,
 			CthulhuBeamStarshipWeaponMultiblockBottom,
 			CthulhuBeamStarshipWeaponMultiblockTop,
 			CthulhuBeamStarshipWeaponMultiblockSide,

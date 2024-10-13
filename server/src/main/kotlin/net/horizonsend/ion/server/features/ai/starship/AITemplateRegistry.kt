@@ -3,13 +3,14 @@ package net.horizonsend.ion.server.features.ai.starship
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
-import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.configuration.ServerConfiguration.PlanetSpawnConfig.DroppedItem
 import net.horizonsend.ion.server.configuration.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.faction.AIFaction
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PUMPKINS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SKELETONS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_RAIDERS
@@ -20,6 +21,8 @@ import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
+import net.horizonsend.ion.server.features.custom.items.CustomItems
+import org.bukkit.Material
 
 /**
  * Fully realized, spawnable, AI templates
@@ -80,11 +83,13 @@ object AITemplateRegistry {
 		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
-			itemString = net.horizonsend.ion.server.features.custom.items.CustomItems.SUPERCONDUCTOR.identifier,
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
+			DroppedItem(
+			itemString = CustomItems.SUPERCONDUCTOR.identifier,
 			dropChance = 1.0f,
 			amount = 1,
-		))))
+		)
+		)))
 		.build()
 	)
 
@@ -97,11 +102,13 @@ object AITemplateRegistry {
 		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
-			itemString = net.horizonsend.ion.server.features.custom.items.CustomItems.SUPERCONDUCTOR.identifier,
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
+			DroppedItem(
+			itemString = CustomItems.SUPERCONDUCTOR.identifier,
 			dropChance = 1.0f,
 			amount = 1,
-		))))
+		)
+		)))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -120,11 +127,13 @@ object AITemplateRegistry {
 		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(18000.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
-			itemString = net.horizonsend.ion.server.features.custom.items.CustomItems.SUPERCONDUCTOR.identifier,
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
+			DroppedItem(
+			itemString = CustomItems.SUPERCONDUCTOR.identifier,
 			dropChance = 1.0f,
 			amount = 1,
-		))))
+		)
+		)))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
@@ -150,11 +159,13 @@ object AITemplateRegistry {
 		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
-			itemString = net.horizonsend.ion.server.features.custom.items.CustomItems.SUPERCONDUCTOR.identifier,
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
+			DroppedItem(
+			itemString = CustomItems.SUPERCONDUCTOR.identifier,
 			dropChance = 1.0f,
 			amount = 1,
-		))))
+		)
+		)))
 		.build()
 	)
 
@@ -167,11 +178,13 @@ object AITemplateRegistry {
 		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(ServerConfiguration.PlanetSpawnConfig.DroppedItem(
-			itemString = net.horizonsend.ion.server.features.custom.items.CustomItems.SUPERCONDUCTOR.identifier,
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
+			DroppedItem(
+			itemString = CustomItems.SUPERCONDUCTOR.identifier,
 			dropChance = 1.0f,
 			amount = 1,
-		))))
+		)
+		)))
 		.build()
 	)
 
@@ -940,6 +953,31 @@ object AITemplateRegistry {
 	// High Priest // Deer tentacles
 
 	// Big, medium pumpkin
+	val PUMPKIN_DEVOURER = registerTemplate(builder(
+		identifier = "DEVOURER",
+		template = StarshipTemplateRegistry.PUMPKIN_DEVOURER,
+		controllerFactory = AIControllerFactories.frigate,
+		engagementRange = 1000.0
+	)
+		.addFactionConfiguration(PUMPKINS)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(3500.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, 1, 0.5f))))
+		.build()
+	)
+
+	val PUMPKIN_KIN = registerTemplate(builder(
+		identifier = "KIN",
+		template = StarshipTemplateRegistry.PUMPKIN_KIN,
+		controllerFactory = AIControllerFactories.frigate,
+		engagementRange = 1000.0
+	)
+		.addFactionConfiguration(PUMPKINS)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.35))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1500.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, 1, 0.5f))))
+		.build()
+	)
 
 	val SKUTTLE = registerTemplate(builder(
 		identifier = "SKUTTLE",
@@ -950,6 +988,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(SKELETONS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.35))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(300.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BONE.name, 3, 0.5f))))
 		.build()
 	)
 

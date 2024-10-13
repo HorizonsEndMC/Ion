@@ -8,18 +8,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
-sealed class PumpkinCannonStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<PumpkinCannonWeaponSubsystem>() {
-	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): PumpkinCannonWeaponSubsystem {
-		val adjustedFace = getAdjustedFace(face)
-		return PumpkinCannonWeaponSubsystem(starship, pos, adjustedFace, this)
+object PumpkinCannonStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<PumpkinCannonWeaponSubsystem>() {
+	fun getAdjustedFace(originalFace: BlockFace): BlockFace {
+		return originalFace
 	}
 
-	protected abstract fun getAdjustedFace(originalFace: BlockFace): BlockFace
-}
-
-object HorizontalPumpkinCannonStarshipWeaponMultiblock : PumpkinCannonStarshipWeaponMultiblock() {
-	override fun getAdjustedFace(originalFace: BlockFace): BlockFace {
-		return originalFace
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): PumpkinCannonWeaponSubsystem {
+		val adjustedFace = getAdjustedFace(face)
+		return PumpkinCannonWeaponSubsystem(starship, pos, adjustedFace)
 	}
 
 	override fun MultiblockShape.buildStructure() {
