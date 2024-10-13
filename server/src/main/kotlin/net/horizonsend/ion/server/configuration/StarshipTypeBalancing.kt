@@ -1439,22 +1439,22 @@ class StarshipWeapons(
 				range = 500.0,
 				speed = PI * 50,
 				areaShieldDamageMultiplier = 0.0,
-				starshipShieldDamageMultiplier = 0.0,
+				starshipShieldDamageMultiplier = 0.01,
 				particleThickness = 0.44,
 				explosionPower = 20.0f,
 				volume = 10,
 				pitch = 2.0f,
-				soundName = "entity.firework_rocket.blast_far",
-				powerUsage = 1600,
+				soundName = "entity.zombie_villager.converted",
+				powerUsage = 120000,
 				length = 2,
 				angleRadiansHorizontal = 15.0,
 				angleRadiansVertical = 15.0,
 				convergeDistance = 20.0,
 				extraDistance = 2,
-				fireCooldownMillis = 0,
-				boostChargeSeconds = 0,
+				fireCooldownMillis = 3000,
+				boostChargeSeconds = 10,
 				aimDistance = 0,
-				applyCooldownToAll = false
+				applyCooldownToAll = true
 		),
 
 		val sonicMissile: StarshipWeapon = StarshipWeapon(
