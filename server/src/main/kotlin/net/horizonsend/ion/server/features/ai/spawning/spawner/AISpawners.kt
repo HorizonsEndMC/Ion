@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING_GUILD
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PUMPKINS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SKELETONS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_RAIDERS
@@ -42,6 +43,8 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAYBRE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MALINGSHU_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBAO_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PATROLLER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PUMPKIN_DEVOURER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PUMPKIN_KIN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.RAIDER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.REAVER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.SCYTHE
@@ -943,6 +946,22 @@ object AISpawners : IonServerComponent(true) {
 				groupMessage = "<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage(),
 				individualSpawnMessage = null,
 				asBagSpawned(SKELETONS.asSpawnedShip(AITemplateRegistry.SKUTTLE), 1)
+			)
+		))
+
+		registerGlobalSpawner(GlobalWorldSpawner(
+			"PUMPKIN_SPAWNER",
+			AISpawnerTicker(
+				pointChance = 0.5,
+				pointThreshold = 20 * 60 * 7
+			),
+			SingleSpawn(
+				RandomShipSupplier(PUMPKINS.asSpawnedShip(PUMPKIN_DEVOURER), PUMPKINS.asSpawnedShip(PUMPKIN_KIN)),
+				Supplier {
+					val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
+					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
+				},
+				spawnMessage = SpawnMessage.GlobalMessage("<#FFA500>Pumpkin spawn".miniMessage())
 			)
 		))
 	}

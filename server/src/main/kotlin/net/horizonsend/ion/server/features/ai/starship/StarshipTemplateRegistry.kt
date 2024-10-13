@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType.AI_LIGHT_FREIGH
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_SHUTTLE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_STARFIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_TRANSPORT
+import net.horizonsend.ion.server.features.starship.StarshipType.UNIDENTIFIEDSHIP
 import net.kyori.adventure.text.Component.text
 
 /**
@@ -519,6 +520,18 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		schematicName = "Skuttle",
 		type = AI_STARFIGHTER,
 		miniMessageName = "<dark_red>Skuttle",
+	))
+
+	val PUMPKIN_DEVOURER = registerTemplate(StarshipTemplate(
+		schematicName = "pumpkin_devourer",
+		type = UNIDENTIFIEDSHIP,
+		miniMessageName = "<#FFA500>Pumpkin Devourer",
+	))
+
+	val PUMPKIN_KIN = registerTemplate(StarshipTemplate(
+		schematicName = "small_pumpkin",
+		type = UNIDENTIFIEDSHIP,
+		miniMessageName = "<#FFA500>Pumpkin Kin",
 	))
 
 	private fun registerTemplate(default: StarshipTemplate): StarshipTemplate {
