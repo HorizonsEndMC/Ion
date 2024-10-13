@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArcedParticleProjectile
 import net.kyori.adventure.text.Component
-import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -37,12 +36,6 @@ class FlamethrowerProjectile(
 	}
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-		// val entity = loc.world.spawnEntity(Location(loc.world, x, y, z), EntityType.BLOCK_DISPLAY) as Display
-
-//		loc.world.spawnParticle(Particle.BLOCK_MARKER, x, y, z, 30, 0.5, 0.5, 0.5, 0.0, fire, force)
-
-		val particle = Particle.REDSTONE
-		val dustOptions = Particle.DustOptions(Color.GREEN, 100f)
-		loc.world.spawnParticle(particle, x, y, z, 20, 1.0, 1.0, 1.0, 0.0, dustOptions, force)
+		loc.world.spawnParticle(Particle.FLAME, x, y, z, 10, 0.25, 0.25, 0.25, 0.0, null, force)
 	}
 }

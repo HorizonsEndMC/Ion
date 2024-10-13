@@ -311,7 +311,7 @@ class AIFaction private constructor(
 			.build()
 
 		val SKELETONS = builder("SKELETONS", DARK_RED.value())
-			.addNames(listOf("Minion").map { it.toComponent(DARK_RED) })
+			.addNames(listOf("Lost Soul").map { it.toComponent(DARK_RED) })
 			.setMessagePrefix("")
 			.addSmackMessages(
 				"YOU WILL SOON JOIN THE DEAD, MORTAL!",

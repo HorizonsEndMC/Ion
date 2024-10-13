@@ -38,6 +38,6 @@ class FlamethrowerWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 	override val extraDistance: Int = 3
 
 	override fun getName(): Component {
-		return Component.text("Abyssal Flamer")
+		return Component.text("Flaming Breath")
 	}
 }
