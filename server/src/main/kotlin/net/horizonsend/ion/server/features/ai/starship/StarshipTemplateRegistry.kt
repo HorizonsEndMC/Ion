@@ -518,7 +518,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val SKUTTLE = registerTemplate(StarshipTemplate(
 		schematicName = "Skuttle",
 		type = AI_SHUTTLE,
-		miniMessageName = "<dark_reg>Skuttle",
+		miniMessageName = "<dark_red>Skuttle",
 	))
 
 	private fun registerTemplate(default: StarshipTemplate): StarshipTemplate {
