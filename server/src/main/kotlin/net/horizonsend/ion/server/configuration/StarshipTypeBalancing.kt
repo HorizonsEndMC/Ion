@@ -1373,7 +1373,7 @@ class StarshipWeapons(
 				areaShieldDamageMultiplier = 3.0,
 				starshipShieldDamageMultiplier = 3.0,
 				particleThickness = 0.8,
-				explosionPower = 6f,
+				explosionPower = 2f,
 				volume = 0,
 				pitch = 2.0f,
 				soundName = "entity.firework_rocket.blast_far",
