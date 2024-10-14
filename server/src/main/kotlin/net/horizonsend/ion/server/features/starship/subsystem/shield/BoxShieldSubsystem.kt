@@ -16,6 +16,11 @@ class BoxShieldSubsystem(
 	sign: Sign,
 	multiblock: BoxShieldMultiblock
 ) : ShieldSubsystem(starship, sign, multiblock) {
+	override var power: Int = maxPower
+		set(value) {
+			field = value.coerceIn(0, maxPower)
+		}
+
 	private val width: Int
 	private val height: Int
 	private val length: Int

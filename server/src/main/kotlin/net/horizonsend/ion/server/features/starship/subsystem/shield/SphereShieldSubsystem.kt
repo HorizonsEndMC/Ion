@@ -15,6 +15,11 @@ class SphereShieldSubsystem(
 	val maxRange = multiblock.maxRange
 	private val maxRangeSquared = maxRange.squared()
 
+	override var power: Int = maxPower
+		set(value) {
+			field = value.coerceIn(0, maxPower)
+		}
+
 	override fun containsBlock(block: Block): Boolean {
 		if (starship.world.uid != block.world.uid) {
 			return false
