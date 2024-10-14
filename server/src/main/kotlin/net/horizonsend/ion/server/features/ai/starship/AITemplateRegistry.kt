@@ -963,6 +963,7 @@ object AITemplateRegistry {
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(3500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, 1, 0.5f))))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItems.PUMPKIN_GRENADE.identifier, 2, 0.5f))))
 		.build()
 	)
 
@@ -976,6 +977,7 @@ object AITemplateRegistry {
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.35))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, 1, 0.5f))))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItems.PUMPKIN_GRENADE.identifier, 2, 0.5f))))
 		.build()
 	)
 
