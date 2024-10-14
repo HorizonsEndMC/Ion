@@ -6,7 +6,7 @@ data class AISteeringConfiguration(
 	val defaultBasicSteeringConfiguration : BasicSteeringConfiguration =
 		BasicSteeringConfiguration(),
 	val starfighterBasicSteeringConfiguration : BasicSteeringConfiguration =
-		BasicSteeringConfiguration(defaultMaxSpeed = 30.0,defaultRotationMixingRatio = 0.4),
+		BasicSteeringConfiguration(defaultMaxSpeed = 30.0,defaultRotationMixingRatio = 0.6),
 	val gunshipBasicSteeringConfiguration : BasicSteeringConfiguration =
 		BasicSteeringConfiguration(defaultMaxSpeed = 25.0,defaultRotationMixingRatio = 0.2),
 	val corvetteBasicSteeringConfiguration : BasicSteeringConfiguration =
@@ -21,7 +21,7 @@ data class AISteeringConfiguration(
 		BasicSteeringConfiguration(defaultMaxSpeed = 15.0,defaultRotationMixingRatio = 0.1, defaultRotationContribution = 0.0),
 
 	val starfighterDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 600.0, optimalDist = 100.0),
-	val gunshipDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 600.0, optimalDist = 150.0),
+	val gunshipDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 600.0, optimalDist = 130.0),
 	val interdictionCorvetteDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 2300.0, optimalDist = 1500.0),
 	val logisticCorvetteDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 2300.0, optimalDist = 130.0, startFleeing = 0.1, stopFleeing = 0.3),
 	val miniFrigateDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 300.0, optimalDist = 100.0),
