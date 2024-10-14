@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsys
 import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.BoxShieldSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.shield.EventShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterType
@@ -136,8 +137,12 @@ object SubsystemDetector {
 
 		when (multiblock) {
 			is SphereShieldMultiblock -> {
-				if (multiblock is EventShieldMultiblock && starship.playerPilot?.hasPermission("ion.core.eventship") == false) return
 				starship.subsystems += SphereShieldSubsystem(starship, sign, multiblock)
+			}
+
+			is EventShieldMultiblock -> {
+				if (starship.playerPilot?.hasPermission("ion.core.eventship") == false) return
+				starship.subsystems += EventShieldSubsystem(starship, sign)
 			}
 
 			is BoxShieldMultiblock -> {
