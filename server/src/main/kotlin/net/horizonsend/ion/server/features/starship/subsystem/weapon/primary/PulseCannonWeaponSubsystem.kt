@@ -47,7 +47,7 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
         loc: Location,
         dir: Vector,
         shooter: Damager,
-        target: Vector?
+        target: Vector
 	) {
 		PulseLaserProjectile(starship, getName(), loc, dir, color, shooter).fire()
 	}

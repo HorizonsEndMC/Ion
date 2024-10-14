@@ -38,7 +38,7 @@ class SonicMissileWeaponSubsystem(
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 
-	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
 		SonicMissileProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 
