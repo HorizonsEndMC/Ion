@@ -18,7 +18,8 @@ abstract class ShieldSubsystem(
 	val name: String = sign.getLine(2).stripColor()
 	val maxShields: Double = (0.00671215 * starship.initialBlockCount.toDouble().pow(0.836512) - 0.188437)
 		get() = if (starship.initialBlockCount < 500) field.coerceAtLeast(1.0) else field
-	val maxPower: Int = (starship.initialBlockCount.d().pow(3.0 / 5.0) * 10000.0).roundToInt()
+
+	open val maxPower: Int = (starship.initialBlockCount.d().pow(3.0 / 5.0) * 10000.0).roundToInt()
 		get() = if (starship.shields.size > maxShields) {
 			(field * ((maxShields / starship.shields.size) * starship.balancing.shieldPowerMultiplier)).toInt()
 		}
@@ -26,11 +27,9 @@ abstract class ShieldSubsystem(
 			(field * starship.balancing.shieldPowerMultiplier).toInt()
 		}
 
+	// Abstract so max power can be safely overriden
+	abstract var power: Int
 
-	var power: Int = maxPower
-		set(value) {
-			field = value.coerceIn(0, maxPower)
-		}
 	var isReinforcementEnabled = multiblock.isReinforced
 
 	fun isReinforcementActive(): Boolean {

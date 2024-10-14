@@ -946,13 +946,12 @@ object AITemplateRegistry {
 	// END_TSAII
 
 	// Abyssal
-	// Dredge // Tentacle Blob thing
+	// Dredge // Chomper
 	// Charm // Biblically accurate angel
 	// Graft // Tree monster?
-	// Emperor // Worm
-	// High Priest // Deer tentacles
+	// Emperor // Chomper with tentacles
+	// High Priest // Deer with tentacles
 
-	// Big, medium pumpkin
 	val PUMPKIN_DEVOURER = registerTemplate(builder(
 		identifier = "DEVOURER",
 		template = StarshipTemplateRegistry.PUMPKIN_DEVOURER,
