@@ -5,10 +5,12 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.CthulhuBeamProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component
@@ -21,7 +23,8 @@ class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var fa
 	WeaponSubsystem(starship, pos),
 	DirectionalSubsystem,
 	AutoWeaponSubsystem,
-	PermissionWeaponSubsystem {
+	PermissionWeaponSubsystem,
+	ManualWeaponSubsystem {
 	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.cthulhuBeam
 	override val permission: String = "ioncore.eventweapon"
 	override val powerUsage: Int = balancing.powerUsage
@@ -61,6 +64,7 @@ class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var fa
 				return false
 			}
 		}
+
 		return true
 	}
 
@@ -73,12 +77,21 @@ class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var fa
 		CthulhuBeamProjectile(starship, getName(), loc, dir, shooter.damager).fire()
 	}
 
+	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
+		lastFire = System.nanoTime()
+		val loc = getFirePos().toCenterVector().toLocation(starship.world)
+
+		CthulhuBeamProjectile(starship, getName(), loc, dir, shooter).fire()
+	}
+
+
+
 	override fun shouldTargetRandomBlock(target: Player): Boolean {
 		// TODO: only return false if there's a clear path
 		return true
 	}
 
 	override fun getName(): Component {
-		return Component.text("Cthulhu Beam")
+		return Component.text("Eldritch Beam")
 	}
 }
