@@ -38,7 +38,7 @@ class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
         loc: Location,
         dir: Vector,
         shooter: Damager,
-        target: Vector?
+        target: Vector
 	) {
 		PlasmaLaserProjectile(starship, getName(), loc, dir, shooter).fire()
 	}

@@ -75,7 +75,7 @@ abstract class SimpleProjectile(
 
 		val predictedNewLoc = loc.clone().add(dir.clone().multiply(delta * speed))
 		if (!predictedNewLoc.isChunkLoaded) {
-			return
+			return onDespawn()
 		}
 		val result: RayTraceResult? = loc.world.rayTrace(loc, dir, delta * speed, FluidCollisionMode.NEVER, true, 0.1) { it.type != EntityType.ITEM_DISPLAY }
 		val newLoc = result?.hitPosition?.toLocation(loc.world) ?: predictedNewLoc
@@ -94,11 +94,12 @@ abstract class SimpleProjectile(
 		distance += travel
 
 		if (impacted) {
-			return
+			onImpact()
+			return onDespawn()
 		}
 
 		if (distance >= range) {
-			return
+			return onDespawn()
 		}
 
 		lastTick = System.nanoTime()
@@ -106,6 +107,9 @@ abstract class SimpleProjectile(
 	}
 
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
+
+	protected open fun onImpact() {}
+	protected open fun onDespawn() {}
 
 	protected fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
 		if (loc.world.name.lowercase(Locale.getDefault()).contains("hyperspace", ignoreCase = true)) return false

@@ -35,8 +35,8 @@ class TorpedoWeaponSubsystem(
 		return this.face == starship.forward
 	}
 
-	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
-		TorpedoProjectile(starship, getName(), loc, dir, shooter, checkNotNull(target), aimDistance).fire()
+	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
+		TorpedoProjectile(starship, getName(), loc, dir, shooter, target, aimDistance).fire()
 	}
 
 	override fun getName(): Component {

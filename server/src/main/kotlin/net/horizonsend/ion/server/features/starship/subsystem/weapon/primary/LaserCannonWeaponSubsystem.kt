@@ -29,7 +29,7 @@ class LaserCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 		return super.isAcceptableDirection(face)
 	}
 
-	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
 		CannonLaserProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 
