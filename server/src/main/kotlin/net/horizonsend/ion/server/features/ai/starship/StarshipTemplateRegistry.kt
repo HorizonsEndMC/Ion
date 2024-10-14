@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.ai.starship
 
 import net.horizonsend.ion.common.utils.configuration.Configuration
+import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_DARK_RED
+import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_DESATURATED_RED
 import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_LIGHT_RED
 import net.horizonsend.ion.common.utils.text.colors.EXPLORER_MEDIUM_CYAN
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
@@ -535,10 +537,22 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		miniMessageName = "<#FFA500>Pumpkin Kin",
 	))
 
+	val DREDGE = registerTemplate(StarshipTemplate(
+		schematicName = "Dredge",
+		type = UNIDENTIFIEDSHIP,
+		miniMessageName = "<$ABYSSAL_DESATURATED_RED>Dredge",
+	))
+
 	val EMPEROR = registerTemplate(StarshipTemplate(
 		schematicName = "Emperor",
 		type = UNIDENTIFIEDSHIP,
 		miniMessageName = "<$ABYSSAL_LIGHT_RED>Emperor",
+	))
+
+	val HIGH_PRIESTESS = registerTemplate(StarshipTemplate(
+		schematicName = "HighPriestess",
+		type = UNIDENTIFIEDSHIP,
+		miniMessageName = "<$ABYSSAL_DARK_RED>High Priestess",
 	))
 
 	private fun registerTemplate(default: StarshipTemplate): StarshipTemplate {

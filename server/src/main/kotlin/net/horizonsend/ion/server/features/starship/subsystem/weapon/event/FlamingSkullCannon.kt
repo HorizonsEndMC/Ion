@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
+import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -35,10 +36,20 @@ class FlamingSkullCannon(
 	override fun isAcceptableDirection(face: BlockFace) = true
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-		FlamingSkullProjectile(starship, getName(), loc, dir, shooter, target, 10).fire()
+//		FlamingSkullProjectile(starship, getName(), loc, dir, shooter, target, 10).fire()
+
+		for (n in 0..30) {
+			val deviation = Vector(
+				randomDouble(0.0, 0.2),
+				randomDouble(0.0, 0.2),
+				randomDouble(0.0, 0.2)
+			)
+
+			FlamingSkullProjectile(starship, getName(), loc, dir.clone().add(deviation), shooter, target, 10).fire()
+		}
 	}
 
 	override fun getName(): Component {
-		return Component.text("Foul Trumpets")
+		return Component.text("Screaming Kin")
 	}
 }
