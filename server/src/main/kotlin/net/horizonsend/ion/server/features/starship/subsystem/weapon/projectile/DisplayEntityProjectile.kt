@@ -16,11 +16,11 @@ import org.joml.Vector3f
 
 
 interface DisplayEntityProjectile {
-	var displayEntities: MutableMap<Player, Display.ItemDisplay?>
+	val displayEntities: MutableMap<Player, Display.ItemDisplay?>
 
 	val originLocation: Location //The position where the displayEntity was spawned, this is used in the translation maths
 
-	var scale: Vector3f
+	val scale: Vector3f
 
 	fun updateDisplayEntity(newLocation: Location, velocity: Vector) {
 		for (player in Bukkit.getServer().onlinePlayers.filter { it.world == newLocation.world }) {
@@ -80,6 +80,5 @@ interface DisplayEntityProjectile {
 
 	fun makeDisplayEntities() {}
 
-	fun makeDisplayEntity(player: Player): Display.ItemDisplay? { return null}
-
+	fun makeDisplayEntity(player: Player): Display.ItemDisplay
 }

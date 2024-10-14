@@ -31,7 +31,7 @@ class FlamethrowerWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 		return super.canFire(dir, target)
 	}
 
-	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
 		FlamethrowerProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 

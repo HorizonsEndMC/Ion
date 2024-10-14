@@ -84,8 +84,6 @@ class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var fa
 		CthulhuBeamProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 
-
-
 	override fun shouldTargetRandomBlock(target: Player): Boolean {
 		// TODO: only return false if there's a clear path
 		return true
