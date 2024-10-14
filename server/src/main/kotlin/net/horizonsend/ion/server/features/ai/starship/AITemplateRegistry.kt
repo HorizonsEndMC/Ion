@@ -948,10 +948,50 @@ object AITemplateRegistry {
 
 	// Abyssal
 	// Dredge // Chomper
+	val DREDGE = registerTemplate(builder(
+		identifier = "DREDGE",
+		template = StarshipTemplateRegistry.DREDGE,
+		controllerFactory = AIControllerFactories.battlecruiser,
+		engagementRange = 3000.0
+	)
+		.addFactionConfiguration(ABYSALL)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(3500.0))
+		.build()
+	)
+
 	// Charm // Biblically accurate angel
+
 	// Graft // Tree monster?
+
 	// Emperor // Chomper with tentacles
-	// High Priest // Deer with tentacles
+	val EMPEROR = registerTemplate(builder(
+		identifier = "EMPEROR",
+		template = StarshipTemplateRegistry.EMPEROR,
+		controllerFactory = AIControllerFactories.battlecruiser,
+		engagementRange = 3000.0
+	)
+		.addFactionConfiguration(ABYSALL)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
+		.build()
+	)
+
+	// High Priestess // Deer with tentacles
+	val HIGH_PRIESTESS = registerTemplate(builder(
+		identifier = "HIGH_PRIESTESS",
+		template = StarshipTemplateRegistry.HIGH_PRIESTESS,
+		controllerFactory = AIControllerFactories.corvette,
+		engagementRange = 3000.0
+	)
+		.addFactionConfiguration(ABYSALL)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
+		.build()
+	)
+
 
 	val PUMPKIN_DEVOURER = registerTemplate(builder(
 		identifier = "DEVOURER",
@@ -991,19 +1031,6 @@ object AITemplateRegistry {
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.35))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(300.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BONE.name, 3, 0.5f))))
-		.build()
-	)
-
-	val EMPEROR = registerTemplate(builder(
-		identifier = "EMPEROR",
-		template = StarshipTemplateRegistry.EMPEROR,
-		controllerFactory = AIControllerFactories.battlecruiser,
-		engagementRange = 3000.0
-	)
-		.addFactionConfiguration(ABYSALL)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
 		.build()
 	)
 
