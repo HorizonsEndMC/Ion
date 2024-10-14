@@ -38,7 +38,7 @@ class PhaserWeaponSubsystem(
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 
-	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
     		if (starship.initialBlockCount > 12000) {
 				starship.userError("You can't fire phasers on a ship larger than 12000 blocks!")
 				return
