@@ -19,7 +19,7 @@ data class AIContextConfiguration(
 
 	val defaultFaceSeekContextConfiguration: FaceSeekContextConfiguration = FaceSeekContextConfiguration(),
 	val starfighterFaceSeekContextConfiguration: FaceSeekContextConfiguration =
-		FaceSeekContextConfiguration(weight = 1.0, maxWeight = 2.0),
+		FaceSeekContextConfiguration(weight = 2.0, maxWeight = 4.0),
 	val gunshipFaceSeekContextConfiguration: FaceSeekContextConfiguration =
 		FaceSeekContextConfiguration(weight = 0.5, maxWeight = 1.0),
 
@@ -40,10 +40,9 @@ data class AIContextConfiguration(
 ) {
 	@Serializable
 	data class WanderContextConfiguration(
-		val weight: Double = 1.0,
-		val dotShift: Double = 1.0,
-		val jitterRate: Double = 1.0,
-		val maxChange: Double = 1.0,
+		val weight: Double = 0.5,
+		val jitterRate: Double = 1000000.0,
+		val sizeFactor: Double = 100.0,
 	)
 
 	@Serializable
@@ -97,7 +96,7 @@ data class AIContextConfiguration(
 	data class ShipDangerContextConfiguration(
 		val falloff: Double = 50.0,
 		val dotShift: Double = 0.2,
-		val shipWeightSize: Double = 10.0,
+		val shipWeightSize: Double = 100.0,
 		val shipWeightSpeed: Double = 20.0
 	)
 

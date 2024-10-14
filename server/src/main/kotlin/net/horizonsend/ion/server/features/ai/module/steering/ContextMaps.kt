@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.IonServer.aiContextConfig
 import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
 import net.horizonsend.ion.server.features.ai.util.AITarget
+import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
@@ -52,25 +53,22 @@ class WanderContext(
 	val offset : Double,//offset doesnt change so okay to just copy it
 	val config : AIContextConfiguration.WanderContextConfiguration = aiContextConfig.defaultWanderContext,
 ) : ContextMap(linearbins = true) {
-	var theta: Double = randomDouble(0.0, PI *2)
+	val generator = SimplexOctaveGenerator(1, 1)
 
 	override fun populateContext() {
 		clearContext()
 
-		val timeoffset = offset * config.jitterRate
-		val generator = SimplexOctaveGenerator(1, 1)
-		val deltatheta =
-			generator.noise(System.currentTimeMillis() % 1000000 / config.jitterRate
-				/ (ship.currentBlockCount.toDouble()).pow(0.5) + timeoffset,
-				1.0,1.0 ).pow(3) * config.maxChange
-		val phi = generator.noise(System.currentTimeMillis() % 1000000 / (config.jitterRate* 10)
-			/ (ship.currentBlockCount.toDouble()).pow(0.5) + timeoffset,
-			1.0,1.0 ) * Math.PI / 2
-		theta += deltatheta
-		theta += PI *2
-		theta %= PI *2
-		val desiredDir = Vector(0.0,0.0,1.0).rotateAroundX(phi).rotateAroundY(theta)
-		dotContext(desiredDir, config.dotShift, config.weight)
+		val finalRate = config.jitterRate * (ship.currentBlockCount.toDouble().pow(1/3.0) / config.sizeFactor)
+		val timeoffset = offset * finalRate
+
+		for (i in 0 until NUMBINS) {
+			val dir = bindir[i]
+			val response = generator.noise(dir.x,
+										dir.y + ((System.currentTimeMillis() / finalRate) % finalRate + timeoffset),
+										   dir.z, 0.5, 0.5) + 1
+			bins[i] += response*config.weight
+		}
+
 		lincontext!!.apply(lincontext!!.populatePeak(1.0, config.weight))
 		checkContext()
 	}
@@ -156,11 +154,16 @@ class OffsetSeekContext(
 		clearContext()
 		val seekPos =  generalTarget.get()?.getLocation()?.toVector()
 		seekPos ?: return
+		var finalDist = offsetDist
+		if (generalTarget.get() is StarshipTarget) {
+			finalDist =  offsetDist * min((generalTarget.get() as StarshipTarget).ship.currentBlockCount
+											/ship.currentBlockCount.toDouble(), 1.0)
+		}
 		val shipPos = ship.centerOfMass.toVector()
 		val center = seekPos.clone()
 		val yDiff = shipPos.clone().add(center.clone().multiply(-1.0)).y
-		center.y = sign(yDiff) * min(abs(yDiff),config.maxHeightDiff)//adjust center to account for height diff
-		val tetherl = offsetDist * PI * 2 * 0.1
+		center.y += sign(yDiff) * min(abs(yDiff),config.maxHeightDiff)//adjust center to account for height diff
+		val tetherl = finalDist * PI * 2 * 0.1
 		val shipvel = ship.velocity.clone()
 		shipvel.y = 0.0
 		if (shipvel.length() > 1e-5) shipvel.normalize()
@@ -168,7 +171,7 @@ class OffsetSeekContext(
 		val tetherOffset = frowardTether.add(center.clone().multiply(-1.0))
 		tetherOffset.y = 0.0
 		tetherOffset.normalize()
-		val target = center.clone().add(tetherOffset.multiply(offsetDist))
+		val target = center.clone().add(tetherOffset.multiply(finalDist))
 		module.orbitTarget = target.clone()
 		val targetOffset = target.clone().add(shipPos.clone().multiply(-1.0))
 		val dist = targetOffset.length()
