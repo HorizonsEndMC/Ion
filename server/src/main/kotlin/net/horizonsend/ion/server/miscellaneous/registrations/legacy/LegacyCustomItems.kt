@@ -166,6 +166,7 @@ object CustomItems {
 	val ENERGY_SWORD_PURPLE = registerEnergySword(color = "purple", colorName = "${DARK_PURPLE}Purple", model = 5)
 	val ENERGY_SWORD_ORANGE = registerEnergySword(color = "orange", colorName = "${GOLD}Orange", model = 6)
 	val ENERGY_SWORD_PINK = register(EnergySwordItem("energy_sword_pink", "<#FFC0CB>Pink<yellow> Energy<dark_aqua> Sword", SHIELD, 7, useMiniMessage = true))
+	val ENERGY_SWORD_BLACK = register(EnergySwordItem("energy_sword_black", "<black>Black<yellow> Energy<dark_aqua> Sword", SHIELD, 8, useMiniMessage = true))
 	//endregion Energy Swords
 
 	//region Power Armor
