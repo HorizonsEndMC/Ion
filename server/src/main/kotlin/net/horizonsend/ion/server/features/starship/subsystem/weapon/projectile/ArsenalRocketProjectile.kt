@@ -55,7 +55,7 @@ class ArsenalRocketProjectile(
 	private var age: Int = 0 //Ticks
 	private var initialVelocity = this.dir
 	private var hasSwitchedToNormalDirection = false
-	override var scale: Vector3f = Vector3f(3f,3f,3f)
+	override val scale: Vector3f = Vector3f(3f,3f,3f)
 	override fun tick() {
 		delta = (System.nanoTime() - lastTick) / 1_000_000_000.0 // Convert to seconds
 		/*Age is increased by 1 every tick. Between 10-15 ticks, the missile move straight up, to "escape" the silo and the ship
@@ -211,7 +211,7 @@ class ArsenalRocketProjectile(
 		}
 	}
 
-	override fun makeDisplayEntity(player: Player): ItemDisplay? {
+	override fun makeDisplayEntity(player: Player): ItemDisplay {
 		val nmsPlayer = (player as CraftPlayer)
 		val connection = nmsPlayer.handle.connection
 		val itemDisplay = ItemDisplay(EntityType.ITEM_DISPLAY, nmsPlayer.minecraft.level()).apply {
@@ -221,7 +221,7 @@ class ArsenalRocketProjectile(
 			val transformation = Transformation(
 				translation,
 				Quaternionf(),
-				Vector3f(3.0f, 3.0f, 3.0f),
+				scale,
 				Quaternionf()
 			) //Set the new transformation
 			this.setTransformation(

@@ -33,7 +33,7 @@ class HeavyLaserWeaponSubsystem(
 	override val extraDistance: Int = balancing.extraDistance
 	override val aimDistance: Int = balancing.aimDistance
 
-	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
 		checkNotNull(target)
 		HeavyLaserProjectile(starship, getName(), loc, dir, shooter, target, aimDistance, sound).fire()
 	}

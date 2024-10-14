@@ -78,5 +78,5 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 		return true
 	}
 
-	protected abstract fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?)
+	protected abstract fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector)
 }

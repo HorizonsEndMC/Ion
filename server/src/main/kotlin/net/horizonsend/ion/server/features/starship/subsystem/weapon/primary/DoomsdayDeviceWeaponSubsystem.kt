@@ -38,7 +38,7 @@ class DoomsdayDeviceWeaponSubsystem(
     override val powerUsage: Int = balancing.powerUsage
     override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
 
-    override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
+    override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
         var tick = 0
         runnable {
 
