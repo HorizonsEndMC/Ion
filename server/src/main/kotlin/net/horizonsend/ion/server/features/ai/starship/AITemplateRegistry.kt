@@ -1003,7 +1003,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(ABYSALL)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BONE.name, 3, 0.5f))))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
 		.build()
 	)
 
