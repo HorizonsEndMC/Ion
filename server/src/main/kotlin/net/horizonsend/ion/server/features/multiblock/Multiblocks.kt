@@ -9,9 +9,6 @@ import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMu
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4SideMirrored
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4Top
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier4TopMirrored
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockBottom
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockSide
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockTop
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomIonTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopIonTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
@@ -131,6 +128,9 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.CapitalBeamStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockBottom
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockSide
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockTop
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.FireWaveWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.FlamethrowerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.MiniPhaserStarshipWeaponMultiblock
