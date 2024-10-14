@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.faction.AIFaction
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.ABYSALL
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PUMPKINS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SKELETONS
@@ -987,6 +988,19 @@ object AITemplateRegistry {
 		.addFactionConfiguration(SKELETONS)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.35))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(300.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BONE.name, 3, 0.5f))))
+		.build()
+	)
+
+	val EMPEROR = registerTemplate(builder(
+		identifier = "EMPEROR",
+		template = StarshipTemplateRegistry.EMPEROR,
+		controllerFactory = AIControllerFactories.battlecruiser,
+		engagementRange = 3000.0
+	)
+		.addFactionConfiguration(ABYSALL)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BONE.name, 3, 0.5f))))
 		.build()
 	)
