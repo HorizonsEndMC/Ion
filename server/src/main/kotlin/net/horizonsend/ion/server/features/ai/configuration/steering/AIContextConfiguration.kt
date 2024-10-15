@@ -117,7 +117,8 @@ data class AIContextConfiguration(
 	@Serializable
 	data class ObstructionDangerContextConfiguration(
 		val falloff: Double = 30.0,
-		val dotPower: Double = 3.0,
+		val dotShift : Double = 0.3,
+		val dotPower: Double = 1.0,
 		val expireTime: Int = 5 * 1000,
 	)
 }
