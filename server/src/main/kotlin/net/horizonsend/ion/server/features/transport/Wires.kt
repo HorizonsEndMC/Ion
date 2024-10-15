@@ -152,9 +152,6 @@ object Wires : IonServerComponent() {
 		val nextY = y + direction.modY
 		val nextZ = z + direction.modZ
 
-		debugHighlightBlock(x, y, z)
-		debugHighlightBlock(nextX, nextY, nextZ)
-
 		val nextType = getBlockTypeSafe(world, nextX, nextY, nextZ) ?: return
 
 		val reverse = direction.oppositeFace // used for ensuring we're not going backwards when dealing w/ connectors

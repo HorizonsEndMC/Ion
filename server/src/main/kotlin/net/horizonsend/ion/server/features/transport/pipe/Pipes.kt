@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.transport.pipe
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.debugHighlightBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.GasCanister
 import net.horizonsend.ion.server.features.gas.type.GasFuel
@@ -199,8 +198,6 @@ object Pipes : IonServerComponent() {
 			val nz = data.z + data.direction.modZ
 
 			val nextType: Material = getBlockTypeSafe(data.world, nx, ny, nz) ?: return
-
-			debugHighlightBlock(nx, ny, nz)
 
 			// if the next type is not even a pipe, end the chain
 			if (!isAnyPipe(nextType)) {
