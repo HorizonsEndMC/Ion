@@ -62,7 +62,7 @@ class SteeringSolverModule(
 
 		//map onto player slots
 		controller.selectedDirectControlSpeed = round(throttle * 8.0).toInt() + 1
-		if (thrust.dot(heading) < 0.0) controller.selectedDirectControlSpeed = 0 //ship wants to go backwards
+		if (thrust.dot(ship.forward.direction) < 0.0) controller.selectedDirectControlSpeed = 0 //ship wants to go backwards
 		AIControlUtils.faceDirection(controller, vectorToBlockFace(heading))
 	}
 
@@ -79,12 +79,10 @@ class SteeringSolverModule(
 			BlockFace.EAST -> rotated.rotateAroundZ(PI/2)
 			else ->rotated.rotateAroundX(0.0)
 		}
-		println(rotated)
 		rotated.setY(0)
 		//if (forwardX) rotated.rotateAroundY(PI/4) // Z -> X
 		if (rotated.lengthSquared() < 1e-2) return Vector(0.0,0.0,0.0)
 		rotated.normalize()
-		println(rotated)
 
 		rotated.x = round(rotated.x)
 		rotated.z = round(rotated.z)

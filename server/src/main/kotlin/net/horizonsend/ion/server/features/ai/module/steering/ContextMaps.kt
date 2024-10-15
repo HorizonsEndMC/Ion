@@ -578,7 +578,7 @@ class ObstructionDangerContext(
 			val offset = obstruction.toVector().add(shipPos.clone().multiply(-1.0))
 			val dist = offset.length()
 			offset.normalize()
-			dotContext(offset, 0.0, config.falloff/ dist, config.dotPower)
+			dotContext(offset, config.dotShift, config.falloff/ dist, config.dotPower)
 		}
 	}
 }
