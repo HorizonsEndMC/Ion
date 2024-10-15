@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ai.starship
 
+import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_DESATURATED_RED
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
@@ -975,6 +976,19 @@ object AITemplateRegistry {
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
+		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
+			activationThreshold = 0.85,
+			delay = 5L,
+			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
+		) {
+			BagSpawner(
+				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+				VariableIntegerAmount(2, 3),
+				null,
+				null,
+				asBagSpawned(ABYSALL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+			)
+		})
 		.build()
 	)
 
@@ -989,6 +1003,19 @@ object AITemplateRegistry {
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
+		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
+			activationThreshold = 0.85,
+			delay = 5L,
+			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
+		) {
+			BagSpawner(
+				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+				VariableIntegerAmount(2, 3),
+				null,
+				null,
+				asBagSpawned(ABYSALL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+			)
+		})
 		.build()
 	)
 
