@@ -33,8 +33,12 @@ class ClosestLargeStarshipTargetingModule(
 
         return controller.getNearbyTargetsInRadius(0.0, maxRange) {
             if (it is StarshipTarget) {
-                if (!targetAI) it.ship.controller !is AIController else it.ship.controller is AIController && starship.controller != it.ship.controller
-            } else true
+                if (!targetAI) {
+					it.ship.controller !is AIController
+				} else {
+					it.ship.controller is AIController && starship.controller != it.ship.controller
+				}
+            } else {!targetAI} // its a player, if its a targeting ai ignore players
         }.sortedWith(
             Comparator<AITarget> { o1, o2 ->
                 // if both objects are not StarshipTargets, maintain order

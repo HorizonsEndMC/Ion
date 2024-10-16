@@ -13,6 +13,7 @@ import kotlin.math.pow
  * This positioning module seeks out a position at the closest cardinal direction from the target
  * it has a variable holdoff distance
  **/
+@Deprecated("Outdated movement strategy use Steering instead")
 class AxisStandoffPositioningModule(
 	controller: AIController,
 	var target: Supplier<AITarget?>,

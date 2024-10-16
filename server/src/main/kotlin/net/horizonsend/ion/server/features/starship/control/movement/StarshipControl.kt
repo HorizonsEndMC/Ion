@@ -121,27 +121,7 @@ object StarshipControl : IonServerComponent() {
 			starship.directControlCenter = center
 		}
 
-		// Calculate the movement vector
-		var vector = pilotLocation.toVector().subtract(center.toVector())
-		vector.setY(0)
-		vector.normalize()
-
-		// Clone the vector to do some additional math
-		val directionWrapper = center.clone()
-		directionWrapper.direction = Vector(direction.modX, direction.modY, direction.modZ)
-
-		val playerDirectionWrapper = center.clone()
-		playerPilot?.let { playerDirectionWrapper.direction = it.location.direction }
-
-		val vectorWrapper = center.clone()
-		vectorWrapper.direction = vector
-
-		vectorWrapper.yaw = vectorWrapper.yaw - (playerDirectionWrapper.yaw - directionWrapper.yaw)
-		vector = vectorWrapper.direction
-
-		vector.x = round(vector.x)
-		vector.setY(0)
-		vector.z = round(vector.z)
+		var vector = controller.directControlMovementVector(direction)
 
 		val vectors = starship.directControlPreviousVectors
 		if (vectors.size > 3) {
@@ -199,6 +179,7 @@ object StarshipControl : IonServerComponent() {
 		dy *= speedFac
 		dz *= speedFac
 
+
 		when {
 			dy < 0 && starship.min.y + dy < 0 -> {
 				dy = -starship.min.y
@@ -218,7 +199,7 @@ object StarshipControl : IonServerComponent() {
 		}
 
 		playerPilot?.walkSpeed = 0.009f
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
+		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementType.DC)
 	}
 
 	fun calculateSpeed(selectedSlot: Int) = if (selectedSlot == 0) -1 else (selectedSlot / DIRECT_CONTROL_DIVISOR).toInt()
@@ -261,7 +242,7 @@ object StarshipControl : IonServerComponent() {
 
 		if (locationCheck(starship, dx, dy, dz)) return
 
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
+		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementType.MANUAL)
 	}
 
 	fun locationCheck(starship: ActiveControlledStarship, dx: Int, dy: Int, dz: Int): Boolean {
