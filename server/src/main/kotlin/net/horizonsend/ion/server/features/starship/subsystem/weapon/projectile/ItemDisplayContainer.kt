@@ -52,7 +52,7 @@ class ItemDisplayContainer(
 
 			entity.setTransformation(com.mojang.math.Transformation(
 				Vector3f(0f),
-				ClientDisplayEntities.rotateToFaceVector2d(value.toVector3f()),
+				ClientDisplayEntities.rotateToFaceVector(value.toVector3f()),
 				Vector3f(scale),
 				Quaternionf()
 			))
