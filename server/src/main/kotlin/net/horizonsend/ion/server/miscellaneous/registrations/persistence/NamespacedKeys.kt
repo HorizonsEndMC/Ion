@@ -67,6 +67,7 @@ object NamespacedKeys {
 	val MATERIAL = key("material")
 
 	val PROGRESS = key("progress")
+	val LAST_PROGRESS_TICK = key("last_progress_tick")
 	val CUSTOM_ITEM_RESULT = key("custom_item_result")
 
 	val ORE_POSITIONS = key("ore_positions")
