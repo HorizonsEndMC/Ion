@@ -12,6 +12,9 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.PilotedStarships.checkDamagers
+import net.horizonsend.ion.server.features.starship.PilotedStarships.checkSurroundingPlayers
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -21,6 +24,7 @@ import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
@@ -92,6 +96,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		validateWorldBorders(starship.min, starship.max, findPassengers(world1), world2)
 		checkCelestialBodies(starship.min, starship.max, world2)
+		checkEnteringSafeZone(starship.min, starship.max, starship, world2)
 
 		val oldLocationArray = oldLocationSet.filter {
 			isFlyable(world1.getBlockAt(blockKeyX(it), blockKeyY(it), blockKeyZ(it)).blockData.nms)
@@ -205,6 +210,19 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			if (distance1 < star.outerSphereRadius || distance2 < star.outerSphereRadius)
 				throw StarshipOutOfBoundsException("Starship would be inside ${star.name}!")
 		}
+	}
+
+	private fun checkEnteringSafeZone(min: Vec3i, max: Vec3i, starship: Starship, world2: World) {
+		val newMin = displacedVec(min).toLocation(world2)
+		val newMax = displacedVec(max).toLocation(world2)
+
+		val loc1 = newMin.toLocation(world2)
+		val loc2 = newMax.toLocation(world2)
+
+		if ((ProtectionListener.isProtectedCity(loc1) || ProtectionListener.isProtectedCity(loc2)) &&
+			(IonServer.configuration.serverName == "Survival" &&
+				(checkDamagers(starship) || checkSurroundingPlayers(starship))))
+			throw StarshipOutOfBoundsException("Starship is currently combat tagged and cannot enter safe zones!")
 	}
 
 	private fun moveShipComputers(world2: World) {
