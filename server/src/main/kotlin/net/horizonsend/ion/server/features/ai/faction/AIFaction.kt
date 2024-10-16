@@ -302,7 +302,12 @@ class AIFaction private constructor(
 				"<$ABYSSAL_DESATURATED_RED>Only in darkness does the flower take hold.",
 				"<$ABYSSAL_DESATURATED_RED>Your fear is branded deep.",
 				"<$ABYSSAL_DESATURATED_RED>Its a shame.",
+				"<$ABYSSAL_DESATURATED_RED>We are sorry.",
 				"<$ABYSSAL_DESATURATED_RED>Under a starless sky.",
+				"<$ABYSSAL_DESATURATED_RED>Godspeed.",
+				"<$ABYSSAL_DESATURATED_RED>Do you know your worth?.",
+				"<$ABYSSAL_DESATURATED_RED>Purposeless.",
+				"<$ABYSSAL_DESATURATED_RED>Do you know what's really out there?.",
 			)
 			.build()
 
