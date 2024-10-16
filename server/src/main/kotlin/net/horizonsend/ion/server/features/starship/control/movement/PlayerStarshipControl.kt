@@ -38,8 +38,6 @@ object PlayerStarshipControl : IonServerComponent() {
 
 		event.isCancelled = true
 
-		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
-
 		starship.tryRotate(true)
 	}
 

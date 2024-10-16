@@ -118,7 +118,7 @@ object Hyperspace : IonServerComponent() {
 
 		starship.playSound(starship.balancing.sounds.enterHyperspace.sound)
 
-		StarshipTeleportation.teleportStarship(starship, loc) {
+		StarshipTeleportation.teleportStarship(starship, loc) { _, _ ->
 			// Happens after the teleport finishes
 			Tasks.syncDelay(2L) {
 				StarshipEnterHyperspaceEvent(starship).callEvent()
@@ -155,7 +155,7 @@ object Hyperspace : IonServerComponent() {
 		dest.z = movement.z
 
 		starship.playSound(starship.balancing.sounds.exitHyperspace.sound)
-		StarshipTeleportation.teleportStarship(starship, dest) {
+		StarshipTeleportation.teleportStarship(starship, dest) { _, _ ->
 			Tasks.syncDelay(2L) {
 				// Happens after the teleport finishes
 				StarshipExitHyperspaceEvent(starship, movement).callEvent()
@@ -173,7 +173,7 @@ object Hyperspace : IonServerComponent() {
 		starship.subsystems.forEach { it.handleJump(movement) }
 
 		starship.playSound(starship.balancing.sounds.exitHyperspace.sound)
-		StarshipTeleportation.teleportStarship(starship, movement.dest) {
+		StarshipTeleportation.teleportStarship(starship, movement.dest) { _, _ ->
 			Tasks.syncDelay(2L) {
 				// Happens after the teleport finishes
 				StarshipExitHyperspaceEvent(starship, movement).callEvent()
