@@ -291,7 +291,7 @@ class AIFaction private constructor(
 			)
 			.build()
 
-		val ABYSALL = builder("ABYSALL", ABYSSAL_LIGHT_RED.value())
+		val ABYSSAL = builder("ABYSALL", ABYSSAL_LIGHT_RED.value())
 			.addNames(listOf("Spectre", "Nebuchadnezzar", "Balthazar", "Salmanazar", "Jeroboam", "The Pale One").map { it.toComponent(ABYSSAL_DARK_RED) })
 			.setMessagePrefix("")
 			.addSmackMessages(
