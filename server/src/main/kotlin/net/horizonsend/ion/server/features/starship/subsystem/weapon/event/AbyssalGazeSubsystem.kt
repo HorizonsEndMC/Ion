@@ -29,6 +29,10 @@ class AbyssalGazeSubsystem(
 	override val powerUsage: Int = balancing.powerUsage
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 
+	override fun canFire(dir: Vector, target: Vector): Boolean {
+		return true
+	}
+
 	override fun isAcceptableDirection(face: BlockFace) = true
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
