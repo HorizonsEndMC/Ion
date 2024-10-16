@@ -555,6 +555,18 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		miniMessageName = "<$ABYSSAL_DARK_RED>High Priestess",
 	))
 
+	val GRAFT = registerTemplate(StarshipTemplate(
+		schematicName = "Graft",
+		type = UNIDENTIFIEDSHIP,
+		miniMessageName = "<$ABYSSAL_DARK_RED>Graft",
+	))
+
+	val CHARM = registerTemplate(StarshipTemplate(
+		schematicName = "Charm",
+		type = UNIDENTIFIEDSHIP,
+		miniMessageName = "<$ABYSSAL_DARK_RED>Charm",
+	))
+
 	private fun registerTemplate(default: StarshipTemplate): StarshipTemplate {
 		return Configuration.loadOrDefault(TEMPLATE_DIRECTORY, "${default.schematicName}.json", default)
 	}
