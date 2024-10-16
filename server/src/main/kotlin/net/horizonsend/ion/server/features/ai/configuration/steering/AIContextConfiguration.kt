@@ -85,10 +85,10 @@ data class AIContextConfiguration(
 	@Serializable
 	data class ShieldAwarenessContextConfiguration(
 		val weight: Double = 1.0,
-		val criticalPoint: Double = 0.15,
+		val criticalPoint: Double = 0.3,
 		val power: Double = 1.5,
-		val histDecay: Double = 0.95,
-		val verticalDamp :Double = 1.0,
+		val histDecay: Double = 0.98,
+		val verticalDamp :Double = 0.5,
 		val damageSensitivity : Double = 100.0,
 	)
 

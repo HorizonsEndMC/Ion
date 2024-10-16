@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.ai.module.movement
 
 import SteeringModule
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -34,9 +35,20 @@ class SteeringSolverModule(
 
     override fun tick() {
         steeringModule.steer()
+
 		thrust = steeringModule.getThrust()
 		heading = diagonalFixed(steeringModule.getHeading())
 		throttle = steeringModule.getThrottle()
+
+		if (AIDebugModule.canShipsRotate) {
+			AIControlUtils.faceDirection(controller, vectorToBlockFace(heading))
+		}
+		if (!AIDebugModule.canShipsMove) {
+			controller.starship.setDirectControlEnabled(false)
+			StarshipCruising.stopCruising(controller,starship)
+			controller.setShiftFlying(false)
+			return
+		}
 
 		val targetVec = target.get()?.getLocation()?.toVector()
 		val targetDist = targetVec?.add(ship.centerOfMass.toVector().multiply(-1.0))?.length() ?: 1e10
@@ -63,7 +75,6 @@ class SteeringSolverModule(
 		//map onto player slots
 		controller.selectedDirectControlSpeed = round(throttle * 8.0).toInt() + 1
 		if (thrust.dot(ship.forward.direction) < 0.0) controller.selectedDirectControlSpeed = 0 //ship wants to go backwards
-		AIControlUtils.faceDirection(controller, vectorToBlockFace(heading))
 	}
 
 	fun directControlMovementVector(direction: BlockFace) : Vector {
@@ -99,7 +110,6 @@ class SteeringSolverModule(
 
 		onPlane = diagonalFixed(onPlane)
 
-		AIControlUtils.faceDirection(controller, vectorToBlockFace(heading))
 
 		val dx = if (abs(onPlane.x) >= 0.5) sign(thrust.x).toInt() else 0
 		val dz = if (abs(onPlane.z) > 0.5) sign(thrust.z).toInt() else 0
