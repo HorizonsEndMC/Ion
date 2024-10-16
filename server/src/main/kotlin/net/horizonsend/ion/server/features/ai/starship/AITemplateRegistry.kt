@@ -1019,6 +1019,46 @@ object AITemplateRegistry {
 		.build()
 	)
 
+	// High Priestess // Deer with tentacles
+	val GRAFT = registerTemplate(builder(
+		identifier = "GRAFT",
+		template = StarshipTemplateRegistry.GRAFT,
+		controllerFactory = AIControllerFactories.battlecruiser,
+		engagementRange = 3000.0
+	)
+		.addFactionConfiguration(ABYSALL)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
+		.build()
+	)
+
+	// High Priestess // Deer with tentacles
+	val CHARM = registerTemplate(builder(
+		identifier = "GRAFT",
+		template = StarshipTemplateRegistry.CHARM,
+		controllerFactory = AIControllerFactories.battlecruiser,
+		engagementRange = 3000.0
+	)
+		.addFactionConfiguration(ABYSALL)
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
+		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
+			activationThreshold = 0.85,
+			delay = 5L,
+			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
+		) {
+			BagSpawner(
+				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+				VariableIntegerAmount(2, 3),
+				null,
+				null,
+				asBagSpawned(ABYSALL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+			)
+		})
+		.build()
+	)
 
 	val PUMPKIN_DEVOURER = registerTemplate(builder(
 		identifier = "DEVOURER",
