@@ -517,7 +517,7 @@ object PilotedStarships : IonServerComponent() {
 	 *
 	 * Returns true if any are found
 	 **/
-	private fun checkDamagers(starship: ActiveControlledStarship): Boolean {
+	fun checkDamagers(starship: ActiveControlledStarship): Boolean {
 		val playerPilot = (starship.controller as? PlayerController)?.player ?: return false
 		val pilotNation = PlayerCache[playerPilot].nationOid ?: return false
 
@@ -538,7 +538,7 @@ object PilotedStarships : IonServerComponent() {
 	/**
 	 * Checks for enemied players within 500 blocks
 	 **/
-	private fun checkSurroundingPlayers(starship: ActiveControlledStarship): Boolean {
+	fun checkSurroundingPlayers(starship: ActiveControlledStarship): Boolean {
 		val playerPilot = (starship.controller as? PlayerController)?.player ?: return false
 		val pilotNation = PlayerCache[playerPilot].nationOid ?: return false
 
