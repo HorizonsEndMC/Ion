@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.faction.AIFaction
-import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.ABYSALL
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.ABYSSAL
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PUMPKINS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SKELETONS
@@ -955,7 +955,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.battlecruiser,
 		engagementRange = 3000.0
 	)
-		.addFactionConfiguration(ABYSALL)
+		.addFactionConfiguration(ABYSSAL)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(3500.0))
 		.build()
@@ -972,7 +972,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.battlecruiser,
 		engagementRange = 3000.0
 	)
-		.addFactionConfiguration(ABYSALL)
+		.addFactionConfiguration(ABYSSAL)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
@@ -986,7 +986,7 @@ object AITemplateRegistry {
 				VariableIntegerAmount(2, 3),
 				null,
 				null,
-				asBagSpawned(ABYSALL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
 		.build()
@@ -999,7 +999,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.corvette,
 		engagementRange = 3000.0
 	)
-		.addFactionConfiguration(ABYSALL)
+		.addFactionConfiguration(ABYSSAL)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
@@ -1013,7 +1013,7 @@ object AITemplateRegistry {
 				VariableIntegerAmount(2, 3),
 				null,
 				null,
-				asBagSpawned(ABYSALL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
 		.build()
@@ -1026,7 +1026,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.battlecruiser,
 		engagementRange = 3000.0
 	)
-		.addFactionConfiguration(ABYSALL)
+		.addFactionConfiguration(ABYSSAL)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
@@ -1040,7 +1040,7 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.battlecruiser,
 		engagementRange = 3000.0
 	)
-		.addFactionConfiguration(ABYSALL)
+		.addFactionConfiguration(ABYSSAL)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
@@ -1054,7 +1054,7 @@ object AITemplateRegistry {
 				VariableIntegerAmount(2, 3),
 				null,
 				null,
-				asBagSpawned(ABYSALL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
 		.build()
