@@ -369,6 +369,12 @@ class Starship (
 
 	var directControlCenter: Location? = null
 
+	// Stored on starship so it can't be reset by switching to dc and back
+	var directControlSpeedModifier = 1.0
+	val initialDirectControlCooldown get() = 300L + (initialBlockCount / 700) * 30
+	var directControlCooldown = initialDirectControlCooldown
+	var lastDirectControlSpeedSlowed = 0L
+
 	fun setDirectControlEnabled(enabled: Boolean) {
 		val controller = controller as ActivePlayerController
 
