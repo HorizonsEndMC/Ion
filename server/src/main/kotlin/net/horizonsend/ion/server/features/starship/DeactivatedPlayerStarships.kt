@@ -296,7 +296,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		}
 	}
 
-	fun deactivateNow(starship: ActiveControlledStarship) {
+	fun deactivateNow(starship: ActiveControlledStarship, ephemeral: Boolean = false) {
 		if (PilotedStarships.isPiloted(starship)) {
 			Tasks.getSyncBlocking {
 				PilotedStarships.unpilot(starship)
@@ -322,7 +322,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 			return@getSyncBlocking StarshipState.createFromActiveShip(starship)
 		}
 
-		saveDeactivatedData(world, starship, state, carriedShipStateMap)
+		if (!ephemeral) saveDeactivatedData(world, starship, state, carriedShipStateMap)
 	}
 
 	private fun saveDeactivatedData(
@@ -376,7 +376,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		}
 	}
 
-	private fun destroy(data: StarshipData) {
+	fun destroy(data: StarshipData) {
 		require(ActiveStarships[data._id] == null) { "Can't delete an active starship, but tried deleting ${data._id}" }
 
 		val world: World = data.bukkitWorld()
