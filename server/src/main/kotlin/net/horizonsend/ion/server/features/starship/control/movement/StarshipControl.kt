@@ -84,7 +84,7 @@ object StarshipControl : IonServerComponent() {
 		val playerDcModifier = playerPilot?.let { PlayerCache[playerPilot.uniqueId].dcSpeedModifier } ?: 1
 		val speedFac = if (ping != null && ping > movementCooldown) max(2, playerDcModifier) else playerDcModifier
 
-		val selectedSpeed = (controller.selectedDirectControlSpeed * starship.directControlSpeedModifier).toInt().coerceAtLeast(1)
+		val selectedSpeed = (controller.selectedDirectControlSpeed * starship.directControlSpeedModifier).toInt().coerceAtLeast(0)
 
 		val cooldown = calculateCooldown(movementCooldown, selectedSpeed) * speedFac
 		val currentTime = System.currentTimeMillis()
