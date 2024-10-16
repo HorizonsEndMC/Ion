@@ -17,7 +17,33 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 
 class AIDebugModule(controller : AIController ) : AIModule(controller) {
+	companion object {
+		val contextMapTypes = setOf(
+			"movementInterest",
+			"rotationInterest",
+			"danger",
+			"wander",
+			"offsetSeek",
+			"faceSeek",
+			"shieldAwareness",
+			"shipDanger",
+			"borderDanger",
+			"worldBlockDanger",
+			"obstructionDanger"
+		)
 
+		val shownContexts = mutableListOf(
+			Pair("danger", DebugColor.RED),
+			Pair("movementInterest", DebugColor.GREEN))
+
+		private val debugOffsetIncrement = 0.6
+		private val debugOffset = 2.0
+
+		enum class DebugColor{WHITE, RED, BLUE, GREEN}
+
+		var canShipsMove = true
+		var canShipsRotate = true
+	}
 
 	// These vars are for saving the info of the closest
 	private var displayVectors = mutableListOf<VectorDisplay>()
@@ -38,12 +64,14 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 	private fun createAIShipDebug () : MutableList<VectorDisplay> {
 		val mod = controller.getModuleByType<BasicSteeringModule>()?:return mutableListOf()
 		val output = mutableListOf<VectorDisplay>()
-		output.addAll(displayContext( mod.contexts["movementInterest"]!!,
-			CustomItems.DEBUG_LINE_GREEN.constructItemStack(),controller.starship, Vector(0.0,10.2, 0.0)))
-		output.addAll(displayContext( mod.contexts["danger"]!!,
-			CustomItems.DEBUG_LINE_RED.constructItemStack(),controller.starship, Vector(0.0,10.0,0.0)))
-		output.add(VectorDisplay(mod::getThrust,
-			CustomItems.DEBUG_LINE_BLUE.constructItemStack(), controller.starship, Vector(0.0,10.4,0.0)))
+		val shipOffset = (controller.starship.max - controller.starship.centerOfMass).y.toDouble()
+		for (i in 0 until shownContexts.size) {
+			val offset = i * debugOffsetIncrement + debugOffset + shipOffset
+			output.addAll(displayContext( mod.contexts[shownContexts[i].first]!!,
+				mapColor(shownContexts[i].second),controller.starship, Vector(0.0,  offset,0.0)))
+		}
+		val dirOffset = shownContexts.size * debugOffsetIncrement + debugOffset + shipOffset
+		output.add(VectorDisplay(mod::getThrust,mapColor(DebugColor.BLUE), controller.starship, Vector(0.0,dirOffset,0.0)))
 		return output
 	}
 
@@ -76,5 +104,16 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 			}
 		}
 	}
+
+	private fun mapColor(color : DebugColor) : ItemStack{
+		 return when (color) {
+			 DebugColor.RED -> CustomItems.DEBUG_LINE_RED.constructItemStack()
+			 DebugColor.GREEN -> CustomItems.DEBUG_LINE_GREEN.constructItemStack()
+			 DebugColor.BLUE -> CustomItems.DEBUG_LINE_BLUE.constructItemStack()
+			 DebugColor.WHITE -> CustomItems.DEBUG_LINE.constructItemStack()
+		}
+	}
+
+
 
 }

@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
@@ -69,6 +70,14 @@ object AIDebugCommand : SLCommand() {
 		manager.commandCompletions.registerAsyncCompletion("controllerFactories") { _ ->
 			AIControllerFactories.presetControllers.keys
 		}
+
+		manager.commandCompletions.registerAsyncCompletion("AIDebugColors") { _ ->
+			AIDebugModule.Companion.DebugColor.entries.map { it.name }
+		}
+		manager.commandCompletions.registerAsyncCompletion("AIContexts") { _ ->
+			AIDebugModule.contextMapTypes
+		}
+
 	}
 
 	@Suppress("Unused")
@@ -84,7 +93,6 @@ object AIDebugCommand : SLCommand() {
 	fun ai(
 		sender: Player,
 		controller: AIControllerFactory,
-		standoffDistance: Double,
 		@Optional manualSets: String?,
 		@Optional autoSets: String?,
 	) {
@@ -95,15 +103,53 @@ object AIDebugCommand : SLCommand() {
 			text("Player Created AI Ship"),
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
 			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
-		).apply {
-			val positioningEngine = modules["positioning"]
-			(positioningEngine as? AxisStandoffPositioningModule)?.let { it.standoffDistance = standoffDistance }
-		}
+		)
 
 		starship.setController(newController)
 
 		starship.removePassenger(sender.uniqueId)
 	}
+
+	@Subcommand("debug show")
+	@CommandCompletion("@AIContexts @AIDebugColors")
+	@Suppress("unused")
+	fun debugShow(
+		sender: Player,
+		context: String,
+		color: String
+	) {
+		if (context !in AIDebugModule.contextMapTypes) throw InvalidCommandArgument("not a context")
+		AIDebugModule.shownContexts.add(Pair(context,AIDebugModule.Companion.DebugColor.valueOf(color)))
+	}
+
+	@Subcommand("debug hide")
+	@CommandCompletion("@AIContexts @AIDebugColors")
+	@Suppress("unused")
+	fun debugHide(
+		sender: Player,
+		context: String,
+		color: String
+	) {
+		if (context !in AIDebugModule.contextMapTypes) throw InvalidCommandArgument("not a context")
+		AIDebugModule.shownContexts.remove(Pair(context,AIDebugModule.Companion.DebugColor.valueOf(color)))
+	}
+
+	@Subcommand("toggle movement")
+	@Suppress("unused")
+	fun toggleMovement(
+		sender: Player,
+	) {
+		AIDebugModule.canShipsMove = !AIDebugModule.canShipsMove
+	}
+
+	@Subcommand("toggle rotation")
+	@Suppress("unused")
+	fun toggleRotation(
+		sender: Player,
+	) {
+		AIDebugModule.canShipsRotate = !AIDebugModule.canShipsRotate
+	}
+
 
 	@Subcommand("spawner query")
 	@Suppress("unused")

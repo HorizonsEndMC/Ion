@@ -337,20 +337,19 @@ class ShieldAwarenessContext(
 			val dir = bindir[i]
 			if (abs(dir.dot(Vector(0.0,1.0,0.0))) >= 0.9 ) continue //skip vertical directions
 			val rotatedCenters = ship.shields.map {transformCords(ship,it,dir)}
+			val response = object : ContextMap() {}
 			for (j in 0 until ship.shields.size) {
 				val shield = ship.shields[j]
 				val offset = rotatedCenters[j].clone().normalize()
 				val damage = ((shield.maxPower - shield.power)/
 					(shield.maxPower.toDouble()*(1-config.criticalPoint))).pow(config.power)
-				val response = object : ContextMap() {}
 				response.dotContext(offset,-0.3,damage*config.weight)
-				for (k in 0 until NUMBINS) {
-					response.bins[k] *= incomingFire.bins[k]
-				}
-				bins[i] += response.bins.sum()
-				bins[i] *= verticalDamp.bins[i]
 			}
-
+			for (k in 0 until NUMBINS) {
+				response.bins[k] *= incomingFire.bins[k]
+			}
+			bins[i] += response.bins.sum()
+			bins[i] *= verticalDamp.bins[i]
 		}
 		checkContext()
 	}
