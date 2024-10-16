@@ -961,7 +961,7 @@ object AITemplateRegistry {
 		.build()
 	)
 
-	// Charm // Biblically accurate angel
+	// Charm // Cthulhu looking thing
 
 	// Graft // Tree monster?
 
