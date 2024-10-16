@@ -30,7 +30,6 @@ import kotlin.math.sign
 class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHandler(controller, "Direct Control") {
 	private val directControlPreviousVectors = LinkedBlockingQueue<Vector>(4)
 	private val directControlVector = Vector()
-	private val directControlCooldown get() = 300L + (starship.initialBlockCount / 700) * 30
 
 	override fun create() {
 		val message = ofChildren(
@@ -79,7 +78,7 @@ class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHa
 		inventory.setItem(previousSlot, newItem)
 
 		val baseSpeed = calculateSpeed(newSlot)
-		val cooldown: Long = calculateCooldown(directControlCooldown, newSlot)
+		val cooldown: Long = calculateCooldown(starship.directControlCooldown, newSlot)
 		val speed = (10.0f * baseSpeed * (1000.0f / cooldown)).roundToInt() / 10.0f
 
 		player.sendActionBar(text("Speed: $speed", NamedTextColor.AQUA))
@@ -99,11 +98,11 @@ class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHa
 
 		// Ping compensation
 		val ping = getPing(playerPilot)
-		val movementCooldown = directControlCooldown
+		val movementCooldown = starship.directControlCooldown
 		val playerDcModifier = PlayerCache[playerPilot.uniqueId].dcSpeedModifier
 		val speedFac = if (ping > movementCooldown) max(2, playerDcModifier) else playerDcModifier
 
-		val selectedSpeed = controller.selectedDirectControlSpeed
+		val selectedSpeed = (controller.selectedDirectControlSpeed * starship.directControlSpeedModifier).toInt().coerceAtLeast(0)
 
 		val cooldown = calculateCooldown(movementCooldown, selectedSpeed) * speedFac
 		val currentTime = System.currentTimeMillis()
