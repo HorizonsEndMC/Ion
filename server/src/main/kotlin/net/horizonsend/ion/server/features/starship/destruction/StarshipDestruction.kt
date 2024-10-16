@@ -27,13 +27,11 @@ object StarshipDestruction {
 		starship.isExploding = true
 
 		if (urgent) {
-			Tasks.syncBlocking {
-				DeactivatedPlayerStarships.deactivateNow(starship)
+			return Tasks.syncBlocking {
+				DeactivatedPlayerStarships.deactivateNow(starship, true)
 
 				vanishShip(starship)
 			}
-
-			return
 		}
 
 		DeactivatedPlayerStarships.deactivateAsync(starship) {
