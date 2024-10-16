@@ -1519,7 +1519,7 @@ class StarshipWeapons(
 				angleRadiansHorizontal = 18.0,
 				angleRadiansVertical = 18.0,
 				convergeDistance = 0.0,
-				extraDistance = 0,
+				extraDistance = 3,
 				fireCooldownMillis = 1000,
 				boostChargeSeconds = 5,
 				aimDistance = 0,
