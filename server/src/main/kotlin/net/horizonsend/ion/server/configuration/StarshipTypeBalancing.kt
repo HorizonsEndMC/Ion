@@ -1502,6 +1502,29 @@ class StarshipWeapons(
 				aimDistance = 0,
 				applyCooldownToAll = false
 		),
+
+		val abyssalGaze: StarshipWeapon = StarshipWeapon(
+				canFire = false,
+				range = 300.0,
+				speed = 50.0,
+				areaShieldDamageMultiplier = 10.0,
+				starshipShieldDamageMultiplier = 10.0,
+				particleThickness = 0.0,
+				explosionPower = 7.5f,
+				volume = 10,
+				pitch = 2.0f,
+				soundName = "entity.warden.sonic_boom",
+				powerUsage = 5000,
+				length = 4,
+				angleRadiansHorizontal = 18.0,
+				angleRadiansVertical = 18.0,
+				convergeDistance = 0.0,
+				extraDistance = 0,
+				fireCooldownMillis = 1000,
+				boostChargeSeconds = 5,
+				aimDistance = 0,
+				applyCooldownToAll = false
+		),
 ) {
 	/**
 	 * @param canFire Whether this weapon can be fired.
