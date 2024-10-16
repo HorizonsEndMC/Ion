@@ -1035,7 +1035,7 @@ object AITemplateRegistry {
 
 	// High Priestess // Deer with tentacles
 	val CHARM = registerTemplate(builder(
-		identifier = "GRAFT",
+		identifier = "CHARM",
 		template = StarshipTemplateRegistry.CHARM,
 		controllerFactory = AIControllerFactories.battlecruiser,
 		engagementRange = 3000.0
