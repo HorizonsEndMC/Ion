@@ -43,12 +43,14 @@ import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.setValue
+import java.util.concurrent.CompletableFuture
 import kotlin.collections.set
 import kotlin.math.sqrt
 
 abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: World? = null) {
 	// null if the ship is not a player ship
-	private val playerShip: ActiveControlledStarship? = starship
+	private val playerShip: ActiveControlledStarship? = starship as? ActiveControlledStarship
+	val future = CompletableFuture<Boolean>()
 
 	abstract fun displaceX(oldX: Int, oldZ: Int): Int
 	abstract fun displaceY(oldY: Int): Int
@@ -60,6 +62,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 	/* should only be called by the ship itself */
 	fun execute() {
+		if (future.isDone) return
+
 		val world1: World = starship.world
 		val world2 = newWorld ?: world1
 
@@ -355,5 +359,9 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		for (passenger: Entity in passengers) {
 			movePassenger(passenger)
 		}
+	}
+
+	fun cancelMovement() {
+		future.complete(false)
 	}
 }
