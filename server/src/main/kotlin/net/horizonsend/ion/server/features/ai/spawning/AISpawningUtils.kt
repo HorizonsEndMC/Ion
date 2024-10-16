@@ -195,7 +195,7 @@ fun formatLocationSupplier(world: World, minDistance: Double, maxDistance: Doubl
 
 	val border = world.worldBorder
 
-	val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+	val planets = Space.getAllPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
 
 	// max 10 iterations
 	while (iterations <= 15) {
@@ -233,7 +233,7 @@ fun formatLocationSupplier(centerSupplier: Supplier<Location>, minDistance: Doub
 
 	val border = world.worldBorder
 
-	val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+	val planets = Space.getAllPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
 
 	// max 10 iterations
 	while (iterations <= 15) {
