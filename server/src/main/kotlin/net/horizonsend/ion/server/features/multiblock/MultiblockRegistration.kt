@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMu
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockTop
+import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
@@ -193,6 +195,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(CircuitfabMultiblock)
 		registerMultiblock(PlatePressMultiblock)
 		registerMultiblock(GasFurnaceMultiblock)
+		registerMultiblock(MissileLoaderMultiblock)
+		registerMultiblock(AmmoLoaderMultiblock)
 
 		// Moreso powered multis than ship multis, could go in either spot tbh
 		registerMultiblock(MiningLaserMultiblockTier1Top)

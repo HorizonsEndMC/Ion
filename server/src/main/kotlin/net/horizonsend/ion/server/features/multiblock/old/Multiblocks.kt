@@ -2,8 +2,6 @@ package net.horizonsend.ion.server.features.multiblock.old
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.VentMultiblock
@@ -15,10 +13,6 @@ import net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace.Po
 
 object Multiblocks : IonServerComponent() {
 	private fun initMultiblocks() {
-		// Recipe system multis
-		registerMultiblock(MissileLoaderMultiblock)
-		registerMultiblock(AmmoLoaderMultiblock)
-
 		// Furnace start
 		registerMultiblock(PowerFurnaceMultiblockTier1)
 		registerMultiblock(PowerFurnaceMultiblockTier2)
