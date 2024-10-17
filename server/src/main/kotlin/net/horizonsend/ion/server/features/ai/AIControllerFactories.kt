@@ -242,7 +242,7 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestLargeStarshipTargetingModule(it, 5000.0, null, focusRange = 200.0).apply { sticky = true })
 			builder.addModule("tracking", TrackingModule(it, 5, 87.5, 35.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TrackingModule>("tracking").get().findTarget() })
-			builder.addModule("directControlWell", DirectControlWellModule(it, 200.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
+//			builder.addModule("directControlWell", DirectControlWellModule(it, 200.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
 
 			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 0.0))
 			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
