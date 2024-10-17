@@ -31,6 +31,12 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.ElectrolysisMul
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.PipedGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankMedium
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankSmall
+import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
@@ -179,6 +185,14 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(ArmorPrinterMultiblock)
 
 		registerMultiblock(CarbonProcessorMultiblock)
+
+		// Crafting
+		registerMultiblock(CentrifugeMultiblock)
+		registerMultiblock(CompressorMultiblock)
+		registerMultiblock(FabricatorMultiblock)
+		registerMultiblock(CircuitfabMultiblock)
+		registerMultiblock(PlatePressMultiblock)
+		registerMultiblock(GasFurnaceMultiblock)
 
 		// Moreso powered multis than ship multis, could go in either spot tbh
 		registerMultiblock(MiningLaserMultiblockTier1Top)
