@@ -956,14 +956,10 @@ object AITemplateRegistry {
 		engagementRange = 3000.0
 	)
 		.addFactionConfiguration(ABYSSAL)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(3500.0))
 		.build()
 	)
-
-	// Charm // Cthulhu looking thing
-
-	// Graft // Tree monster?
 
 	// Emperor // Chomper with tentacles
 	val EMPEROR = registerTemplate(builder(
@@ -973,7 +969,7 @@ object AITemplateRegistry {
 		engagementRange = 3000.0
 	)
 		.addFactionConfiguration(ABYSSAL)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
@@ -1000,7 +996,7 @@ object AITemplateRegistry {
 		engagementRange = 3000.0
 	)
 		.addFactionConfiguration(ABYSSAL)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
@@ -1027,9 +1023,22 @@ object AITemplateRegistry {
 		engagementRange = 3000.0
 	)
 		.addFactionConfiguration(ABYSSAL)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
+		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
+			activationThreshold = 0.85,
+			delay = 5L,
+			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
+		) {
+			BagSpawner(
+				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+				VariableIntegerAmount(2, 3),
+				null,
+				null,
+				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+			)
+		})
 		.build()
 	)
 
@@ -1041,7 +1050,7 @@ object AITemplateRegistry {
 		engagementRange = 3000.0
 	)
 		.addFactionConfiguration(ABYSSAL)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
