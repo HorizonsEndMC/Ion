@@ -15,12 +15,12 @@ import java.time.Duration
 
 interface ProgressMultiblock {
 	val progressManager: ProgressManager
-	fun tickProgress(totalDuration: Duration) {
+	fun tickProgress(totalDuration: Duration): Boolean {
 		val current = System.currentTimeMillis()
 		val delta = Duration.ofMillis(current - progressManager.lastProgressTick)
 
 		progressManager.lastProgressTick = current
-		progressManager.addProgress(totalDuration, delta)
+		return progressManager.addProgress(totalDuration, delta)
 	}
 
 	class ProgressManager(data: PersistentMultiblockData) {

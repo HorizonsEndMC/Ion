@@ -1,24 +1,23 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.result
 
-import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
-import org.bukkit.block.Sign
-import org.bukkit.inventory.Inventory
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.RecipeExecutionContext
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 
 /**
  * Wrap multiple result actions
  **/
-class MultiRecipeResult(
-	val main: MultiblockRecipeResult,
-	vararg others: ActionResult
-) : MultiblockRecipeResult {
-	val actions = others.toList()
+class MultiRecipeResult<T: MultiblockEntity>(
+	val main: MultiblockRecipeResult<T>,
+	vararg others: ActionResult<T>
+) : MultiblockRecipeResult<T> {
+	private val actions = others.toList()
 
-	override fun canFit(recipe: MultiblockRecipe<*>, craftingInventory: Inventory, sign: Sign): Boolean {
-		return main.canFit(recipe, craftingInventory, sign)
+	override fun canFit(context: RecipeExecutionContext<T>): Boolean {
+		return main.canFit(context)
 	}
 
-	override fun execute(recipe: MultiblockRecipe<*>, craftingInventory: Inventory, sign: Sign) {
-		main.execute(recipe, craftingInventory, sign)
-		actions.forEach { it.execute(recipe, craftingInventory, sign) }
+	override fun execute(context: RecipeExecutionContext<T>) {
+		main.execute(context)
+		actions.forEach { it.execute(context) }
 	}
 }
