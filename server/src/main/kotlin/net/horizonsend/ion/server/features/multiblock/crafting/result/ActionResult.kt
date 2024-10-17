@@ -1,11 +1,10 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.result
 
-import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
-import org.bukkit.block.Sign
-import org.bukkit.inventory.Inventory
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.RecipeExecutionContext
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 
-fun interface ActionResult : MultiblockRecipeResult {
-	override fun canFit(recipe: MultiblockRecipe<*>, craftingInventory: Inventory, sign: Sign): Boolean {
+fun interface ActionResult<T: MultiblockEntity> : MultiblockRecipeResult<T> {
+	override fun canFit(context: RecipeExecutionContext<T>): Boolean {
 		return true
 	}
 }

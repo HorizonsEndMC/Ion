@@ -1,15 +1,20 @@
 package net.horizonsend.ion.server.features.multiblock.type.ammo
 
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import org.bukkit.Material
-import org.bukkit.block.Furnace
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
 
-object MissileLoaderMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+object MissileLoaderMultiblock : Multiblock(), NewPoweredMultiblock<MissileLoaderMultiblock.MissileLoaderMultiblockEntity> {
 
     override fun MultiblockShape.buildStructure() {
         z(+0) {
@@ -135,7 +140,27 @@ object MissileLoaderMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 
     override val maxPower = 250_000
 
-    override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-        handleRecipe(this, event, furnace, sign)
-    }
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): MissileLoaderMultiblockEntity {
+		return MissileLoaderMultiblockEntity(data, manager, x, y, z, world, structureDirection)
+	}
+
+	class MissileLoaderMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace
+	) : SimplePoweredMultiblockEntity(data, manager, MissileLoaderMultiblock, x, y, z, world, structureDirection), LegacyMultiblockEntity {
+		override val poweredMultiblock: MissileLoaderMultiblock = MissileLoaderMultiblock
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
+		).register()
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
+	}
 }
