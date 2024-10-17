@@ -1,19 +1,19 @@
 package net.horizonsend.ion.server.features.multiblock.type.industry
 
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
-import net.horizonsend.ion.server.features.gas.Gasses
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import org.bukkit.block.Furnace
+import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
-import org.bukkit.inventory.InventoryHolder
 
-object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+object GasFurnaceMultiblock : Multiblock(), NewPoweredMultiblock<GasFurnaceMultiblock.GasFurnaceMultiblockEntity> {
 	override val maxPower: Int = 250_000
 	override val name = "gasfurnace"
 
@@ -75,17 +75,27 @@ object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		}
 	}
 
-	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-		handleRecipe(this, event, furnace, sign)
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): GasFurnaceMultiblockEntity {
+		return GasFurnaceMultiblockEntity(data, manager, x, y, z, world, structureDirection)
+	}
 
-		if (furnace.inventory.fuel?.customItem != CustomItemRegistry.GAS_CANISTER_EMPTY) return
+	class GasFurnaceMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace
+	) : SimplePoweredMultiblockEntity(data, manager, GasFurnaceMultiblock, x, y, z, world, structureDirection), LegacyMultiblockEntity {
+		override val poweredMultiblock: GasFurnaceMultiblock = GasFurnaceMultiblock
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
+		).register()
 
-		val inventoryHolder = furnace.block.getRelative(sign.getFacing().oppositeFace, 3).state as InventoryHolder
-
-		val noFit = inventoryHolder.inventory.addItem(Gasses.EMPTY_CANISTER).values.isNotEmpty()
-
-		if (noFit) return
-
-		furnace.inventory.fuel = null
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
 	}
 }
