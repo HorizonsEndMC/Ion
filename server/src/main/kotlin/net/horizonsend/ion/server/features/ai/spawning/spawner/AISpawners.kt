@@ -956,24 +956,23 @@ object AISpawners : IonServerComponent(true) {
 			)
 		))
 
-		registerGlobalSpawner(GlobalWorldSpawner(
+		registerSingleWorldSpawner("AU-0821") { SingleWorldSpawner(
 			"PUMPKIN_SPAWNER",
+			it,
 			AISpawnerTicker(
 				pointChance = 0.5,
 				pointThreshold = 20 * 60 * 7
 			),
 			SingleSpawn(
 				RandomShipSupplier(PUMPKINS.asSpawnedShip(PUMPKIN_DEVOURER), PUMPKINS.asSpawnedShip(PUMPKIN_KIN)),
-				Supplier {
-					val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
-					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
-				},
+				formatLocationSupplier(it, 1000.0, 3000.0),
 				spawnMessage = SpawnMessage.GlobalMessage("<#FFA500>A... {0}? has been spotted at {1}, {3}, in {4}".miniMessage())
 			)
-		))
+		)}
 
-		registerGlobalSpawner(GlobalWorldSpawner(
+		registerSingleWorldSpawner("AU-0821") { SingleWorldSpawner(
 			"ABYSSAL_SPAWNER",
+			it,
 			AISpawnerTicker(
 				pointChance = 0.5,
 				pointThreshold = 20 * 60 * 7
@@ -986,12 +985,9 @@ object AISpawners : IonServerComponent(true) {
 					ABYSSAL.asSpawnedShip(EMPEROR),
 					ABYSSAL.asSpawnedShip(GRAFT)
 				),
-				Supplier {
-					val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
-					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
-				},
+				formatLocationSupplier(it, 1000.0, 3000.0),
 				spawnMessage = SpawnMessage.GlobalMessage("<$ABYSSAL_DESATURATED_RED>We arrive in your \"{4}\".".miniMessage())
 			)
-		))
+		)}
 	}
 }
