@@ -1,14 +1,19 @@
 package net.horizonsend.ion.server.features.multiblock.type.industry
 
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import org.bukkit.block.Furnace
+import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
 
-object CircuitfabMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+object CircuitfabMultiblock : Multiblock(), NewPoweredMultiblock<CircuitfabMultiblock.CircuitfabMultiblockEntity> {
 	override val name = "circuitfab"
 
 	override val signText = createSignText(
@@ -71,11 +76,27 @@ object CircuitfabMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		}
 	}
 
-	override fun onFurnaceTick(
-		event: FurnaceBurnEvent,
-		furnace: Furnace,
-		sign: Sign,
-	) {
-		handleRecipe(this, event, furnace, sign)
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): CircuitfabMultiblockEntity {
+		return CircuitfabMultiblockEntity(data, manager, x, y, z, world, structureDirection)
+	}
+
+	class CircuitfabMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace
+	) : SimplePoweredMultiblockEntity(data, manager, CircuitfabMultiblock, x, y, z, world, structureDirection), LegacyMultiblockEntity {
+		override val poweredMultiblock: CircuitfabMultiblock = CircuitfabMultiblock
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
+		).register()
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
 	}
 }
