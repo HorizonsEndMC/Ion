@@ -10,15 +10,15 @@ import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.starship.PilotedStarships.checkDamagers
-import net.horizonsend.ion.server.features.starship.PilotedStarships.checkSurroundingPlayers
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
@@ -214,14 +214,17 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	}
 
 	private fun checkEnteringSafeZone(min: Vec3i, max: Vec3i, starship: Starship, world2: World) {
+
+		if (starship.controller !is PlayerController) return
+
 		val newMin = displacedVec(min).toLocation(world2)
 		val newMax = displacedVec(max).toLocation(world2)
 
 		val boundingBox = rectangle(newMin, newMax)
 
 		for (point in boundingBox) {
-			if (ProtectionListener.isProtectedCity(point) && IonServer.configuration.serverName == "Survival" &&
-				(checkDamagers(starship) || checkSurroundingPlayers(starship))) {
+			if (ProtectionListener.isProtectedCity(point) && starship.type.isWarship &&
+				CombatTimer.isPvpCombatTagged((starship.controller as PlayerController).player)) {
 
 				throw StarshipOutOfBoundsException("Starship is currently combat tagged and cannot enter safe zones!")
 			}
