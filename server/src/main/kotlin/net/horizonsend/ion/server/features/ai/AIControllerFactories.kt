@@ -49,7 +49,7 @@ object AIControllerFactories : IonServerComponent() {
 				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()}) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -70,7 +70,7 @@ object AIControllerFactories : IonServerComponent() {
 				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()}) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -91,7 +91,7 @@ object AIControllerFactories : IonServerComponent() {
 				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()}) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -108,7 +108,7 @@ object AIControllerFactories : IonServerComponent() {
 			val steering = builder.addModule("steering", BasicSteeringModule(it) {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()})
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 			builder
 		}
 		build()
@@ -129,7 +129,7 @@ object AIControllerFactories : IonServerComponent() {
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
 
 			builder.addModule("jamming", ContactsJammerModule(it, 300.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -151,7 +151,7 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.corvetteBasicSteeringConfiguration) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 			builder
 		}
 		build()
@@ -173,7 +173,7 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.corvetteBasicSteeringConfiguration) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -195,7 +195,7 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.corvetteBasicSteeringConfiguration) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -218,7 +218,7 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.miniFrigateBasicSteeringConfiguration) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -241,7 +241,7 @@ object AIControllerFactories : IonServerComponent() {
 				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()}) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.CRUISE))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
         }
@@ -266,7 +266,7 @@ object AIControllerFactories : IonServerComponent() {
 				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()}) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.CRUISE))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
         }
@@ -290,7 +290,7 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.destroyerBasicSteeringConfiguration) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.CRUISE))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -314,7 +314,7 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.destroyerBasicSteeringConfiguration) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.CRUISE))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -340,7 +340,7 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.battlecruiserBasicSteeringConfiguration) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.CRUISE))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -402,7 +402,7 @@ object AIControllerFactories : IonServerComponent() {
 				cruiseEndpoint.invoke(it).orNull() ?: Vec3i(0, 0, 0)) )
 			builder.addModule("movement", SteeringSolverModule(it, steering,
 				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
-			builder.addModule("debug", AIDebugModule(it))
+//			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
