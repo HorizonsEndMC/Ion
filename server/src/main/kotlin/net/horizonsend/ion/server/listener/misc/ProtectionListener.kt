@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.lpHasPermission
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -234,7 +235,11 @@ object ProtectionListener : SLEventListener() {
 			return
 		}
 
-		if (event.entity is Player && (isProtectedCity(event.entity.location) || isProtectedCity(event.damager.location))) {
+		// Prevent combat if defender is not combat tagged and is in a protected city, or attacker is not combat tagged and is in a protected city
+		if (event.entity is Player && (
+				(!CombatTimer.isPvpCombatTagged(event.entity as Player) && isProtectedCity(event.entity.location)) ||
+				(!CombatTimer.isPvpCombatTagged(event.damager as Player) && isProtectedCity(event.damager.location))
+			)) {
 			event.isCancelled = true
 		}
 	}

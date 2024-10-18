@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.nations.utils.isSemiActive
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.utils.*
@@ -95,6 +96,7 @@ internal object SettlementCommand : SLCommand() {
 		requireNotInSettlement(sender)
 
 // 		requireMinLevel(sender, NATIONS_BALANCE.settlement.minCreateLevel)
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 
 		validateName(name, null)
 
