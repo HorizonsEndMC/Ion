@@ -24,7 +24,7 @@ import java.util.UUID
 
 class ItemDisplayContainer(
 	val world: World,
-	private val scale: Float,
+	initScale: Float,
 	initPosition: Vector,
 	initHeading: Vector,
 	item: ItemStack
@@ -51,7 +51,7 @@ class ItemDisplayContainer(
 			field = value
 
 			entity.setTransformation(com.mojang.math.Transformation(
-				Vector3f(0f),
+				Vector3f(offset),
 				ClientDisplayEntities.rotateToFaceVector(value.toVector3f()),
 				Vector3f(scale),
 				Quaternionf()
@@ -59,6 +59,35 @@ class ItemDisplayContainer(
 
 			entity.transformationInterpolationDuration = 3
 		}
+
+	var scale: Vector3f = Vector3f(initScale)
+		set(value) {
+			field = value
+
+			entity.setTransformation(com.mojang.math.Transformation(
+				Vector3f(offset),
+				ClientDisplayEntities.rotateToFaceVector(heading.toVector3f()),
+				Vector3f(scale),
+				Quaternionf()
+			))
+
+			entity.transformationInterpolationDuration = 3
+		}
+
+	var offset: Vector3f = Vector3f(0f)
+		set(value) {
+			field = value
+
+			entity.setTransformation(com.mojang.math.Transformation(
+				Vector3f(value),
+				ClientDisplayEntities.rotateToFaceVector(heading.toVector3f()),
+				Vector3f(scale),
+				Quaternionf()
+			))
+
+			entity.transformationInterpolationDuration = 3
+		}
+
 
 	var itemStack: ItemStack = item
 		set(value) {
