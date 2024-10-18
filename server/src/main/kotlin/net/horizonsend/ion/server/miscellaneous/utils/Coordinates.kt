@@ -183,6 +183,31 @@ fun Location.alongVector(vector: Vector, points: Int): List<Location> {
 	return locationList
 }
 
+/**
+ * Returns a list of Locations forming a 2D rectangle bounded by two corner Locations
+ *
+ * @param minLoc: The northwestern corner of the rectangle
+ * @param maxLoc: The southeastern corner of the rectangle
+ */
+fun rectangle(minLoc: Location, maxLoc: Location): List<Location> {
+	if (minLoc.world != maxLoc.world) return emptyList()
+
+	val xAxisLength = (maxLoc.z - minLoc.z).toInt()
+	val zAxisLength = (maxLoc.x - minLoc.x).toInt()
+
+	val northVector = minLoc.toVector().apply { y = 0.0; x += xAxisLength }.subtract(minLoc.toVector().apply { y = 0.0 })
+	val eastVector = maxLoc.toVector().apply { y = 0.0; z -= zAxisLength }.subtract(maxLoc.toVector().apply { y = 0.0 })
+	val southVector = maxLoc.toVector().apply { y = 0.0; x -= xAxisLength }.subtract(maxLoc.toVector().apply { y = 0.0 })
+	val westVector = minLoc.toVector().apply { y = 0.0; z += zAxisLength }.subtract(minLoc.toVector().apply { y = 0.0 })
+
+	val northList = minLoc.alongVector(northVector, xAxisLength)
+	val eastList = maxLoc.alongVector(eastVector, zAxisLength)
+	val southList = maxLoc.alongVector(southVector, xAxisLength)
+	val westList = minLoc.alongVector(westVector, zAxisLength)
+
+	return (northList + eastList + southList + westList).distinct()
+}
+
 fun Location.iterateVector(vector: Vector, points: Int, function: (Location, Double) -> Unit) {
 	for (count in 0..points) {
 		val progress = count.toDouble() / points.toDouble()
