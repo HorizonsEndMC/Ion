@@ -7,14 +7,19 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.ores.OldOreData
 import net.horizonsend.ion.server.features.starship.isFlyable
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ItemDisplayContainer
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.Material.AIR
+import org.bukkit.Material.GRAY_CONCRETE
 import org.bukkit.SoundCategory
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.util.Vector
+import org.joml.Vector3f
 
 class DecomposeTask(
 	private val entity: DecomposerMultiblock.DecomposerEntity,
@@ -25,6 +30,32 @@ class DecomposeTask(
 	private var totalBlocksBroken = 0
 
 	private var currentBlock: Block = entity.getOrigin()
+
+	private val displayItem = ItemStack(GRAY_CONCRETE)
+
+	val rightDisplay = ItemDisplayContainer(
+		entity.world,
+		0.25f,
+		entity.vec3i.toCenterVector(),
+		entity.structureDirection.rightFace.direction,
+		displayItem
+	).apply { scale = Vector3f(0.25f, 0.25f, 1.0f) }
+
+	val upDisplay = ItemDisplayContainer(
+		entity.world,
+		0.25f,
+		entity.vec3i.toCenterVector(),
+		BlockFace.UP.direction,
+		displayItem
+	).apply { scale = Vector3f(0.25f, 0.25f, 1.0f) }
+
+	val forwardDisplay = ItemDisplayContainer(
+		entity.world,
+		0.25f,
+		entity.vec3i.toCenterVector(),
+		entity.structureDirection.direction,
+		displayItem
+	).apply { scale = Vector3f(0.25f, 0.25f, 1.0f) }
 
 	override fun run() {
 		try {
@@ -41,6 +72,10 @@ class DecomposeTask(
 
 	override fun cancel() {
 		super.cancel()
+
+		rightDisplay.remove()
+		upDisplay.remove()
+		forwardDisplay.remove()
 
 		entity.userManager.getUserPlayer()?.information("Decomposer broke $totalBlocksBroken blocks.")
 		entity.userManager.clear()
@@ -117,6 +152,7 @@ class DecomposeTask(
 				}
 			}
 
+			updateDisplays()
 			totalBlocksBroken++
 			iterationBroken++
 		}
@@ -136,6 +172,36 @@ class DecomposeTask(
 		}
 
 		return success
+	}
+
+	private fun updateDisplays() {
+		val block = currentBlock
+		val origin = entity.getOrigin()
+		val right = entity.structureDirection.rightFace
+
+		// + 1 to get one block inside the frame
+		val currentWidth = (right.modX * (block.x - origin.x)) + (right.modZ * (block.z - origin.z)) + 1
+		val currentHeight = block.y - origin.y + 1
+		val currentDepth = (entity.structureDirection.modX * (block.x - origin.x)) + (entity.structureDirection.modZ * (block.z - origin.z)) + 1
+
+		val heightOffset = Vector(0, currentHeight, 0)
+		val widthOffset = Vector(currentWidth * right.modX, 0, currentWidth * right.modZ)
+		val depthOffset = Vector(currentWidth * right.modX, currentHeight, currentWidth * right.modZ)
+
+		// Up display comes out of the width defining bar
+		upDisplay.offset = widthOffset.toVector3f()
+		upDisplay.scale = Vector3f(0f, 0f, currentDepth.toFloat())
+		upDisplay.update()
+
+		// Right display comes out of the vertical bar
+		rightDisplay.offset = heightOffset.toVector3f()
+		upDisplay.scale = Vector3f(0f, 0f, currentDepth.toFloat())
+		upDisplay.update()
+
+		// Depth display comes from the intersection point of the 2 bars
+		forwardDisplay.offset = depthOffset.toVector3f()
+		forwardDisplay.scale = Vector3f(0f, 0f, currentDepth.toFloat())
+		forwardDisplay.update()
 	}
 
 	private fun moveForward(): Boolean {
