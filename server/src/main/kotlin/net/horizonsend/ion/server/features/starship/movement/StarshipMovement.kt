@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.horizonsend.ion.server.miscellaneous.utils.rectangle
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
@@ -216,13 +217,15 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		val newMin = displacedVec(min).toLocation(world2)
 		val newMax = displacedVec(max).toLocation(world2)
 
-		val loc1 = newMin.toLocation(world2)
-		val loc2 = newMax.toLocation(world2)
+		val boundingBox = rectangle(newMin, newMax)
 
-		if ((ProtectionListener.isProtectedCity(loc1) || ProtectionListener.isProtectedCity(loc2)) &&
-			(IonServer.configuration.serverName == "Survival" &&
-				(checkDamagers(starship) || checkSurroundingPlayers(starship))))
-			throw StarshipOutOfBoundsException("Starship is currently combat tagged and cannot enter safe zones!")
+		for (point in boundingBox) {
+			if (ProtectionListener.isProtectedCity(point) && IonServer.configuration.serverName == "Survival" &&
+				(checkDamagers(starship) || checkSurroundingPlayers(starship))) {
+
+				throw StarshipOutOfBoundsException("Starship is currently combat tagged and cannot enter safe zones!")
+			}
+		}
 	}
 
 	private fun moveShipComputers(world2: World) {
