@@ -9,9 +9,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.Particle
-import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.UUID
 
@@ -40,7 +38,7 @@ class AbyssalGazeProjectile(
 
 	private val container = ItemDisplayContainer(
 		starship.world,
-		2.5F,
+		1.5F,
 		loc.toVector(),
 		dir,
 		skullItem("skull", UUID.fromString("bf8c1907-b235-4152-84bb-a5f28b58f89c"), "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmFmMGJjNGEyMzdiZDIwMTZjZDdlOWZhMGExNWM5ZWY3MjJlMDc5OTcwODU0NTJkNjVmM2U4ZmFkODZjM2JkNSJ9fX0=")

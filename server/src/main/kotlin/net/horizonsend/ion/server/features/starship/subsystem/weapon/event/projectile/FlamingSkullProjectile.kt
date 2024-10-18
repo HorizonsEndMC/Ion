@@ -22,7 +22,7 @@ class FlamingSkullProjectile(
 	originalTarget: Vector,
 	baseAimDistance: Int
 ) : TrackingLaserProjectile(starship, name, loc, dir, shooter, originalTarget, baseAimDistance) {
-	override val balancing: StarshipWeapons.ProjectileBalancing = starship.balancing.weapons.arsenalMissile
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship.balancing.weapons.skullThrower
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed
 	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
@@ -38,7 +38,7 @@ class FlamingSkullProjectile(
 
 	private val container = ItemDisplayContainer(
 		starship.world,
-		10.0F,
+		5.0F,
 		loc.toVector(),
 		dir,
 		ItemStack(Material.SKELETON_SKULL)
