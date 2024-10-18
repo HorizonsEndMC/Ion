@@ -141,4 +141,22 @@ object CombatTimer : IonServerComponent() {
 	fun isPvpCombatTagged(player: Player): Boolean {
 		return pvpTimer[player.uniqueId] != null
 	}
+
+	fun npcTimerRemainingMillis(player: Player): Long {
+		val endTime = npcTimer[player.uniqueId]
+		return if (endTime == null) {
+			0L
+		} else {
+			(endTime - System.currentTimeMillis()).coerceAtLeast(0L)
+		}
+	}
+
+	fun pvpTimerRemainingMillis(player: Player): Long {
+		val endTime = pvpTimer[player.uniqueId]
+		return if (endTime == null) {
+			0L
+		} else {
+			(endTime - System.currentTimeMillis()).coerceAtLeast(0L)
+		}
+	}
 }

@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.sidebar
 
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.sidebar.component.CombatTagSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ContactsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ContactsSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.LocationSidebarComponent
@@ -18,10 +20,7 @@ import net.horizonsend.ion.server.features.sidebar.tasks.PlayerLocationSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.WaypointsSidebar
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.megavex.scoreboardlibrary.api.sidebar.Sidebar
@@ -57,6 +56,13 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 		// Location
 		val locationComponent: SidebarComponent = LocationSidebarComponent(player)
 		lines.addComponent(locationComponent)
+
+
+		// Combat tag
+		if (CombatTimer.isNpcCombatTagged(player) || CombatTimer.isPvpCombatTagged(player)) {
+			val combatTagComponent: SidebarComponent = CombatTagSidebarComponent(player)
+			lines.addComponent(combatTagComponent)
+		}
 
 		// Starship
 		val starshipsEnabled = PlayerCache[player.uniqueId].starshipsEnabled
