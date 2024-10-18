@@ -1,20 +1,23 @@
 package net.horizonsend.ion.server.features.ai
 
+import BasicSteeringModule
+import TravelSteeringModule
+import net.horizonsend.ion.server.IonServer.aiSteeringConfig
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.module.combat.DefensiveCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.FrigateCombatModule
+import net.horizonsend.ion.server.features.ai.module.combat.GoonCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.MultiTargetFrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.StarfighterCombatModule
+import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
-import net.horizonsend.ion.server.features.ai.module.misc.DirectControlWellModule
-import net.horizonsend.ion.server.features.ai.module.misc.FleeModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.TrackingModule
-import net.horizonsend.ion.server.features.ai.module.movement.CruiseModule
-import net.horizonsend.ion.server.features.ai.module.pathfinding.SteeringPathfindingModule
-import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
-import net.horizonsend.ion.server.features.ai.module.positioning.BasicPositioningModule
-import net.horizonsend.ion.server.features.ai.module.positioning.StandoffPositioningModule
+import net.horizonsend.ion.server.features.ai.module.movement.SteeringSolverModule
+import net.horizonsend.ion.server.features.ai.module.positioning.DistancePositioningModule
+import net.horizonsend.ion.server.features.ai.module.steering.CapitalSteeringModule
+import net.horizonsend.ion.server.features.ai.module.steering.GunshipSteeringModule
+import net.horizonsend.ion.server.features.ai.module.steering.StarfighterSteeringModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestLargeStarshipTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestPlayerTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestSmallStarshipTargetingModule
@@ -40,11 +43,13 @@ object AIControllerFactories : IonServerComponent() {
 
 			val targetingOriginal = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
 			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
-
-			val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 25.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targetingOriginal) { controller, _ -> controller.getMinimumShieldHealth() <= 0.2 }) // Flee if a shield reaches below 10%
-			builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.starfighterDistanceConfiguration))
+			val steering = builder.addModule("steering", StarfighterSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()}) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
+			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -59,9 +64,13 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
 			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.gunshipDistanceConfiguration))
+			val steering = builder.addModule("steering", GunshipSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()}) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
+			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -76,10 +85,30 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
 			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.gunshipDistanceConfiguration))
+			val steering = builder.addModule("steering", GunshipSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()}) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
+			builder.addModule("debug", AIDebugModule(it))
 
+			builder
+		}
+		build()
+	}
+
+	val goonship = registerFactory("GOONSHIP") {
+		setControllerTypeName("GoonShip")
+		setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
+			builder.addModule("combat", GoonCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			val steering = builder.addModule("steering", BasicSteeringModule(it) {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()})
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
+			builder.addModule("debug", AIDebugModule(it))
 			builder
 		}
 		build()
@@ -92,11 +121,15 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestPlayerTargetingModule(it, 5000.0))
 			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 250.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.MATCH_Y_WITH_OFFSET_150, 256.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.gunshipDistanceConfiguration))
+			val steering = builder.addModule("steering", GunshipSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()}) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
 
 			builder.addModule("jamming", ContactsJammerModule(it, 300.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
+			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -111,10 +144,14 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
 			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
-
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.gunshipDistanceConfiguration))
+			val steering = builder.addModule("steering", GunshipSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()},
+				config = aiSteeringConfig.corvetteBasicSteeringConfiguration) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
+			builder.addModule("debug", AIDebugModule(it))
 			builder
 		}
 		build()
@@ -129,9 +166,14 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 			builder.addModule("gravityWell", GravityWellModule(it, 1800.0, true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 1500.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.MATCH_Y, 16_384.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.interdictionCorvetteDistanceConfiguration))
+			val steering = builder.addModule("steering", GunshipSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()},
+				config = aiSteeringConfig.corvetteBasicSteeringConfiguration) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
+			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -146,12 +188,41 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestLargeStarshipTargetingModule(it, 2000.0, null, true).apply { sticky = false })
 			builder.addModule("combat", MultiTargetFrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 130.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.MATCH_Y_WITH_OFFSET_150, 16_384.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.logisticCorvetteDistanceConfiguration))
+			val steering = builder.addModule("steering", GunshipSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()},
+				config = aiSteeringConfig.corvetteBasicSteeringConfiguration) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
+			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
+		build()
+	}
+
+	val miniFrigate = registerFactory("MINI_FRIGATE") {//for 4.9k ships
+		setControllerTypeName("Frigate")
+
+		setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			builder.addModule("targeting", ClosestTargetingModule(it, 1500.0, null).apply { sticky = true })
+			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.miniFrigateDistanceConfiguration))
+			val steering = builder.addModule("steering", GunshipSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()},
+				config = aiSteeringConfig.miniFrigateBasicSteeringConfiguration) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
+			builder.addModule("debug", AIDebugModule(it))
+
+			builder
+		}
+
 		build()
 	}
 
@@ -164,9 +235,13 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestTargetingModule(it, 1500.0, null).apply { sticky = true })
 			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.capitalDistanceConfiguration))
+			val steering = builder.addModule("steering", CapitalSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()}) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.CRUISE))
+			builder.addModule("debug", AIDebugModule(it))
 
 			builder
         }
@@ -185,9 +260,13 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TrackingModule>("tracking").get().findTarget() })
 			builder.addModule("gravityWell", GravityWellModule(it, 2400.0, true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 0.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.advancedCapitalDistanceConfiguration))
+			val steering = builder.addModule("steering", CapitalSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()}) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.CRUISE))
+			builder.addModule("debug", AIDebugModule(it))
 
 			builder
         }
@@ -204,9 +283,14 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = true })
 			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.capitalDistanceConfiguration))
+			val steering = builder.addModule("steering", CapitalSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()},
+				config = aiSteeringConfig.destroyerBasicSteeringConfiguration) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.CRUISE))
+			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -223,9 +307,14 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestLargeStarshipTargetingModule(it, 5000.0, null).apply { sticky = true })
 			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = false) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 0.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.advancedCapitalDistanceConfiguration))
+			val steering = builder.addModule("steering", CapitalSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()},
+				config = aiSteeringConfig.destroyerBasicSteeringConfiguration) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.CRUISE))
+			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -242,11 +331,15 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("targeting", ClosestLargeStarshipTargetingModule(it, 5000.0, null, focusRange = 200.0).apply { sticky = true })
 			builder.addModule("tracking", TrackingModule(it, 5, 87.5, 35.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TrackingModule>("tracking").get().findTarget() })
-			builder.addModule("directControlWell", DirectControlWellModule(it, 200.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 0.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.advancedCapitalDistanceConfiguration))
+			val steering = builder.addModule("steering", CapitalSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()},
+				config = aiSteeringConfig.battlecruiserBasicSteeringConfiguration) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.CRUISE))
+			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}
@@ -301,10 +394,14 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule("combat", DefensiveCombatModule(it, targeting::findTarget))
 
 			// Movement handling
-			val positioning = builder.addModule("positioning", BasicPositioningModule(it, cruiseEndpoint.invoke(it).orNull() ?: Vec3i(0, 0, 0)))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			val flee = builder.addModule("flee", FleeModule(it, positioning::getDestination, targeting) { controller, _ -> controller.getMinimumShieldHealth() <= 0.5 }) // Flee if there is a target found by the highest damage module
-			builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val distance = builder.addModule("distance", DistancePositioningModule(it, aiSteeringConfig.gunshipDistanceConfiguration))
+			val steering = builder.addModule("steering", TravelSteeringModule(
+				it, {builder.suppliedModule<TargetingModule>("targeting").get().findTarget()},
+				{builder.suppliedModule<DistancePositioningModule>("distance").get().calcDistance()},
+				cruiseEndpoint.invoke(it).orNull() ?: Vec3i(0, 0, 0)) )
+			builder.addModule("movement", SteeringSolverModule(it, steering,
+				{builder.suppliedModule<TargetingModule>("targeting").get().findTarget()}, SteeringSolverModule.MovementType.DC))
+			builder.addModule("debug", AIDebugModule(it))
 
 			builder
 		}

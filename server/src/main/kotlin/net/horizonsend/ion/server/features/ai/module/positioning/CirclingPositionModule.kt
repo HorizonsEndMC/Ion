@@ -12,6 +12,7 @@ import kotlin.math.sin
 /**
  * Tries to position the ship in a circling pattern around the target
  **/
+@Deprecated("Outdated movement strategy use Steering instead")
 class CirclingPositionModule(
 	controller: AIController,
 	var targetSupplier: Supplier<AITarget?>,
