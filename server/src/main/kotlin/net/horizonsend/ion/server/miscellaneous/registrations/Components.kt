@@ -45,6 +45,7 @@ import net.horizonsend.ion.server.features.npcs.TutorialNPCs
 import net.horizonsend.ion.server.features.npcs.traits.NPCTraits
 import net.horizonsend.ion.server.features.ores.generation.OreGeneration
 import net.horizonsend.ion.server.features.player.CombatNPCs
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
 import net.horizonsend.ion.server.features.player.EventLogger
 import net.horizonsend.ion.server.features.progression.Levels
@@ -210,4 +211,5 @@ val components: List<IonComponent> = listOf(
 	HudIcons,
 	Fleets,
 	ContactsJammingSidebar,
+	CombatTimer
 )

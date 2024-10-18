@@ -16,11 +16,11 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.extensions.userErrorTitle
 import net.horizonsend.ion.common.utils.configuration.redis
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -494,7 +494,8 @@ object PilotedStarships : IonServerComponent() {
 		unpilot(starship)
 
 		// Combat tag check
-		if (!bypassCombatTag && IonServer.configuration.serverName == "Survival" && (checkDamagers(starship) || checkSurroundingPlayers(starship))) {
+		if (!bypassCombatTag && oldController is PlayerController &&
+			(CombatTimer.isNpcCombatTagged(oldController.player) || CombatTimer.isPvpCombatTagged(oldController.player))) {
 			oldController.alert("Your starship is in combat! It will be unpiloted instead!")
 
 			return false
