@@ -9,7 +9,7 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 
 object EventShieldMultiblock : ShieldMultiblock(), PermissionWeaponSubsystem {
-	override val isReinforced: Boolean = true
+	override val isReinforced: Boolean = false
 	override val permission: String = "ioncore.eventweapon"
 
 	override val signText = createSignText(

@@ -958,6 +958,13 @@ object AITemplateRegistry {
 		.addFactionConfiguration(ABYSSAL)
 		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(3500.0))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
+			DroppedItem(
+				itemString = Material.ROTTEN_FLESH.name,
+				dropChance = 0.5f,
+				amount = 2,
+			)
+		)))
 		.build()
 	)
 
@@ -985,6 +992,13 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
+			DroppedItem(
+				itemString = CustomItems.SUPERCONDUCTOR.identifier,
+				dropChance = 0.5f,
+				amount = 2,
+			)
+		)))
 		.build()
 	)
 
@@ -1012,10 +1026,16 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
+			DroppedItem(
+				itemString = CustomItems.SUPERCONDUCTOR.identifier,
+				dropChance = 0.5f,
+				amount = 2,
+			)
+		)))
 		.build()
 	)
 
-	// High Priestess // Deer with tentacles
 	val GRAFT = registerTemplate(builder(
 		identifier = "GRAFT",
 		template = StarshipTemplateRegistry.GRAFT,
@@ -1039,10 +1059,16 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
+			DroppedItem(
+				itemString = CustomItems.SUPERCONDUCTOR.identifier,
+				dropChance = 0.5f,
+				amount = 2,
+			)
+		)))
 		.build()
 	)
 
-	// High Priestess // Deer with tentacles
 	val CHARM = registerTemplate(builder(
 		identifier = "CHARM",
 		template = StarshipTemplateRegistry.CHARM,
@@ -1066,6 +1092,13 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
+			DroppedItem(
+				itemString = CustomItems.SUPERCONDUCTOR.identifier,
+				dropChance = 1.0f,
+				amount = 1,
+			)
+		)))
 		.build()
 	)
 
@@ -1080,6 +1113,13 @@ object AITemplateRegistry {
 		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(3500.0))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, 1, 0.5f))))
 		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItems.PUMPKIN_GRENADE.identifier, 2, 0.5f))))
+		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
+			DroppedItem(
+				itemString = CustomItems.SUPERCONDUCTOR.identifier,
+				dropChance = 0.5f,
+				amount = 1,
+			)
+		)))
 		.build()
 	)
 

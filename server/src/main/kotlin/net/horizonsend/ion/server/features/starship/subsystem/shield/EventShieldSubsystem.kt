@@ -7,7 +7,7 @@ import org.bukkit.block.Sign
 
 class EventShieldSubsystem(starship: ActiveStarship, sign: Sign) : ShieldSubsystem(starship, sign, EventShieldMultiblock) {
 	override val maxPower: Int
-		get() = super.maxPower * 3
+		get() = super.maxPower * 5
 
 	override var power: Int = maxPower
 		set(value) {
