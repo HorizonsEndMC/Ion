@@ -48,6 +48,7 @@ class DynamicEstimator(
 		if (!needsUpdate) return //dont do matrix operations until data changes
 		needsUpdate = false
 		referenceTime = System.currentTimeMillis()
+		println("# of movements : ${movements.size}")
 		if (movements.isEmpty()) {//ship hasnt moved in the time interval
 			referncePos = ship.centerOfMass.toVector()
 			coeffMatrix  = mk.zeros<Double>(numTerms,3)

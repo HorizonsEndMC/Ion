@@ -102,15 +102,12 @@ class TranslateMovement(starship: ActiveStarship,
 		when (type) {
 			MovementType.MANUAL -> {
 				starship.shiftDynamicEstimator.addData(starship.centerOfMass.toVector(),this)
-				starship.shiftDynamicEstimator.needsUpdate = true
 			}
 			MovementType.DC -> {
 				starship.shiftDynamicEstimator.addData(starship.centerOfMass.toVector(), this)
-				starship.shiftDynamicEstimator.needsUpdate = true
 			}
 			MovementType.CRUISE -> {
 				starship.cruiseDynamicEstimator.addData(starship.centerOfMass.toVector(), this)
-				starship.cruiseDynamicEstimator.needsUpdate = true
 			}
 			else -> {}
 		}

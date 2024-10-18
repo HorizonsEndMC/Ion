@@ -47,7 +47,6 @@ class VectorDisplay private constructor(
 		ContextVectorBox(map,binIndex), model, parent, offset) {}
 
 	fun createEntity(): ItemDisplay {
-		println("boop2")
 		val entity = CraftItemDisplay(
 			IonServer.server as CraftServer,
 			ItemDisplay(EntityType.ITEM_DISPLAY, parent.world.minecraft)
