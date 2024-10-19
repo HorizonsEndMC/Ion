@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.loadChunkAsync
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.slf4j.Logger
 import java.util.UUID
 
@@ -49,6 +50,10 @@ class NPCManager(private val logger: Logger, val name: String) {
 			npc.spawn(location)
 			callback(npc)
 		}
+	}
+
+	fun getNPC(player: Player): NPC? {
+		return npcRegistry.getNPC(player)
 	}
 
 	fun allNPCs(): List<NPC> {

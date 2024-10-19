@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
@@ -585,6 +586,8 @@ class Starship (
 		damager.debug("$damager added to $identifier's damagers")
 
 		controller.onDamaged(damager)
+
+		CombatTimer.evaluateSvs(damager, this)
 	}
 	//endregion
 

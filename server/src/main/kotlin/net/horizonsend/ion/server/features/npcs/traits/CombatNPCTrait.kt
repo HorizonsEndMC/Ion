@@ -8,7 +8,6 @@ import net.citizensnpcs.api.trait.Trait
 import net.citizensnpcs.api.trait.TraitName
 import net.citizensnpcs.api.util.DataKey
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.player.CombatNPCs.EXPIRED_NPC_CUTOFF
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import java.util.UUID
@@ -24,6 +23,12 @@ class CombatNPCTrait : Trait("ioncombatnpc") {
 	@DelegatePersistence(InventoryPersister::class)
 	lateinit var inventoryContents: Array<ItemStack?>
 
+	@Persist
+	var despawnTime: Long = 0
+
+	@Persist
+	var wasInCombat: Boolean = false
+
 	override fun run() {
 		if (!::owner.isInitialized) return
 
@@ -31,7 +36,7 @@ class CombatNPCTrait : Trait("ioncombatnpc") {
 		if (isExpired()) return destroy()
 	}
 
-	fun isExpired() = EXPIRED_NPC_CUTOFF > System.currentTimeMillis()
+	fun isExpired() = System.currentTimeMillis() > despawnTime
 
 	private fun destroy() {
 		if (npc.isSpawned) {
