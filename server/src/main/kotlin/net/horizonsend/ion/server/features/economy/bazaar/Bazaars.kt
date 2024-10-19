@@ -124,7 +124,7 @@ object Bazaars : IonServerComponent() {
 			}
 
 	private fun getCityItems(territoryId: Oid<Territory>): FindIterable<BazaarItem> = BazaarItem
-		.find(and(BazaarItem::cityTerritory eq territoryId, BazaarItem::stock gt 0))
+		.find(and(BazaarItem::cityTerritory eq territoryId, BazaarItem::stock gt 0, BazaarItem::embargoed ne true))
 
 	enum class SortingBy(val property: KProperty<*>, val displayType: Material) {
 		PRICE(BazaarItem::price, Material.GOLD_INGOT),
@@ -151,7 +151,7 @@ object Bazaars : IonServerComponent() {
 			} + guiButton(Material.IRON_DOOR) { openMainMenu(terrId, playerClicker, remote) }.setName("Go Back")
 
 			val items: List<GuiItem> = BazaarItem
-				.find(and(BazaarItem::cityTerritory eq terrId, BazaarItem::itemString eq item, BazaarItem::stock gt 0))
+				.find(and(BazaarItem::cityTerritory eq terrId, BazaarItem::itemString eq item, BazaarItem::stock gt 0, BazaarItem::embargoed ne true))
 				.let { if (descend) it.descendingSort(sort.property) else it.ascendingSort(sort.property) }
 				.map { bazaarItem ->
 					val itemStack = fromItemString(bazaarItem.itemString)

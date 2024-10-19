@@ -52,6 +52,7 @@ import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Bukkit
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -234,6 +235,31 @@ object BazaarCommand : SLCommand() {
 	}
 
 	@Suppress("Unused")
+	@Subcommand("embargo")
+	@Description("Prevent a player's bazaar listing from appearing in this trade city")
+	@CommandCompletion("@nothing @bazaarItemStrings")
+	fun onEmbargo(sender: Player, target: String, itemString: String, @Optional embargo: Boolean = true) = asyncCommand(sender) {
+		val territory = requireTerritoryIn(sender)
+		val settlement = territory.settlement ?: fail { "You are not in a trade city" }
+		requireSettlementLeader(sender, settlement)
+
+		val cityName = cityName(territory)
+
+		val targetPlayer = Bukkit.getPlayer(resolveOfflinePlayer(target))!! // resolveOfflinePlayer will exit this function prematurely if UUID is not found
+		val item: BazaarItem = requireSelling(territory, targetPlayer, itemString)
+
+		BazaarItem.embargo(item._id, embargo)
+
+		Tasks.sync {
+			if (embargo) {
+				sender.success("Embargoed ${targetPlayer.name}'s $itemString at $cityName")
+			} else {
+				sender.success("Lifted embargo on ${targetPlayer.name}'s $itemString at $cityName")
+			}
+		}
+	}
+
+	@Suppress("Unused")
 	@Subcommand("setprice")
 	@Description("Update the price of the specific item")
 	@CommandCompletion("@bazaarItemStrings @nothing")
@@ -278,6 +304,7 @@ object BazaarCommand : SLCommand() {
 			val stock = item.stock
 			val uncollected = item.balance.toCreditComponent()
 			val price = item.price.toCreditComponent()
+			val embargoed = item.embargoed
 
 			totalBalance += item.balance
 
@@ -285,7 +312,7 @@ object BazaarCommand : SLCommand() {
 				itemDisplayName,
 				text(" @ ", DARK_PURPLE),
 				text(city, LIGHT_PURPLE),
-				bracketed(template(text("stock: {0}, balance: {1}, price: {2}", GRAY), stock, uncollected, price))
+				bracketed(template(text("stock: {0}, balance: {1}, price: {2}, embargoed: {3}", GRAY), stock, uncollected, price, embargoed))
 			)
 		}
 
