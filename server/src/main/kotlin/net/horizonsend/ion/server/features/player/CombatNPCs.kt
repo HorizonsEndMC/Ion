@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
@@ -32,6 +33,7 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
+import org.litote.kmongo.pull
 import org.litote.kmongo.push
 import org.litote.kmongo.setValue
 import java.util.EnumSet
@@ -168,6 +170,7 @@ object CombatNPCs : IonServerComponent(true) {
 				event.drops.clear()
 				event.deathMessage(null)
 
+				SLPlayer.updateById(event.player.slPlayerId, pull(SLPlayer::wasKilledOn, IonServer.configuration.serverName))
 				SLPlayer.updateById(data._id, setValue(SLPlayer::wasKilled, false))
 			}
 		}
