@@ -9,12 +9,9 @@ import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.event.ImpactStarshipEvent
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.kyori.adventure.audience.Audience
@@ -148,18 +145,5 @@ fun addToDamagers(world: World, block: Block, shooter: Damager) {
 		if (event.isCancelled) return
 
 		otherStarship.addDamager(shooter)
-
-		if (shooter is AIShipDamager && otherStarship.controller is PlayerController) {
-			// refresh NPC combat timer if attacker is AI and defender is player
-			CombatTimer.refreshNpcTimer((otherStarship.controller as PlayerController).player)
-		} else if (shooter is PlayerDamager) {
-			if (otherStarship.controller is PlayerController) {
-				// evaluate PVP timer if both attacker and defender are players
-				CombatTimer.evaluatePvp(shooter.player, (otherStarship.controller as PlayerController).player)
-			} else if (otherStarship.controller is AIController) {
-				// refresh NPC combat timer if attacker is player and defender is AI
-				CombatTimer.refreshNpcTimer(shooter.player)
-			}
-		}
 	}
 }

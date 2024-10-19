@@ -226,7 +226,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			if (ProtectionListener.isProtectedCity(point) && starship.type.isWarship &&
 				CombatTimer.isPvpCombatTagged((starship.controller as PlayerController).player)) {
 
-				throw StarshipOutOfBoundsException("Starship is currently combat tagged and cannot enter safe zones!")
+				throw StarshipOutOfBoundsException("The trade city denies your starship entry for your recent acts of aggression!")
 			}
 		}
 	}

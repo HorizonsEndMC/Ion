@@ -6,7 +6,11 @@ import net.horizonsend.ion.common.utils.lpHasPermission
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.npcs.traits.CombatNPCTrait
+import net.horizonsend.ion.server.features.player.CombatNPCs
 import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.player.CombatTimer.REASON_PVP_GROUND_COMBAT
+import net.horizonsend.ion.server.features.player.CombatTimer.evaluatePvp
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -231,16 +235,28 @@ object ProtectionListener : SLEventListener() {
 
 	@EventHandler
 	fun onPVP(event: EntityDamageByEntityEvent) {
-		if (event.damager !is Player) {
+		val attacker = event.damager
+		val defender = event.entity
+
+		if (attacker !is Player || defender !is Player) {
 			return
 		}
 
+		// Do not perform the protected city check if the NPC was in combat
+		if (defender.hasMetadata("NPC")) {
+			val npc = CombatNPCs.manager.getNPC(defender) ?: return
+			val trait = npc.getTraitNullable(CombatNPCTrait::class.java)
+			if (trait != null && trait.wasInCombat) return
+		}
+
 		// Prevent combat if defender is not combat tagged and is in a protected city, or attacker is not combat tagged and is in a protected city
-		if (event.entity is Player && (
-				(!CombatTimer.isPvpCombatTagged(event.entity as Player) && isProtectedCity(event.entity.location)) ||
-				(!CombatTimer.isPvpCombatTagged(event.damager as Player) && isProtectedCity(event.damager.location))
+		if (((!CombatTimer.isPvpCombatTagged(defender) && isProtectedCity(defender.location)) ||
+					(!CombatTimer.isPvpCombatTagged(attacker) && isProtectedCity(attacker.location))
 			)) {
 			event.isCancelled = true
+		} else  {
+			// If combat occurs on ground, apply combat tag
+			evaluatePvp(attacker, defender, REASON_PVP_GROUND_COMBAT)
 		}
 	}
 

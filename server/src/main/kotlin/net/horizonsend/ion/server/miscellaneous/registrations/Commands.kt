@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.admin.AdminCommands
 import net.horizonsend.ion.server.command.admin.BatteryCommand
+import net.horizonsend.ion.server.command.admin.CombatTagCommand
 import net.horizonsend.ion.server.command.admin.ConvertCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
@@ -181,6 +182,7 @@ val commands: List<SLCommand> = listOf(
 //	TutorialCommand,
 	CheckCryoCommand,
 	PersonalTransporterCommand,
-	ForbiddenBlocksCommand,
+	CombatTagCommand,
+    ForbiddenBlocksCommand,
 	EnableProtectionMessagesCommand
 )
