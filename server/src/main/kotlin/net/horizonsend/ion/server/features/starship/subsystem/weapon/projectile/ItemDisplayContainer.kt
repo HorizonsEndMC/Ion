@@ -130,4 +130,6 @@ class ItemDisplayContainer(
 		ClientDisplayEntities.sendEntityPacket(player.bukkitEntity, entity)
 		shownPlayers.add(player.uuid)
 	}
+
+	fun getEntity() = entity
 }
