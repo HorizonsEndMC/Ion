@@ -16,6 +16,7 @@ import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
@@ -27,6 +28,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionParent
 import net.horizonsend.ion.server.features.nations.region.types.RegionRentalArea
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
@@ -72,6 +74,8 @@ object Regions : IonServerComponent() {
 		registerRegionType(SolarSiegeZone.Companion) { RegionSolarSiegeZone(it) }
 
 		registerRegionType(StationRentalArea.Companion) { RegionRentalArea(it) }
+
+		registerRegionType(NPCSpaceStation.Companion) { RegionNPCSpaceStation(it) }
 
 		cache.forEach { it.refreshAccessCache() }
 
