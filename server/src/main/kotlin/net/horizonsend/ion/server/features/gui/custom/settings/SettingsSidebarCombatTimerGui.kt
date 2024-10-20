@@ -1,18 +1,23 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.sidebar.command.SidebarCombatTimerCommand
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
+import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
@@ -20,7 +25,7 @@ import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
+class SettingsSidebarCombatTimerGui(val player: Player) : AbstractBackgroundPagedGui {
 
     companion object {
         private const val SETTINGS_PER_PAGE = 5
@@ -30,10 +35,7 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
     override var currentWindow: Window? = null
 
     private val buttonsList = listOf(
-        CombatTimerSettingsButton(),
-        StarshipsSettingsButton(),
-        ContactsSettingsButton(),
-        RouteSettingsButton()
+        EnableButton()
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -51,7 +53,7 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addIngredient('<', GuiItems.LeftItem())
             .addIngredient('>', GuiItems.RightItem())
-            .addIngredient('v', SettingsMainMenuGui(player).ReturnToMainMenuButton())
+            .addIngredient('v', SettingsSidebarGui(player).ReturnToSidebarButton())
 
         for (button in buttonsList) {
             gui.addContent(button)
@@ -66,8 +68,12 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
 
     override fun createText(player: Player, currentPage: Int): Component {
 
+        val enabledSettings = listOf(
+            PlayerCache[player.uniqueId].combatTimerEnabled,
+        )
+
         // create a new GuiText builder
-        val header = "Sidebar Settings"
+        val header = "Sidebar Combat Timer Settings"
         val guiText = GuiText(header)
         guiText.addBackground()
 
@@ -79,12 +85,18 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
             val title = buttonsList[buttonIndex].text
             val line = (buttonIndex - startIndex) * 2
 
-            // setting title
+            // settings title
             guiText.add(
                 component = title,
                 line = line,
-                horizontalShift = 21,
-                verticalShift = 5
+                horizontalShift = 21
+            )
+
+            // settings description
+            guiText.add(
+                component = if (enabledSettings[buttonIndex]) text("ENABLED", GREEN) else text("DISABLED", RED),
+                line = line + 1,
+                horizontalShift = 21
             )
         }
 
@@ -104,51 +116,18 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
     fun openMainWindow() {
         currentWindow = open(player).apply { open() }
     }
-    private inner class CombatTimerSettingsButton : GuiItems.AbstractButtonItem(
-        text("Combat Timer Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
-    ) {
-        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarCombatTimerGui(player).openMainWindow()
-        }
-    }
 
-    private inner class StarshipsSettingsButton : GuiItems.AbstractButtonItem(
-        text("Starships Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
-    ) {
-        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarStarshipsGui(player).openMainWindow()
-        }
-    }
-
-    private inner class ContactsSettingsButton : GuiItems.AbstractButtonItem(
-        text("Contacts Settings").decoration(ITALIC, false),
+    private inner class EnableButton : GuiItems.AbstractButtonItem(
+        text("Enable Combat Timer Info").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarContactsGui(player).openMainWindow()
-        }
-    }
+            val combatTimerEnabled = PlayerCache[player.uniqueId].combatTimerEnabled
 
-    private inner class RouteSettingsButton : GuiItems.AbstractButtonItem(
-        text("Route Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.ROUTE_SEGMENT.customModelData) }
-    ) {
-        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarRouteGui(player).openMainWindow()
-        }
-    }
+            if (combatTimerEnabled) SidebarCombatTimerCommand.onDisableCombatTimer(player)
+            else SidebarCombatTimerCommand.onEnableCombatTimer(player)
 
-    inner class ReturnToSidebarButton : GuiItems.AbstractButtonItem(
-        text("Return to Sidebar Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-            it.setCustomModelData(GuiItem.DOWN.customModelData)
-            it.displayName(text("Return to Sidebar Settings").decoration(ITALIC, false))
-        }
-    ) {
-        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            SettingsSidebarGui(player).openMainWindow()
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
 }
