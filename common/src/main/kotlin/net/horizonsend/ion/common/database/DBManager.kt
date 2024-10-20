@@ -6,7 +6,6 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoCursor
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
@@ -16,6 +15,7 @@ import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.CompletedCollectionMission
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
+import net.horizonsend.ion.common.database.schema.economy.StationRentedArea
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -30,6 +30,7 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
@@ -38,6 +39,7 @@ import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.database.schema.starships.AIStarshipData
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import org.bson.BsonDocument
 import org.bson.BsonDocumentReader
 import org.bson.Document
@@ -110,6 +112,8 @@ object DBManager : IonComponent() {
 		Nation.init()
 		NationRelation.init()
 		NPCTerritoryOwner.init()
+		NPCSpaceStation.init()
+		StationRentedArea.init()
 		SettlementRole.init()
 		NationRole.init()
 		Settlement.init()

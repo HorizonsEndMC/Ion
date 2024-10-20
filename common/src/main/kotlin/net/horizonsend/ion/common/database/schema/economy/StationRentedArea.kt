@@ -13,8 +13,8 @@ import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOneById
 import java.util.concurrent.TimeUnit
 
-data class RentedArea(
-	override val _id: Oid<RentedArea>,
+data class StationRentedArea(
+	override val _id: Oid<StationRentedArea>,
 	var name: String,
 
 	val world: String,
@@ -27,14 +27,14 @@ data class RentedArea(
 	var rentBalance: Double = 0.0,
 	var rentLastCharged: Long = 0
 ) : DbObject {
-	companion object : OidDbObjectCompanion<RentedArea>(RentedArea::class, setup = {
+	companion object : OidDbObjectCompanion<StationRentedArea>(StationRentedArea::class, setup = {
 
 	}) {
-		fun create(name: String, world: String, minPoint: DBVec3i, maxPoint: DBVec3i): Oid<RentedArea> {
+		fun create(name: String, world: String, minPoint: DBVec3i, maxPoint: DBVec3i): Oid<StationRentedArea> {
 			return  trx { sess ->
-				val id = objId<RentedArea>()
+				val id = objId<StationRentedArea>()
 
-				col.insertOne(sess, RentedArea(
+				col.insertOne(sess, StationRentedArea(
 					_id = id,
 					name = name,
 					world = world,
@@ -46,36 +46,36 @@ data class RentedArea(
 			}
 		}
 
-		fun isRentDue(id: Oid<RentedArea>): Boolean {
-			val lastCharged = findPropById(id, RentedArea::rentLastCharged) ?: return false
+		fun isRentDue(id: Oid<StationRentedArea>): Boolean {
+			val lastCharged = findPropById(id, StationRentedArea::rentLastCharged) ?: return false
 			return TimeUnit.DAYS.toMillis(30) >= (System.currentTimeMillis() - lastCharged)
 		}
 
-		fun chargeRent(id: Oid<RentedArea>) {
+		fun chargeRent(id: Oid<StationRentedArea>) {
 
 		}
 
 		/** Returns whether using the available balance, rent can be charged */
-		fun canPayRent(id: Oid<RentedArea>): Boolean {
+		fun canPayRent(id: Oid<StationRentedArea>): Boolean {
 			TODO()
 		}
 
 		/** Sets the owner */
-		fun buy(id: Oid<RentedArea>, owner: SLPlayerId) {
-			col.updateOneById(id, setValue(RentedArea::owner, owner))
+		fun buy(id: Oid<StationRentedArea>, owner: SLPlayerId) {
+			col.updateOneById(id, setValue(StationRentedArea::owner, owner))
 		}
 
 		/** Deposit rent to the balance to be charged */
-		fun depositRent(id: Oid<RentedArea>, amount: Int) {
-			col.updateOneById(id, inc(RentedArea::rentBalance, amount))
+		fun depositRent(id: Oid<StationRentedArea>, amount: Int) {
+			col.updateOneById(id, inc(StationRentedArea::rentBalance, amount))
 		}
 
 		/** Resets the ownership of this area */
-		fun repossess(id: Oid<RentedArea>) {
+		fun repossess(id: Oid<StationRentedArea>) {
 			col.updateOneById(id, and(
-				setValue(RentedArea::owner, null),
-				setValue(RentedArea::rentBalance, 0.0),
-				setValue(RentedArea::rentLastCharged, 0L)
+				setValue(StationRentedArea::owner, null),
+				setValue(StationRentedArea::rentBalance, 0.0),
+				setValue(StationRentedArea::rentLastCharged, 0L)
 			))
 		}
 	}

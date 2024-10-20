@@ -93,7 +93,7 @@ abstract class SpaceStationCompanion<Owner: DbObject, T: SpaceStationInterface<O
 
 	fun setTrustLevel(id: Oid<T>, trustLevel: TrustLevel) = col.updateOneById(id, setValue(trustLevelProperty, trustLevel))
 
-	fun delete(id: Oid<T>) = trx { col.deleteOneById(id) }
+	fun delete(id: Oid<T>) = trx { col.deleteOneById(it, id) }
 
 	enum class TrustLevel { NONE, MANUAL, SETTLEMENT_MEMBER, NATION_MEMBER, ALLY }
 }
