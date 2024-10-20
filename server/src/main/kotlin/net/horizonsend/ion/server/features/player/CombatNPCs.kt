@@ -94,6 +94,10 @@ object CombatNPCs : IonServerComponent(true) {
 				npc.getOrAddTrait(CombatNPCTrait::class.java).apply {
 					owner = event.player.uniqueId
 					inventoryContents = inventoryCopy
+					despawnTime = if (CombatTimer.isPvpCombatTagged(event.player))
+						CombatTimer.pvpTimerRemainingMillis(event.player).coerceAtLeast(TimeUnit.MINUTES.toMillis(4L)) + System.currentTimeMillis()
+					else TimeUnit.MINUTES.toMillis(4L) + System.currentTimeMillis()
+					wasInCombat = CombatTimer.isPvpCombatTagged(event.player)
 				}
 			}
 		}

@@ -74,6 +74,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var advancedStarshipInfo: Boolean = false,
 		var rotateCompass: Boolean = false,
 
+		var combatTimerEnabled: Boolean = true,
+
 		var hudPlanetsImage: Boolean = true,
 		var hudPlanetsSelector: Boolean = true,
 		var hudIconStars: Boolean = true,
@@ -88,6 +90,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var dcSpeedModifier: Int = 1,
 		var enableAdditionalSounds: Boolean = true,
 		var soundCruiseIndicator: Int = 0,
+		var enableCombatTimerAlerts: Boolean = true,
 
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
@@ -464,6 +467,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::combatTimerEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val combatTimerEnabled = it.boolean()
+					data.combatTimerEnabled = combatTimerEnabled
+				}
+			}
+
 			change[SLPlayer::hudPlanetsImage]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -585,6 +597,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 					data.soundCruiseIndicator = soundCruiseIndicator
 				}
 			}
+
+			change[SLPlayer::enableCombatTimerAlerts]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val enableCombatTimerAlerts = it.boolean()
+					data.enableCombatTimerAlerts = enableCombatTimerAlerts
+				}
+			}
 		}
 
 		val mutex = Any()
@@ -673,6 +694,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			starshipsEnabled = data.starshipsEnabled,
 			advancedStarshipInfo = data.advancedStarshipInfo,
 			rotateCompass = data.rotateCompass,
+			combatTimerEnabled = data.combatTimerEnabled,
 			hudPlanetsImage = data.hudPlanetsImage,
 			hudPlanetsSelector = data.hudPlanetsSelector,
 			hudIconStars = data.hudIconStars,
@@ -684,7 +706,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 			useAlternateDCCruise = data.useAlternateDCCruise,
 			dcSpeedModifier = data.dcSpeedModifier,
 			enableAdditionalSounds = data.enableAdditionalSounds,
-			soundCruiseIndicator = data.soundCruiseIndicator
+			soundCruiseIndicator = data.soundCruiseIndicator,
+			enableCombatTimerAlerts = data.enableCombatTimerAlerts,
 		)
 	}
 

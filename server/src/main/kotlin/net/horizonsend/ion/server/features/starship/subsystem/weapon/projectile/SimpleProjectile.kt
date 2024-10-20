@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.machine.AreaShields
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -10,6 +11,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.EntityDamager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
@@ -198,6 +200,10 @@ abstract class SimpleProjectile(
 			}.incrementPoints(points)
 
 			onImpactStarship(otherStarship, block.location)
+
+			if (!ProtectionListener.isProtectedCity(block.location)) {
+				CombatTimer.evaluateSvs(shooter, otherStarship)
+			}
 		}
 	}
 

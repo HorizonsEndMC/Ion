@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
@@ -55,7 +56,6 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.setValue
-import java.util.*
 
 @CommandAlias("spacestation|nspacestation|nstation|sstation|station|nationspacestation")
 object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
@@ -239,6 +239,8 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		failIf(!sender.world.ion.hasFlag(WorldFlag.ALLOW_SPACE_STATIONS)) { "You can't create space stations in this world!" }
+
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 
 		validateName(name)
 

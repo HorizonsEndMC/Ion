@@ -97,6 +97,7 @@ data class SLPlayer(
 	var starshipsEnabled: Boolean = true,
 	var advancedStarshipInfo: Boolean = false,
 	var rotateCompass: Boolean = false,
+	var combatTimerEnabled: Boolean = true,
 
 	var hudPlanetsImage: Boolean = true,
 	var hudPlanetsSelector: Boolean = true,
@@ -111,6 +112,7 @@ data class SLPlayer(
 	var dcSpeedModifier: Int = 1,
 	var enableAdditionalSounds: Boolean = true,
 	var soundCruiseIndicator: Int = 0,
+	var enableCombatTimerAlerts: Boolean = true,
 
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	var wasKilledOn: Set<String> = setOf(),

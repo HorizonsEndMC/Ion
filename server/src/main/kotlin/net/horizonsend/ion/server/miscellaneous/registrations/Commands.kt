@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.admin.AdminCommands
 import net.horizonsend.ion.server.command.admin.BatteryCommand
+import net.horizonsend.ion.server.command.misc.CombatTimerCommand
 import net.horizonsend.ion.server.command.admin.ConvertCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
@@ -33,6 +34,7 @@ import net.horizonsend.ion.server.command.misc.PlayerInfoCommand
 import net.horizonsend.ion.server.command.misc.RegenerateCommand
 import net.horizonsend.ion.server.command.misc.ShipFactoryCommand
 import net.horizonsend.ion.server.command.misc.ShuttleCommand
+import net.horizonsend.ion.server.command.misc.SuicideCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.command.nations.NationCommand
 import net.horizonsend.ion.server.command.nations.NationRelationCommand
@@ -181,6 +183,8 @@ val commands: List<SLCommand> = listOf(
 //	TutorialCommand,
 	CheckCryoCommand,
 	PersonalTransporterCommand,
-	ForbiddenBlocksCommand,
-	EnableProtectionMessagesCommand
+	CombatTimerCommand,
+    ForbiddenBlocksCommand,
+	EnableProtectionMessagesCommand,
+	SuicideCommand
 )

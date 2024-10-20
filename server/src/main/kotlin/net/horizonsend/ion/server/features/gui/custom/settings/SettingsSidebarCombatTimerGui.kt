@@ -1,19 +1,17 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
-import net.horizonsend.ion.server.command.misc.CombatTimerCommand
-import net.horizonsend.ion.server.command.misc.EnableProtectionMessagesCommand
-import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.sidebar.command.SidebarCombatTimerCommand
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -27,7 +25,7 @@ import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
+class SettingsSidebarCombatTimerGui(val player: Player) : AbstractBackgroundPagedGui {
 
     companion object {
         private const val SETTINGS_PER_PAGE = 5
@@ -37,9 +35,7 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
     override var currentWindow: Window? = null
 
     private val buttonsList = listOf(
-        ShowItemSearchItems(),
-        EnableCombatTimerAlert(),
-        EnableProtectionMessages(),
+        EnableButton()
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -57,7 +53,7 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addIngredient('<', GuiItems.LeftItem())
             .addIngredient('>', GuiItems.RightItem())
-            .addIngredient('v', SettingsMainMenuGui(player).ReturnToMainMenuButton())
+            .addIngredient('v', SettingsSidebarGui(player).ReturnToSidebarButton())
 
         for (button in buttonsList) {
             gui.addContent(button)
@@ -73,13 +69,11 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
     override fun createText(player: Player, currentPage: Int): Component {
 
         val enabledSettings = listOf(
-            PlayerCache[player.uniqueId].showItemSearchItem,
-            PlayerCache[player.uniqueId].enableCombatTimerAlerts,
-            PlayerCache[player.uniqueId].protectionMessagesEnabled
+            PlayerCache[player.uniqueId].combatTimerEnabled,
         )
 
         // create a new GuiText builder
-        val header = "Other Settings"
+        val header = "Sidebar Combat Timer Settings"
         val guiText = GuiText(header)
         guiText.addBackground()
 
@@ -91,14 +85,14 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
             val title = buttonsList[buttonIndex].text
             val line = (buttonIndex - startIndex) * 2
 
-            // setting title
+            // settings title
             guiText.add(
                 component = title,
                 line = line,
                 horizontalShift = 21
             )
 
-            // setting description
+            // settings description
             guiText.add(
                 component = if (enabledSettings[buttonIndex]) text("ENABLED", GREEN) else text("DISABLED", RED),
                 line = line + 1,
@@ -123,36 +117,15 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
         currentWindow = open(player).apply { open() }
     }
 
-    private inner class ShowItemSearchItems : GuiItems.AbstractButtonItem(
-        text("Show /itemsearch Items").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
-    ) {
-        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            val itemSearch = PlayerCache[player.uniqueId].showItemSearchItem
-            SearchCommand.itemSearchToggle(player, !itemSearch)
-
-            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
-        }
-    }
-
-    private inner class EnableCombatTimerAlert : GuiItems.AbstractButtonItem(
-        text("Enable Combat Timer Alerts").decoration(TextDecoration.ITALIC, false),
+    private inner class EnableButton : GuiItems.AbstractButtonItem(
+        text("Enable Combat Timer Info").decoration(ITALIC, false),
         ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            val enableCombatTimerAlerts = PlayerCache[player.uniqueId].enableCombatTimerAlerts
-            CombatTimerCommand.onToggle(player, !enableCombatTimerAlerts)
+            val combatTimerEnabled = PlayerCache[player.uniqueId].combatTimerEnabled
 
-            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
-        }
-    }
-
-    private inner class EnableProtectionMessages : GuiItems.AbstractButtonItem(
-        text("Enable Protection Messages").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
-    ) {
-        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            EnableProtectionMessagesCommand.defaultCase(player)
+            if (combatTimerEnabled) SidebarCombatTimerCommand.onDisableCombatTimer(player)
+            else SidebarCombatTimerCommand.onEnableCombatTimer(player)
 
             currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }

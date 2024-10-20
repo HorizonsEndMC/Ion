@@ -30,6 +30,7 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
     override var currentWindow: Window? = null
 
     private val buttonsList = listOf(
+        CombatTimerSettingsButton(),
         StarshipsSettingsButton(),
         ContactsSettingsButton(),
         RouteSettingsButton()
@@ -102,6 +103,14 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
 
     fun openMainWindow() {
         currentWindow = open(player).apply { open() }
+    }
+    private inner class CombatTimerSettingsButton : GuiItems.AbstractButtonItem(
+        text("Combat Timer Settings").decoration(ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SettingsSidebarCombatTimerGui(player).openMainWindow()
+        }
     }
 
     private inner class StarshipsSettingsButton : GuiItems.AbstractButtonItem(

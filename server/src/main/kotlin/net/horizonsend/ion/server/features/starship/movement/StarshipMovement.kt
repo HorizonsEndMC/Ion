@@ -10,17 +10,21 @@ import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
@@ -28,6 +32,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.horizonsend.ion.server.miscellaneous.utils.rectangle
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
@@ -92,6 +97,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		validateWorldBorders(starship.min, starship.max, findPassengers(world1), world2)
 		checkCelestialBodies(starship.min, starship.max, world2)
+		checkEnteringSafeZone(starship.min, starship.max, starship, world2)
 
 		val oldLocationArray = oldLocationSet.filter {
 			isFlyable(world1.getBlockAt(blockKeyX(it), blockKeyY(it), blockKeyZ(it)).blockData.nms)
@@ -204,6 +210,24 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 			if (distance1 < star.outerSphereRadius || distance2 < star.outerSphereRadius)
 				throw StarshipOutOfBoundsException("Starship would be inside ${star.name}!")
+		}
+	}
+
+	private fun checkEnteringSafeZone(min: Vec3i, max: Vec3i, starship: Starship, world2: World) {
+
+		if (starship.controller !is PlayerController) return
+
+		val newMin = displacedVec(min).toLocation(world2)
+		val newMax = displacedVec(max).toLocation(world2)
+
+		val boundingBox = rectangle(newMin, newMax)
+
+		for (point in boundingBox) {
+			if (ProtectionListener.isProtectedCity(point) && starship.type.isWarship &&
+				CombatTimer.isPvpCombatTagged((starship.controller as PlayerController).player)) {
+
+				throw StarshipOutOfBoundsException("The trade city denies your starship entry for your recent acts of aggression!")
+			}
 		}
 	}
 
