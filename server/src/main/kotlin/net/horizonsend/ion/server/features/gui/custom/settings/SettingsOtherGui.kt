@@ -71,7 +71,8 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
     override fun createText(player: Player, currentPage: Int): Component {
 
         val enabledSettings = listOf(
-            PlayerCache[player.uniqueId].showItemSearchItem
+            PlayerCache[player.uniqueId].showItemSearchItem,
+            PlayerCache[player.uniqueId].protectionMessagesEnabled
         )
 
         // create a new GuiText builder
