@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.listener.misc
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.utils.lpHasPermission
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
@@ -150,7 +151,7 @@ object ProtectionListener : SLEventListener() {
 				player action "&eBypassed ${region.javaClass.simpleName.removePrefix("Region")} protection in dutymode"
 				break // only show one message, they will bypass anything else anyway
 			} else {
-				if (!denied) { // only if no other region has already reached this, in order to maintain the priority of region messages
+				if (!denied && PlayerCache[player].protectionMessagesEnabled) { // only if no other region has already reached this, in order to maintain the priority of region messages
 					// Send them the detailed message
 					player.sendTitle("", "&e$message".colorize(), 5, 20, 5)
 					player.sendActionBar("&cThis place is claimed! Find an unclaimed territory with the map (https://survival.horizonsend.net)".colorize())

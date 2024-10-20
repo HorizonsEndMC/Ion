@@ -83,6 +83,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 		var showItemSearchItem: Boolean = true,
 
+		var protectionMessagesEnabled: Boolean = true,
 		var useAlternateDCCruise: Boolean = true,
 		var dcSpeedModifier: Int = 1,
 		var enableAdditionalSounds: Boolean = true,
@@ -525,6 +526,14 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::protectionMessagesEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					data.protectionMessagesEnabled = it.boolean()
+				}
+			}
+
 			change[SLPlayer::bounty]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -671,6 +680,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			hudIconStations = data.hudIconStations,
 			hudIconBookmarks = data.hudIconBookmarks,
 			showItemSearchItem = data.showItemSearchItem,
+			protectionMessagesEnabled = data.protectionMessagesEnabled,
 			useAlternateDCCruise = data.useAlternateDCCruise,
 			dcSpeedModifier = data.dcSpeedModifier,
 			enableAdditionalSounds = data.enableAdditionalSounds,

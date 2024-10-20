@@ -106,6 +106,7 @@ data class SLPlayer(
 	var hudIconBookmarks: Boolean = false,
 
 	var showItemSearchItem: Boolean = true,
+	var protectionMessagesEnabled: Boolean = true,
 	var useAlternateDCCruise: Boolean = false,
 	var dcSpeedModifier: Int = 1,
 	var enableAdditionalSounds: Boolean = true,

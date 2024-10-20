@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.command.misc.BlockCommand
 import net.horizonsend.ion.server.command.misc.BountyAdminCommand
 import net.horizonsend.ion.server.command.misc.BountyCommand
 import net.horizonsend.ion.server.command.misc.DyeCommand
+import net.horizonsend.ion.server.command.misc.EnableProtectionMessagesCommand
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.command.misc.GlobalGameRuleCommand
 import net.horizonsend.ion.server.command.misc.IonBroadcastCommand
@@ -180,5 +181,6 @@ val commands: List<SLCommand> = listOf(
 //	TutorialCommand,
 	CheckCryoCommand,
 	PersonalTransporterCommand,
-	ForbiddenBlocksCommand
+	ForbiddenBlocksCommand,
+	EnableProtectionMessagesCommand
 )

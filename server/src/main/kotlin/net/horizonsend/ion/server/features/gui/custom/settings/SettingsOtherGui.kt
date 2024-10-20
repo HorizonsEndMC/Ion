@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
+import net.horizonsend.ion.server.command.misc.EnableProtectionMessagesCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
@@ -35,7 +36,8 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
     override var currentWindow: Window? = null
 
     private val buttonsList = listOf(
-        ShowItemSearchItems()
+        ShowItemSearchItems(),
+        EnableProtectionMessages(),
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -124,6 +126,17 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val itemSearch = PlayerCache[player.uniqueId].showItemSearchItem
             SearchCommand.itemSearchToggle(player, !itemSearch)
+
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private inner class EnableProtectionMessages : GuiItems.AbstractButtonItem(
+        text("Enable Protection Messages").decoration(TextDecoration.ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            EnableProtectionMessagesCommand.defaultCase(player)
 
             currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
