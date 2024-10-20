@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
+import java.util.UUID
 import kotlin.math.roundToInt
 
 object PlayerStarshipControl : IonServerComponent() {
@@ -19,6 +20,8 @@ object PlayerStarshipControl : IonServerComponent() {
 		val inventory = player.inventory
 		return inventory.itemInMainHand.type == StarshipControl.CONTROLLER_TYPE || inventory.itemInOffHand.type == StarshipControl.CONTROLLER_TYPE
 	}
+
+	val lastRotationAttempt = mutableMapOf<UUID, Long>()
 
 	@EventHandler
 	fun onPlayerDropItem(event: PlayerDropItemEvent) {
@@ -29,6 +32,7 @@ object PlayerStarshipControl : IonServerComponent() {
 
 		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
 
+		lastRotationAttempt[event.player.uniqueId] = System.currentTimeMillis()
 		starship.tryRotate(false)
 	}
 

@@ -27,10 +27,13 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
-
 object PlayerStarshipWeaponry : IonServerComponent() {
 	@EventHandler(priority = EventPriority.LOW)
 	fun onClick(event: PlayerInteractEvent) {
+		val lastRotationAttempt = PlayerStarshipControl.lastRotationAttempt[event.player.uniqueId]
+		// Block the double trigger of firing weapons when turning
+		if (lastRotationAttempt != null && System.currentTimeMillis() - lastRotationAttempt < 5) return
+
 		val player = event.player
 
 		player.debugBanner("INTERACT EVENT MANUAL FIRE START")
