@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import org.litote.kmongo.Id
+
 data class PlayerSpaceStation(
     override val _id: Oid<PlayerSpaceStation>,
     override var owner: Id<SLPlayer>,
@@ -21,7 +22,9 @@ data class PlayerSpaceStation(
     override var trustedSettlements: Set<Oid<Settlement>>,
     override var trustedNations: Set<Oid<Nation>>,
 
-    override var trustLevel: SpaceStationCompanion.TrustLevel
+    override var trustLevel: SpaceStationCompanion.TrustLevel,
+
+	val color: StationColor = StationColor.Default,
 ) : SpaceStationInterface<SLPlayer> {
 
 	companion object : SpaceStationCompanion<SLPlayer, PlayerSpaceStation>(
@@ -61,6 +64,29 @@ data class PlayerSpaceStation(
 				trustedSettlements = setOf(),
 				trustedNations = setOf(),
 			)
+		}
+	}
+
+	sealed interface StationColor {
+		fun getColor(): Int
+
+		data object Default : StationColor {
+			override fun getColor(): Int {
+				return Integer.parseInt("FFFFFF", 16)
+			}
+		}
+
+		data class Custom(val value: Int) : StationColor {
+			override fun getColor(): Int {
+				return value
+			}
+		}
+
+		data object UseNation : StationColor {
+			override fun getColor(): Int {
+				// Special value to check for in game using caches
+				return -1
+			}
 		}
 	}
 }
