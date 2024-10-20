@@ -74,5 +74,7 @@ object NamespacedKeys {
 
 	val TOOL_MODIFICATIONS = key("tool_modifications")
 
+	val FORBIDDEN_BLOCKS = key("forbidden_blocks")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 }

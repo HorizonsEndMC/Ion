@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
@@ -21,6 +22,7 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import net.minecraft.core.BlockPos
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -65,9 +67,7 @@ object StarshipDetection : IonServerComponent() {
 		detectNewState(data.bukkitWorld(), Vec3i(data.blockKey), data.starshipType.actualType, detector, loadChunks)
 
 	fun detectNewState(world: World, computerLocation: Vec3i, type: StarshipType, detector: Audience? = null, loadChunks: Boolean = false): StarshipState {
-		/*
-						val forbiddenBlocks = ForbiddenBlocks.getForbiddenBlocks(world)
-		*/
+		val forbiddenBlocks = world.ion.detectionForbiddenBlocks
 
 		// blocks that were accepted
 		val blocks = mutableListOf<Vec3i>()
@@ -133,12 +133,10 @@ object StarshipDetection : IonServerComponent() {
 				continue
 			}
 
-			/*
-									// Don't allow blocks that have been added to the forbidden blocks list
-									if (forbiddenBlocks.contains(key)) {
-											continue
-									}
-			*/
+			// Don't allow blocks that have been added to the forbidden blocks list
+			if (forbiddenBlocks.contains(BlockPos.asLong(x, y, z /* Modern block key TODO replace with function */))) {
+				continue
+			}
 
 			// --------------------------------------------------------------------
 			// Past this point, the block has been validated and will be detected

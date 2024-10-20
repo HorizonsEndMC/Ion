@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.world
 
 import com.destroystokyo.paper.event.server.ServerTickStartEvent
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
@@ -8,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import org.bukkit.World
@@ -16,6 +18,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldSaveEvent
 import org.bukkit.event.world.WorldUnloadEvent
+import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
 import kotlin.DeprecationLevel.ERROR
 
 class IonWorld private constructor(
@@ -49,6 +52,8 @@ class IonWorld private constructor(
 
 	/** Get all players on the inner world */
 	val players: List<Player> get() = world.players
+
+	val detectionForbiddenBlocks = loadForbiddenBlocks()
 
 	//TODO
 	// - Terrain Generator
@@ -131,5 +136,14 @@ class IonWorld private constructor(
 		for (environment in environments) {
 			players.forEach(environment::tickPlayer)
 		}
+	}
+
+	private fun loadForbiddenBlocks(): LongOpenHashSet {
+		val existing = world.persistentDataContainer.getOrDefault(FORBIDDEN_BLOCKS, LONG_ARRAY, longArrayOf())
+		return LongOpenHashSet(existing)
+	}
+
+	fun saveForbiddenBlocks() {
+		world.persistentDataContainer.set(FORBIDDEN_BLOCKS, LONG_ARRAY, detectionForbiddenBlocks.toLongArray())
 	}
 }

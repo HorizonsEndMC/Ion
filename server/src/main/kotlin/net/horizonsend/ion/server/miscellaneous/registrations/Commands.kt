@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.command.admin.AdminCommands
 import net.horizonsend.ion.server.command.admin.BatteryCommand
 import net.horizonsend.ion.server.command.admin.ConvertCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
+import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.ItemDebugCommand
@@ -178,5 +179,6 @@ val commands: List<SLCommand> = listOf(
 //	TutorialAdminCommand,
 //	TutorialCommand,
 	CheckCryoCommand,
-	PersonalTransporterCommand
+	PersonalTransporterCommand,
+	ForbiddenBlocksCommand
 )
