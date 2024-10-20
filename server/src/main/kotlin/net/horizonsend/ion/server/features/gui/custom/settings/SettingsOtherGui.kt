@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
+import net.horizonsend.ion.server.command.admin.CombatTimerCommand
 import net.horizonsend.ion.server.command.misc.EnableProtectionMessagesCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -37,6 +38,7 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private val buttonsList = listOf(
         ShowItemSearchItems(),
+        EnableCombatTimerAlert(),
         EnableProtectionMessages(),
     )
 
@@ -72,6 +74,7 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
 
         val enabledSettings = listOf(
             PlayerCache[player.uniqueId].showItemSearchItem,
+            PlayerCache[player.uniqueId].enableCombatTimerAlerts,
             PlayerCache[player.uniqueId].protectionMessagesEnabled
         )
 
@@ -127,6 +130,18 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val itemSearch = PlayerCache[player.uniqueId].showItemSearchItem
             SearchCommand.itemSearchToggle(player, !itemSearch)
+
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private inner class EnableCombatTimerAlert : GuiItems.AbstractButtonItem(
+        text("Enable Combat Timer Alerts").decoration(TextDecoration.ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+    ) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            val enableCombatTimerAlerts = PlayerCache[player.uniqueId].enableCombatTimerAlerts
+            CombatTimerCommand.onToggle(player, !enableCombatTimerAlerts)
 
             currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }

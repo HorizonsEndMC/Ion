@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.U
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.text.Component
@@ -83,9 +84,11 @@ object CombatTimer : IonServerComponent() {
 					val starshipCom  = pilotedStarship.centerOfMass.toLocation(player.world)
 
 					if (pilotedStarship.isInterdicting) {
-						// Interdicting ships will place combat tags on other player starships that are within the well range and are less than neutral
+						// Interdicting ships will place combat tags on other player starships that are within the well range, are less than neutral, and not in a protected city
 						toPlayersInRadius(starshipCom, pilotedStarship.interdictionRange.toDouble()) { otherPlayer ->
-							if (PilotedStarships[otherPlayer] != null) {
+							val otherStarship = PilotedStarships[otherPlayer]
+							if (otherStarship != null &&
+								!ProtectionListener.isProtectedCity(otherStarship.centerOfMass.toLocation(otherPlayer.world))) {
 								evaluatePvp(
 									player,
 									otherPlayer,
@@ -96,9 +99,10 @@ object CombatTimer : IonServerComponent() {
 						}
 					}
 
-					// Piloted ships will place combat tags on other players that are not piloting ships within 500 blocks if the pilot is unfriendly to them
+					// Piloted ships will place combat tags on other players that are unfriendly if they are within 500 blocks, the defender is not piloting a ship, and they are not in a protected city
 					toPlayersInRadius(starshipCom, SVP_ENTER_COMBAT_DIST) { otherPlayer ->
-						if (PilotedStarships[otherPlayer] == null) {
+						if (PilotedStarships[otherPlayer] == null &&
+							!ProtectionListener.isProtectedCity(otherPlayer.location)) {
 							evaluatePvp(
 								player,
 								otherPlayer,
@@ -109,9 +113,10 @@ object CombatTimer : IonServerComponent() {
 						}
 					}
 
-					// Piloted ships will maintain combat tag on all players, within 1000 blocks if the pilot is unfriendly to them and the other player was already tagged
+					// Piloted ships will maintain combat tag on all players, within 1000 blocks if the pilot is unfriendly to them and the other player was already tagged and not in a protected city
 					toPlayersInRadius(starshipCom, MAINTAIN_COMBAT_DIST) { otherPlayer ->
-						if (isPvpCombatTagged(otherPlayer)) {
+						if (isPvpCombatTagged(otherPlayer) &&
+							!ProtectionListener.isProtectedCity(otherPlayer.location)) {
 							evaluatePvp(
 								player,
 								otherPlayer,
@@ -145,7 +150,7 @@ object CombatTimer : IonServerComponent() {
 	fun refreshNpcTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isNpcCombatTagged(player)) {
+		if (!isNpcCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
 			player.sendMessage(npcTimerAlertComponent(reason))
 		}
 
@@ -158,7 +163,7 @@ object CombatTimer : IonServerComponent() {
 	fun refreshPvpTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isPvpCombatTagged(player)) {
+		if (!isPvpCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
 			player.sendMessage(pvpTimerAlertComponent(reason))
 		}
 
@@ -307,7 +312,7 @@ object CombatTimer : IonServerComponent() {
 			text(reason, HE_LIGHT_BLUE),
 			newline(),
 			text("Expiry: ", HE_MEDIUM_GRAY),
-			text("5 minutes", GOLD),
+			text("${NPC_TIMER_MINS.toMinutesPart()}m ${NPC_TIMER_MINS.toSecondsPart().toString().padStart(2, '0')}s", GOLD),
 			newline(),
 			text("Consequences: ", HE_MEDIUM_GRAY),
 			text("[Hover]", HE_LIGHT_BLUE)
@@ -336,7 +341,7 @@ object CombatTimer : IonServerComponent() {
 			text(reason, HE_LIGHT_BLUE),
 			newline(),
 			text("Expiry: ", HE_MEDIUM_GRAY),
-			text("10 minutes", DARK_RED),
+			text("${PVP_TIMER_MINS.toMinutesPart()}m ${PVP_TIMER_MINS.toSecondsPart().toString().padStart(2, '0')}s", GOLD),
 			newline(),
 			text("Consequences: ", HE_MEDIUM_GRAY),
 			text("[Hover]", HE_LIGHT_BLUE)

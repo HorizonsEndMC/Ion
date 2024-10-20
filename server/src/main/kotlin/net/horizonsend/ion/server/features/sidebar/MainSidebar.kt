@@ -59,7 +59,8 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 
 
 		// Combat tag
-		if (CombatTimer.isNpcCombatTagged(player) || CombatTimer.isPvpCombatTagged(player)) {
+		val combatTimerEnabled = PlayerCache[player.uniqueId].combatTimerEnabled
+		if (combatTimerEnabled && (CombatTimer.isNpcCombatTagged(player) || CombatTimer.isPvpCombatTagged(player))) {
 			val combatTagComponent: SidebarComponent = CombatTagSidebarComponent(player)
 			lines.addComponent(combatTagComponent)
 		}
