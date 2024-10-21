@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
+import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
@@ -87,13 +88,17 @@ abstract class AbstractDisposalMultiblock : Multiblock(), PowerStoringMultiblock
 
 	private fun getOutput(sign: Sign): Inventory {
 		val direction = sign.getFacing().oppositeFace
-		return (
-			sign.block.getRelative(direction)
-				.getRelative(direction.leftFace)
-				.getRelative(BlockFace.DOWN)
-				.getState(false) as InventoryHolder
-			)
-			.inventory
+		return if (!mirrored) (
+				sign.block.getRelative(direction)
+					.getRelative(direction.leftFace)
+					.getRelative(BlockFace.DOWN)
+					.getState(false) as InventoryHolder
+			).inventory else (
+				sign.block.getRelative(direction)
+					.getRelative(direction.rightFace)
+					.getRelative(BlockFace.DOWN)
+					.getState(false) as InventoryHolder
+			).inventory
 	}
 
 	override fun onFurnaceTick(
