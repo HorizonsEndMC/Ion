@@ -14,9 +14,11 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.randomString
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
@@ -632,9 +634,10 @@ class Starship (
 
 	/** Gets the component display name of this starship */
 	fun getDisplayName(): Component {
-		val name = this.data.name ?: return type.displayNameComponent
-
-		return miniMessage().deserialize(name)
+		return text()
+			.append(this.data.name?.let { miniMessage().deserialize(it) } ?: return type.displayNameComponent)
+			.hoverEvent(template(text("A {0} block {1}", HE_LIGHT_GRAY), initialBlockCount, type))
+			.build()
 	}
 
 	/** Gets the plain text serialized version of this starship's display name */
