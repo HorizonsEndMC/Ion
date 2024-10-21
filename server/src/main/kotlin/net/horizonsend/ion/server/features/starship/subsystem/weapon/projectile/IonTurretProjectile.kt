@@ -12,6 +12,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector
+import java.time.Duration
 
 class IonTurretProjectile(
 		ship: ActiveStarship?,
@@ -63,12 +64,15 @@ class IonTurretProjectile(
 			thruster.lastIonTurretLimited = System.currentTimeMillis()
 		}
 
-		starship.userErrorAction("Direct Control speed slowed by 75%!")
-		starship.directControlSpeedModifier = 0.25
-		starship.lastDirectControlSpeedSlowed = System.currentTimeMillis() + 5000
+		starship.userErrorAction("Direct Control speed slowed by 9%!")
+		starship.directControlSpeedModifier *= 0.91
+		starship.lastDirectControlSpeedSlowed = System.currentTimeMillis() + Duration.ofSeconds(7).toMillis()
 
-		Tasks.syncDelay(5 * 20L) {
+		Tasks.syncDelay(Duration.ofSeconds(5).toSeconds() * 20L) {
+			// reset for individual shots
+			starship.directControlSpeedModifier /= 0.91
 			if (ActiveStarships.isActive(starship) && starship.lastDirectControlSpeedSlowed - 100 < System.currentTimeMillis()) {
+				// hard reset to normal speed (I feel that weird double-rounding bugs might be possible)
 				starship.directControlSpeedModifier = 1.0
 				starship.informationAction("Direct Control speed restored")
 			}
