@@ -202,10 +202,10 @@ object AISpawners : IonServerComponent(true) {
 				),
 				BagSpawner(
 					formatLocationSupplier(it, 2500.0, 4500.0),
-					VariableIntegerAmount(20, 30),
+					VariableIntegerAmount(10, 20),
 					text("An unusually strong alien signature has been detected in {3} at {0}, {2}", WATCHER_ACCENT),
 					null,
-					asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 5),
+					asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 10),
 					asBagSpawned(WATCHERS.asSpawnedShip(TERALITH), 10)
 				)
 			)
@@ -807,7 +807,7 @@ object AISpawners : IonServerComponent(true) {
 				it,
 				AISpawnerTicker(
 					pointChance = 0.5,
-					pointThreshold = 20 * 60 * 7
+					pointThreshold = 20 * 60 * 7 * 5
 				),
 				BagSpawner(
 					formatLocationSupplier(it, 1500.0, 2500.0),
