@@ -76,6 +76,7 @@ import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.time.Duration
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
@@ -551,9 +552,17 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		sender.information("Speed limit set to $speedLimit")
 	}
 
+	private val ejectCooldown = mutableMapOf<UUID, Long>()
 	@Suppress("unused")
 	@CommandAlias("eject")
 	fun onEject(sender: Player, who: OnlinePlayer) {
+		val cooldown = ejectCooldown[sender.uniqueId]
+		if (cooldown != null && cooldown > System.currentTimeMillis()) {
+			// prevent players from using /eject more frequently than 1 minute
+			sender.userError("Your ability to eject players from your starship is currently on cooldown for " +
+				"${Duration.ofMillis(cooldown - System.currentTimeMillis()).toSeconds()}s")
+			return
+		}
 		val starship = getStarshipPiloting(sender)
 		val player = who.player
 		failIf(sender == player) { "Can't eject yourself" }
@@ -579,6 +588,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		player.alert("You were ejected from the starship")
+		ejectCooldown[sender.uniqueId] = System.currentTimeMillis() + Duration.ofMinutes(1).toMillis()
 	}
 
 	@Suppress("unused")
