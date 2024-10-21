@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.containsUpdated
 import net.horizonsend.ion.common.database.oid
+import net.horizonsend.ion.common.database.schema.economy.StationRentedArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -28,6 +29,7 @@ import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionParent
+import net.horizonsend.ion.server.features.nations.region.types.RegionRentedZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -67,6 +69,8 @@ object Regions : IonServerComponent() {
 		registerRegionType(PlayerSpaceStation.Companion) { RegionSpaceStation(it) }
 
 		registerRegionType(NPCSpaceStation.Companion) { RegionNPCSpaceStation(it) }
+
+		registerRegionType(StationRentedArea.Companion) { RegionRentedZone(it) }
 
 		cache.forEach { it.refreshAccessCache() }
 

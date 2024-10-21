@@ -11,10 +11,6 @@ import com.mongodb.client.model.CollationStrength
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.result.UpdateResult
-import java.util.UUID
-import kotlin.collections.set
-import kotlin.reflect.KProperty
-import kotlin.reflect.full.isSubclassOf
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import org.bson.BsonArray
 import org.bson.BsonDocument
@@ -33,6 +29,10 @@ import org.litote.kmongo.projection
 import org.litote.kmongo.util.KMongoUtil
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 import org.litote.kmongo.withDocumentClass
+import java.util.UUID
+import kotlin.collections.set
+import kotlin.reflect.KProperty
+import kotlin.reflect.full.isSubclassOf
 
 typealias SLTextStyleDB = String
 typealias StarshipTypeDB = String
@@ -213,6 +213,7 @@ inline operator fun <reified R> BsonDocument.get(property: KProperty<R>): BsonVa
 
 fun BsonValue.nullable(): BsonValue? = if (isNull) null else this
 fun BsonValue.int(): Int = asInt32().intValue()
+fun BsonValue.long(): Long = asInt64().longValue()
 fun BsonValue.double(): Double = asDouble().doubleValue()
 fun BsonValue.boolean(): Boolean = asBoolean().value
 fun BsonValue.string(): String = asString().value
