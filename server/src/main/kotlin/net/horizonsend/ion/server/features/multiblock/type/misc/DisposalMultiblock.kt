@@ -18,7 +18,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import kotlin.math.roundToInt
 
-object DisposalMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+abstract class AbstractDisposalMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val name = "incinerator"
 
 	override var signText: Array<Component?> = arrayOf(
@@ -28,17 +28,19 @@ object DisposalMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultibl
 		null
 	)
 
+	companion object {
+		private const val powerConsumed = 0.5
+	}
 
 	override val maxPower: Int = 150_000
-
-	private const val powerConsumed = 0.5
+	abstract val mirrored: Boolean
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
-				x(-1).anyPipedInventory()
+				if (!mirrored) x(-1).anyPipedInventory() else x(-1).ironBlock()
 				x(+0).wireInputComputer()
-				x(+1).ironBlock()
+				if (!mirrored) x(+1).ironBlock() else x(+1).anyPipedInventory()
 			}
 			y(0) {
 				x(-1).anyStairs()
@@ -128,4 +130,12 @@ object DisposalMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultibl
 		event.isBurning = false
 		event.burnTime = 20
 	}
+}
+
+object DisposalMultiblock : AbstractDisposalMultiblock() {
+	override val mirrored = false
+}
+
+object DisposalMultiblockMirrored : AbstractDisposalMultiblock() {
+	override val mirrored = true
 }
