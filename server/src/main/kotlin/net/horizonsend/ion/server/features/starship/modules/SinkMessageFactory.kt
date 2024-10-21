@@ -13,23 +13,22 @@ import net.horizonsend.ion.server.features.starship.control.controllers.NoOpCont
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Discord.asDiscord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.getArenaPrefix
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.TextColor
 
 class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory {
 	override fun execute() {
-		val arena = sunkShip.world.hasFlag(WorldFlag.ARENA)
 		val data = sunkShip.damagers
 
 		// First person got the final blow
@@ -50,9 +49,10 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 
 		val (killerDamager, _) = sortedByTime.next()
 
-		val sinkMessage = getSinkMessage(arena, killerDamager)
+		val sinkMessage = getSinkMessage(killerDamager)
 		val assists = getAssists(sortedByTime)
 
+		val arena = sunkShip.world.ion.hasFlag(WorldFlag.ARENA)
 		sendGameMessage(arena, sinkMessage, assists)
 		sendDiscordMessage(arena, sinkMessage, assists)
 	}
@@ -94,10 +94,10 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 		}
 	}
 
-	private fun getSinkMessage(arena: Boolean, killerDamager: Damager): Component {
+	private fun getSinkMessage(killerDamager: Damager): Component {
 		return template(
 			text("{0}{1} was sunk by {2} using {3}", RED),
-			if (arena) SPACE_ARENA else empty(),
+			getArenaPrefix(sunkShip.world),
 			formatName(sunkShip),
 			formatName(killerDamager),
 			sunkShip.lastWeaponName
@@ -155,13 +155,5 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 		}
 
 		return ofChildren(nameFormat, text(", piloted by ", RED), newName).hoverEvent(hover)
-	}
-
-	companion object {
-		val SPACE_ARENA = ofChildren(
-			text("[", TextColor.color(85, 85, 85)),
-			text("Space Arena", TextColor.color(255, 255, 102)),
-			text("] ", TextColor.color(85, 85, 85))
-		)
 	}
 }
