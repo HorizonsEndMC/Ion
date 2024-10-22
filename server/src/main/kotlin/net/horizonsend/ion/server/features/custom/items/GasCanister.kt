@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.Damageable
 import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
 
-abstract class GasCanister(
+class GasCanister(
 	identifier: String,
 
 	private val customModelData: Int,

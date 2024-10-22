@@ -11,7 +11,7 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-abstract class Magazine<T : PVPBalancingConfiguration.EnergyWeapons.AmmoStorageBalancing>(
+class Magazine<T : PVPBalancingConfiguration.EnergyWeapons.AmmoStorageBalancing>(
 	identifier: String,
 
 	override val material: Material,

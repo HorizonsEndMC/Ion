@@ -43,7 +43,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 
-abstract class Blaster<T : Balancing>(
+open class Blaster<T : Balancing>(
 	identifier: String,
 
 	override val material: Material,
