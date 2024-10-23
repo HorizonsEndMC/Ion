@@ -442,7 +442,7 @@ class Starship (
 		get() = (shields.size.d().pow(0.9) / (initialBlockCount / 500.0).coerceAtLeast(1.0).pow(0.7))
 			.coerceAtMost(1.0)
 
-	val maxShields: Int = (0.00671215 * initialBlockCount.toDouble().pow(0.836512) - 0.188437).toInt()
+	val maxShields: Double = (0.00671215 * initialBlockCount.toDouble().pow(0.836512) - 0.188437)
 		get() = if (initialBlockCount < 500) (1 - field + (1)) else field
 
 	val thrusterMap = mutableMapOf<BlockFace, ThrustData>()
