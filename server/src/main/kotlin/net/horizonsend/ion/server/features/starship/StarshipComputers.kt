@@ -4,8 +4,10 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer.Companion.isMemberOfSettlement
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
@@ -204,7 +206,9 @@ object StarshipComputers : IonServerComponent() {
 					1, 0
 				)
 
-				if (player.isMemberOfTerritory()) {
+				if (player.isMemberOfTerritory() &&
+					hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP))
+				{
 					pane.addItem(
 						guiButton(Material.RECOVERY_COMPASS) {
 							takeOwnership(player, data)
@@ -437,5 +441,9 @@ object StarshipComputers : IonServerComponent() {
 		val territory = Territory.findById(territoryId.id) ?: return false
 		val settlementId = territory.settlement ?: Nation.findById(territory.nation?: return false)?.capital ?: return false
 		return isMemberOfSettlement(this.slPlayerId, settlementId)
+	}
+
+	fun hasPermission(player: SLPlayerId, permission: SettlementRole.Permission): Boolean {
+		return SettlementRole.hasPermission(player, permission)
 	}
 }
