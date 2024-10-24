@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -217,7 +218,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		val boundingBox = rectangle(newMin, newMax)
 
 		for (point in boundingBox) {
-			if (ProtectionListener.isProtectedCity(point) && starship.type.isWarship &&
+			if (ProtectionListener.isProtectedCity(point) && starship.type.typeCategory == TypeCategory.WAR_SHIP &&
 				CombatTimer.isPvpCombatTagged((starship.controller as PlayerController).player)) {
 
 				throw StarshipOutOfBoundsException("The trade city denies your starship entry for your recent acts of aggression!")

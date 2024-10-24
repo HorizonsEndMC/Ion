@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -81,7 +82,7 @@ object CombatTimer : IonServerComponent() {
 
 				// Only actively controlled warships can cause proximity triggered combat tags
 				if (pilotedStarship != null && pilotedStarship.controller !is UnpilotedController &&
-					pilotedStarship.type.isWarship) {
+					pilotedStarship.type.typeCategory == TypeCategory.WAR_SHIP) {
 					val starshipCom  = pilotedStarship.centerOfMass.toLocation(player.world)
 
 					if (pilotedStarship.isInterdicting) {
