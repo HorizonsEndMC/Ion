@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -36,7 +37,7 @@ class AddNewPilotButton(val pilotMenu: ManagePilotsMenu) : AbstractItem() {
 	private val nameConfirmButton = NameConfirmButton(this)
 
 	override fun getItemProvider(): ItemProvider = ItemProvider {
-		ItemStack(Material.BEACON).setDisplayNameAndGet(text("Add Pilot").decoration(ITALIC, false))
+		ItemStack(Material.BEACON).setDisplayNameAndGet(text("Add Pilot").itemName)
 	}
 
 	override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
@@ -44,7 +45,7 @@ class AddNewPilotButton(val pilotMenu: ManagePilotsMenu) : AbstractItem() {
 	}
 
 	private val returnToPilotMenu = GuiItems.createButton(
-		ItemStack(BARRIER).setDisplayNameAndGet(text("Go back to pilot menu", WHITE).decoration(ITALIC, false))
+		ItemStack(BARRIER).setDisplayNameAndGet(text("Go back to pilot menu", WHITE).itemName)
 	) { _, player, _ ->
 		pilotMenu.openAddPilotMenu(player, pilotMenu.main.data as PlayerStarshipData)
 	}
@@ -72,10 +73,10 @@ class AddNewPilotButton(val pilotMenu: ManagePilotsMenu) : AbstractItem() {
 
 	private class NameConfirmButton(val addPilot: AddNewPilotButton) : AbstractItem() {
 		val playerNotFoundItem = ItemStack(Material.SKELETON_SKULL)
-			.setDisplayNameAndGet(text("Player not found!", NamedTextColor.RED, BOLD).decoration(ITALIC, false))
+			.setDisplayNameAndGet(text("Player not found!", NamedTextColor.RED, BOLD).itemName)
 
 		val loadingItem = ItemStack(Material.PLAYER_HEAD)
-			.setDisplayNameAndGet(text("Loading...", NamedTextColor.GRAY).decoration(ITALIC, false))
+			.setDisplayNameAndGet(text("Loading...", NamedTextColor.GRAY).itemName)
 
 		var currentProvider: ItemProvider = ItemProvider { loadingItem }
 		var id: SLPlayerId? = null
@@ -110,7 +111,7 @@ class AddNewPilotButton(val pilotMenu: ManagePilotsMenu) : AbstractItem() {
 
 				currentProvider = if (slPlayer != null) ItemProvider {
 					id = slPlayer._id
-					skullItem(slPlayer._id.uuid, addPilot.currentName, text(addPilot.currentName).decoration(ITALIC, false))
+					skullItem(slPlayer._id.uuid, addPilot.currentName, text(addPilot.currentName).itemName)
 				} else {
 					id = null
 					ItemProvider { playerNotFoundItem }

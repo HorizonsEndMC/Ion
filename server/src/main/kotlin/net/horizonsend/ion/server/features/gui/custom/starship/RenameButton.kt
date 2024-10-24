@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.gui.custom.starship
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
@@ -10,6 +11,7 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -18,7 +20,6 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import net.kyori.adventure.util.HSVLike
 import org.bukkit.Material
 import org.bukkit.Material.EMERALD_BLOCK
@@ -39,13 +40,8 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 
 	override fun getItemProvider(): ItemProvider = ItemProvider {
 		ItemStack(Material.NAME_TAG)
-			.setDisplayNameAndGet(text("Change Ship Name", WHITE).decoration(ITALIC, false))
-			.setLoreAndGet(listOf(
-				text().decoration(ITALIC, false).color(WHITE).append(
-					text("Current Name: ", GRAY),
-					PilotedStarships.getDisplayName(main.data)
-				).build()
-			))
+			.setDisplayNameAndGet(text("Change Ship Name", WHITE).itemName)
+			.setLoreAndGet(listOf(ofChildren(text("Current Name: ", GRAY), PilotedStarships.getDisplayName(main.data)).itemName))
 	}
 
 	override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
@@ -85,17 +81,8 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 
 		// The whole empty append setup is to provide a formatted base that isn't italic purple
 		ItemStack(PAPER)
-			.setDisplayNameAndGet(
-				text().decoration(ITALIC, false).color(WHITE).append(
-					name?.toComponent() ?: empty()
-				).build()
-			)
-			.setLoreAndGet(listOf(
-				text().decoration(ITALIC, false).color(WHITE).append(
-					text("Formatted: ", GRAY),
-					(name ?: "").miniMessage()
-				).build()
-			))
+			.setDisplayNameAndGet((name?.toComponent() ?: empty()).itemName)
+			.setLoreAndGet(listOf(ofChildren(text("Formatted: ", GRAY), (name ?: "").miniMessage()).itemName))
 	}
 
 	class RenameConfirmationButton(val parent: RenameButton) : AbstractItem() {
@@ -103,14 +90,12 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 			val serialized: Component = runCatching {
 				parent.newName.miniMessage()
 			}.getOrElse {
-				text("Error: ${it.message}", RED).decoration(ITALIC, false)
+				text("Error: ${it.message}", RED).itemName
 			}
 
 			ItemStack(EMERALD_BLOCK)
-				.setDisplayNameAndGet(text("Confirm New Name:", GREEN).decoration(ITALIC, false))
-				.setLoreAndGet(listOf(
-					text().decoration(ITALIC, false).color(WHITE).append(serialized).build()
-				))
+				.setDisplayNameAndGet(text("Confirm New Name:", GREEN).itemName)
+				.setLoreAndGet(listOf(serialized.itemName))
 		}
 
 		override fun getItemProvider(): ItemProvider = provider
