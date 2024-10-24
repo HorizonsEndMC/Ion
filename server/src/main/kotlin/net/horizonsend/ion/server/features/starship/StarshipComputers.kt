@@ -3,9 +3,11 @@ package net.horizonsend.ion.server.features.starship
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer.Companion.isMemberOfNation
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer.Companion.isMemberOfSettlement
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
@@ -152,7 +154,10 @@ object StarshipComputers : IonServerComponent() {
 			data is PlayerStarshipData &&
 			!data.isPilot(player) &&
 			!player.hasPermission("ion.core.starship.override") &&
-			!(player.isMemberOfTerritory() && hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP))
+			(!player.isMemberOfTerritory() || // passing this implies the player is a member of the settlement
+			!hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP)) &&
+			(!player.isNationMemberOfTerritory() || // passing this implies the player is part of the nation
+			!hasPermission(player.slPlayerId, NationRole.Permission.TAKE_SHIP_OWNERSHIP))
 			) {
 			Tasks.async {
 				val name: String? = SLPlayer.getName(data.captain)
@@ -206,8 +211,8 @@ object StarshipComputers : IonServerComponent() {
 					1, 0
 				)
 
-				if (player.isMemberOfTerritory() &&
-					hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP))
+				if ((player.isMemberOfTerritory() && hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP)) ||
+					(player.isNationMemberOfTerritory() && hasPermission(player.slPlayerId, NationRole.Permission.TAKE_SHIP_OWNERSHIP)))
 				{
 					pane.addItem(
 						guiButton(Material.RECOVERY_COMPASS) {
@@ -445,5 +450,18 @@ object StarshipComputers : IonServerComponent() {
 
 	fun hasPermission(player: SLPlayerId, permission: SettlementRole.Permission): Boolean {
 		return SettlementRole.hasPermission(player, permission)
+	}
+
+	fun Player.isNationMemberOfTerritory(): Boolean {
+		val territoryId = Regions.find(this.location)
+			.filterIsInstance<RegionTerritory>()
+			.firstOrNull() ?: return false
+		val territory = Territory.findById(territoryId.id) ?: return false
+		val nationId = territory.nation ?: return false
+		return isMemberOfNation(this.slPlayerId, nationId)
+	}
+
+	fun hasPermission(player: SLPlayerId, permission: NationRole.Permission): Boolean {
+		return NationRole.hasPermission(player, permission)
 	}
 }
