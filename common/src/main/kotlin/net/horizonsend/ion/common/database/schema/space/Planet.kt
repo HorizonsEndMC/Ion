@@ -51,9 +51,9 @@ data class Planet(
     val cloudNoise: Double = 0.1,
     val cloudMaterials: List<String> = listOf(),
 	val description: String = "",
-	@Deprecated("Use rouge planet db") val rogue: Boolean = false,
-	@Deprecated("Use rouge planet db") val x: Int = 0,
-	@Deprecated("Use rouge planet db") val z: Int = 0,
+	@Deprecated("Use rogue planet db") val rogue: Boolean = false,
+	@Deprecated("Use rogue planet db") val x: Int = 0,
+	@Deprecated("Use rogue planet db") val z: Int = 0,
 ) : DbObject, ParentPlanet {
 	companion object : OidDbObjectCompanion<Planet>(Planet::class, setup = {
 		ensureUniqueIndex(Planet::name)
