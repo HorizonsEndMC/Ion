@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.command.nations
 import co.aikar.commands.annotation.CommandAlias
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.nations.StationSieges
+import net.horizonsend.ion.server.features.nations.sieges.StationSieges
 import org.bukkit.entity.Player
 
 internal object SiegeCommand : SLCommand() {
