@@ -66,7 +66,7 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 		var dy = sin(-pitchRadians).roundToInt() * distance
 
 		if (starship.type == StarshipType.TANK) {
-			dy = getHoverHeight(starship)
+			dy = getHoverHeight(starship, Vec3i(dx, 0, dy))
 		}
 
 		val dz = if (vertical) 0 else cos(yawRadians).roundToInt() * distance
@@ -77,11 +77,12 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 	}
 
 	companion object {
-		fun getHoverHeight(starship: Starship): Int {
-			val min = starship.min
-			val max = starship.max
-			val center = starship.centerOfMass
+		fun getHoverHeight(starship: Starship, delta: Vec3i): Int {
+			val min = starship.min + delta
+			val max = starship.max + delta
+			val center = starship.centerOfMass + delta
 
+			// Points to check
 			val points = listOf(
 				Vec3i(min.x, min.y, min.z),
 				Vec3i(min.x, min.y, max.z),
@@ -92,12 +93,15 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 
 			// Start with 3 blocks clearance
 			var down = 3
+			val downMax = 10
 
-			val startY = min.y
-
-			for (y in 1 ..< startY) {
+			for (y in 0..downMax) {
 				for (point in points) {
-					val below = getBlockTypeSafe(starship.world, point.x, point.y - y, point.z) ?: continue
+					val dx = point.x
+					val dy = point.y - y
+					val dz = point.z
+					if (starship.contains(dx, dy, dz)) continue
+					val below = getBlockTypeSafe(starship.world, dx, dy, dz) ?: continue
 
 					if (!below.isTankPassable) return down
 				}
