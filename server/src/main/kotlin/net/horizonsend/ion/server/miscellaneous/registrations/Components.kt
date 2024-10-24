@@ -40,8 +40,9 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.Halloweeeeeen
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
-import net.horizonsend.ion.server.features.nations.StationSieges
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
+import net.horizonsend.ion.server.features.nations.sieges.StationSieges
 import net.horizonsend.ion.server.features.npcs.StarshipDealers
 import net.horizonsend.ion.server.features.npcs.TutorialNPCs
 import net.horizonsend.ion.server.features.npcs.traits.NPCTraits
@@ -125,6 +126,7 @@ val components: List<IonComponent> = listOf(
 	Regions,
 
 	StationSieges,
+	SolarSieges,
 
 	Multiblocks,
 	MultiblockRecipes,
