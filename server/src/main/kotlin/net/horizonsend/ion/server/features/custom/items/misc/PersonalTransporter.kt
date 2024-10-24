@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -21,6 +22,9 @@ object PersonalTransporter : CustomItem("PERSONAL_TRANSPORTER") {
         return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
             it.setCustomModelData(1103)
             it.displayName(text("Personal Transporter", GOLD).itemName)
+            it.lore(listOf(
+                text("Select a player to request to teleport to them. One-time use", GRAY)
+            ))
             it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
         }.apply { amount = 1 }
     }
