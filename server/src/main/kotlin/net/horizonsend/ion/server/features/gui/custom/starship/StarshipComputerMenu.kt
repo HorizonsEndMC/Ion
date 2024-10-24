@@ -8,7 +8,6 @@ import net.horizonsend.ion.common.extensions.serverErrorActionMessage
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toText
-import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.wrap
