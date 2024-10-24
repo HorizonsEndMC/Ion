@@ -6,7 +6,6 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.BOLD
-import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
