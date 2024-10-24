@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
+import net.horizonsend.ion.server.features.starship.StarshipType.AI_CORVETTE_LOGISTIC
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -164,7 +165,7 @@ enum class StarshipType(
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		menuItemRaw = { ItemStack(Material.IRON_TRAPDOOR) },
-		menuSubclasses = { listOf(AI_CORVETTE) },
+		menuSubclasses = { listOf(AI_CORVETTE, AI_CORVETTE_LOGISTIC) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff0000",
 		overridePermission = "ion.ships.override.20",
@@ -201,6 +202,7 @@ enum class StarshipType(
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.5,
 		menuItemRaw = { ItemStack(Material.IRON_DOOR) },
+		displayInMainMenu = false,
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff0000",
 		dynmapIcon = "corvette",
