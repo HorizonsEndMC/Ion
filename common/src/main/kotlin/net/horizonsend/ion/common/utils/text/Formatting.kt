@@ -1,5 +1,8 @@
 package net.horizonsend.ion.common.utils.text
 
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
@@ -40,7 +43,7 @@ fun lineBreak(width: Int, color: TextColor = HE_DARK_GRAY, vararg decorations: T
  *
  * @sample
  * 	Takes: Value
- * 	Returns [Value]
+ * 	Returns "[value]"
  **/
 fun bracketed(value: ComponentLike, leftBracket: Char = '[', rightBracket: Char = ']', bracketColor: TextColor = HE_DARK_GRAY) =
 	bracketed(value, leftBracket.toComponent(bracketColor), rightBracket.toComponent(bracketColor))
@@ -50,7 +53,7 @@ fun bracketed(value: ComponentLike, leftBracket: Char = '[', rightBracket: Char 
  *
  * @sample
  * 	Takes: Value
- * 	Returns [Value]
+ * 	Returns "[value]"
  **/
 fun bracketed(value: ComponentLike, leftBracket: ComponentLike, rightBracket: ComponentLike) = ofChildren(leftBracket, value, rightBracket)
 
@@ -280,6 +283,11 @@ fun commandPrompt(shownText: String, color: TextColor, command: String): Compone
 	return bracketed(text(shownText, color, ITALIC))
 		.hoverEvent(text(command))
 		.clickEvent(ClickEvent.runCommand(command))
+}
+
+fun formatNationName(id: Oid<Nation>): Component {
+	val cached = NationCache[id]
+	return text(cached.name, TextColor.color(cached.color))
 }
 
 fun formatException(throwable: Throwable): Component {

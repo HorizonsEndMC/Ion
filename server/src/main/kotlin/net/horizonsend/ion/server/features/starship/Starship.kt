@@ -62,6 +62,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -616,4 +617,6 @@ class Starship (
 	init {
 		IonWorld[world].starships.add(this)
 	}
+
+	val initPrintCost = blocks.sumOf { ShipFactoryMaterialCosts.getPrice(world.getBlockAtKey(it).blockData) }
 }
