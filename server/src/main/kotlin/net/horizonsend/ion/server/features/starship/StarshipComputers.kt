@@ -152,7 +152,7 @@ object StarshipComputers : IonServerComponent() {
 			data is PlayerStarshipData &&
 			!data.isPilot(player) &&
 			!player.hasPermission("ion.core.starship.override") &&
-			!player.isTerritoryOwner()
+			!(player.isMemberOfTerritory() && hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP))
 			) {
 			Tasks.async {
 				val name: String? = SLPlayer.getName(data.captain)
