@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -74,15 +75,15 @@ class StarshipComputerMenu(val player: Player, val data: StarshipData) {
 
 	private val reDetectButton = object : AbstractItem() {
 		var lore = listOf<Component>(
-			text("Use this button to detect", GRAY).decoration(ITALIC, false),
-			text("a new state of your ship.", GRAY).decoration(ITALIC, false),
-			text("This is needed if you change", GRAY).decoration(ITALIC, false),
-			text("any blocks.", GRAY).decoration(ITALIC, false)
+			text("Use this button to detect", GRAY).itemName,
+			text("a new state of your ship.", GRAY).itemName,
+			text("This is needed if you change", GRAY).itemName,
+			text("any blocks.", GRAY).itemName
 		)
 
 		val provider = ItemProvider {
 			ItemStack(Material.CLOCK)
-				.setDisplayNameAndGet(text("Re-Detect Ship").decoration(ITALIC, false))
+				.setDisplayNameAndGet(text("Re-Detect Ship").itemName)
 				.setLoreAndGet(lore)
 		}
 
@@ -110,14 +111,14 @@ class StarshipComputerMenu(val player: Player, val data: StarshipData) {
 	private val toggleLockButton = object : AbstractItem() {
 		override fun getItemProvider(): ItemProvider = ItemProvider {
 			ItemStack(Material.IRON_DOOR)
-				.setDisplayNameAndGet(text("Toggle Ship Lock", if (data.isLockEnabled) GREEN else RED).decoration(ITALIC, false))
+				.setDisplayNameAndGet(text("Toggle Ship Lock", if (data.isLockEnabled) GREEN else RED).itemName)
 				.setLoreAndGet(listOf(
-					ofChildren(text("Status: ", GRAY), if (data.isLockEnabled) text("ENABLED", GREEN) else text("DISABLED", RED)).decoration(ITALIC, false),
+					ofChildren(text("Status: ", GRAY), if (data.isLockEnabled) text("ENABLED", GREEN) else text("DISABLED", RED)).itemName,
 					empty(),
-					text("Ship locks protect your ship", GRAY).decoration(ITALIC, false),
-					text("from access by people not", GRAY).decoration(ITALIC, false),
-					text("added as pilots. They enable", GRAY).decoration(ITALIC, false),
-					text("5 minutes after being released.", GRAY).decoration(ITALIC, false)
+					text("Ship locks protect your ship", GRAY).itemName,
+					text("from access by people not", GRAY).itemName,
+					text("added as pilots. They enable", GRAY).itemName,
+					text("5 minutes after being released.", GRAY).itemName
 				))
 		}
 
@@ -142,7 +143,7 @@ class StarshipComputerMenu(val player: Player, val data: StarshipData) {
 	private val renameButton = RenameButton(this)
 
 	val mainMenuButton = createButton(
-		ItemStack(Material.BARRIER).setDisplayNameAndGet(text("Go back to main menu", WHITE).decoration(ITALIC, false))
+		ItemStack(Material.BARRIER).setDisplayNameAndGet(text("Go back to main menu", WHITE).itemName)
 	) { _, player, _ ->
 		player.closeInventory()
 		open()
@@ -164,10 +165,10 @@ class StarshipComputerMenu(val player: Player, val data: StarshipData) {
 					player.serverErrorActionMessage("${e.message} Detection failed!")
 					player.hint("Is it touching another structure?")
 
-					val split = text(e.message ?: "Unspecified", RED).decoration(ITALIC, false).wrap(150).toTypedArray()
+					val split = text(e.message ?: "Unspecified", RED).itemName.wrap(150).toTypedArray()
 
 					future.complete(DetectionResult(listOf(
-						text("Detection failed!", RED).decoration(ITALIC, false),
+						text("Detection failed!", RED).itemName,
 						*split
 					)))
 
@@ -176,9 +177,9 @@ class StarshipComputerMenu(val player: Player, val data: StarshipData) {
 					e.printStackTrace()
 					player.serverErrorActionMessage("An error occurred while detecting")
 					future.complete(DetectionResult(listOf(
-						text("There was an unknown error during detection.").decoration(ITALIC, false)
+						text("There was an unknown error during detection.").itemName
 							.hoverEvent(text(e.message ?: "NULL")),
-						text("Please report this to staff").decoration(ITALIC, false)
+						text("Please report this to staff").itemName
 							.hoverEvent(text(e.message ?: "NULL"))
 					)))
 
@@ -191,8 +192,8 @@ class StarshipComputerMenu(val player: Player, val data: StarshipData) {
 				DeactivatedPlayerStarships.updateState(data, state)
 
 				future.complete(DetectionResult(listOf(
-					text("Success!", GREEN).decoration(ITALIC, false),
-					text("Re-detected! New size ${state.blockMap.size.toText()}", GREEN).decoration(ITALIC, false)
+					text("Success!", GREEN).itemName,
+					text("Re-detected! New size ${state.blockMap.size.toText()}", GREEN).itemName
 				)))
 
 				player.success("Re-detected! New size ${state.blockMap.size.toText()}")
