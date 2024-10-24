@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.input
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
@@ -45,7 +46,11 @@ class DirecterControlHandler(controller: PlayerController) : PlayerMovementInput
 
 		starship.lastManualMove = now
 
-		val (dx, dy, dz) = deltaV
+		var (dx, dy, dz) = deltaV
+
+		if (starship.type == StarshipType.TANK) {
+			dy = ShiftFlightHandler.getHoverHeight(starship, Vec3i(dx, 0, dy))
+		}
 
 		if (StarshipControl.locationCheck(starship, dx, dy, dz)) return
 
