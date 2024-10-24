@@ -79,7 +79,6 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 		val data = main.data as PlayerStarshipData
 		val name = data.name
 
-		// The whole empty append setup is to provide a formatted base that isn't italic purple
 		ItemStack(PAPER)
 			.setDisplayNameAndGet((name?.toComponent() ?: empty()).itemName)
 			.setLoreAndGet(listOf(ofChildren(text("Formatted: ", GRAY), (name ?: "").miniMessage()).itemName))

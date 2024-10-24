@@ -1,15 +1,15 @@
 package net.horizonsend.ion.server.features.gui.custom.starship.type
 
-import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.gui.custom.starship.StarshipComputerMenu
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -24,13 +24,13 @@ import xyz.xenondevs.invui.window.Window
 class ChangeTypeButton(val main: StarshipComputerMenu) : AbstractItem() {
 	private val provider = ItemProvider {
 		ItemStack(Material.GHAST_TEAR)
-			.setDisplayNameAndGet(text("Change Ship Class").decoration(ITALIC, false))
+			.setDisplayNameAndGet(text("Change Ship Class").itemName)
 			.setLoreAndGet(listOf(
-				ofChildren(text("Current type: ", NamedTextColor.GRAY), main.data.starshipType.actualType.displayNameComponent).decoration(ITALIC, false),
+				ofChildren(text("Current type: ", GRAY), main.data.starshipType.actualType.displayNameComponent).itemName,
 				Component.empty(),
-				text("Different starship types", NamedTextColor.GRAY).decoration(ITALIC, false),
-				text("support different block", NamedTextColor.GRAY).decoration(ITALIC, false),
-				text("counts, weapons, and tools.", NamedTextColor.GRAY).decoration(ITALIC, false)
+				text("Different starship types", GRAY).itemName,
+				text("support different block", GRAY).itemName,
+				text("counts, weapons, and tools.", GRAY).itemName
 			))
 	}
 
@@ -70,7 +70,7 @@ class ChangeTypeButton(val main: StarshipComputerMenu) : AbstractItem() {
 
 		Window.single()
 			.setViewer(player)
-			.setTitle(AdventureComponentWrapper(text("Change Ship Class").decoration(ITALIC, false)))
+			.setTitle(AdventureComponentWrapper(text("Change Ship Class").itemName))
 			.setGui(gui)
 			.build()
 			.open()
