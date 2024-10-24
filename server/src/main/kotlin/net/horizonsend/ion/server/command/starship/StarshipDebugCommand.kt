@@ -12,8 +12,14 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.control.input.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.input.DirecterControlHandler
+import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VariableVisualProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
@@ -193,5 +199,34 @@ object StarshipDebugCommand : SLCommand() {
 	fun onPurge(sender: Player) {
 		sender.information("purging")
 		UnusedSoldShipPurge.purgeNoobShuttles()
+	}
+
+	@Subcommand("set movement")
+	fun onSetMovement(sender: Player, type: MovementType) {
+		val ship = getStarshipPiloting(sender)
+		val controller = ship.controller as? ActivePlayerController ?: fail { "bruh" }
+		type.apply(controller)
+	}
+
+	enum class MovementType {
+		SHIFT_FLIGHT {
+			override fun apply(controller: ActivePlayerController) {
+				controller.inputHandler = ShiftFlightHandler(controller)
+			}
+		},
+		DIRECT_CONTROL {
+			override fun apply(controller: ActivePlayerController) {
+				controller.inputHandler = DirectControlHandler(controller)
+			}
+		},
+		DIRECTER_CONTROL {
+			override fun apply(controller: ActivePlayerController) {
+				controller.inputHandler = DirecterControlHandler(controller)
+			}
+		},
+
+		;
+
+		abstract fun apply(controller: ActivePlayerController)
 	}
 }
