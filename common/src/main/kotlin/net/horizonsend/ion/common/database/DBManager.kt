@@ -28,6 +28,7 @@ import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
+import net.horizonsend.ion.common.database.schema.nations.SolarSiege
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
@@ -111,6 +112,7 @@ object DBManager : IonComponent() {
 		CapturableStation.init()
 		SolarSiegeZone.init()
 		CapturableStationSiege.init()
+		SolarSiege.init()
 		Nation.init()
 		NationRelation.init()
 		NPCTerritoryOwner.init()
