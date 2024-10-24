@@ -42,7 +42,7 @@ class ChangeTypeButton(val main: StarshipComputerMenu) : AbstractItem() {
 
 	private fun createButton(type: StarshipType): SelectTypeButton = SelectTypeButton(this, type)
 
-	private fun openClassMenu(player: Player) {
+	fun openClassMenu(player: Player) {
 		val grouped = StarshipType
 			.entries
 			.filter { it.displayInMainMenu }
