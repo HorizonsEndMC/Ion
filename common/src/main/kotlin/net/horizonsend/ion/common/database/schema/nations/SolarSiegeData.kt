@@ -13,8 +13,8 @@ import java.util.Date
 /**
  * Stores siege data in the case of a restart
  **/
-data class SolarSiege(
-	override val _id: Oid<SolarSiege>,
+data class SolarSiegeData(
+	override val _id: Oid<SolarSiegeData>,
 
 	val zone: Oid<SolarSiegeZone>,
 	val attacker: Oid<Nation>,
@@ -24,18 +24,18 @@ data class SolarSiege(
 
 	val startTime: Date = Date(System.currentTimeMillis())
 ) : DbObject {
-	companion object : OidDbObjectCompanion<SolarSiege>(SolarSiege::class) {
-		fun new(zone: Oid<SolarSiegeZone>, attacker: Oid<Nation>): Oid<SolarSiege> = trx { sess ->
-			val id = objId<SolarSiege>()
-			col.insertOne(sess, SolarSiege(id, zone, attacker))
+	companion object : OidDbObjectCompanion<SolarSiegeData>(SolarSiegeData::class) {
+		fun new(zone: Oid<SolarSiegeZone>, attacker: Oid<Nation>): Oid<SolarSiegeData> = trx { sess ->
+			val id = objId<SolarSiegeData>()
+			col.insertOne(sess, SolarSiegeData(id, zone, attacker))
 
 			return@trx id
 		}
 
-		fun updatePoints(id: Oid<SolarSiege>, defender: Int, attacker: Int) {
+		fun updatePoints(id: Oid<SolarSiegeData>, defender: Int, attacker: Int) {
 			col.updateOneById(id, and(
-				setValue(SolarSiege::defenderPoints, defender),
-				setValue(SolarSiege::attackerPoints, attacker),
+				setValue(SolarSiegeData::defenderPoints, defender),
+				setValue(SolarSiegeData::attackerPoints, attacker),
 			))
 		}
 	}
