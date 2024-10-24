@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.nations.StationSieges
+import net.horizonsend.ion.server.features.nations.sieges.StationSieges
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
 
