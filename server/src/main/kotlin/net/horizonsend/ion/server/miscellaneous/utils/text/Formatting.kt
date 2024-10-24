@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.TextDecoration
 
 val Component.itemName get() = Component.text()
 	.decoration(TextDecoration.ITALIC, false)
+	.color(WHITE)
 	.append(this)
 	.build()
 
