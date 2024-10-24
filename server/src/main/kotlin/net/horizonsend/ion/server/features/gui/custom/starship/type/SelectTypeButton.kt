@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.gui.custom.starship.type
 
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
@@ -31,13 +30,13 @@ class SelectTypeButton(val parent: ChangeTypeButton, val type: StarshipType) : A
 
 	private val provider = ItemProvider {
 		ItemStack(type.menuItemRaw.get())
-			.setDisplayNameAndGet(type.displayNameComponent.decoration(ITALIC, false))
+			.setDisplayNameAndGet(type.displayNameComponent.itemName)
 			.setLoreAndGet(listOf(
-				ofChildren(text("Minimum Block Count: ", GRAY), text(type.minSize, AQUA)).decoration(ITALIC, false),
-				ofChildren(text("Maximum Block Count: ", GRAY), text(type.maxSize, AQUA)).decoration(ITALIC, false),
+				ofChildren(text("Minimum Block Count: ", GRAY), text(type.minSize, AQUA)).itemName,
+				ofChildren(text("Maximum Block Count: ", GRAY), text(type.maxSize, AQUA)).itemName,
 				empty(),
-				text("Left click to select", AQUA).decoration(ITALIC, false),
-				if (subClasses.isNotEmpty()) text("Right click to view [${subClasses.size}] subclass(es)", AQUA).decoration(ITALIC, false) else empty(),
+				text("Left click to select", AQUA).itemName,
+				if (subClasses.isNotEmpty()) text("Right click to view [${subClasses.size}] subclass(es)", AQUA).itemName else empty(),
 			))
 	}
 
