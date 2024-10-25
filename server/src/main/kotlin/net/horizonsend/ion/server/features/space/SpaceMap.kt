@@ -70,7 +70,7 @@ object SpaceMap : IonServerComponent(true) {
 			// planet ring
 			markerSet.createCircleMarker(
 				"${planet.id}_orbit",
-				planet.name,
+				"${planet.name}'s orbit path",
 				false, // Allow html markup in icon labels
 				planet.spaceWorldName,
 				planet.sun.location.x.toDouble(),
