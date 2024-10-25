@@ -397,10 +397,10 @@ object CustomItems {
 	// Planets end
 
 	//Debug start
-	val DEBUG_LINE = register("DEBUG_LINE", 8000, text("DEBUG_LINE"))
-	val DEBUG_LINE_GREEN = register("DEBUG_LINE_GREEN", 8001, text("DEBUG_LINE_GREEN"))
-	val DEBUG_LINE_RED = register("DEBUG_LINE_RED", 8002, text("DEBUG_LINE_RED"))
-	val DEBUG_LINE_BLUE = register("DEBUG_LINE_BLUE", 8003, text("DEBUG_LINE_BLUE"))
+	val DEBUG_LINE = registerSimpleUnstackable("DEBUG_LINE", 8000, text("DEBUG_LINE"))
+	val DEBUG_LINE_GREEN = registerSimpleUnstackable("DEBUG_LINE_GREEN", 8001, text("DEBUG_LINE_GREEN"))
+	val DEBUG_LINE_RED = registerSimpleUnstackable("DEBUG_LINE_RED", 8002, text("DEBUG_LINE_RED"))
+	val DEBUG_LINE_BLUE = registerSimpleUnstackable("DEBUG_LINE_BLUE", 8003, text("DEBUG_LINE_BLUE"))
 
 	// Tools begin
 	val PERSONAL_TRANSPORTER = register(PersonalTransporter)
