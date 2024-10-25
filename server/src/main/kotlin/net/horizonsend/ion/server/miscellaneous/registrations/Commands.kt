@@ -75,6 +75,7 @@ import net.horizonsend.ion.server.command.starship.StarshipsCommand
 import net.horizonsend.ion.server.command.starship.ai.AIDebugCommand
 import net.horizonsend.ion.server.configuration.ConfigurationCommands
 import net.horizonsend.ion.server.features.client.commands.HudCommand
+import net.horizonsend.ion.server.features.gui.custom.navigation.NavigationTestCommand
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SettingsCommand
 import net.horizonsend.ion.server.features.player.NewPlayerProtection
 import net.horizonsend.ion.server.features.progression.achievements.AchievementsCommand
@@ -188,5 +189,6 @@ val commands: List<SLCommand> = listOf(
     ForbiddenBlocksCommand,
 	EnableProtectionMessagesCommand,
 	IonSitCommand,
-	SuicideCommand
+	SuicideCommand,
+	NavigationTestCommand
 )
