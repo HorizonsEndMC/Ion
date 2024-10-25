@@ -296,12 +296,12 @@ object NationsMap : IonServerComponent(true) {
 
 		val name = station.name
 		val world = station.world
-		val x = station.x
+		val x = station.x.toDouble()
 		val y = 128.0
 		val z = station.z.toDouble()
 		val radius = NATIONS_BALANCE.capturableStation.radius.toDouble()
 
-		markerSet.createCircleMarker(name, name, false, world, x.toDouble(), y, z, radius, radius, false)
+		markerSet.createCircleMarker(name, name, false, world, x, y, z, radius, radius, false)
 
 		updateSolarSiege(station)
 	}
