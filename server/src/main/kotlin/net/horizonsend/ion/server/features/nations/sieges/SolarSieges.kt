@@ -3,25 +3,32 @@ package net.horizonsend.ion.server.features.nations.sieges
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
+import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.formatNationName
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
+import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.time.Duration
+import java.util.Date
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -36,7 +43,7 @@ object SolarSieges : IonServerComponent() {
 		Tasks.asyncRepeat(20L, 20L, ::processPassivePoints)
 	}
 
-	private fun tryLoadSieges() = SolarSiegeData.allIds().forEach(::loadPriorSiege)
+	private fun tryLoadSieges() = SolarSiegeData.findActive().map(SolarSiegeData::_id).forEach(::loadPriorSiege)
 
 	private fun loadPriorSiege(id: Oid<SolarSiegeData>) {
 		val data = SolarSiegeData.findById(id) ?: return
@@ -48,11 +55,18 @@ object SolarSieges : IonServerComponent() {
 			data.attacker,
 			data.attackerPoints,
 			region.nation!!,
-			data.attackerPoints
+			data.attackerPoints,
+			SolarSiegeData.findPropById(id, SolarSiegeData::declareTime)!!.time
 		)
 
-		onGoingSieges[id] = siege
-		Notify.chatAndGlobal(ofChildren(text("Resumed ", HE_MEDIUM_GRAY), siege.formatName()))
+		if (siege.isPreparationPeriod()) {
+			scheduleSiegeStart(siege)
+		}
+
+		if (siege.isActive()) {
+			onGoingSieges[id] = siege
+			Notify.chatAndGlobal(ofChildren(text("Resumed ", HE_MEDIUM_GRAY), siege.formatName()))
+		}
 	}
 
 	/**
@@ -67,15 +81,23 @@ object SolarSieges : IonServerComponent() {
 			region,
 			attacker = attacker,
 			defender = defender,
+			declaredTime = System.currentTimeMillis()
 		)
 
-		onGoingSieges[siegeData] = siege
-		Notify.chatAndEvents(template(
-			text("{0} has initiated a siege on {1}'s solar siege zone in {2}", HE_MEDIUM_GRAY),
+		Notify.chatAndGlobal(template(
+			text("{0} has initiated a siege on {1}'s solar siege zone in {2}. The preparation period begins now.", HE_MEDIUM_GRAY),
 			formatNationName(attacker),
 			formatNationName(defender),
 			region.name
 		))
+
+		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, Embed(
+			title = "Siege Declaration",
+			description = "${formatNationName(attacker).plainText()} has declared a siege of ${formatNationName(defender).plainText()}'s Solar Siege holding in " +
+			"${region.world}. The siege will start <t:${System.currentTimeMillis() + TimeUnit.HOURS.toMillis(3)}:R>."
+		))
+
+		scheduleSiegeStart(siege)
 
 		return true
 	}
@@ -97,7 +119,7 @@ object SolarSieges : IonServerComponent() {
 			if (participationData.tagTime - now <= PARTICIPATION_EXPIRATION.toMillis()) return participationData.siege.let(onGoingSieges::get)
 		}
 
-		val contained = getAllCurrentSieges().firstOrNull { it.region.contains(player.location) } ?: return null
+		val contained = getAllCurrentSieges().firstOrNull { it.region.contains(player.location) && it.isActive() } ?: return null
 		updateParticipation(player, contained)
 		return contained
 	}
@@ -159,5 +181,25 @@ object SolarSieges : IonServerComponent() {
 		// Passive points are ticked once per second. Over the 90 minutes of the siege, the value of
 		// 3 players contesting should be equal to the reference value of a sunk destroyer
 		return (referenceDestroyerValue / durationSeconds) / 3
+	}
+
+	fun scheduleSiegeStart(siege: SolarSiege) {
+		val startupTask = runnable {
+			if (siege.isAbandoned) return@runnable cancel()
+			Notify.chatAndEvents(template(text("{0} has begun.", HE_MEDIUM_GRAY), siege.formatName()))
+
+			Discord.sendEmbed(IonServer.discordSettings.eventsChannel, Embed(
+				title = "Siege Start",
+				description = "${siege.formatName().plainText()} has begun. It will end <t:${System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(90)}:R>."
+			))
+
+			onGoingSieges[siege.databaseId] = siege
+		}
+
+		Tasks.asyncAt(Date(siege.getSiegeStart()), startupTask)
+	}
+
+	fun abandonSiege(siege: SolarSiege) {
+		siege.isAbandoned = true
 	}
 }
