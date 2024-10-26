@@ -444,7 +444,7 @@ object StarshipComputers : IonServerComponent() {
 			.filterIsInstance<RegionTerritory>()
 			.firstOrNull() ?: return false
 		val territory = Territory.findById(territoryId.id) ?: return false
-		val settlementId = territory.settlement ?: Nation.findById(territory.nation?: return false)?.capital ?: return false
+		val settlementId = territory.settlement ?: return false
 		return isMemberOfSettlement(this.slPlayerId, settlementId)
 	}
 
