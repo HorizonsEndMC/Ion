@@ -15,8 +15,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.registerIcon
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.World
 import org.dynmap.bukkit.DynmapPlugin
+import org.dynmap.markers.CircleMarker
 import org.dynmap.markers.Marker
 import org.dynmap.markers.MarkerAPI
 import org.dynmap.markers.MarkerIcon
@@ -66,6 +68,16 @@ object StarshipDisplay : IonServerComponent(true) {
 
 		val description = createDynmapPopupHTML(starship, isInHyperspace)
 
+		val circles = mutableListOf<CircleInfo>()
+
+		if (starship.isInterdicting) {
+			circles.add(CircleInfo(
+				"gravity_well",
+				starship.balancing.interdictionRange,
+				Color.fromRGB(128, 128, 128)
+			))
+		}
+
 		val starshipIcon = if (isInHyperspace) {
 			if (starship !is ActiveControlledStarship) return
 			val movement = Hyperspace.getHyperspaceMovement(starship)!!
@@ -82,7 +94,7 @@ object StarshipDisplay : IonServerComponent(true) {
 				movement,
 				description
 			)
-		} else createOverworldMarker(starship, displayName, markerIcon, description)
+		} else createOverworldMarker(starship, displayName, markerIcon, description, circles)
 
 		starshipsIcons[charIdentifier] = starshipIcon
 	}
@@ -117,14 +129,16 @@ object StarshipDisplay : IonServerComponent(true) {
 		starship: ActiveStarship,
 		displayName: String,
 		markerIcon: MarkerIcon,
-		description: String
+		description: String,
+		circles: List<CircleInfo>
 	) = StarshipIcon(
 		starship.charIdentifier,
 		displayName,
 		markerIcon,
 		starship.world,
 		starship.centerOfMass,
-		description
+		description,
+		circles
 	)
 
 	/** Creates a hyperspace icon **/
@@ -144,7 +158,8 @@ object StarshipDisplay : IonServerComponent(true) {
 			starship.centerOfMass.y,
 			movement.z.toInt()
 		),
-		description
+		description,
+		listOf() // hyperspace icons have no circles
 	)
 
 	/**
@@ -155,11 +170,18 @@ object StarshipDisplay : IonServerComponent(true) {
 		val iterator = starshipsIcons.iterator()
 
 		while (iterator.hasNext()) {
-			val (identifier, _) = iterator.next()
+			val (identifier, icon) = iterator.next()
 
 			if (ActiveStarships[identifier] != null) continue
 
+			val gravityWellCircleMarker: CircleMarker? = markerSet.findCircleMarker("${identifier}_gravity_well")
+			gravityWellCircleMarker?.deleteMarker()
+
 			markerSet.findMarker(identifier)?.deleteMarker()
+			for (circle in icon.circles) {
+				markerSet.findMarker("${icon.charIdentifier}_${circle.charIdentifier}")?.deleteMarker()
+			}
+
 			iterator.remove()
 		}
 	}
@@ -179,6 +201,7 @@ object StarshipDisplay : IonServerComponent(true) {
 		val world: World,
 		var position: Vec3i,
 		val description: String,
+		val circles: List<CircleInfo>
 	) {
 		fun update(markerSet: MarkerSet) {
 			val marker: Marker? = markerSet.findMarker(charIdentifier)
@@ -194,6 +217,15 @@ object StarshipDisplay : IonServerComponent(true) {
 
 			marker?.deleteMarker()
 			createMarker(markerSet)
+
+			val gravityWellCircleMarker: CircleMarker? = markerSet.findCircleMarker("${charIdentifier}_gravity_well")
+			gravityWellCircleMarker?.deleteMarker()
+
+			for (circle in circles) {
+				val circleMarker: CircleMarker? = markerSet.findCircleMarker("${charIdentifier}_${circle.charIdentifier}")
+				circleMarker?.deleteMarker()
+				createCircleMarker(markerSet, circle)
+			}
 		}
 
 		private fun createMarker(markerSet: MarkerSet): Marker? {
@@ -215,5 +247,33 @@ object StarshipDisplay : IonServerComponent(true) {
 
 			return marker
 		}
+
+		private fun createCircleMarker(markerSet: MarkerSet, info: CircleInfo): CircleMarker? {
+			val (x, y, z) = position
+
+			val circleMarker: CircleMarker? = markerSet.createCircleMarker(
+				"${charIdentifier}_${info.charIdentifier}",
+				"<p>$displayName's ${info.charIdentifier}</p>",
+				true,
+				world.name,
+				x.toDouble(),
+				y.toDouble(),
+				z.toDouble(),
+				info.radius.toDouble(),
+				info.radius.toDouble(),
+				false
+			)
+
+			circleMarker?.setFillStyle(0.25, info.color.asRGB())
+			circleMarker?.setLineStyle(0, 0.0, 0)
+
+			return circleMarker
+		}
 	}
+
+	data class CircleInfo(
+		val charIdentifier: String,
+		val radius: Int,
+		val color: Color
+	)
 }
