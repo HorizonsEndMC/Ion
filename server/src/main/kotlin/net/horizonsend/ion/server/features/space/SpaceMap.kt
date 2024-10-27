@@ -58,8 +58,9 @@ object SpaceMap : IonServerComponent(true) {
 				MassShadows.STAR_RADIUS.toDouble(),
 				false
 			)?.run {
-				setFillStyle(0.0, 0) // make the inside empty
-				setLineStyle(lineWeight, lineOpacity, Color.fromRGB(255, 102, 0).asRGB())
+				setFillStyle(0.25, Color.fromRGB(128, 128, 128).asRGB()) // translucent gray fill
+				setLineStyle(0, 0.0, 0) // no line weight, zero opacity, and black color
+
 			}
 		}
 
@@ -120,8 +121,8 @@ object SpaceMap : IonServerComponent(true) {
 				MassShadows.PLANET_RADIUS.toDouble(),
 				false
 			)?.run {
-				setFillStyle(0.0, 0) // make the inside empty
-				setLineStyle(lineWeight, lineOpacity, Color.fromRGB(255, 102, 0).asRGB())
+				setFillStyle(0.25, Color.fromRGB(128, 128, 128).asRGB()) // translucent gray fill
+				setLineStyle(0, 0.0, 0) // no line weight, zero opacity, and black color
 			}
 
 			// Create a marker to escape the planet view
