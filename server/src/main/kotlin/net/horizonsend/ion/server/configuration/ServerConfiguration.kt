@@ -263,7 +263,7 @@ data class ServerConfiguration(
 		@Serializable
 		data class DroppedItem(
 			val itemString: String,
-			val amount: Int = 1,
+			val amount: IntegerAmount = StaticIntegerAmount(1),
 			val dropChance: Float,
 		)
 

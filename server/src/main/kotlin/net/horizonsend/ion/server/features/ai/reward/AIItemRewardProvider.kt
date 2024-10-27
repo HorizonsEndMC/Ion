@@ -20,7 +20,7 @@ class AIItemRewardProvider(
 ) : AIRewardsProvider {
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
 	val items = configuration.items.associate { (string, count, percent) ->
-		fromItemString(string).apply { amount = count } to percent
+		fromItemString(string).apply { amount = count.get() } to percent
 	}
 
 	override fun processPrimaryDamagerRewards(damager: PlayerDamager, sum: Int, dataMap: ShipKillXP.ShipDamageData) {

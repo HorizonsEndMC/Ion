@@ -5,10 +5,14 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.server.configuration.ServerConfiguration.PlanetSpawnConfig.DroppedItem
+import net.horizonsend.ion.server.configuration.StaticIntegerAmount
 import net.horizonsend.ion.server.configuration.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
+import net.horizonsend.ion.server.features.ai.configuration.AITemplate.CreditRewardProviderConfiguration
+import net.horizonsend.ion.server.features.ai.configuration.AITemplate.ItemRewardProviderConfiguration
+import net.horizonsend.ion.server.features.ai.configuration.AITemplate.SLXPRewardProviderConfiguration
 import net.horizonsend.ion.server.features.ai.faction.AIFaction
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.ABYSSAL
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
@@ -83,15 +87,9 @@ object AITemplateRegistry {
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(WATCHERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
-			DroppedItem(
-			itemString = CustomItems.SUPERCONDUCTOR.identifier,
-			dropChance = 1.0f,
-			amount = 1,
-		)
-		)))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 		.build()
 	)
 
@@ -102,15 +100,9 @@ object AITemplateRegistry {
 			engagementRange = 2500.0
 		)
 		.addFactionConfiguration(WATCHERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
-			DroppedItem(
-			itemString = CustomItems.SUPERCONDUCTOR.identifier,
-			dropChance = 1.0f,
-			amount = 1,
-		)
-		)))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -127,15 +119,9 @@ object AITemplateRegistry {
 			engagementRange = 2500.0
 		)
 		.addFactionConfiguration(WATCHERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(18000.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
-			DroppedItem(
-			itemString = CustomItems.SUPERCONDUCTOR.identifier,
-			dropChance = 1.0f,
-			amount = 1,
-		)
-		)))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+		.addRewardProvider(CreditRewardProviderConfiguration(18000.0))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
@@ -159,15 +145,9 @@ object AITemplateRegistry {
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
-			DroppedItem(
-			itemString = CustomItems.SUPERCONDUCTOR.identifier,
-			dropChance = 1.0f,
-			amount = 1,
-		)
-		)))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 		.build()
 	)
 
@@ -178,15 +158,9 @@ object AITemplateRegistry {
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
-			DroppedItem(
-			itemString = CustomItems.SUPERCONDUCTOR.identifier,
-			dropChance = 1.0f,
-			amount = 1,
-		)
-		)))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 		.build()
 	)
 
@@ -197,8 +171,8 @@ object AITemplateRegistry {
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -215,8 +189,8 @@ object AITemplateRegistry {
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.9))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -235,8 +209,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.4))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
+		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
 		.build()
 	)
 
@@ -247,8 +221,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.4))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
+		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
 		.build()
 	)
 
@@ -259,8 +233,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.4))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
+		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
 		.build()
 	)
 
@@ -271,8 +245,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.4))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
+		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
 		.build()
 	)
 
@@ -283,8 +257,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.4))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
+		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
 		.build()
 	)
 
@@ -295,8 +269,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.4))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
+		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
 		.build()
 	)
 
@@ -307,8 +281,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.4))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
+		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
 		.build()
 	)
 
@@ -319,8 +293,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.4))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
+		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
 		.build()
 	)
 
@@ -331,8 +305,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.5))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
+		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
 		.build()
 	)
 
@@ -343,8 +317,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.5))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
+		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
 		.build()
 	)
 
@@ -355,8 +329,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.5))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
+		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
 		.build()
 	)
 
@@ -367,8 +341,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.5))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
+		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
 		.build()
 	)
 
@@ -379,8 +353,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.5))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
+		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
 		.build()
 	)
 
@@ -391,8 +365,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.5))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
+		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
 		.build()
 	)
 
@@ -403,8 +377,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2650.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
+		.addRewardProvider(CreditRewardProviderConfiguration(2650.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -426,8 +400,8 @@ object AITemplateRegistry {
 		engagementRange = 1250.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(5750.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
+		.addRewardProvider(CreditRewardProviderConfiguration(5750.0))
 		.build()
 	)
 
@@ -438,8 +412,8 @@ object AITemplateRegistry {
 		engagementRange = 1250.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(3750.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
+		.addRewardProvider(CreditRewardProviderConfiguration(3750.0))
 		.build()
 	)
 
@@ -450,8 +424,8 @@ object AITemplateRegistry {
 		engagementRange = 1250.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2650.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
+		.addRewardProvider(CreditRewardProviderConfiguration(2650.0))
 		.build()
 	)
 
@@ -462,8 +436,8 @@ object AITemplateRegistry {
 		engagementRange = 1250.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2650.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
+		.addRewardProvider(CreditRewardProviderConfiguration(2650.0))
 		.build()
 	)
 
@@ -474,8 +448,8 @@ object AITemplateRegistry {
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1850.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
+		.addRewardProvider(CreditRewardProviderConfiguration(1850.0))
 		.build()
 	)
 
@@ -486,8 +460,8 @@ object AITemplateRegistry {
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(950.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
+		.addRewardProvider(CreditRewardProviderConfiguration(950.0))
 		.build()
 	)
 
@@ -498,8 +472,8 @@ object AITemplateRegistry {
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.8))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1850.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
+		.addRewardProvider(CreditRewardProviderConfiguration(1850.0))
 		.build()
 	)
 
@@ -510,8 +484,8 @@ object AITemplateRegistry {
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(950.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(950.0))
 		.build()
 	)
 
@@ -522,8 +496,8 @@ object AITemplateRegistry {
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(950.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(950.0))
 		.build()
 	)
 
@@ -534,8 +508,8 @@ object AITemplateRegistry {
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(950.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(950.0))
 		.build()
 	)
 
@@ -549,8 +523,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(400.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(400.0))
 		.build()
 	)
 
@@ -561,8 +535,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
 		.build()
 	)
 
@@ -573,8 +547,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
 		.build()
 	)
 
@@ -585,8 +559,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(550.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(550.0))
 		.build()
 	)
 
@@ -597,8 +571,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
 		.build()
 	)
 
@@ -609,8 +583,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
 		.build()
 	)
 
@@ -621,8 +595,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
 		.build()
 	)
 
@@ -633,8 +607,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(550.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(550.0))
 		.build()
 	)
 
@@ -645,8 +619,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(550.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(550.0))
 		.build()
 	)
 
@@ -657,8 +631,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(550.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(550.0))
 		.build()
 	)
 
@@ -669,8 +643,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(400.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(400.0))
 		.build()
 	)
 
@@ -684,8 +658,8 @@ object AITemplateRegistry {
 		engagementRange = 500.0
 	)
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2650.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(2650.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
@@ -702,8 +676,8 @@ object AITemplateRegistry {
 		engagementRange = 500.0
 	)
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(650.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(650.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.65,
 			delay = 100L,
@@ -720,8 +694,8 @@ object AITemplateRegistry {
 		engagementRange = 500.0
 	)
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1850.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(1850.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.5,
 			delay = 100L,
@@ -738,8 +712,8 @@ object AITemplateRegistry {
 		engagementRange = 500.0
 	)
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2560.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(2560.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
@@ -756,8 +730,8 @@ object AITemplateRegistry {
 		engagementRange = 500.0
 	)
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(650.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(650.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.55,
 			delay = 100L,
@@ -774,8 +748,8 @@ object AITemplateRegistry {
 		engagementRange = 500.0
 	)
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(650.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(650.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.55,
 			delay = 100L,
@@ -792,8 +766,8 @@ object AITemplateRegistry {
 		engagementRange = 500.0
 	)
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.6))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(650.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(650.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.55,
 			delay = 100L,
@@ -813,8 +787,8 @@ object AITemplateRegistry {
 		engagementRange = 1000.0
 	)
 		.addFactionConfiguration(TSAII_RAIDERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.7))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1550.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.7))
+		.addRewardProvider(CreditRewardProviderConfiguration(1550.0))
 		.build()
 	)
 
@@ -825,8 +799,8 @@ object AITemplateRegistry {
 		engagementRange = 1000.0
 	)
 		.addFactionConfiguration(TSAII_RAIDERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.7))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1550.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.7))
+		.addRewardProvider(CreditRewardProviderConfiguration(1550.0))
 		.build()
 	)
 
@@ -837,8 +811,8 @@ object AITemplateRegistry {
 		engagementRange = 1000.0
 	)
 		.addFactionConfiguration(TSAII_RAIDERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.7))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(2500.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.7))
+		.addRewardProvider(CreditRewardProviderConfiguration(2500.0))
 		.build()
 	)
 
@@ -849,8 +823,8 @@ object AITemplateRegistry {
 		engagementRange = 1000.0
 	)
 		.addFactionConfiguration(TSAII_RAIDERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.7))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(6500.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.7))
+		.addRewardProvider(CreditRewardProviderConfiguration(6500.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -868,8 +842,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 //		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(400.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(400.0))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 5L,
@@ -896,8 +870,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 5L,
@@ -924,8 +898,8 @@ object AITemplateRegistry {
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 5L,
@@ -956,15 +930,9 @@ object AITemplateRegistry {
 		engagementRange = 3000.0
 	)
 		.addFactionConfiguration(ABYSSAL)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(3500.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
-			DroppedItem(
-				itemString = Material.ROTTEN_FLESH.name,
-				dropChance = 0.5f,
-				amount = 2,
-			)
-		)))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.55))
+		.addRewardProvider(CreditRewardProviderConfiguration(3500.0))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = Material.ROTTEN_FLESH.name, dropChance = 0.5f, amount = VariableIntegerAmount(2, 20),))))
 		.build()
 	)
 
@@ -976,9 +944,8 @@ object AITemplateRegistry {
 		engagementRange = 3000.0
 	)
 		.addFactionConfiguration(ABYSSAL)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.25))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
+		.addRewardProvider(CreditRewardProviderConfiguration(7500.0))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 5L,
@@ -992,13 +959,10 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
-			DroppedItem(
-				itemString = CustomItems.SUPERCONDUCTOR.identifier,
-				dropChance = 0.5f,
-				amount = 2,
-			)
-		)))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
 		.build()
 	)
 
@@ -1010,9 +974,8 @@ object AITemplateRegistry {
 		engagementRange = 3000.0
 	)
 		.addFactionConfiguration(ABYSSAL)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.55))
+		.addRewardProvider(CreditRewardProviderConfiguration(7500.0))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 5L,
@@ -1026,13 +989,10 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
-			DroppedItem(
-				itemString = CustomItems.SUPERCONDUCTOR.identifier,
-				dropChance = 0.5f,
-				amount = 2,
-			)
-		)))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
 		.build()
 	)
 
@@ -1043,9 +1003,8 @@ object AITemplateRegistry {
 		engagementRange = 3000.0
 	)
 		.addFactionConfiguration(ABYSSAL)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.55))
+		.addRewardProvider(CreditRewardProviderConfiguration(7500.0))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 5L,
@@ -1059,13 +1018,10 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
-			DroppedItem(
-				itemString = CustomItems.SUPERCONDUCTOR.identifier,
-				dropChance = 0.5f,
-				amount = 2,
-			)
-		)))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
 		.build()
 	)
 
@@ -1076,9 +1032,8 @@ object AITemplateRegistry {
 		engagementRange = 3000.0
 	)
 		.addFactionConfiguration(ABYSSAL)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(7500.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", 1, 0.25f))))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.55))
+		.addRewardProvider(CreditRewardProviderConfiguration(7500.0))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 5L,
@@ -1092,13 +1047,10 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
-			DroppedItem(
-				itemString = CustomItems.SUPERCONDUCTOR.identifier,
-				dropChance = 1.0f,
-				amount = 1,
-			)
-		)))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
 		.build()
 	)
 
@@ -1109,17 +1061,11 @@ object AITemplateRegistry {
 		engagementRange = 1000.0
 	)
 		.addFactionConfiguration(PUMPKINS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.55))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(3500.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, 1, 0.5f))))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItems.PUMPKIN_GRENADE.identifier, 2, 0.5f))))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(
-			DroppedItem(
-				itemString = CustomItems.SUPERCONDUCTOR.identifier,
-				dropChance = 0.5f,
-				amount = 1,
-			)
-		)))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.55))
+		.addRewardProvider(CreditRewardProviderConfiguration(3500.0))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, VariableIntegerAmount(3, 5), 0.25f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItems.PUMPKIN_GRENADE.identifier, VariableIntegerAmount(0, 3), 1.05f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 0.5f, amount = StaticIntegerAmount(1)))))
 		.build()
 	)
 
@@ -1130,10 +1076,10 @@ object AITemplateRegistry {
 		engagementRange = 1000.0
 	)
 		.addFactionConfiguration(PUMPKINS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.35))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(1500.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, 1, 0.5f))))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItems.PUMPKIN_GRENADE.identifier, 2, 0.5f))))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.35))
+		.addRewardProvider(CreditRewardProviderConfiguration(1500.0))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, VariableIntegerAmount(3, 5), 0.25f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItems.PUMPKIN_GRENADE.identifier, VariableIntegerAmount(0, 3), 1.0f))))
 		.build()
 	)
 
@@ -1144,9 +1090,10 @@ object AITemplateRegistry {
 		engagementRange = 1000.0
 	)
 		.addFactionConfiguration(SKELETONS)
-		.addRewardProvider(AITemplate.SLXPRewardProviderConfiguration(0.35))
-		.addRewardProvider(AITemplate.CreditRewardProviderConfiguration(300.0))
-		.addRewardProvider(AITemplate.ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BONE.name, 3, 0.5f))))
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.35))
+		.addRewardProvider(CreditRewardProviderConfiguration(300.0))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BONE.name, VariableIntegerAmount(3, 5), 0.5f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SKELETON_SKULL.name, StaticIntegerAmount(1), 0.25f))))
 		.build()
 	)
 
