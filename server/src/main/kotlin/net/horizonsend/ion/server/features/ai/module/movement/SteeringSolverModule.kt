@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.ai.module.movement
 import SteeringModule
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -24,6 +25,7 @@ import kotlin.math.sign
 class SteeringSolverModule(
 	controller: AIController,
 	val steeringModule: SteeringModule,
+	val difficulty : DifficultyModule,
 	val target: Supplier<AITarget?>,
 	val type : MovementType = MovementType.CRUISE
 ) : AIModule(controller) {
@@ -70,7 +72,7 @@ class SteeringSolverModule(
 
 	fun updateDirectControl() {
 		if (!controller.starship.isDirectControlEnabled)	controller.starship.setDirectControlEnabled(true)
-		controller.setShiftFlying(true)
+		if (!difficulty.speedDebuff) controller.setShiftFlying(true)
 
 		//map onto player slots
 		controller.selectedDirectControlSpeed = round(throttle * 8.0).toInt() + 1
@@ -122,6 +124,10 @@ class SteeringSolverModule(
 
 		var (accel, maxSpeed) = starship.getThrustData(dx, dz)
 		maxSpeed /= 2
+		if (difficulty.speedDebuff) {
+			maxSpeed = round(0.7 * maxSpeed).toInt()
+		}
+
 		maxSpeed = (maxSpeed * starship.balancing.cruiseSpeedMultiplier).toInt()
 		val finalSpeed = round(throttle * maxSpeed).toInt()
 		starship.speedLimit = finalSpeed

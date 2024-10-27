@@ -5,6 +5,7 @@ import SteeringModule
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.IonServer.aiContextConfig
 import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.Starship
@@ -196,6 +197,7 @@ class OffsetSeekContext(
 class FaceSeekContext(
 	val ship : Starship,
 	val generalTarget : Supplier<AITarget?>,
+	val difficulty: DifficultyModule,
 	val config : AIContextConfiguration.FaceSeekContextConfiguration = aiContextConfig.defaultFaceSeekContextConfiguration,
 ) : ContextMap() {
 	override fun populateContext() {
@@ -208,9 +210,9 @@ class FaceSeekContext(
 		val dist = offset.length() + 1e-4
 		offset.normalize()
 		offset.multiply(config.faceWeight).add(ship.getTargetForward().direction).normalize()
-		dotContext(offset,0.0, dist / config.falloff * config.weight)
+		dotContext(offset,0.0, dist / config.falloff * config.weight * difficulty.faceModifier)
 		for (i in 0 until NUMBINS) {
-			bins[i] = min(bins[i], config.maxWeight)
+			bins[i] = min(bins[i], config.maxWeight * difficulty.faceModifier)
 		}
 		checkContext()
 	}
@@ -301,6 +303,7 @@ class SquadFormationContext(
  */
 class ShieldAwarenessContext(
 	val ship : Starship,
+	val difficulty: DifficultyModule,
 	val config : AIContextConfiguration.ShieldAwarenessContextConfiguration = aiContextConfig.defaultShieldAwarenessContextConfiguration,
 )  : ContextMap() {
 	val incomingFire : ContextMap = object : ContextMap() {}
@@ -324,6 +327,7 @@ class ShieldAwarenessContext(
 	}
 	override fun populateContext() {
 		clearContext()
+		if (!difficulty.isShieldAware) return
 		val shipPos = ship.centerOfMass.toVector()
 		incomingFire.multScalar(config.histDecay)
 		for (shield in ship.shields) {

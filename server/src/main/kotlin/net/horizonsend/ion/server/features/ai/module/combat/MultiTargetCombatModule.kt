@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.ai.module.combat
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
@@ -12,8 +13,12 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 
-abstract class MultiTargetCombatModule(controller: AIController, val targetingSupplier: Supplier<List<AITarget>>) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
-    var shotDeviation: Double = 0.025
+abstract class MultiTargetCombatModule(
+	controller: AIController,
+	val difficulty : DifficultyModule,
+	val targetingSupplier: Supplier<List<AITarget>>
+) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
+	val shotDeviation: Double get()  {return difficulty.shotVariation + 0.025}
 
     open var shouldFaceTarget: Boolean = false
 

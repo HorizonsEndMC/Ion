@@ -2,9 +2,14 @@ package net.horizonsend.ion.server.features.ai.module.positioning
 
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 
-class DistancePositioningModule(controller: AIController, val config : AISteeringConfiguration.DistanceConfiguration) : AIModule(controller){
+class DistancePositioningModule(
+	controller: AIController,
+	val difficulty : DifficultyModule,
+	val config : AISteeringConfiguration.DistanceConfiguration
+) : AIModule(controller){
 	val ship get() = controller.starship
 	val minDist get() = config.minDist
 	val maxDist get() = config.maxDist
@@ -17,6 +22,8 @@ class DistancePositioningModule(controller: AIController, val config : AISteerin
 	var isFleeing = false
 
 	fun calcDistance() : Double {
+		if (!difficulty.doBackOff) return optimalDist
+
 		if (controller.getMinimumShieldHealth() <= startFleeing) {
 			isFleeing = true
 		}

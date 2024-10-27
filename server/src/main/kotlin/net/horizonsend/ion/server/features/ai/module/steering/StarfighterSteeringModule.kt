@@ -4,16 +4,18 @@ import BasicSteeringModule
 import net.horizonsend.ion.server.IonServer.aiContextConfig
 import net.horizonsend.ion.server.IonServer.aiSteeringConfig
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import java.util.function.Supplier
 
 class StarfighterSteeringModule(
 	controller: AIController,
+	difficulty : DifficultyModule,
 	generalTarget: Supplier<AITarget?>,
 	orbitDist : Supplier<Double>,
 	override val config: AISteeringConfiguration.BasicSteeringConfiguration = aiSteeringConfig.starfighterBasicSteeringConfiguration
-) : BasicSteeringModule(controller, generalTarget){
+) : BasicSteeringModule(controller, difficulty ,generalTarget){
 
 
 	init {
@@ -40,8 +42,8 @@ class StarfighterSteeringModule(
 		contexts["danger"]= BlankContext()
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,aiContextConfig.starfighterOffsetSeekContextConfiguration, offsetSupplier = orbitDist)
-		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget, aiContextConfig.starfighterFaceSeekContextConfiguration)
-		contexts["shieldAwareness"] = ShieldAwarenessContext(ship)
+		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty, aiContextConfig.starfighterFaceSeekContextConfiguration)
+		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)
 		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
 		contexts["worldBlockDanger"]=WorldBlockDangerContext(ship)

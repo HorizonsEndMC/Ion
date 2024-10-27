@@ -1,7 +1,5 @@
-import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.IonServer.aiContextConfig
 import net.horizonsend.ion.server.IonServer.aiSteeringConfig
-import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.steering.BlankContext
 import net.horizonsend.ion.server.features.ai.module.steering.BorderDangerContext
 import net.horizonsend.ion.server.features.ai.module.steering.FaceSeekContext
@@ -14,30 +12,18 @@ import net.horizonsend.ion.server.features.ai.module.steering.ShipDangerContext
 import net.horizonsend.ion.server.features.ai.module.steering.WanderContext
 import net.horizonsend.ion.server.features.ai.module.steering.WorldBlockDangerContext
 import net.horizonsend.ion.server.features.ai.util.AITarget
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
-import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import org.bukkit.FluidCollisionMode
-import org.bukkit.util.Vector
-import org.bukkit.util.noise.SimplexOctaveGenerator
-import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Supplier
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.pow
 
 /** Steering Module that can travel though space */
 open class TravelSteeringModule(
 	controller: AIController,
+	difficulty: DifficultyModule,
 	val generalTarget : Supplier<AITarget?>,
 	orbitDist : Supplier<Double>,
-	val goalPoint : Vec3i) : SteeringModule(controller) {
+	val goalPoint : Vec3i
+) : SteeringModule(controller, difficulty,) {
 
 	open val config = aiSteeringConfig.gunshipBasicSteeringConfiguration
 
@@ -65,9 +51,9 @@ open class TravelSteeringModule(
 		contexts["danger"]= BlankContext()
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this)
-		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget)
+		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty)
 		contexts["goalSeek"] = GoalSeekContext(ship,goalPoint)
-		contexts["shieldAwareness"] = ShieldAwarenessContext(ship)
+		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)
 		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
 		contexts["worldBlockDanger"]=WorldBlockDangerContext(ship)

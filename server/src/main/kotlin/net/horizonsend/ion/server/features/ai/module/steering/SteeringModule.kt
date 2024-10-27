@@ -1,4 +1,5 @@
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -41,7 +42,10 @@ should be the LAST step.
  *  * The master steering function that determines thrust and heading
  *  * Each steering module has its own configuration, each Context also has its own configuration
  */
-abstract class SteeringModule(var controler: AIController) : AIModule(controler){
+abstract class SteeringModule(
+	var controler: AIController,
+	val difficulty: DifficultyModule
+) : AIModule(controler){
 	val ship : Starship get() = controler.starship
 	val contexts = mutableMapOf<String,ContextMap>()
 	val offset = Math.random()
