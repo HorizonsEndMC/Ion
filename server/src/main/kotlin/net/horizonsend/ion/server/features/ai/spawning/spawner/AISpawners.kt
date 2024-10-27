@@ -966,7 +966,7 @@ object AISpawners : IonServerComponent(true) {
 			SingleSpawn(
 				RandomShipSupplier(PUMPKINS.asSpawnedShip(PUMPKIN_DEVOURER), PUMPKINS.asSpawnedShip(PUMPKIN_KIN)),
 				formatLocationSupplier(it, 1000.0, 3000.0),
-				spawnMessage = SpawnMessage.GlobalMessage("<#FFA500>A... {0}? has been spotted at {1}, {3}, in {4}".miniMessage())
+				spawnMessage = SpawnMessage.ChatMessage("<#FFA500>A... {0}? has been spotted at {1}, {3}, in {4}".miniMessage())
 			)
 		)}
 
@@ -986,7 +986,7 @@ object AISpawners : IonServerComponent(true) {
 					ABYSSAL.asSpawnedShip(GRAFT)
 				),
 				formatLocationSupplier(it, 1000.0, 3000.0),
-				spawnMessage = SpawnMessage.GlobalMessage("<$ABYSSAL_DESATURATED_RED>We arrive in your \"{4}\".".miniMessage())
+				spawnMessage = SpawnMessage.ChatMessage("<$ABYSSAL_DESATURATED_RED>We arrive in your \"{4}\".".miniMessage())
 			)
 		)}
 	}
