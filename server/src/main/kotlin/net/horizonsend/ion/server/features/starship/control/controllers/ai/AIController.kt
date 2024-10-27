@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.ai.module.AIModule
-import net.horizonsend.ion.server.features.ai.module.movement.SteeringSolverModule
+import net.horizonsend.ion.server.features.ai.module.steering.SteeringSolverModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget

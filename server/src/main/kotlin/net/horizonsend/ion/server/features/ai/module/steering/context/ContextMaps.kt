@@ -1,8 +1,6 @@
-package net.horizonsend.ion.server.features.ai.module.steering
+package net.horizonsend.ion.server.features.ai.module.steering.context
 
-import ContextMap
 import SteeringModule
-import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.IonServer.aiContextConfig
 import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
@@ -340,7 +338,7 @@ class ShieldAwarenessContext(
 		for (i in 0 until NUMBINS) {
 			val dir = bindir[i]
 			if (abs(dir.dot(Vector(0.0,1.0,0.0))) >= 0.9 ) continue //skip vertical directions
-			val rotatedCenters = ship.shields.map {transformCords(ship,it,dir)}
+			val rotatedCenters = ship.shields.map { transformCords(ship,it,dir) }
 			val response = object : ContextMap() {}
 			for (j in 0 until ship.shields.size) {
 				val shield = ship.shields[j]

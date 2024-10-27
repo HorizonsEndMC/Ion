@@ -1,12 +1,11 @@
-import net.horizonsend.ion.server.features.ai.module.steering.LinearContext
+package net.horizonsend.ion.server.features.ai.module.steering.context
+
 import net.horizonsend.ion.server.miscellaneous.utils.isNan
 import org.bukkit.util.Vector
 import java.util.Arrays
 import kotlin.math.PI
-import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
 
 /**

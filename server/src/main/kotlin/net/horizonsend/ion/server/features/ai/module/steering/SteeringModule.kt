@@ -1,5 +1,6 @@
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
+import net.horizonsend.ion.server.features.ai.module.steering.context.ContextMap
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -44,7 +45,7 @@ should be the LAST step.
  */
 abstract class SteeringModule(controller: AIController, val difficulty: DifficultyModule) : AIModule(controller) {
 	val ship : Starship get() = controller.starship
-	val contexts = mutableMapOf<String,ContextMap>()
+	val contexts = mutableMapOf<String, ContextMap>()
 	val offset = Math.random()
 
 	var thrustOut = Vector(0.0,0.0,1.0)

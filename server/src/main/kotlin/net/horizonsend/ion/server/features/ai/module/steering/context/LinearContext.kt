@@ -1,8 +1,6 @@
-package net.horizonsend.ion.server.features.ai.module.steering
+package net.horizonsend.ion.server.features.ai.module.steering.context
 
-import org.bukkit.util.Vector
-import java.util.*
-import kotlin.math.PI
+import java.util.Arrays
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min

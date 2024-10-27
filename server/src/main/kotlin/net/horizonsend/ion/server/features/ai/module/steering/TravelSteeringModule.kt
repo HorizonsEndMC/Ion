@@ -1,16 +1,17 @@
 import net.horizonsend.ion.server.IonServer.aiSteeringConfig
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
-import net.horizonsend.ion.server.features.ai.module.steering.BlankContext
-import net.horizonsend.ion.server.features.ai.module.steering.BorderDangerContext
-import net.horizonsend.ion.server.features.ai.module.steering.FaceSeekContext
-import net.horizonsend.ion.server.features.ai.module.steering.GoalSeekContext
-import net.horizonsend.ion.server.features.ai.module.steering.MovementInterestContext
-import net.horizonsend.ion.server.features.ai.module.steering.ObstructionDangerContext
-import net.horizonsend.ion.server.features.ai.module.steering.OffsetSeekContext
-import net.horizonsend.ion.server.features.ai.module.steering.ShieldAwarenessContext
-import net.horizonsend.ion.server.features.ai.module.steering.ShipDangerContext
-import net.horizonsend.ion.server.features.ai.module.steering.WanderContext
-import net.horizonsend.ion.server.features.ai.module.steering.WorldBlockDangerContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.BlankContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.BorderDangerContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.ContextMap
+import net.horizonsend.ion.server.features.ai.module.steering.context.FaceSeekContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.GoalSeekContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.MovementInterestContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.ObstructionDangerContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.OffsetSeekContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.ShieldAwarenessContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.ShipDangerContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.WanderContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.WorldBlockDangerContext
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -56,7 +57,7 @@ open class TravelSteeringModule(
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)
 		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
-		contexts["worldBlockDanger"]=WorldBlockDangerContext(ship)
+		contexts["worldBlockDanger"]= WorldBlockDangerContext(ship)
 		contexts["obstructionDanger"] = ObstructionDangerContext(ship,obstructions)
 	}
 

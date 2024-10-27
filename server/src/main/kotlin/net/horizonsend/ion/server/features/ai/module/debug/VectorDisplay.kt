@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.ai.module.debug
 
-import ContextMap
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.ai.module.steering.context.ContextMap
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship

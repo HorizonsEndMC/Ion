@@ -5,6 +5,16 @@ import net.horizonsend.ion.server.IonServer.aiContextConfig
 import net.horizonsend.ion.server.IonServer.aiSteeringConfig
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
+import net.horizonsend.ion.server.features.ai.module.steering.context.BlankContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.BorderDangerContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.FaceSeekContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.MovementInterestContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.ObstructionDangerContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.OffsetSeekContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.ShieldAwarenessContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.ShipDangerContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.WanderContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.WorldBlockDangerContext
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import java.util.function.Supplier
@@ -46,7 +56,7 @@ class CapitalSteeringModule(
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty, aiContextConfig.capitalShieldAwarenessContextConfiguration)
 		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
-		contexts["worldBlockDanger"]=WorldBlockDangerContext(ship)
+		contexts["worldBlockDanger"]= WorldBlockDangerContext(ship)
 		contexts["obstructionDanger"] = ObstructionDangerContext(ship,obstructions)
 	}
 }

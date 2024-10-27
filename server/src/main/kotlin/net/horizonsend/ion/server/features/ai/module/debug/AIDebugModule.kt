@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.ai.module.debug
 
 
 import BasicSteeringModule
-import ContextMap
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.steering.context.ContextMap
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -95,8 +95,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 			val dustOptions = Particle.DustOptions(Color.BLUE, 4f,)
 			val orbitTarget = mod.orbitTarget
 			if (orbitTarget != null) {
-				player.spawnParticle(particle, orbitTarget.x, orbitTarget.y, orbitTarget.z,
-					1, 0.0, 0.0, 0.0, 0.0, dustOptions)
+				player.spawnParticle(particle, orbitTarget.x, orbitTarget.y, orbitTarget.z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions)
 			}
 		}
 	}

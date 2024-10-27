@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.ai.module.movement
+package net.horizonsend.ion.server.features.ai.module.steering
 
 import SteeringModule
 import net.horizonsend.ion.server.features.ai.module.AIModule

@@ -16,11 +16,11 @@ import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.TrackingModule
-import net.horizonsend.ion.server.features.ai.module.movement.SteeringSolverModule
-import net.horizonsend.ion.server.features.ai.module.positioning.DistancePositioningModule
 import net.horizonsend.ion.server.features.ai.module.steering.CapitalSteeringModule
+import net.horizonsend.ion.server.features.ai.module.steering.DistancePositioningModule
 import net.horizonsend.ion.server.features.ai.module.steering.GunshipSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.StarfighterSteeringModule
+import net.horizonsend.ion.server.features.ai.module.steering.SteeringSolverModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestLargeStarshipTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestPlayerTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestSmallStarshipTargetingModule
@@ -58,13 +58,15 @@ object AIControllerFactories : IonServerComponent() {
 				distance::calcDistance
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,
 				difficulty,
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
-			))
+			)
+			)
 
 			builder
 		}
@@ -92,13 +94,15 @@ object AIControllerFactories : IonServerComponent() {
 				distance::calcDistance
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,
 				difficulty,
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
-			))
+			)
+			)
 
 			builder
 		}
@@ -126,13 +130,15 @@ object AIControllerFactories : IonServerComponent() {
 				distance::calcDistance
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,
 				difficulty,
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
-			))
+			)
+			)
 
 			builder
 		}
@@ -157,13 +163,15 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,
 				difficulty,
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
-			))
+			)
+			)
 
 			builder
 		}
@@ -190,13 +198,15 @@ object AIControllerFactories : IonServerComponent() {
 				distance::calcDistance
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,
 				difficulty,
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
-			))
+			)
+			)
 
 			builder.addModule(ContactsJammerModule::class, ContactsJammerModule(controller, 300.0, controller.getCoreModuleSupplier<TargetingModule>(TargetingModule::class).map { it.findTargets() }))
 			builder
@@ -227,13 +237,15 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.corvetteBasicSteeringConfiguration
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,
 				difficulty,
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
-			))
+			)
+			)
 
 			builder
 		}
@@ -261,13 +273,15 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.corvetteBasicSteeringConfiguration
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,
 				difficulty,
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
-			))
+			)
+			)
 
 			builder
 		}
@@ -296,13 +310,15 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.corvetteBasicSteeringConfiguration
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,
 				difficulty,
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
-			))
+			)
+			)
 
 
 			builder
@@ -331,13 +347,15 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.miniFrigateBasicSteeringConfiguration
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,
 				difficulty,
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
-			))
+			)
+			)
 
 			builder
 		}
@@ -363,12 +381,14 @@ object AIControllerFactories : IonServerComponent() {
 				distance::calcDistance
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,difficulty,
 				targeting::findTarget,
 				SteeringSolverModule.MovementType.CRUISE
-			))
+			)
+			)
 
 
 			builder
@@ -396,12 +416,14 @@ object AIControllerFactories : IonServerComponent() {
 				distance::calcDistance
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,difficulty,
 				targeting::findTarget,
 				SteeringSolverModule.MovementType.CRUISE
-			))
+			)
+			)
 
 
 			builder
@@ -430,12 +452,14 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.destroyerBasicSteeringConfiguration
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,difficulty,
 				targeting::findTarget,
 				SteeringSolverModule.MovementType.CRUISE
-			))
+			)
+			)
 
 
 			builder
@@ -463,12 +487,14 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.destroyerBasicSteeringConfiguration
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,difficulty,
 				targeting::findTarget,
 				SteeringSolverModule.MovementType.CRUISE
-			))
+			)
+			)
 
 
 			builder
@@ -498,12 +524,14 @@ object AIControllerFactories : IonServerComponent() {
 				config = aiSteeringConfig.battlecruiserBasicSteeringConfiguration
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,difficulty,
 				targeting::findTarget,
 				SteeringSolverModule.MovementType.CRUISE
-			))
+			)
+			)
 
 			builder
 		}
@@ -568,13 +596,15 @@ object AIControllerFactories : IonServerComponent() {
 				cruiseEndpoint.invoke(controller).orNull() ?: Vec3i(0, 0, 0)
 			))
 
-			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
 				controller,
 				steering,
 				difficulty,
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
-			))
+			)
+			)
 
 			builder
 		}
