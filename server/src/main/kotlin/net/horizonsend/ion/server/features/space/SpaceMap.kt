@@ -59,7 +59,7 @@ object SpaceMap : IonServerComponent(true) {
 				false
 			)?.run {
 				setFillStyle(0.0, 0) // make the inside empty
-				setLineStyle(lineWeight, lineOpacity, Color.fromRGB(128, 0, 0).asRGB())
+				setLineStyle(lineWeight, lineOpacity, Color.fromRGB(255, 102, 0).asRGB())
 			}
 		}
 
@@ -121,7 +121,7 @@ object SpaceMap : IonServerComponent(true) {
 				false
 			)?.run {
 				setFillStyle(0.0, 0) // make the inside empty
-				setLineStyle(lineWeight, lineOpacity, Color.fromRGB(128, 0, 0).asRGB())
+				setLineStyle(lineWeight, lineOpacity, Color.fromRGB(255, 102, 0).asRGB())
 			}
 
 			// Create a marker to escape the planet view
