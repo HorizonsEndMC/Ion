@@ -11,15 +11,15 @@ class DistancePositioningModule(
 	val config : AISteeringConfiguration.DistanceConfiguration
 ) : AIModule(controller){
 	val ship get() = controller.starship
-	val minDist get() = config.minDist
-	val maxDist get() = config.maxDist
-	val optimalDist get() = config.optimalDist
-	val distRange get() =  maxDist - minDist
-	val optimalMapped get() = (optimalDist - minDist)/(distRange)
-	val startFleeing get() = config.startFleeing
-	val stopFleeing get() = config.stopFleeing
+	private val minDist get() = config.minDist
+	private val maxDist get() = config.maxDist
+	private val optimalDist get() = config.optimalDist
+	private val distRange get() =  maxDist - minDist
+	private val optimalMapped get() = (optimalDist - minDist) / distRange
+	private val startFleeing get() = config.startFleeing
+	private val stopFleeing get() = config.stopFleeing
 
-	var isFleeing = false
+	private var isFleeing = false
 
 	fun calcDistance() : Double {
 		if (!difficulty.doBackOff) return optimalDist

@@ -1,3 +1,6 @@
+package net.horizonsend.ion.server.features.ai.module.steering
+
+import SteeringModule
 import net.horizonsend.ion.server.IonServer.aiSteeringConfig
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.BlankContext
@@ -21,10 +24,10 @@ import java.util.function.Supplier
 open class TravelSteeringModule(
 	controller: AIController,
 	difficulty: DifficultyModule,
-	val generalTarget : Supplier<AITarget?>,
+	generalTarget : Supplier<AITarget?>,
 	orbitDist : Supplier<Double>,
-	val goalPoint : Vec3i
-) : SteeringModule(controller, difficulty,) {
+	goalPoint : Vec3i
+) : SteeringModule(controller, difficulty) {
 
 	open val config = aiSteeringConfig.gunshipBasicSteeringConfiguration
 
@@ -102,7 +105,7 @@ open class TravelSteeringModule(
         // A current issue is that if the movement and rotation maps are equal and opposing
         // magnitude then it will lead to an agent jittering under a certain ship.velocity threshold.
         //mixing
-        var rotationMovementPrior = config.defaultRotationMixingRatio
+        val rotationMovementPrior = config.defaultRotationMixingRatio
             //max(min(ship.velocity.length() / MAXSPEED*2, 1.0), 0.0).pow(1.0)
         //println(rotationMovementPrior)
 		ContextMap.mix(contexts["movementInterest"]!!,contexts["rotationInterest"]!!,

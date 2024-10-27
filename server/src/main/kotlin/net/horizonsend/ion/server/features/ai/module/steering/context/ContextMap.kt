@@ -21,8 +21,8 @@ import kotlin.math.pow
 abstract class ContextMap {
 
     companion object {
-        val NUMBINSLIST = listOf(1, 8, 8, 8, 1)
-		val PHILIST = listOf(-PI/2, -PI/4, 0.0, PI/4, PI/2)
+        private val NUMBINSLIST = listOf(1, 8, 8, 8, 1)
+		private val PHILIST = listOf(-PI/2, -PI/4, 0.0, PI/4, PI/2)
 		val NUMBINS = NUMBINSLIST.sum()
         val bindir = Array(NUMBINS) {Vector(0.0,0.0,1.0)}
 		init {
@@ -193,7 +193,7 @@ abstract class ContextMap {
     /**
      * Finds the argmax and adjacent bins, because context maps are circular, indices wrap around
      */
-    fun maxAdjacent(): IntArray {
+	private fun maxAdjacent(): IntArray {
         val indices = IntArray(3)
         indices[0] = 0
         indices[1] = 1

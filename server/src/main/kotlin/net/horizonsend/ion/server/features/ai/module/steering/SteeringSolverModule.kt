@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.Starship
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -24,7 +23,7 @@ import kotlin.math.sign
 
 class SteeringSolverModule(
 	controller: AIController,
-	val steeringModule: SteeringModule,
+	private val steeringModule: SteeringModule,
 	val difficulty : DifficultyModule,
 	val target: Supplier<AITarget?>,
 	val type : MovementType = MovementType.CRUISE
@@ -62,15 +61,11 @@ class SteeringSolverModule(
 		}
     }
 
-    fun shiftFlyInDirection(
-        direction: Vector
-    ) = Tasks.sync {
-        val starship = controller.starship as ActiveControlledStarship
-
+    private fun shiftFlyInDirection(direction: Vector) = Tasks.sync {
         AIControlUtils.shiftFlyInDirection(controller, direction)
     }
 
-	fun updateDirectControl() {
+	private fun updateDirectControl() {
 		if (!controller.starship.isDirectControlEnabled)	controller.starship.setDirectControlEnabled(true)
 		if (!difficulty.speedDebuff) controller.isSneakFlying = true
 
@@ -82,7 +77,6 @@ class SteeringSolverModule(
 	fun directControlMovementVector(direction: BlockFace) : Vector {
 		val thrust = steeringModule.thrustOut
 
-		val forwardX = direction.modZ == 0
 		val rotated = thrust.clone()//.multiply(-1.0)
 		rotated.y *= 1.5 //stretch y a little so that ship can strafe up and down more easily
 		when (direction) {
@@ -103,7 +97,7 @@ class SteeringSolverModule(
 		return rotated
 	}
 
-	fun handleCruise() {
+	private fun handleCruise() {
 		if (controller.starship.isDirectControlEnabled)	controller.starship.setDirectControlEnabled(false)
 
 		var onPlane = thrust.clone()
@@ -122,7 +116,7 @@ class SteeringSolverModule(
 			return
 		}
 
-		var (accel, maxSpeed) = starship.getThrustData(dx, dz)
+		var (_, maxSpeed) = starship.getThrustData(dx, dz)
 		maxSpeed /= 2
 		if (difficulty.speedDebuff) {
 			maxSpeed = round(0.7 * maxSpeed).toInt()
@@ -140,15 +134,17 @@ class SteeringSolverModule(
 
 	/** to prevent overloading the rotation queue on diagonals fix the diagonal slightly
 	 * such that the ship does not rotate unless the heading is significantly different*/
-	fun diagonalFixed(dir : Vector) : Vector{
+	private fun diagonalFixed(dir : Vector) : Vector{
 		val heading = dir.clone()
 		val (_, headingYaw) = vectorToPitchYaw(heading, true)
 		val (_, shipYaw) = vectorToPitchYaw(starship.getTargetForward().direction, true)
+
 		val angle = headingYaw-shipYaw
-		if ( ((PI/4)*0.8 < abs(angle)) && (abs(angle) < (PI/4)*1.2 )) {
-			heading.rotateAroundY(sign(angle)*max(0.0, abs(angle) - (PI/4)*0.8))
-			val (_, newYaw) = vectorToPitchYaw(heading, true)
+
+		if ( ((PI / 4) * 0.8 < abs(angle)) && (abs(angle) < (PI / 4) * 1.2 )) {
+			heading.rotateAroundY(sign(angle) * max(0.0, abs(angle) - (PI / 4) * 0.8))
 		}
+
 		return heading
 	}
 

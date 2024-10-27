@@ -83,7 +83,7 @@ class CommitmentContext(
 	val ship : Starship,
 	val config : AIContextConfiguration.CommitmentContextConfiguration = aiContextConfig.defaultCommitmentContext,
 ) : ContextMap() {
-	var headingHist: ContextMap = object : ContextMap() {}
+	private var headingHist: ContextMap = object : ContextMap() {}
 
 	override fun populateContext() {
 		clearContext()
@@ -111,11 +111,11 @@ class MomentumContext(
 	val config : AIContextConfiguration.MomentumContextConfiguration = aiContextConfig.defaultMomentumContextConfiguration,
 	private val maxSpeedSupplier: Supplier<Double>,
 ) :  ContextMap() {
-	val maxSpeed get() = maxSpeedSupplier.get()
+	private val maxSpeed get() = maxSpeedSupplier.get()
 	override fun populateContext() {
 		clearContext()
 		multScalar(config.hist)
-		var velNorm = ship.getTargetForward().direction
+		val velNorm = ship.getTargetForward().direction
 		val mag = ship.velocity.length() / maxSpeed
 		//velNorm = if (mag > 1e-4) velNorm.normal() else
 		// Vector2D(1.0, Math.random() * Math.PI * 2).toCartesian()
@@ -143,7 +143,7 @@ class MomentumContext(
  */
 class OffsetSeekContext(
 	val ship : Starship,
-	val generalTarget : Supplier<AITarget?>,
+	private val generalTarget : Supplier<AITarget?>,
 	val module : SteeringModule,
 	val config : AIContextConfiguration.OffsetSeekContextConfiguration = aiContextConfig.defaultOffsetSeekContextConfiguration,
 	private val offsetSupplier: Supplier<Double> = Supplier<Double> { config.defaultOffsetDist },
@@ -194,7 +194,7 @@ class OffsetSeekContext(
  */
 class FaceSeekContext(
 	val ship : Starship,
-	val generalTarget : Supplier<AITarget?>,
+	private val generalTarget : Supplier<AITarget?>,
 	val difficulty: DifficultyModule,
 	val config : AIContextConfiguration.FaceSeekContextConfiguration = aiContextConfig.defaultFaceSeekContextConfiguration,
 ) : ContextMap() {
@@ -230,10 +230,10 @@ class FaceSeekContext(
  */
 class GoalSeekContext(
 	val ship : Starship,
-	val goalPoint : Vec3i,
+	private val goalPoint : Vec3i,
 	val config : AIContextConfiguration.GoalSeekContextConfiguration = aiContextConfig.defaultGoalSeekContextConfiguration,
 ) : ContextMap() {
-	var reached = false
+	private var reached = false
 	override fun populateContext() {
 		clearContext()
 		if (reached) return
@@ -304,8 +304,8 @@ class ShieldAwarenessContext(
 	val difficulty: DifficultyModule,
 	val config : AIContextConfiguration.ShieldAwarenessContextConfiguration = aiContextConfig.defaultShieldAwarenessContextConfiguration,
 )  : ContextMap() {
-	val incomingFire : ContextMap = object : ContextMap() {}
-	val verticalDamp : ContextMap = object : ContextMap() {
+	private val incomingFire : ContextMap = object : ContextMap() {}
+	private val verticalDamp : ContextMap = object : ContextMap() {
 		override fun populateContext() {
 			dotContext(Vector(0.0,1.0,0.0),0.0,1.0, clipZero = false)
 			for (i in 0 until NUMBINS) {
@@ -397,7 +397,7 @@ class ShipDangerContext(
 	val module : SteeringModule,
 	val config : AIContextConfiguration.ShipDangerContextConfiguration = aiContextConfig.defaultShipDangerContextConfiguration,
 ) : ContextMap() {
-	val maxSpeed get() = maxSpeedSupplier.get()
+	private val maxSpeed get() = maxSpeedSupplier.get()
 
 	override fun populateContext() {
 		clearContext()
@@ -564,7 +564,7 @@ class WorldBlockDangerContext(
  */
 class ObstructionDangerContext(
 	val ship : Starship,
-	val obstructions : ConcurrentHashMap<Vec3i, Long>,
+	private val obstructions : ConcurrentHashMap<Vec3i, Long>,
 	val config : AIContextConfiguration.ObstructionDangerContextConfiguration = aiContextConfig.defaultObstructionDangerContextConfiguration,
 ): ContextMap() {
 	override fun populateContext() {
@@ -584,13 +584,14 @@ class ObstructionDangerContext(
 	}
 }
 
-private fun lookAhead(ship: Starship,other: Starship,
-					  pos : Vector = other.centerOfMass.toVector(),
-					  futuremod : Double = 1.0, maxSpeed : Double? = null) : Vector {
+private fun lookAhead(
+	ship: Starship, other: Starship,
+	pos: Vector = other.centerOfMass.toVector(),
+	futuremod: Double = 1.0, maxSpeed: Double? = null
+): Vector {
 	val offset = pos.add(ship.centerOfMass.toVector().multiply(-1.0))
 	val dist = offset.length() + 1e-4
 	val vel = maxSpeed ?: (ship.velocity.length() + 1e-5)
-	val t = dist/(vel*futuremod)
-	val lookAhead =  other.velocity.clone().multiply(t)
-	return lookAhead
+	val t = dist / (vel * futuremod)
+	return other.velocity.clone().multiply(t)
 }

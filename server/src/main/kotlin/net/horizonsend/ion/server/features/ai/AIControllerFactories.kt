@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.ai
 
-import BasicSteeringModule
 import SteeringModule
-import TravelSteeringModule
 import net.horizonsend.ion.server.IonServer.aiSteeringConfig
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.module.combat.CombatModule
@@ -16,11 +14,13 @@ import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.TrackingModule
+import net.horizonsend.ion.server.features.ai.module.steering.BasicSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.CapitalSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.DistancePositioningModule
 import net.horizonsend.ion.server.features.ai.module.steering.GunshipSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.StarfighterSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.SteeringSolverModule
+import net.horizonsend.ion.server.features.ai.module.steering.TravelSteeringModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestLargeStarshipTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestPlayerTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.ClosestSmallStarshipTargetingModule
@@ -161,7 +161,8 @@ object AIControllerFactories : IonServerComponent() {
 				controller,
 				difficulty,
 				targeting::findTarget
-			))
+			)
+			)
 
 			builder.addModule(
 				SteeringSolverModule::class, SteeringSolverModule(
@@ -594,7 +595,8 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget,
 				distance::calcDistance,
 				cruiseEndpoint.invoke(controller).orNull() ?: Vec3i(0, 0, 0)
-			))
+			)
+			)
 
 			builder.addModule(
 				SteeringSolverModule::class, SteeringSolverModule(

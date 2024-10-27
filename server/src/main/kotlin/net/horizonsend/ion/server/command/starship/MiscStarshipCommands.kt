@@ -149,7 +149,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onStopRiding(sender: Player) {
 		val starship = getStarshipRiding(sender)
 
-		failIf(starship is ActiveControlledStarship && starship.playerPilot == sender) {
+		failIf(starship.playerPilot == sender) {
 			"You can't stop riding if you're the pilot. Use /release or /unpilot."
 		}
 

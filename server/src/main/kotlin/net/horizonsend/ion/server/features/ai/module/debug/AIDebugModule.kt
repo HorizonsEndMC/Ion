@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.ai.module.debug
 
 
-import BasicSteeringModule
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.steering.BasicSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.ContextMap
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship

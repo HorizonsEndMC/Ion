@@ -13,7 +13,7 @@ class LinearContext {
 		const val NUMLINBINS = 12
 	}
 
-	val binloc = Array(NUMLINBINS) { i ->
+	private val binloc = Array(NUMLINBINS) { i ->
 		val spacing = 1.0 /(NUMLINBINS - 3).toDouble()
 		(i - 1) * spacing
 	}

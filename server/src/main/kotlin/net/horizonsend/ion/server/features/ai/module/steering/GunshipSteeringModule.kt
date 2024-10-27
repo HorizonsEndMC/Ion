@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.ai.module.steering
 
-import BasicSteeringModule
 import net.horizonsend.ion.server.IonServer.aiSteeringConfig
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
