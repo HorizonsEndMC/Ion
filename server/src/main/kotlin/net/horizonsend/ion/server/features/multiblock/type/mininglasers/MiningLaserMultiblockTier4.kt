@@ -1363,7 +1363,7 @@ object MiningLaserMultiblockTier4SideMirrored : MiningLaserMultiblockTier4() {
                 x(+2).sponge()
                 x(+1).sponge()
                 x(+0).sponge()
-                x(+1).steelBlock()
+                x(-1).steelBlock()
             }
 
             y(+1) {
