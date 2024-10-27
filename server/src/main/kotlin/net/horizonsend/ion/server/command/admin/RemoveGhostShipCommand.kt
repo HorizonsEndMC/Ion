@@ -8,7 +8,6 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 
@@ -18,7 +17,7 @@ object RemoveGhostShipCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Default
 	@Suppress("unused")
 	fun onDeleteGhostShip(sender: Player) = asyncCommand(sender) {
-		val selection = sender.getSelection() ?: fail { "You must make a selection!" }
+		val selection = requireSelection(sender)
 
 		for (pos in selection) {
 			val x = pos.x

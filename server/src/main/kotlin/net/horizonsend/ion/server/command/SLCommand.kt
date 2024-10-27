@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandException
@@ -282,6 +283,8 @@ abstract class SLCommand : BaseCommand() {
 
 	protected fun getStarshipPiloting(sender: Player) = ActiveStarships.findByPilot(sender)
 		?: fail { "You must be piloting a starship" }
+
+	protected fun requireSelection(sender: Player) = runCatching { sender.getSelection() }.getOrNull() ?: fail { "You must have a worldedit selection!" }
 
 	open fun supportsVanilla(): Boolean = false
 }
