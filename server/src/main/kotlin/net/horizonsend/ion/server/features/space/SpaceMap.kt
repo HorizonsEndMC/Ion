@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.text.createHtmlLink
 import net.horizonsend.ion.common.utils.text.wrapStyle
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.Color
@@ -44,6 +45,22 @@ object SpaceMap : IonServerComponent(true) {
 				markerAPI.getMarkerIcon("sun"),
 				false // ??
 			)
+
+			markerSet.createCircleMarker(
+				"${star.id}_gravity_well",
+				"${star.name}'s Gravity Well",
+				false,
+				star.spaceWorldName,
+				star.location.x.toDouble(),
+				star.location.y.toDouble(),
+				star.location.z.toDouble(),
+				MassShadows.STAR_RADIUS.toDouble(),
+				MassShadows.STAR_RADIUS.toDouble(),
+				false
+			)?.run {
+				setFillStyle(0.0, 0) // make the inside empty
+				setLineStyle(lineWeight, lineOpacity, Color.fromRGB(128, 0, 0).asRGB())
+			}
 		}
 
 		for (planet in Space.getPlanets()) {
@@ -88,6 +105,23 @@ object SpaceMap : IonServerComponent(true) {
 				val b = random.nextInt(128, 255)
 				val color = Color.fromRGB(r, g, b)
 				setLineStyle(lineWeight, lineOpacity, color.asRGB())
+			}
+
+			// gravity well indicator
+			markerSet.createCircleMarker(
+				"${planet.id}_gravity_well",
+				"${planet.name}'s Gravity Well",
+				false,
+				planet.spaceWorldName,
+				planet.location.x.toDouble(),
+				planet.location.y.toDouble(),
+				planet.location.z.toDouble(),
+				MassShadows.PLANET_RADIUS.toDouble(),
+				MassShadows.PLANET_RADIUS.toDouble(),
+				false
+			)?.run {
+				setFillStyle(0.0, 0) // make the inside empty
+				setLineStyle(lineWeight, lineOpacity, Color.fromRGB(128, 0, 0).asRGB())
 			}
 
 			// Create a marker to escape the planet view
