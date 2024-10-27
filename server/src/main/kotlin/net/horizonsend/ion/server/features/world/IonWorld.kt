@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
 import net.horizonsend.ion.server.features.world.environment.Environment
+import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawner
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -54,6 +55,8 @@ class IonWorld private constructor(
 	val players: List<Player> get() = world.players
 
 	val detectionForbiddenBlocks = loadForbiddenBlocks()
+
+	val customMonSpawner = CustomMobSpawner(this, configuration.customMobSpawns)
 
 	//TODO
 	// - Terrain Generator

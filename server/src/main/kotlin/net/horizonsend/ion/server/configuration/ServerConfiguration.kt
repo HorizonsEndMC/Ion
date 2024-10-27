@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.world.WorldSettings
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -17,7 +18,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
-import org.bukkit.entity.EntityType
 import org.bukkit.util.Vector
 
 @Serializable
@@ -28,12 +28,12 @@ data class ServerConfiguration(
 	val beacons: List<HyperspaceBeacon> = listOf(),
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
 	val soldShips: List<Ship> = listOf(),
-	val mobSpawns: Map<String, PlanetSpawnConfig> = mapOf(),
 	val dutyModeMonitorWebhook: String? = null,
 	val eventLoggerWebhook: String? = null,
 	val getPosMaxRange: Double = 600.0,
 	val nearMaxRange: Double = 1200.0,
 	val restartHour: Int = 8,
+	val globalCustomSpawns: List<WorldSettings.SpawnedMob> = listOf(),
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -232,43 +232,5 @@ data class ServerConfiguration(
 		val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
 
 		fun schematic(): Clipboard = readSchematic(schematicFile)!!
-	}
-
-	@Serializable
-	data class PlanetSpawnConfig(
-		val mobs: List<Mob>
-	) {
-		@Serializable
-		data class Mob(
-			val weight: Int,
-			val type: String,
-			val namePool: Map<String, Int> = mapOf(),
-			val onHand: DroppedItem? = null,
-			val offHand: DroppedItem? = null,
-			val helmet: DroppedItem? = null,
-			val chestPlate: DroppedItem? = null,
-			val leggings: DroppedItem? = null,
-			val boots: DroppedItem? = null,
-		) {
-			@Transient
-			val nameList: WeightedRandomList<String> = WeightedRandomList(namePool)
-
-			fun getEntityType(): EntityType = EntityType.valueOf(type)
-		}
-
-		/**
-		 * Uses bazaar strings for now
-		 * Not the end of the world, but could be improved upon
-		 **/
-		@Serializable
-		data class DroppedItem(
-			val itemString: String,
-			val amount: IntegerAmount = StaticIntegerAmount(1),
-			val dropChance: Float,
-		)
-
-		fun weightedList(): WeightedRandomList<Mob> {
-			return WeightedRandomList(*mobs.map { it to it.weight }.toTypedArray())
-		}
 	}
 }
