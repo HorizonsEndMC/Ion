@@ -177,7 +177,7 @@ object AISpawners : IonServerComponent(true) {
 			separation = { getRandomDuration(Duration.ofHours(3), Duration.ofHours(5)) },
 			"<${HE_MEDIUM_GRAY}>An <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has been detected in {0} at {1} {3}. <$WATCHER_ACCENT>Alien starships patrol the area.".miniMessage(),
 			"<${HE_MEDIUM_GRAY}>The <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has disappeared".miniMessage(),
-			radius = 500.0,
+			radius = 1500.0,
 			spawnSeparation = { getRandomDuration(Duration.ofSeconds(30), Duration.ofSeconds(90)) },
 			listOf("Trench", "AU-0821", "Horizon")
 		)
@@ -516,7 +516,7 @@ object AISpawners : IonServerComponent(true) {
 			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(4)) },
 			"<${HE_MEDIUM_GRAY}>Increased <$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> activity has been noted in {0} at {1} {3}. <$PIRATE_SATURATED_RED>Please avoid the area.".miniMessage(),
 			"<$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> activity has waned".miniMessage(),
-			radius = 300.0,
+			radius = 1500.0,
 			spawnSeparation = { getRandomDuration(Duration.ofSeconds(30), Duration.ofSeconds(90)) },
 			listOf("Trench", "AU-0821", "Horizon")
 		)
@@ -826,7 +826,7 @@ object AISpawners : IonServerComponent(true) {
 			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(4)) },
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Naval Drills<${HE_MEDIUM_GRAY}> will be conducted in {0} at {1} {3}. Please avoid the area.".miniMessage(),
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Naval Drills<${HE_MEDIUM_GRAY}> have ended".miniMessage(),
-			radius = 300.0,
+			radius = 1500.0,
 			spawnSeparation = { getRandomDuration(Duration.ofSeconds(30), Duration.ofSeconds(90)) },
 			listOf("Trench", "AU-0821", "Horizon")
 		)
@@ -898,7 +898,7 @@ object AISpawners : IonServerComponent(true) {
 			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(4)) },
 			"<${HE_MEDIUM_GRAY}>A <$TSAII_DARK_ORANGE>Tsaii Warband<${HE_MEDIUM_GRAY}> has been spotted in {0} at {1} {3}. <$TSAII_MEDIUM_ORANGE>Please avoid the area.".miniMessage(),
 			"<${HE_MEDIUM_GRAY}>The <$TSAII_DARK_ORANGE>Tsaii Warband<${HE_MEDIUM_GRAY}> has departed".miniMessage(),
-			radius = 300.0,
+			radius = 1500.0,
 			spawnSeparation = { getRandomDuration(Duration.ofSeconds(30), Duration.ofSeconds(90)) },
 			listOf("Trench", "AU-0821", "Horizon")
 		)
