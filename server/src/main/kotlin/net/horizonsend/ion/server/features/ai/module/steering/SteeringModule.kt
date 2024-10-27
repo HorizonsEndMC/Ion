@@ -42,11 +42,8 @@ should be the LAST step.
  *  * The master steering function that determines thrust and heading
  *  * Each steering module has its own configuration, each Context also has its own configuration
  */
-abstract class SteeringModule(
-	var controler: AIController,
-	val difficulty: DifficultyModule
-) : AIModule(controler){
-	val ship : Starship get() = controler.starship
+abstract class SteeringModule(controller: AIController, val difficulty: DifficultyModule) : AIModule(controller) {
+	val ship : Starship get() = controller.starship
 	val contexts = mutableMapOf<String,ContextMap>()
 	val offset = Math.random()
 
@@ -62,20 +59,8 @@ abstract class SteeringModule(
 		populateContexts()
 	}
 
-	fun getThrust(): Vector {
-		return thrustOut
-	}
-
-	fun getHeading(): Vector {
-		return headingOut
-	}
-
-	fun getThrottle(): Double {
-		return throttleOut
-	}
-
 	private fun populateContexts() {
-		contexts.forEach() {it.value.populateContext()}
+		contexts.forEach { it.value.populateContext() }
 	}
 
 	fun decision(thrustContext : ContextMap, headingContext : ContextMap) {
@@ -83,6 +68,7 @@ abstract class SteeringModule(
 		heading.normalize()
 		val thrustMag = thrustContext.lincontext!!.interpolotedMax()
 		val thrust = thrustContext.maxDir().normalize()
+
 		thrustOut = thrust
 		headingOut = heading
 		throttleOut = thrustMag
@@ -94,5 +80,4 @@ abstract class SteeringModule(
 			obstructions[location] = time
 		}
 	}
-
 }

@@ -186,7 +186,7 @@ object StarshipDebugCommand : SLCommand() {
 		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
 		sender.information(ship.controller.toString())
 
-		(ship.controller as? AIController)?.let { sender.userError("Target: ${(it.modules["targeting"] as? TargetingModule)?.findTarget()}") }
+		(ship.controller as? AIController)?.let { sender.userError("Target: ${(it.coreModules[TargetingModule::class] as? TargetingModule)?.findTarget()}") }
 	}
 
 	@Subcommand("purge now")

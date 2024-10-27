@@ -66,7 +66,7 @@ object MassShadows {
 				text()
 					.append(interdictingShipName)
 					.append(text(" piloted by "))
-					.append(interdictingShip?.controller?.getPilotName() ?: text("none"))
+					.append(interdictingShip?.controller?.pilotName ?: text("none"))
 					.build(),
 				otherX,
 				otherZ,

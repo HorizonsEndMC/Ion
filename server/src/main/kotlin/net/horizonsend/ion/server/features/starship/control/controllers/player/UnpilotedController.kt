@@ -11,12 +11,12 @@ class UnpilotedController(oldPilot: Player, starship: ActiveStarship) : PlayerCo
 	override val yaw: Float = 0f
 	override val pitch: Float = 0f
 
-	override fun isSneakFlying(): Boolean = false
+	override val isSneakFlying: Boolean = false
 
 	// Shouldn't be treated like they're still piloting it
 	override fun audience(): Audience = Audience.empty()
 
-	override fun getPilotName(): Component = text("none")
+	override val pilotName: Component = text("none")
 
 	constructor(controller: PlayerController) : this(controller.player, controller.starship)
 }

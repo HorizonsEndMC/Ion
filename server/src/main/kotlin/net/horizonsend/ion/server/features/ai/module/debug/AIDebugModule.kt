@@ -1,18 +1,14 @@
 package net.horizonsend.ion.server.features.ai.module.debug
 
+
 import BasicSteeringModule
 import ContextMap
-
 import net.horizonsend.ion.server.features.ai.module.AIModule
-import net.horizonsend.ion.server.features.ai.module.steering.ShieldAwarenessContext
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import org.bukkit.Color
 import org.bukkit.Particle
-
-
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 
@@ -71,7 +67,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 				mapColor(shownContexts[i].second),controller.starship, Vector(0.0,  offset,0.0)))
 		}
 		val dirOffset = shownContexts.size * debugOffsetIncrement + debugOffset + shipOffset
-		output.add(VectorDisplay(mod::getThrust,mapColor(DebugColor.BLUE), controller.starship, Vector(0.0,dirOffset,0.0)))
+		output.add(VectorDisplay(mod::thrustOut ,mapColor(DebugColor.BLUE), controller.starship, Vector(0.0,dirOffset,0.0)))
 		return output
 	}
 

@@ -31,7 +31,6 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
-import kotlin.math.round
 import kotlin.math.roundToInt
 import kotlin.math.sign
 import kotlin.math.sin
@@ -59,7 +58,7 @@ object StarshipControl : IonServerComponent() {
 			return
 		}
 
-		if (controller.isSneakFlying()) {
+		if (controller.isSneakFlying) {
 			processSneakFlight(controller, starship)
 		}
 	}
@@ -107,7 +106,7 @@ object StarshipControl : IonServerComponent() {
 		dz += (targetSpeed * direction.modZ)
 
 		// Boost if shift flying
-		if (controller.isSneakFlying()) {
+		if (controller.isSneakFlying) {
 			dx *= 2
 			dz *= 2
 		}
@@ -216,7 +215,7 @@ object StarshipControl : IonServerComponent() {
 			return
 		}
 
-		if (!controller.isSneakFlying()) return
+		if (!controller.isSneakFlying) return
 
 		val now = System.currentTimeMillis()
 		if (now - starship.lastManualMove < starship.manualMoveCooldownMillis) return

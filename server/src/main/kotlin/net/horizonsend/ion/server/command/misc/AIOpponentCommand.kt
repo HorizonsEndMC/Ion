@@ -86,7 +86,7 @@ object AIOpponentCommand : SLCommand() {
 	}
 
 	private fun processController(summoner: Player, controller: AIController) {
-		controller.modules["opponent"] = OpponentTrackerModule(controller, summoner.uniqueId)
+		controller.coreModules[OpponentTrackerModule::class] = OpponentTrackerModule(controller, summoner.uniqueId)
 	}
 
 	fun getExisting(player: Player): Collection<Starship> {
@@ -94,7 +94,7 @@ object AIOpponentCommand : SLCommand() {
 			val controller = it.controller
 			if (controller !is AIController) return@filter false
 
-			val trackers = controller.modules.values.filterIsInstance<OpponentTrackerModule>()
+			val trackers = controller.coreModules.values.filterIsInstance<OpponentTrackerModule>()
 			if (trackers.isEmpty()) return@filter false
 
 			trackers.any { tracker -> tracker.opponent == player.uniqueId }

@@ -53,9 +53,7 @@ abstract class MultiSpawner(
 
 			debugAudience.debug("Spawning ${spawnedShip.template.identifier} at $spawnPoint")
 
-			spawnedShip.spawn(logger, spawnPoint) {
-				modules["fleet"] = AIFleetManageModule(this, aiFleet)
-			}
+			spawnedShip.spawn(logger, spawnPoint) { addUtilModule(AIFleetManageModule(this, aiFleet)) }
 
 			individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
 		}

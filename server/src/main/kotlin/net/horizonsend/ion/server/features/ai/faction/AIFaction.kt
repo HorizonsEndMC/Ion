@@ -41,20 +41,21 @@ import org.bukkit.Color
 class AIFaction private constructor(
 	val identifier: String,
 	val color: Int = Integer.parseInt("ff0000", 16),
-	private val nameList: List<Component>
+	val nameList: List<Component>
 ) {
 	private var templateProcess: AITemplateRegistry.Builder.() -> Unit = {}
 
-	fun getNameList() = nameList
-
 	fun getFactionStarships(): List<ActiveStarship> = allAIStarships().filter { ship ->
-		val factionManager = (ship.controller as AIController).modules["faction"] as? FactionManagerModule ?: return@filter false
+		val controller = ship.controller
+		if (controller !is AIController) return@filter false
+		val factionManager = controller.getUtilModule(FactionManagerModule::class.java) ?: return@filter false
+
 		return@filter factionManager.faction == this
 	}
 
 	fun getAvailableName(): Component {
 		return nameList.shuffled().firstOrNull { name ->
-			getFactionStarships().none { (it.controller as AIController).getPilotName() == name }
+			getFactionStarships().none { (it.controller as AIController).pilotName == name }
 		} ?: nameList.random()
 	}
 
@@ -64,7 +65,7 @@ class AIFaction private constructor(
 
 	val controllerModifier: (AIController) -> Unit = { controller ->
 		controller.setColor(Color.fromRGB(color))
-		controller.modules["faction"] = FactionManagerModule(controller, this)
+		controller.addUtilModule(FactionManagerModule(controller, this))
 	}
 
 	fun asSpawnedShip(template: AITemplate): SpawnedShip {

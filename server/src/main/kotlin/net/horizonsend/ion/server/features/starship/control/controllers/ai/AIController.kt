@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
+import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.movement.SteeringSolverModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
@@ -24,38 +25,53 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
+import java.util.function.Supplier
+import kotlin.reflect.KClass
 
 /**
  * AI Controller.
  * This class can be used to control a starship. It is ticked along with the world it is in.
  *
  * @param starship The starship this controller controls.
- * @param name The name of the controller.
  * @param damager The damager of this starship. If transferring to a new controller, preserve this value, otherwise duplicate entries may appear on damage trackers.
  **/
-class AIController private constructor(
-	starship: ActiveStarship,
-	name: String,
-	damager: Damager
-) : Controller(damager, starship, name) {
+class AIController private constructor(starship: ActiveStarship, damager: Damager) : Controller(damager, starship, "AIController") {
+	override var pilotName: Component = text("AI Controller")
+	private var color: Color = super.getColor()
+
+	fun setColor(color: Color) { this.color = color }
+
 	/** Build the controller using a module builder */
 	constructor(
 		starship: ActiveStarship,
-		name: String,
 		damager: Damager,
 		pilotName: Component,
-		manualWeaponSets: Set<WeaponSet>,
-		autoWeaponSets: Set<WeaponSet>,
-		createModules: (AIController) -> AIControllerFactory.Builder.ModuleBuilder
-	) : this(starship, name, damager) {
-		modules.putAll(createModules(this).build())
-		setPilotName(pilotName)
-		manualWeaponSets.forEach(::addManualWeaponSet)
-		autoWeaponSets.forEach(::addAutoWeaponSet)
+		setupCoreModules: (AIController) -> AIControllerFactory.Builder.ModuleBuilder,
+		setupUtilModules: (AIController) -> Set<AIModule>,
+		manualWeaponSets: Set<WeaponSet> = setOf(),
+		autoWeaponSets: Set<WeaponSet> = setOf(),
+	) : this(starship, damager) {
+		this.coreModules.putAll(setupCoreModules(this).build())
+		this.utilModules.addAll(setupUtilModules(this))
+
+		this.pilotName = pilotName
+
+		this.manualWeaponSets.addAll(manualWeaponSets)
+		this.autoWeaponSets.addAll(autoWeaponSets)
 	}
 
 	/** AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more. */
-	val modules: MutableMap<String, net.horizonsend.ion.server.features.ai.module.AIModule> = mutableMapOf()
+	val coreModules: MutableMap<KClass<out AIModule>, AIModule> = mutableMapOf()
+
+	/** Util modules provide less heavy-duty functions like the glow and don't need to be accessed often. */
+	private val utilModules: MutableSet<AIModule> = mutableSetOf()
+
+	fun addUtilModule(module: AIModule) = utilModules.add(module)
+
+	fun <T: AIModule> getUtilModule(clazz: Class<T>) = utilModules.filterIsInstance(clazz).firstOrNull()
+
+	// Control variables
+	override var isSneakFlying: Boolean = false
 
 	override var pitch: Float = 0f
 	override var yaw: Float = 0f
@@ -64,16 +80,13 @@ class AIController private constructor(
 
 	var lastRotation: Long = 0L
 
-
 	// Disallow mining lasers and other block placement / destroying things for now
 	override fun canDestroyBlock(block: Block): Boolean = false
 	override fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean = false
 
-
 	// Pass through functions for starship information
 	fun getCenter(): Vec3i = starship.centerOfMass
 	fun getWorld(): World = starship.world
-
 
 	// Shield Health indicators
 	fun getShields() = starship.shields
@@ -81,71 +94,66 @@ class AIController private constructor(
 	fun getAverageShieldHealth() = (getShields().sumOf { it.powerRatio }) / getShieldCount().toDouble()
 	fun getMinimumShieldHealth() = (getShields().minOfOrNull { it.powerRatio } ?: 0.0)
 
-
-	// Control variables
-	private var isShiftFlying: Boolean = false
-	override fun isSneakFlying(): Boolean = isShiftFlying
-	fun setShiftFlying(value: Boolean) { isShiftFlying = value }
-
-
-	// The variable color, settable
-	private var color: Color = super.getColor()
-	fun setColor(value: Color) { color = value }
-	override fun getColor(): Color = color
-
-
-	// Settable name
-	private var pilotName: Component = text("AI Controller")
-	override fun getPilotName(): Component = pilotName
-	fun setPilotName(value: Component) { pilotName = value }
-
-
 	// Weapon sets
 	private val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
-	fun addManualWeaponSet(set: WeaponSet) = manualWeaponSets.add(set)
-	fun getAllManualSets() = manualWeaponSets
+
 	/** Returns the weapon set that's range contains the specified distance */
 	fun getManualSetInRange(distance: Double): WeaponSet? {
 		return manualWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
 	}
 
 	private val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
-	fun addAutoWeaponSet(set: WeaponSet) = autoWeaponSets.add(set)
-	fun getAllAutoSets() = autoWeaponSets
+
 	/** Returns the weapon set that's range contains the specified distance */
 	fun getAutoSetInRange(distance: Double): WeaponSet? {
 		return autoWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
 	}
 
-	inline fun <reified T> getModuleByType(): T? = modules.values.filterIsInstance<T>().firstOrNull()
+	inline fun <reified T> getModuleByType(): T? = coreModules.values.filterIsInstance<T>().firstOrNull()
 
-	//Functionality
+	// Functionality
 	override fun tick() {
-		for ((_, module) in modules) {
+		for ((_, module) in coreModules) {
+			module.tick()
+		}
+
+		for (module in utilModules) {
 			module.tick()
 		}
 	}
 
 	override fun destroy() {
-		for ((_, module) in modules) {
+		for ((_, module) in coreModules) {
+			module.shutDown()
+		}
+
+		for (module in utilModules) {
 			module.shutDown()
 		}
 	}
 
 	override fun onDamaged(damager: Damager) {
-		for ((_, module) in modules) {
+		for ((_, module) in coreModules) {
+			module.onDamaged(damager)
+		}
+
+		for (module in utilModules) {
 			module.onDamaged(damager)
 		}
 	}
 
 	override fun onMove(movement: StarshipMovement) {
-		for ((_, module) in modules) {
+		for ((_, module) in coreModules) {
+			module.onMove(movement)
+		}
+
+		for (module in utilModules) {
 			module.onMove(movement)
 		}
 	}
 
 	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
-		for ((_, module) in modules) {
+		for ((_, module) in coreModules) {
 			module.onBlocked(movement, reason, location)
 		}
 	}
@@ -179,7 +187,11 @@ class AIController private constructor(
 	}
 
 	override fun directControlMovementVector(direction: BlockFace): Vector {
-		return getModuleByType<SteeringSolverModule>()?.let {
-			it.directControlMovementVector(direction) } ?: Vector(0.0,0.0,0.0)
+		return getModuleByType<SteeringSolverModule>()?.directControlMovementVector(direction) ?: Vector(0.0,0.0,0.0)
+	}
+
+	fun <T: AIModule> getCoreModuleSupplier(identifier: KClass<out AIModule>): Supplier<T> = Supplier {
+		@Suppress("UNCHECKED_CAST")
+		coreModules[identifier] as T
 	}
 }

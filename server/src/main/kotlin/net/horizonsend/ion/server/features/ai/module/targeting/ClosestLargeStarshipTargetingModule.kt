@@ -13,14 +13,11 @@ class ClosestLargeStarshipTargetingModule(
     private val targetAI: Boolean = false,
     private val focusRange: Double = 0.0
 ) : TargetingModule(controller) {
-    private var lastDamaged: Long = 0
-
     init {
         lastTarget = existingTarget
     }
 
     override fun onDamaged(damager: Damager) {
-        lastDamaged = System.currentTimeMillis()
         if (lastTarget == null) lastTarget = damager.getAITarget()
     }
 

@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.damager.damager
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
@@ -43,11 +42,7 @@ abstract class PlayerController(
 
 	override fun audience(): Audience = player
 
-	override fun toString(): String {
-		return "$name [${player.name}]"
-	}
-
-	override fun getPilotName(): Component = player.displayName()
+	override val pilotName: Component get() = player.displayName()
 
 	override fun directControlMovementVector(direction : BlockFace): Vector {
 		// Use the player's location
@@ -81,5 +76,9 @@ abstract class PlayerController(
 		vector.setY(0)
 		vector.z = round(vector.z)
 		return  vector
+	}
+
+	override fun toString(): String {
+		return "$name [${player.name}]"
 	}
 }

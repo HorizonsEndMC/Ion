@@ -68,12 +68,13 @@ fun createAIShipFromTemplate(
 	starship.rewardsProviders.addAll(template.rewardProviders.map { it.createRewardsProvider(starship, template) })
 
 	val controller = starship.controller
-	if (controller is AIController) template.behaviorInformation.additionalModules.forEach {
-		controller.modules[it.name] = it.createModule(controller)
-	}
+
+	if (controller is AIController) template.behaviorInformation.additionalModules
+		.map { it.createModule(controller) }
+		.forEach(controller::addUtilModule)
 
 	starship.sinkMessageFactory = AISinkMessageFactory(starship)
-	(starship.controller as AIController).modules["Glow"] = GlowModule(starship.controller as AIController)
+	(starship.controller as AIController).addUtilModule((GlowModule(starship.controller as AIController)))
 
 	callback(starship)
 }

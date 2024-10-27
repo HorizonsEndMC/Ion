@@ -47,7 +47,7 @@ open class BasicSteeringModule(
 		contexts["danger"]= BlankContext()
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this)
-		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty)
+		contexts["faceSeek"]= FaceSeekContext(ship, generalTarget,difficulty)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)
 		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
@@ -95,11 +95,10 @@ open class BasicSteeringModule(
         // A current issue is that if the movement and rotation maps are equal and opposing
         // magnitude then it will lead to an agent jittering under a certain ship.velocity threshold.
         //mixing
-        var rotationMovementPrior = config.defaultRotationMixingRatio
+        val rotationMovementPrior = config.defaultRotationMixingRatio
             //max(min(ship.velocity.length() / MAXSPEED*2, 1.0), 0.0).pow(1.0)
         //println(rotationMovementPrior)
-		ContextMap.mix(contexts["movementInterest"]!!,contexts["rotationInterest"]!!,
-			rotationMovementPrior,config.defaultRotationMixingPower)
+		ContextMap.mix(contexts["movementInterest"]!!,contexts["rotationInterest"]!!, rotationMovementPrior,config.defaultRotationMixingPower)
 
         //masking, if the danger for a certain direction is greater than the threshold then it is
         // masked out
@@ -107,10 +106,7 @@ open class BasicSteeringModule(
 		contexts["movementInterest"]!!.softMaskContext(contexts["obstructionDanger"]!!,1.0)
 		contexts["rotationInterest"]!!.softMaskContext(contexts["danger"]!!, 1.0)
 
-
         //decision time
         decision(contexts["movementInterest"]!!, contexts["rotationInterest"]!!)
     }
-
-
 }

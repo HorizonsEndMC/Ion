@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
-import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
@@ -207,7 +206,7 @@ object AIDebugCommand : SLCommand() {
 		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
 		sender.information(ship.controller.toString())
 
-		(ship.controller as? AIController)?.let { sender.userError(it.modules.entries.joinToString(separator = "\n") { mod ->
+		(ship.controller as? AIController)?.let { sender.userError(it.coreModules.entries.joinToString(separator = "\n") { mod ->
 			"[${mod.key}] = ${mod.value}" })
 		}
 	}

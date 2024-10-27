@@ -38,9 +38,9 @@ class SteeringSolverModule(
     override fun tick() {
         steeringModule.steer()
 
-		thrust = steeringModule.getThrust()
-		heading = diagonalFixed(steeringModule.getHeading())
-		throttle = steeringModule.getThrottle()
+		thrust = steeringModule.thrustOut
+		heading = diagonalFixed(steeringModule.headingOut)
+		throttle = steeringModule.throttleOut
 
 		if (AIDebugModule.canShipsRotate) {
 			AIControlUtils.faceDirection(controller, vectorToBlockFace(heading))
@@ -48,7 +48,7 @@ class SteeringSolverModule(
 		if (!AIDebugModule.canShipsMove) {
 			controller.starship.setDirectControlEnabled(false)
 			StarshipCruising.stopCruising(controller,starship)
-			controller.setShiftFlying(false)
+			controller.isSneakFlying = false
 			return
 		}
 
@@ -72,7 +72,7 @@ class SteeringSolverModule(
 
 	fun updateDirectControl() {
 		if (!controller.starship.isDirectControlEnabled)	controller.starship.setDirectControlEnabled(true)
-		if (!difficulty.speedDebuff) controller.setShiftFlying(true)
+		if (!difficulty.speedDebuff) controller.isSneakFlying = true
 
 		//map onto player slots
 		controller.selectedDirectControlSpeed = round(throttle * 8.0).toInt() + 1
@@ -80,7 +80,7 @@ class SteeringSolverModule(
 	}
 
 	fun directControlMovementVector(direction: BlockFace) : Vector {
-		val thrust = steeringModule.getThrust()
+		val thrust = steeringModule.thrustOut
 
 		val forwardX = direction.modZ == 0
 		val rotated = thrust.clone()//.multiply(-1.0)
