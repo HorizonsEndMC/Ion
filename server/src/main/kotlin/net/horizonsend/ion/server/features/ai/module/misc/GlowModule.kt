@@ -33,4 +33,8 @@ class GlowModule(controller: AIController) : net.horizonsend.ion.server.features
 
 		container.update()
 	}
+
+	override fun shutDown() {
+		container.remove()
+	}
 }

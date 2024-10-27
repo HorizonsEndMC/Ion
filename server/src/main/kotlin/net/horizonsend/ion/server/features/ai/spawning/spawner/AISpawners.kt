@@ -165,7 +165,7 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(WATCHERS.asSpawnedShip(TERALITH), 0.25)
 					),
 					formatLocationSupplier(it, 2500.0, 4500.0),
-					SpawnMessage.WorldMessage("<$WATCHER_ACCENT>An unknown starship signature is being broadcast in {3} at {0}, {2}".miniMessage())
+					SpawnMessage.WorldMessage("<$WATCHER_ACCENT>An unknown starship signature is being broadcast in {4} spawned at {1}, {3}".miniMessage())
 				)
 			)
 		}
