@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.ai.configuration
 
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.ai.reward.AICreditRewardProvider
 import net.horizonsend.ion.server.features.ai.reward.AIItemRewardProvider
 import net.horizonsend.ion.server.features.ai.reward.AIXPRewardProvider
@@ -10,6 +9,7 @@ import net.horizonsend.ion.server.features.ai.starship.BehaviorConfiguration
 import net.horizonsend.ion.server.features.ai.starship.StarshipTemplate
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
+import net.horizonsend.ion.server.features.world.WorldSettings
 
 @Serializable
 data class AITemplate(
@@ -44,7 +44,7 @@ data class AITemplate(
 
 	@Serializable
 	data class ItemRewardProviderConfiguration(
-		val items: List<ServerConfiguration.PlanetSpawnConfig.DroppedItem>
+		val items: List<WorldSettings.DroppedItem>
 	) : AIRewardsProviderConfiguration {
 		override fun createRewardsProvider(starship: ActiveControlledStarship, template: AITemplate): RewardsProvider {
 			return AIItemRewardProvider(starship, this)

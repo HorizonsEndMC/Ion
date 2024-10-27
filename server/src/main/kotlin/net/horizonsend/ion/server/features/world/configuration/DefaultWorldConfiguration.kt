@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.gas.collection.HeightRamp
 import net.horizonsend.ion.server.features.gas.collection.StaticBase
 import net.horizonsend.ion.server.features.gas.type.WorldGasConfiguration
 import net.horizonsend.ion.server.features.world.WorldSettings
+import org.bukkit.entity.EntityType
 
 @Suppress("UNUSED")
 object DefaultWorldConfiguration {
@@ -20,65 +21,6 @@ object DefaultWorldConfiguration {
 		defaultConfigs[worldName] = settings
 		return settings
 	}
-
-	val TEST = register("Chandra", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(100),
-				maxHeight = StaticIntegerAmount(384),
-				minWeight = StaticDoubleAmount(0.0),
-				maxWeight = StaticDoubleAmount(1.0)
-			),
-			weight = StaticDoubleAmount(0.5))
-		),
-		CollectedGas(Gasses.NITROGEN.identifier,
-			ChildWeight(
-				parent = ChildWeight(
-					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
-				),
-				weight = StaticDoubleAmount(0.5)
-			),
-		),
-		CollectedGas(Gasses.METHANE.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(0),
-				maxHeight = StaticIntegerAmount(384),
-				minWeight = StaticDoubleAmount(0.5),
-				maxWeight = StaticDoubleAmount(1.0)
-			),
-			weight = StaticDoubleAmount(0.5))
-		),
-		CollectedGas(Gasses.OXYGEN.identifier,
-			ChildWeight(
-				parent = ChildWeight(
-					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
-				),
-				weight = StaticDoubleAmount(0.5)
-			),
-		),
-		CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(0),
-				maxHeight = StaticIntegerAmount(384),
-				minWeight = StaticDoubleAmount(1.0),
-				maxWeight = StaticDoubleAmount(0.0)
-			),
-			weight = StaticDoubleAmount(0.5))
-		),
-		CollectedGas(Gasses.FLUORINE.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(0),
-				maxHeight = StaticIntegerAmount(128),
-				minWeight = StaticDoubleAmount(1.0),
-				maxWeight = StaticDoubleAmount(0.0)
-			),
-			weight = StaticDoubleAmount(0.5))
-		)
-	))))
 
 	val CHANDRA = register("Chandra", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
 		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
@@ -443,26 +385,33 @@ object DefaultWorldConfiguration {
 		),
 	))))
 
-	val EDEN = register("Ilius_horizonsend_eden", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.METHANE.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(0),
-				maxHeight = StaticIntegerAmount(384),
-				minWeight = StaticDoubleAmount(0.5),
-				maxWeight = StaticDoubleAmount(1.0)
+	val EDEN = register("Ilius_horizonsend_eden", WorldSettings(
+		gasConfiguration = WorldGasConfiguration(gasses = listOf(
+			CollectedGas(Gasses.METHANE.identifier, ChildWeight(
+				parent = HeightRamp(
+					parent = StaticBase(amount = StaticIntegerAmount(85)),
+					minHeight = StaticIntegerAmount(0),
+					maxHeight = StaticIntegerAmount(384),
+					minWeight = StaticDoubleAmount(0.5),
+					maxWeight = StaticDoubleAmount(1.0)
+				),
+				weight = StaticDoubleAmount(0.45))
 			),
-			weight = StaticDoubleAmount(0.45))
-		),
-		CollectedGas(Gasses.FLUORINE.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(0),
-				maxHeight = StaticIntegerAmount(128),
-				minWeight = StaticDoubleAmount(1.0),
-				maxWeight = StaticDoubleAmount(0.0)
+			CollectedGas(Gasses.FLUORINE.identifier, ChildWeight(
+				parent = HeightRamp(
+					parent = StaticBase(amount = StaticIntegerAmount(85)),
+					minHeight = StaticIntegerAmount(0),
+					maxHeight = StaticIntegerAmount(128),
+					minWeight = StaticDoubleAmount(1.0),
+					maxWeight = StaticDoubleAmount(0.0)
+				),
+				weight = StaticDoubleAmount(0.5))
 			),
-			weight = StaticDoubleAmount(0.5))
-		),
-	))))
+		)),
+		customMobSpawns = listOf(WorldSettings.SpawnedMob(
+			function = WorldSettings.SpawnedMob.AlwaysReplace,
+			spawningWeight = 1.0,
+			type = EntityType.WARDEN.name
+		))
+	))
 }

@@ -87,7 +87,6 @@ import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
-import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawning
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -197,8 +196,6 @@ val components: List<IonComponent> = listOf(
     WaypointManager,
 
 	Bounties,
-
-	CustomMobSpawning,
 
 	AISpawners,
 	AISpawningManager,

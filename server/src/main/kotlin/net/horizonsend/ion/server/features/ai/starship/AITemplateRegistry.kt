@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_DESATURATED_RED
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
-import net.horizonsend.ion.server.configuration.ServerConfiguration.PlanetSpawnConfig.DroppedItem
 import net.horizonsend.ion.server.configuration.StaticIntegerAmount
 import net.horizonsend.ion.server.configuration.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
@@ -28,6 +27,7 @@ import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
 import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.world.WorldSettings.DroppedItem
 import org.bukkit.Material
 
 /**
