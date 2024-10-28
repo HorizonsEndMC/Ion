@@ -57,14 +57,10 @@ object SiegeCommand : SLCommand() {
 
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerAsyncCompletion("solarSieges") {
-			println(SolarSieges.getAllPreparingSieges())
-			println(SolarSieges.getAllActiveSieges())
 			return@registerAsyncCompletion SolarSieges.getAllSieges().map { it.region.name.replace(' ', '_') }
 		}
 		manager.commandContexts.registerContext(SolarSiege::class.java) { c ->
 			val name = c.popFirstArg()
-			println(SolarSieges.getAllPreparingSieges())
-			println(SolarSieges.getAllActiveSieges())
 			SolarSieges.getAllSieges().firstOrNull { it.region.name.replace(' ', '_').equals(name, ignoreCase = true) } ?: throw InvalidCommandArgument("$name not found!")
 		}
 		manager.commandCompletions.setDefaultCompletion("solarSieges", SolarSiege::class.java)
