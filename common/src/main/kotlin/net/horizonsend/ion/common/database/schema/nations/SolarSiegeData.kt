@@ -42,10 +42,11 @@ data class SolarSiegeData(
 		}
 
 		fun updatePoints(id: Oid<SolarSiegeData>, defender: Int, attacker: Int) {
-			col.updateOneById(id, and(
+			updateById(
+				id,
 				setValue(SolarSiegeData::defenderPoints, defender),
-				setValue(SolarSiegeData::attackerPoints, attacker),
-			))
+				setValue(SolarSiegeData::attackerPoints, attacker)
+			)
 		}
 
 		fun markComplete(id: Oid<SolarSiegeData>) {
