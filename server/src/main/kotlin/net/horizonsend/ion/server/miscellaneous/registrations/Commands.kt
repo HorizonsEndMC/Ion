@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.command.admin.AdminCommands
 import net.horizonsend.ion.server.command.admin.BatteryCommand
+import net.horizonsend.ion.server.command.admin.CapturableStationsCommand
 import net.horizonsend.ion.server.command.admin.ConvertCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
@@ -142,7 +142,7 @@ val commands: List<SLCommand> = listOf(
 	StarshipsCommand,
 	GracePeriod,
 	NewPlayerProtection,
-	AdminCommands,
+	CapturableStationsCommand,
 
 	MultiblockCommand,
 	SpaceGenCommand,

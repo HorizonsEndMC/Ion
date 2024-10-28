@@ -19,6 +19,8 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpa
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.extensions.hint
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
@@ -32,7 +34,6 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStati
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
-import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -53,25 +54,25 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	@Subcommand("rebalance")
     fun onRebalance(sender: CommandSender) {
 		NationsBalancing.reload()
-		sender msg "&aRebalanced"
+		sender.success("Reloaded config")
 	}
 
 	@Subcommand("refresh map")
     fun onRefreshMap(sender: CommandSender) {
 		NationsMap.reloadDynmap()
-		sender msg "Refreshed map"
+		sender.success("Refreshed map")
 	}
 
 	@Subcommand("runtask money")
     fun onRunTaskIncome(sender: CommandSender) {
 		NationsMasterTasks.executeMoneyTasks()
-		sender msg "Executed income task"
+		sender.success("Executed income task")
 	}
 
 	@Subcommand("runtask purge")
     fun onRunTaskPurge(sender: CommandSender) = asyncCommand(sender) {
 		NationsMasterTasks.checkPurges()
-		sender msg "Executed purge task"
+		sender.success("Executed purge task")
 	}
 
 	@Subcommand("player set settlement")
@@ -87,7 +88,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 
 		SLPlayer.joinSettlement(playerId, settlementId)
 
-		sender msg "&aPut $player in $settlement"
+		sender.success("Put $player in $settlement")
 	}
 
 	private fun percentAndTotal(dividend: Double, divisor: Double) =
@@ -95,10 +96,12 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 
 	@Subcommand("player stats")
     fun onPlayerStats(sender: CommandSender) = asyncCommand(sender) {
-		sender msg "Pulling from db..."
+		sender.hint("Pulling from db...")
 		val allPlayers = SLPlayer.all()
+
 		val total = allPlayers.size.toDouble()
-		sender msg "Analyzing $total players..."
+		sender.hint("Analyzing $total players...")
+
 		var playersInSettlements = 0.0
 		var playersInNations = 0.0
 		var activePlayers = 0.0
@@ -116,11 +119,11 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 			}
 		}
 
-		sender msg "&6Players in settlements: &b" + percentAndTotal(playersInSettlements, total)
-		sender msg "&6Players in nations: &5" + percentAndTotal(playersInNations, total)
-		sender msg "&6Active Players: &2" + percentAndTotal(activePlayers, total)
-		sender msg "&6Semi-Active Players: &7" + percentAndTotal(semiActivePlayers, total)
-		sender msg "&6Inactive Players: &c" + percentAndTotal(inactivePlayers, total)
+		sender.information("Players in settlements: " + percentAndTotal(playersInSettlements, total))
+		sender.information("Players in nations: " + percentAndTotal(playersInNations, total))
+		sender.information("Active Players: " + percentAndTotal(activePlayers, total))
+		sender.information("Semi-Active Players: " + percentAndTotal(semiActivePlayers, total))
+		sender.information("Inactive Players: " + percentAndTotal(inactivePlayers, total))
 	}
 
 	@Subcommand("settlement set leader")
@@ -129,28 +132,28 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 		val playerId = resolveOfflinePlayer(player).slPlayerId
 		requireIsMemberOf(playerId, settlementId)
 		Settlement.setLeader(settlementId, playerId)
-		sender msg "Changed leader of ${getSettlementName(settlementId)} to ${getPlayerName(playerId)}"
+		sender.success("Changed leader of ${getSettlementName(settlementId)} to ${getPlayerName(playerId)}")
 	}
 
 	@Subcommand("settlement purge")
     fun onSettlementPurge(sender: CommandSender, settlement: String, sendMessage: Boolean) = asyncCommand(sender) {
 		val settlementId = resolveSettlement(settlement)
 		NationsMasterTasks.purgeSettlement(settlementId, sendMessage)
-		sender msg "Purged ${getSettlementName(settlementId)}"
+		sender.success("Purged ${getSettlementName(settlementId)}")
 	}
 
 	@Subcommand("settlement set balance")
     fun onSettlementSetBalance(sender: CommandSender, settlement: String, balance: Int) = asyncCommand(sender) {
 		val settlementId = resolveSettlement(settlement)
 		Settlement.updateById(settlementId, setValue(Settlement::balance, balance))
-		sender msg "Set balance of $settlement to ${balance.toCreditsString()}"
+		sender.success("Set balance of $settlement to ${balance.toCreditsString()}")
 	}
 
 	@Subcommand("nation set balance")
     fun onNationSetBalance(sender: CommandSender, nation: String, balance: Int) = asyncCommand(sender) {
 		val nationId = resolveNation(nation)
 		Nation.updateById(nationId, setValue(Nation::balance, balance))
-		sender msg "Set balance of $nation to ${balance.toCreditsString()}"
+		sender.success("Set balance of $nation to ${balance.toCreditsString()}")
 	}
 
 	@Subcommand("nation set capital")
@@ -271,13 +274,13 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	}
 
 	@Subcommand("station set quarter")
-    fun onStationSetQuarter(sender: CommandSender, station: String, quarter: Int) = asyncCommand(sender) {
+    fun onStationSetQuarter(sender: CommandSender, stationName: String, quarter: Int) = asyncCommand(sender) {
 		failIf(quarter !in 1..4) { "Quarter must be within [1, 4]" }
-		val station = CapturableStation.findOne(CapturableStation::name eq station)
-			?: fail { "Station $station not found" }
+		val station = CapturableStation.findOne(CapturableStation::name eq stationName) ?: fail { "Station $stationName not found" }
 		station.siegeTimeFrame = quarter
 		CapturableStation.col.updateOne(station)
-		sender msg "Set quarter of $station to $quarter"
+
+		sender.success("Set quarter of $station to $quarter")
 	}
 
 	@Subcommand("station clearsieges")
@@ -289,7 +292,8 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 		val deleted = CapturableStationSiege.col
 			.deleteMany(and(CapturableStationSiege::time gt date, CapturableStationSiege::nation eq nationId))
 			.deletedCount
-		sender msg "Deleted $deleted siege(s)"
+
+		sender.success("Deleted $deleted siege(s)")
 	}
 
 	@Subcommand("territory import")
