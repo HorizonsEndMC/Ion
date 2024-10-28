@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship
 
-import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer.Companion.isMemberOfNation
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer.Companion.isMemberOfSettlement
@@ -13,28 +12,26 @@ import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
-import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.gui.custom.starship.StarshipComputerMenu
-import net.horizonsend.ion.server.features.nations.gui.anvilInput
-import net.horizonsend.ion.server.features.nations.gui.playerClicker
-import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
@@ -46,10 +43,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.litote.kmongo.addToSet
-import org.litote.kmongo.pull
 import org.litote.kmongo.setValue
-import java.util.LinkedList
 import java.util.concurrent.TimeUnit
 
 object StarshipComputers : IonServerComponent() {
@@ -139,192 +133,88 @@ object StarshipComputers : IonServerComponent() {
 	}
 
 	private fun tryOpenMenu(player: Player, data: StarshipData) {
-		if (
-			data is PlayerStarshipData
-			&& !data.isPilot(player)
-			&& !player.hasPermission("ion.core.starship.override")
-			&& !player.isTerritoryOwner()
-			|| (!player.isMemberOfTerritory() || // passing this implies the player is a member of the settlement
-				!hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP))
-			&& (!player.isNationMemberOfTerritory() || // passing this implies the player is part of the nation
-				!hasPermission(player.slPlayerId, NationRole.Permission.TAKE_SHIP_OWNERSHIP))
-		) {
-			Tasks.async {
-				val name: String? = SLPlayer.getName(data.captain)
-
-				player.userError("You're not a pilot of this ship! The captain is $name")
-			}
+		if (data !is PlayerStarshipData) {
+			if (player.hasPermission("ion.core.starship.override")) handleAIComputer(player, data)
 
 			return
 		}
 
-		if (data !is PlayerStarshipData && !player.hasPermission("ion.core.starship.override")) return
+		if (data.isPilot(player) || canTakeOwnership(player, data)) return openMenu(player, data)
+
+		Tasks.async {
+			val name: String? = SLPlayer.getName(data.captain)
+
+			player.userError("You're not a pilot of this ship! The captain is $name")
+		}
+	}
+
+	private fun openMenu(player: Player, data: PlayerStarshipData) {
 		if (!StarshipComputerOpenMenuEvent(player).callEvent()) return
-
 		StarshipComputerMenu(player, data).open()
-
-		return
-		@Suppress("UNREACHABLE_CODE")
-		MenuHelper.apply {
-			val pane = staticPane(0, 0, 9, 1)
-
-			pane.addItem(
-				guiButton(Material.GHAST_TEAR) {
-					openTypeMenu(playerClicker, data)
-				}.setName(MiniMessage.miniMessage().deserialize("<white>Type (${data.starshipType})")),
-				2, 0
-			)
-
-			pane.addItem(
-				guiButton(Material.NAME_TAG) {
-					startRename(playerClicker, data)
-				}.setName(MiniMessage.miniMessage().deserialize("<gray>Starship Name")),
-				8, 0
-			)
-
-			pane.setOnClick { e ->
-				e.isCancelled = true
-			}
-
-			gui(1, getDisplayName(data)).withPane(pane).show(player)
-		}
 	}
 
-	private fun openPilotsMenu(player: Player, data: PlayerStarshipData) {
-		MenuHelper.apply {
-			val items = LinkedList<GuiItem>()
-
-			items.add(guiButton(Material.BEACON) {
-				player.closeInventory()
-
-				player.anvilInput("Enter player name:".toComponent()) { player, input ->
-					Tasks.async {
-						val id = SLPlayer.findIdByName(input) ?: return@async player.userError("Player not found")
-
-						DeactivatedPlayerStarships.addPilot(data, id)
-						data.pilots += id
-
-						PlayerStarshipData.updateById(
-							data._id,
-							addToSet(PlayerStarshipData::pilots, id)
-						)
-
-						player.success("Added $input as a pilot to starship.")
-
-						Tasks.sync {
-							player.closeInventory()
-						}
+	private fun handleAIComputer(player: Player, data: StarshipData) {
+		player.sendMessage(ofChildren(
+			text("This is an AI starship computer, click here to remove it: "),
+			bracketed(text("Here"))
+				.clickEvent(ClickEvent.callback {
+					DeactivatedPlayerStarships.destroyAsync(data) {
+						player.successActionMessage("Destroyed starship computer")
 					}
-
-					null
-				}
-			}.setName("Add Pilot"))
-
-			Tasks.async {
-				for (pilot in data.pilots) {
-					val name = SLPlayer.getName(pilot) ?: continue
-
-					items.add(guiButton(skullItem(pilot.uuid, name)) {
-						if (pilot != data.captain) {
-							data.pilots -= pilot
-
-							Tasks.async { PlayerStarshipData.updateById(data._id, pull(PlayerStarshipData::pilots, pilot)) }
-
-							player.closeInventory()
-							player.success("Removed $name")
-						}
-					})
-				}
-
-				Tasks.sync { player.openPaginatedMenu("Edit Pilots", items) }
-			}
-		}
+				})
+				.hoverEvent(text("Remove Computer"))
+		))
 	}
 
-	private fun startRename(player: Player, data: StarshipData) {
-		player.closeInventory()
-		player.anvilInput("Enter new ship name:".toComponent()) { r, input ->
-			Tasks.async {
-				val serialized = MiniMessage.miniMessage().deserialize(input)
-
-
-			}
-			null
-		}
+	fun canTakeOwnership(player: Player, data: PlayerStarshipData): Boolean {
+		return !data.isPilot(player)
+			&& (player.hasPermission("ion.core.starship.override")
+			|| isSettlementOwner(player, data)
+			|| (isMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, SettlementRole.Permission.TAKE_SHIP_OWNERSHIP))   // passing this implies the player is a member of the settlement
+			|| (isNationMemberOfTerritory(player, data) && hasPermission(player.slPlayerId, NationRole.Permission.TAKE_SHIP_OWNERSHIP))) // passing this implies the player is part of the nation
 	}
 
-	private fun openTypeMenu(player: Player, data: StarshipData) {
-		MenuHelper.apply {
-			val items = StarshipType.getUnlockedTypes(player).map { type ->
-				guiButton(type.menuItem) {
-					// prevent from being piloted
-					if (ActiveStarships[data._id] != null) {
-						return@guiButton
-					}
-
-					DeactivatedPlayerStarships.updateType(data, type)
-
-					playerClicker.closeInventory()
-					tryOpenMenu(player, data)
-					player.success("Changed type to $type")
-				}
-			}
-			player.openPaginatedMenu("Select Type", items)
-		}
-	}
-
-	private fun toggleLockEnabled(player: Player, data: StarshipData) {
-		val newValue = !data.isLockEnabled
-
-		DeactivatedPlayerStarships.updateLockEnabled(data, newValue)
-
-		if (newValue) {
-			player.success("Enabled Lock")
-		} else {
-			player.success("Disabled Lock")
-		}
-
-		tryOpenMenu(player, data)
-		player.updateInventory()
-	}
-
-	private fun takeOwnership(player: Player, data: PlayerStarshipData) {
+	fun takeOwnership(player: Player, data: PlayerStarshipData) {
+		data.captain = player.slPlayerId
 		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::captain, player.slPlayerId))
+		data.pilots.clear()
 		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::pilots, mutableSetOf()))
 	}
 
-	private fun Player.isTerritoryOwner(): Boolean {
-		val territoryId = Regions.find(this.location)
-			.filterIsInstance<RegionTerritory>()
-			.firstOrNull() ?: return false
+	private fun getComputerTerritory(data: PlayerStarshipData): Territory? {
+		val location = Vec3i(data.blockKey).toLocation(data.bukkitWorld())
 
-		val territory = Territory.findById(territoryId.id) ?: return false
+		val territoryId = Regions.find(location)
+			.filterIsInstance<RegionTerritory>()
+			.firstOrNull() ?: return null
+
+		return Territory.findById(territoryId.id)
+	}
+
+	private fun isSettlementOwner(player: Player, data: PlayerStarshipData): Boolean {
+		val territory = getComputerTerritory(data) ?: return false
 		val settlementId = territory.settlement ?: Nation.findById(territory.nation?: return false)?.capital ?: return false
 		val settlement = Settlement.findById(settlementId) ?: return false
 
-		return settlement.leader.uuid == uniqueId
+		return settlement.leader.uuid == player.uniqueId
 	}
 
-	fun Player.isMemberOfTerritory(): Boolean {
-		val territoryId = Regions.find(this.location)
-			.filterIsInstance<RegionTerritory>()
-			.firstOrNull() ?: return false
-		val territory = Territory.findById(territoryId.id) ?: return false
+	private fun isMemberOfTerritory(player: Player, data: PlayerStarshipData): Boolean {
+		val territory = getComputerTerritory(data) ?: return false
 		val settlementId = territory.settlement ?: return false
-		return isMemberOfSettlement(this.slPlayerId, settlementId)
+
+		return isMemberOfSettlement(player.slPlayerId, settlementId)
 	}
 
 	fun hasPermission(player: SLPlayerId, permission: SettlementRole.Permission): Boolean {
 		return SettlementRole.hasPermission(player, permission)
 	}
 
-	fun Player.isNationMemberOfTerritory(): Boolean {
-		val territoryId = Regions.find(this.location)
-			.filterIsInstance<RegionTerritory>()
-			.firstOrNull() ?: return false
-		val territory = Territory.findById(territoryId.id) ?: return false
+	private fun isNationMemberOfTerritory(player: Player, data: PlayerStarshipData): Boolean {
+		val territory = getComputerTerritory(data) ?: return false
 		val nationId = territory.nation ?: return false
-		return isMemberOfNation(this.slPlayerId, nationId)
+
+		return isMemberOfNation(player.slPlayerId, nationId)
 	}
 
 	fun hasPermission(player: SLPlayerId, permission: NationRole.Permission): Boolean {
