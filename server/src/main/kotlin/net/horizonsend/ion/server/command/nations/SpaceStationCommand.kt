@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.body.CachedMoon
@@ -166,8 +167,6 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		// Check conflicts with eco stations
-		// (use the database directly, in order to avoid people making
-		// another one in the same location before the cache updates)
 		for (other in EcoStations.getAll()) {
 			if (other.world != world.name) continue
 			val minDistance = 5000
@@ -179,12 +178,22 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		// Check conflicts with capturable stations
-		for (station in Regions.getAllOf<RegionCapturableStation>().filter { it.bukkitWorld == world }) {
+		for (station in Regions.getAllOfInWorld<RegionCapturableStation>(world)) {
 			val minDistance = maxOf((NATIONS_BALANCE.capturableStation.radius + radius), 2500)
 			val distance = distance(x, y, z, station.x, y, station.z)
 
 			failIf(distance < minDistance) {
 				"This claim would be too close to the capturable station ${station.name}"
+			}
+		}
+
+		// Check conflicts with solar siege zones
+		for (station in Regions.getAllOfInWorld<RegionSolarSiegeZone>(world)) {
+			val minDistance = maxOf((RegionSolarSiegeZone.RADIUS + radius), 3500)
+			val distance = distance(x, y, z, station.x, y, station.z)
+
+			failIf(distance < minDistance) {
+				"This claim would be too close to the solar siege zone ${station.name}"
 			}
 		}
 	}
