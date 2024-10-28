@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.ai.module.misc
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getDirection
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getDirection
 import org.apache.commons.collections4.queue.CircularFifoQueue
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
