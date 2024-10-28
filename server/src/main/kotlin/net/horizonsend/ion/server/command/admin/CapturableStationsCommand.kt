@@ -3,8 +3,10 @@ package net.horizonsend.ion.server.command.admin
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
-import net.horizonsend.ion.common.extensions.success
+import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.nations.NationsMap
@@ -15,13 +17,12 @@ import java.time.DayOfWeek
 
 @CommandAlias("capturablestation")
 @CommandPermission("ion.core.capturablestation.create")
-object AdminCommands : SLCommand() {
-	@Suppress("unused")
-	@Default
-	fun capturableStationCreation(sender: Player, stationname: String, x: Int, z: Int, siegehour: Int) {
+object CapturableStationsCommand : SLCommand() {
+	@Subcommand("create normal")
+	fun capturableStationCreation(sender: Player, stationName: String, x: Int, z: Int, siegehour: Int) {
 		CapturableStation.findById(
 			CapturableStation.create(
-				stationname,
+				stationName,
 				sender.world.name,
 				x,
 				z,
@@ -31,8 +32,20 @@ object AdminCommands : SLCommand() {
 		)
 			?.let { RegionCapturableStation(it) }?.let { NationsMap.addCapturableStation(it) }
 		sender.success(
-			"Successfully created Capturable Station ($stationname), At {$x}, {$z}, SiegeHour is {$siegehour}"
+			"Successfully created Capturable Station ($stationName), At {$x}, {$z}, SiegeHour is {$siegehour}"
 		)
+	}
+
+	@Subcommand("create solar")
+	fun capturableStationCreation(sender: Player, stationName: String, x: Int, z: Int) {
+		val id = SolarSiegeZone.create(
+			stationName,
+			sender.world.name,
+			x,
+			z
+		)
+
+		sender.success("Successfully created Solar Siege Zone ($stationName), At {$x}, {$z}")
 	}
 }
 
