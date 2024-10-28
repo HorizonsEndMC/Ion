@@ -1,14 +1,14 @@
-package net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret
+package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.CycleTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.CycleTurretProjectile
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector

@@ -1,7 +1,6 @@
-package net.horizonsend.ion.server.features.multiblock.mininglasers
+package net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -28,7 +27,6 @@ sealed class MiningLaserMultiblockTier4 : MiningLaserMultiblock() {
 
 object MiningLaserMultiblockTier4Top : MiningLaserMultiblockTier4() {
     override val side = BlockFace.UP
-    override val mirrored = false
 
     override fun getFirePointOffset(): Vec3i = Vec3i(+0, +6, +2)
 	override val outputOffset: Vec3i = Vec3i(-1, -1, 0)
@@ -272,9 +270,9 @@ object MiningLaserMultiblockTier4Top : MiningLaserMultiblockTier4() {
 
 object MiningLaserMultiblockTier4TopMirrored : MiningLaserMultiblockTier4() {
     override val side = BlockFace.UP
-    override val mirrored = true
 
     override fun getFirePointOffset(): Vec3i = Vec3i(+0, +6, -3)
+	override val outputOffset: Vec3i = Vec3i(+1, -1, 0)
 
     override fun MultiblockShape.buildStructure() {
         z(+0) {
@@ -515,7 +513,6 @@ object MiningLaserMultiblockTier4TopMirrored : MiningLaserMultiblockTier4() {
 
 object MiningLaserMultiblockTier4Bottom : MiningLaserMultiblockTier4() {
     override val side = BlockFace.DOWN
-    override val mirrored = false
 
     override fun getFirePointOffset(): Vec3i = Vec3i(+0, -6, +2)
 	override val outputOffset: Vec3i = Vec3i(-1, +1, 0)
@@ -759,9 +756,9 @@ object MiningLaserMultiblockTier4Bottom : MiningLaserMultiblockTier4() {
 
 object MiningLaserMultiblockTier4BottomMirrored : MiningLaserMultiblockTier4() {
     override val side = BlockFace.DOWN
-    override val mirrored = true
 
     override fun getFirePointOffset(): Vec3i = Vec3i(+0, -6, -3)
+	override val outputOffset: Vec3i = Vec3i(+1, +1, 0)
 
     override fun MultiblockShape.buildStructure() {
         z(+0) {
@@ -1002,7 +999,6 @@ object MiningLaserMultiblockTier4BottomMirrored : MiningLaserMultiblockTier4() {
 
 object MiningLaserMultiblockTier4Side : MiningLaserMultiblockTier4() {
 	override val side = BlockFace.UP
-    override val mirrored = false
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(-1, +1, +8)
 	override val outputOffset: Vec3i = Vec3i(-1, -1, 0)
@@ -1243,9 +1239,9 @@ object MiningLaserMultiblockTier4Side : MiningLaserMultiblockTier4() {
 
 object MiningLaserMultiblockTier4SideMirrored : MiningLaserMultiblockTier4() {
     override val side = BlockFace.UP
-    override val mirrored = true
 
     override fun getFirePointOffset(): Vec3i = Vec3i(+1, -1, -8)
+	override val outputOffset: Vec3i = Vec3i(+1, -1, 0)
 
     override fun MultiblockShape.buildStructure() {
         z(+0) {
