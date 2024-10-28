@@ -172,7 +172,7 @@ object SolarSieges : IonServerComponent(true) {
 		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, Embed(
 			title = "Siege Declaration",
 			description = "$attackerName of ${formatNationName(attackerNation).plainText()} has declared a siege of ${formatNationName(defender).plainText()}'s Solar Siege holding in " +
-				"${region.world}. The siege will start <t:${TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(3))}:R>."
+				"${region.world}. The siege will start <t:${TimeUnit.MILLISECONDS.toSeconds(siege.getActivePeriodStart())}:R>."
 		))
 
 		siege.scheduleTasks()
