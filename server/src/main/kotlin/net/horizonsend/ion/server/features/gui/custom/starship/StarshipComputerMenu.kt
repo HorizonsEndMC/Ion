@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.gui.custom.starship
 
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.hint
@@ -10,6 +11,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toText
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.gui.GuiItems.createButton
 import net.horizonsend.ion.server.features.gui.custom.starship.pilots.ManagePilotsMenu
@@ -17,6 +19,8 @@ import net.horizonsend.ion.server.features.gui.custom.starship.type.ChangeTypeBu
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
+import net.horizonsend.ion.server.features.starship.StarshipComputers
+import net.horizonsend.ion.server.features.starship.StarshipComputers.canTakeOwnership
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipState
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -45,7 +49,7 @@ import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 import java.util.concurrent.CompletableFuture
 
-class StarshipComputerMenu(val player: Player, val data: StarshipData) {
+class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 	fun open() {
 		val state: StarshipState? = DeactivatedPlayerStarships.getSavedState(data)
 		val title = if (state != null)
@@ -62,12 +66,16 @@ class StarshipComputerMenu(val player: Player, val data: StarshipData) {
 
 	private fun formatGui(): Gui {
 		val gui = Gui.normal()
-			.setStructure("1 2 3 4 . . . . 5")
+			.setStructure("1 2 3 4 . . . 5 6")
 			.addIngredient('1', reDetectButton)
 			.addIngredient('2', changePilotsButton)
 			.addIngredient('3', changeTypeButton)
 			.addIngredient('4', toggleLockButton)
-			.addIngredient('5', renameButton)
+			.addIngredient('6', renameButton)
+
+		if (canTakeOwnership(player, data)) {
+			gui.addIngredient('5', takeOwnershipButton)
+		}
 
 		return gui.build()
 	}
@@ -137,6 +145,19 @@ class StarshipComputerMenu(val player: Player, val data: StarshipData) {
 				notifyWindows()
 			}
 		}
+	}
+
+	private val takeOwnershipButton = createButton(
+		ItemStack(Material.RECOVERY_COMPASS)
+			.setDisplayNameAndGet(text("Take ownership").itemName)
+			.setLoreAndGet(listOf<Component>(
+				template(text("Current owner: {0}.", GRAY), SLPlayer.getName(data.captain)).itemName,
+				text("Use this button to take", GRAY).itemName,
+				text("ownership of this computer", GRAY).itemName
+			))
+	) { _, player, _ ->
+		StarshipComputers.takeOwnership(player, data)
+		player.success("Took ownership of this computer")
 	}
 
 	private val renameButton = RenameButton(this)
