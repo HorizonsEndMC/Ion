@@ -1,8 +1,14 @@
 package net.horizonsend.ion.server.features.nations.sieges
 
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
+import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.formatNationName
@@ -11,6 +17,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -19,111 +26,195 @@ import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
+import org.apache.commons.lang3.time.TimeZones.GMT_ID
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
+import java.time.DayOfWeek
 import java.time.Duration
+import java.time.LocalDate
+import java.util.Calendar
 import java.util.Date
+import java.util.TimeZone.getTimeZone
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-object SolarSieges : IonServerComponent() {
-	private val onGoingSieges = mutableMapOf<Oid<SolarSiegeData>, SolarSiege>()
+object SolarSieges : IonServerComponent(true) {
+	@Synchronized
+	private fun locked(block: () -> Unit) = block()
 
-	fun getAllCurrentSieges(): Collection<SolarSiege> = onGoingSieges.values
+	private fun asyncLocked(block: () -> Unit) = Tasks.async {
+		locked(block)
+	}
 
 	override fun onEnable() {
 		tryLoadSieges()
-		Tasks.asyncRepeat(60L, 60L) { getAllCurrentSieges().filter { it.needsSave }.forEach(SolarSiege::saveSiegeData) }
+		Tasks.asyncRepeat(60L, 60L) { getAllActiveSieges().filter { it.needsSave }.forEach(SolarSiege::saveSiegeData) }
 		Tasks.asyncRepeat(20L, 20L, ::processPassivePoints)
 	}
 
-	private fun tryLoadSieges() = SolarSiegeData.findActive().map(SolarSiegeData::_id).forEach(::loadPriorSiege)
+	private val preparationSieges = mutableMapOf<Oid<SolarSiegeData>, SolarSiege>()
+	private val activeSieges = mutableMapOf<Oid<SolarSiegeData>, SolarSiege>()
 
-	private fun loadPriorSiege(id: Oid<SolarSiegeData>) {
-		val data = SolarSiegeData.findById(id) ?: return
+	fun getAllPreparingSieges(): Collection<SolarSiege> = preparationSieges.values
+	fun getAllActiveSieges(): Collection<SolarSiege> = activeSieges.values
 
-		val region = Regions.get<RegionSolarSiegeZone>(data.zone)
-		val siege = SolarSiege(
-			id,
-			region,
-			data.attacker,
-			data.attackerPoints,
-			region.nation!!,
-			data.attackerPoints,
-			SolarSiegeData.findPropById(id, SolarSiegeData::declareTime)!!.time
-		)
+	fun setPreparing(siege: SolarSiege) {
+		preparationSieges[siege.databaseId] = siege
+	}
 
-		if (siege.isPreparationPeriod()) {
-			scheduleSiegeStart(siege)
+	fun setActive(siege: SolarSiege) {
+		preparationSieges.remove(siege.databaseId)
+		activeSieges[siege.databaseId] = siege
+	}
+
+	fun removeActive(siege: SolarSiege) {
+		preparationSieges.remove(siege.databaseId) // Just in case
+		activeSieges.remove(siege.databaseId)
+	}
+
+	/**
+	 * Returns whether this siege zone is being prepared for a siege, or actively under siege
+	 **/
+	fun isUnderSiege(stationId: Oid<SolarSiegeZone>): Boolean {
+		return activeSieges.any { it.value.region.id == stationId } ||
+			   preparationSieges.any { it.value.region.id == stationId }
+	}
+
+	/**
+	 * Returns whether the current time is inside the period when a siege can be declared
+	 **/
+	private fun isSiegeDeclarationPeriod(): Boolean {
+		val localDate = LocalDate.now()
+		if (!(localDate.dayOfWeek == DayOfWeek.SATURDAY || localDate.dayOfWeek == DayOfWeek.SUNDAY)) return false
+
+		val calendar = Calendar.getInstance(getTimeZone(GMT_ID))
+		calendar.time = Date()
+		val hour = calendar.get(Calendar.HOUR_OF_DAY)
+		return hour in 14..16
+	}
+
+	// Initiation, Ending
+	fun initSiege(player: Player) = asyncLocked {
+		val nation = PlayerCache[player].nationOid
+			?: return@asyncLocked player.userError("You need to be in a nation to siege a zone.")
+
+		val zone = Regions.findFirstOf<RegionSolarSiegeZone>(player.location)
+			?: return@asyncLocked player.userError("You must be within a zone's area to siege it.")
+
+		if (zone.nation?.let { RelationCache[nation, it] >= NationRelation.Level.ALLY } == true) {
+			return@asyncLocked player.userError("This zone is owned by an ally or your nation!")
 		}
 
-		if (siege.isActive()) {
-			onGoingSieges[id] = siege
-			Notify.chatAndGlobal(ofChildren(text("Resumed ", HE_MEDIUM_GRAY), siege.formatName()))
+		val stationId = zone.id
+
+		if (isUnderSiege(stationId)) {
+			return@asyncLocked player.userError("This station is already under siege!")
 		}
+
+		if (zone.nation == nation) {
+			return@asyncLocked player.userError("Your nation already owns this station.")
+		}
+
+		if (!isSiegeDeclarationPeriod() && false) {
+			player.userError("It is not the siege declaration period!")
+			player.information("Solar Sieges can only be declared on Saturday or Sunday between 14:00 and 17:00 UTC")
+			return@asyncLocked
+		}
+
+		val oldNation = zone.nation
+
+		if (oldNation == null) {
+			SolarSiegeZone.setNation(zone.id, nation)
+			Notify.chatAndEvents(template(
+				text("The solar siege zone in {0} has been captured by {1} of {2}"),
+				useQuotesAroundObjects = false,
+				zone.world,
+				player.name,
+				NationCache[nation].name
+			))
+			player.information("Captured siege zone, since it had no owner.")
+			return@asyncLocked
+		}
+
+		initSiege(zone, player.name, nation)
 	}
 
 	/**
 	 * Initiates a new siege, assumes all checks have been done properly
 	 **/
-	fun initSiege(region: RegionSolarSiegeZone, attacker: Oid<Nation>): Boolean {
+	private fun initSiege(region: RegionSolarSiegeZone, attackerName: String, attackerNation: Oid<Nation>): Boolean {
 		val defender = checkNotNull(region.nation)
-		val siegeData = SolarSiegeData.new(region.id, attacker)
+		val siegeData = SolarSiegeData.new(region.id, attackerNation)
 
 		val siege = SolarSiege(
 			siegeData,
 			region,
-			attacker = attacker,
+			attacker = attackerNation,
 			defender = defender,
 			declaredTime = System.currentTimeMillis()
 		)
 
 		Notify.chatAndGlobal(template(
-			text("{0} has initiated a siege on {1}'s solar siege zone in {2}. The preparation period begins now.", HE_MEDIUM_GRAY),
-			formatNationName(attacker),
+			text("{0} of {1} has initiated a siege on {2}'s solar siege zone in {3}. The preparation period begins now.", HE_MEDIUM_GRAY),
+			attackerName,
+			formatNationName(attackerNation),
 			formatNationName(defender),
 			region.name
 		))
 
 		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, Embed(
 			title = "Siege Declaration",
-			description = "${formatNationName(attacker).plainText()} has declared a siege of ${formatNationName(defender).plainText()}'s Solar Siege holding in " +
-			"${region.world}. The siege will start <t:${System.currentTimeMillis() + TimeUnit.HOURS.toMillis(3)}:R>."
+			description = "$attackerName of ${formatNationName(attackerNation).plainText()} has declared a siege of ${formatNationName(defender).plainText()}'s Solar Siege holding in " +
+				"${region.world}. The siege will start <t:${TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(3))}:R>."
 		))
 
-		scheduleSiegeStart(siege)
+		siege.scheduleTasks()
 
 		return true
 	}
 
-	data class ParticipationData(val player: UUID, val siege: Oid<SolarSiegeData>, val tagTime: Long)
+	fun attackerAbandonSiege(player: Player, siege: SolarSiege) {
+		val playerNation = PlayerCache[player].nationOid ?: return
 
-	private val participationData = mutableMapOf<UUID, ParticipationData>()
+		siege.isAbandoned = true
+		siege.handleEnd()
 
-	fun updateParticipation(player: Player, siege: SolarSiege) {
-		participationData[player.uniqueId] = ParticipationData(player.uniqueId, siege.databaseId, System.currentTimeMillis())
+		val nationName = NationCache[playerNation].name
+		Notify.chatAndEvents(template(
+			text("{0} of {1} has abandoned {1}"),
+			useQuotesAroundObjects = false,
+			player.name,
+			nationName,
+			siege.formatName(),
+		))
+
+		siege.fail()
 	}
 
-	private val PARTICIPATION_EXPIRATION = Duration.ofMinutes(10)
+	fun defenderAbandonSiege(player: Player, siege: SolarSiege) {
+		val playerNation = PlayerCache[player].nationOid ?: return
 
-	fun getParticipating(player: Player): SolarSiege? {
-		val participationData = participationData[player.uniqueId]
-		if (participationData != null) {
-			val now = System.currentTimeMillis()
-			if (participationData.tagTime - now <= PARTICIPATION_EXPIRATION.toMillis()) return participationData.siege.let(onGoingSieges::get)
-		}
+		siege.isAbandoned = true
+		siege.handleEnd()
 
-		val contained = getAllCurrentSieges().firstOrNull { it.region.contains(player.location) && it.isActive() } ?: return null
-		updateParticipation(player, contained)
-		return contained
+		val nationName = NationCache[playerNation].name
+		Notify.chatAndEvents(template(
+			text("{0} of {1} has abandoned {1}"),
+			useQuotesAroundObjects = false,
+			player.name,
+			nationName,
+			siege.formatName(),
+		))
+
+		siege.succeed()
 	}
 
+	// Point accrual
 	@EventHandler
 	fun onStarshipSink(event: StarshipSunkEvent) {
 		val controller = event.previousController as? PlayerController ?: return
@@ -154,7 +245,7 @@ object SolarSieges : IonServerComponent() {
 	}
 
 	private fun processPassivePoints() {
-		getAllCurrentSieges().forEach(::processPassivePoints)
+		getAllActiveSieges().forEach(::processPassivePoints)
 	}
 
 	private fun processPassivePoints(siege: SolarSiege) {
@@ -183,23 +274,57 @@ object SolarSieges : IonServerComponent() {
 		return (referenceDestroyerValue / durationSeconds) / 3
 	}
 
-	fun scheduleSiegeStart(siege: SolarSiege) {
-		val startupTask = runnable {
-			if (siege.isAbandoned) return@runnable cancel()
-			Notify.chatAndEvents(template(text("{0} has begun.", HE_MEDIUM_GRAY), siege.formatName()))
+	// Participation utils
+	data class ParticipationData(val player: UUID, val siege: Oid<SolarSiegeData>, val tagTime: Long)
 
-			Discord.sendEmbed(IonServer.discordSettings.eventsChannel, Embed(
-				title = "Siege Start",
-				description = "${siege.formatName().plainText()} has begun. It will end <t:${System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(90)}:R>."
-			))
+	private val participationData = mutableMapOf<UUID, ParticipationData>()
 
-			onGoingSieges[siege.databaseId] = siege
-		}
-
-		Tasks.asyncAt(Date(siege.getSiegeStart()), startupTask)
+	fun updateParticipation(player: Player, siege: SolarSiege) {
+		participationData[player.uniqueId] = ParticipationData(player.uniqueId, siege.databaseId, System.currentTimeMillis())
 	}
 
-	fun abandonSiege(siege: SolarSiege) {
-		siege.isAbandoned = true
+	private val PARTICIPATION_EXPIRATION = Duration.ofMinutes(10)
+
+	fun getParticipating(player: Player): SolarSiege? {
+		val participationData = participationData[player.uniqueId]
+		if (participationData != null) {
+			val now = System.currentTimeMillis()
+			if (participationData.tagTime - now <= PARTICIPATION_EXPIRATION.toMillis()) return participationData.siege.let(activeSieges::get)
+		}
+
+		val contained = getAllActiveSieges().firstOrNull { it.region.contains(player.location) && it.isActivePeriod() } ?: return null
+		updateParticipation(player, contained)
+		return contained
+	}
+
+	// Load from restart
+	private fun tryLoadSieges() = SolarSiegeData.findActive().map(SolarSiegeData::_id).forEach(::loadPriorSiege)
+
+	private fun loadPriorSiege(id: Oid<SolarSiegeData>) = asyncLocked {
+		val data = SolarSiegeData.findById(id) ?: return@asyncLocked
+
+		val region = Regions.get<RegionSolarSiegeZone>(data.zone)
+		val siege = SolarSiege(
+			id,
+			region,
+			data.attacker,
+			data.attackerPoints,
+			region.nation!!,
+			data.attackerPoints,
+			SolarSiegeData.findPropById(id, SolarSiegeData::declareTime)!!.time
+		)
+
+		log.info("Resuming solar siege in ${region.world}")
+
+		Notify.chatAndGlobal(ofChildren(text("Resumed ", HE_MEDIUM_GRAY), siege.formatName()))
+		siege.scheduleTasks()
+
+		if (siege.isPreparationPeriod()) {
+			preparationSieges[id] = siege
+		}
+
+		if (siege.isActivePeriod()) {
+			activeSieges[id] = siege
+		}
 	}
 }
