@@ -63,6 +63,8 @@ object SolarSieges : IonServerComponent(true) {
 	fun getAllPreparingSieges(): Collection<SolarSiege> = preparationSieges.values
 	fun getAllActiveSieges(): Collection<SolarSiege> = activeSieges.values
 
+	fun getAllSieges(): Collection<SolarSiege> = getAllPreparingSieges().plus(getAllActiveSieges())
+
 	fun setPreparing(siege: SolarSiege) {
 		preparationSieges[siege.databaseId] = siege
 	}
@@ -186,7 +188,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		val nationName = NationCache[playerNation].name
 		Notify.chatAndEvents(template(
-			text("{0} of {1} has abandoned {1}"),
+			text("{0} of {1} has abandoned {2}"),
 			useQuotesAroundObjects = false,
 			player.name,
 			nationName,
@@ -204,7 +206,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		val nationName = NationCache[playerNation].name
 		Notify.chatAndEvents(template(
-			text("{0} of {1} has abandoned {1}"),
+			text("{0} of {1} has abandoned {2}"),
 			useQuotesAroundObjects = false,
 			player.name,
 			nationName,
