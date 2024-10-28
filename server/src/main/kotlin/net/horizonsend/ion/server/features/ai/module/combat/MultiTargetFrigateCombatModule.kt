@@ -3,12 +3,12 @@ package net.horizonsend.ion.server.features.ai.module.combat
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getDirection
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import net.horizonsend.ion.server.miscellaneous.utils.getDirection
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import java.util.function.Supplier
 
 class MultiTargetFrigateCombatModule(controller: AIController, private val toggleRandomTargeting: Boolean = true, targetingSupplier: Supplier<List<AITarget>>) : MultiTargetCombatModule(controller, targetingSupplier) {

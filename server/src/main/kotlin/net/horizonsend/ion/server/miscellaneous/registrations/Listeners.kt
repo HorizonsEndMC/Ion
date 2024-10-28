@@ -85,7 +85,6 @@ val listeners: List<Listener> = listOf(
 	ActivePlayerController.Companion,
 	TransportManager,
 	PersonalTransporterManager,
-	TransportManager,
 	GlobalNodeManager,
 	MultiblockEntities,
 
