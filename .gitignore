@@ -1,5 +1,6 @@
 /run/waterfall
 /run/paper
+/run/velocity
 .gradle
 /.idea
 build
