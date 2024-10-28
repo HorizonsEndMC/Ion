@@ -46,6 +46,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.EntitySpawnEvent
+import org.bukkit.event.player.PlayerBucketEmptyEvent
+import org.bukkit.event.player.PlayerBucketFillEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.InventoryHolder
 
@@ -104,6 +106,12 @@ object ProtectionListener : SLEventListener() {
 			event.isCancelled = true
 		}
 	}
+
+	@EventHandler
+	fun onBucketFill(event: PlayerBucketFillEvent) = onBlockEdit(event, event.block.location, event.player)
+
+	@EventHandler
+	fun onBucketEmpty(event: PlayerBucketEmptyEvent) = onBlockEdit(event, event.block.location, event.player)
 
 	/** Called on block break etc. GriefPrevention check should be done first.
 	 *  Loops through protected regions at location, checks each one for access message
