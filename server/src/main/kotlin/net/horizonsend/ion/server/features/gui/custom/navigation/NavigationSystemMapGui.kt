@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -17,21 +18,26 @@ import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.impl.SimpleItem
 
-class NavigationSystemMapGui(val world: World) {
+class NavigationSystemMapGui(val world: World, val player: Player) {
 
+	private val gui = Gui.empty(9, 6)
 	private var planetListShift = 0
 	private var beaconListShift = 0
-	private val gui = Gui.empty(9, 5)
+	private var bookmarkListShift = 0
 
 	private var planetsInWorld = 0
 	private var beaconsInWorld = 0
+	private var bookmarkCount = 0
 
 	private val planetItems = mutableListOf<ItemStack>()
 	private val beaconItems = mutableListOf<ItemStack>()
+	private val bookmarkItems = mutableListOf<Item>()
 
 	private val leftPlanetButton = GuiItems.CustomControlItem("Previous Planet In This System", GuiItem.LEFT) {
 		planetListShift--
@@ -57,6 +63,18 @@ class NavigationSystemMapGui(val world: World) {
 		println("DEBUG: Current value of beaconListShift: $beaconListShift")
 	}
 
+	private val leftBookmarkButton = GuiItems.CustomControlItem("Previous Bookmark In This System", GuiItem.LEFT) {
+		bookmarkListShift--
+		updateGui()
+		println("DEBUG: Current value of bookmarkListShift: $bookmarkListShift")
+	}
+
+	private val rightBookmarkButton = GuiItems.CustomControlItem("Next Bookmark In This System", GuiItem.RIGHT) {
+		bookmarkListShift++
+		updateGui()
+		println("DEBUG: Current value of bookmarkListShift: $bookmarkListShift")
+	}
+
 	companion object {
 		val ionWorldCache: LoadingCache<WorldFlag, Collection<World>> = CacheBuilder.newBuilder().build(
 			CacheLoader.from { worldFlag: WorldFlag ->
@@ -68,6 +86,7 @@ class NavigationSystemMapGui(val world: World) {
 		private const val MAX_ELEMENTS_PER_ROW = 7
 		private const val PLANET_ROW = 1
 		private const val BEACON_ROW = 2
+		private const val BOOKMARK_ROW = 3
 	}
 
 	fun createGui(): Gui {
@@ -90,6 +109,13 @@ class NavigationSystemMapGui(val world: World) {
 		)
 		beaconsInWorld = beaconItems.size
 
+		bookmarkItems.addAll(BookmarkCommand.getBookmarks(player)
+			.filter { bookmark -> bookmark.worldName == world.name }
+			.map { bookmark -> GuiItems.CustomControlItem(bookmark.name, GuiItem.BOOKMARK) {
+				// TODO: Add click handler here
+			} }
+		)
+
 		gui.setItem(MIDDLE_COLUMN, 0, SimpleItem(starItem))
 
 		gui.setItem(0, 4, SimpleItem(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
@@ -107,6 +133,8 @@ class NavigationSystemMapGui(val world: World) {
 		gui.setItem(8, PLANET_ROW, if (planetListShift + MAX_ELEMENTS_PER_ROW < planetsInWorld) rightPlanetButton else GuiItems.EmptyItem())
 		gui.setItem(0, BEACON_ROW, if (beaconListShift > 0) leftBeaconButton else GuiItems.EmptyItem())
 		gui.setItem(8, BEACON_ROW, if (beaconListShift + MAX_ELEMENTS_PER_ROW < beaconsInWorld) rightBeaconButton else GuiItems.EmptyItem())
+		gui.setItem(0, BOOKMARK_ROW, if (bookmarkListShift > 0) leftBookmarkButton else GuiItems.EmptyItem())
+		gui.setItem(8, BOOKMARK_ROW, if (bookmarkListShift + MAX_ELEMENTS_PER_ROW < bookmarkCount) rightBookmarkButton else GuiItems.EmptyItem())
 
 		for (widthIndex in 0 until planetItems.size.coerceAtMost(MAX_ELEMENTS_PER_ROW)) {
 			gui.setItem(widthIndex + 1, PLANET_ROW, SimpleItem(planetItems[widthIndex + planetListShift]))
@@ -114,6 +142,10 @@ class NavigationSystemMapGui(val world: World) {
 
 		for (widthIndex in 0 until beaconItems.size.coerceAtMost(MAX_ELEMENTS_PER_ROW)) {
 			gui.setItem(widthIndex + 1, BEACON_ROW, SimpleItem(beaconItems[widthIndex + beaconListShift]))
+		}
+
+		for (widthIndex in 0 until bookmarkItems.size.coerceAtMost(MAX_ELEMENTS_PER_ROW)) {
+			gui.setItem(widthIndex + 1, BOOKMARK_ROW, bookmarkItems[widthIndex + bookmarkListShift])
 		}
 	}
 
