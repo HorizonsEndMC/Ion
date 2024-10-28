@@ -23,7 +23,12 @@ import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
@@ -31,9 +36,14 @@ import net.horizonsend.ion.server.features.nations.NationsMasterTasks
 import net.horizonsend.ion.server.features.nations.TerritoryImporter
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
+import net.horizonsend.ion.server.features.nations.sieges.SolarSiege
+import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
+import net.horizonsend.ion.server.miscellaneous.utils.Discord
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.kyori.adventure.text.Component
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -318,5 +328,36 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 
 		Territory.setNation(currentTerritory.id, null)
 		Territory.setNation(currentTerritory.id, nation)
+	}
+
+	@Subcommand("solarSiege start")
+	fun onSiegeStart(sender: CommandSender, siege: SolarSiege) {
+		Notify.chatAndGlobal(template(Component.text("{0} has begun.", HEColorScheme.HE_MEDIUM_GRAY), siege.formatName()))
+		Discord.sendEmbed(
+			IonServer.discordSettings.eventsChannel, Embed(
+				title = "Siege Start",
+				description = "${siege.formatName().plainText()} has begun. It will end <t:${TimeUnit.MILLISECONDS.toSeconds(siege.getSiegeEnd())}:R>."
+			)
+		)
+
+		SolarSieges.setActive(siege)
+		siege.scheduleEnd()
+	}
+
+	@Subcommand("solarSiege end")
+	fun onSiegeEnd(sender: CommandSender, siege: SolarSiege) {
+		siege.endSiege(true)
+	}
+
+	@Subcommand("solarSiege win")
+	fun onSiegeWin(sender: CommandSender, siege: SolarSiege) {
+		siege.succeed()
+		siege.handleEnd()
+	}
+
+	@Subcommand("solarSiege lose")
+	fun onSiegeLose(sender: CommandSender, siege: SolarSiege) {
+		siege.fail(true)
+		siege.handleEnd()
 	}
 }
