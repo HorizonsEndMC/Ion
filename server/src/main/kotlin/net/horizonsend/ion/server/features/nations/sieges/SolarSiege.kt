@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.nations.sieges
 
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
@@ -89,16 +90,22 @@ class SolarSiege(
 	}
 
 	fun getActivePeriodStart(): Long {
-		return declaredTime + TimeUnit.HOURS.toMillis(3)
+//		return declaredTime + TimeUnit.HOURS.toMillis(3)
+		return declaredTime + TimeUnit.MINUTES.toMillis(1)
 	}
 
 	fun getSiegeEnd(): Long {
-		return getActivePeriodStart() + TimeUnit.MINUTES.toMillis(90)
+//		return getActivePeriodStart() + TimeUnit.MINUTES.toMillis(90)
+		return getActivePeriodStart() + TimeUnit.MINUTES.toMillis(1)
 	}
 
-	fun endSiege() {
+	/**
+	 * @param disableEarlyCheck: Disables premature ending check which triggers abandon message
+	 **/
+	fun endSiege(disableEarlyCheck: Boolean = false) {
 		handleEnd()
-		if (isSuccess()) succeed() else fail()
+		if (isSuccess()) succeed() else fail(disableEarlyCheck)
+
 	}
 
 	private fun isSuccess(): Boolean {
@@ -107,24 +114,66 @@ class SolarSiege(
 
 	fun succeed() {
 		SolarSiegeZone.setNation(region.id, attacker)
+
+		val attackerName = NationCache[attacker].name
+		val defenderName = NationCache[defender].name
+
+		Discord.sendEmbed(
+			IonServer.discordSettings.eventsChannel,
+			Embed(
+				title = "Siege Success",
+				description = "$attackerName's siege of $defenderName's Solar Siege Zone in ${region.world} has succeeded.",
+				fields = listOf(
+					Embed.Field("$attackerName's Points,", "$attackerPoints", inline = true),
+					Embed.Field("$defenderName's Points,", "$defenderPoints", inline = true),
+				)
+			)
+		)
 	}
 
-	fun fail() {
+	fun fail(disableEarlyCheck: Boolean = false) {
+		if (isPreparationPeriod() && !disableEarlyCheck) {
+			Notify.chatAndEvents(template(
+				text("{0} has abandoned their upcoming siege of {1}'s Solar Siege Zone in {2}"),
+				formatNationName(attacker),
+				region.nation?.let { formatNationName(it) } ?: text("None"),
+				region.world
+			))
 
+			return
+		}
+
+//		Notify.chatAndGlobal()
+
+		val attackerName = NationCache[attacker].name
+		val defenderName = NationCache[defender].name
+
+		Discord.sendEmbed(
+			IonServer.discordSettings.eventsChannel,
+			Embed(
+				title = "Siege Failure",
+				description = "$attackerName's siege of $defenderName's Solar Siege Zone in ${region.world} has failed.",
+				fields = listOf(
+					Embed.Field("$attackerName's Points,", "$attackerPoints", inline = true),
+					Embed.Field("$defenderName's Points,", "$defenderPoints", inline = true),
+				)
+			)
+		)
 	}
 
 	private fun scheduleStart() {
 		val startupTask = runnable {
 			taskIds.remove(taskId)
 
-			Notify.chatAndEvents(template(text("{0} has begun.", HE_MEDIUM_GRAY), formatName()))
+			Notify.chatAndGlobal(template(text("{0} has begun.", HE_MEDIUM_GRAY), formatName()))
 			Discord.sendEmbed(
 				IonServer.discordSettings.eventsChannel, Embed(
 				title = "Siege Start",
-				description = "${formatName().plainText()} has begun. It will end <t:${TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(90))}:R>."
+				description = "${formatName().plainText()} has begun. It will end <t:${TimeUnit.MILLISECONDS.toSeconds(getSiegeEnd())}:R>."
 			))
 
 			SolarSieges.setActive(this@SolarSiege)
+			scheduleEnd()
 		}
 
 		Tasks.asyncAt(Date(getActivePeriodStart()), startupTask)
@@ -132,7 +181,7 @@ class SolarSiege(
 		taskIds.add(startupTask.taskId)
 	}
 
-	private fun scheduleEnd() {
+	fun scheduleEnd() {
 		val endTask = runnable {
 			taskIds.remove(taskId)
 
@@ -148,12 +197,9 @@ class SolarSiege(
 		if (isPreparationPeriod()) {
 			SolarSieges.setPreparing(this)
 			scheduleStart()
-			scheduleEnd()
 		}
 
 		if (isActivePeriod()) {
-
-			SolarSieges.setActive(this)
 			scheduleEnd()
 		}
 	}
