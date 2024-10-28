@@ -9,6 +9,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
@@ -72,5 +73,12 @@ object SiegeCommand : SLCommand() {
 		if (siege.isAttacker(sender.slPlayerId)) return SolarSieges.attackerAbandonSiege(sender, siege)
 		if (siege.isDefender(sender.slPlayerId)) return SolarSieges.defenderAbandonSiege(sender, siege)
 		fail { "You aren't a participant of this siege!" }
+	}
+
+	@Subcommand("abandon")
+	@CommandCompletion("@solarSieges")
+	fun onStatus(sender: Player, siege: SolarSiege) {
+		sender.information("Attacker points: ${siege.attackerPoints}")
+		sender.information("Defender points: ${siege.defenderPoints}")
 	}
 }
