@@ -92,16 +92,20 @@ object AIDebugCommand : SLCommand() {
 	fun ai(
 		sender: Player,
 		controller: AIControllerFactory,
+		@Optional difficulty: Int?,
 		@Optional manualSets: String?,
 		@Optional autoSets: String?,
 	) {
 		val starship = getStarshipRiding(sender)
+
+		failIf(difficulty != null && difficulty < 1) { "ILLEGAL DIFFICULTY" }
 
 		val newController = controller(
 			starship,
 			text("Player Created AI Ship"),
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
 			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
+			difficulty ?: 3
 		)
 
 		starship.setController(newController)

@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.server.configuration.StaticIntegerAmount
+import net.horizonsend.ion.server.configuration.IntegerAmount
 import net.horizonsend.ion.server.configuration.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
@@ -1109,6 +1110,8 @@ object AITemplateRegistry {
 		private val additionalModules: MutableList<BehaviorConfiguration.AdditionalModule> = mutableListOf()
 		private val rewardProviders: MutableList<AITemplate.AIRewardsProviderConfiguration> = mutableListOf()
 
+		private var difficulty: IntegerAmount = StaticIntegerAmount(3)
+
 		fun addRewardProvider(provider: AITemplate.AIRewardsProviderConfiguration): Builder {
 			rewardProviders += provider
 			return this
@@ -1125,6 +1128,10 @@ object AITemplateRegistry {
 			return this
 		}
 
+		fun setDifficulty(difficulty: IntegerAmount) {
+			this.difficulty = difficulty
+		}
+
 		fun build(): AITemplate {
 			return AITemplate(
 				identifier = this.identifier,
@@ -1134,7 +1141,8 @@ object AITemplateRegistry {
 					engagementRange = this.engagementRange,
 					additionalModules = this.additionalModules
 				),
-				rewardProviders = this.rewardProviders
+				rewardProviders = this.rewardProviders,
+				difficulty = difficulty
 			)
 		}
 	}

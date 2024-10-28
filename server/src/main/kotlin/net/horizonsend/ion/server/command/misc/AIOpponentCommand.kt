@@ -74,7 +74,14 @@ object AIOpponentCommand : SLCommand() {
 					location,
 					{ starship ->
 						val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
-						val controller = factory.invoke(starship, template.starshipInfo.componentName())
+						val controller = factory.invoke(
+							starship,
+							template.starshipInfo.componentName(),
+							template.starshipInfo.autoWeaponSets,
+							template.starshipInfo.manualWeaponSets,
+							template.difficulty.get()
+						)
+
 						processController(summoner, controller)
 						controller
 					}

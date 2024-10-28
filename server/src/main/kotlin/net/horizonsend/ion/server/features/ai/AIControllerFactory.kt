@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
 
 class AIControllerFactory private constructor(
 	val identifier: String,
-	private val coreModules: (AIController) -> Builder.ModuleBuilder,
+	private val coreModules: (AIController, Int) -> Builder.ModuleBuilder,
 	private var utilModules: (AIController) -> Set<AIModule>
 ) {
 	/** Build the controller */
@@ -18,26 +18,25 @@ class AIControllerFactory private constructor(
 		starship: ActiveStarship,
 		pilotName: Component,
 		autoSets: Set<WeaponSet>,
-		manualSets: Set<WeaponSet>
+		manualSets: Set<WeaponSet>,
+		difficulty: Int
 	) : AIController {
 		return AIController(
 			starship = starship,
 			damager = AIShipDamager(starship),
 			pilotName = pilotName,
-			setupCoreModules = coreModules,
+			setupCoreModules = { coreModules.invoke(it, difficulty) },
 			setupUtilModules = utilModules,
 			manualWeaponSets = autoSets,
 			autoWeaponSets = manualSets,
 		)
 	}
 
-	operator fun invoke(starship: ActiveStarship, pilotName: Component) = invoke(starship, pilotName, setOf(), setOf())
-
 	class Builder(val identifier: String) {
-		private var coreModules: (AIController) -> ModuleBuilder = { ModuleBuilder() }
+		private var coreModules: (AIController, Int) -> ModuleBuilder = { _, _ -> ModuleBuilder() }
 		private var utilModules: MutableSet<(AIController) -> AIModule> = mutableSetOf()
 
-		fun setCoreModuleBuilder(moduleBuilder: (AIController) -> ModuleBuilder) = apply { coreModules = moduleBuilder }
+		fun setCoreModuleBuilder(moduleBuilder: (AIController, Int) -> ModuleBuilder) = apply { coreModules = moduleBuilder }
 		fun addUtilModule(builder: (AIController) -> AIModule) = utilModules.add(builder)
 
 		fun build(): AIControllerFactory = AIControllerFactory(identifier, coreModules = coreModules) { controller -> this.utilModules.mapTo(mutableSetOf()) { it.invoke(controller) } }

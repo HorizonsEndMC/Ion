@@ -20,7 +20,14 @@ data class GroupSpawnedShip(
     override fun createController(logger: Logger, starship: ActiveStarship): AIController {
         val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
 
-        val controller = factory.invoke(starship, getName())
+        val controller = factory.invoke(
+			starship,
+			getName(),
+			template.starshipInfo.autoWeaponSets,
+			template.starshipInfo.manualWeaponSets,
+			template.difficulty.get()
+		)
+
         controllerModifier.invoke(controller)
 
         return controller
