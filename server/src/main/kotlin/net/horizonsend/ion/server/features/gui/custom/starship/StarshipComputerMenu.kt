@@ -153,7 +153,7 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 			.setLoreAndGet(listOf<Component>(
 				template(text("Current owner: {0}.", GRAY), SLPlayer.getName(data.captain)).itemName,
 				text("Use this button to take", GRAY).itemName,
-				text("ownership of this computer.", GRAY).itemName
+				text("ownership of this starship.", GRAY).itemName
 			))
 	) { _, player, _ ->
 		StarshipComputers.takeOwnership(player, data)

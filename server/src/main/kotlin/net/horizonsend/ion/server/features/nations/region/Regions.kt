@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
+import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
@@ -27,6 +28,7 @@ import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionParent
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
+import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTopLevel
@@ -35,6 +37,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bson.types.ObjectId
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -63,6 +66,8 @@ object Regions : IonServerComponent() {
 		registerRegionType(SettlementSpaceStation.Companion) { RegionSpaceStation(it) }
 
 		registerRegionType(PlayerSpaceStation.Companion) { RegionSpaceStation(it) }
+
+		registerRegionType(SolarSiegeZone.Companion) { RegionSolarSiegeZone(it) }
 
 		cache.forEach { it.refreshAccessCache() }
 
@@ -204,6 +209,8 @@ object Regions : IonServerComponent() {
 	fun <T : Region<*>> getAllOf(clazz: KClass<T>): Iterable<T> = cache.getAllOf(clazz)
 
 	inline fun <reified T : Region<*>> getAllOf(): Iterable<T> = getAllOf(T::class)
+
+	inline fun <reified T : Region<*>> getAllOfInWorld(world: World): Iterable<T> = getAllOf(T::class).filter { it.bukkitWorld?.uid == world.uid }
 
 	private inline fun <reified A : DbObject, reified B : Region<A>> registerRegionType(
 		objectCompanion: OidDbObjectCompanion<A>,
