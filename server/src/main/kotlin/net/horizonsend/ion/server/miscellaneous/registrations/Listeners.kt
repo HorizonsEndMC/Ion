@@ -85,7 +85,6 @@ val listeners: List<Listener> = listOf(
 	ToolModMenu,
 	RecipeModifications,
 	PersonalTransporterManager,
-	TransportManager,
 	GlobalNodeManager,
 	MultiblockEntities,
 

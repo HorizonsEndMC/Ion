@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.gui.custom.item.PersonalTransporterGui
 import net.horizonsend.ion.server.features.progression.Levels
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component.text

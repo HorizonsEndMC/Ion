@@ -8,7 +8,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DoomsdayDeviceProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
 import net.kyori.adventure.text.Component
@@ -82,3 +83,4 @@ class DoomsdayDeviceWeaponSubsystem(
 		return Component.text("Doomsday Device")
 	}
 }
+

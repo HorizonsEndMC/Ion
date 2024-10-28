@@ -291,7 +291,7 @@ abstract class AutoCrafterMultiblock(
 }
 
 abstract class AutoCrafterMultiblockMirrored(
-	tierText: String,
+	tierText: Component,
 	private val tierMaterial: Material,
 	iterations: Int,
 ) : AutoCrafterMultiblock(tierText, tierMaterial, iterations) {
@@ -327,7 +327,7 @@ abstract class AutoCrafterMultiblockMirrored(
 			y(+0) {
 				x(-2).anyPipedInventory()
 				x(-1).endRod()
-				x(+0).anyType(Material.DISPENSER, Material.DROPPER)
+				x(+0).anyType(Material.DISPENSER, Material.DROPPER, alias = "Dispenser or Dropper")
 				x(+1).endRod()
 				x(+2).anyPipedInventory()
 			}
