@@ -10,10 +10,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -26,6 +28,7 @@ import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.AbstractItem
+import xyz.xenondevs.invui.item.impl.SimpleItem
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.item.impl.controlitem.PageItem
 import xyz.xenondevs.invui.item.impl.controlitem.ScrollItem
@@ -33,6 +36,24 @@ import java.util.UUID
 
 @Suppress("UnstableApiUsage")
 object GuiItems {
+    class CustomControlItem(
+        private val name: String,
+        private val customGuiItem: GuiItem,
+        private val callback: () -> Unit
+    ) : ControlItem<Gui>() {
+        override fun getItemProvider(gui: Gui): ItemProvider {
+            return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+                it.setCustomModelData(customGuiItem.customModelData)
+                it.displayName(text(name).decoration(ITALIC, false))
+            })
+        }
+
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            callback()
+            notifyWindows()
+        }
+    }
+
     class PageLeftItem : PageItem(false) {
         override fun getItemProvider(gui: PagedGui<*>): ItemProvider {
             val builder = if (gui.hasPreviousPage()) ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).apply {
@@ -75,6 +96,8 @@ object GuiItems {
     abstract class AbstractButtonItem(val text: Component, val itemStack: ItemStack) : ControlItem<PagedGui<*>>() {
         override fun getItemProvider(gui: PagedGui<*>): ItemProvider = ItemBuilder(itemStack.updateDisplayName(text))
     }
+
+    class EmptyItem : SimpleItem(ItemStack(Material.AIR))
 
     class BlankButton(val item: Item) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
