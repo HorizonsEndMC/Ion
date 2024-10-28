@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.Starship
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -24,16 +23,15 @@ import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rectangle
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.nms
-import net.horizonsend.ion.server.miscellaneous.utils.rectangle
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
@@ -44,7 +42,6 @@ import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.setValue
-import kotlin.collections.set
 import kotlin.math.sqrt
 
 abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: World? = null) {

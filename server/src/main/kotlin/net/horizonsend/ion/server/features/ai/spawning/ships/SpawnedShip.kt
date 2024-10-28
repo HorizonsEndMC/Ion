@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.getRadialRandomPoint
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRadialRandomPoint
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.util.Vector
