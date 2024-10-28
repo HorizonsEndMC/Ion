@@ -8,6 +8,6 @@ object AutoCrafterMultiblockTier3 : AutoCrafterMultiblock(text("Tier 3", AQUA), 
 	override val maxPower: Int = 600_000
 }
 
-object AutoCrafterMultiblockTier3Mirrored : AutoCrafterMultiblockMirrored("&bTier 3", Material.DIAMOND_BLOCK, iterations = 6) {
+object AutoCrafterMultiblockTier3Mirrored : AutoCrafterMultiblockMirrored(text("Tier 3", AQUA), Material.DIAMOND_BLOCK, iterations = 6) {
 	override val maxPower: Int = 600_000
 }
