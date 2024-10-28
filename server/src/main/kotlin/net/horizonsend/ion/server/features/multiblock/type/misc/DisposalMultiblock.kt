@@ -20,7 +20,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import kotlin.math.roundToInt
 
-object AbstractDisposalMultiblock : Multiblock(), NewPoweredMultiblock<DisposalMultiblock.DisposalMultiblockEntity> {
+abstract class AbstractDisposalMultiblock : Multiblock(), NewPoweredMultiblock<AbstractDisposalMultiblock.DisposalMultiblockEntity> {
 	override val name = "incinerator"
 
 	override var signText: Array<Component?> = arrayOf(
@@ -32,7 +32,7 @@ object AbstractDisposalMultiblock : Multiblock(), NewPoweredMultiblock<DisposalM
 
 	override val maxPower: Int = 150_000
 
-	private const val powerConsumed = 0.5
+	private val powerConsumed = 0.5
 	abstract val mirrored: Boolean
 
 	override fun MultiblockShape.buildStructure() {
@@ -86,18 +86,19 @@ object AbstractDisposalMultiblock : Multiblock(), NewPoweredMultiblock<DisposalM
 	}
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): DisposalMultiblockEntity {
-		return DisposalMultiblockEntity(data, manager, x, y, z, world, structureDirection)
+		return DisposalMultiblockEntity(data, manager, this, x, y, z, world, structureDirection)
 	}
 
 	class DisposalMultiblockEntity(
 		data: PersistentMultiblockData,
 		manager: MultiblockManager,
+		override val multiblock: AbstractDisposalMultiblock,
 		x: Int,
 		y: Int,
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredMultiblockEntity(data, manager, DisposalMultiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
+	) : SimplePoweredMultiblockEntity(data, manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
 		override val poweredMultiblock: DisposalMultiblock = DisposalMultiblock
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
@@ -117,12 +118,12 @@ object AbstractDisposalMultiblock : Multiblock(), NewPoweredMultiblock<DisposalM
 			// Clear while checking for power
 			for (i in 0 until inventory.size) {
 				val size = (inventory.getItem(i) ?: continue).amount
-				if ((size * powerConsumed) + (amountToClear * 3) >= power) continue
+				if ((size * multiblock.powerConsumed) + (amountToClear * 3) >= power) continue
 				amountToClear += size
 				inventory.clear(i)
 			}
 
-			powerStorage.removePower((powerConsumed * amountToClear).roundToInt())
+			powerStorage.removePower((multiblock.powerConsumed * amountToClear).roundToInt())
 		}
 
 		override fun loadFromSign(sign: Sign) {
