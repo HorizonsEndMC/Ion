@@ -25,7 +25,6 @@ abstract class MiningLaserMultiblock : Multiblock(), NewPoweredMultiblock<Mining
 	abstract val sound: String
 	abstract val side: BlockFace
 	abstract val tier: Int
-	abstract val mirrored: Boolean
 
 	abstract val outputOffset: Vec3i
 
