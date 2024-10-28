@@ -15,13 +15,32 @@ import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
+import xyz.xenondevs.invui.item.impl.SimpleItem
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.item.impl.controlitem.PageItem
 import java.util.UUID
 
 object GuiItems {
 
-    class LeftItem : PageItem(false) {
+    class CustomControlItem(
+        private val name: String,
+        private val customGuiItem: GuiItem,
+        private val callback: () -> Unit
+    ) : ControlItem<Gui>() {
+        override fun getItemProvider(gui: Gui): ItemProvider {
+            return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+                it.setCustomModelData(customGuiItem.customModelData)
+                it.displayName(text(name).decoration(ITALIC, false))
+            })
+        }
+
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            callback()
+            notifyWindows()
+        }
+    }
+
+    class LeftPageItem : PageItem(false) {
         override fun getItemProvider(gui: PagedGui<*>): ItemProvider {
             val builder = if (gui.hasPreviousPage()) ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
                 it.setCustomModelData(GuiItem.LEFT.customModelData)
@@ -31,7 +50,7 @@ object GuiItems {
         }
     }
 
-    class RightItem : PageItem(true) {
+    class RightPageItem : PageItem(true) {
         override fun getItemProvider(gui: PagedGui<*>): ItemProvider {
             val builder = if (gui.hasNextPage()) ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
                 it.setCustomModelData(GuiItem.RIGHT.customModelData)
@@ -49,6 +68,8 @@ object GuiItems {
             return builder
         }
     }
+
+    class EmptyItem : SimpleItem(ItemStack(Material.AIR))
 
     class BlankItem(val item: Item) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
