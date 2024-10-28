@@ -314,7 +314,6 @@ object NationsMap : IonServerComponent(true) {
 		markerSet.findAreaMarker(station.name)?.deleteMarker()
 	}
 
-
 	fun updateSolarSiege(station: RegionSolarSiegeZone): Unit = syncOnly {
 		if (!dynmapLoaded) {
 			return@syncOnly
@@ -325,7 +324,7 @@ object NationsMap : IonServerComponent(true) {
 		val nation = station.nation?.let(NationCache::get)
 
 		val rgb = nation?.color ?: Color.WHITE.asRGB()
-		marker.setFillStyle(0.0, Color.WHITE.asRGB())
+		marker.setFillStyle(0.4, rgb)
 		marker.setLineStyle(5, 0.8, rgb)
 	}
 

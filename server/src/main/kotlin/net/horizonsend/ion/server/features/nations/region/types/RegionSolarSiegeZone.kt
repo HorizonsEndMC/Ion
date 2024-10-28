@@ -46,6 +46,14 @@ class RegionSolarSiegeZone(station: SolarSiegeZone) : Region<SolarSiegeZone>(sta
 		NationsMap.updateSolarSiege(this)
 	}
 
+	override fun onCreate() {
+		NationsMap.addSolarSiege(this)
+	}
+
+	override fun onDelete() {
+		NationsMap.removeSolarSiege(this)
+	}
+
 	override fun calculateInaccessMessage(player: Player): String? {
 		val nation = nation ?: return "$name is not claimed by any nation!".intern()
 
