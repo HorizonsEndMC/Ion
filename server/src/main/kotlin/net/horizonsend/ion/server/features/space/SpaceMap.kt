@@ -64,7 +64,6 @@ object SpaceMap : IonServerComponent(true) {
 			)?.run {
 				setFillStyle(0.25, Color.fromRGB(128, 128, 128).asRGB()) // translucent gray fill
 				setLineStyle(0, 0.0, 0) // no line weight, zero opacity, and black color
-
 			}
 		}
 

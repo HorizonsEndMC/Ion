@@ -3,6 +3,10 @@ package net.horizonsend.ion.server.command.nations
 import co.aikar.commands.annotation.CommandAlias
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
+import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.sieges.StationSieges
 import org.bukkit.entity.Player
 
@@ -23,6 +27,7 @@ internal object SiegeCommand : SLCommand() {
 			val z = it.z
 			"<dark_gray>[<aqua>$nationName<gray>'s <aqua>$stationName <gray>in <yellow>$world <gray>(<yellow>$x<gray>, <yellow>$z<gray>)<dark_gray>]"
 		}
+
 		sender.sendRichMessage("<gray>Current Stations: $currentStationNames")
 	}
 
@@ -31,6 +36,7 @@ internal object SiegeCommand : SLCommand() {
 	}
 
 	private fun beginSiege(sender: Player) {
-		StationSieges.beginSiege(sender)
+		if (Regions.findFirstOf<RegionCapturableStation>(sender.location) != null) StationSieges.beginSiege(sender)
+		if (Regions.findFirstOf<RegionSolarSiegeZone>(sender.location) != null) SolarSieges.initSiege(sender)
 	}
 }
