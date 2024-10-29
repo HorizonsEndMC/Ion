@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.features.gui.custom.navigation
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import net.horizonsend.ion.common.utils.text.SPACE_BACKGROUND_CHARACTER
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
@@ -35,44 +37,38 @@ class NavigationSystemMapGui(val world: World, val player: Player) {
 	private var beaconsInWorld = 0
 	private var bookmarkCount = 0
 
-	private val planetItems = mutableListOf<ItemStack>()
-	private val beaconItems = mutableListOf<ItemStack>()
+	private val planetItems = mutableListOf<Item>()
+	private val beaconItems = mutableListOf<Item>()
 	private val bookmarkItems = mutableListOf<Item>()
 
 	private val leftPlanetButton = GuiItems.CustomControlItem("Previous Planet In This System", GuiItem.LEFT) {
 		planetListShift--
 		updateGui()
-		println("DEBUG: Current value of planetListShift: $planetListShift")
 	}
 
 	private val rightPlanetButton = GuiItems.CustomControlItem("Next Planet In This System", GuiItem.RIGHT) {
 		planetListShift++
 		updateGui()
-		println("DEBUG: Current value of planetListShift: $planetListShift")
 	}
 
 	private val leftBeaconButton = GuiItems.CustomControlItem("Previous Beacon In This System", GuiItem.LEFT) {
 		beaconListShift--
 		updateGui()
-		println("DEBUG: Current value of beaconListShift: $beaconListShift")
 	}
 
 	private val rightBeaconButton = GuiItems.CustomControlItem("Next Beacon In This System", GuiItem.RIGHT) {
 		beaconListShift++
 		updateGui()
-		println("DEBUG: Current value of beaconListShift: $beaconListShift")
 	}
 
 	private val leftBookmarkButton = GuiItems.CustomControlItem("Previous Bookmark In This System", GuiItem.LEFT) {
 		bookmarkListShift--
 		updateGui()
-		println("DEBUG: Current value of bookmarkListShift: $bookmarkListShift")
 	}
 
 	private val rightBookmarkButton = GuiItems.CustomControlItem("Next Bookmark In This System", GuiItem.RIGHT) {
 		bookmarkListShift++
 		updateGui()
-		println("DEBUG: Current value of bookmarkListShift: $bookmarkListShift")
 	}
 
 	companion object {
@@ -92,33 +88,38 @@ class NavigationSystemMapGui(val world: World, val player: Player) {
 	fun createGui(): Gui {
 
 		val star = Space.getStars().firstOrNull { star -> star.spaceWorld == world }
-		val starItem = if (star != null) getItemStack(star.name) else ItemStack(Material.AIR)
+		val starItem = if (star != null) getPlanetItems(star.name) else null
 
 		planetItems.addAll(Space.getPlanets()
 			.filter { planet -> planet.spaceWorld == world }
-			.map { planet -> getItemStack(planet.name) }
+			.sortedBy { planet -> planet.orbitDistance }
+			.map { planet -> GuiItems.CustomItemControlItem(getPlanetItems(planet.name)) {
+				// TODO: Add click handler here
+			} }
 		)
 		planetsInWorld = planetItems.size
 
 		beaconItems.addAll(IonServer.configuration.beacons
 			.filter { beacon -> beacon.spaceLocation.bukkitWorld() == world }
-			.map { beacon -> ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { item ->
-				item.setCustomModelData(GuiItem.BEACON.customModelData)
-				item.displayName(Component.text(beacon.name).decoration(TextDecoration.ITALIC, false))
-			}}
+			.sortedBy { beacon -> beacon.name }
+			.map { beacon -> GuiItems.CustomControlItem(beacon.name, GuiItem.BEACON) {
+				// TODO: Add click handler here
+			} }
 		)
 		beaconsInWorld = beaconItems.size
 
 		bookmarkItems.addAll(BookmarkCommand.getBookmarks(player)
 			.filter { bookmark -> bookmark.worldName == world.name }
+			.sortedBy { bookmark -> bookmark.name }
 			.map { bookmark -> GuiItems.CustomControlItem(bookmark.name, GuiItem.BOOKMARK) {
 				// TODO: Add click handler here
 			} }
 		)
+		bookmarkCount = bookmarkItems.size
 
-		gui.setItem(MIDDLE_COLUMN, 0, SimpleItem(starItem))
+		if (starItem != null) gui.setItem(MIDDLE_COLUMN, 0, SimpleItem(starItem.constructItemStack()))
 
-		gui.setItem(0, 4, SimpleItem(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+		gui.setItem(0, 5, SimpleItem(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
 			it.displayName(Component.text("Return to Galactic Map").decoration(TextDecoration.ITALIC, false))
 			it.setCustomModelData(GuiItem.DOWN.customModelData)
 		}))
@@ -137,11 +138,11 @@ class NavigationSystemMapGui(val world: World, val player: Player) {
 		gui.setItem(8, BOOKMARK_ROW, if (bookmarkListShift + MAX_ELEMENTS_PER_ROW < bookmarkCount) rightBookmarkButton else GuiItems.EmptyItem())
 
 		for (widthIndex in 0 until planetItems.size.coerceAtMost(MAX_ELEMENTS_PER_ROW)) {
-			gui.setItem(widthIndex + 1, PLANET_ROW, SimpleItem(planetItems[widthIndex + planetListShift]))
+			gui.setItem(widthIndex + 1, PLANET_ROW, planetItems[widthIndex + planetListShift])
 		}
 
 		for (widthIndex in 0 until beaconItems.size.coerceAtMost(MAX_ELEMENTS_PER_ROW)) {
-			gui.setItem(widthIndex + 1, BEACON_ROW, SimpleItem(beaconItems[widthIndex + beaconListShift]))
+			gui.setItem(widthIndex + 1, BEACON_ROW, beaconItems[widthIndex + beaconListShift])
 		}
 
 		for (widthIndex in 0 until bookmarkItems.size.coerceAtMost(MAX_ELEMENTS_PER_ROW)) {
@@ -153,6 +154,8 @@ class NavigationSystemMapGui(val world: World, val player: Player) {
 		val header = "${world.name} System Map"
 		val guiText = GuiText(header)
 
+		guiText.addBackground(GuiText.GuiBackground(backgroundChar = SPACE_BACKGROUND_CHARACTER))
+
 		return guiText.build()
 	}
 
@@ -161,7 +164,7 @@ class NavigationSystemMapGui(val world: World, val player: Player) {
 	 * @return the custom planet icon ItemStack
 	 * @param name the name of the planet
 	 */
-	private fun getItemStack(name: String): ItemStack {
+	private fun getPlanetItems(name: String): CustomItem {
 		return when (name) {
 			"Aerach" -> CustomItems.AERACH
 			"Aret" -> CustomItems.ARET
@@ -191,6 +194,6 @@ class NavigationSystemMapGui(val world: World, val player: Player) {
 
 
 			else -> CustomItems.AERACH
-		}.constructItemStack()
+		}
 	}
 }
