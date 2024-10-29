@@ -48,7 +48,7 @@ private fun getDurationBreakdown(input: Long): String {
 	var millis: Long = input
 
 	if (millis < 0) {
-		throw IllegalArgumentException("Duration must be greater than zero!")
+		throw IllegalArgumentException("DurationConfig must be greater than zero!")
 	}
 
 	val days: Long = TimeUnit.MILLISECONDS.toDays(millis)
