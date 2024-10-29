@@ -43,7 +43,6 @@ import java.util.Date
 import java.util.TimeZone.getTimeZone
 import java.util.UUID
 import java.util.concurrent.TimeUnit
-import kotlin.math.max
 import kotlin.math.roundToInt
 
 object SolarSieges : IonServerComponent(true) {
@@ -223,10 +222,9 @@ object SolarSieges : IonServerComponent(true) {
 	@EventHandler
 	fun onStarshipSink(event: StarshipSunkEvent) {
 		val controller = event.previousController as? PlayerController ?: return
-
 		val damager = event.starship.damagers
-			.filter { it is PlayerDamager }
-			.maxByOrNull { it.value.points.get() } as? PlayerDamager ?: return
+			.filter { it.key is PlayerDamager }
+			.maxByOrNull { it.value.points.get() }?.key as? PlayerDamager ?: return
 
 		val initPrintCost = event.starship.initPrintCost.roundToInt()
 
@@ -246,22 +244,24 @@ object SolarSieges : IonServerComponent(true) {
 
 		if (siege.isDefender(player.slPlayerId) && siege.isAttacker(killer.slPlayerId)) {
 			siege.attackerPoints += points
+			log.info("Awarded attacker $points points")
 
 			IonServer.server.sendMessage(template(
 				text("{0} accrued {1} points for killing {2}."),
 				formatNationName(siege.attacker),
-				1000,
+				points,
 				player.name
 			))
 		}
 
 		if (siege.isDefender(killer.slPlayerId) && siege.isAttacker(player.slPlayerId)) {
 			siege.defenderPoints += points
+			log.info("Awarded defender $points points")
 
 			IonServer.server.sendMessage(template(
 				text("{0} accrued {1} points for killing {2}."),
 				formatNationName(siege.defender),
-				1000,
+				points,
 				player.name
 			))
 		}
@@ -278,28 +278,37 @@ object SolarSieges : IonServerComponent(true) {
 			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) }
 			.mapNotNull { it.controller as? PlayerController }
 
-		val defenderCount = contained.count { siege.isDefender(it.player.slPlayerId) }
-		val attackerCount = contained.count { siege.isDefender(it.player.slPlayerId) }
-
 		val siegeAudience = ForwardingAudience { Bukkit.getOnlinePlayers().filter { getParticipating(it) == siege } }
 
-		val defenderNew = max(3, defenderCount) * pointTickValue
-		siege.defenderPoints += defenderNew // TODO formula
+		val defenderCount = contained.count { siege.isDefender(it.player.slPlayerId) }
+		log.info("$defenderCount defender ships present")
+		val defenderNew = defenderCount.coerceAtMost(3) * pointTickValue
 
-		siegeAudience.sendMessage(template(
-			text("{0} accrued {1} passive points for being inside the siege region."),
-			formatNationName(siege.defender),
-			defenderNew
-		))
+		if (defenderNew > 0) {
+			siege.defenderPoints += defenderNew
+			log.info("Awarded defender $defenderNew points")
 
-		val attackerNew = max(3, attackerCount) * pointTickValue
-		siege.attackerPoints += max(3, attackerNew) * pointTickValue // TODO formula
+			siegeAudience.sendMessage(template(
+				text("{0} accrued {1} passive points for being inside the siege region."),
+				formatNationName(siege.defender),
+				defenderNew
+			))
+		}
 
-		siegeAudience.sendMessage(template(
-			text("{0} accrued {1} passive points for being inside the siege region."),
-			formatNationName(siege.attacker),
-			attackerNew
-		))
+		val attackerCount = contained.count { siege.isAttacker(it.player.slPlayerId) }
+		log.info("$attackerCount attacker ships present")
+		val attackerNew = attackerCount.coerceAtMost(3) * pointTickValue
+
+		if (attackerNew > 0) {
+			siege.attackerPoints += attackerNew
+			log.info("Awarded attacker $attackerNew points")
+
+			siegeAudience.sendMessage(template(
+				text("{0} accrued {1} passive points for being inside the siege region."),
+				formatNationName(siege.attacker),
+				attackerNew
+			))
+		}
 	}
 
 	// Constant
