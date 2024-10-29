@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.gui
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
@@ -46,6 +47,20 @@ object GuiItems {
                 it.setCustomModelData(customGuiItem.customModelData)
                 it.displayName(text(name).decoration(ITALIC, false))
             })
+        }
+
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            callback()
+            notifyWindows()
+        }
+    }
+
+    class CustomItemControlItem(
+        private val customItem: CustomItem,
+        private val callback: () -> Unit
+    ) : ControlItem<Gui>() {
+        override fun getItemProvider(gui: Gui): ItemProvider {
+            return ItemBuilder(customItem.constructItemStack())
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
