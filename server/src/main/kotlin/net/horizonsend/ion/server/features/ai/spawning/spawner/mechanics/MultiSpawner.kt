@@ -4,7 +4,9 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.configuration.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -16,7 +18,8 @@ import java.util.function.Supplier
 abstract class MultiSpawner(
 	private val locationProvider: Supplier<Location?>,
 	private val groupMessage: Component?,
-	private val individualSpawnMessage: SpawnMessage?
+	private val individualSpawnMessage: SpawnMessage?,
+	private val difficultySupplier: (String) -> Supplier<Int>,
 ) : SpawnerMechanic() {
 	abstract fun getShips(): List<SpawnedShip>
 
@@ -35,11 +38,19 @@ abstract class MultiSpawner(
 		}
 
 		val aiFleet = AIFleetManageModule.AIFleet()
+		val fleetDifficulty = difficultySupplier(spawnOrigin.world.name).get()
+		val shipDifficultySupplier = WeightedIntegerAmount(
+			setOf(
+				Pair(fleetDifficulty-1, 0.05),
+				Pair(fleetDifficulty, 0.9),
+				Pair(fleetDifficulty+1, 0.05)))
 
 		for (spawnedShip in ships) {
 			val offsets = spawnedShip.offsets
 
 			val spawnPoint = spawnOrigin.clone()
+
+			val difficulty = shipDifficultySupplier.get().coerceIn(DifficultyModule.minDifficulty,DifficultyModule.maxDifficulty)
 
 			val absoluteHeight = spawnedShip.absoluteHeight
 
@@ -53,7 +64,7 @@ abstract class MultiSpawner(
 
 			debugAudience.debug("Spawning ${spawnedShip.template.identifier} at $spawnPoint")
 
-			spawnedShip.spawn(logger, spawnPoint) { addUtilModule(AIFleetManageModule(this, aiFleet)) }
+			spawnedShip.spawn(logger, spawnPoint,difficulty) { addUtilModule(AIFleetManageModule(this, aiFleet)) }
 
 			individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
 		}

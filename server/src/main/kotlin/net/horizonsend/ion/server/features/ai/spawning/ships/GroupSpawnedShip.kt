@@ -17,15 +17,15 @@ data class GroupSpawnedShip(
 	override val offsets: MutableList<Supplier<Vector>> = mutableListOf()
     override var absoluteHeight: Double? = null
 
-    override fun createController(logger: Logger, starship: ActiveStarship): AIController {
+    override fun createController(logger: Logger, starship: ActiveStarship, difficulty: Int): AIController {
         val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
 
         val controller = factory.invoke(
 			starship,
-			getName(),
+			getName(difficulty),
 			template.starshipInfo.autoWeaponSets,
 			template.starshipInfo.manualWeaponSets,
-			template.difficulty.get()
+			difficulty
 		)
 
         controllerModifier.invoke(controller)
@@ -33,7 +33,7 @@ data class GroupSpawnedShip(
         return controller
     }
 
-    override fun getName(): Component {
+    override fun getName(difficulty: Int): Component {
         return nameProvider.get()
     }
 }

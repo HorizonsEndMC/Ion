@@ -85,7 +85,7 @@ object AIControllerFactories : IonServerComponent() {
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			builder.addModule(CombatModule::class, StarfighterCombatModule(controller, difficultyManager, targeting::findTarget))
 
-			val distance = builder.addModule(DistancePositioningModule::class, DistancePositioningModule(controller, difficultyManager, aiSteeringConfig.starfighterDistanceConfiguration))
+			val distance = builder.addModule(DistancePositioningModule::class, DistancePositioningModule(controller, difficultyManager, aiSteeringConfig.gunshipDistanceConfiguration))
 
 			val steering = builder.addModule(SteeringModule::class, GunshipSteeringModule(
 				controller,
@@ -121,7 +121,7 @@ object AIControllerFactories : IonServerComponent() {
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			builder.addModule(CombatModule::class, StarfighterCombatModule(controller, difficultyManager, targeting::findTarget))
 
-			val distance = builder.addModule(DistancePositioningModule::class, DistancePositioningModule(controller, difficultyManager, aiSteeringConfig.starfighterDistanceConfiguration))
+			val distance = builder.addModule(DistancePositioningModule::class, DistancePositioningModule(controller, difficultyManager, aiSteeringConfig.gunshipDistanceConfiguration))
 
 			val steering = builder.addModule(SteeringModule::class, GunshipSteeringModule(
 				controller,
@@ -191,7 +191,7 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule(CombatModule::class, StarfighterCombatModule(controller, difficultyManager, targeting::findTarget))
 
 
-			val distance = builder.addModule(DistancePositioningModule::class, DistancePositioningModule(controller, difficultyManager, aiSteeringConfig.starfighterDistanceConfiguration))
+			val distance = builder.addModule(DistancePositioningModule::class, DistancePositioningModule(controller, difficultyManager, aiSteeringConfig.gunshipDistanceConfiguration))
 			val steering = builder.addModule(SteeringModule::class, GunshipSteeringModule(
 				controller,
 				difficultyManager,
@@ -228,7 +228,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			builder.addModule(CombatModule::class, StarfighterCombatModule(controller, difficultyManager, targeting::findTarget))
 
-			val distance = builder.addModule(DistancePositioningModule::class, DistancePositioningModule(controller, difficultyManager, aiSteeringConfig.starfighterDistanceConfiguration))
+			val distance = builder.addModule(DistancePositioningModule::class, DistancePositioningModule(controller, difficultyManager, aiSteeringConfig.gunshipDistanceConfiguration))
 
 			val steering = builder.addModule(SteeringModule::class, GunshipSteeringModule(
 				controller,
@@ -515,7 +515,7 @@ object AIControllerFactories : IonServerComponent() {
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			builder.addModule(CombatModule::class, FrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true, targeting::findTarget))
 
-			val distance = builder.addModule(DistancePositioningModule::class, DistancePositioningModule(controller, difficultyManager, aiSteeringConfig.advancedCapitalDistanceConfiguration))
+			val distance = builder.addModule(DistancePositioningModule::class, DistancePositioningModule(controller, difficultyManager, aiSteeringConfig.battlecruiserDistanceConfiguration))
 
 			val steering = builder.addModule(SteeringModule::class, CapitalSteeringModule(
 				controller,

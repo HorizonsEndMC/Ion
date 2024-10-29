@@ -1,12 +1,14 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.SpawnerScheduler
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import java.util.function.Supplier
 
 /**
  * This spawner is not ticked normally, it is not registered.
@@ -26,6 +28,7 @@ class ReinforcementSpawner(
 			WeightedShipSupplier(*reinforcementPool.toTypedArray()),
 			formatLocationSupplier({ reinforced.getCenter().toLocation(reinforced.starship.world) }, 250.0, 500.0),
 			null, // Calling module handles this
+			{_ -> Supplier { reinforced.getModuleByType<DifficultyModule>()?.internalDifficulty ?: 2 }},
 			::setupReinforcementShip
 		)
 	)

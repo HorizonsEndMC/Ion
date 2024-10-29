@@ -41,7 +41,7 @@ import org.bukkit.Color
 class AIFaction private constructor(
 	val identifier: String,
 	val color: Int = Integer.parseInt("ff0000", 16),
-	val nameList: List<Component>
+	val nameList: Map<Int,List<Component>>
 ) {
 	private var templateProcess: AITemplateRegistry.Builder.() -> Unit = {}
 
@@ -53,10 +53,11 @@ class AIFaction private constructor(
 		return@filter factionManager.faction == this
 	}
 
-	fun getAvailableName(): Component {
-		return nameList.shuffled().firstOrNull { name ->
+	fun getAvailableName(difficulty : Int): Component {
+		val list = nameList[difficulty]!!
+		return list.shuffled().firstOrNull { name ->
 			getFactionStarships().none { (it.controller as AIController).pilotName == name }
-		} ?: nameList.random()
+		} ?: list.random()
 	}
 
 	fun processTemplate(template: AITemplateRegistry.Builder) {
@@ -73,7 +74,7 @@ class AIFaction private constructor(
 	}
 
 	class Builder(private val identifier: String, val color: Int) {
-		private val names: MutableList<Component> = mutableListOf()
+		private val names: MutableMap<Int,MutableList<Component>> = mutableMapOf()
 
 		private val templateProcessing: MutableList<AITemplateRegistry.Builder.() -> Unit> = mutableListOf()
 
@@ -87,18 +88,21 @@ class AIFaction private constructor(
 			return this
 		}
 
-		fun addName(name: Component): Builder {
-			names += name
+		fun addName(difficulty: Int,name: Component): Builder {
+			if (names[difficulty] == null) names[difficulty] = mutableListOf()
+			names[difficulty]!! += name
 			return this
 		}
 
-		fun addNames(vararg names: Component): Builder {
-			this.names += names
+		fun addNames(difficulty: Int,vararg names: Component): Builder {
+			if (this.names[difficulty] == null) this.names[difficulty] = mutableListOf()
+			this.names[difficulty]!! += names
 			return this
 		}
 
-		fun addNames(names: Collection<Component>): Builder {
-			this.names += names
+		fun addNames(difficulty: Int,names: Collection<Component>): Builder {
+			if (this.names[difficulty] == null) this.names[difficulty] = mutableListOf()
+			this.names[difficulty]!! += names
 			return this
 		}
 
@@ -136,11 +140,23 @@ class AIFaction private constructor(
 		fun builder(identifier: String, color: String): Builder = Builder(identifier, Integer.parseInt(color.removePrefix("#"), 16))
 
 		val WATCHERS = builder("WATCHERS", WATCHER_ACCENT.value())
-			.addNames(listOf(
-				"Dimidium Hivecraft", "Dimidium Swarm", "Dimidium Nest", "Dimidium Cluster", "Dimidium Commune", "Dimidium Brood", "Harriot Hivecraft", "Harriot Swarm", "Harriot Nest", "Harriot Cluster", "Harriot Commune", "Harriot Brood", "Dagon Hivecraft", "Dagon Swarm", "Dagon Nest", "Dagon Cluster", "Dagon Commune", "Dagon Brood", "Tadmor Hivecraft", "Tadmor Swarm",
-				"Tadmor Nest", "Tadmor Cluster", "Tadmor Commune", "Tadmor Brood", "Hypatia Hivecraft", "Hypatia Swarm", "Hypatia Nest", "Hypatia Cluster", "Hypatia Commune", "Hypatia Brood", "Dulcinea Hivecraft", "Dulcinea Swarm", "Dulcinea Nest", "Dulcinea Cluster", "Dulcinea Commune", "Dulcinea Brood", "Fortitudo Hivecraft", "Fortitudo Swarm", "Fortitudo Nest", "Fortitudo Cluster",
-				"Fortitudo Commune", "Fortitudo Brood", "Poltergeist Hivecraft", "Poltergeist Swarm", "Poltergeist Nest", "Poltergeist Cluster", "Poltergeist Commune", "Poltergeist Brood", "Yvaga Hivecraft", "Yvaga Swarm", "Yvaga Nest", "Yvaga Cluster", "Yvaga Commune", "Yvaga Brood", "Naron Hivecraft", "Naron Swarm", "Naron Nest", "Naron Cluster", "Naron Commune", "Naron Brood",
-				"Levantes Hivecraft", "Levantes Swarm", "Levantes Nest", "Levantes Cluster", "Levantes Commune", "Levantes Brood", "Tylos Hivecraft", "Tylos Swarm", "Tylos Nest", "Tylos Cluster", "Tylos Commune", "Tylos Brood"
+			.addNames(0, listOf(
+				"Dimidium Hivecraft", "Dimidium Swarm", "Harriot Hivecraft", "Harriot Swarm", "Dagon Hivecraft", "Dagon Swarm", "Tadmor Hivecraft", "Tadmor Swarm",
+				"Hypatia Hivecraft", "Hypatia Swarm", "Dulcinea Hivecraft", "Dulcinea Swarm", "Fortitudo Hivecraft", "Fortitudo Swarm",
+				"Poltergeist Hivecraft", "Poltergeist Swarm", "Yvaga Hivecraft", "Yvaga Swarm", "Naron Hivecraft", "Naron Swarm",
+				"Levantes Hivecraft", "Levantes Swarm", "Tylos Hivecraft", "Tylos Swarm"
+			).map { it.toComponent(WATCHER_STANDARD) })
+			.addNames(1, listOf(
+				"Dimidium Nest", "Dimidium Cluster", "Harriot Nest", "Harriot Cluster", "Dagon Nest", "Dagon Cluster", "Tadmor Nest", "Tadmor Cluster",
+				"Hypatia Nest", "Hypatia Cluster", "Dulcinea Nest", "Dulcinea Cluster", "Fortitudo Nest", "Fortitudo Cluster",
+				"Poltergeist Nest", "Poltergeist Cluster", "Yvaga Nest", "Yvaga Cluster", "Naron Nest", "Naron Cluster",
+				"Levantes Nest", "Levantes Cluster", "Tylos Nest", "Tylos Cluster"
+			).map { it.toComponent(WATCHER_STANDARD) })
+			.addNames(2, listOf(
+				"Dimidium Commune", "Dimidium Brood", "Harriot Commune", "Harriot Brood", "Dagon Commune", "Dagon Brood", "Tadmor Commune", "Tadmor Brood",
+				"Hypatia Commune", "Hypatia Brood", "Dulcinea Commune", "Dulcinea Brood", "Fortitudo Commune", "Fortitudo Brood",
+				"Poltergeist Commune", "Poltergeist Brood", "Yvaga Commune", "Yvaga Brood", "Naron Commune", "Naron Brood",
+				"Levantes Commune", "Levantes Brood", "Tylos Commune", "Tylos Brood"
 			).map { it.toComponent(WATCHER_STANDARD) })
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from <$WATCHER_ACCENT>unknown</$WATCHER_ACCENT> vessel. <italic>Translating:</italic>")
 			.addSmackMessages(
@@ -161,15 +177,35 @@ class AIFaction private constructor(
 			.build()
 
 		val 吃饭人 = builder("吃饭人", 吃饭人_STANDARD.value())
-			.addNames(
-				text("飞行员", 吃饭人_STANDARD),
-				text("面包", 吃饭人_STANDARD),
-				text("蛋糕", 吃饭人_STANDARD),
-				text("面条", 吃饭人_STANDARD),
-				text("米饭", 吃饭人_STANDARD),
-				text("土豆", 吃饭人_STANDARD),
-				text("马铃薯", 吃饭人_STANDARD),
-				text("薯叶", 吃饭人_STANDARD),
+			.addNames(0,
+				text("✦飞行员✦", 吃饭人_STANDARD),
+				text("✦面包✦", 吃饭人_STANDARD),
+				text("✦蛋糕✦", 吃饭人_STANDARD),
+				text("✦面条✦", 吃饭人_STANDARD),
+				text("✦米饭✦", 吃饭人_STANDARD),
+				text("✦土豆✦", 吃饭人_STANDARD),
+				text("✦马铃薯✦", 吃饭人_STANDARD),
+				text("✦薯叶✦", 吃饭人_STANDARD),
+			)
+			.addNames(0,
+				text("✨飞行员✨", 吃饭人_STANDARD),
+				text("✨面包✨", 吃饭人_STANDARD),
+				text("✨蛋糕✨", 吃饭人_STANDARD),
+				text("✨面条✨", 吃饭人_STANDARD),
+				text("✨米饭✨", 吃饭人_STANDARD),
+				text("✨土豆✨", 吃饭人_STANDARD),
+				text("✨马铃薯✨", 吃饭人_STANDARD),
+				text("✨薯叶✨", 吃饭人_STANDARD),
+			)
+			.addNames(0,
+				text("\uD83C\uDF5E飞行员\uD83C\uDF5E", 吃饭人_STANDARD),
+				text("\uD83C\uDF5E 面包\uD83C\uDF5E", 吃饭人_STANDARD),
+				text("\uD83E\uDD50蛋糕\uD83E\uDD50", 吃饭人_STANDARD),
+				text("\uD83E\uDD50面条\uD83E\uDD50", 吃饭人_STANDARD),
+				text("\uD83E\uDD56米饭\uD83E\uDD56", 吃饭人_STANDARD),
+				text("\uD83E\uDD56土豆\uD83E\uDD56", 吃饭人_STANDARD),
+				text("\uD83E\uDD68马铃薯\uD83E\uDD68", 吃饭人_STANDARD),
+				text("\uD83E\uDD68薯叶\uD83E\uDD68", 吃饭人_STANDARD),
 			)
 			.build()
 
@@ -177,18 +213,44 @@ class AIFaction private constructor(
 
 		val MINING_GUILD = builder("MINING_GUILD", MINING_CORP_LIGHT_ORANGE.value())
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from $miningGuildMini <${HEColorScheme.HE_MEDIUM_GRAY}>vessel")
-			.addNames(
-				text("Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
-				text("Alpi Artion", MINING_CORP_LIGHT_ORANGE),
-				text("Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
-				text("Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
-				text("Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
-				text("Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
-				text("Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
-				text("Rik Rihre", MINING_CORP_LIGHT_ORANGE),
-				text("Alanury Addar", MINING_CORP_LIGHT_ORANGE),
-				text("Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
-				text("Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
+			.addNames(0,
+				text("Intern Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
+				text("Intern Alpi Artion", MINING_CORP_LIGHT_ORANGE),
+				text("Intern Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
+				text("Intern Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
+				text("Intern Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
+				text("Intern Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
+				text("Intern Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
+				text("Intern Rik Rihre", MINING_CORP_LIGHT_ORANGE),
+				text("Intern Alanury Addar", MINING_CORP_LIGHT_ORANGE),
+				text("Intern Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
+				text("Intern Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
+			)
+			.addNames(1,
+				text("Employee Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
+				text("Employee Alpi Artion", MINING_CORP_LIGHT_ORANGE),
+				text("Employee Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
+				text("Employee Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
+				text("Employee Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
+				text("Employee Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
+				text("Employee Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
+				text("Employee Rik Rihre", MINING_CORP_LIGHT_ORANGE),
+				text("Employee Alanury Addar", MINING_CORP_LIGHT_ORANGE),
+				text("Employee Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
+				text("Employee Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
+			)
+			.addNames(2,
+				text("Manager Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
+				text("Manager Alpi Artion", MINING_CORP_LIGHT_ORANGE),
+				text("Manager Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
+				text("Manager Heimo Hourrog", MINING_CORP_LIGHT_ORANGE),
+				text("Manager Gann Grulgrorlim", MINING_CORP_LIGHT_ORANGE),
+				text("Manager Lempi Lassnia", MINING_CORP_LIGHT_ORANGE),
+				text("Manager Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE),
+				text("Manager Rik Rihre", MINING_CORP_LIGHT_ORANGE),
+				text("Manager Alanury Addar", MINING_CORP_LIGHT_ORANGE),
+				text("Manager Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
+				text("Manager Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
 			)
 			.addRadiusMessages(
 				550.0 * 1.5 to "<#FFA500>You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.",
@@ -198,11 +260,23 @@ class AIFaction private constructor(
 
 		val PERSEUS_EXPLORERS = builder("PERSEUS_EXPLORERS", EXPLORER_LIGHT_CYAN.value())
 			.setMessagePrefix("<$EXPLORER_LIGHT_CYAN>Receiving transmission from civilian vessel")
-			.addNames(
+			.addNames(0,
 				"<$EXPLORER_LIGHT_CYAN>Rookie <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Seasoned Explorer".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Novice <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>New Explorer".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Rookie Captain".miniMessage(),
-				"<$EXPLORER_LIGHT_CYAN>Rookie <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
+			)
+			.addNames(1,
+				"<$EXPLORER_LIGHT_CYAN>Regular <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Trained <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Seasoned Explorer".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Regular Captain".miniMessage(),
+			)
+			.addNames(2,
+				"<$EXPLORER_LIGHT_CYAN>Veteran <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Keen <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Master Explorer".miniMessage(),
+				"<$EXPLORER_LIGHT_CYAN>Veteran Captain".miniMessage(),
 			)
 			.addSmackMessages(
 				"<white>Please no, I've done nothing wrong!",
@@ -218,12 +292,23 @@ class AIFaction private constructor(
 
 		val SYSTEM_DEFENSE_FORCES = builder("SYSTEM_DEFENSE_FORCES", PRIVATEER_LIGHT_TEAL.value())
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from <$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> vessel")
-			.addNames(
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Rookie".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Trainee".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Pilot".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Veteran".miniMessage(),
-				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Ace".miniMessage(),
+			.addNames(0,
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Rookie Sanders".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Trainee Fed".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Rookie Smith".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Trainee Cop".miniMessage(),
+			)
+			.addNames(1,
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Pilot Wesley".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Private John".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Pilot Hale".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Private Haren".miniMessage(),
+			)
+			.addNames(2,
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Veteran Cotte".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Ace Russon".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Veteran Paine".miniMessage(),
+				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Ace Wilsimm".miniMessage(),
 			)
 			.addRadiusMessages(
 				650.0 * 1.5 to "<#FFA500>You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.",
@@ -240,15 +325,21 @@ class AIFaction private constructor(
 			.build()
 
 		val TSAII_RAIDERS = builder("TSAII_RAIDERS", TSAII_MEDIUM_ORANGE.value())
-			.addNames(
-				text("Dhagdagar", TSAII_DARK_ORANGE),
-				text("Zazgrord", TSAII_DARK_ORANGE),
-				text("Dhagzuzz", TSAII_DARK_ORANGE),
+			.addNames(0,
+				text("pup Dhagdagar", TSAII_DARK_ORANGE),
+				text("wimp Zazgrord", TSAII_DARK_ORANGE),
+				text("stooge Furriebruh", TSAII_DARK_ORANGE),
+			)
+			.addNames(1,
 				text("Hrorgrum", TSAII_DARK_ORANGE),
 				text("Rabidstompa", TSAII_DARK_ORANGE),
 				text("Godcooka", TSAII_DARK_ORANGE),
 				text("Skarcrushah", TSAII_DARK_ORANGE),
-				text("Big Bozz",TSAII_DARK_ORANGE, TextDecoration.BOLD)
+			)
+			.addNames(2,
+				text("Big Bozz",TSAII_DARK_ORANGE, TextDecoration.BOLD),
+				text("Rizz Master",TSAII_DARK_ORANGE, TextDecoration.BOLD),
+				text("GOATaider",TSAII_DARK_ORANGE, TextDecoration.BOLD),
 			)
 			.addSmackMessages(
 				"I'll leave nothing but scrap",
@@ -260,25 +351,31 @@ class AIFaction private constructor(
 			)
 			.build()
 
+		private val pirateNames = listOf(
+			"Lord Monty", "Kaptin Jakk", "Mr. D", "Fugitive 862", "Vex", "Dapper Dan", "Dan \"The Man\"", "Vekel \"The Man\"", "Link \"Invincible\" Burton", "\"Fearless\" Dave", "The Reaper", "\"Golden-Eye\" Sue Withers", "Fat Fredd", "Greasy Jill", "The Toof Fari", "King Crabbe", "Redcap Reid", "Bloodbeard", "Long Johnson", "\"Ripper\" Jack",
+			"Big Boris", "Styles Blackmane", "Lil' Tim", "\"Grandpa\" Marty", "Eric The Slayer", "\"Big Brain\" Simmons", "\"Salty\" Swailes", "Eclipse", "Mistress Celina", "Mistress Vera", "Hubert \"Moneybags\" McGee", "Huntly \"Hunter\" Whittaker", "Red Deth", "\"Shady\" Bill Williams", "Oswald One-Eye", "Lil' Peter", "Swordfingers", "Screwhead", "Evelynn \"The Evil\" Myers", "Bearclaw",
+			"Capn' Stefan", "Fugitive 604", "Filthy Frank", "Billy \"The Kid\" Smith", "Russel \"The Boar\" Pert", "Bearclaw Bill", "Wesley \"The Crusher\"", "Jean \"Picker\" Ardluc", "Gru \"The Redeemer\"", "Smelly Schneider", "Little Lilly", "Little Mouse", "Master O. O. Gwae", "Derek \"Pyro\" Martin", "The Headtaker", "Mr. BoomBoom", "Big Harold", "Malinda \"The Hawk\" Carlyle", "Cameron \"Cougar\" Embre", "\"Princess\" Libby Hayley",
+			"Mitch \"Turtle\" Black", "Harrison \"The Executioner\"", "King Jakka", "Fugitive 241", "Fugitive 667", "Seth \"Crazy Hands\" Hartwell", "Selina \"Panther\" Black", "\"Shady\" Sophia Turner", "Sherman The Mad", "Beebe \"The Bear\" Barton", "Annette \"The Unseen\" Fyr", "Lord Far Quaad", "Harold \"The Thresher\"", "Whitman \"The Bull\" Clemons", "Fugitive 404", "Radley \"Stardog\" Arlin", "Grandma Lucille", "The Rizzler", "Jerry \"Killer\" Clarkson", "Big Gus",
+			"Mama Lia", "Lady Antonia Tack", "Captain Vor", "The Khan", "Lucky Larry", "Bruisin' Betty", "Ugluk \"Maneater\" Johnson", "Happy Hayden", "Man-Ray", "The Shadow", "Powell \"Iron-Belly\" Chatham", "Enigma", "The Dragon", "Kader \"Wolf\" Gray", "Big Hands", "Nightowl", "Killjoy", "Sapphire", "Rabid Randy", "Echo",
+			"Stanton Derane", "Stanton Smithers", "Ulrus", "Reid Sladek", "Denyse Cadler", "Hrongar Meton", "Trent Jamesson", "Toma Nombur", "Doni Drew", "Heinrich Wickel", "Vilhelm Lindon", "Tamir Mashon", "Malon Redal", "Alvar Julen", "Ember Camus", "Keyon Coombs", "Bailey Zain", "Carmen Reeves", "Little Fingers", "Lydia Lester",
+			"Aurora Salvadore", "Eva Longia", "Nia Payne", "Elvera Jett", "Claxton Hale", "Larsa Merton", "Xander Sheffield", "Amber Fark", "Radley Wright", "Lynley Paine", "Micah Caldera", "Garrison DuCote", "Urien Ralers", "Seth Vangelos", "Lucy Loretta IV", "Sam Gueniverre", "Meg", "Honda Ohna", "Harri Mudd", "Kreef Garga",
+			"Django Bett", "Emeri Jas", "Gendar", "Mebo Teeja", "Wam Zesek", "Bad Cane", "Pumi Raramita", "Wade Weiss", "Adam Sander", "Zayn Foster", "Enir Boreh", "Bristol Fleming", "Sadyhe Wahl", "Ben Dover", "Foba Bett", "Blanche Darkwalker", "Rosella Daniesh", "Rosalia Daniesh", "Rosilla Daniesh", "Ham Swolo",
+			"Luk Star-Runner", "Brock Hayes", "Studs Shearman", "Sham Corrend", "Varlo Daraay", "Deng Pelles", "Luca Dara", "Lon Avand", "Grego Grenko", "Leys Kilis", "Tonor Donnall", "Jaa Kiles", "Guy Fawkes", "Nica Rezal", "Juda Grossand", "Mildra Scolly", "Bine Theson", "Renda Leson", "Mildra Wardson", "Arbann Clore",
+			"Mara Hilly", "Jacquel Pere", "Loise Kinson", "Jerry Homart", "Keithy Hompson", "Enner Nera", "Joshua Manett", "Jonio Reson", "Billie Colley", "Jesse Hayeson", "Pauly Hardson", "Arlon Scarte", "Johne Guezal", "Willy Hernett", "Sara Ancim", "Magent Tille", "Amabe Tille", "Rana Avik", "Aitan Corrik", "Tala Haren",
+			"Lysa Nalle", "Vital Kilian", "Jaina Harik", "Jet Severt", "Warrick Burcham", "Preston Jammer", "Arik Llewellyn", "Glen Lockley", "Damien Hyland", "Thaddeus Engstrom", "Darius Calder", "Fae Helsing", "Elsy Carrick", "Ariana Rackham", "Fae Arleth", "Joie Jann", "Kerilyn Woldt", "Gwen Vangelos", "Morgana Stasny", "Maia Morgan",
+			"Allyson Byrn", "Kadi Kovane", "Antid Buchkina", "Vlukar Zadenko", "Zori Atyev", "Redi Kinova", "Alen Kinova", "Adil Sova", "Lana Igomov", "Unarya Bova", "Valaya Serova", "Vilma Khoteva", "Aleno Aponov", "Leva Montova", "Amila Grenau", "Jysell Halcyon", "Jaina Antis", "Vital Baize", "Sanne Korraay", "Mara Kale",
+			"Elabe Enkows", "Ierran Haren", "Lysa Prenda", "Myla Ajinn", "Cadan Keggle", "Hoola Bane", "Caden Vamma", "Elar Stazi", "Hoola Madak", "Lana Trehalt", "Linor Pragant", "Garm Thalcorr", "Kuna Vene", "Val Hamne", "Hugo Minne", "Maro Kesyk", "Garm Horne", "Jaa Harand", "Jafan Dolphe", "Jery Reson",
+			"Anier Wilsimm", "Jone Jackson", "Phily Hingte", "Jeffry Rezal", "Rianio Cotte", "Russe Russon", "Alteth Homes", "Donna Coopow", "Chera Hayeson", "Jase Hilly", "Kara Tinels", "Fryna Coxand", "Ricy Henders", "Nety Hernand", "Rachia Russon", "Amen Bertson", "Masa Take", "Utan Moro", "Nishi Yosun", "Inon Boro",
+			"Ekoh Hideo", "Yakan Miko", "Sumi Tomi", "Matsu Chiko", "Natse Kuko", "Akuk Yuikoshi", "Kino Nami", "Mota Euikoki", "Hira Machi", "Kano Niko", "Kawa Sako", "Kagi Chito", "Kynon Graydon", "Xeno Severt", "Yukon Centrich", "Galen Lockley", "Nicol Jaenke", "Bjorn Wynn", "Garrison Burcham", "Zebulon Leath"
+		)
 		val PIRATES = builder("PIRATES", PIRATE_SATURATED_RED.value())
 			.setMessagePrefix("<$PIRATE_SATURATED_RED>Receiving transmission from pirate vessel")
-			.addNames(listOf(
-				"Lord Monty", "Kaptin Jakk", "Mr. D", "Fugitive 862", "Vex", "Dapper Dan", "Dan \"The Man\"", "Vekel \"The Man\"", "Link \"Invincible\" Burton", "\"Fearless\" Dave", "The Reaper", "\"Golden-Eye\" Sue Withers", "Fat Fredd", "Greasy Jill", "The Toof Fari", "King Crabbe", "Redcap Reid", "Bloodbeard", "Long Johnson", "\"Ripper\" Jack",
-				"Big Boris", "Styles Blackmane", "Lil' Tim", "\"Grandpa\" Marty", "Eric The Slayer", "\"Big Brain\" Simmons", "\"Salty\" Swailes", "Eclipse", "Mistress Celina", "Mistress Vera", "Hubert \"Moneybags\" McGee", "Huntly \"Hunter\" Whittaker", "Red Deth", "\"Shady\" Bill Williams", "Oswald One-Eye", "Lil' Peter", "Swordfingers", "Screwhead", "Evelynn \"The Evil\" Myers", "Bearclaw",
-				"Capn' Stefan", "Fugitive 604", "Filthy Frank", "Billy \"The Kid\" Smith", "Russel \"The Boar\" Pert", "Bearclaw Bill", "Wesley \"The Crusher\"", "Jean \"Picker\" Ardluc", "Gru \"The Redeemer\"", "Smelly Schneider", "Little Lilly", "Little Mouse", "Master O. O. Gwae", "Derek \"Pyro\" Martin", "The Headtaker", "Mr. BoomBoom", "Big Harold", "Malinda \"The Hawk\" Carlyle", "Cameron \"Cougar\" Embre", "\"Princess\" Libby Hayley",
-				"Mitch \"Turtle\" Black", "Harrison \"The Executioner\"", "King Jakka", "Fugitive 241", "Fugitive 667", "Seth \"Crazy Hands\" Hartwell", "Selina \"Panther\" Black", "\"Shady\" Sophia Turner", "Sherman The Mad", "Beebe \"The Bear\" Barton", "Annette \"The Unseen\" Fyr", "Lord Far Quaad", "Harold \"The Thresher\"", "Whitman \"The Bull\" Clemons", "Fugitive 404", "Radley \"Stardog\" Arlin", "Grandma Lucille", "The Rizzler", "Jerry \"Killer\" Clarkson", "Big Gus",
-				"Mama Lia", "Lady Antonia Tack", "Captain Vor", "The Khan", "Lucky Larry", "Bruisin' Betty", "Ugluk \"Maneater\" Johnson", "Happy Hayden", "Man-Ray", "The Shadow", "Powell \"Iron-Belly\" Chatham", "Enigma", "The Dragon", "Kader \"Wolf\" Gray", "Big Hands", "Nightowl", "Killjoy", "Sapphire", "Rabid Randy", "Echo",
-				"Stanton Derane", "Stanton Smithers", "Ulrus", "Reid Sladek", "Denyse Cadler", "Hrongar Meton", "Trent Jamesson", "Toma Nombur", "Doni Drew", "Heinrich Wickel", "Vilhelm Lindon", "Tamir Mashon", "Malon Redal", "Alvar Julen", "Ember Camus", "Keyon Coombs", "Bailey Zain", "Carmen Reeves", "Little Fingers", "Lydia Lester",
-				"Aurora Salvadore", "Eva Longia", "Nia Payne", "Elvera Jett", "Claxton Hale", "Larsa Merton", "Xander Sheffield", "Amber Fark", "Radley Wright", "Lynley Paine", "Micah Caldera", "Garrison DuCote", "Urien Ralers", "Seth Vangelos", "Lucy Loretta IV", "Sam Gueniverre", "Meg", "Honda Ohna", "Harri Mudd", "Kreef Garga",
-				"Django Bett", "Emeri Jas", "Gendar", "Mebo Teeja", "Wam Zesek", "Bad Cane", "Pumi Raramita", "Wade Weiss", "Adam Sander", "Zayn Foster", "Enir Boreh", "Bristol Fleming", "Sadyhe Wahl", "Ben Dover", "Foba Bett", "Blanche Darkwalker", "Rosella Daniesh", "Rosalia Daniesh", "Rosilla Daniesh", "Ham Swolo",
-				"Luk Star-Runner", "Brock Hayes", "Studs Shearman", "Sham Corrend", "Varlo Daraay", "Deng Pelles", "Luca Dara", "Lon Avand", "Grego Grenko", "Leys Kilis", "Tonor Donnall", "Jaa Kiles", "Guy Fawkes", "Nica Rezal", "Juda Grossand", "Mildra Scolly", "Bine Theson", "Renda Leson", "Mildra Wardson", "Arbann Clore",
-				"Mara Hilly", "Jacquel Pere", "Loise Kinson", "Jerry Homart", "Keithy Hompson", "Enner Nera", "Joshua Manett", "Jonio Reson", "Billie Colley", "Jesse Hayeson", "Pauly Hardson", "Arlon Scarte", "Johne Guezal", "Willy Hernett", "Sara Ancim", "Magent Tille", "Amabe Tille", "Rana Avik", "Aitan Corrik", "Tala Haren",
-				"Lysa Nalle", "Vital Kilian", "Jaina Harik", "Jet Severt", "Warrick Burcham", "Preston Jammer", "Arik Llewellyn", "Glen Lockley", "Damien Hyland", "Thaddeus Engstrom", "Darius Calder", "Fae Helsing", "Elsy Carrick", "Ariana Rackham", "Fae Arleth", "Joie Jann", "Kerilyn Woldt", "Gwen Vangelos", "Morgana Stasny", "Maia Morgan",
-				"Allyson Byrn", "Kadi Kovane", "Antid Buchkina", "Vlukar Zadenko", "Zori Atyev", "Redi Kinova", "Alen Kinova", "Adil Sova", "Lana Igomov", "Unarya Bova", "Valaya Serova", "Vilma Khoteva", "Aleno Aponov", "Leva Montova", "Amila Grenau", "Jysell Halcyon", "Jaina Antis", "Vital Baize", "Sanne Korraay", "Mara Kale",
-				"Elabe Enkows", "Ierran Haren", "Lysa Prenda", "Myla Ajinn", "Cadan Keggle", "Hoola Bane", "Caden Vamma", "Elar Stazi", "Hoola Madak", "Lana Trehalt", "Linor Pragant", "Garm Thalcorr", "Kuna Vene", "Val Hamne", "Hugo Minne", "Maro Kesyk", "Garm Horne", "Jaa Harand", "Jafan Dolphe", "Jery Reson",
-				"Anier Wilsimm", "Jone Jackson", "Phily Hingte", "Jeffry Rezal", "Rianio Cotte", "Russe Russon", "Alteth Homes", "Donna Coopow", "Chera Hayeson", "Jase Hilly", "Kara Tinels", "Fryna Coxand", "Ricy Henders", "Nety Hernand", "Rachia Russon", "Amen Bertson", "Masa Take", "Utan Moro", "Nishi Yosun", "Inon Boro",
-				"Ekoh Hideo", "Yakan Miko", "Sumi Tomi", "Matsu Chiko", "Natse Kuko", "Akuk Yuikoshi", "Kino Nami", "Mota Euikoki", "Hira Machi", "Kano Niko", "Kawa Sako", "Kagi Chito", "Kynon Graydon", "Xeno Severt", "Yukon Centrich", "Galen Lockley", "Nicol Jaenke", "Bjorn Wynn", "Garrison Burcham", "Zebulon Leath"
-			).map { it.toComponent(PIRATE_LIGHT_RED) })
+			.addNames(0, pirateNames.map { ("Rowdy"+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(0, pirateNames.map { ("Deliquent"+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(1, pirateNames.map { ("Wanted"+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(1, pirateNames.map { ("Criminal"+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(2, pirateNames.map { ("Capo"+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(2, pirateNames.map { ("Vicious"+it).toComponent(PIRATE_LIGHT_RED) })
 			.addSmackMessages(
 				"Nice day, Nice Ship. I think ill take it!",
 				"I'll plunder your booty!",

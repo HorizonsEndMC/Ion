@@ -25,9 +25,9 @@ data class AISteeringConfiguration(
 	val interdictionCorvetteDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 2300.0, optimalDist = 1500.0),
 	val logisticCorvetteDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 2300.0, optimalDist = 130.0, startFleeing = 0.1, stopFleeing = 0.3),
 	val miniFrigateDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 300.0, optimalDist = 100.0),
-	val capitalDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 600.0, optimalDist = 200.0, startFleeing = 0.1, stopFleeing = 0.5),//capitals back off
+	val capitalDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 600.0, optimalDist = 150.0, startFleeing = 0.1, stopFleeing = 0.5),//capitals back off
 	val advancedCapitalDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 600.0, optimalDist = 100.0, startFleeing = 0.01, stopFleeing = 0.3),
-	val battlecruiserDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 600.0, optimalDist = 300.0, startFleeing = -0.1, stopFleeing = 0.0) //BCs dont flee
+	val battlecruiserDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(maxDist = 600.0, optimalDist = 200.0, startFleeing = -0.1, stopFleeing = 0.0) //BCs dont flee
 ) {
 	@Serializable
 	data class BasicSteeringConfiguration(

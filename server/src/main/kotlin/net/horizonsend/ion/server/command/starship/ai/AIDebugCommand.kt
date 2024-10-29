@@ -98,7 +98,7 @@ object AIDebugCommand : SLCommand() {
 	) {
 		val starship = getStarshipRiding(sender)
 
-		failIf(difficulty != null && difficulty < 1) { "ILLEGAL DIFFICULTY" }
+		failIf(difficulty != null && difficulty < 0) { "ILLEGAL DIFFICULTY" }
 
 		val newController = controller(
 			starship,
@@ -195,8 +195,9 @@ object AIDebugCommand : SLCommand() {
 
 	@Subcommand("spawn")
 	@Suppress("unused")
-	fun spawn(sender: Player, spawner: AISpawner, template: SpawnedShip) {
-		template.spawn(log, sender.location)
+	fun spawn(sender: Player, spawner: AISpawner, template: SpawnedShip, difficulty: Int) {
+		failIf(difficulty < 0) { "ILLEGAL DIFFICULTY" }
+		template.spawn(log, sender.location,difficulty)
 
 		sender.success("Spawned ship")
 	}

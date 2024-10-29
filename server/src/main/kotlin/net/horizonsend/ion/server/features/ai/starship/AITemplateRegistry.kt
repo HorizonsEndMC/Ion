@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
@@ -168,7 +169,7 @@ object AITemplateRegistry {
 	val MALINGSHU_REINFORCED = registerTemplate(builder(
 		identifier = "MALINGSHU_REINFORCED",
 		template = StarshipTemplateRegistry.MALINGSHU,
-		controllerFactory = AIControllerFactories.frigate,
+		controllerFactory = AIControllerFactories.miniFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
@@ -186,7 +187,7 @@ object AITemplateRegistry {
 	val MIANBAO_REINFORCED = registerTemplate(builder(
 		identifier = "MIANBAO_REINFORCED",
 		template = StarshipTemplateRegistry.MIANBAO,
-		controllerFactory = AIControllerFactories.frigate,
+		controllerFactory = AIControllerFactories.miniFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
@@ -859,6 +860,7 @@ object AITemplateRegistry {
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.build()
@@ -887,6 +889,7 @@ object AITemplateRegistry {
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.build()
@@ -914,7 +917,8 @@ object AITemplateRegistry {
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(150.0, 200.0, 0.0), 1),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(75.0, 150.0, 0.0), 3),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10)
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.build()
@@ -1128,8 +1132,9 @@ object AITemplateRegistry {
 			return this
 		}
 
-		fun setDifficulty(difficulty: IntegerAmount) {
+		fun setDifficulty(difficulty: IntegerAmount) : Builder{
 			this.difficulty = difficulty
+			return this
 		}
 
 		fun build(): AITemplate {

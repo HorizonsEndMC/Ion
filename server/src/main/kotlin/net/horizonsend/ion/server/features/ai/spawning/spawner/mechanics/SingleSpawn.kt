@@ -12,13 +12,15 @@ class SingleSpawn(
 	private val locationProvider: Supplier<Location?>,
 	/** 0: x, 1: y, 2: z, 3: world name, */
 	private val spawnMessage: SpawnMessage?,
+	private val difficultySupplier: (String) -> Supplier<Int>,
 	private val controllerModifier: AIController.() -> Unit = {}
 ) : SpawnerMechanic() {
 	override suspend fun trigger(logger: Logger) {
 		val ship = shipPool.get()
 		val spawnPoint = locationProvider.get() ?: return
+		val difficulty = difficultySupplier(spawnPoint.world.name).get()
 
-		ship.spawn(logger, spawnPoint, controllerModifier)
+		ship.spawn(logger, spawnPoint,difficulty, controllerModifier)
 
 		spawnMessage?.broadcast(spawnPoint, ship.template)
 	}

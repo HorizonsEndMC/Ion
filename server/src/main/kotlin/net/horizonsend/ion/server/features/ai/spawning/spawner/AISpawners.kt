@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.isSystemOccupied
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
@@ -154,7 +155,8 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(WATCHERS.asSpawnedShip(TERALITH), 0.25)
 					),
 					formatLocationSupplier(it, 2500.0, 4500.0),
-					SpawnMessage.WorldMessage("<$WATCHER_ACCENT>An unknown starship signature is being broadcast in {4} spawned at {1}, {3}".miniMessage())
+					SpawnMessage.WorldMessage("<$WATCHER_ACCENT>An unknown starship signature is being broadcast in {4} spawned at {1}, {3}".miniMessage()),
+					DifficultyModule::regularSpawnDifficultySupplier
 				)
 			)
 		}
@@ -164,6 +166,7 @@ object AISpawners : IonServerComponent(true) {
 			WATCHER_STANDARD,
 			duration = { Duration.ofMinutes(30) },
 			separation = { getRandomDuration(Duration.ofHours(3), Duration.ofHours(5)) },
+			difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 			"<${HE_MEDIUM_GRAY}>An <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has been detected in {0} at {1} {3}. <$WATCHER_ACCENT>Alien starships patrol the area.".miniMessage(),
 			"<${HE_MEDIUM_GRAY}>The <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has disappeared".miniMessage(),
 			radius = 1500.0,
@@ -177,7 +180,8 @@ object AISpawners : IonServerComponent(true) {
 			SingleSpawn(
 				RandomShipSupplier(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), WATCHERS.asSpawnedShip(TERALITH)),
 				watcherLocusScheduler.spawnLocationProvider,
-				SpawnMessage.WorldMessage("<$WATCHER_ACCENT>Watcher Vessels<$HE_MEDIUM_GRAY> answer the call of the signal.".miniMessage())
+				SpawnMessage.WorldMessage("<$WATCHER_ACCENT>Watcher Vessels<$HE_MEDIUM_GRAY> answer the call of the signal.".miniMessage()),
+				{_ -> Supplier { watcherLocusScheduler.difficulty }}
 			)
 		))
 
@@ -195,7 +199,8 @@ object AISpawners : IonServerComponent(true) {
 					text("An unusually strong alien signature has been detected in {3} at {0}, {2}", WATCHER_ACCENT),
 					null,
 					asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 10),
-					asBagSpawned(WATCHERS.asSpawnedShip(TERALITH), 10)
+					asBagSpawned(WATCHERS.asSpawnedShip(TERALITH), 10),
+					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 				)
 			)
 		}
@@ -503,6 +508,7 @@ object AISpawners : IonServerComponent(true) {
 			PIRATE_SATURATED_RED,
 			duration = { Duration.ofMinutes(30) },
 			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(4)) },
+			difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 			"<${HE_MEDIUM_GRAY}>Increased <$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> activity has been noted in {0} at {1} {3}. <$PIRATE_SATURATED_RED>Please avoid the area.".miniMessage(),
 			"<$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> activity has waned".miniMessage(),
 			radius = 1500.0,
@@ -524,7 +530,8 @@ object AISpawners : IonServerComponent(true) {
 					PIRATES.asSpawnedShip(AITemplateRegistry.BLOODSTAR)
 				),
 				pirateLocusScheduler.spawnLocationProvider,
-				SpawnMessage.WorldMessage("<$PIRATE_SATURATED_RED>More pirates spotted!".miniMessage())
+				SpawnMessage.WorldMessage("<$PIRATE_SATURATED_RED>More pirates spotted!".miniMessage()),
+				{ _ -> Supplier {pirateLocusScheduler.difficulty}}
 			)
 		))
 
@@ -803,7 +810,8 @@ object AISpawners : IonServerComponent(true) {
 					VariableIntegerAmount(3, 5),
 					"<$PRIVATEER_LIGHT_TEAL>Privateer Dagger <${HE_MEDIUM_GRAY}>Flight Squadron has spawned at {0}, {2}, in {3}".miniMessage(),
 					null,
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1)
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1),
+					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 				)
 			)
 		}
@@ -813,6 +821,7 @@ object AISpawners : IonServerComponent(true) {
 			PRIVATEER_LIGHT_TEAL,
 			duration = { Duration.ofMinutes(30) },
 			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(4)) },
+			difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Naval Drills<${HE_MEDIUM_GRAY}> will be conducted in {0} at {1} {3}. Please avoid the area.".miniMessage(),
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Naval Drills<${HE_MEDIUM_GRAY}> have ended".miniMessage(),
 			radius = 1500.0,
@@ -834,7 +843,8 @@ object AISpawners : IonServerComponent(true) {
 					SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK)
 				),
 				daggerLocusScheduler.spawnLocationProvider,
-				SpawnMessage.WorldMessage("<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {3}, in {4}".miniMessage())
+				SpawnMessage.WorldMessage("<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {3}, in {4}".miniMessage()),
+				{_ -> Supplier { daggerLocusScheduler.difficulty }}
 			)
 		))
 
@@ -857,6 +867,7 @@ object AISpawners : IonServerComponent(true) {
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 5),
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 10),
+					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 				)
 			)
 		}
@@ -876,7 +887,8 @@ object AISpawners : IonServerComponent(true) {
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(150.0, 200.0, 0.0), 1),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(75.0, 150.0, 0.0), 3),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 0.0, 0.0), 10)
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 0.0, 0.0), 10),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		) }
 
@@ -885,6 +897,7 @@ object AISpawners : IonServerComponent(true) {
 			PIRATE_SATURATED_RED,
 			duration = { Duration.ofMinutes(30) },
 			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(4)) },
+			difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 			"<${HE_MEDIUM_GRAY}>A <$TSAII_DARK_ORANGE>Tsaii Warband<${HE_MEDIUM_GRAY}> has been spotted in {0} at {1} {3}. <$TSAII_MEDIUM_ORANGE>Please avoid the area.".miniMessage(),
 			"<${HE_MEDIUM_GRAY}>The <$TSAII_DARK_ORANGE>Tsaii Warband<${HE_MEDIUM_GRAY}> has departed".miniMessage(),
 			radius = 1500.0,
@@ -903,7 +916,8 @@ object AISpawners : IonServerComponent(true) {
 					TSAII_RAIDERS.asSpawnedShip(REAVER)
 				),
 				tsaiiLocusScheduler.spawnLocationProvider,
-				SpawnMessage.WorldMessage("<${TSAII_DARK_ORANGE}>{0} has joined the raid {1}, {3}, in {4}.".miniMessage())
+				SpawnMessage.WorldMessage("<${TSAII_DARK_ORANGE}>{0} has joined the raid {1}, {3}, in {4}.".miniMessage()),
+				{_ -> Supplier { tsaiiLocusScheduler.difficulty }}
 			)
 		))
 
@@ -923,7 +937,8 @@ object AISpawners : IonServerComponent(true) {
 					val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
 					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
 				},
-				spawnMessage = SpawnMessage.WorldMessage("<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage())
+				spawnMessage = SpawnMessage.WorldMessage("<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage()),
+				{_ -> Supplier { 0 }}
 			)
 		))
 

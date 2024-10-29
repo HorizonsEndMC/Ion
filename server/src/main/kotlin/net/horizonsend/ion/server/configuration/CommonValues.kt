@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.configuration
 
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.server.miscellaneous.utils.weightedRandom
 import java.util.function.Supplier
 import kotlin.random.Random
 
@@ -20,6 +21,13 @@ data class StaticIntegerAmount(
 	val value: Int
 ) : IntegerAmount {
 	override fun get(): Int = value
+}
+
+@Serializable
+data class WeightedIntegerAmount(
+	val items: Set<Pair<Int,Double>>
+) : IntegerAmount {
+	override fun get(): Int = items.weightedRandom { it.second }.first
 }
 
 @Serializable
