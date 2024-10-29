@@ -12,7 +12,7 @@ object NavigationTestCommand : SLCommand() {
 	@Default
 	@Suppress("unused")
 	fun onTest(sender: Player) {
-		val gui = NavigationSystemMapGui(sender.world)
+		val gui = NavigationSystemMapGui(sender.world, sender)
 
 		val window = Window.single()
 			.setViewer(sender)
