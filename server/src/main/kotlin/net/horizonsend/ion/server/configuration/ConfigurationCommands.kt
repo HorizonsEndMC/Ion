@@ -186,6 +186,7 @@ object ConfigurationCommands : SLCommand() {
 		IonServer.aiSpawningConfiguration = Configuration.load(IonServer.configurationFolder, "aiships.json")
 		IonServer.pvpBalancing = Configuration.load(IonServer.configurationFolder, "pvpbalancing.json")
 		IonServer.starshipBalancing = Configuration.load(IonServer.configurationFolder, "starshipbalancing.json")
+		IonServer.nationsConfiguration = Configuration.load(IonServer.configurationFolder, "nations.json")
 
 		reloadOthers()
 

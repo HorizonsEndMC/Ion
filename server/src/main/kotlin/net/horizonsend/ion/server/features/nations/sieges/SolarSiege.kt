@@ -16,6 +16,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
+import net.horizonsend.ion.server.features.nations.sieges.SolarSieges.config
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -90,13 +91,11 @@ class SolarSiege(
 	}
 
 	fun getActivePeriodStart(): Long {
-//		return declaredTime + TimeUnit.HOURS.toMillis(3)
-		return declaredTime + TimeUnit.MINUTES.toMillis(1)
+		return declaredTime + config.preparationWindowDuration.toDuration().toMillis()
 	}
 
 	fun getSiegeEnd(): Long {
-//		return getActivePeriodStart() + TimeUnit.MINUTES.toMillis(90)
-		return getActivePeriodStart() + TimeUnit.MINUTES.toMillis(1)
+		return getActivePeriodStart() + config.activeWindowDuration.toDuration().toMillis()
 	}
 
 	/**

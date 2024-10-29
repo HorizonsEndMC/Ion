@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.FeatureFlags
 import net.horizonsend.ion.server.configuration.GlobalGassesConfiguration
+import net.horizonsend.ion.server.configuration.NationsConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
@@ -55,6 +56,7 @@ object IonServer : JavaPlugin() {
 	var tradeConfiguration: TradeConfiguration = Configuration.load(configurationFolder, "trade.json")
 	var aiSpawningConfiguration: AISpawningConfiguration = Configuration.load(configurationFolder, "aiSpawning.json")
 	var discordSettings: DiscordConfiguration = Configuration.load(configurationFolder, "discord.json")
+	var nationsConfiguration: NationsConfiguration = Configuration.load(configurationFolder, "nations.json")
 	var legacySettings: LegacyConfig = loadConfig(configurationFolder, "config") // Setting
 
 	override fun onEnable(): Unit =
