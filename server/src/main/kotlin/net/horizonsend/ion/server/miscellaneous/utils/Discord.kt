@@ -8,20 +8,21 @@ import github.scarsz.discordsrv.dependencies.jda.api.JDA
 import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServerComponent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.KeybindComponent
-import net.kyori.adventure.text.TranslatableComponent
+import net.kyori.adventure.translation.GlobalTranslator
 import org.bukkit.Bukkit.getPluginManager
 import java.time.Instant
+import java.util.Locale
 
 object Discord : IonServerComponent(true) {
 	private val serializer = DiscordSerializer(DiscordSerializerOptions(
 		true,
 		false,
-		KeybindComponent::keybind,
-		TranslatableComponent::key
-	))
+		KeybindComponent::keybind
+	) { component -> GlobalTranslator.render(component, Locale.ENGLISH).plainText() })
 
 	private var enabled: Boolean = false
 	private var JDA: JDA? = null

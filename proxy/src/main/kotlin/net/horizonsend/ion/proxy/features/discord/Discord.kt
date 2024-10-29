@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.proxy.IonProxyComponent
 import net.horizonsend.ion.proxy.PLUGIN
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
@@ -24,17 +25,17 @@ import net.horizonsend.ion.proxy.commands.discord.DiscordSettlementCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordTPSCommand
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.KeybindComponent
-import net.kyori.adventure.text.TranslatableComponent
+import net.kyori.adventure.translation.GlobalTranslator
 import java.time.Instant
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 object Discord : IonProxyComponent() {
 	private val serializer = DiscordSerializer(DiscordSerializerOptions(
 		true,
 		false,
-		KeybindComponent::keybind,
-		TranslatableComponent::key
-	))
+		KeybindComponent::keybind
+	) { component -> GlobalTranslator.render(component, Locale.ENGLISH).plainText() })
 
 	private val configuration get() = PLUGIN.discordConfiguration
 	private var enabled: Boolean = false
