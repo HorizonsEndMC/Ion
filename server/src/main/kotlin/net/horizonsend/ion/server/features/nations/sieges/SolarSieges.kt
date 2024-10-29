@@ -186,7 +186,7 @@ object SolarSieges : IonServerComponent(true) {
 		val playerNation = PlayerCache[player].nationOid ?: return
 
 		siege.isAbandoned = true
-		siege.handleEnd()
+		siege.removeActive()
 
 		val nationName = NationCache[playerNation].name
 		Notify.chatAndEvents(template(
@@ -204,7 +204,7 @@ object SolarSieges : IonServerComponent(true) {
 		val playerNation = PlayerCache[player].nationOid ?: return
 
 		siege.isAbandoned = true
-		siege.handleEnd()
+		siege.removeActive()
 
 		val nationName = NationCache[playerNation].name
 		Notify.chatAndEvents(template(

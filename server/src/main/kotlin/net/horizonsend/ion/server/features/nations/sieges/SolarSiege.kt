@@ -103,7 +103,7 @@ class SolarSiege(
 	 * @param disableEarlyCheck: Disables premature ending check which triggers abandon message
 	 **/
 	fun endSiege(disableEarlyCheck: Boolean = false) {
-		handleEnd()
+		removeActive()
 		if (isSuccess()) succeed() else fail(disableEarlyCheck)
 
 	}
@@ -204,7 +204,7 @@ class SolarSiege(
 		}
 	}
 
-	fun handleEnd() {
+	fun removeActive() {
 		for (taskId in taskIds) Bukkit.getScheduler().cancelTask(taskId)
 		SolarSieges.removeActive(this)
 		SolarSiegeData.markComplete(databaseId)

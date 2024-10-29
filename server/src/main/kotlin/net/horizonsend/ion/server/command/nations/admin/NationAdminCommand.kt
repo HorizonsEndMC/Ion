@@ -352,12 +352,12 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	@Subcommand("solarSiege win")
 	fun onSiegeWin(sender: CommandSender, siege: SolarSiege) {
 		siege.succeed()
-		siege.handleEnd()
+		siege.removeActive()
 	}
 
 	@Subcommand("solarSiege lose")
 	fun onSiegeLose(sender: CommandSender, siege: SolarSiege) {
 		siege.fail(true)
-		siege.handleEnd()
+		siege.removeActive()
 	}
 }
