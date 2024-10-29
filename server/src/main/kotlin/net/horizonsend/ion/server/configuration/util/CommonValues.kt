@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.configuration
+package net.horizonsend.ion.server.configuration.util
 
 import kotlinx.serialization.Serializable
 import java.util.function.Supplier

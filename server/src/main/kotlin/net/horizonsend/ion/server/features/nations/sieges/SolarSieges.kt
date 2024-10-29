@@ -16,6 +16,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServer.nationsConfiguration
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -36,7 +37,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.time.DayOfWeek
-import java.time.Duration
 import java.time.LocalDate
 import java.util.Calendar
 import java.util.Date
@@ -46,6 +46,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 object SolarSieges : IonServerComponent(true) {
+	val config get() = nationsConfiguration.solarSiegeConfiguration
+
 	@Synchronized
 	private fun locked(block: () -> Unit) = block()
 
@@ -62,8 +64,8 @@ object SolarSieges : IonServerComponent(true) {
 	private val preparationSieges = mutableMapOf<Oid<SolarSiegeData>, SolarSiege>()
 	private val activeSieges = mutableMapOf<Oid<SolarSiegeData>, SolarSiege>()
 
-	fun getAllPreparingSieges(): Collection<SolarSiege> = preparationSieges.values
-	fun getAllActiveSieges(): Collection<SolarSiege> = activeSieges.values
+	private fun getAllPreparingSieges(): Collection<SolarSiege> = preparationSieges.values
+	private fun getAllActiveSieges(): Collection<SolarSiege> = activeSieges.values
 
 	fun getAllSieges(): Collection<SolarSiege> = getAllPreparingSieges().plus(getAllActiveSieges())
 
@@ -84,7 +86,7 @@ object SolarSieges : IonServerComponent(true) {
 	/**
 	 * Returns whether this siege zone is being prepared for a siege, or actively under siege
 	 **/
-	fun isUnderSiege(stationId: Oid<SolarSiegeZone>): Boolean {
+	private fun isUnderSiege(stationId: Oid<SolarSiegeZone>): Boolean {
 		return activeSieges.any { it.value.region.id == stationId } ||
 			   preparationSieges.any { it.value.region.id == stationId }
 	}
@@ -173,7 +175,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, Embed(
 			title = "Siege Declaration",
-			description = "$attackerName of ${formatNationName(attackerNation).plainText()} has declared a siege of ${formatNationName(defender).plainText()}'s Solar Siege holding in " +
+			description = "$attackerName of ${formatNationName(attackerNation).plainText()} has declared a siege of ${formatNationName(defender).plainText()}'s Solar Siege Zone in " +
 				"${region.world}. The siege will start <t:${TimeUnit.MILLISECONDS.toSeconds(siege.getActivePeriodStart())}:R>."
 		))
 
@@ -226,7 +228,7 @@ object SolarSieges : IonServerComponent(true) {
 			.filter { it.key is PlayerDamager }
 			.maxByOrNull { it.value.points.get() }?.key as? PlayerDamager ?: return
 
-		val initPrintCost = event.starship.initPrintCost.roundToInt()
+		val initPrintCost = (event.starship.initPrintCost * config.shipCostMultiplier).roundToInt()
 
 		processKill(controller.player, damager.player, initPrintCost)
 	}
@@ -234,7 +236,7 @@ object SolarSieges : IonServerComponent(true) {
 	@EventHandler
 	fun onPlayerDeath(event: PlayerDeathEvent) {
 		val killer = event.player.killer ?: return
-		processKill(event.player, killer, 1000)
+		processKill(event.player, killer, config.playerKillPoints)
 	}
 
 	private fun processKill(player: Player, killer: Player, points: Int) {
@@ -315,8 +317,8 @@ object SolarSieges : IonServerComponent(true) {
 	private val pointTickValue = calculateTickValue()
 
 	private fun calculateTickValue(): Int {
-		val referenceDestroyerValue = 10000
-		val durationMinutes = 90 /* Minutes */ + 60
+		val referenceDestroyerValue = (config.referenceDestroyerPrice * config.shipCostMultiplier).roundToInt()
+		val durationMinutes = config.activeWindowDuration.toDuration().toMinutes().toInt()
 
 		// Passive points are ticked once per second. Over the 90 minutes of the siege, the value of
 		// 3 players contesting should be equal to the reference value of a sunk destroyer
@@ -332,13 +334,12 @@ object SolarSieges : IonServerComponent(true) {
 		participationData[player.uniqueId] = ParticipationData(player.uniqueId, siege.databaseId, System.currentTimeMillis())
 	}
 
-	private val PARTICIPATION_EXPIRATION = Duration.ofMinutes(10)
-
-	fun getParticipating(player: Player): SolarSiege? {
+	private fun getParticipating(player: Player): SolarSiege? {
 		val participationData = participationData[player.uniqueId]
 		if (participationData != null) {
 			val now = System.currentTimeMillis()
-			if (participationData.tagTime - now <= PARTICIPATION_EXPIRATION.toMillis()) return participationData.siege.let(activeSieges::get)
+			val participationLength = config.participationLength.toDuration()
+			if (participationData.tagTime - now <= participationLength.toMillis()) return participationData.siege.let(activeSieges::get)
 		}
 
 		val contained = getAllActiveSieges().firstOrNull { it.region.contains(player.location) && it.isActivePeriod() } ?: return null
