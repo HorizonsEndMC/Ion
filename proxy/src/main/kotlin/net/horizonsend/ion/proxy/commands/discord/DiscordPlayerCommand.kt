@@ -25,7 +25,7 @@ import net.horizonsend.ion.proxy.utils.messageEmbed
 object DiscordPlayerCommand : DiscordCommand("player", "Commands relating to players") {
 	override fun setup(commandManager: SlashCommandManager) {
 		commandManager.registerCompletion("onlinePlayers") { PLUGIN.proxy.players.map { it.name } }
-		commandManager.registerCompletion("allPlayers") { SLPlayer.all().map { it.lastKnownName } }
+		commandManager.registerCompletion("allPlayers") { context -> SLPlayer.all().map { it.lastKnownName }.filter { if (context.isNotEmpty()) it.startsWith(context) else true } }
 
 		registerSubcommand(onInfo)
 		registerSubcommand(DiscordPlayerListCommand.defaultReceiver)
