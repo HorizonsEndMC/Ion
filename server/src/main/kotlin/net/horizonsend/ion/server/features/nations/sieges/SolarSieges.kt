@@ -22,13 +22,16 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component.text
 import org.apache.commons.lang3.time.TimeZones.GMT_ID
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
@@ -54,7 +57,7 @@ object SolarSieges : IonServerComponent(true) {
 	override fun onEnable() {
 		tryLoadSieges()
 		Tasks.asyncRepeat(60L, 60L) { getAllActiveSieges().filter { it.needsSave }.forEach(SolarSiege::saveSiegeData) }
-		Tasks.asyncRepeat(20L, 20L, ::processPassivePoints)
+		Tasks.asyncRepeat(20L * 60L, 20L * 60L, ::processPassivePoints)
 	}
 
 	private val preparationSieges = mutableMapOf<Oid<SolarSiegeData>, SolarSiege>()
@@ -220,30 +223,48 @@ object SolarSieges : IonServerComponent(true) {
 	@EventHandler
 	fun onStarshipSink(event: StarshipSunkEvent) {
 		val controller = event.previousController as? PlayerController ?: return
-		processShipKill(controller)
-	}
 
-	private fun processShipKill(killedShipController: PlayerController) {
-		val siege = getParticipating(killedShipController.player) ?: return
-		val starship = killedShipController.starship
-		val initPrintCost = starship.initPrintCost.roundToInt()
+		val damager = event.starship.damagers
+			.filter { it is PlayerDamager }
+			.maxByOrNull { it.value.points.get() } as? PlayerDamager ?: return
 
-		val id = killedShipController.player.slPlayerId
-		if (siege.isDefender(id)) siege.attackerPoints += initPrintCost
-		if (siege.isAttacker(id)) siege.defenderPoints += initPrintCost
+		val initPrintCost = event.starship.initPrintCost.roundToInt()
+
+		processKill(controller.player, damager.player, initPrintCost)
 	}
 
 	@EventHandler
 	fun onPlayerDeath(event: PlayerDeathEvent) {
-		processPlayerKill(event.player)
+		val killer = event.player.killer ?: return
+		processKill(event.player, killer, 1000)
 	}
 
-	private fun processPlayerKill(player: Player) {
+	private fun processKill(player: Player, killer: Player, points: Int) {
 		val siege = getParticipating(player) ?: return
+		if (getParticipating(killer) != siege) return // Weird case, probably unrelated player
+		if (!killer.isOnline) return
 
-		val id = player.slPlayerId
-		if (siege.isDefender(id)) siege.attackerPoints += 1000
-		if (siege.isAttacker(id)) siege.defenderPoints += 1000
+		if (siege.isDefender(player.slPlayerId) && siege.isAttacker(killer.slPlayerId)) {
+			siege.attackerPoints += points
+
+			IonServer.server.sendMessage(template(
+				text("{0} accrued {1} points for killing {2}."),
+				formatNationName(siege.attacker),
+				1000,
+				player.name
+			))
+		}
+
+		if (siege.isDefender(killer.slPlayerId) && siege.isAttacker(player.slPlayerId)) {
+			siege.defenderPoints += points
+
+			IonServer.server.sendMessage(template(
+				text("{0} accrued {1} points for killing {2}."),
+				formatNationName(siege.defender),
+				1000,
+				player.name
+			))
+		}
 	}
 
 	private fun processPassivePoints() {
@@ -260,8 +281,25 @@ object SolarSieges : IonServerComponent(true) {
 		val defenderCount = contained.count { siege.isDefender(it.player.slPlayerId) }
 		val attackerCount = contained.count { siege.isDefender(it.player.slPlayerId) }
 
-		siege.defenderPoints += max(3, defenderCount) * pointTickValue // TODO formula
-		siege.attackerPoints += max(3, attackerCount) * pointTickValue // TODO formula
+		val siegeAudience = ForwardingAudience { Bukkit.getOnlinePlayers().filter { getParticipating(it) == siege } }
+
+		val defenderNew = max(3, defenderCount) * pointTickValue
+		siege.defenderPoints += defenderNew // TODO formula
+
+		siegeAudience.sendMessage(template(
+			text("{0} accrued {1} passive points for being inside the siege region."),
+			formatNationName(siege.defender),
+			defenderNew
+		))
+
+		val attackerNew = max(3, attackerCount) * pointTickValue
+		siege.attackerPoints += max(3, attackerNew) * pointTickValue // TODO formula
+
+		siegeAudience.sendMessage(template(
+			text("{0} accrued {1} passive points for being inside the siege region."),
+			formatNationName(siege.attacker),
+			attackerNew
+		))
 	}
 
 	// Constant
@@ -269,11 +307,11 @@ object SolarSieges : IonServerComponent(true) {
 
 	private fun calculateTickValue(): Int {
 		val referenceDestroyerValue = 10000
-		val durationSeconds = 90 /* Minutes */ * 60
+		val durationMinutes = 90 /* Minutes */ + 60
 
 		// Passive points are ticked once per second. Over the 90 minutes of the siege, the value of
 		// 3 players contesting should be equal to the reference value of a sunk destroyer
-		return (referenceDestroyerValue / durationSeconds) / 3
+		return (referenceDestroyerValue / durationMinutes) / 3
 	}
 
 	// Participation utils
@@ -281,7 +319,7 @@ object SolarSieges : IonServerComponent(true) {
 
 	private val participationData = mutableMapOf<UUID, ParticipationData>()
 
-	fun updateParticipation(player: Player, siege: SolarSiege) {
+	private fun updateParticipation(player: Player, siege: SolarSiege) {
 		participationData[player.uniqueId] = ParticipationData(player.uniqueId, siege.databaseId, System.currentTimeMillis())
 	}
 
