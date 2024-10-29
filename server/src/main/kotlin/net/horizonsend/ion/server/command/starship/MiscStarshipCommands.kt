@@ -31,7 +31,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
+import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
