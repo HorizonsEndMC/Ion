@@ -4,6 +4,9 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.utils.text.SPACE_BACKGROUND_CHARACTER
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.repeatString
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
@@ -16,6 +19,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -93,7 +97,7 @@ class NavigationSystemMapGui(val world: World, val player: Player) {
 		planetItems.addAll(Space.getPlanets()
 			.filter { planet -> planet.spaceWorld == world }
 			.sortedBy { planet -> planet.orbitDistance }
-			.map { planet -> GuiItems.CustomItemControlItem(getPlanetItems(planet.name)) {
+			.map { planet -> GuiItems.CustomItemControlItem(getPlanetItems(planet.name), navigationInstructionComponents()) {
 				// TODO: Add click handler here
 			} }
 		)
@@ -102,7 +106,7 @@ class NavigationSystemMapGui(val world: World, val player: Player) {
 		beaconItems.addAll(IonServer.configuration.beacons
 			.filter { beacon -> beacon.spaceLocation.bukkitWorld() == world }
 			.sortedBy { beacon -> beacon.name }
-			.map { beacon -> GuiItems.CustomControlItem(beacon.name, GuiItem.BEACON) {
+			.map { beacon -> GuiItems.CustomControlItem(beacon.name, GuiItem.BEACON, navigationInstructionComponents()) {
 				// TODO: Add click handler here
 			} }
 		)
@@ -111,7 +115,7 @@ class NavigationSystemMapGui(val world: World, val player: Player) {
 		bookmarkItems.addAll(BookmarkCommand.getBookmarks(player)
 			.filter { bookmark -> bookmark.worldName == world.name }
 			.sortedBy { bookmark -> bookmark.name }
-			.map { bookmark -> GuiItems.CustomControlItem(bookmark.name, GuiItem.BOOKMARK) {
+			.map { bookmark -> GuiItems.CustomControlItem(bookmark.name, GuiItem.BOOKMARK, navigationInstructionComponents()) {
 				// TODO: Add click handler here
 			} }
 		)
@@ -196,4 +200,35 @@ class NavigationSystemMapGui(val world: World, val player: Player) {
 			else -> CustomItems.AERACH
 		}
 	}
+
+	private fun navigationInstructionComponents(): List<Component> = listOf(
+		Component.text(repeatString("=", 30)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY),
+		if (world == player.world) initiateJumpComponent() else Component.empty(),
+		setWaypointComponent(),
+		removeWaypointComponent()
+	)
+
+	private fun initiateJumpComponent(): Component = template(
+		"{0} to initiate hyperspace jump to this location",
+		color = HE_LIGHT_GRAY,
+		paramColor = NamedTextColor.AQUA,
+		useQuotesAroundObjects = false,
+		"Left Click"
+	).decoration(TextDecoration.ITALIC, false)
+
+	private fun setWaypointComponent(): Component = template(
+		"{0} to set a route waypoint to this location",
+		color = HE_LIGHT_GRAY,
+		paramColor = NamedTextColor.AQUA,
+		useQuotesAroundObjects = false,
+		"Right Click"
+	).decoration(TextDecoration.ITALIC, false)
+
+	private fun removeWaypointComponent(): Component = template(
+		"{0} to remove the last location from the route",
+		color = HE_LIGHT_GRAY,
+		paramColor = NamedTextColor.AQUA,
+		useQuotesAroundObjects = false,
+		"Shift Click"
+	).decoration(TextDecoration.ITALIC, false)
 }

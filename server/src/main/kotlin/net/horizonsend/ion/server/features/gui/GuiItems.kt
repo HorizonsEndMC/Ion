@@ -40,12 +40,14 @@ object GuiItems {
     class CustomControlItem(
         private val name: String,
         private val customGuiItem: GuiItem,
-        private val callback: () -> Unit
+        private val lore: List<Component>? = null,
+        private val callback: () -> Unit,
     ) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
                 it.setCustomModelData(customGuiItem.customModelData)
                 it.displayName(text(name).decoration(ITALIC, false))
+                it.lore(lore)
             })
         }
 
@@ -57,10 +59,13 @@ object GuiItems {
 
     class CustomItemControlItem(
         private val customItem: CustomItem,
+        private val lore: List<Component>? = null,
         private val callback: () -> Unit
     ) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
-            return ItemBuilder(customItem.constructItemStack())
+            return ItemBuilder(customItem.constructItemStack().updateMeta {
+                it.lore(lore)
+            })
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
