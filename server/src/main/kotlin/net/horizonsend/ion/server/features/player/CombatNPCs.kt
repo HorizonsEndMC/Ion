@@ -71,9 +71,6 @@ object CombatNPCs : IonServerComponent(true) {
 			// if this permission is granted, do not spawn the npc
 			if (player.hasPermission("starlegacy.combatnpc.bypass")) return@listen
 
-			// if they joined less than 10 seconds ago, don't do it
-			if (System.currentTimeMillis() - (lastJoinMap[playerId] ?: 0) < 10000) return@listen
-
 			val inventoryCopy: Array<ItemStack?> = player.inventory.contents
 				.map { item: ItemStack? -> item?.clone() }
 				.toTypedArray()
