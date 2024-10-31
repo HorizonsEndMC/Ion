@@ -17,6 +17,8 @@ import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import java.util.concurrent.TimeUnit
 
 enum class Environment {
@@ -118,6 +120,106 @@ enum class Environment {
 				event.block.setBlockData(event.blockData, false)
 			}
 		}
+	},
+
+	LOW_GRAVITY {
+		override fun tickPlayer(player: Player) {
+			if (player.gameMode != GameMode.SURVIVAL || player.isDead) return
+
+			if (!isInside(player.eyeLocation, 1)) {
+				player.addPotionEffect(PotionEffect(
+					PotionEffectType.LEVITATION,
+					PotionEffect.INFINITE_DURATION,
+					-1,
+					false,
+					false
+				))
+			} else {
+				player.removePotionEffect(PotionEffectType.LEVITATION)
+			}
+		}
+
+		override fun setup() {
+			listen<EntityDamageEvent> { event ->
+				if (!event.entity.world.hasEnvironment()) return@listen
+				if (event.cause != EntityDamageEvent.DamageCause.FALL) return@listen
+
+				event.isCancelled = true
+			}
+		}
+	},
+
+	VERY_HOT {
+		private fun shouldBurn(player: Player): Boolean {
+			if (isWearingSpaceSuit(player)) return false
+			if (checkEnvironment(player)) return false
+
+			if (isInside(player.eyeLocation, 1)) return false
+
+			return true
+		}
+
+		private fun tickBurning(player: Player) {
+			player.addPotionEffect(PotionEffect(
+				PotionEffectType.HUNGER,
+				PotionEffect.INFINITE_DURATION,
+				2,
+				false,
+				false
+			))
+			player.fireTicks = 300
+		}
+
+		override fun tickPlayer(player: Player) {
+			if (player.gameMode != GameMode.SURVIVAL || player.isDead) return
+
+			if (shouldBurn(player)) tickBurning(player) else cleanseBurning(player)
+		}
+	},
+
+	HOT {
+		override fun tickPlayer(player: Player) {
+			if (player.gameMode != GameMode.SURVIVAL || player.isDead) return
+
+			if (isDay(player)) VERY_HOT.tickPlayer(player) else cleanseBurning(player)
+		}
+	},
+
+	VERY_COLD {
+		private fun shouldFreeze(player: Player): Boolean {
+			if (isWearingSpaceSuit(player)) return false
+			if (checkEnvironment(player)) return false
+
+			if (isInside(player.eyeLocation, 1)) return false
+
+			return true
+		}
+
+		private fun tickFreezing(player: Player) {
+			player.addPotionEffect(PotionEffect(
+				PotionEffectType.SLOW_DIGGING,
+				PotionEffect.INFINITE_DURATION,
+				1,
+				false,
+				false
+			))
+			player.lockFreezeTicks(true)
+			player.freezeTicks += 20
+		}
+
+		override fun tickPlayer(player: Player) {
+			if (player.gameMode != GameMode.SURVIVAL || player.isDead) return
+
+			if (shouldFreeze(player)) tickFreezing(player) else cleanseFreezing(player)
+		}
+	},
+
+	COLD {
+		override fun tickPlayer(player: Player) {
+			if (player.gameMode != GameMode.SURVIVAL || player.isDead) return
+
+			if (isNight(player)) VERY_COLD.tickPlayer(player) else cleanseFreezing(player)
+		}
 	}
 
 	;
@@ -128,6 +230,9 @@ enum class Environment {
 	protected fun World.hasEnvironment(): Boolean = this.ion.environments.contains(this@Environment)
 
 	companion object {
+		private const val SUNSET_TIME = 12610
+		private const val SUNRISE_TIME = 23041
+
 		fun isWearingSpaceSuit(player: Player): Boolean {
 			val inventory = player.inventory
 
@@ -135,6 +240,35 @@ enum class Environment {
 				inventory.chestplate?.type == Material.CHAINMAIL_CHESTPLATE &&
 				inventory.leggings?.type == Material.CHAINMAIL_LEGGINGS &&
 				inventory.boots?.type == Material.CHAINMAIL_BOOTS
+		}
+
+		fun checkEnvironment(player: Player): Boolean {
+			val helmet = player.inventory.helmet ?: return false
+
+			if (!PowerArmorManager.hasModule(helmet, PowerArmorModule.ENVIRONMENT)) return false
+
+			val powerUsage = 10
+
+			return getPower(helmet) >= powerUsage
+		}
+
+		fun isNight(player: Player): Boolean {
+			val world = player.world
+			return world.time in SUNSET_TIME..SUNRISE_TIME
+		}
+
+		fun isDay(player: Player): Boolean {
+			val world = player.world
+			return world.time > SUNRISE_TIME || world.time < SUNSET_TIME
+		}
+
+		fun cleanseBurning(player: Player) {
+			player.removePotionEffect(PotionEffectType.HUNGER)
+		}
+
+		fun cleanseFreezing(player: Player) {
+			player.removePotionEffect(PotionEffectType.SLOW_DIGGING)
+			player.lockFreezeTicks(false)
 		}
 	}
 }
