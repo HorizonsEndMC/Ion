@@ -36,7 +36,8 @@ class SettlementZone(
     var trustedNations: Set<Oid<Nation>>? = null,
     var trustedSettlements: Set<Oid<Settlement>>? = null,
     var minBuildAccess: Settlement.ForeignRelation? = null,
-	var allowFriendlyFire: Boolean? = null
+	var allowFriendlyFire: Boolean? = null,
+	var interactableBlocks: Set<String> = setOf()
 ) : DbObject {
 	companion object : OidDbObjectCompanion<SettlementZone>(SettlementZone::class, setup = {
 		ensureIndex(SettlementZone::settlement)
@@ -110,7 +111,8 @@ class SettlementZone(
 					org.litote.kmongo.setValue(SettlementZone::trustedNations, null),
 					org.litote.kmongo.setValue(SettlementZone::trustedSettlements, null),
 					org.litote.kmongo.setValue(SettlementZone::minBuildAccess, null),
-					org.litote.kmongo.setValue(SettlementZone::allowFriendlyFire, null)
+					org.litote.kmongo.setValue(SettlementZone::allowFriendlyFire, null),
+					org.litote.kmongo.setValue(SettlementZone::interactableBlocks, setOf())
 				)
 			} else {
 				// someone bought it -> set owner, unset price (not rent, as the rent must stay for them to be charged)
@@ -166,6 +168,16 @@ class SettlementZone(
 		fun setAllowFriendlyFire(zoneId: Oid<SettlementZone>, value: Boolean) = trx { sess ->
 			require(matches(sess, zoneId, SettlementZone::owner ne null)) { "Zone $zoneId has no owner" }
 			updateById(sess, zoneId, org.litote.kmongo.setValue(SettlementZone::allowFriendlyFire, value))
+		}
+
+		fun addInteractableBlock(zoneId: Oid<SettlementZone>, blockName: String) = trx { sess ->
+			require(matches(sess, zoneId, SettlementZone::owner ne null)) { "Zone $zoneId has no owner" }
+			updateById(sess, zoneId, addToSet(SettlementZone::interactableBlocks, blockName))
+		}
+
+		fun removeInteractableBlock(zoneId: Oid<SettlementZone>, blockName: String) = trx { sess ->
+			require(matches(sess, zoneId, SettlementZone::owner ne null)) { "Zone $zoneId has no owner" }
+			updateById(sess, zoneId, pull(SettlementZone::interactableBlocks, blockName))
 		}
 
 		fun setMinBuildAccess(zoneId: Oid<SettlementZone>, level: Settlement.ForeignRelation): Unit = trx { sess ->
