@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.utils.lpHasPermission
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.npcs.traits.CombatNPCTrait
 import net.horizonsend.ion.server.features.player.CombatNPCs
@@ -29,6 +30,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
+import org.bukkit.block.Jukebox
+import org.bukkit.block.data.Openable
+import org.bukkit.block.data.Powerable
 import org.bukkit.block.data.type.Door
 import org.bukkit.block.data.type.Switch
 import org.bukkit.block.data.type.TrapDoor
@@ -70,12 +74,29 @@ object ProtectionListener : SLEventListener() {
 		// If something ends up getting checked that shouldn't
 		// (e.g. clicking the glass in your cockpit), it could break firing weapons.
 
+		val zone = RegionSettlementZone.getRegionSettlementZone(clickedBlock.location)
+
+		// if there is a settlement zone and the clicked block is allowed on its list of interactable blocks,
+		// do not perform protection checks
+		if (zone != null && isInteractable(clickedBlock) &&
+			zone.interactableBlocks.contains(clickedBlock.blockData.material.toString())) {
+			return true
+		}
+
 		// Manually check these
 		if (clickedBlock.blockData is Switch) return false
 		if (clickedBlock.blockData is TrapDoor) return false
 		if (clickedBlock.blockData is Door) return false
 
 		return clickedBlock.state !is InventoryHolder
+	}
+
+	private fun isInteractable(block: Block): Boolean {
+		// Expand list of interactable blocks as needed
+		return (block !is Jukebox &&
+			(block is InventoryHolder ||
+			block is Openable ||
+			block is Powerable))
 	}
 
 	@EventHandler

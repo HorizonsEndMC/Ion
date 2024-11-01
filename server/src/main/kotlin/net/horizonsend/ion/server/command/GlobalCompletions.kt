@@ -19,6 +19,7 @@ object GlobalCompletions {
 
 		manager.commandCompletions.registerAsyncCompletion( "anyItem") { Bazaars.strings }
 		manager.commandCompletions.setDefaultCompletion("anyItem", AnyItem::class.java)
+		manager.commandCompletions.registerAsyncCompletion("anyBlock") { Material.entries.filter { it.isBlock && !it.isLegacy }.map { it.name } }
 	}
 
 	fun toItemString(item: ItemStack): String {

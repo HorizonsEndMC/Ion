@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import org.bukkit.Location
 import org.bukkit.entity.Player
 
 class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) {
@@ -44,6 +45,7 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 	var trustedSettlements: Set<Oid<Settlement>>? = zone.trustedSettlements; private set
 	var minBuildAccess: Settlement.ForeignRelation? = zone.minBuildAccess; private set
 	var allowFriendlyFire: Boolean? = zone.allowFriendlyFire; private set
+	var interactableBlocks: Set<String> = zone.interactableBlocks; private set
 	override val world: String get() = Regions.get<RegionTerritory>(territory).world
 
 	private fun getRegionTerritory(): RegionTerritory {
@@ -87,6 +89,9 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 		}
 		delta[SettlementZone::allowFriendlyFire]?.let { bson ->
 			allowFriendlyFire = bson.nullable()?.boolean()
+		}
+		delta[SettlementZone::interactableBlocks]?.let { bson ->
+			interactableBlocks = bson.mappedSet { it.string() }
 		}
 	}
 
@@ -152,6 +157,22 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 
 			// this makes the mega lag
 			// SettlementZoneCommand.visualizeRegion(minPoint, maxPoint, player, name.hashCode())
+		}
+	}
+
+	fun getInteractableBlocks(): String {
+		return interactableBlocks.joinToString()
+	}
+
+	companion object {
+		fun getRegionSettlementZone(location: Location): RegionSettlementZone? {
+			val territory: RegionTerritory? = Regions.findFirstOf(location)
+
+			val zone = territory?.children?.firstOrNull { region ->
+				region is RegionSettlementZone && region.contains(location.blockX, location.blockY, location.blockZ)
+			} as? RegionSettlementZone
+
+			return zone
 		}
 	}
 }

@@ -5,9 +5,7 @@ import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
-import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Bukkit
 import org.bukkit.entity.EntityType
@@ -35,12 +33,7 @@ object FriendlyFireListener : SLEventListener() {
 		val damager = event.damager as? Player ?: return
 
 		if (isFriendlyFire(damaged, damager)) {
-			val location = damaged.location
-			val territory: RegionTerritory? = Regions.findFirstOf(location)
-
-			val zone = territory?.children?.firstOrNull { region ->
-				region is RegionSettlementZone && region.contains(location.blockX, location.blockY, location.blockZ)
-			} as? RegionSettlementZone
+			val zone = RegionSettlementZone.getRegionSettlementZone(damaged.location)
 
 			if (zone != null && zone.allowFriendlyFire == true) return
 

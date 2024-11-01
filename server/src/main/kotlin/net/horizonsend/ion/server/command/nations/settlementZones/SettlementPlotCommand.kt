@@ -10,6 +10,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -224,10 +225,53 @@ internal object SettlementPlotCommand : net.horizonsend.ion.server.command.SLCom
 
 	@Subcommand("allowFriendlyFire")
 	@Description("Allow members of the same nation or allies to damage each other")
+	@CommandCompletion("@plots true|false")
+	@Suppress("unused")
 	fun onSetFriendlyFire(sender: Player, zone: RegionSettlementZone, state: Boolean) = asyncCommand(sender) {
 		requireOwnsZone(sender, zone)
 		SettlementZone.setAllowFriendlyFire(zone.id, state)
 		sender msg "&aChanged ${zone.name} to ${if (state) "allow" else "disallow"} friendly fire"
+	}
+
+	@Subcommand("interactableBlocks add")
+	@Description("Allow a block to be interacted with by any player")
+	@CommandCompletion("@plots @anyBlock")
+	@Suppress("unused")
+	fun onAddInteractableBlock(sender: Player, zone: RegionSettlementZone, blockString: String) {
+		requireOwnsZone(sender, zone)
+		val material = validateBlock(blockString)
+		SettlementZone.addInteractableBlock(zone.id, material.name)
+		sender msg "&aAdded $blockString to ${zone.name}'s list of interactable blocks"
+	}
+
+	@Subcommand("interactableBlocks remove")
+	@Description("Remove a block from the list of interactable blocks")
+	@CommandCompletion("@plots @anyBlock")
+	@Suppress("unused")
+	fun onRemoveInteractableBlock(sender: Player, zone: RegionSettlementZone, blockString: String) {
+		requireOwnsZone(sender, zone)
+		val material = validateBlock(blockString)
+		SettlementZone.removeInteractableBlock(zone.id, material.name)
+		sender msg "&aRemoved $blockString from ${zone.name}'s list of interactable blocks"
+	}
+
+	@Subcommand("interactableBlocks list")
+	@Description("Gets list of interactable blocks")
+	@CommandCompletion("@plots")
+	@Suppress("unused")
+	fun onListInteractableBlocks(sender: Player, zone: RegionSettlementZone) {
+		requireOwnsZone(sender, zone)
+		sender.information(zone.getInteractableBlocks())
+	}
+
+	private fun validateBlock(blockString: String): Material {
+		try {
+			val material = Material.matchMaterial(blockString)
+			failIf(material == null || !material.isBlock) { "$blockString is not a block" }
+			return material!! // fails if material is null
+		} catch (e: Exception) {
+			fail { "Invalid block string $blockString! To see a block's string, use /bazaar string" }
+		}
 	}
 
 	@Subcommand("minbuildaccess")
