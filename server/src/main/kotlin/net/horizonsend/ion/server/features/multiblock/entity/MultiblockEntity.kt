@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.entity
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
@@ -170,6 +171,7 @@ abstract class MultiblockEntity(
 		this.structureDirection = movement.displaceFace(structureDirection)
 
 		displaceAdditional(movement)
+		if (this is DisplayMultiblockEntity) this.displayHandler.displace(movement)
 	}
 
 	/**
