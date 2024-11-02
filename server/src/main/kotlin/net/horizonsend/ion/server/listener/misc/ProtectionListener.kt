@@ -79,7 +79,7 @@ object ProtectionListener : SLEventListener() {
 		// if there is a settlement zone and the clicked block is allowed on its list of interactable blocks,
 		// do not perform protection checks
 		if (zone != null && isInteractable(clickedBlock) &&
-			zone.interactableBlocks.contains(clickedBlock.blockData.material.toString())) {
+			zone.interactableBlocks.contains(clickedBlock.blockData.material.name)) {
 			return true
 		}
 
@@ -93,10 +93,10 @@ object ProtectionListener : SLEventListener() {
 
 	private fun isInteractable(block: Block): Boolean {
 		// Expand list of interactable blocks as needed
-		return (block !is Jukebox &&
-			(block is InventoryHolder ||
-			block is Openable ||
-			block is Powerable))
+		return (block.blockData !is Jukebox &&
+			(block.state is InventoryHolder ||
+			block.blockData is Openable ||
+			block.blockData is Powerable))
 	}
 
 	@EventHandler
