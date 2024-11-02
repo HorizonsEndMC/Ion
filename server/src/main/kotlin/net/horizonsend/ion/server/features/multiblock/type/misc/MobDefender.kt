@@ -94,9 +94,7 @@ object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntit
 		z: Int,
 		world: World,
 		signDirection: BlockFace
-	) : MultiblockEntity(manager, x, y, z, world, signDirection) {
-		override val multiblock: Multiblock = MobDefender
-
+	) : MultiblockEntity(manager, MobDefender, x, y, z, world, signDirection) {
 		override fun onLoad() {
 			world.ion.multiblockManager.register(this)
 		}
