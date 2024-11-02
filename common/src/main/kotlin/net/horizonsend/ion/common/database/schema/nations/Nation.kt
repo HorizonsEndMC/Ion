@@ -139,6 +139,8 @@ data class Nation(
 
 			Blueprint.col.updateMany(sess, Blueprint::trustedNations contains id, pull(Blueprint::trustedNations, id))
 
+			SolarSiegeData.col.deleteMany(sess, or(SolarSiegeData::attacker eq id, SolarSiegeData::defender eq id))
+
 			// Remove the nation itself
 			col.deleteOne(sess, idFilterQuery(id))
 		}
