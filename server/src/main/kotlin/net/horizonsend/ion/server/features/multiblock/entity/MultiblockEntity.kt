@@ -33,16 +33,16 @@ import org.bukkit.persistence.PersistentDataAdapterContext
  * @param structureDirection The direction this multiblock is oriented [from the origin]
  **/
 abstract class MultiblockEntity(
-    var manager: MultiblockManager,
+	var manager: MultiblockManager,
+	open val multiblock: Multiblock,
 
-    var x: Int,
-    var y: Int,
-    var z: Int,
-    var world: World,
+	var x: Int,
+	var y: Int,
+	var z: Int,
+	var world: World,
 
-    var structureDirection: BlockFace
+	var structureDirection: BlockFace
 ): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion> {
-	abstract val multiblock: Multiblock
 	private var lastRetrieved = System.currentTimeMillis()
 
 	/** Gets the time since this value was last retrieved */
