@@ -60,8 +60,8 @@ class SolarSiege(
 	fun formatName(): Component {
 		return template(
 			text("{0}'s siege of {1}'s Solar Siege Zone in {2}", HE_MEDIUM_GRAY),
-			formatNationName(attacker),
-			region.nation?.let { formatNationName(it) } ?: text("None"),
+			attackerNameFormatted,
+			defenderNameFormatted,
 			region.world
 		)
 	}
@@ -134,8 +134,8 @@ class SolarSiege(
 		if (isPreparationPeriod() && !disableEarlyCheck) {
 			Notify.chatAndEvents(template(
 				text("{0} has abandoned their upcoming siege of {1}'s Solar Siege Zone in {2}"),
-				formatNationName(attacker),
-				region.nation?.let { formatNationName(it) } ?: text("None"),
+				attackerNameFormatted,
+				defenderNameFormatted,
 				region.world
 			))
 
@@ -208,4 +208,7 @@ class SolarSiege(
 		SolarSieges.removeActive(this)
 		SolarSiegeData.markComplete(databaseId)
 	}
+
+	val defenderNameFormatted = formatNationName(defender)
+	val attackerNameFormatted = formatNationName(attacker)
 }
