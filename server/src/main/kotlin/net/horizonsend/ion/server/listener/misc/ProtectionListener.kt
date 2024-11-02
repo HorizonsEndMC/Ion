@@ -24,10 +24,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.component1
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.component2
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.component3
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.component4
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Location
@@ -147,8 +143,7 @@ object ProtectionListener : SLEventListener() {
 
 		if (isRegionDenied(player, location)) denied = true
 
-		val (world, x, y, z) = location
-		val shipContaining = DeactivatedPlayerStarships.getContaining(world, x.toInt(), y.toInt(), z.toInt())
+		val shipContaining = DeactivatedPlayerStarships.getContaining(location.world, location.blockX, location.blockY, location.blockZ)
 
 		// Need to also check for null
 		if (shipContaining !is PlayerStarshipData?) return true
