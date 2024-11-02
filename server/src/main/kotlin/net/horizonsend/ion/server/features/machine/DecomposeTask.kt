@@ -29,7 +29,7 @@ class DecomposeTask(
 ) : BukkitRunnable() {
 	private var totalBlocksBroken = 0
 
-	private var currentBlock: Block = entity.getOrigin()
+	private var currentBlock: Block = entity.getBlockRelative(1, 1, 1)
 
 	private val displayItem = ItemStack(GRAY_CONCRETE)
 
