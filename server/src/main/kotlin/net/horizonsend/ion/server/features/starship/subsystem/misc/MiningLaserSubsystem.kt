@@ -41,7 +41,7 @@ class MiningLaserSubsystem(
 	override val entity: MiningLaserMultiblock.MiningLaserMultiblockEntity,
 ) : WeaponSubsystem(starship, entity.vec3i), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
 
-	val multiblock = entity.poweredMultiblock
+	val multiblock = entity.multiblock
 	override var face: BlockFace = entity.structureDirection
 
 	override val balancing: StarshipWeapons.StarshipWeapon = StarshipWeapons.StarshipWeapon(

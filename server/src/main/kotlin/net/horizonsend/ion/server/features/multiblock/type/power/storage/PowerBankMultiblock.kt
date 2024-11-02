@@ -4,19 +4,23 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers.newMultiblockSignOverlay
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.persistence.PersistentDataAdapterContext
 
 abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredMultiblock<PowerBankMultiblock.PowerBankEntity>, InteractableMultiblock {
 	abstract val tierMaterial: Material
@@ -108,19 +112,41 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 	}
 
 	class PowerBankEntity(
-        data: PersistentMultiblockData,
-        manager: MultiblockManager,
-        override val poweredMultiblock: PowerBankMultiblock,
-        x: Int,
-        y: Int,
-        z: Int,
-        world: World,
-        structureDirection: BlockFace
-	) : SimplePoweredMultiblockEntity(data, manager, poweredMultiblock, x, y, z, world, structureDirection), LegacyMultiblockEntity {
-		override val displayHandler = newMultiblockSignOverlay(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		override val multiblock: PowerBankMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
+		override val powerStorage: PowerStorage = loadStoredPower(data)
+
+		private val displayHandler = newMultiblockSignOverlay(
 			this,
 			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
 		).register()
+
+		override fun onLoad() {
+			displayHandler.update()
+		}
+
+		override fun onUnload() {
+			displayHandler.remove()
+		}
+
+		override fun handleRemoval() {
+			displayHandler.remove()
+		}
+
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
+		}
+
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			savePowerData(store)
+		}
 
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
