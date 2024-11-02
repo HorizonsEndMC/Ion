@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.nations.sieges
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
@@ -59,6 +60,8 @@ object SolarSieges : IonServerComponent(true) {
 		tryLoadSieges()
 		Tasks.asyncRepeat(60L, 60L) { getAllActiveSieges().filter { it.needsSave }.forEach(SolarSiege::saveSiegeData) }
 		Tasks.asyncRepeat(20L * 60L, 20L * 60L, ::processPassivePoints)
+
+		Nation.watchDeletes { handleNationDisband(it.oid) }
 	}
 
 	private val preparationSieges = mutableMapOf<Oid<SolarSiegeData>, SolarSiege>()
@@ -155,7 +158,7 @@ object SolarSieges : IonServerComponent(true) {
 	 **/
 	private fun initSiege(region: RegionSolarSiegeZone, attackerName: String, attackerNation: Oid<Nation>): Boolean {
 		val defender = checkNotNull(region.nation)
-		val siegeData = SolarSiegeData.new(region.id, attackerNation)
+		val siegeData = SolarSiegeData.new(region.id, attackerNation, defender)
 
 		val siege = SolarSiege(
 			siegeData,
@@ -376,5 +379,11 @@ object SolarSieges : IonServerComponent(true) {
 		if (siege.isActivePeriod()) {
 			activeSieges[id] = siege
 		}
+	}
+
+	/** Better to deal with it */
+	private fun handleNationDisband(id: Oid<Nation>) {
+		getAllSieges().filter { it.defender == id }.forEach { it.fail(); it.removeActive() }
+		getAllSieges().filter { it.attacker == id }.forEach { it.succeed(); it.removeActive() }
 	}
 }
