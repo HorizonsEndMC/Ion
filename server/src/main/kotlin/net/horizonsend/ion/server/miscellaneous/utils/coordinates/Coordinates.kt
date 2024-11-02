@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.miscellaneous.utils.coordinates
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.minecraft.core.BlockPos
-import net.minecraft.world.level.ChunkPos
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -26,18 +25,11 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-val Block.coordinates: Vec3i get() = Vec3i(x, y, z)
-
 fun Location.isInRange(location: Location, radius: Double): Boolean = distanceSquared(location) <= radius.squared()
 
 fun Location.add(x: Int, y: Int, z: Int): Location = add(x.toDouble(), y.toDouble(), z.toDouble())
 fun Location.add(trio: Vec3i): Location = add(trio.x.toDouble(), trio.y.toDouble(), trio.z.toDouble())
 fun Location.add(face: BlockFace): Location = add(face.modX, face.modY, face.modZ)
-
-operator fun Location.component1(): World = this.world
-operator fun Location.component2(): Double = this.x
-operator fun Location.component3(): Double = this.y
-operator fun Location.component4(): Double = this.z
 
 fun BlockPos.toVec3i() = Vec3i(this.x, this.y, this.z)
 
@@ -338,35 +330,11 @@ fun isInside(location: Location, extraChecks: Int): Boolean {
 	return true
 }
 
-fun BlockPos.toVector() = Vector(this.x, this.y, this.z)
-
 fun BlockPos.toLocation(world: World?) = Location(world, this.x.toDouble(), this.y.toDouble(), this.z.toDouble())
 
 fun Location.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
 
 fun Location.toVector3f(): Vector3f = Vector3f(this.x.toFloat(), this.y.toFloat(), this.z.toFloat())
-
-operator fun BlockPos.component1(): Int = this.x
-
-operator fun BlockPos.component2(): Int = this.y
-
-operator fun BlockPos.component3(): Int = this.z
-
-operator fun BlockPos.minus(other: BlockPos) = BlockPos(this.x - other.x, this.y - other.y, this.z - other.z)
-
-operator fun Triple<Int, Int, Int>.minus(other: Triple<Int, Int, Int>) = Triple(this.first - other.first, this.second - other.second, this.third - other.third)
-
-operator fun ChunkPos.component1(): Int = this.x
-
-operator fun ChunkPos.component2(): Int = this.z
-
-fun Vector.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
-
-fun getChunkSection(minHeight: Int, maxHeight: Int, y: Int): Int {
-	check(y in minHeight..maxHeight)
-
-	return (y - minHeight).shr(4)
-}
 
 fun vectorToBlockFace(vector: Vector, includeVertical: Boolean = false): BlockFace {
 	val x = vector.x
