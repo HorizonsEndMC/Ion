@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.transport.old.pipe.filter.Filters
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.coordinates
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
@@ -20,14 +19,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.ungzip
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.Material
 import org.bukkit.World
-import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.DaylightDetector
-import org.bukkit.event.EventPriority
-import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import org.bukkit.inventory.InventoryHolder
@@ -55,20 +50,6 @@ object Extractors : IonServerComponent() {
 
 		Tasks.asyncRepeat(20 * 2, 20 * 2) {
 			worldDataMap.keys.forEach { saveExtractors(it) }
-		}
-
-		listen<BlockPlaceEvent>(priority = EventPriority.MONITOR, ignoreCancelled = true) { event ->
-			val block: Block = event.block
-
-			if (block.type == EXTRACTOR_BLOCK) {
-				add(block.world, block.coordinates)
-			}
-		}
-
-		listen<BlockBreakEvent>(priority = EventPriority.MONITOR, ignoreCancelled = true) { event ->
-			val block: Block = event.block
-
-			remove(block.world, block.coordinates)
 		}
 
 		listen<WorldLoadEvent> { event -> loadExtractors(event.world) }
