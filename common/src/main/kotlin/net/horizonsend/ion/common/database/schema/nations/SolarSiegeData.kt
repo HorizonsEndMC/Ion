@@ -23,6 +23,7 @@ data class SolarSiegeData(
 
 	val zone: Oid<SolarSiegeZone>,
 	val attacker: Oid<Nation>,
+	val defender: Oid<Nation>,
 
 	val attackerPoints: Int = 0,
 	val defenderPoints: Int = 0,
@@ -34,9 +35,9 @@ data class SolarSiegeData(
 	companion object : OidDbObjectCompanion<SolarSiegeData>(SolarSiegeData::class, setup = {
 		ensureIndex(SolarSiegeData::declareTime)
 	}) {
-		fun new(zone: Oid<SolarSiegeZone>, attacker: Oid<Nation>): Oid<SolarSiegeData> = trx { sess ->
+		fun new(zone: Oid<SolarSiegeZone>, attacker: Oid<Nation>, defender: Oid<Nation>): Oid<SolarSiegeData> = trx { sess ->
 			val id = objId<SolarSiegeData>()
-			col.insertOne(sess, SolarSiegeData(id, zone, attacker))
+			col.insertOne(sess, SolarSiegeData(id, zone, attacker, defender))
 
 			return@trx id
 		}
