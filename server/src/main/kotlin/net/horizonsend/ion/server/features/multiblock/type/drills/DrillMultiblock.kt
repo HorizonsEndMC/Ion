@@ -8,11 +8,13 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity.UserManager
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -20,6 +22,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
@@ -119,22 +122,18 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 	}
 
 	class DrillMultiblockEntity(
-        data: PersistentMultiblockData,
-        manager: MultiblockManager,
-        override val poweredMultiblock: DrillMultiblock,
-        x: Int,
-        y: Int,
-        z: Int,
-        world: World,
-        structureDirection: BlockFace,
-	) : SimplePoweredMultiblockEntity(data, manager, poweredMultiblock, x, y, z, world, structureDirection), UserManagedMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		override val multiblock: DrillMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace,
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, UserManagedMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val tickingManager: TickingManager = TickingManager(interval = 5)
 		override val userManager: UserManager = UserManager(data, persistent = true)
-
-		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
-			this,
-			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
-		).register()
 
 		override fun tick() {
 			val player = userManager.getUserPlayer() ?: return disable()
@@ -220,7 +219,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		}
 
 		private fun getBlocksToDestroy(): MutableList<Block> {
-			val toDestroy = getSquareRegion(4, 0, 0, poweredMultiblock.radius, 1) {
+			val toDestroy = getSquareRegion(4, 0, 0, multiblock.radius, 1) {
 				it.type == Material.AIR || it.type == Material.BEDROCK
 			}
 
@@ -236,7 +235,28 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 			userManager.saveUserData(store)
-			super.storeAdditionalData(store, adapterContext)
+			savePowerData(store)
+		}
+
+		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
+		).register()
+
+		override fun onLoad() {
+			displayHandler.update()
+		}
+
+		override fun onUnload() {
+			displayHandler.remove()
+		}
+
+		override fun handleRemoval() {
+			displayHandler.remove()
+		}
+
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
 		}
 
 		override fun loadFromSign(sign: Sign) {

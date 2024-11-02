@@ -10,16 +10,19 @@ import net.horizonsend.ion.server.features.client.display.modular.display.PowerE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplay
 import net.horizonsend.ion.server.features.machine.DecomposeTask
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity.UserManager
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.listener.misc.ProtectionListener.isRegionDenied
 import net.horizonsend.ion.server.miscellaneous.utils.CHISELED_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -71,13 +74,13 @@ object DecomposerMultiblock : Multiblock(), NewPoweredMultiblock<DecomposerMulti
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredMultiblockEntity(data, manager, DecomposerMultiblock, x, y, z, world, structureDirection), LegacyMultiblockEntity, StatusMultiblockEntity, UserManagedMultiblockEntity {
-		override val poweredMultiblock = DecomposerMultiblock
-
+	) : MultiblockEntity(manager, DecomposerMultiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, LegacyMultiblockEntity, StatusMultiblockEntity, UserManagedMultiblockEntity {
+		override val multiblock = DecomposerMultiblock
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 		override val userManager: UserManager = UserManager(data, false)
 
-		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
 			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.45f),
 			StatusDisplay(statusManager, +0.0, -0.10, +0.0, 0.45f)
@@ -134,6 +137,22 @@ object DecomposerMultiblock : Multiblock(), NewPoweredMultiblock<DecomposerMulti
 		}
 
 		fun getStorage() = getInventory(0, -1, -1)
+
+		override fun onLoad() {
+			displayHandler.update()
+		}
+
+		override fun onUnload() {
+			displayHandler.remove()
+		}
+
+		override fun handleRemoval() {
+			displayHandler.remove()
+		}
+
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
+		}
 
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
