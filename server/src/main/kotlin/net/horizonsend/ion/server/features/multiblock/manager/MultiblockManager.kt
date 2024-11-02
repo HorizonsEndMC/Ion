@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.manager
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
@@ -45,6 +46,7 @@ abstract class MultiblockManager(val log: Logger) {
 		multiblockEntities[entity.locationKey] = entity
 
 		entity.onLoad()
+		if (entity is DisplayMultiblockEntity) entity.displayHandler.update()
 
 		if (entity is SyncTickingMultiblockEntity) {
 			syncTickingMultiblockEntities[entity.locationKey] = entity
@@ -70,6 +72,7 @@ abstract class MultiblockManager(val log: Logger) {
 		asyncTickingMultiblockEntities.remove(key)
 
 		entity?.handleRemoval()
+		if (this is DisplayMultiblockEntity) this.displayHandler.remove()
 
 		return entity
 	}
