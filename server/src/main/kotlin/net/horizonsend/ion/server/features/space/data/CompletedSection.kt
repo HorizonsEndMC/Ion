@@ -3,8 +3,6 @@ package net.horizonsend.ion.server.features.space.data
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.BLOCKS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.PALETTE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Y
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.component1
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.component2
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.chunk.LevelChunk
@@ -54,9 +52,8 @@ data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, val
 
 		val section = levelChunk.sections[y - worldMin]
 
-		val (chunkX, chunkZ) = levelChunk.pos
-		val chunkAbsoluteX = chunkX.shl(4)
-		val chunkAbsoluteZ = chunkZ.shl(4)
+		val chunkAbsoluteX = levelChunk.pos.x.shl(4)
+		val chunkAbsoluteZ = levelChunk.pos.z.shl(4)
 		val sectionAbsoluteY = (y - worldMin).shl(4)
 
 		for (x in 0..15) {
