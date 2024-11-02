@@ -10,7 +10,13 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.utils.text.lineBreak
+import net.horizonsend.ion.common.utils.text.minecraftLength
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.repeatString
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
@@ -18,7 +24,13 @@ import net.horizonsend.ion.server.features.nations.sieges.SolarSiege
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.sieges.StationSieges
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.kyori.adventure.text.Component.newline
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.entity.Player
+import kotlin.math.max
+import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 @CommandAlias("siege")
 object SiegeCommand : SLCommand() {
@@ -75,10 +87,55 @@ object SiegeCommand : SLCommand() {
 		fail { "You aren't a participant of this siege!" }
 	}
 
-	@Subcommand("abandon")
+	private const val WIDTH = 48
+
+	@Subcommand("status")
 	@CommandCompletion("@solarSieges")
 	fun onStatus(sender: Player, siege: SolarSiege) {
-		sender.information("Attacker points: ${siege.attackerPoints}")
-		sender.information("Defender points: ${siege.defenderPoints}")
+		failIf(siege.isPreparationPeriod()) { "That siege has not yet started!" }
+		failIf(siege.isAbandoned) { "That siege has ended!" }
+
+		val lineBreak = lineBreak(48)
+		val totalWidth = lineBreak.minecraftLength + 8
+
+		val totalPoints = (siege.defenderPoints + siege.attackerPoints).toDouble()
+		val attackerWidth = ((siege.attackerPoints.toDouble() / max(totalPoints, 1.0)) * WIDTH).roundToInt()
+		val defenderWidth = ((siege.defenderPoints.toDouble() / max(totalPoints, 1.0)) * WIDTH).roundToInt()
+
+		val attackerColor = NationCache[siege.attacker].textColor
+		val defenderColor = NationCache[siege.defender].textColor
+
+		val guiText = GuiText("", guiWidth = totalWidth, initialShiftDown = -1)
+
+		guiText.add(text(repeatString("=", attackerWidth), attackerColor), 0, GuiText.TextAlignment.LEFT)
+		guiText.add(text(repeatString("=", defenderWidth), defenderColor), 0, GuiText.TextAlignment.RIGHT)
+
+		guiText.add(siege.attackerNameFormatted, 1, GuiText.TextAlignment.LEFT)
+		guiText.add(siege.defenderNameFormatted, 1, GuiText.TextAlignment.RIGHT)
+
+		guiText.add(text(siege.attackerPoints, attackerColor), 2, GuiText.TextAlignment.LEFT)
+		guiText.add(text(siege.defenderPoints, defenderColor), 2, GuiText.TextAlignment.RIGHT)
+
+		val remaining = siege
+			.getRemainingTime()
+			.toSeconds() // Get seconds value
+			.seconds // Convert to kotlin duration
+			.toComponents { hours, minutes, seconds, _ -> // Format string
+				"$hours Hour${if (hours == 1L) "" else "s"} $minutes Minute${if (minutes == 1) "" else "s"} $seconds Second${if (seconds == 1) "" else "s"}"
+			}
+
+		guiText.add(text("$remaining remaining", YELLOW), 3, GuiText.TextAlignment.CENTER)
+		guiText.add(template(text("{0}'s siege of {1}'s Solar Siege Zone {2}", YELLOW), siege.defenderNameFormatted, siege.attackerNameFormatted, siege.region.name), -1, GuiText.TextAlignment.CENTER)
+
+		sender.sendMessage(ofChildren(
+			lineBreak, newline(),
+			guiText.build(),
+			newline(),
+			newline(),
+			newline(),
+			newline(),
+			newline(),
+			lineBreak
+		))
 	}
 }
