@@ -6,11 +6,11 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import org.bukkit.persistence.PersistentDataType
 
 interface PoweredMultiblockEntity {
-	val poweredMultiblock: NewPoweredMultiblock<*>
+	val multiblock: NewPoweredMultiblock<*>
 	val powerStorage: PowerStorage
 
 	fun loadStoredPower(data: PersistentMultiblockData): PowerStorage {
-		return PowerStorage(this, data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0), poweredMultiblock.maxPower)
+		return PowerStorage(this, data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0), multiblock.maxPower)
 	}
 
 	fun savePowerData(store: PersistentMultiblockData) {

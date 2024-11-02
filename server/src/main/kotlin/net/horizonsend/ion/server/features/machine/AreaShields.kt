@@ -31,7 +31,7 @@ object AreaShields : IonServerComponent() {
 		val shields = location.world.ion.multiblockManager[AreaShield.AreaShieldEntity::class]
 
 		return shields.filter {
-			val radius = it.poweredMultiblock.radius + explosionSize
+			val radius = it.multiblock.radius + explosionSize
 			val shieldLoc = it.location
 
 			return@filter shieldLoc.world == location.world && shieldLoc.isInRange(location, radius) && !it.removed
