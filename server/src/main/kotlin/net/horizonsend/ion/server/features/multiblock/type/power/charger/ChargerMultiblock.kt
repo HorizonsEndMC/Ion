@@ -7,13 +7,16 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.custo
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -21,6 +24,7 @@ import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataAdapterContext
 
 abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPoweredMultiblock<ChargerMultiblock.ChargerEntity>, FurnaceMultiblock {
 	protected abstract val tierMaterial: Material
@@ -90,16 +94,18 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 	}
 
 	class ChargerEntity(
-        data: PersistentMultiblockData,
-        manager: MultiblockManager,
-        override val poweredMultiblock: ChargerMultiblock,
-        x: Int,
-        y: Int,
-        z: Int,
-        world: World,
-        signDirection: BlockFace,
-	) : SimplePoweredMultiblockEntity(data, manager, poweredMultiblock, x, y, z, world, signDirection), LegacyMultiblockEntity {
-		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		override val multiblock: ChargerMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		signDirection: BlockFace,
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, signDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
+		override val powerStorage: PowerStorage = loadStoredPower(data)
+
+		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
 			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
 		).register()
@@ -138,7 +144,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 				return
 			}
 
-			var multiplier = poweredMultiblock.powerPerSecond
+			var multiplier = multiblock.powerPerSecond
 			multiplier /= item.amount
 
 			if (item.amount * multiplier > power) return
@@ -154,8 +160,28 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), NewPowere
 			event.burnTime = 20
 		}
 
+		override fun onLoad() {
+			displayHandler.update()
+		}
+
+		override fun handleRemoval() {
+			displayHandler.remove()
+		}
+
+		override fun onUnload() {
+			displayHandler.remove()
+		}
+
+		override fun displaceAdditional(movement: StarshipMovement) {
+			displayHandler.displace(movement)
+		}
+
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			savePowerData(store)
+		}
+
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
 		}
-    }
+	}
 }
