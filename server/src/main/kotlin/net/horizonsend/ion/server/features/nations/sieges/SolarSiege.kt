@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
+import java.time.Duration
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
@@ -97,6 +98,8 @@ class SolarSiege(
 	fun getSiegeEnd(): Long {
 		return getActivePeriodStart() + config.activeWindowDuration.toDuration().toMillis()
 	}
+
+	fun getRemainingTime(): Duration = Duration.ofMillis(getSiegeEnd() - System.currentTimeMillis())
 
 	/**
 	 * @param disableEarlyCheck: Disables premature ending check which triggers abandon message

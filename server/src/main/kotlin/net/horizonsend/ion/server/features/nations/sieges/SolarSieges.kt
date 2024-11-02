@@ -362,8 +362,8 @@ object SolarSieges : IonServerComponent(true) {
 			region,
 			data.attacker,
 			data.attackerPoints,
-			region.nation!!,
-			data.attackerPoints,
+			data.defender,
+			data.defenderPoints,
 			SolarSiegeData.findPropById(id, SolarSiegeData::declareTime)!!.time
 		)
 
