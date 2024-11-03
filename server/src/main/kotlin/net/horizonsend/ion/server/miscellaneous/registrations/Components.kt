@@ -231,7 +231,6 @@ val components: List<IonComponent> = listOf(
 	ContactsJammingSidebar,
 	CombatTimer,
 	WorldEditListener,
-	TransportManager,
 	DisplayHandlers,
 	Halloweeeeeen,
 	PlanetTeleportCooldown,

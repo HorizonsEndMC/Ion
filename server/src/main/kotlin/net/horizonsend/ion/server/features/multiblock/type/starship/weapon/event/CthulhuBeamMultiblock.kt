@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event
+package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
