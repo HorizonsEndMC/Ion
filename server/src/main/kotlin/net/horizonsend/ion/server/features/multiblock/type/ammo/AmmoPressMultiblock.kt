@@ -4,20 +4,35 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.custo
 import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.machine.PowerMachines
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
+import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity.StatusManager
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
-import org.bukkit.block.Furnace
+import org.bukkit.Material.matchMaterial
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
-import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataAdapterContext
 import java.lang.Integer.min
 
-abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+abstract class AmmoPressMultiblock : Multiblock(), NewPoweredMultiblock<AmmoPressMultiblock.AmmoPressMultiblockEntity> {
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -123,56 +138,84 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 		line4 = null
 	)
 
-	override fun onFurnaceTick(
-		event: FurnaceBurnEvent,
-		furnace: Furnace,
-		sign: Sign
-	) {
-		val smelting = furnace.inventory.smelting
-		val fuel = furnace.inventory.fuel
-		val fuelCustomItem = fuel?.customItem
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AmmoPressMultiblockEntity {
+		return AmmoPressMultiblockEntity(data, manager, this, x, y, z, world, structureDirection)
+	}
 
-		if (PowerMachines.getPower(sign) == 0 ||
-			smelting == null ||
-			smelting.type != Material.PRISMARINE_CRYSTALS ||
-			fuel == null ||
-			fuelCustomItem == null
-		) {
-			return
-		}
+	class AmmoPressMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		override val multiblock: AmmoPressMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace,
+	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, PoweredMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity,
+		DisplayMultiblockEntity {
+		override val powerStorage: PowerStorage = loadStoredPower(data)
+		override val tickingManager: TickingManager = TickingManager(interval = 20)
+		override val statusManager: StatusManager = StatusManager()
+
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.45f),
+			StatusDisplay(statusManager, +0.0, -0.10, +0.0, 0.45f)
+		).register()
+
+		override fun tick() {
+			val furnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return sleepWithStatus(text("No Furnace!"), 250)
+			val smelting = furnaceInventory.smelting
+			val fuel = furnaceInventory.fuel
+			val fuelCustomItem = fuel?.customItem
+
+			if (powerStorage.getPower() == 0 ||
+				smelting == null ||
+				smelting.type != Material.PRISMARINE_CRYSTALS ||
+				fuel == null ||
+				fuelCustomItem == null
+			) {
+				return
+			}
 
 		if (!fuelCustomItem.hasComponent(CustomComponentTypes.AMMUNITION_STORAGE)) return
 		val ammoComponent = fuelCustomItem.getComponent(CustomComponentTypes.AMMUNITION_STORAGE)
 		val ammoRefillAttribute = fuelCustomItem.getAttributes(fuel).filterIsInstance<AmmunitionRefillType>().firstOrNull() ?: return
 
-		// deposit blaster/magazine into output if full
-		if (ammoComponent.getAmmo(fuel) == ammoComponent.balancingSupplier.get().capacity) {
-			val result = furnace.inventory.result
-			if (result != null && result.type != Material.AIR) return
-			furnace.inventory.result = event.fuel
-			furnace.inventory.fuel = null
-			return
+			// deposit blaster/magazine into output if full
+			if (ammoComponent.getAmmo(fuel) == ammoComponent.balancingSupplier.get().capacity) {
+				val result = furnaceInventory.result
+				if (result != null && result.type != Material.AIR) return
+				furnaceInventory.result = furnaceInventory.fuel
+				furnaceInventory.fuel = null
+				return
+			}
+
+			// refill item check
+			val inventory = getInventory(0, 0, 6) ?: return
+			val typeRefill = matchMaterial(fuelCustomItem.getTypeRefill()) ?: return
+			if (!inventory.containsAtLeast(ItemStack(typeRefill), 1)) return
+
+			tickingManager.sleep(200)
+			furnaceInventory.holder?.burnTime = 200
+			furnaceInventory.holder?.update()
+
+			val ammoToSet = min(
+				ammoComponent.balancingSupplier.get().capacity - ammoComponent.getAmmo(fuel),
+				ammoComponent.balancingSupplier.get().ammoPerRefill
+			)
+			ammoComponent.setAmmo(fuel, fuelCustomItem, ammoComponent.getAmmo(fuel) + ammoToSet)
+			inventory.removeItemAnySlot(ItemStack(typeRefill))
+			powerStorage.removePower(250)
+			powerStorage.removePower(250)
 		}
 
-		// refill item check
-		val direction = sign.getFacing().oppositeFace
-		val state = sign.block.getRelative(direction, 7).getState(false)
-			as? InventoryHolder ?: return
-		val inventory = state.inventory
-		val typeRefill = ammoRefillAttribute.type
-		if (!inventory.containsAtLeast(ItemStack(typeRefill), 1)) return
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			savePowerData(store)
+		}
 
-		event.isBurning = false
-		event.burnTime = 200
-		furnace.cookTime = (-1000).toShort()
-		event.isCancelled = false
-
-		val ammoToSet = min(
-			ammoComponent.balancingSupplier.get().capacity - ammoComponent.getAmmo(fuel),
-			ammoComponent.balancingSupplier.get().ammoPerRefill
-		)
-		ammoComponent.setAmmo(fuel, fuelCustomItem, ammoComponent.getAmmo(fuel) + ammoToSet)
-		inventory.removeItemAnySlot(ItemStack(typeRefill))
-		PowerMachines.removePower(sign, 250)
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
 	}
 }
