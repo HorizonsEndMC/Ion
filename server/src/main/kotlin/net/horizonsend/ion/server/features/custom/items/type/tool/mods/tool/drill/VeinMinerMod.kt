@@ -7,12 +7,15 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModif
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.general.AOEDMod
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration
-import net.minecraft.core.BlockPos
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import java.util.ArrayDeque
@@ -46,7 +49,7 @@ class VeinMinerMod(
 		val visited = mutableMapOf<Long, Block>()
 
 		// Jumpstart the queue by adding the origin block
-		val originKey = BlockPos.asLong(origin.x, origin.y, origin.z)
+		val originKey = toBlockKey(origin.x, origin.y, origin.z)
 		visited[originKey] = origin
 		queue.push(originKey)
 
@@ -59,9 +62,9 @@ class VeinMinerMod(
 			if (visited.count() > depth) break
 
 			val key = queue.removeFirst()
-			val x = BlockPos.getX(key)
-			val y = BlockPos.getY(key)
-			val z = BlockPos.getZ(key)
+			val x = getX(key)
+			val y = getY(key)
+			val z = getZ(key)
 
 			// Do not allow checking blocks larger than render distance
 			val block = origin.world.getBlockAt(x, y, z)
@@ -82,7 +85,7 @@ class VeinMinerMod(
 					continue
 				}
 
-				val key1 = BlockPos.asLong(adjacentX, adjacentY, adjacentZ)
+				val key1 = toBlockKey(adjacentX, adjacentY, adjacentZ)
 
 				if (visited.containsKey(key1)) continue
 
