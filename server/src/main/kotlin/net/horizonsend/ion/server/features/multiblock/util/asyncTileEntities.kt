@@ -5,22 +5,13 @@ import org.bukkit.block.BlockState as BukkitBlockState
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.future.asDeferred
-import net.horizonsend.ion.server.features.multiblock.util.BlockSnapshot.Companion.getBlockSnapshot
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
-import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Bukkit
-import org.bukkit.ChunkSnapshot
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -31,49 +22,6 @@ import org.bukkit.craftbukkit.v1_20_R3.block.CraftBlockStates
 import org.bukkit.craftbukkit.v1_20_R3.block.data.CraftBlockData
 import org.bukkit.craftbukkit.v1_20_R3.util.CraftMagicNumbers
 import java.lang.reflect.Method
-
-/**
- * X and Z in real coordinates
- **/
-suspend fun getChunkSnapshotAsync(world: World, x: Int, z: Int, loadChunks: Boolean = false): ChunkSnapshot? {
-	val chunk = if (loadChunks) {
-		world.getChunkAtAsync(x shr 4, z shr 4).asDeferred().await()
-	} else {
-		world.getChunkAtIfLoaded(x shr 4, z shr 4) ?: return null
-	}
-
-	return chunk.chunkSnapshot
-}
-
-/** Retrieves a snapshot of an async block */
-suspend fun getBlockSnapshotAsync(world: World, x: Int, y: Int, z: Int, loadChunks: Boolean = false): BlockSnapshot? {
-	val chunkX = x.shr(4)
-	val chunkZ = z.shr(4)
-
-	if (world.isChunkLoaded(chunkX, chunkZ)) {
-		val type = getBlockTypeSafe(world, x, y, z) ?: return null
-		val data = getBlockDataSafe(world, x, y, z) ?: return null
-
-		return BlockSnapshot(world, x, y, z, type, data)
-	}
-
-	if (!loadChunks) return null
-
-	val chunk = world.getChunkAtAsync(x, z).asDeferred().await()
-	val state = chunk.minecraft.getBlockState(x, y, z)
-
-	return BlockSnapshot(world, x, y, z, state.bukkitMaterial, CraftBlockData.fromData(state))
-}
-
-/** Retrieves a snapshot of an async block */
-suspend fun getBlockSnapshotAsync(world: World, key: Long, loadChunks: Boolean = false): BlockSnapshot? {
-	val x = getX(key)
-	val y = getY(key)
-	val z = getZ(key)
-	return getChunkSnapshotAsync(world, x, z, loadChunks)?.getBlockSnapshot(x, y, z)
-}
-
-suspend fun <K, V> Map<K, Deferred<V>>.awaitAllValues(): Map<K, V> = if (isEmpty()) mapOf() else mapValues { (_, v) -> v.await() }
 
 fun getNMSTileEntity(block: Block, loadChunks: Boolean): BlockEntity? {
 	val serverLevel: ServerLevel = block.world.minecraft
@@ -96,9 +44,9 @@ fun getNMSTileEntity(block: Block, loadChunks: Boolean): BlockEntity? {
 	return chunk.getBlockEntity(blockPos)
 }
 
-@Suppress("UNCHECKED_CAST")
-fun <T: BlockEntity> getAndCastNMSTileEntity(block: Block, loadChunks: Boolean): T? = getNMSTileEntity(block, loadChunks) as? T
-
+/**
+ * Please don't use this unless it is necessary
+ **/
 fun getBukkitBlockState(block: Block, loadChunks: Boolean) : BukkitBlockState? {
 	// If this is the main thread, we don't need to do laggy reflection
 	if (Bukkit.isPrimaryThread()) {

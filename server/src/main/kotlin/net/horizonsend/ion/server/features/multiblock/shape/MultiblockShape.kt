@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BATTLECRUI
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_CASING
-import net.horizonsend.ion.server.features.multiblock.util.getBlockSnapshotAsync
 import net.horizonsend.ion.server.features.transport.old.Extractors
 import net.horizonsend.ion.server.features.transport.old.Wires
 import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
@@ -43,7 +42,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.isWool
 import net.minecraft.world.level.block.AbstractFurnaceBlock
 import org.bukkit.Material
 import org.bukkit.Particle
-import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
@@ -207,43 +205,6 @@ class MultiblockShape {
 		}
 	}
 
-	/**
-	 * Checks all possible directions a multiblock face
-	 *
-	 *
-	 **/
-	suspend fun checkRequirementsAsync(originWorld: World, origin: Vec3i, inward: BlockFace, loadChunks: Boolean): Boolean {
-		val realOrigin = if (signCentered) origin + Vec3i(inward.oppositeFace.modX, 0, inward.oppositeFace.modZ) else origin
-
-		// check all directions if ignoring direction
-		for (face in if (ignoreDirection) CARDINAL_BLOCK_FACES else listOf(inward)) {
-			if (checkRequirementsSpecificAsync(originWorld, realOrigin, face, loadChunks)) {
-				return true
-			}
-		}
-
-		return false
-	}
-
-	/**
-	 * Checks a single direction of the multiblock
-	 *
-	 * TODO more documentation
-	 **/
-	suspend fun checkRequirementsSpecificAsync(world: World, origin: Vec3i, inward: BlockFace, loadChunks: Boolean): Boolean {
-		val blocks = getRequirementMap(inward).map { (offset, _) ->
-			val (x, y, z) = offset + origin
-
-			offset to world.getBlockAt(x, y, z)
-		}.toMap()
-
-		return getRequirementMap(inward).all { (offset, requirement) ->
-			val block = blocks[offset]!!
-
-			requirement.checkAsync(block, inward, loadChunks)
-		}
-	}
-
 	private val allLocations = mutableSetOf<Vec3i>() // used for checking for duplicates
 
 	private fun addRequirement(right: Int, upward: Int, inward: Int, requirement: BlockRequirement) {
@@ -269,7 +230,6 @@ class MultiblockShape {
 				alias = type.toString(),
 				example = { type.createBlockData() },
 				syncCheck = { block, _, loadChunks -> if (loadChunks) block.type == type else block.getTypeSafe() == type },
-				asyncCheck = { block, _, loadChunks -> getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.type == type },
 				dataCheck = { type == it.material }
 			)
 
@@ -283,12 +243,7 @@ class MultiblockShape {
 				alias = alias,
 				example = { types.first().createBlockData() },
 				syncCheck = { block, _, loadChunks ->
-					typeSet.contains(if (loadChunks) block.type else block.getTypeSafe())
-				},
-				asyncCheck = { block, _, loadChunks ->
-					val type = getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.type
-
-					typeSet.contains(type)
+					typeSet.contains(if (loadChunks) block.type else block.getTypeSafe() ?: return@BlockRequirement false)
 				},
 				dataCheck = { typeSet.contains(it.material) }
 			)
@@ -306,9 +261,6 @@ class MultiblockShape {
 					if (loadChunks) CustomBlocks.getByBlock(block) else {
 						getBlockDataSafe(block.world, block.x, block.y, block.z)?.let { CustomBlocks.getByBlockData(it) }
 					} === customBlock
-				},
-				asyncCheck = { block, _, loadChunks ->
-					getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.let { CustomBlocks.getByBlockData(it.data) } === customBlock
 				},
 				dataCheck = { CustomBlocks.getByBlockData(it) == customBlock }
 			)
@@ -367,10 +319,6 @@ class MultiblockShape {
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 					blockData is Slab && blockData.type == DOUBLE
 				},
-				asyncCheck = { block, _, loadChunks ->
-					val blockData: BlockData? = getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.data
-					blockData is Slab && blockData.type == DOUBLE
-				},
 				dataCheck = { it is Slab && it.type == DOUBLE }
 			)
 		)
@@ -383,13 +331,6 @@ class MultiblockShape {
 				syncCheck = { block, _, loadChunks ->
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 					val blockType = if (loadChunks) block.type else block.getTypeSafe()
-
-					(blockData is Slab && blockData.type == DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
-				},
-				asyncCheck = { block, _, loadChunks ->
-					val blockSnapshot = getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)
-					val blockData = blockSnapshot?.data
-					val blockType = blockSnapshot?.type
 
 					(blockData is Slab && blockData.type == DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
 				},
@@ -526,13 +467,6 @@ class MultiblockShape {
 				if (blockData.bukkitMaterial != Material.FURNACE) return@check false
 				val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace
 				return@check facing == inward.oppositeFace
-			},
-			asyncCheck = asyncCheck@{ block, inward, loadChunks ->
-				val blockData = getBlockSnapshotAsync(block.world, block.x, block.y, block.z, loadChunks)?.data as? Furnace ?: return@asyncCheck false
-
-				if (blockData.material != Material.FURNACE) return@asyncCheck false
-				val facing = blockData.facing
-				return@asyncCheck facing == inward.oppositeFace
 			},
 			dataCheck = { it is Furnace }
 		))
