@@ -138,7 +138,6 @@ val components: List<IonComponent> = listOf(
 	StationSieges,
 	SolarSieges,
 
-	Multiblocks,
 	MultiblockRecipes,
 	MultiblockRegistration,
 	MultiblockAccess,
