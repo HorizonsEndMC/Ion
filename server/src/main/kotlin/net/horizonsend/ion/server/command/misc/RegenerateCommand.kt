@@ -25,10 +25,12 @@ import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
-import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtOps
@@ -241,9 +243,9 @@ object RegenerateCommand : SLCommand() {
 
 				for (i in 0 until stored.positions.size) {
 					val key = stored.positions[i]
-					val x = BlockPos.getX(key)
-					val y = BlockPos.getY(key)
-					val z = BlockPos.getZ(key)
+					val x = getX(key)
+					val y = getY(key)
+					val z = getZ(key)
 
 					val oreIndex = stored.oreIndexes[i].toInt()
 					val ore = stored.orePalette[oreIndex]
