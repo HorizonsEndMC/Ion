@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
@@ -22,7 +23,6 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.minecraft.core.BlockPos
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -136,7 +136,7 @@ object StarshipDetection : IonServerComponent() {
 			}
 
 			// Don't allow blocks that have been added to the forbidden blocks list
-			if (forbiddenBlocks.contains(BlockPos.asLong(x, y, z /* Modern block key TODO replace with function */))) {
+			if (forbiddenBlocks.contains(toBlockKey(x, y, z /* Modern block key */))) {
 				continue
 			}
 

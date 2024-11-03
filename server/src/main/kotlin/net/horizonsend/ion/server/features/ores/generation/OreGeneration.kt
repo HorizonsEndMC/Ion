@@ -12,7 +12,9 @@ import net.horizonsend.ion.server.features.ores.storage.OreData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.ORE_DATA
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.minecraft.core.BlockPos
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import org.bukkit.Chunk
 import org.bukkit.ChunkSnapshot
 import org.bukkit.Material
@@ -124,9 +126,9 @@ object OreGeneration : IonServerComponent() {
 			val replacementIndex = data.replacedIndexes[index].toInt()
 			val replaced = data.replacedPalette[replacementIndex]
 
-			val x = BlockPos.getX(position)
-			val y = BlockPos.getY(position)
-			val z = BlockPos.getZ(position)
+			val x = getX(position)
+			val y = getY(position)
+			val z = getZ(position)
 
 			if (snapshot.getBlockData(x, y, z) == ore.blockData) {
 				blockUpdates[position] = replaced.createBlockData()
@@ -177,9 +179,9 @@ object OreGeneration : IonServerComponent() {
 		val maxY = chunk.world.maxHeight
 
 		blockUpdates.forEach { (position, data) ->
-			val x = BlockPos.getX(position)
-			val y = BlockPos.getY(position)
-			val z = BlockPos.getZ(position)
+			val x = getX(position)
+			val y = getY(position)
+			val z = getZ(position)
 
 			if (y > maxY || y < minY) {
 				log.warn("Attempted to place ore outside of build limit! Did the world height change?")
