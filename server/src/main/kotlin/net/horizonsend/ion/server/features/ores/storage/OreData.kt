@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.ores.storage
 
 import com.manya.pdc.base.array.StringArrayDataType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.minecraft.core.BlockPos
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.Material
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -50,7 +50,7 @@ class OreData(
 			replacedPalette.lastIndex
 		}
 
-		val key = BlockPos.asLong(x, y, z)
+		val key = toBlockKey(x, y, z)
 
 		positions += key
 		oreIndexes += oreIndex.toByte()
