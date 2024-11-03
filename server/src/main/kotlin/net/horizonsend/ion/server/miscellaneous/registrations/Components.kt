@@ -37,9 +37,6 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipes
-import net.horizonsend.ion.server.features.multiblock.newer.MultiblockAccess
-import net.horizonsend.ion.server.features.multiblock.newer.MultiblockRegistration
-import net.horizonsend.ion.server.features.multiblock.type.crafting.MultiblockRecipes
 import net.horizonsend.ion.server.features.multiblock.type.misc.Halloweeeeeen
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
@@ -96,7 +93,6 @@ import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.data.DataFixers
-import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawning
 import net.horizonsend.ion.server.listener.misc.WorldEditListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -225,7 +221,6 @@ val components: List<IonComponent> = listOf(
 	ContactsJammingSidebar,
 	CombatTimer,
 	WorldEditListener,
-	TransportManager,
 	DisplayHandlers,
 	Halloweeeeeen,
 )
