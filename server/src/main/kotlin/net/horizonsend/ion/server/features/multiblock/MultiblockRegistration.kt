@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.Cthul
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CthulhuBeamStarshipWeaponMultiblockTop
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
@@ -195,6 +196,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(ArmorPrinterMultiblock)
 
 		registerMultiblock(CarbonProcessorMultiblock)
+
+		registerMultiblock(StandardAmmoPressMultiblock)
 
 		// Crafting
 		registerMultiblock(CentrifugeMultiblock)
