@@ -61,6 +61,9 @@ import net.horizonsend.ion.server.features.multiblock.type.power.charger.Charger
 import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.power.generator.GeneratorMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace.PowerFurnaceMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace.PowerFurnaceMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace.PowerFurnaceMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier3
@@ -176,6 +179,10 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(AutoCrafterMultiblockTier1)
 		registerMultiblock(AutoCrafterMultiblockTier2)
 		registerMultiblock(AutoCrafterMultiblockTier3)
+
+		registerMultiblock(PowerFurnaceMultiblockTier1)
+		registerMultiblock(PowerFurnaceMultiblockTier2)
+		registerMultiblock(PowerFurnaceMultiblockTier3)
 
 		registerMultiblock(GeneratorMultiblockTier1)
 		registerMultiblock(GeneratorMultiblockTier2)
