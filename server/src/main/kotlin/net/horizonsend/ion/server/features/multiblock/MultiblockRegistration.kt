@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.Har
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.ElectrolysisMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.PipedGasCollectorMultiblock
@@ -227,6 +228,7 @@ object MultiblockRegistration : IonServerComponent() {
 		// Gas
 		registerMultiblock(PipedGasCollectorMultiblock)
 		registerMultiblock(CanisterGasCollectorMultiblock, "GasCollectorMultiblock")
+		registerMultiblock(CanisterVentMultiblock, "VentMultiblock")
 
 		registerMultiblock(ElectrolysisMultiblock)
 		registerMultiblock(FluidTankSmall)
