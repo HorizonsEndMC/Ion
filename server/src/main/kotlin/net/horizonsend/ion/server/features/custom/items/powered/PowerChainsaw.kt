@@ -12,7 +12,11 @@ import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isFence
 import net.horizonsend.ion.server.miscellaneous.utils.isLeaves
@@ -20,7 +24,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.isLog
 import net.horizonsend.ion.server.miscellaneous.utils.isWood
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
-import net.minecraft.core.BlockPos
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -112,7 +115,7 @@ class PowerChainsaw(
 
 		init {
 			// Jumpstart the queue by adding the origin block
-			val originKey = BlockPos.asLong(origin.x, origin.y, origin.z)
+			val originKey = toBlockKey(origin.x, origin.y, origin.z)
 			visited[originKey] = origin
 			queue.push(originKey)
 		}
@@ -126,9 +129,9 @@ class PowerChainsaw(
 			if (!player.inventory.contains(chainsawItem)) return
 
 			val key = queue.removeFirst()
-			val x = BlockPos.getX(key)
-			val y = BlockPos.getY(key)
-			val z = BlockPos.getZ(key)
+			val x = getX(key)
+			val y = getY(key)
+			val z = getZ(key)
 
 			// Do not allow checking blocks larger than render distance
 			val block = getBlockIfLoaded(origin.world, x, y, z) ?: return
@@ -165,7 +168,7 @@ class PowerChainsaw(
 			}
 
 			for ((dropLocation, items) in drops) {
-				val location = BlockPos.of(dropLocation).toLocation(origin.world)
+				val location = toVec3i(dropLocation).toLocation(origin.world)
 				items.forEach { origin.world.dropItemNaturally(location, it) }
 			}
 
@@ -184,9 +187,9 @@ class PowerChainsaw(
 					continue
 				}
 
-				val key1 = BlockPos.asLong(adjacentX, adjacentY, adjacentZ)
+				val key1 = toBlockKey(adjacentX, adjacentY, adjacentZ)
 
-				if (key1 == BlockPos.asLong(x, y, z)) continue
+				if (key1 == toBlockKey(x, y, z)) continue
 
 				if (visited.containsKey(key1)) continue
 
