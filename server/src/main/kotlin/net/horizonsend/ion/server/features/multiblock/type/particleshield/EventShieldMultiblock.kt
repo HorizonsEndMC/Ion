@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.particleshield
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
