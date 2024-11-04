@@ -10,14 +10,14 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerSto
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
 
-object CompressorMultiblock : Multiblock(), NewPoweredMultiblock<CompressorMultiblock.CompressorMultiblockEntity> {
+object CompressorMultiblock : Multiblock(), PoweredMultiblock<CompressorMultiblock.CompressorMultiblockEntity> {
 	override val maxPower = 300_000
 
 	override val name = "compressor"
