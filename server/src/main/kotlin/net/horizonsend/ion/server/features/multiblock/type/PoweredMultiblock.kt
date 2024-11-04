@@ -11,7 +11,7 @@ import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 
-interface NewPoweredMultiblock<T : MultiblockEntity> : EntityMultiblock<T> {
+interface PoweredMultiblock<T : MultiblockEntity> : EntityMultiblock<T> {
 	val maxPower: Int
 
 	fun handleBatteryInput(sign: Sign, entity: PoweredMultiblockEntity, event: PlayerInteractEvent) {
@@ -37,7 +37,7 @@ interface NewPoweredMultiblock<T : MultiblockEntity> : EntityMultiblock<T> {
 		fun onPlayerInteract(event: PlayerInteractEvent) {
 			val sign = event.clickedBlock?.state as? Sign ?: return
 			val multiblock = MultiblockAccess.getFast(sign) ?: return
-			if (multiblock !is NewPoweredMultiblock<*>) return
+			if (multiblock !is PoweredMultiblock<*>) return
 			val entity = multiblock.getMultiblockEntity(sign) ?: return
 
 			val item = event.item ?: return
