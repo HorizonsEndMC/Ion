@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.multiblock.type.misc
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -15,7 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-object ShipFactoryMultiblock : Multiblock(), PowerStoringMultiblock, InteractableMultiblock {
+object ShipFactoryMultiblock : Multiblock(), InteractableMultiblock {
 	override val name = "shipfactory"
 
 	override val signText = createSignText(
@@ -25,7 +24,7 @@ object ShipFactoryMultiblock : Multiblock(), PowerStoringMultiblock, Interactabl
 		line4 = null
 	)
 
-	override val maxPower: Int = 1_000_000
+//	override val maxPower: Int = 1_000_000
 
 	override fun onTransformSign(player: Player, sign: Sign) {
 		sign.setLine(2, sign.getLine(1))
