@@ -14,9 +14,8 @@ import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfi
 import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawner
-import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DATA_VERSION
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import org.bukkit.Chunk
@@ -27,8 +26,8 @@ import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldSaveEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import org.bukkit.persistence.PersistentDataType.INTEGER
-import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.DeprecationLevel.ERROR
 
 class IonWorld private constructor(
@@ -207,7 +206,9 @@ class IonWorld private constructor(
 		}
 
 		override fun onDisable() {
-			for (world in ionWorlds.values) saveAllChunks(world)
+			for (world in ionWorlds.values) {
+				saveAllChunks(world)
+			}
 		}
 
 		private fun saveAllChunks(world: IonWorld) {
