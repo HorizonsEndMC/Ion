@@ -1,16 +1,10 @@
 package net.horizonsend.ion.server.features.world.chunk
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Chunk
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
 
 class ChunkRegion(val world: IonWorld) {
 	val chunks = ConcurrentHashMap<Long, IonChunk>()
@@ -28,10 +22,7 @@ class ChunkRegion(val world: IonWorld) {
 		world.chunkRegions.remove(this)
 	}
 
-	fun launch(block: suspend CoroutineScope.() -> Unit) = scope.launch { block.invoke(this) }
-
 	companion object {
-		val scope = CoroutineScope(Executors.newCachedThreadPool(Tasks.namedThreadFactory("chunk-async-worker")).asCoroutineDispatcher() + SupervisorJob())
 		const val MAX_SIZE: Int = 50
 
 		fun loadChunk(chunk: Chunk) {
