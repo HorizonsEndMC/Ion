@@ -151,8 +151,7 @@ object MissileLoaderMultiblock : Multiblock(), EntityMultiblock<MissileLoaderMul
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : SimplePoweredEntity(data, MissileLoaderMultiblock, manager, x, y, z, world, structureFace), LegacyMultiblockEntity, PoweredMultiblockEntity, RecipeEntity {
-		override val maxPower = 250_000
+	) : SimplePoweredEntity(data, MissileLoaderMultiblock, manager, x, y, z, world, structureFace, 250_000), LegacyMultiblockEntity, PoweredMultiblockEntity, RecipeEntity {
 		override val displayHandler = standardPowerDisplay(this)
 		override val progressManager: ProgressManager = ProgressManager(data)
 		override val tickingManager: TickingManager = TickingManager(20)
