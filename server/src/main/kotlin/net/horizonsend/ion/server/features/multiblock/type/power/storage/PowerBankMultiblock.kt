@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -26,7 +26,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredMultiblock<PowerBankMultiblock.PowerBankEntity>, InteractableMultiblock, DisplayNameMultilblock {
+abstract class PowerBankMultiblock(tierText: String) : Multiblock(), PoweredMultiblock<PowerBankMultiblock.PowerBankEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	abstract val tierMaterial: Material
 	override val name = "powerbank"
 

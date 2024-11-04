@@ -11,13 +11,13 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerSto
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
 
-object FabricatorMultiblock : Multiblock(), NewPoweredMultiblock<FabricatorMultiblock.FabricatorMultiblockEntity> {
+object FabricatorMultiblock : Multiblock(), PoweredMultiblock<FabricatorMultiblock.FabricatorMultiblockEntity> {
 	override val name = "fabricator"
 
 	override val signText = createSignText(

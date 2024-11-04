@@ -17,7 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -29,7 +29,7 @@ import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: Material) : Multiblock(), NewPoweredMultiblock<GeneratorMultiblock.GeneratorMultiblockEntity> {
+abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: Material) : Multiblock(), PoweredMultiblock<GeneratorMultiblock.GeneratorMultiblockEntity> {
 	override val name = "generator"
 	abstract val speed: Double
 

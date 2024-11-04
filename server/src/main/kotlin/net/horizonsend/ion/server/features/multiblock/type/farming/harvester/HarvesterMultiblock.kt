@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
@@ -35,7 +35,7 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.Ageable
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), NewPoweredMultiblock<HarvesterMultiblock.HarvesterEntity> {
+abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), PoweredMultiblock<HarvesterMultiblock.HarvesterEntity> {
 	override val name: String = "harvester"
 	override val signText: Array<Component?> = arrayOf(
 		ofChildren(text("Auto ", GRAY), text("Harvester", GREEN)),

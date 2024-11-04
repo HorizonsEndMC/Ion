@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.BlasterListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractTractorBeam
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
@@ -54,7 +54,7 @@ val listeners: List<Listener> = listOf(
 	BlockListener,
 	EntityListener,
 	FurnaceListener,
-	NewPoweredMultiblock.Companion,
+	PoweredMultiblock.Companion,
 	InventoryListener,
 	BowHitListener,
 
