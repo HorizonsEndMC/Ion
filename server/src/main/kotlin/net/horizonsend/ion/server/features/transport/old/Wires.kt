@@ -5,7 +5,7 @@ import com.google.common.cache.CacheLoader
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.debugHighlightBlock
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -30,8 +30,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.math.min
 import kotlin.system.measureNanoTime
 
@@ -50,7 +48,7 @@ object Wires : IonServerComponent() {
 			}
 		)
 
-	data class CachedPowerStore(val multiblock: PowerStoringMultiblock, val sign: Sign)
+	data class CachedPowerStore(val multiblock: Multiblock, val sign: Sign)
 
 	private val multiblockCache = CacheBuilder.newBuilder()
 		.expireAfterWrite(5, TimeUnit.SECONDS)
@@ -294,7 +292,7 @@ object Wires : IonServerComponent() {
 				}
 
 				val destinationPower = powerSignUpdateCache[destinationSign]
-				val destinationPowerMax = destinationMultiblock.maxPower
+				val destinationPowerMax = 0
 				val destinationFreeSpace = destinationPowerMax - destinationPower
 
 				val transferLimit = when (destinationMultiblock) {

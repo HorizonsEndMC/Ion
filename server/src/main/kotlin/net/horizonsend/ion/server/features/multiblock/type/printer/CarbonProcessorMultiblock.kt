@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.isConcretePowder
@@ -31,7 +31,7 @@ import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-object CarbonProcessorMultiblock : Multiblock(), NewPoweredMultiblock<CarbonProcessorMultiblock.CarbonProcessorEntity> {
+object CarbonProcessorMultiblock : Multiblock(), PoweredMultiblock<CarbonProcessorMultiblock.CarbonProcessorEntity> {
 	override val maxPower: Int = 30000
 	override val name = "processor"
 
