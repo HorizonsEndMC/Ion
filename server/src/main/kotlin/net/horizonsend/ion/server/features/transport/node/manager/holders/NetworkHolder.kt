@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node.manager.holders
 
-import kotlinx.coroutines.CoroutineScope
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
@@ -9,7 +8,6 @@ import org.bukkit.World
 
 interface NetworkHolder <T: NodeManager<*>> {
 	val network: T
-	val scope: CoroutineScope
 
 	fun getWorld(): World
 
