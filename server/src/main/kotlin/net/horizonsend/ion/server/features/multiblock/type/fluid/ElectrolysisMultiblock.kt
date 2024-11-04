@@ -180,15 +180,7 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 	}
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): ElectrolysisMultiblockEntity {
-		return ElectrolysisMultiblockEntity(
-			data,
-			manager,
-			x,
-			y,
-			z,
-			world,
-			structureDirection
-		)
+		return ElectrolysisMultiblockEntity(data, manager, x, y, z, world, structureDirection)
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {

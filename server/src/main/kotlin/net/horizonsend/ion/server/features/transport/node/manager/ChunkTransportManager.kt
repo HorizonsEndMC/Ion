@@ -2,15 +2,12 @@ package net.horizonsend.ion.server.features.transport.node.manager
 
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.node.manager.holders.ChunkNetworkHolder
-import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
 
 class ChunkTransportManager(val chunk: IonChunk) : TransportManager() {
-	val scope = ChunkRegion.scope
-
 	override val powerNodeManager = ChunkNetworkHolder(this) { PowerNodeManager(it) }
 	override val fluidNodeManager = ChunkNetworkHolder(this) { FluidNodeManager(it) }
 //	val pipeGrid = PowerNodeManager(this) // TODO
