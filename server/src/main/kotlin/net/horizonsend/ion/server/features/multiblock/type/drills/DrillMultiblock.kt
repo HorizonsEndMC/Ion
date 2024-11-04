@@ -4,6 +4,8 @@ import net.horizonsend.ion.common.extensions.alertSubtitle
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
+import net.horizonsend.ion.common.utils.text.legacyAmpersand
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
@@ -19,6 +21,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -29,6 +32,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -48,7 +52,7 @@ import java.util.EnumSet
 import java.util.UUID
 import kotlin.math.max
 
-abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : Multiblock(), NewPoweredMultiblock<DrillMultiblock.DrillMultiblockEntity>, InteractableMultiblock {
+abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : Multiblock(), NewPoweredMultiblock<DrillMultiblock.DrillMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	abstract val radius: Int
 
 	abstract val coolDown: Int
@@ -63,6 +67,8 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		line3 = null,
 		line4 = null
 	)
+
+	override val displayName: Component = ofChildren(legacyAmpersand.deserialize(tierText), text(" Drill"))
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
