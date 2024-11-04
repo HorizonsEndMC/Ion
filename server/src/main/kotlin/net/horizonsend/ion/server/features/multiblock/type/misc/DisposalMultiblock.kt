@@ -95,8 +95,7 @@ abstract class AbstractDisposalMultiblock : Multiblock(), EntityMultiblock<Abstr
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
-		override val maxPower: Int = 75_000
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, 75_000), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
