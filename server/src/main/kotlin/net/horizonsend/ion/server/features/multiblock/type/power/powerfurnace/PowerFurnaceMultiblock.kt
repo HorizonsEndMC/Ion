@@ -19,7 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -38,7 +38,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 import java.util.Optional
 
-abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), NewPoweredMultiblock<PowerFurnaceMultiblock.PowerFurnaceMultiblockEntity> {
+abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), PoweredMultiblock<PowerFurnaceMultiblock.PowerFurnaceMultiblockEntity> {
 	override val name = "powerfurnace"
 
 	protected abstract val burnTime: Int
