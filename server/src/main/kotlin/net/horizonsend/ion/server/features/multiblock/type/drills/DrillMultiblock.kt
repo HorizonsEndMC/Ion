@@ -44,7 +44,6 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
-import org.bukkit.persistence.PersistentDataAdapterContext
 import java.util.EnumSet
 import java.util.UUID
 import kotlin.math.max
@@ -131,8 +130,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection), UserManagedMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
-		override val maxPower: Int = multiblock.maxPower
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, multiblock.maxPower), UserManagedMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
 		override val tickingManager: TickingManager = TickingManager(interval = 5)
 		override val userManager: UserManager = UserManager(data, persistent = true)
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
@@ -233,11 +231,6 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 
 		fun getOutput(): Inventory {
 			return (getBlockRelative(0, -1, 0).getState(false) as InventoryHolder).inventory
-		}
-
-		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			super.storeAdditionalData(store, adapterContext)
-			savePowerData(store)
 		}
 
 		override fun loadFromSign(sign: Sign) {
