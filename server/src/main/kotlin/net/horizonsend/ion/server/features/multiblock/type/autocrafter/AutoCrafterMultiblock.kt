@@ -19,7 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -45,7 +45,7 @@ abstract class AutoCrafterMultiblock(
 	tierText: Component,
 	private val tierMaterial: Material,
 	private val iterations: Int,
-) : Multiblock(), NewPoweredMultiblock<AutoCrafterMultiblock.AutoCrafterEntity> {
+) : Multiblock(), PoweredMultiblock<AutoCrafterMultiblock.AutoCrafterEntity> {
 	override val name = "autocrafter"
 	override val requiredPermission: String? = "ion.multiblock.autocrafter"
 	open val mirrored: Boolean = false

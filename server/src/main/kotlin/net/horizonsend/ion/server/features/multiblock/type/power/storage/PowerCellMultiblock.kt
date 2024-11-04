@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.kyori.adventure.text.Component
 import org.bukkit.World
@@ -19,7 +19,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultiblock.PowerCellEntity>, DisplayNameMultilblock {
+object PowerCellMultiblock : Multiblock(), PoweredMultiblock<PowerCellMultiblock.PowerCellEntity>, DisplayNameMultilblock {
 	override val name = "powercell"
 
 	override val signText = createSignText(

@@ -21,7 +21,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.listener.misc.ProtectionListener.isRegionDenied
 import net.horizonsend.ion.server.miscellaneous.utils.CHISELED_TYPES
@@ -36,7 +36,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 
-object DecomposerMultiblock : Multiblock(), NewPoweredMultiblock<DecomposerMultiblock.DecomposerEntity>, InteractableMultiblock {
+object DecomposerMultiblock : Multiblock(), PoweredMultiblock<DecomposerMultiblock.DecomposerEntity>, InteractableMultiblock {
 	override val maxPower: Int = 75_000
 	override val name: String = "decomposer"
 	override val signText = createSignText(

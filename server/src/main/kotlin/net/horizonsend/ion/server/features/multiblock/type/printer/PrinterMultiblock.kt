@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.kyori.adventure.text.Component
@@ -29,7 +29,7 @@ import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class PrinterMultiblock : Multiblock(), NewPoweredMultiblock<PrinterMultiblock.PrinterEntity> {
+abstract class PrinterMultiblock : Multiblock(), PoweredMultiblock<PrinterMultiblock.PrinterEntity> {
 	override val name: String = "printer"
 	override val maxPower: Int = 50_000
 	abstract fun getOutput(product: Material): ItemStack

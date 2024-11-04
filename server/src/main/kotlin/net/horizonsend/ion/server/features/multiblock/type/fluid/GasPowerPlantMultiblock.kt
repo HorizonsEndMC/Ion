@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -37,7 +37,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 import kotlin.math.roundToInt
 
-object GasPowerPlantMultiblock : Multiblock(), NewPoweredMultiblock<GasPowerPlantMultiblock.GasPowerPlantMultiblockEntity> {
+object GasPowerPlantMultiblock : Multiblock(), PoweredMultiblock<GasPowerPlantMultiblock.GasPowerPlantMultiblockEntity> {
 
 	override val maxPower: Int = 500000
 

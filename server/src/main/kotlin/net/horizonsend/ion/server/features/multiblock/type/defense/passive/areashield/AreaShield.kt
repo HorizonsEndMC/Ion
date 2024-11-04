@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerSto
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -28,7 +28,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataAdapterContext
 import java.util.concurrent.TimeUnit
 
-abstract class AreaShield(val radius: Int) : Multiblock(), NewPoweredMultiblock<AreaShield.AreaShieldEntity>, InteractableMultiblock {
+abstract class AreaShield(val radius: Int) : Multiblock(), PoweredMultiblock<AreaShield.AreaShieldEntity>, InteractableMultiblock {
 	override fun onTransformSign(player: Player, sign: Sign) {
 		player.success("Area Shield created.")
 	}
