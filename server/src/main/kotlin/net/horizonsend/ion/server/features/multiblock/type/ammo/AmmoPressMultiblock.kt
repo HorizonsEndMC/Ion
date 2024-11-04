@@ -7,13 +7,11 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.custo
 import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity.StatusManager
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
@@ -28,7 +26,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataAdapterContext
 import java.lang.Integer.min
 
 abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMultiblock.AmmoPressMultiblockEntity> {
@@ -152,10 +149,8 @@ abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMul
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, PoweredMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity,
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, multiblock.maxPower), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity,
 		DisplayMultiblockEntity {
-		override val maxPower: Int = multiblock.maxPower
-		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val tickingManager: TickingManager = TickingManager(interval = 20)
 		override val statusManager: StatusManager = StatusManager()
 
@@ -210,10 +205,6 @@ abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMul
 			inventory.removeItemAnySlot(ItemStack(typeRefill))
 			powerStorage.removePower(250)
 			powerStorage.removePower(250)
-		}
-
-		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			savePowerData(store)
 		}
 
 		override fun loadFromSign(sign: Sign) {

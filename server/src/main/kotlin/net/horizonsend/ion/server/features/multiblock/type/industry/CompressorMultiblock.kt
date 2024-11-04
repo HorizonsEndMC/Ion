@@ -125,8 +125,7 @@ object CompressorMultiblock : Multiblock(), EntityMultiblock<CompressorMultibloc
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : SimplePoweredEntity(data, CompressorMultiblock, manager, x, y, z, world, structureFace), LegacyMultiblockEntity, PoweredMultiblockEntity, RecipeEntity {
-		override val maxPower = 300_000
+	) : SimplePoweredEntity(data, CompressorMultiblock, manager, x, y, z, world, structureFace, 300_000), LegacyMultiblockEntity, PoweredMultiblockEntity, RecipeEntity {
 		override val displayHandler = standardPowerDisplay(this)
 		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
