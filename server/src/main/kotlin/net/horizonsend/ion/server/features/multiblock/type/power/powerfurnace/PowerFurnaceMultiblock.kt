@@ -7,13 +7,12 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
@@ -35,7 +34,6 @@ import org.bukkit.block.Sign
 import org.bukkit.craftbukkit.v1_20_R3.block.CraftFurnaceFurnace
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataAdapterContext
 import java.util.Optional
 
 abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMultiblock<PowerFurnaceMultiblock.PowerFurnaceMultiblockEntity> {
@@ -94,10 +92,8 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, PoweredMultiblockEntity, LegacyMultiblockEntity,
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, multiblock.maxPower), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, PoweredMultiblockEntity, LegacyMultiblockEntity,
 		DisplayMultiblockEntity {
-		override val maxPower: Int = multiblock.maxPower
-		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
@@ -136,10 +132,6 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 			furnace.update()
 		}
 
-		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			savePowerData(store)
-		}
-
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
 		}
@@ -156,10 +148,7 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 					MinecraftServer.getServer().recipeManager
 						.getRecipeFor(RecipeType.SMELTING, furnaceTile, level)
 						.map {
-							println("Recipe holder: $it")
-							println("Recipe: ${it.value}")
 							val b = it.value.assemble(furnaceTile, level.registryAccess())
-							println("B: $b")
 							CraftItemStack.asBukkitCopy(b)
 						}
 				}

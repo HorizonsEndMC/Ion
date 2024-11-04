@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -106,9 +105,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMul
 		z: Int,
 		world: World,
 		signDirection: BlockFace,
-	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, signDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
-		override val maxPower: Int = multiblock.maxPower
-		override val powerStorage: PowerStorage = loadStoredPower(data)
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, signDirection, multiblock.maxPower), PoweredMultiblockEntity, LegacyMultiblockEntity {
 		override val displayHandler = standardPowerDisplay(this)
 
 		fun handleCharging(event: FurnaceBurnEvent, furnace: Furnace) {

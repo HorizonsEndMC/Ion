@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.multiblock.type.starship.mininglaser
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
@@ -43,10 +42,7 @@ abstract class MiningLaserMultiblock : Multiblock(), EntityMultiblock<MiningLase
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredEntity(data, multiblock, manager, x ,y ,z, world, structureDirection), LegacyMultiblockEntity {
-		override val maxPower: Int = multiblock.maxPower
-		override val powerStorage: PowerStorage = loadStoredPower(data)
-
+	) : SimplePoweredEntity(data, multiblock, manager, x ,y ,z, world, structureDirection, multiblock.maxPower), LegacyMultiblockEntity {
 		override val displayHandler = standardPowerDisplay(this)
 
 		fun getFirePos(): Vec3i {

@@ -124,8 +124,7 @@ object PlatePressMultiblock : Multiblock(), EntityMultiblock<PlatePressMultibloc
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : SimplePoweredEntity(data, PlatePressMultiblock, manager, x, y, z, world, structureFace), LegacyMultiblockEntity, PoweredMultiblockEntity, RecipeEntity {
-		override val maxPower = 300_000
+	) : SimplePoweredEntity(data, PlatePressMultiblock, manager, x, y, z, world, structureFace, 300_000), LegacyMultiblockEntity, PoweredMultiblockEntity, RecipeEntity {
 		override val displayHandler = standardPowerDisplay(this)
 		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
