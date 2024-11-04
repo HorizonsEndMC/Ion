@@ -118,8 +118,7 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, LegacyMultiblockEntity, StatusTickedMultiblockEntity {
-		override val maxPower: Int = multiblock.maxPower
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, multiblock.maxPower), SyncTickingMultiblockEntity, LegacyMultiblockEntity, StatusTickedMultiblockEntity {
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 		override val tickingManager: TickingManager = TickingManager(interval = 20)
 
