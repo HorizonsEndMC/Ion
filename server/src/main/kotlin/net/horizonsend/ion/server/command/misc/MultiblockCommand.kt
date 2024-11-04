@@ -7,12 +7,14 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
+import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -25,13 +27,13 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.util.Vector
 
 @CommandAlias("multiblock")
-@CommandPermission("ion.multiblock")
 object MultiblockCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandContexts.registerContext(Multiblock::class.java) { c: BukkitCommandExecutionContext ->
@@ -82,8 +84,7 @@ object MultiblockCommand : SLCommand() {
 
 	@Subcommand("check")
 	@CommandCompletion("@multiblocks")
-	@CommandPermission("ion.multiblock.check")
-    fun onCheck(sender: Player, lastMatch: Multiblock, x: Int, y: Int, z: Int) {
+	fun onCheck(sender: Player, lastMatch: Multiblock, x: Int, y: Int, z: Int) {
 		val sign = sender.world.getBlockAt(x, y, z).state as? Sign ?: return sender.userError("Block at $x $y $z isn't a sign!")
 
 		val face = sign.getFacing().oppositeFace
@@ -115,7 +116,7 @@ object MultiblockCommand : SLCommand() {
 
 	@Subcommand("place")
 	@CommandCompletion("@multiblocks")
-	@CommandPermission("ion.multiblock.place")
+	@CommandPermission("ion.command.multiblock.place")
     fun onPlace(sender: Player, multiblock: Multiblock) {
 		val shape = multiblock.shape.getRequirementMap(sender.facing)
 
@@ -146,5 +147,15 @@ object MultiblockCommand : SLCommand() {
 		}
 
 		sender.success("Placed ${multiblock.javaClass.simpleName}")
+	}
+
+	@Subcommand("give token")
+	@CommandCompletion("@multiblocks")
+	@CommandPermission("ion.command.multiblock.give")
+	fun onGivePrepackaged(sender: CommandSender, prePackagedType: Multiblock, recipient: Player?) {
+		val destination: Player = recipient ?: (sender as? Player ?: fail { "You must specify a player!" })
+
+		destination.inventory.addItem(MultiblockToken.constructFor(prePackagedType))
+		sender.information("Added to inventory")
 	}
 }
