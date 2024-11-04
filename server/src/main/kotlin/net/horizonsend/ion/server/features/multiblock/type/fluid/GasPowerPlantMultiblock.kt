@@ -10,19 +10,17 @@ import net.horizonsend.ion.server.features.gas.Gasses.EMPTY_CANISTER
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -34,13 +32,9 @@ import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataAdapterContext
 import kotlin.math.roundToInt
 
-object GasPowerPlantMultiblock : Multiblock(), PoweredMultiblock<GasPowerPlantMultiblock.GasPowerPlantMultiblockEntity> {
-
-	override val maxPower: Int = 500000
-
+object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMultiblock.GasPowerPlantMultiblockEntity> {
 	override val name: String = "gaspowerplant"
 
 	override val signText: Array<Component?> = arrayOf(
@@ -180,7 +174,8 @@ object GasPowerPlantMultiblock : Multiblock(), PoweredMultiblock<GasPowerPlantMu
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, GasPowerPlantMultiblock, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, PoweredMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity, DisplayMultiblockEntity {
+	) : SimplePoweredEntity(data, GasPowerPlantMultiblock, manager, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity {
+		override val maxPower: Int = 500000
 		override val multiblock: GasPowerPlantMultiblock = GasPowerPlantMultiblock
 		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
@@ -219,10 +214,6 @@ object GasPowerPlantMultiblock : Multiblock(), PoweredMultiblock<GasPowerPlantMu
 			} else {
 				world.playEffect(location.toCenterLocation(), Effect.SMOKE, 4)
 			}
-		}
-
-		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			savePowerData(store)
 		}
 
 		override fun loadFromSign(sign: Sign) {
