@@ -22,11 +22,14 @@ import net.kyori.adventure.text.format.Style.style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
 // Serialization
 /** Skip building the serializer */
 val miniMessage = MiniMessage.miniMessage()
+
+val legacyAmpersand = LegacyComponentSerializer.legacyAmpersand()
 
 /** Serializes the component to minimessage format */
 fun miniMessage(component: Component): String = miniMessage.serialize(component)
