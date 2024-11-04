@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblo
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
@@ -18,7 +18,7 @@ import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class MiningLaserMultiblock : Multiblock(), NewPoweredMultiblock<MiningLaserMultiblock.MiningLaserMultiblockEntity> {
+abstract class MiningLaserMultiblock : Multiblock(), PoweredMultiblock<MiningLaserMultiblock.MiningLaserMultiblockEntity> {
 	override val name = "mininglaser"
 	abstract val range: Double
 

@@ -10,14 +10,14 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerSto
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
-object AmmoLoaderMultiblock	: Multiblock(), NewPoweredMultiblock<AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity> {
+object AmmoLoaderMultiblock	: Multiblock(), PoweredMultiblock<AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity> {
 	override val maxPower = 250_000
 
 	override fun MultiblockShape.buildStructure() {

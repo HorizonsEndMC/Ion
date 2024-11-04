@@ -18,7 +18,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.Material.matchMaterial
@@ -30,7 +30,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 import java.lang.Integer.min
 
-abstract class AmmoPressMultiblock : Multiblock(), NewPoweredMultiblock<AmmoPressMultiblock.AmmoPressMultiblockEntity> {
+abstract class AmmoPressMultiblock : Multiblock(), PoweredMultiblock<AmmoPressMultiblock.AmmoPressMultiblockEntity> {
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

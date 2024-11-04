@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -22,7 +22,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import kotlin.math.roundToInt
 
-abstract class AbstractDisposalMultiblock : Multiblock(), NewPoweredMultiblock<AbstractDisposalMultiblock.DisposalMultiblockEntity> {
+abstract class AbstractDisposalMultiblock : Multiblock(), PoweredMultiblock<AbstractDisposalMultiblock.DisposalMultiblockEntity> {
 	override val name = "incinerator"
 
 	override var signText: Array<Component?> = arrayOf(
