@@ -10,14 +10,16 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerSto
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.kyori.adventure.text.Component
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultiblock.PowerCellEntity> {
+object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultiblock.PowerCellEntity>, DisplayNameMultilblock {
 	override val name = "powercell"
 
 	override val signText = createSignText(
@@ -26,6 +28,8 @@ object PowerCellMultiblock : Multiblock(), NewPoweredMultiblock<PowerCellMultibl
 		line3 = null,
 		line4 = "&cCompact Power"
 	)
+
+	override val displayName: Component = Component.text("Power Cell")
 
 	override val maxPower = 50_000
 
