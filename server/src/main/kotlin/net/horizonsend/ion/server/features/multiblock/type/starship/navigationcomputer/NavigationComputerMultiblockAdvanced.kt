@@ -1,15 +1,17 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.LEFT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.RIGHT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.SELF
+import net.kyori.adventure.text.Component
 import org.bukkit.block.data.Bisected.Half.BOTTOM
 import org.bukkit.block.data.Bisected.Half.TOP
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
 
-sealed class NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock() {
+sealed class NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock(), DisplayNameMultilblock {
 	override val signText = createSignText(
 		line1 = "&6Advanced",
 		line2 = "&8Navigation",
@@ -21,6 +23,8 @@ sealed class NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock
 }
 
 data object VerticalNavigationComputerMultiblockAdvanced : NavigationComputerMultiblockAdvanced() {
+	override val displayName: Component = Component.text("Horizontal Navigation Computer")
+
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
@@ -75,6 +79,8 @@ data object VerticalNavigationComputerMultiblockAdvanced : NavigationComputerMul
 }
 
 data object HorizontalNavigationComputerMultiblockAdvanced : NavigationComputerMultiblockAdvanced() {
+	override val displayName: Component = Component.text("Vertical Navigation Computer")
+
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
 			y(0) {
