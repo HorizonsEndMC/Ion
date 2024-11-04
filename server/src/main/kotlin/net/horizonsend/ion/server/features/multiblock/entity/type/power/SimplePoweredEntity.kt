@@ -8,9 +8,11 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
+import org.bukkit.persistence.PersistentDataType
 
 abstract class SimplePoweredEntity(
 	data: PersistentMultiblockData,
@@ -21,8 +23,9 @@ abstract class SimplePoweredEntity(
 	z: Int,
 	world: World,
 	structureDirection: BlockFace,
+	final override val maxPower: Int
 ) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, DisplayMultiblockEntity {
-	override val powerStorage: PowerStorage = this.loadStoredPower(data)
+	final override val powerStorage: PowerStorage = PowerStorage(this, data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0), maxPower)
 
 	override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 		savePowerData(store)

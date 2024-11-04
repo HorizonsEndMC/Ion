@@ -138,8 +138,7 @@ abstract class PrinterMultiblock : Multiblock(), EntityMultiblock<PrinterMultibl
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureFace), LegacyMultiblockEntity, StatusTickedMultiblockEntity, SyncTickingMultiblockEntity {
-		override val maxPower: Int = 50_000
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureFace, 50_000), LegacyMultiblockEntity, StatusTickedMultiblockEntity, SyncTickingMultiblockEntity {
 		override val tickingManager: TickingManager = TickingManager(interval = 1)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 

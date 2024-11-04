@@ -81,8 +81,7 @@ abstract class AreaShield(val radius: Int) : Multiblock(), EntityMultiblock<Area
 		z: Int,
 		world: World,
 		structureFace: BlockFace,
-	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureFace), LegacyMultiblockEntity {
-		override val maxPower: Int = 100_000
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureFace, 100_000), LegacyMultiblockEntity {
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
 		override fun onLoad() {
