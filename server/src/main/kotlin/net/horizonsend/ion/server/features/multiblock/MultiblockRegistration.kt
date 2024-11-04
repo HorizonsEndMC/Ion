@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultib
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonBaseMultiblock
@@ -16,8 +17,11 @@ import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areas
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.ConnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.DisconnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier1Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier2Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier3Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier3
@@ -41,10 +45,12 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.AirlockMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableAirlock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
@@ -71,10 +77,14 @@ import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBa
 import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerBankMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.power.storage.PowerCellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.ArmorPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.ArmorPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.printer.CarbonProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.OdometerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
@@ -87,17 +97,29 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.H
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass3
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass4
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1Bottom
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1BottomMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1Side
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1SideMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1Top
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier1TopMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2Bottom
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2BottomMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2Side
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2SideMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2Top
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier2TopMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3Bottom
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3BottomMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3Side
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3SideMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3Top
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier3TopMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4Bottom
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4BottomMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4Side
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4SideMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4Top
+import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4TopMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
@@ -172,8 +194,11 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(ChargerMultiblockTier3)
 
 		registerMultiblock(DrillMultiblockTier1)
+		registerMultiblock(DrillMultiblockTier1Mirrored)
 		registerMultiblock(DrillMultiblockTier2)
+		registerMultiblock(DrillMultiblockTier2Mirrored)
 		registerMultiblock(DrillMultiblockTier3)
+		registerMultiblock(DrillMultiblockTier3Mirrored)
 
 		registerMultiblock(PlanterMultiblockTier1)
 		registerMultiblock(PlanterMultiblockTier2)
@@ -183,10 +208,14 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(HarvesterMultiblockTier3)
 
 		registerMultiblock(DisposalMultiblock)
+		registerMultiblock(DisposalMultiblockMirrored)
 
 		registerMultiblock(AutoCrafterMultiblockTier1)
+		registerMultiblock(AutoCrafterMultiblockTier1Mirrored)
 		registerMultiblock(AutoCrafterMultiblockTier2)
+		registerMultiblock(AutoCrafterMultiblockTier1Mirrored)
 		registerMultiblock(AutoCrafterMultiblockTier3)
+		registerMultiblock(AutoCrafterMultiblockTier1Mirrored)
 
 		registerMultiblock(PowerFurnaceMultiblockTier1)
 		registerMultiblock(PowerFurnaceMultiblockTier2)
@@ -197,9 +226,13 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(GeneratorMultiblockTier3)
 
 		registerMultiblock(CarbonPrinterMultiblock)
+		registerMultiblock(CarbonPrinterMultiblockMirrored)
 		registerMultiblock(TechnicalPrinterMultiblock)
+		registerMultiblock(TechnicalPrinterMultiblockMirrored)
 		registerMultiblock(GlassPrinterMultiblock)
+		registerMultiblock(GlassPrinterMultiblockMirrored)
 		registerMultiblock(ArmorPrinterMultiblock)
+		registerMultiblock(ArmorPrinterMultiblockMirrored)
 
 		registerMultiblock(CarbonProcessorMultiblock)
 
@@ -217,17 +250,29 @@ object MultiblockRegistration : IonServerComponent() {
 
 		// Moreso powered multis than ship multis, could go in either spot tbh
 		registerMultiblock(MiningLaserMultiblockTier1Top)
+		registerMultiblock(MiningLaserMultiblockTier1TopMirrored)
 		registerMultiblock(MiningLaserMultiblockTier1Bottom)
+		registerMultiblock(MiningLaserMultiblockTier1BottomMirrored)
 		registerMultiblock(MiningLaserMultiblockTier1Side)
+		registerMultiblock(MiningLaserMultiblockTier1SideMirrored)
 		registerMultiblock(MiningLaserMultiblockTier2Top)
+		registerMultiblock(MiningLaserMultiblockTier2TopMirrored)
 		registerMultiblock(MiningLaserMultiblockTier2Bottom)
+		registerMultiblock(MiningLaserMultiblockTier2BottomMirrored)
 		registerMultiblock(MiningLaserMultiblockTier2Side)
+		registerMultiblock(MiningLaserMultiblockTier2SideMirrored)
 		registerMultiblock(MiningLaserMultiblockTier3Top)
+		registerMultiblock(MiningLaserMultiblockTier3TopMirrored)
 		registerMultiblock(MiningLaserMultiblockTier3Bottom)
+		registerMultiblock(MiningLaserMultiblockTier3BottomMirrored)
 		registerMultiblock(MiningLaserMultiblockTier3Side)
+		registerMultiblock(MiningLaserMultiblockTier3SideMirrored)
 		registerMultiblock(MiningLaserMultiblockTier4Top)
+		registerMultiblock(MiningLaserMultiblockTier4TopMirrored)
 		registerMultiblock(MiningLaserMultiblockTier4Bottom)
+		registerMultiblock(MiningLaserMultiblockTier4BottomMirrored)
 		registerMultiblock(MiningLaserMultiblockTier4Side)
+		registerMultiblock(MiningLaserMultiblockTier4SideMirrored)
 
 		// Gas
 		registerMultiblock(PipedGasCollectorMultiblock)
@@ -299,6 +344,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(OdometerMultiblock)
 		registerMultiblock(LandingGearMultiblock)
 		registerMultiblock(MagazineMultiblock)
+		registerMultiblock(MagazineMultiblockMirrored)
 
 		registerMultiblock(NavigationComputerMultiblockBasic)
 		registerMultiblock(VerticalNavigationComputerMultiblockAdvanced)
