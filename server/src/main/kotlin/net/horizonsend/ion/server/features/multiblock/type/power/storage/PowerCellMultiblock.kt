@@ -56,8 +56,7 @@ object PowerCellMultiblock : Multiblock(), EntityMultiblock<PowerCellMultiblock.
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : SimplePoweredEntity(data, PowerCellMultiblock, manager, x, y, z, world, structureFace), LegacyMultiblockEntity, PoweredMultiblockEntity {
-		override val maxPower = 50_000
+	) : SimplePoweredEntity(data, PowerCellMultiblock, manager, x, y, z, world, structureFace, 50_000), LegacyMultiblockEntity, PoweredMultiblockEntity {
 		override val displayHandler = standardPowerDisplay(this)
 
 		override fun loadFromSign(sign: Sign) {

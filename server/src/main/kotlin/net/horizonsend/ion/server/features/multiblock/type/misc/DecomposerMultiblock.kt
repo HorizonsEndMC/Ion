@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity.StatusManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity.UserManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
@@ -70,10 +71,9 @@ object DecomposerMultiblock : Multiblock(), EntityMultiblock<DecomposerMultibloc
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredEntity(data, DecomposerMultiblock, manager, x, y, z, world, structureDirection), LegacyMultiblockEntity, StatusMultiblockEntity, UserManagedMultiblockEntity {
-		override val maxPower: Int = 75_000
+	) : SimplePoweredEntity(data, DecomposerMultiblock, manager, x, y, z, world, structureDirection, 75_000), LegacyMultiblockEntity, StatusMultiblockEntity, UserManagedMultiblockEntity {
 		override val multiblock = DecomposerMultiblock
-		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
+		override val statusManager: StatusManager = StatusManager()
 		override val userManager: UserManager = UserManager(data, false)
 
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
