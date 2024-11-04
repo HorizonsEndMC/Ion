@@ -1,25 +1,20 @@
 package net.horizonsend.ion.server.features.multiblock.type.power.storage
 
-import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
-import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
-import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.kyori.adventure.text.Component
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.persistence.PersistentDataAdapterContext
 
-object PowerCellMultiblock : Multiblock(), PoweredMultiblock<PowerCellMultiblock.PowerCellEntity>, DisplayNameMultilblock {
+object PowerCellMultiblock : Multiblock(), EntityMultiblock<PowerCellMultiblock.PowerCellEntity>, DisplayNameMultilblock {
 	override val name = "powercell"
 
 	override val signText = createSignText(
@@ -30,8 +25,6 @@ object PowerCellMultiblock : Multiblock(), PoweredMultiblock<PowerCellMultiblock
 	)
 
 	override val displayName: Component = Component.text("Power Cell")
-
-	override val maxPower = 50_000
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -52,54 +45,20 @@ object PowerCellMultiblock : Multiblock(), PoweredMultiblock<PowerCellMultiblock
 	}
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): PowerCellEntity {
-		return PowerCellEntity(
-			data,
-			manager,
-			this,
-			x,
-			y,
-			z,
-			world,
-			structureDirection
-		)
+		return PowerCellEntity(data, manager, x, y, z, world, structureDirection)
 	}
 
 	class PowerCellEntity(
 		data: PersistentMultiblockData,
 		manager: MultiblockManager,
-		override val multiblock: PowerCellMultiblock,
 		x: Int,
 		y: Int,
 		z: Int,
 		world: World,
-		structureDirection: BlockFace
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, LegacyMultiblockEntity {
-		override val powerStorage: PowerStorage = loadStoredPower(data)
-
-		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
-			this,
-			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
-		).register()
-
-		override fun onLoad() {
-			displayHandler.update()
-		}
-
-		override fun onUnload() {
-			displayHandler.remove()
-		}
-
-		override fun handleRemoval() {
-			displayHandler.remove()
-		}
-
-		override fun displaceAdditional(movement: StarshipMovement) {
-			displayHandler.displace(movement)
-		}
-
-		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			savePowerData(store)
-		}
+		structureFace: BlockFace
+	) : SimplePoweredEntity(data, PowerCellMultiblock, manager, x, y, z, world, structureFace), LegacyMultiblockEntity, PoweredMultiblockEntity {
+		override val maxPower = 50_000
+		override val displayHandler = standardPowerDisplay(this)
 
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
