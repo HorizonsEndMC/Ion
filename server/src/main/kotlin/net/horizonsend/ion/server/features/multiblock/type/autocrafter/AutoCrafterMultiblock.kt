@@ -9,18 +9,16 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
@@ -45,10 +43,12 @@ abstract class AutoCrafterMultiblock(
 	tierText: Component,
 	private val tierMaterial: Material,
 	private val iterations: Int,
-) : Multiblock(), PoweredMultiblock<AutoCrafterMultiblock.AutoCrafterEntity> {
+) : Multiblock(), EntityMultiblock<AutoCrafterMultiblock.AutoCrafterEntity> {
 	override val name = "autocrafter"
 	override val requiredPermission: String? = "ion.multiblock.autocrafter"
 	open val mirrored: Boolean = false
+
+	abstract val maxPower: Int
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -139,21 +139,16 @@ abstract class AutoCrafterMultiblock(
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, StatusMultiblockEntity, LegacyMultiblockEntity {
-		override val powerStorage: PowerStorage = loadStoredPower(data)
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity {
+		override val maxPower: Int = multiblock.maxPower
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
-		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
 			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.45f),
 			StatusDisplay(statusManager, +0.0, -0.10, +0.0, 0.45f)
 		).register()
-
-		private fun sleepWithStatus(status: Component, sleepTicks: Int) {
-			setStatus(status)
-			tickingManager.sleep(sleepTicks)
-		}
 
 		private fun getInput(): Inventory? = getInventory(-2, 0, 1)
 		private fun getRecipeHolder(): Inventory? = getInventory(0, 0, 1)
@@ -256,22 +251,6 @@ abstract class AutoCrafterMultiblock(
 					sleepWithStatus(result.displayName(), 200)
 				}
 			}
-		}
-
-		override fun onLoad() {
-			displayHandler.update()
-		}
-
-		override fun onUnload() {
-			displayHandler.remove()
-		}
-
-		override fun handleRemoval() {
-			displayHandler.remove()
-		}
-
-		override fun displaceAdditional(movement: StarshipMovement) {
-			displayHandler.displace(movement)
 		}
 
 		override fun loadFromSign(sign: Sign) {

@@ -4,22 +4,20 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.isConcretePowder
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -29,10 +27,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataAdapterContext
 
-object CarbonProcessorMultiblock : Multiblock(), PoweredMultiblock<CarbonProcessorMultiblock.CarbonProcessorEntity> {
-	override val maxPower: Int = 30000
+object CarbonProcessorMultiblock : Multiblock(), EntityMultiblock<CarbonProcessorMultiblock.CarbonProcessorEntity> {
 	override val name = "processor"
 
 	override val signText = createSignText(
@@ -97,22 +93,20 @@ object CarbonProcessorMultiblock : Multiblock(), PoweredMultiblock<CarbonProcess
 		y: Int,
 		z: Int,
 		world: World,
-		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, CarbonProcessorMultiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity, StatusMultiblockEntity {
-		override val multiblock = CarbonProcessorMultiblock
-		override val powerStorage: PowerStorage = loadStoredPower(data)
+		structureFace: BlockFace
+	) : SimplePoweredEntity(data, MissileLoaderMultiblock, manager, x, y, z, world, structureFace), LegacyMultiblockEntity, StatusTickedMultiblockEntity, SyncTickingMultiblockEntity {
+		override val maxPower = 30_000
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 1)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
-		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
 			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.45f),
 			StatusDisplay(statusManager, +0.0, -0.10, +0.0, 0.45f)
 		).register()
 
-		private fun sleepWithStatus(status: Component, sleepTicks: Int) {
-			setStatus(status)
-			tickingManager.sleep(sleepTicks)
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
 		}
 
 		override fun tick() {
@@ -155,30 +149,6 @@ object CarbonProcessorMultiblock : Multiblock(), PoweredMultiblock<CarbonProcess
 
 			val existingType = inputType.type
 			return ItemStack(Material.getMaterial(existingType.name.removeSuffix("_POWDER")) ?: error("No material $glassType"), 1)
-		}
-
-		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			savePowerData(store)
-		}
-
-		override fun onLoad() {
-			displayHandler.update()
-		}
-
-		override fun onUnload() {
-			displayHandler.remove()
-		}
-
-		override fun handleRemoval() {
-			displayHandler.remove()
-		}
-
-		override fun displaceAdditional(movement: StarshipMovement) {
-			displayHandler.displace(movement)
-		}
-
-		override fun loadFromSign(sign: Sign) {
-			migrateLegacyPower(sign)
 		}
 	}
 }

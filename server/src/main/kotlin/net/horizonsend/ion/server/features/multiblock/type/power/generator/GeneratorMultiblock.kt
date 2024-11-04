@@ -5,19 +5,16 @@ import net.horizonsend.ion.server.features.client.display.modular.display.PowerE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplay
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -27,11 +24,12 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
-import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: Material) : Multiblock(), PoweredMultiblock<GeneratorMultiblock.GeneratorMultiblockEntity> {
+abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: Material) : Multiblock(), EntityMultiblock<GeneratorMultiblock.GeneratorMultiblockEntity> {
 	override val name = "generator"
 	abstract val speed: Double
+
+	abstract val maxPower: Int
 
 	override val signText = createSignText(
 		line1 = "&2Power",
@@ -69,8 +67,8 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, PoweredMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity, DisplayMultiblockEntity {
-		override val powerStorage: PowerStorage = loadStoredPower(data)
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity {
+		override val maxPower: Int = multiblock.maxPower
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
@@ -103,10 +101,6 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 			furnace?.update()
 
 			powerStorage.addPower(fuel.power)
-		}
-
-		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			savePowerData(store)
 		}
 
 		override fun loadFromSign(sign: Sign) {

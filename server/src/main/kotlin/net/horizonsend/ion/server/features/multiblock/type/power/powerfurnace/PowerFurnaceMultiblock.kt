@@ -19,7 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -38,9 +38,10 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 import java.util.Optional
 
-abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), PoweredMultiblock<PowerFurnaceMultiblock.PowerFurnaceMultiblockEntity> {
+abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMultiblock<PowerFurnaceMultiblock.PowerFurnaceMultiblockEntity> {
 	override val name = "powerfurnace"
 
+	abstract val maxPower: Int
 	protected abstract val burnTime: Int
 	protected abstract val tierMaterial: Material
 
@@ -95,6 +96,7 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), PoweredM
 		structureDirection: BlockFace,
 	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, PoweredMultiblockEntity, LegacyMultiblockEntity,
 		DisplayMultiblockEntity {
+		override val maxPower: Int = multiblock.maxPower
 		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()

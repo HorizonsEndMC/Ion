@@ -1,23 +1,22 @@
 package net.horizonsend.ion.server.features.multiblock.type.industry
 
-import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
-import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
+import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
 
-object FabricatorMultiblock : Multiblock(), PoweredMultiblock<FabricatorMultiblock.FabricatorMultiblockEntity> {
+object FabricatorMultiblock : Multiblock(), EntityMultiblock<FabricatorMultiblock.FabricatorMultiblockEntity> {
 	override val name = "fabricator"
 
 	override val signText = createSignText(
@@ -26,8 +25,6 @@ object FabricatorMultiblock : Multiblock(), PoweredMultiblock<FabricatorMultiblo
 		line3 = null,
 		line4 = null
 	)
-
-	override val maxPower = 300_000
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -117,15 +114,12 @@ object FabricatorMultiblock : Multiblock(), PoweredMultiblock<FabricatorMultiblo
 		y: Int,
 		z: Int,
 		world: World,
-		structureDirection: BlockFace
-	) : MultiblockEntity(manager, FabricatorMultiblock, x, y, z, world, structureDirection), LegacyMultiblockEntity, PoweredMultiblockEntity, DisplayMultiblockEntity {
-		override val powerStorage: PowerStorage = loadStoredPower(data)
-		override val multiblock: FabricatorMultiblock = FabricatorMultiblock
-
-		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
-			this,
-			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
-		).register()
+		structureFace: BlockFace
+	) : SimplePoweredEntity(data, FabricatorMultiblock, manager, x, y, z, world, structureFace), LegacyMultiblockEntity, PoweredMultiblockEntity, RecipeEntity {
+		override val maxPower = 300_000
+		override val displayHandler = standardPowerDisplay(this)
+		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
+		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
