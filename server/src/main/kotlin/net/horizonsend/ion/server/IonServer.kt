@@ -140,8 +140,6 @@ object IonServer : JavaPlugin() {
 	}
 
 	override fun onDisable() {
-		IonWorld.unregisterAll()
-
 		SLCommand.ASYNC_COMMAND_THREAD.shutdown()
 
 		for (component in components.asReversed()) try {
@@ -151,6 +149,8 @@ object IonServer : JavaPlugin() {
 			slF4JLogger.error("There was an error shutting down ${component.javaClass.simpleName}! ${e.message}")
 			e.printStackTrace()
 		}
+
+		IonWorld.unregisterAll()
 	}
 
 	override fun getDefaultBiomeProvider(worldName: String, id: String?): BiomeProvider {
