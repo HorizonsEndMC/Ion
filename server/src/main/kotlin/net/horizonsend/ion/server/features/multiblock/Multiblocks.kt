@@ -90,6 +90,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableAirloc
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.LandingGearMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.LargeTractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
@@ -247,6 +248,7 @@ object Multiblocks : IonServerComponent() {
 			AirlockMultiblock,
 			ExpandableAirlock,
 			TractorBeamMultiblock,
+			LargeTractorBeamMultiblock,
 
 			ShipFactoryMultiblock,
 
