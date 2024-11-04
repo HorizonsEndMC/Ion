@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.manager
 
-import kotlinx.coroutines.launch
-import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -15,7 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import org.bukkit.World
 import org.bukkit.persistence.PersistentDataAdapterContext
-import org.bukkit.persistence.PersistentDataType
+import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER_ARRAY
 import org.slf4j.Logger
 
 class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManager(log) {
@@ -29,6 +27,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 	}
 
 	private var lastSaved = System.currentTimeMillis()
+
 	override fun getSignUnsavedTime(): Long {
 		return System.currentTimeMillis() - lastSaved
 	}
@@ -53,17 +52,13 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 	/**
 	 * Save the multiblock data back into the chunk
 	 **/
-	private fun saveMultiblocks(adapterContext: PersistentDataAdapterContext) = MultiblockAccess.multiblockCoroutineScope.launch {
-		val old = chunk.inner.persistentDataContainer.get(STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY)
-		old?.let {
-			chunk.inner.persistentDataContainer.set(STORED_MULTIBLOCK_ENTITIES_OLD, PersistentDataType.TAG_CONTAINER_ARRAY, it)
-		}
+	private fun saveMultiblocks(adapterContext: PersistentDataAdapterContext) {
+		val previous = chunk.inner.persistentDataContainer.get(STORED_MULTIBLOCK_ENTITIES, TAG_CONTAINER_ARRAY)
+		if (previous != null) chunk.inner.persistentDataContainer.set(STORED_MULTIBLOCK_ENTITIES_OLD, TAG_CONTAINER_ARRAY, previous)
 
-		val array = multiblockEntities.map { (_, entity) ->
-			entity.serialize(adapterContext, entity.store())
-		}.toTypedArray()
+		val array = multiblockEntities.values.map { it.serialize(adapterContext, it.store()) }.toTypedArray()
 
-		chunk.inner.persistentDataContainer.set(STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY, array)
+		chunk.inner.persistentDataContainer.set(STORED_MULTIBLOCK_ENTITIES, TAG_CONTAINER_ARRAY, array)
 	}
 
 	/**
@@ -71,7 +66,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 	 **/
 	private fun loadMultiblocks() {
 		val serialized = try {
-			chunk.inner.persistentDataContainer.get(STORED_MULTIBLOCK_ENTITIES, PersistentDataType.TAG_CONTAINER_ARRAY) ?: return
+			chunk.inner.persistentDataContainer.get(STORED_MULTIBLOCK_ENTITIES, TAG_CONTAINER_ARRAY) ?: return
 		} catch (e: IllegalArgumentException) {
 			log.warn("Could not load chunks multiblocks for $chunk")
 			if (e.message == "The found tag instance (NBTTagList) cannot store List") {
@@ -83,7 +78,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 			arrayOf()
 		} catch (e: Throwable) {
 			// Try to load backup
-			chunk.inner.persistentDataContainer.get(STORED_MULTIBLOCK_ENTITIES_OLD, PersistentDataType.TAG_CONTAINER_ARRAY) ?: return
+			chunk.inner.persistentDataContainer.get(STORED_MULTIBLOCK_ENTITIES_OLD, TAG_CONTAINER_ARRAY) ?: return
 		} catch (e: Throwable) {
 			// Give up
 			return
@@ -104,6 +99,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 	fun onUnload() {
 		multiblockEntities.values.forEach {
 			it.onUnload()
+
 			if (it is DisplayMultiblockEntity) it.displayHandler.remove()
 		}
 
