@@ -21,8 +21,8 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.pane
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.stairs
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -52,7 +52,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-object ElectrolysisMultiblock : Multiblock(), PoweredMultiblock<ElectrolysisMultiblock.ElectrolysisMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
+object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMultiblock.ElectrolysisMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	override val name: String = "ElectrolysisMultiblock"
 	override val alternativeDetectionNames: Array<String> = arrayOf("Electrolysis")
 
@@ -179,8 +179,6 @@ object ElectrolysisMultiblock : Multiblock(), PoweredMultiblock<ElectrolysisMult
 		}
 	}
 
-	override val maxPower: Int = 100_000
-
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): ElectrolysisMultiblockEntity {
 		return ElectrolysisMultiblockEntity(
 			data,
@@ -211,15 +209,8 @@ object ElectrolysisMultiblock : Multiblock(), PoweredMultiblock<ElectrolysisMult
 		z: Int,
 		world: World,
 		structureDirection: BlockFace
-	) : MultiblockEntity(
-		manager,
-		ElectrolysisMultiblock,
-		x,
-		y,
-		z,
-		world,
-		structureDirection
-	), AsyncTickingMultiblockEntity, FluidStoringEntity, PoweredMultiblockEntity {
+	) : MultiblockEntity(manager, ElectrolysisMultiblock, x, y, z, world, structureDirection), AsyncTickingMultiblockEntity, FluidStoringEntity, PoweredMultiblockEntity {
+		override val maxPower: Int = 100_000
 		override val multiblock = ElectrolysisMultiblock
 		override val tickingManager: TickingManager = TickingManager(interval = 4)
 

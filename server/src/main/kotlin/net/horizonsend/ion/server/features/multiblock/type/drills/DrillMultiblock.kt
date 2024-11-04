@@ -6,26 +6,22 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
-import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
+import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity.UserManager
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
@@ -53,12 +49,11 @@ import java.util.EnumSet
 import java.util.UUID
 import kotlin.math.max
 
-abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : Multiblock(), PoweredMultiblock<DrillMultiblock.DrillMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
+abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : Multiblock(), EntityMultiblock<DrillMultiblock.DrillMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	abstract val radius: Int
-
 	abstract val coolDown: Int
-
 	abstract val mirrored: Boolean
+	abstract val maxPower: Int
 
 	override val name = "drill"
 
@@ -136,10 +131,11 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, UserManagedMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
-		override val powerStorage: PowerStorage = loadStoredPower(data)
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection), UserManagedMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity {
+		override val maxPower: Int = multiblock.maxPower
 		override val tickingManager: TickingManager = TickingManager(interval = 5)
 		override val userManager: UserManager = UserManager(data, persistent = true)
+		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
 		override fun tick() {
 			val player = userManager.getUserPlayer() ?: return disable()
@@ -240,29 +236,8 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			userManager.saveUserData(store)
+			super.storeAdditionalData(store, adapterContext)
 			savePowerData(store)
-		}
-
-		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
-			this,
-			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
-		).register()
-
-		override fun onLoad() {
-			displayHandler.update()
-		}
-
-		override fun onUnload() {
-			displayHandler.remove()
-		}
-
-		override fun handleRemoval() {
-			displayHandler.remove()
-		}
-
-		override fun displaceAdditional(movement: StarshipMovement) {
-			displayHandler.displace(movement)
 		}
 
 		override fun loadFromSign(sign: Sign) {
