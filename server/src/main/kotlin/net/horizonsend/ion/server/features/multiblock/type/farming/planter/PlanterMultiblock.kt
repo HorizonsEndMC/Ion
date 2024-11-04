@@ -110,8 +110,7 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity, StatusTickedMultiblockEntity {
-		override val maxPower = multiblock.maxPower
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, multiblock.maxPower), PoweredMultiblockEntity, SyncTickingMultiblockEntity, LegacyMultiblockEntity, StatusTickedMultiblockEntity {
 		override val tickingManager: TickingManager = TickingManager(interval = 20)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
