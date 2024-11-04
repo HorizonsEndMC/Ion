@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.active.projectile.AntiAirCannonProjectile
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.RotatingMultiblock
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
@@ -28,9 +27,9 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 
-object AntiAirCannonBaseMultiblock : Multiblock(), PowerStoringMultiblock, InteractableMultiblock {
+object AntiAirCannonBaseMultiblock : Multiblock()/*, PowerStoringMultiblock*/, InteractableMultiblock {
 	override val name: String = "antiaircannon"
-	override val maxPower: Int = 1_000_000
+//	override val maxPower: Int = 1_000_000
 
 	private val turretPivotPoint = Vec3i(0, 3, -4)
 
