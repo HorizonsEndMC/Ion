@@ -33,6 +33,7 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.persistence.PersistentDataAdapterContext
 
 object DecomposerMultiblock : Multiblock(), EntityMultiblock<DecomposerMultiblock.DecomposerEntity>, InteractableMultiblock {
 	override val name: String = "decomposer"
@@ -130,6 +131,11 @@ object DecomposerMultiblock : Multiblock(), EntityMultiblock<DecomposerMultibloc
 			}
 
 			return dimension
+		}
+
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			println("Decomposer got call for additional data")
+			super.storeAdditionalData(store, adapterContext)
 		}
 
 		fun getStorage() = getInventory(0, -1, -1)

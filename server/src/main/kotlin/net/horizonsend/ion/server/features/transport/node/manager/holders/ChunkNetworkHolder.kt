@@ -1,9 +1,5 @@
 package net.horizonsend.ion.server.features.transport.node.manager.holders
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.node.TransportNode
@@ -11,6 +7,7 @@ import net.horizonsend.ion.server.features.transport.node.manager.ChunkTransport
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
@@ -27,8 +24,6 @@ class ChunkNetworkHolder<T: NodeManager<*>> private constructor (val manager: Ch
 	constructor(manager: ChunkTransportManager, network: (ChunkNetworkHolder<T>) -> T) : this(manager) {
 		this.network = network(this)
 	}
-
-	override val scope: CoroutineScope = manager.scope
 
 	override fun getWorld(): World = manager.chunk.world
 
@@ -70,13 +65,13 @@ class ChunkNetworkHolder<T: NodeManager<*>> private constructor (val manager: Ch
 		// Load data sync
 		val good = loadData()
 
-		manager.scope.launch {
+		Tasks.async {
 			val adapterContext = chunkPDC.adapterContext
 
 			// Handle cases of data corruption
 			if (!good) {
 				network.clearData()
-				collectAllNodes().join()
+				collectAllNodes()
 
 				// Save rebuilt data
 				save(adapterContext)
@@ -151,11 +146,11 @@ class ChunkNetworkHolder<T: NodeManager<*>> private constructor (val manager: Ch
 	/**
 	 * Build node data from an unregistered state
 	 **/
-	private fun collectAllNodes(): Job = manager.scope.launch {
+	private fun collectAllNodes() {
 		// Parallel collect the nodes of each section
 		manager.chunk.sections.map { (y, _) ->
-			launch { collectSectionNodes(y) }
-		}.joinAll()
+			collectSectionNodes(y)
+		}
 	}
 
 	/**
