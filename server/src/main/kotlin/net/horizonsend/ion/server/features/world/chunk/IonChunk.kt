@@ -146,7 +146,7 @@ class IonChunk(
 		private fun unregisterChunk(chunk: Chunk) {
 			val ionWorld = chunk.world.ion
 
-			val removed = ionWorld.removeChunk(chunk) ?: return
+			val removed = ionWorld.removeChunk(chunk) ?: return log.warn("Removed unregistered IonChunk!")
 
 			removed.onUnload()
 			ChunkRegion.unloadChunk(removed)

@@ -32,8 +32,6 @@ abstract class AOEWave(starship: Starship, shooter: Damager, val firePos: Locati
 
 		distance += (speed * delta)
 
-		println("Distance: $distance")
-
 		if (distance >= range) {
 			return
 		}

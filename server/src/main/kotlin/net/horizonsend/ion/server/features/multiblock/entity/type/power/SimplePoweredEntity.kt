@@ -25,7 +25,12 @@ abstract class SimplePoweredEntity(
 	structureDirection: BlockFace,
 	final override val maxPower: Int
 ) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, DisplayMultiblockEntity {
-	final override val powerStorage: PowerStorage = PowerStorage(this, data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0), maxPower)
+	@Suppress("LeakingThis") // Only a reference is needed, max power is provided in the constructor
+	final override val powerStorage: PowerStorage = PowerStorage(
+		this,
+		data.getAdditionalDataOrDefault(NamespacedKeys.POWER, PersistentDataType.INTEGER, 0),
+		maxPower
+	)
 
 	override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 		savePowerData(store)
