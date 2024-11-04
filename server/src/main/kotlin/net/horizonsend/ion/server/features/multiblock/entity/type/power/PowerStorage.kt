@@ -13,6 +13,7 @@ class PowerStorage(val holder: PoweredMultiblockEntity, amount: Int, val capacit
 	fun isFull() = getPower() >= capacity
 
 	fun setPower(amount: Int) {
+		Throwable().printStackTrace()
 		synchronized(mutex) {
 			val correctedPower = amount.coerceIn(0, capacity)
 
