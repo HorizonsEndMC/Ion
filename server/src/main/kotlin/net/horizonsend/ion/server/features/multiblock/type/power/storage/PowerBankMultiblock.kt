@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.power.storage
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.utils.text.legacyAmpersand
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers.newMultiblockSignOverlay
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
@@ -11,9 +13,11 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerSto
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -22,7 +26,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredMultiblock<PowerBankMultiblock.PowerBankEntity>, InteractableMultiblock {
+abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredMultiblock<PowerBankMultiblock.PowerBankEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	abstract val tierMaterial: Material
 	override val name = "powerbank"
 
@@ -32,6 +36,8 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), NewPoweredM
 		line3 = null,
 		line4 = tierText
 	)
+
+	override val displayName: Component = ofChildren(legacyAmpersand.deserialize(tierText), Component.text(" Power Bank"))
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
