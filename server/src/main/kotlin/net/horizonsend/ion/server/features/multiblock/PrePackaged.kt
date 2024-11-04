@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.multiblock.shape.BlockRequirement
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -88,6 +89,8 @@ object PrePackaged {
 			val soundGroup = placement.soundGroup
 			origin.world.playSound(block.location, soundGroup.placeSound, soundGroup.volume, soundGroup.pitch)
 		}
+
+		if (data.multiblock is SignlessStarshipWeaponMultiblock<*>) return
 
 		// Add sign
 		val signPosition = origin.getRelative(direction.oppositeFace, 1)
