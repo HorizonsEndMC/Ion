@@ -1,23 +1,19 @@
 package net.horizonsend.ion.server.features.multiblock.type.industry
 
-import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
-import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
 
-object CentrifugeMultiblock : Multiblock(), PoweredMultiblock<CentrifugeMultiblock.CentrifugeMultiblockEntity> {
+object CentrifugeMultiblock : Multiblock(), EntityMultiblock<CentrifugeMultiblock.CentrifugeMultiblockEntity> {
 	override val name = "centrifuge"
 
 	override val signText = createSignText(
@@ -26,8 +22,6 @@ object CentrifugeMultiblock : Multiblock(), PoweredMultiblock<CentrifugeMultiblo
 		line3 = null,
 		line4 = null
 	)
-
-	override val maxPower: Int = 300_000
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -124,33 +118,14 @@ object CentrifugeMultiblock : Multiblock(), PoweredMultiblock<CentrifugeMultiblo
 		z: Int,
 		world: World,
 		structureDirection: BlockFace
-	) : MultiblockEntity(manager, CentrifugeMultiblock, x, y, z, world, structureDirection), LegacyMultiblockEntity, PoweredMultiblockEntity {
-		override val powerStorage: PowerStorage = loadStoredPower(data)
+	) : SimplePoweredEntity(data, CentrifugeMultiblock, manager, x, y, z, world, structureDirection), LegacyMultiblockEntity, PoweredMultiblockEntity {
+		override val maxPower: Int = 300_000
 		override val multiblock: CentrifugeMultiblock = CentrifugeMultiblock
 
-		val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
-			this,
-			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.5f)
-		).register()
+		override val displayHandler = standardPowerDisplay(this)
 
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
-		}
-
-		override fun onLoad() {
-			displayHandler.update()
-		}
-
-		override fun onUnload() {
-			displayHandler.remove()
-		}
-
-		override fun handleRemoval() {
-			displayHandler.remove()
-		}
-
-		override fun displaceAdditional(movement: StarshipMovement) {
-			displayHandler.displace(movement)
 		}
 	}
 }
