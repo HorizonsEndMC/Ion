@@ -10,14 +10,14 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerSto
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.NewPoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
-object MissileLoaderMultiblock : Multiblock(), NewPoweredMultiblock<MissileLoaderMultiblock.MissileLoaderMultiblockEntity> {
+object MissileLoaderMultiblock : Multiblock(), PoweredMultiblock<MissileLoaderMultiblock.MissileLoaderMultiblockEntity> {
 
     override fun MultiblockShape.buildStructure() {
         z(+0) {
@@ -154,10 +154,10 @@ object MissileLoaderMultiblock : Multiblock(), NewPoweredMultiblock<MissileLoade
 		y: Int,
 		z: Int,
 		world: World,
-		structureDirection: BlockFace
+		structureDirection: BlockFace,
 	) : MultiblockEntity(manager, MissileLoaderMultiblock, x, y, z, world, structureDirection), LegacyMultiblockEntity, PoweredMultiblockEntity {
-		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val multiblock: MissileLoaderMultiblock = MissileLoaderMultiblock
+		override val powerStorage: PowerStorage = loadStoredPower(data)
 
 		val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
