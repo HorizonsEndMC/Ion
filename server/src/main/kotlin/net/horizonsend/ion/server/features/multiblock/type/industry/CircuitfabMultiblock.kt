@@ -10,13 +10,13 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerSto
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.PoweredMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
-object CircuitfabMultiblock : Multiblock(), PoweredMultiblock<CircuitfabMultiblock.CircuitfabMultiblockEntity> {
+object CircuitfabMultiblock : Multiblock(), EntityMultiblock<CircuitfabMultiblock.CircuitfabMultiblockEntity> {
 	override val name = "circuitfab"
 
 	override val signText = createSignText(
@@ -25,8 +25,6 @@ object CircuitfabMultiblock : Multiblock(), PoweredMultiblock<CircuitfabMultiblo
 		line3 = null,
 		line4 = null
 	)
-
-	override val maxPower = 300_000
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -92,6 +90,7 @@ object CircuitfabMultiblock : Multiblock(), PoweredMultiblock<CircuitfabMultiblo
 		world: World,
 		structureDirection: BlockFace
 	) : MultiblockEntity(manager, CircuitfabMultiblock, x, y, z, world, structureDirection), LegacyMultiblockEntity, PoweredMultiblockEntity {
+		override val maxPower = 300_000
 		override val powerStorage: PowerStorage = loadStoredPower(data)
 		override val multiblock: CircuitfabMultiblock = CircuitfabMultiblock
 
