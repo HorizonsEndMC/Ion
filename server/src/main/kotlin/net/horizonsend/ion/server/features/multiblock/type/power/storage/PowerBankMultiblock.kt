@@ -105,8 +105,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMulti
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureFace), LegacyMultiblockEntity, PoweredMultiblockEntity {
-		override val maxPower = multiblock.maxPower
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureFace, multiblock.maxPower), LegacyMultiblockEntity, PoweredMultiblockEntity {
 		override val displayHandler = standardPowerDisplay(this)
 
 		override fun loadFromSign(sign: Sign) {

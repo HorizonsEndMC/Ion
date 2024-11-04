@@ -118,8 +118,7 @@ object CentrifugeMultiblock : Multiblock(), EntityMultiblock<CentrifugeMultibloc
 		z: Int,
 		world: World,
 		structureDirection: BlockFace
-	) : SimplePoweredEntity(data, CentrifugeMultiblock, manager, x, y, z, world, structureDirection), LegacyMultiblockEntity, PoweredMultiblockEntity {
-		override val maxPower: Int = 300_000
+	) : SimplePoweredEntity(data, CentrifugeMultiblock, manager, x, y, z, world, structureDirection, 300_000), LegacyMultiblockEntity, PoweredMultiblockEntity {
 		override val multiblock: CentrifugeMultiblock = CentrifugeMultiblock
 
 		override val displayHandler = standardPowerDisplay(this)
