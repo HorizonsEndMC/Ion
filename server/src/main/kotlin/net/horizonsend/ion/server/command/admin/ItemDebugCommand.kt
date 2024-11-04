@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.command.admin
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information

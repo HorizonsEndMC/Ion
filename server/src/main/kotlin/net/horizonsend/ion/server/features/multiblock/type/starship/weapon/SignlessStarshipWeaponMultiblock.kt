@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsy
 import net.kyori.adventure.text.Component
 import org.bukkit.block.Sign
 
-// TODO: Make signless multiblocks an actualStyle thing
+// TODO: Make signless multiblocks an actual thing
 abstract class SignlessStarshipWeaponMultiblock<TSubsystem : WeaponSubsystem> : Multiblock(), SubsystemMultiblock<TSubsystem> {
 	override val signText = arrayOf<Component?>(null, null, null, null)
 

@@ -8,7 +8,9 @@ import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPres
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield10
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield20
@@ -213,9 +215,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(AutoCrafterMultiblockTier1)
 		registerMultiblock(AutoCrafterMultiblockTier1Mirrored)
 		registerMultiblock(AutoCrafterMultiblockTier2)
-		registerMultiblock(AutoCrafterMultiblockTier1Mirrored)
+		registerMultiblock(AutoCrafterMultiblockTier2Mirrored)
 		registerMultiblock(AutoCrafterMultiblockTier3)
-		registerMultiblock(AutoCrafterMultiblockTier1Mirrored)
+		registerMultiblock(AutoCrafterMultiblockTier3Mirrored)
 
 		registerMultiblock(PowerFurnaceMultiblockTier1)
 		registerMultiblock(PowerFurnaceMultiblockTier2)
