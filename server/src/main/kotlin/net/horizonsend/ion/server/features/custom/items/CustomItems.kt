@@ -14,8 +14,8 @@ import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.minerals.MineralItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
+import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.MultimeterItem
-import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblockItem
 import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
@@ -438,7 +438,7 @@ object CustomItems {
 	val FERTILIZER_DISPENSER: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FERTILIZER_DISPENSER", 7014, text("Fertilizer Sprayer").itemName, text("Applies bonemeal to crops in the effected area, if available in the user's inventory", GRAY).itemName
 	) { ItemModRegistry.FERTILIZER_DISPENSER })
 
-	val PACKAGED_MULTIBLOCK = register(PackagedMultiblockItem)
+	val PACKAGED_MULTIBLOCK = register(MultiblockToken)
 	// Tools end
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
