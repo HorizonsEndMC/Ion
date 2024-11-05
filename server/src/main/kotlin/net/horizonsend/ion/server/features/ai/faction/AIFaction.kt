@@ -390,7 +390,9 @@ class AIFaction private constructor(
 			.build()
 
 		val ABYSSAL = builder("ABYSALL", ABYSSAL_LIGHT_RED.value())
-			.addNames(listOf("Spectre", "Nebuchadnezzar", "Balthazar", "Salmanazar", "Jeroboam", "The Pale One").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.addNames( 0, listOf("Spectre", "Nebuchadnezzar").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.addNames( 1, listOf("Balthazar", "Salmanazar").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.addNames( 2, listOf("Jeroboam", "The Pale One").map { it.toComponent(ABYSSAL_DARK_RED) })
 			.setMessagePrefix("")
 			.addSmackMessages(
 				"<$ABYSSAL_DESATURATED_RED>Why do you hide your bones?",
@@ -410,12 +412,16 @@ class AIFaction private constructor(
 			.build()
 
 		val PUMPKINS = builder("PUMPKINS", TextColor.fromHexString("#FFA500")!!.value())
-			.addNames(listOf("Kin", "Matriarch").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.addNames(0,listOf("Kin!", "Matriarch!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.addNames(0,listOf("Kin!!", "Matriarch!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.addNames(0,listOf("Kin!!!", "Matriarch!!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
 			.setMessagePrefix("<#FFA500>OY! Hey!")
 			.build()
 
 		val SKELETONS = builder("SKELETONS", DARK_RED.value())
-			.addNames(listOf("Lost Soul").map { it.toComponent(DARK_RED) })
+			.addNames(0,listOf("Lost Soul").map { it.toComponent(DARK_RED) })
+			.addNames(1,listOf("Hungry Ghoul").map { it.toComponent(DARK_RED) })
+			.addNames(2,listOf("Frenzied Wreath").map { it.toComponent(DARK_RED) })
 			.setMessagePrefix("")
 			.addSmackMessages(
 				"YOU WILL SOON JOIN THE DEAD, MORTAL!",

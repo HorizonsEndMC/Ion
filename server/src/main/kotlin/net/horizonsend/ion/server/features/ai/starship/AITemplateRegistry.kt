@@ -962,6 +962,7 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
@@ -992,6 +993,7 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
@@ -1021,6 +1023,7 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
@@ -1050,6 +1053,7 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
