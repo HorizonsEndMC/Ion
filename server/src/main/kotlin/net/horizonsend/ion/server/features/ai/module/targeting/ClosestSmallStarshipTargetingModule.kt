@@ -30,9 +30,7 @@ class ClosestSmallStarshipTargetingModule(
 
     override fun searchForTargetList(): List<AITarget> {
         return controller.getNearbyTargetsInRadius(0.0, maxRange) {
-            if (it is StarshipTarget) {
-                it.ship.controller !is AIController
-            } else true
+            targetFilter(it,false)
         }.sortedWith(
             Comparator { o1, o2 ->
                 // if both objects are not StarshipTargets, maintain order
