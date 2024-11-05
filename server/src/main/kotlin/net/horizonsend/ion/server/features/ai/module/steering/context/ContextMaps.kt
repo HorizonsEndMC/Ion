@@ -3,11 +3,14 @@ package net.horizonsend.ion.server.features.ai.module.steering.context
 import SteeringModule
 import net.horizonsend.ion.server.IonServer.aiContextConfig
 import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
+import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
+import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToPitchYaw
@@ -208,7 +211,7 @@ class FaceSeekContext(
 		val dist = offset.length() + 1e-4
 		offset.normalize()
 		offset.multiply(config.faceWeight).add(ship.getTargetForward().direction).normalize()
-		dotContext(offset,0.0, dist / config.falloff * config.weight * difficulty.faceModifier)
+		dotContext(offset,-0.2, dist / config.falloff * config.weight * difficulty.faceModifier)
 		for (i in 0 until NUMBINS) {
 			bins[i] = min(bins[i], config.maxWeight * difficulty.faceModifier)
 		}
@@ -253,6 +256,41 @@ class GoalSeekContext(
 		checkContext()
 	}
 }
+/** makes ships spawned in the same fleet stay close to the center of mass modulated by the sum of cube root block counts
+ * This Context is meant for **`movementInterest`**
+ *
+ *  * **`weight`** controls how strong this behavior is
+ *  * **`falloffMod`** controls how this behavior scales with distance, higher
+ * values will cause a lower weight (ie agent will only move towards fleet from further away)*/
+class FleetGravityContext(
+	val ship : Starship,
+	val config : AIContextConfiguration.FleetGravityContextConfiguration = aiContextConfig.defaultFleetGravityContextConfiguration,
+) : ContextMap(){
+	override fun populateContext() {
+		clearContext()
+		val fleet = (ship.controller as AIController) //get ships in the same fleet in the same world
+			.getModuleByType<AIFleetManageModule>()?.fleet?.members?.filter {it.get()?.world == ship.world}
+		fleet ?: return
+		if (fleet.size <= 1) return
+		val com = Vector()
+		fleet.forEach{ it.get()?.centerOfMass?.let { it1 -> com.add(it1.toVector()) } }
+		com.multiply(1/fleet.size.toDouble())
+
+		val shipPos = ship.centerOfMass.toVector()
+		val target= com.clone()
+		val offset = target.add(shipPos.clone().multiply(-1.0))
+		val dist = offset.length() + 1e-4
+		offset.normalize()
+
+		var R3BlockCount = 0.0
+		fleet.forEach {it.get()?.let { other -> R3BlockCount += other.currentBlockCount.toDouble().pow(1/3.0)}}
+		//R3BlockCount /= fleet.size.toDouble()
+
+		val falloff = R3BlockCount * config.falloffMod
+
+		dotContext(offset,0.0, dist / falloff * config.weight )
+	}
+}
 
 class SquadFormationContext(
 
@@ -279,6 +317,23 @@ class SquadFormationContext(
 		val throttleWeight = min(throttleFalloff*weight / dist, maxWeight)
 		lincontext!!.apply(lincontext!!.populatePeak(dist/throttleFalloff, throttleWeight))
 		 */
+	}
+}
+
+class AvoidIlliusContext(val ship : Starship) : ContextMap() {
+	override fun populateContext() {
+		clearContext()
+		if (ship.world.name != "Asteri") return
+		val loc = Space.getPlanet("Illius")?.location?.toVector() ?: return
+		val shipPos = ship.centerOfMass.toVector()
+		val target= loc.clone()
+		val offset = target.add(shipPos.clone().multiply(-1.0))
+		val dist = offset.length() + 1e-4
+		offset.normalize()
+
+		val falloff = 400.0
+
+		dotContext(offset,0.0, -1.0*falloff/dist * 1.0)
 	}
 }
 

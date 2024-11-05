@@ -2,11 +2,14 @@ package net.horizonsend.ion.server.features.ai.module.steering
 
 import SteeringModule
 import net.horizonsend.ion.server.IonServer.aiSteeringConfig
+import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
+import net.horizonsend.ion.server.features.ai.module.steering.context.AvoidIlliusContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.BlankContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.BorderDangerContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.ContextMap
 import net.horizonsend.ion.server.features.ai.module.steering.context.FaceSeekContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.FleetGravityContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.MovementInterestContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.ObstructionDangerContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.OffsetSeekContext
@@ -52,6 +55,8 @@ open class BasicSteeringModule(
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this)
 		contexts["faceSeek"]= FaceSeekContext(ship, generalTarget,difficulty)
+		contexts["fleetGravity"] = FleetGravityContext(ship)
+		contexts["avoidIllius"] = AvoidIlliusContext(ship)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)
 		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
@@ -71,7 +76,9 @@ open class BasicSteeringModule(
 
 		contexts["movementInterest"]!!.addAll(
 			contexts["wander"]!!,
-			contexts["offsetSeek"]!!
+			contexts["offsetSeek"]!!,
+			contexts["fleetGravity"]!!,
+			contexts["avoidIllius"]!!
 		)
 		contexts["movementInterest"]!!.clipZero()//safeguard against neg weights
 

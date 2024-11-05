@@ -4,9 +4,11 @@ import net.horizonsend.ion.server.IonServer.aiContextConfig
 import net.horizonsend.ion.server.IonServer.aiSteeringConfig
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
+import net.horizonsend.ion.server.features.ai.module.steering.context.AvoidIlliusContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.BlankContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.BorderDangerContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.FaceSeekContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.FleetGravityContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.MovementInterestContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.ObstructionDangerContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.OffsetSeekContext
@@ -52,6 +54,8 @@ class StarfighterSteeringModule(
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,aiContextConfig.starfighterOffsetSeekContextConfiguration, offsetSupplier = orbitDist)
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty, aiContextConfig.starfighterFaceSeekContextConfiguration)
+		contexts["fleetGravity"] = FleetGravityContext(ship)
+		contexts["avoidIllius"] = AvoidIlliusContext(ship)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)
 		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)

@@ -25,6 +25,8 @@ data class AIContextConfiguration(
 
 	val defaultGoalSeekContextConfiguration: GoalSeekContextConfiguration = GoalSeekContextConfiguration(),
 
+	val defaultFleetGravityContextConfiguration: FleetGravityContextConfiguration = FleetGravityContextConfiguration(),
+
 	val defaultShieldAwarenessContextConfiguration: ShieldAwarenessContextConfiguration = ShieldAwarenessContextConfiguration(),
 	val gunshipShieldAwarenessContextConfiguration: ShieldAwarenessContextConfiguration = ShieldAwarenessContextConfiguration(weight = 0.5),
 	val capitalShieldAwarenessContextConfiguration: ShieldAwarenessContextConfiguration = ShieldAwarenessContextConfiguration(weight = 1.0),
@@ -80,6 +82,13 @@ data class AIContextConfiguration(
 		val weight: Double = 1.0,
 		val maxWeight: Double = 2.0,
 		val falloff: Double = 1000.0
+	)
+
+	@Serializable
+	data class FleetGravityContextConfiguration(
+		val weight: Double = 1.0,
+		val falloffMod: Double = 16.0//number was estimated by determining the factor needed to keep 2 6k ships at most
+		//300 blocks apart with wandering only
 	)
 
 	@Serializable
