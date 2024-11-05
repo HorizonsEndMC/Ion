@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.throwables.thrown
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Throwables.ThrowableBalancing
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.damager
@@ -82,7 +83,9 @@ class ThrownDetonator(
 				world,
 				block,
 				it
-			)
+			) { starship ->
+				starship.lastWeaponName = CustomItems.DETONATOR.displayName
+			}
 		}
 
 		world.getNearbyEntities(location, balancing.damageRadius, balancing.damageRadius, balancing.damageRadius)

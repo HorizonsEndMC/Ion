@@ -100,7 +100,9 @@ class RayTracedParticleProjectile(
 						location.world,
 						hitBlock,
 						shooter
-					)
+					) {
+						it.lastWeaponName = text("Blaster Cannon")
+					}
 				}
 			}
 

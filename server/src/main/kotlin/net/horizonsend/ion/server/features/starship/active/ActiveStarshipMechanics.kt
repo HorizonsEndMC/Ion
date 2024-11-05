@@ -184,7 +184,9 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		val damager = entityDamagerCache[entity]
 
-		addToDamagers(world, block, damager)
+		addToDamagers(world, block, damager) { starship ->
+			starship.lastWeaponName = entity.name()
+		}
 	}
 
 	@EventHandler

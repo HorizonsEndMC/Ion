@@ -40,8 +40,8 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
+import net.horizonsend.ion.server.features.starship.modules.PlayerShipSinkMessageFactory
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
-import net.horizonsend.ion.server.features.starship.modules.SinkMessageFactory
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -574,7 +574,7 @@ class Starship (
 
 	//region Kill Credit
 	val rewardsProviders: LinkedList<RewardsProvider> = LinkedList<RewardsProvider>()
-	var sinkMessageFactory: MessageFactory = SinkMessageFactory(this)
+	var sinkMessageFactory: MessageFactory = PlayerShipSinkMessageFactory(this)
 
 	var lastWeaponName: Component? = null
 

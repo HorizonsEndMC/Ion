@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.throwables
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
+import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.damager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -89,7 +90,9 @@ class ThrownPumpkinGrenade(
 				world,
 				block,
 				it
-			)
+			) { starship ->
+				starship.lastWeaponName = CustomItems.PUMPKIN_GRENADE.displayName
+			}
 		}
 
 		blocks.forEach { it.setType(Material.AIR, false) }

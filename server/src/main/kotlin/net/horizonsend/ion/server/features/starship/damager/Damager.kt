@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.progression.SLXP
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.event.ImpactStarshipEvent
@@ -25,6 +26,7 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import java.util.Locale
+import java.util.function.Consumer
 
 /** An object capable of damaging a starship **/
 interface Damager : ForwardingAudience {
@@ -124,13 +126,13 @@ class AIShipDamager(override val starship: ActiveStarship, override val color: C
 	override fun audiences(): MutableIterable<Audience> = mutableListOf(starship)
 }
 
-fun addToDamagers(world: World, block: Block, shooter: Entity) {
+fun addToDamagers(world: World, block: Block, shooter: Entity, consumer: Consumer<Starship>?) {
 	val damager = entityDamagerCache[shooter]
 
-	addToDamagers(world, block, damager)
+	addToDamagers(world, block, damager, consumer)
 }
 
-fun addToDamagers(world: World, block: Block, shooter: Damager) {
+fun addToDamagers(world: World, block: Block, shooter: Damager, consumer: Consumer<Starship>?) {
 	val x = block.x
 	val y = block.y
 	val z = block.z
@@ -145,5 +147,6 @@ fun addToDamagers(world: World, block: Block, shooter: Damager) {
 		if (event.isCancelled) return
 
 		otherStarship.addDamager(shooter)
+		consumer?.accept(otherStarship)
 	}
 }
