@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.ConsumedItemIngredient
+import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.ConsumedMatchingIngredient
 import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.GasCanisterIngredient
 import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.ProgressHolderItemIngredient
 import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.ResourceIngredient
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.Furna
 import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.ProcessingMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.type.crafting.result.ItemResult
+import net.horizonsend.ion.server.features.multiblock.type.crafting.result.MatchingResult
 import net.horizonsend.ion.server.features.multiblock.type.crafting.result.MultiRecipeResult
 import net.horizonsend.ion.server.features.multiblock.type.crafting.result.ProgressItemResult
 import net.horizonsend.ion.server.features.multiblock.type.crafting.result.SoundResult
@@ -28,6 +30,7 @@ import org.bukkit.SoundCategory
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import java.util.EnumSet
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentHashMap
 
@@ -147,6 +150,48 @@ object MultiblockRecipes : IonServerComponent() {
 		resources = listOf(power(100)),
 		result = ProgressItemResult(CustomItems.ARSENAL_MISSILE, 60L * 60L * 20L, SoundResult("horizonsend:industry.mload", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	)
+	)
+
+	//BC recipies end
+
+	//misc recipies start
+
+	val COPPER_OXIDATION = registerRecipe(
+		FurnaceMultiblockRecipe(
+			multiblock = GasFurnaceMultiblock,
+			smelting = ConsumedMatchingIngredient("^(WAXED_|)(CUT|)(_?)(COPPER_BLOCK|COPPER)(.*)",
+				setOf(Material.COPPER_ORE,
+					Material.DEEPSLATE_COPPER_ORE,
+					Material.COPPER_INGOT),
+			0),
+			fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 5),
+			resources = listOf(power(100)),
+			result = MatchingResult("^(WAXED_|)(EXPOSED)(.*)","\$1EXPOSED\$3\$2_COPPER\$5", setOf())
+		)
+	)
+
+	val EXPOSED_COPPER_OXIDATION = registerRecipe(
+		FurnaceMultiblockRecipe(
+			multiblock = GasFurnaceMultiblock,
+			smelting = ConsumedMatchingIngredient("^(WAXED_|)(EXPOSED)(.*)",
+				setOf(),
+				0),
+			fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 5),
+			resources = listOf(power(100)),
+			result = MatchingResult("^(WAXED_|)(WEATHERED)(.*)","\$1WEATHERED\$3", setOf())
+		)
+	)
+
+	val WEATHERED_COPPER_OXIDATION = registerRecipe(
+		FurnaceMultiblockRecipe(
+			multiblock = GasFurnaceMultiblock,
+			smelting = ConsumedMatchingIngredient("^(WAXED_|)(WEATHERED)(.*)",
+				setOf(),
+				0),
+			fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 5),
+			resources = listOf(power(100)),
+			result = MatchingResult("^(WAXED_|)(OXIDIZED)(.*)","\$1OXIDIZED\$3", setOf())
+		)
 	)
 
 	/**
