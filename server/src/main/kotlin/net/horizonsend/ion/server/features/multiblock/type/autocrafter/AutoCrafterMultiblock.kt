@@ -5,6 +5,7 @@ import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack as CBItemStack
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
@@ -189,7 +190,10 @@ abstract class AutoCrafterMultiblock(
 						requiredIngredients++
 						for ((index: Int, item: ItemStack?) in inputInventory.withIndex()) {
 							// if it matches AND we haven't already taken too much from it, use it
-							if (item?.isSimilar(ingredient) == true && item.amount >= removeSlots.count { it == index } + 1) {
+							if (item?.isSimilar(ingredient) == true &&
+								// validate that the customItem data (if any) matches
+								item.customItem == ingredient.customItem == true &&
+								item.amount >= removeSlots.count { it == index } + 1) {
 								removeSlots += index
 								matchedIngredients++
 								continue@ingredientLoop
