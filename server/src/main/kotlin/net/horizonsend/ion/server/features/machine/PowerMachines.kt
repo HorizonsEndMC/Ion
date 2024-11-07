@@ -4,6 +4,11 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.crafting.MultiblockRecipes
+import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.ConsumedItemIngredient
+import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.FurnaceMultiblockRecipe
+import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.MultiblockRecipe
+import net.horizonsend.ion.server.features.multiblock.type.crafting.result.ItemResult
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -53,6 +58,25 @@ object PowerMachines : IonServerComponent() {
 				NamespacedKey(IonServer, "gas_furnaces"),
 				ItemStack(Material.IRON_INGOT),
 				Material.IRON_INGOT,
+				0.0f,
+				Int.MAX_VALUE
+			))
+
+			addCopperRecipes(MultiblockRecipes.COPPER_OXIDATION)
+			addCopperRecipes(MultiblockRecipes.EXPOSED_COPPER_OXIDATION)
+			addCopperRecipes(MultiblockRecipes.WEATHERED_COPPER_OXIDATION)
+		}
+	}
+
+	private fun addCopperRecipes(recipes : Set<MultiblockRecipe<*>>) {
+		for (recipe in recipes) {
+			if (recipe !is FurnaceMultiblockRecipe) continue
+			val input = (recipe.smelting as ConsumedItemIngredient).ingredient
+			val output = (recipe.result as ItemResult).result
+			Bukkit.addRecipe(FurnaceRecipe(
+				NamespacedKey(IonServer, output.type.name.lowercase()),
+				output,
+				input.type,
 				0.0f,
 				Int.MAX_VALUE
 			))
