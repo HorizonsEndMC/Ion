@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.ConsumedItemIngredient
-import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.ConsumedMatchingIngredient
 import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.GasCanisterIngredient
 import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.ProgressHolderItemIngredient
 import net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient.ResourceIngredient
@@ -14,7 +13,6 @@ import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.Furna
 import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.ProcessingMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.type.crafting.result.ItemResult
-import net.horizonsend.ion.server.features.multiblock.type.crafting.result.MatchingResult
 import net.horizonsend.ion.server.features.multiblock.type.crafting.result.MultiRecipeResult
 import net.horizonsend.ion.server.features.multiblock.type.crafting.result.ProgressItemResult
 import net.horizonsend.ion.server.features.multiblock.type.crafting.result.SoundResult
@@ -25,12 +23,12 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.getMatchingMaterials
 import org.bukkit.Material
 import org.bukkit.SoundCategory
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import java.util.EnumSet
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentHashMap
 
@@ -156,42 +154,27 @@ object MultiblockRecipes : IonServerComponent() {
 
 	//misc recipies start
 
-	val COPPER_OXIDATION = registerRecipe(
-		FurnaceMultiblockRecipe(
-			multiblock = GasFurnaceMultiblock,
-			smelting = ConsumedMatchingIngredient("^(WAXED_|)(CUT|)(_?)(COPPER_BLOCK|COPPER)(.*)",
-				setOf(Material.COPPER_ORE,
-					Material.DEEPSLATE_COPPER_ORE,
-					Material.COPPER_INGOT),
-			0),
-			fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 5),
-			resources = listOf(power(100)),
-			result = MatchingResult("^(WAXED_|)(EXPOSED)(.*)","\$1EXPOSED\$3\$2_COPPER\$5", setOf())
-		)
+	val COPPER_OXIDATION = registerAllMatch(
+		"^(WAXED_|)(CUT|)(_?)(COPPER_BLOCK|COPPER)(.*)",
+		setOf(Material.COPPER_ORE,
+			Material.DEEPSLATE_COPPER_ORE,
+			Material.COPPER_INGOT),
+		"^(WAXED_|)(EXPOSED)(.*)",
+		"\$1EXPOSED\$3\$2_COPPER\$5"
 	)
 
-	val EXPOSED_COPPER_OXIDATION = registerRecipe(
-		FurnaceMultiblockRecipe(
-			multiblock = GasFurnaceMultiblock,
-			smelting = ConsumedMatchingIngredient("^(WAXED_|)(EXPOSED)(.*)",
-				setOf(),
-				0),
-			fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 5),
-			resources = listOf(power(100)),
-			result = MatchingResult("^(WAXED_|)(WEATHERED)(.*)","\$1WEATHERED\$3", setOf())
-		)
+	val EXPOSED_COPPER_OXIDATION = registerAllMatch(
+		"^(WAXED_|)(EXPOSED)(.*)",
+		setOf(),
+		"^(WAXED_|)(WEATHERED)(.*)",
+		"\$1WEATHERED\$3"
 	)
 
-	val WEATHERED_COPPER_OXIDATION = registerRecipe(
-		FurnaceMultiblockRecipe(
-			multiblock = GasFurnaceMultiblock,
-			smelting = ConsumedMatchingIngredient("^(WAXED_|)(WEATHERED)(.*)",
-				setOf(),
-				0),
-			fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 5),
-			resources = listOf(power(100)),
-			result = MatchingResult("^(WAXED_|)(OXIDIZED)(.*)","\$1OXIDIZED\$3", setOf())
-		)
+	val WEATHERED_COPPER_OXIDATION = registerAllMatch(
+		"^(WAXED_|)(WEATHERED)(.*)",
+		setOf(),
+		"^(WAXED_|)(OXIDIZED)(.*)",
+		"\$1OXIDIZED\$3"
 	)
 
 	/**
@@ -203,6 +186,38 @@ object MultiblockRecipes : IonServerComponent() {
 		recipes.getOrPut(recipe.multiblock) { LinkedList() }.add(recipe)
 
 		return recipe
+	}
+
+	private fun registerAllMatch(
+		inputMatch: String, ignore : Set<Material>, outputMatch : String, replaceStr : String
+	): Set<MultiblockRecipe<*>> {
+		val recipes = mutableSetOf<MultiblockRecipe<*>>()
+		val inputMatches = run {
+			val list: MutableSet<Material> = getMatchingMaterials { it.name.matches(Regex(inputMatch)) }
+			list.removeAll(ignore)
+			list.toSet()
+		}
+
+		val outputMatches = run {
+			val list: MutableSet<Material> = getMatchingMaterials { it.name.matches(Regex(outputMatch)) }
+			list.toSet()
+		}
+
+		for (inputMat in inputMatches) {
+			val resultMat = outputMatches.first { it.name == inputMat.name.replace(Regex(inputMatch),replaceStr) }
+			println(resultMat)
+			val recipe = registerRecipe(
+				FurnaceMultiblockRecipe(
+					multiblock = GasFurnaceMultiblock,
+					smelting = ConsumedItemIngredient(ItemStack(inputMat), 1),
+					fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 50),
+					resources = listOf(power(100)),
+					result = ItemResult(ItemStack(resultMat))
+				)
+			)
+			recipes.add(recipe)
+		}
+		return recipes.toSet()
 	}
 
 	fun <T: Multiblock> getRecipe(multiblock: T, sign: Sign, inventory: Inventory): MultiblockRecipe<T>? {

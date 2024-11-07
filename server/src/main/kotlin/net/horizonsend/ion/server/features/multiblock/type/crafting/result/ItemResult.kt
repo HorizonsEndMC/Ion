@@ -9,7 +9,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-open class ItemResult(private val result: ItemStack, private val count: Int = 1) : MultiblockRecipeResult {
+open class ItemResult(val result: ItemStack, private val count: Int = 1) : MultiblockRecipeResult {
 	constructor(item: CustomItem, count: Int = 1) : this(item.constructItemStack(), count)
 
 	override fun canFit(recipe: MultiblockRecipe<*>, craftingInventory: Inventory, sign: Sign): Boolean {
