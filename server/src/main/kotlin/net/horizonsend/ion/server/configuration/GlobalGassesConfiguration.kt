@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GlobalGassesConfiguration(
+	val sandbox: Boolean = false,
 	val collectorTickInterval: Int = 100,
 	val powerPlantConsumption: Int = 250,
 	val gasses: Gasses = Gasses()
