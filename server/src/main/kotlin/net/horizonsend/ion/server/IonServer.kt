@@ -3,7 +3,6 @@ package net.horizonsend.ion.server
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
-import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.configuration.Configuration
@@ -136,8 +135,6 @@ object IonServer : JavaPlugin() {
 
 		// Checkmark is not an emoji?
 		DBManager.INITIALIZATION_COMPLETE = true // Start handling reads from the DB
-
-		BazaarItem.replaceLegacyMinerals()
 	}
 
 	override fun onDisable() {
