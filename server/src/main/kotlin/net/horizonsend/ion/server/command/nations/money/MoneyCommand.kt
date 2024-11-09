@@ -40,6 +40,8 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 	open fun onDeposit(sender: Player, amount: Int) = asyncCommand(sender) {
 		requireEconomyEnabled()
 
+		failIf(amount <= 0) { "Amount must be greater than 0" }
+
 		val parent: Oid<Parent> = requireDefaultParent(sender)
 		requireCanDeposit(sender, parent)
 
