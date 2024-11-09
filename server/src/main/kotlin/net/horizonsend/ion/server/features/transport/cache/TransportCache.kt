@@ -35,16 +35,16 @@ abstract class TransportCache(val holder: NetworkHolder<*> /* TODO temp network 
 
 	abstract fun getNodeType(material: Material): CachedNode?
 
-	fun getNextNodeLocations(location: BlockKey, from: BlockFace): Map<BlockFace, BlockKey> {
+	fun getNextNodeLocations(location: BlockKey, from: BlockFace): List<Triple<BlockFace, BlockKey, Int>> {
 		val cachedAt = if (!isCached(location)) {
 			// If the requested node is not cached, cache the node at the location
-			val material = getBlockTypeSafe(holder.getWorld(), getX(location), getY(location), getZ(location)) ?: return mapOf()
+			val material = getBlockTypeSafe(holder.getWorld(), getX(location), getY(location), getZ(location)) ?: return listOf()
 			cache(location, material)
 		} else getCached(location) // If it is already cached, this function will handle the empty node case
 
-		if (cachedAt == null) return mapOf()
+		if (cachedAt == null) return listOf()
 
-		return cachedAt.getNextNodes(from).associateWith { getRelative(location, it) }
+		return cachedAt.getNextNodes(from).map { (face, priority) -> Triple(face, getRelative(location, face), priority) }
 	}
 
 
