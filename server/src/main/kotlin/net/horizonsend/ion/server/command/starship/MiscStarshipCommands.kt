@@ -199,9 +199,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onJump(sender: Player, xCoordinate: String, zCoordinate: String, @Optional hyperdriveTier: Int?) {
 		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 
-		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
-		val maxRange: Int =
-			(navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
+		val navComp: NavCompSubsystem? = Hyperspace.findNavComp(starship) ?: if (starship.type != StarshipType.SHUTTLE) fail { "Intact Navigation Computer not found!" } else null
+		val maxRange: Int = if (navComp == null)
+		// if the ship is a shuttle without a navcomp, just give half range instead of failing entirely
+			NavigationComputerMultiblockBasic.baseRange * (starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
+		else (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
 
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
