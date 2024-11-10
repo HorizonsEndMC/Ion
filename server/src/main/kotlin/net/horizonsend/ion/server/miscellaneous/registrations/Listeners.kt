@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.progression.achievements.AchievementL
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
-import net.horizonsend.ion.server.features.transport.GlobalNodeManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
@@ -83,7 +82,6 @@ val listeners: List<Listener> = listOf(
 	ActivePlayerController.Companion,
 	TransportManager,
 	PersonalTransporterManager,
-	GlobalNodeManager,
 	MultiblockEntities,
 
 	// Achievement Listeners

@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.features.transport
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.transport.node.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.old.Extractors
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import org.bukkit.World
 import java.util.Timer
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
@@ -42,5 +44,10 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	fun removeTransportManager(manager: TransportManager) {
 		transportManagers.remove(manager)
+	}
+
+	fun invalidateCache(world: World, x: Int, y: Int, z: Int) {
+		val chunk = IonChunk[world, x.shr(4), z.shr(4)] ?: return
+		chunk.transportNetwork.invalidateCache(x, y, z)
 	}
 }
