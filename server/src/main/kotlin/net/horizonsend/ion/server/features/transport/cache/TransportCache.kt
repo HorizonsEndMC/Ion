@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.transport.cache.state.CacheState
 import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.util.NetworkType
+import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -42,16 +43,13 @@ abstract class TransportCache(val holder: NetworkHolder<*> /* TODO temp network 
 	}
 
 	fun cache(location: BlockKey, block: Block): CachedNode? {
+		println("Caching")
 		val type = nodeFactory.cache(block)
+		println("Type: $type")
 		val state = if (type == null) CacheState.Empty else CacheState.Present(type)
 
 		cache[location] = state
 		return type
-	}
-
-	fun getNextNodeLocations(location: BlockKey, from: BlockFace): List<Triple<BlockFace, BlockKey, Int>> {
-		val cachedAt = getOrCache(location) ?: return listOf()
-		return cachedAt.getNextNodes(from).map { (face, priority) -> Triple(face, getRelative(location, face), priority) }
 	}
 
 	fun invalidate(x: Int, y: Int, z: Int) {
@@ -59,8 +57,25 @@ abstract class TransportCache(val holder: NetworkHolder<*> /* TODO temp network 
 	}
 
 	fun invalidate(key: BlockKey) {
-
+		cache.remove(key)
 	}
 
 	fun getRawCache() = cache
+
+	fun getNextNodes(backwards: BlockFace, parentPos: BlockKey, parentType: CachedNode): Map<BlockFace, CachedNode> {
+		val adjacent = ADJACENT_BLOCK_FACES.minus(backwards)
+
+		val map = mutableMapOf<BlockFace, CachedNode>()
+
+		for (adjacentFace in adjacent) {
+			val pos = getRelative(parentPos, adjacentFace)
+			val cached = holder.getOrCacheGlobalNode(pos) ?: continue
+
+			if (!cached.canTransferFrom(parentType, adjacentFace) || !parentType.canTransferTo(cached, adjacentFace)) continue
+
+			map[adjacentFace] = cached
+		}
+
+		return map
+	}
 }

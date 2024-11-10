@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerExtractorNode
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerInputNode
 import net.horizonsend.ion.server.features.transport.node.type.power.SolarPanelNode
@@ -14,6 +13,7 @@ import net.horizonsend.ion.server.features.transport.node.util.getIdealPath
 import net.horizonsend.ion.server.features.transport.node.util.getNetworkDestinations
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.Axis
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.END_ROD
@@ -22,6 +22,7 @@ import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.OBSERVER
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.SPONGE
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Observer
 import org.bukkit.craftbukkit.v1_20_R3.block.impl.CraftEndRod
@@ -95,29 +96,24 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 	}
 
 	fun tickExtractor(extractorNode: PowerNode.PowerExtractorNode): Future<*> = NewTransport.executor.submit {
-		val powerCheck = extractorNode.getTransferAmount()
-		if (powerCheck == 0) return@submit
-
-		extractorNode.markTicked()
-
-		val source = extractorNode.getSourcePool().filterNot { it.powerStorage.isEmpty() }.randomOrNull() ?: return@submit
-
-		val destinations: ObjectOpenHashSet<PowerInputNode> = getPowerInputs(extractorNode)
-		destinations.removeAll(extractorNode.getTransferableNodes().filterIsInstanceTo(ObjectOpenHashSet()))
-
-		if (destinations.isEmpty()) return@submit
-
-		val transferred = minOf(source.powerStorage.getPower(), powerCheck)
-		val notRemoved = source.powerStorage.removePower(transferred)
-		val remainder = runPowerTransfer(extractorNode, destinations.toMutableList(), (transferred - notRemoved))
-
-		if (transferred == remainder) {
-			//TODO skip growing number of ticks if nothing to do
-		}
-
-		if (remainder > 0) {
-			source.powerStorage.addPower(remainder)
-		}
+//		val source = extractorNode.getSourcePool().filterNot { it.powerStorage.isEmpty() }.randomOrNull() ?: return@submit
+//
+//		val destinations: ObjectOpenHashSet<PowerInputNode> = getPowerInputs(extractorNode)
+//		destinations.removeAll(extractorNode.getTransferableNodes().filterIsInstanceTo(ObjectOpenHashSet()))
+//
+//		if (destinations.isEmpty()) return@submit
+//
+//		val transferred = minOf(source.powerStorage.getPower(), powerCheck)
+//		val notRemoved = source.powerStorage.removePower(transferred)
+//		val remainder = runPowerTransfer(extractorNode, destinations.toMutableList(), (transferred - notRemoved))
+//
+//		if (transferred == remainder) {
+//			//TODO skip growing number of ticks if nothing to do
+//		}
+//
+//		if (remainder > 0) {
+//			source.powerStorage.addPower(remainder)
+//		}
 	}
 
 	private fun tickSolarPanel(solarPanelNode: SolarPanelNode) = NewTransport.executor.submit {
@@ -125,7 +121,7 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		if (powerCheck == 0) return@submit
 
 		val destinations: ObjectOpenHashSet<PowerInputNode> = getPowerInputs(solarPanelNode)
-		runPowerTransfer(solarPanelNode, destinations.toMutableList(), powerCheck)
+//		runPowerTransfer(solarPanelNode, destinations.toMutableList(), powerCheck)
 	}
 }
 
@@ -136,13 +132,13 @@ fun getPowerInputs(origin: TransportNode) = getNetworkDestinations<PowerInputNod
 /**
  * Runs the power transfer from the source to the destinations. pending rewrite
  **/
-private fun runPowerTransfer(source: TransportNode, destinations: List<PowerInputNode>, availableTransferPower: Int): Int {
+private fun runPowerTransfer(world: World, sourcePos: BlockKey, sourceType: CachedNode, destinations: List<PowerInputNode>, availableTransferPower: Int): Int {
 	if (destinations.isEmpty()) return availableTransferPower
 
 	val numDestinations = destinations.size
 
-	val paths: Array<Array<TransportNode>?> = Array(numDestinations) { runCatching {
-		getIdealPath(source, destinations[it])
+	val paths: Array<Array<CachedNode>?> = Array(numDestinations) { runCatching {
+		getIdealPath(world, NetworkType.POWER, sourceType, sourcePos, destinations[it].position)
 	}.getOrNull() }
 
 	var maximumResistance: Double = -1.0
@@ -203,7 +199,7 @@ private fun getRemainingCapacity(destination: PowerInputNode): Int {
 	return destination.getPoweredEntities().sumOf { it.powerStorage.getRemainingCapacity() }
 }
 
-private fun completeChain(path: Array<TransportNode>?, transferred: Int) {
+private fun completeChain(path: Array<CachedNode>?, transferred: Int) {
 	path?.filterIsInstance(PowerFlowMeter::class.java)?.forEach { it.onCompleteChain(transferred) }
 }
 

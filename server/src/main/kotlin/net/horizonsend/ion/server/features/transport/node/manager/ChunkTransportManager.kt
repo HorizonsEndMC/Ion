@@ -13,7 +13,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
 
 class ChunkTransportManager(val chunk: IonChunk) : TransportManager() {
-	override val extractorManager: ExtractorManager = ChunkExtractorManager()
+	override val extractorManager: ExtractorManager = ChunkExtractorManager(this)
 	override val powerNodeManager = ChunkNetworkHolder(this) { PowerTransportCache(it) }
 	override val fluidNodeManager = ChunkNetworkHolder(this) { FluidTransportCache(it) }
 //	val pipeGrid = PowerNodeManager(this) // TODO
@@ -28,6 +28,15 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager() {
 		powerNodeManager.handleUnload()
 		fluidNodeManager.handleUnload()
 		NewTransport.removeTransportManager(this)
+	}
+
+	fun invalidateCache(x: Int, y: Int, z: Int) {
+		invalidateCache(toBlockKey(x, y, z))
+	}
+
+	fun invalidateCache(key: BlockKey) {
+		powerNodeManager.network.invalidate(key)
+		fluidNodeManager.network.invalidate(key)
 	}
 
 	fun processBlockRemoval(key: BlockKey) {

@@ -32,7 +32,7 @@ interface NetworkHolder <T: TransportCache> {
 	/**
 	 * Method used to access nodes inside, and outside the network
 	 **/
-	fun getGlobalNode(key: BlockKey): CachedNode?
+	fun getOrCacheGlobalNode(key: BlockKey): CachedNode?
 
 	fun getMultiblockManager(): MultiblockManager
 

@@ -6,12 +6,12 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerPathfindingNode
+import net.horizonsend.ion.server.features.transport.cache.CachedNode
 import net.horizonsend.ion.server.features.transport.node.util.NetworkType
 import net.horizonsend.ion.server.features.transport.node.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.node.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.node.util.getHeuristic
+import net.horizonsend.ion.server.features.transport.node.util.getNeighbors
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_VARIANT
@@ -30,6 +30,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -83,17 +84,15 @@ object MultimeterItem : CustomItem("Multimeter") {
 		val firstPoint = itemStack.itemMeta.persistentDataContainer.get(X, LONG) ?: return
 		val firstChunk = IonChunk[world, getX(firstPoint).shr(4), getZ(firstPoint).shr(4)] ?: return
 		val secondPoint = itemStack.itemMeta.persistentDataContainer.get(Z, LONG) ?: return
-		val secondChunk = IonChunk[world, getX(secondPoint).shr(4), getZ(secondPoint).shr(4)] ?: return
 
 		val networkTypeIndex = itemStack.itemMeta.persistentDataContainer.getOrDefault(NODE_VARIANT, INTEGER, 0)
 		val networkType = NetworkType.entries[networkTypeIndex]
 
 		val firstNode = networkType.get(firstChunk).getOrCache(firstPoint) ?: return audience.information("There is no node at ${toVec3i(firstPoint)}")
-		val secondNode = networkType.get(secondChunk).getOrCache(secondPoint)  ?: return audience.information("There is no node at ${toVec3i(secondPoint)}")
 
-		val path = getIdealPath(audience, firstNode, secondNode)
+		val path = getIdealPath(world, networkType, audience, firstPoint, firstNode, secondPoint)
 		val resistance = calculatePathResistance(path) ?: return audience.userError("There is no path connecting these nodes")
-		audience.information("The resistance from ${firstNode.javaClass.simpleName} at ${toVec3i(firstPoint)} to ${secondNode.javaClass.simpleName} at ${toVec3i(secondPoint)} is $resistance")
+		audience.information("The resistance from ${firstNode.javaClass.simpleName} at ${toVec3i(firstPoint)} to ${toVec3i(secondPoint)} at ${toVec3i(secondPoint)} is $resistance")
 	}
 
 	private fun cycleNetworks(audience: Audience, world: World, itemStack: ItemStack) {
@@ -111,7 +110,7 @@ object MultimeterItem : CustomItem("Multimeter") {
 	/**
 	 * Uses the A* algorithm to find the shortest available path between these two nodes.
 	 **/
-	private fun getIdealPath(audience: Audience, fromPos: BlockKey, toPos: BlockKey): Array<TransportNode>? {
+	private fun getIdealPath(world: World, type: NetworkType, audience: Audience, fromPos: BlockKey, fromNode: CachedNode, toPos: BlockKey): Array<CachedNode>? {
 		// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
 		val queue = PriorityQueue<PathfindingNodeWrapper> { o1, o2 -> o2.f.compareTo(o1.f) }
 		// The hash set here is to speed up the .contains() check further down the road, which is slow with the queue.
@@ -127,7 +126,16 @@ object MultimeterItem : CustomItem("Multimeter") {
 			queueSet.remove(wrapper.node.hashCode())
 		}
 
-		queueAdd(PathfindingNodeWrapper(from, null, 0, 0))
+		queueAdd(PathfindingNodeWrapper(
+			world = world,
+			pos = fromPos,
+			node = fromNode,
+			parent = null,
+			offset = BlockFace.SELF,
+			type = type,
+			g = 0,
+			f = 0
+		))
 
 		val visited = IntOpenHashSet()
 
@@ -137,24 +145,24 @@ object MultimeterItem : CustomItem("Multimeter") {
 		while (queue.isNotEmpty() && iterations < 150) {
 			iterations++
 			val current = queue.minBy { it.f }
-			Tasks.syncDelay(iterations) { audience.highlightBlock(current.node.getCenter(), 5L) }
-			audience.information("current: ${current.node.javaClass.simpleName} at ${current.node.getCenter()}")
-			if (current.node == to) return current.buildPath()
+			Tasks.syncDelay(iterations) { audience.highlightBlock(toVec3i(current.pos), 5L) }
+			audience.information("current: ${current.node.javaClass.simpleName} at ${toVec3i(current.pos)}")
+			if (current.pos == toPos) return current.buildPath()
 
 			queueRemove(current)
 			visited.add(current.node.hashCode())
 
-			val neighbors = getNeighborsB(audience, current, to)
+			val neighbors = getNeighbors(current)
 			if (neighbors.isEmpty()) audience.userError("Empty neighbors")
 
 			for (newNeighbor in neighbors) {
-				audience.information("new neighbor: ${newNeighbor.node} at ${newNeighbor.node.getCenter()}")
+				audience.information("new neighbor: ${newNeighbor.node} at ${toVec3i(newNeighbor.pos)}")
 				if (visited.contains(newNeighbor.node.hashCode())) {
 					audience.information("conmtinue")
 					continue
 				}
 
-				newNeighbor.f = (newNeighbor.g + getHeuristic(newNeighbor, to))
+				newNeighbor.f = (newNeighbor.g + getHeuristic(newNeighbor, toPos))
 
 				if (queueSet.contains(newNeighbor.node.hashCode())) {
 					audience.information("Existing in queue")
@@ -174,28 +182,5 @@ object MultimeterItem : CustomItem("Multimeter") {
 		audience.userError("Exhausted queue, $iterations")
 
 		return null
-	}
-
-	// Wraps neighbor nodes in a data class to store G and F values for pathfinding. Should probably find a better solution
-	private fun getNeighborsB(audience: Audience, parent: PathfindingNodeWrapper, destination: TransportNode): Array<PathfindingNodeWrapper> {
-		val parentParent = parent.parent
-		audience.information("Parent: ${parent.node.getTransferableNodes()}")
-
-		val transferable = if (parentParent != null && parent.node is PowerPathfindingNode) {
-			parent.node.getNextNodes(parentParent.node, destination)
-		} else parent.node.cachedTransferable
-
-		audience.information("New transferable: ${transferable.joinToString { it.javaClass.simpleName }}")
-
-		return Array(transferable.size) {
-			val neighbor = transferable[it]
-
-			PathfindingNodeWrapper(
-				node = neighbor,
-				parent = parent,
-				g = parent.g + parent.node.getDistance(neighbor).toInt(),
-				f = 1
-			)
-		}
 	}
 }
