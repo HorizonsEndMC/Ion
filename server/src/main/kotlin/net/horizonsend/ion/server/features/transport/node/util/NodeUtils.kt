@@ -1,6 +1,9 @@
 package net.horizonsend.ion.server.features.transport.node.util
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.transport.cache.FluidTransportCache
+import net.horizonsend.ion.server.features.transport.cache.PowerTransportCache
+import net.horizonsend.ion.server.features.transport.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.FluidNodeManager
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
@@ -111,23 +114,22 @@ fun <T : MultiNode<*, *>> separateNodePositions(node: T): List<Set<BlockKey>> {
 	return separated
 }
 
-
 enum class NetworkType(val namespacedKey: NamespacedKey) {
 	POWER(NamespacedKeys.POWER_TRANSPORT) {
-		override fun get(chunk: IonChunk): PowerNodeManager {
+		override fun get(chunk: IonChunk): PowerTransportCache {
 			return chunk.transportNetwork.powerNodeManager.network
 		}
 
-		override fun get(ship: ActiveStarship): PowerNodeManager {
+		override fun get(ship: ActiveStarship): PowerTransportCache {
 			return ship.transportManager.powerNodeManager.network
 		}
 	},
 	FLUID(NamespacedKeys.FLUID_TRANSPORT) {
-		override fun get(chunk: IonChunk): FluidNodeManager {
+		override fun get(chunk: IonChunk): FluidTransportCache {
 			return chunk.transportNetwork.fluidNodeManager.network
 		}
 
-		override fun get(ship: ActiveStarship): FluidNodeManager {
+		override fun get(ship: ActiveStarship): FluidTransportCache {
 			return ship.transportManager.fluidNodeManager.network
 		}
 	},
@@ -135,8 +137,8 @@ enum class NetworkType(val namespacedKey: NamespacedKey) {
 
 	;
 
-	abstract fun get(chunk: IonChunk): NodeManager<*>
-	abstract fun get(ship: ActiveStarship): NodeManager<*>
+	abstract fun get(chunk: IonChunk): TransportCache
+	abstract fun get(ship: ActiveStarship): TransportCache
 
 	companion object {
 		private val byKey = entries.associateBy { it.namespacedKey }
