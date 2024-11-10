@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.transport.node.manager.holders
 
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
-import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
+import net.horizonsend.ion.server.features.transport.cache.CachedNode
+import net.horizonsend.ion.server.features.transport.cache.TransportCache
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
 
-interface NetworkHolder <T: NodeManager<*>> {
+interface NetworkHolder <T: TransportCache> {
 	val network: T
 
 	fun getWorld(): World
@@ -16,24 +16,22 @@ interface NetworkHolder <T: NodeManager<*>> {
 	 *
 	 * Existing data will be loaded from the chunk's persistent data container, relations between nodes will be built, and any finalization will be performed
 	 **/
-	fun handleLoad()
+	fun handleLoad() {}
 
 	/**
 	 * Logic for when the holder unloaded
 	 **/
-	fun handleUnload()
+	fun handleUnload() {}
 
 	/**
 	 * Get a node inside this network
 	 **/
-	fun getInternalNode(key: BlockKey): TransportNode?
+	fun getInternalNode(key: BlockKey): CachedNode?
 
 	/**
 	 * Method used to access nodes inside, and outside the network
 	 **/
-	fun getGlobalNode(key: BlockKey): TransportNode?
+	fun getGlobalNode(key: BlockKey): CachedNode?
 
-	fun markUnsaved()
-
-	abstract fun getMultiblockManager(): MultiblockManager
+	fun getMultiblockManager(): MultiblockManager
 }
