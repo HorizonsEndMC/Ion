@@ -4,9 +4,13 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.cache.CachedNode
 import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerPathfindingNode
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import java.util.PriorityQueue
 import kotlin.math.roundToInt
@@ -35,7 +39,7 @@ inline fun <reified T: TransportNode> getNetworkDestinations(origin: TransportNo
 /**
  * Uses the A* algorithm to find the shortest available path between these two nodes.
  **/
-fun getIdealPath(from: TransportNode, to: TransportNode): Array<TransportNode>? {
+fun getIdealPath(world: World, type: NetworkType, fromType: CachedNode, fromPos: BlockKey, to: BlockKey): Array<CachedNode>? {
 	// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
 	val queue = PriorityQueue<PathfindingNodeWrapper> { o1, o2 -> o2.f.compareTo(o1.f) }
 	// The hash set here is to speed up the .contains() check further down the road, which is slow with the queue.
@@ -51,7 +55,16 @@ fun getIdealPath(from: TransportNode, to: TransportNode): Array<TransportNode>? 
 		queueSet.remove(wrapper.node.hashCode())
 	}
 
-	queueAdd(PathfindingNodeWrapper(from, null, 0, 0))
+	queueAdd(PathfindingNodeWrapper(
+		world = world,
+		pos = fromPos,
+		node = fromType,
+		parent = null,
+		offset = BlockFace.SELF,
+		type = type,
+		g = 0,
+		f = 0
+	))
 
 	val visited = IntOpenHashSet()
 
@@ -62,12 +75,12 @@ fun getIdealPath(from: TransportNode, to: TransportNode): Array<TransportNode>? 
 		iterations++
 		val current = queue.minBy { it.f }
 
-		if (current.node == to) return current.buildPath()
+		if (current.pos == to) return current.buildPath()
 
 		queueRemove(current)
 		visited.add(current.node.hashCode())
 
-		for (neighbor in getNeighbors(current, to)) {
+		for (neighbor in getNeighbors(current)) {
 			if (visited.contains(neighbor.node.hashCode())) continue
 			neighbor.f = (neighbor.g + getHeuristic(neighbor, to))
 
@@ -87,19 +100,21 @@ fun getIdealPath(from: TransportNode, to: TransportNode): Array<TransportNode>? 
 }
 
 // Wraps neighbor nodes in a data class to store G and F values for pathfinding. Should probably find a better solution
-fun getNeighbors(parent: PathfindingNodeWrapper, destination: TransportNode): Array<PathfindingNodeWrapper> {
-	val parentParent = parent.parent
-	val transferable = if (parentParent != null && parent.node is PowerPathfindingNode) {
-		parent.node.getNextNodes(parentParent.node, destination)
-	} else parent.node.getNextNodes()
+fun getNeighbors(current: PathfindingNodeWrapper): Array<PathfindingNodeWrapper> {
+	val transferable = current.network?.getNextNodes(current.offset, current.pos, current.node)?.toList() ?: return arrayOf()
 
 	return Array(transferable.size) {
-		val neighbor = transferable[it]
+		val (neighborFace, neighborType) = transferable[it]
+		val neighborPos = getRelative(current.pos, neighborFace)
 
 		PathfindingNodeWrapper(
-			node = neighbor,
-			parent = parent,
-			g = parent.g + parent.node.getDistance(neighbor).toInt(),
+			world = current.world,
+			pos = neighborPos,
+			node = neighborType,
+			parent = current,
+			type = current.type,
+			offset = neighborFace,
+			g = current.g + 1,
 			f = 1
 		)
 	}
@@ -119,14 +134,18 @@ fun getHeuristic(wrapper: PathfindingNodeWrapper, destination: BlockKey): Int {
  * @param offset The offset direction between the parent and this node
  **/
 data class PathfindingNodeWrapper(
+	val world: World,
 	val pos: BlockKey,
 	val node: CachedNode,
+	val type: NetworkType,
 	var parent: PathfindingNodeWrapper?,
 	var offset: BlockFace,
 	var g: Int,
 	var f: Int
 ) {
-	// Compiles the path
+	val network get() = IonChunk.getFromWorldCoordinates(world, getX(pos), getZ(pos))?.let { type.get(it) }
+
+ 	// Compiles the path
 	fun buildPath(): Array<CachedNode> {
 		val list = mutableListOf(this.node)
 		var current: PathfindingNodeWrapper? = this
@@ -164,19 +183,6 @@ data class PathfindingNodeWrapper(
 	//</editor-fold>
 }
 
-fun calculatePathResistance(path: Array<TransportNode>?): Double? {
-	if (path == null) return null
-
-	var sum = 0.0
-
-	for (index in path.indices) {
-		val current = path[index]
-
-		sum += current.getPathfindingResistance(
-			previousNode = path.getOrNull(index - 1),
-			nextNode = path.getOrNull(index + 1)
-		)
-	}
-
-	return sum
+fun calculatePathResistance(path: Array<CachedNode>?): Double? {
+	return path?.sumOf { it.pathfindingResistance }
 }
