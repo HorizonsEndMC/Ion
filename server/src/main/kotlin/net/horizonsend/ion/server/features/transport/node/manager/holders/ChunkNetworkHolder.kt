@@ -1,22 +1,15 @@
 package net.horizonsend.ion.server.features.transport.node.manager.holders
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.cache.CachedNode
 import net.horizonsend.ion.server.features.transport.cache.TransportCache
-import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.node.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import org.bukkit.World
-import org.bukkit.persistence.PersistentDataAdapterContext
-import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.persistence.PersistentDataType
 import kotlin.properties.Delegates
 
 class ChunkNetworkHolder<T: TransportCache> private constructor (val manager: ChunkTransportManager) : NetworkHolder<T> {
@@ -54,5 +47,9 @@ class ChunkNetworkHolder<T: TransportCache> private constructor (val manager: Ch
 
 	override fun getMultiblockManager(): MultiblockManager {
 		return manager.chunk.multiblockManager
+	}
+
+	override fun getExtractorManager(): ExtractorManager {
+		return manager.extractorManager
 	}
 }
