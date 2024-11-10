@@ -4,9 +4,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 interface CachedNode {
-	// The backing material(s) of this node type
-	fun isMatchingMaterial(material: Material): Boolean
-
+	val pathfindingResistance: Double
 	/**
 	 * Gets the directions that should be checked for the next nodes
 	 *
