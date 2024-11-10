@@ -169,6 +169,10 @@ class IonChunk(
 
 		fun getXFromKey(key: Long): Int = key.toInt()
 		fun getZFromKey(key: Long): Int = (key shr 32).toInt()
+
+		fun getFromWorldCoordinates(world: World, x: Int, z: Int): IonChunk? {
+			return get(world, x.shr(4), z.shr(4))
+		}
 	}
 
 	fun iterateBlocks(consumer: Consumer<Block>) {
