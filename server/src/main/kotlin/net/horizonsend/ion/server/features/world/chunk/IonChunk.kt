@@ -180,6 +180,12 @@ class IonChunk(
 	/** Mark this chunk as needing to be saved */
 	fun markUnsaved() { inner.minecraft.isUnsaved = true }
 
+	fun isInBounds(x: Int, y: Int, z: Int): Boolean {
+		if (!(0..15).contains(x - originX)) return false
+		if (!(0..15).contains(z - originZ)) return false
+		return (world.minHeight..< world.maxHeight).contains(y)
+	}
+
 	override fun toString(): String {
 		return "IonChunk[$x, $z @ ${world.name}]"
 	}
