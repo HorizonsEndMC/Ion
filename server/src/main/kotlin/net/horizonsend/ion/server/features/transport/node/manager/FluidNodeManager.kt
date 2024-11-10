@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.transport.node.manager
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.cache.FluidTransportCache
+import net.horizonsend.ion.server.features.transport.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.type.fluid.FluidExtractorNode
@@ -13,7 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import org.bukkit.NamespacedKey
 import java.util.concurrent.Future
 
-class FluidNodeManager(holder: NetworkHolder<FluidNodeManager>) : NodeManager<FluidExtractorNode>(holder) {
+class FluidNodeManager(holder: NetworkHolder<FluidTransportCache>) : NodeManager<FluidExtractorNode>(holder) {
 	override val namespacedKey: NamespacedKey = FLUID_TRANSPORT
 	override val type: NetworkType = NetworkType.FLUID
 	override val nodeFactory = FluidNodeFactory(this)
