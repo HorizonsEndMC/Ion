@@ -10,7 +10,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
 
-@CommandAlias("suicide|unalive")
+@CommandAlias("suicide")
 object SuicideCommand : SLCommand() {
     @Default
     @Suppress("unused")
