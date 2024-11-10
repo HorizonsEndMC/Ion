@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.transport.node.type.power
 
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
+import net.horizonsend.ion.server.features.transport.cache.getPowerInputs
 import net.horizonsend.ion.server.features.transport.node.NodeType
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
-import net.horizonsend.ion.server.features.transport.node.manager.getPowerInputs
 import net.horizonsend.ion.server.features.transport.node.type.general.ExtractorNode
 import net.horizonsend.ion.server.features.transport.node.type.general.UnTransferableNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey

@@ -94,6 +94,7 @@ object NamespacedKeys {
 
 	val NODE_COVERED_POSITIONS = key("node_covered_positions")
 	val AXIS = key("axis")
+	val EXTRACTORS = key("extractors")
 	val SOLAR_CELL_EXTRACTORS = key("solar_cell_extractors")
 	val SOLAR_CELL_DETECTORS = key("solar_cell_detectors")
 
