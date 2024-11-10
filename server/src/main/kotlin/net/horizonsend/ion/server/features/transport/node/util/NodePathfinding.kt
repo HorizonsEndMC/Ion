@@ -2,8 +2,12 @@ package net.horizonsend.ion.server.features.transport.node.util
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.features.transport.cache.CachedNode
 import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerPathfindingNode
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import org.bukkit.block.BlockFace
 import java.util.PriorityQueue
 import kotlin.math.roundToInt
 
@@ -87,7 +91,7 @@ fun getNeighbors(parent: PathfindingNodeWrapper, destination: TransportNode): Ar
 	val parentParent = parent.parent
 	val transferable = if (parentParent != null && parent.node is PowerPathfindingNode) {
 		parent.node.getNextNodes(parentParent.node, destination)
-	} else parent.node.cachedTransferable
+	} else parent.node.getNextNodes()
 
 	return Array(transferable.size) {
 		val neighbor = transferable[it]
@@ -103,14 +107,27 @@ fun getNeighbors(parent: PathfindingNodeWrapper, destination: TransportNode): Ar
 
 // The heuristic used for the algorithm in this case is the distance from the node to the destination, which is typical,
 // But it also includes the pathfinding resistance to try to find the least resistant path.
-fun getHeuristic(wrapper: PathfindingNodeWrapper, destination: TransportNode): Int {
-	val resistance = wrapper.node.getPathfindingResistance(wrapper.parent?.node, null)
-	return wrapper.node.getDistance(destination).roundToInt() + resistance
+fun getHeuristic(wrapper: PathfindingNodeWrapper, destination: BlockKey): Int {
+	val resistance = wrapper.node.pathfindingResistance
+	return (toVec3i(wrapper.pos).distance(toVec3i(destination)) + resistance).roundToInt()
 }
 
-data class PathfindingNodeWrapper(val node: TransportNode, var parent: PathfindingNodeWrapper?, var g: Int, var f: Int) {
+/**
+ * @param pos The position of this node in the path
+ * @param node The cached node at this position
+ * @param parent The parent node
+ * @param offset The offset direction between the parent and this node
+ **/
+data class PathfindingNodeWrapper(
+	val pos: BlockKey,
+	val node: CachedNode,
+	var parent: PathfindingNodeWrapper?,
+	var offset: BlockFace,
+	var g: Int,
+	var f: Int
+) {
 	// Compiles the path
-	fun buildPath(): Array<TransportNode> {
+	fun buildPath(): Array<CachedNode> {
 		val list = mutableListOf(this.node)
 		var current: PathfindingNodeWrapper? = this
 

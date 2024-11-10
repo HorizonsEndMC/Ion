@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.X
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Z
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -87,8 +88,8 @@ object MultimeterItem : CustomItem("Multimeter") {
 		val networkTypeIndex = itemStack.itemMeta.persistentDataContainer.getOrDefault(NODE_VARIANT, INTEGER, 0)
 		val networkType = NetworkType.entries[networkTypeIndex]
 
-		val firstNode = networkType.get(firstChunk).getNode(firstPoint) ?: return audience.information("There is no node at ${toVec3i(firstPoint)}")
-		val secondNode = networkType.get(secondChunk).getNode(secondPoint)  ?: return audience.information("There is no node at ${toVec3i(secondPoint)}")
+		val firstNode = networkType.get(firstChunk).getOrCache(firstPoint) ?: return audience.information("There is no node at ${toVec3i(firstPoint)}")
+		val secondNode = networkType.get(secondChunk).getOrCache(secondPoint)  ?: return audience.information("There is no node at ${toVec3i(secondPoint)}")
 
 		val path = getIdealPath(audience, firstNode, secondNode)
 		val resistance = calculatePathResistance(path) ?: return audience.userError("There is no path connecting these nodes")
@@ -110,7 +111,7 @@ object MultimeterItem : CustomItem("Multimeter") {
 	/**
 	 * Uses the A* algorithm to find the shortest available path between these two nodes.
 	 **/
-	private fun getIdealPath(audience: Audience, from: TransportNode, to: TransportNode): Array<TransportNode>? {
+	private fun getIdealPath(audience: Audience, fromPos: BlockKey, toPos: BlockKey): Array<TransportNode>? {
 		// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
 		val queue = PriorityQueue<PathfindingNodeWrapper> { o1, o2 -> o2.f.compareTo(o1.f) }
 		// The hash set here is to speed up the .contains() check further down the road, which is slow with the queue.
