@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.node.manager.holders
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.cache.CachedNode
 import net.horizonsend.ion.server.features.transport.cache.TransportCache
+import net.horizonsend.ion.server.features.transport.node.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
 
@@ -34,4 +35,6 @@ interface NetworkHolder <T: TransportCache> {
 	fun getGlobalNode(key: BlockKey): CachedNode?
 
 	fun getMultiblockManager(): MultiblockManager
+
+	fun getExtractorManager(): ExtractorManager
 }
