@@ -9,7 +9,6 @@ import com.sk89q.worldedit.world.biome.BiomeType
 import com.sk89q.worldedit.world.block.BlockTypesCache
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.block.Sign
 import java.util.Collections
@@ -22,14 +21,8 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 		counter++
 
 		addWriteTask {
-			val data = BukkitAdapter.adapt(BlockTypesCache.states[combinedTo])
+			NewTransport.invalidateCache(bukkitWorld, x, y, z)
 			val type = BukkitAdapter.adapt(BlockTypesCache.states[combinedTo].blockType)
-
-			GlobalNodeManager.handleBlockChange(
-				bukkitWorld,
-				toBlockKey(x, y, z),
-				data
-			)
 
 			if (type.isWallSign) processMultiblock(x, y, z)
 			if (type.isAir) removeMultiblock(x, y, z)

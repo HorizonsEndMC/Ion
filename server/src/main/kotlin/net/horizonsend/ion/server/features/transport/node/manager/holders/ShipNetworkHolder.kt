@@ -31,7 +31,7 @@ class ShipNetworkHolder<T: TransportCache>(val manager: ShipTransportManager) : 
 		return network.getCached(key)
 	}
 
-	override fun getGlobalNode(key: BlockKey): CachedNode? {
+	override fun getOrCacheGlobalNode(key: BlockKey): CachedNode? {
 		// Ship networks cannot access the outside world
 		return getInternalNode(key)
 	}
