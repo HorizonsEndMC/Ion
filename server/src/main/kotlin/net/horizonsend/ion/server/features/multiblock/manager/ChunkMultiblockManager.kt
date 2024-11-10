@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.features.transport.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.node.manager.NodeManager
 import net.horizonsend.ion.server.features.transport.node.util.NetworkType
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -40,7 +41,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 		chunk.inner.minecraft.isUnsaved = true
 	}
 
-	override fun getNetwork(type: NetworkType): NodeManager<*> {
+	override fun getNetwork(type: NetworkType): TransportCache {
 		return type.get(chunk)
 	}
 
