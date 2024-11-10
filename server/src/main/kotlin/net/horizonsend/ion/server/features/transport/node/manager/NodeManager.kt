@@ -30,81 +30,6 @@ abstract class NodeManager<T: ExtractorNode>(val holder: NetworkHolder<*>) {
 
 	var ready: Boolean = false
 
-	open fun processBlockRemoval(key: BlockKey) {
-		val previousNode = nodes[key] ?: return
-
-		previousNode.handlePositionRemoval(key)
-		holder.markUnsaved()
-	}
-
-	open fun processBlockRemovals(keys: Iterable<BlockKey>) {
-		var hits = 0
-
-		for (key in keys) {
-			val previousNode = nodes[key] ?: return
-			hits++
-
-			previousNode.handlePositionRemoval(key)
-		}
-
-		if (hits > 0) holder.markUnsaved()
-	}
-
-	open fun processBlockChange(new: Block) {
-		if (new.type.isAir) {
-			processBlockRemoval(toBlockKey(new.x, new.y, new.z))
-
-			return
-		}
-
-		if (createNodeFromBlock(new)) holder.markUnsaved()
-	}
-
-	open fun processBlockChange(position: BlockKey) {
-		val block = world.getBlockAt(getX(position), getY(position), getZ(position))
-
-		if (block.type.isAir) {
-			processBlockRemoval(position)
-
-			return
-		}
-
-		if (createNodeFromBlock(block)) holder.markUnsaved()
-	}
-
-	open fun processBlockChange(position: BlockKey, data: BlockData) {
-		if (data.material.isAir) {
-			processBlockRemoval(position)
-
-			return
-		}
-
-		if (createNodeFromBlock(position, data)) holder.markUnsaved()
-	}
-
-	open fun processBlockChanges(changeMap: Map<BlockKey, BlockData>) {
-		for ((position, data) in changeMap) {
-			if (data.material.isAir) {
-				processBlockRemoval(position)
-
-				return
-			}
-
-			if (createNodeFromBlock(position, data)) holder.markUnsaved()
-		}
-	}
-
-	open fun processBlockAdditions(changed: Iterable<Block>) {
-		var hits = 0
-		for (new in changed) {
-			if (createNodeFromBlock(new)) {
-				hits++
-			}
-		}
-
-		if (hits > 0) holder.markUnsaved()
-	}
-
 	/**
 	 * Handle the creation / loading of the node into memory
 	 **/
@@ -160,6 +85,6 @@ abstract class NodeManager<T: ExtractorNode>(val holder: NetworkHolder<*>) {
 	 * Gets a node from this chunk, or a direct neighbor, if loaded
 	 **/
 	fun getNode(key: BlockKey, allowNeighborChunks: Boolean = true): TransportNode? {
-		return if (allowNeighborChunks) holder.getGlobalNode(key) else holder.getInternalNode(key)
+		return null
 	}
 }
