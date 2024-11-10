@@ -21,7 +21,7 @@ class ChunkNetworkHolder<T: TransportCache> private constructor (val manager: Ch
 
 	override fun getWorld(): World = manager.chunk.world
 
-	override fun getGlobalNode(key: BlockKey): CachedNode? {
+	override fun getOrCacheGlobalNode(key: BlockKey): CachedNode? {
 		val chunkX = getX(key).shr(4)
 		val chunkZ = getZ(key).shr(4)
 
