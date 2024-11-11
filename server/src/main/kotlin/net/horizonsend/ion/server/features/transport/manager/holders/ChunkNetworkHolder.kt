@@ -1,10 +1,10 @@
-package net.horizonsend.ion.server.features.transport.node.manager.holders
+package net.horizonsend.ion.server.features.transport.manager.holders
 
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.cache.CachedNode
 import net.horizonsend.ion.server.features.transport.cache.TransportCache
-import net.horizonsend.ion.server.features.transport.node.manager.ChunkTransportManager
-import net.horizonsend.ion.server.features.transport.node.manager.extractors.ExtractorManager
+import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
