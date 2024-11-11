@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.node.manager.extractors
+package net.horizonsend.ion.server.features.transport.manager.extractors
 
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
