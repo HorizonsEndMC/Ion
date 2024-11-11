@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.manager
 
-import net.horizonsend.ion.server.features.transport.cache.FluidTransportCache
-import net.horizonsend.ion.server.features.transport.cache.PowerTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.NetworkHolder
 
