@@ -8,7 +8,9 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.transport.util.NetworkType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
@@ -25,6 +27,8 @@ abstract class SimplePoweredEntity(
 	structureDirection: BlockFace,
 	final override val maxPower: Int
 ) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, DisplayMultiblockEntity {
+	override val powerInputOffsets: Array<Vec3i> = arrayOf(Vec3i(0, -1, 0))
+
 	@Suppress("LeakingThis") // Only a reference is needed, max power is provided in the constructor
 	final override val powerStorage: PowerStorage = PowerStorage(
 		this,
@@ -40,4 +44,16 @@ abstract class SimplePoweredEntity(
 		entity,
 		PowerEntityDisplay(entity, +0.0, +0.0, +0.0, 0.5f)
 	).register()
+
+	override fun onLoad() {
+		registerInputs(NetworkType.POWER, getPowerInputLocations())
+	}
+
+	override fun handleRemoval() {
+		releaseInputs(NetworkType.POWER, getPowerInputLocations())
+	}
+
+	override fun onUnload() {
+		releaseInputs(NetworkType.POWER, getPowerInputLocations())
+	}
 }
