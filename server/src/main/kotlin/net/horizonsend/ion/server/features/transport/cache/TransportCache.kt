@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.transport.cache
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.transport.cache.state.CacheState
-import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
-import net.horizonsend.ion.server.features.transport.node.util.NetworkType
+import net.horizonsend.ion.server.features.transport.manager.holders.NetworkHolder
+import net.horizonsend.ion.server.features.transport.util.NetworkType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
