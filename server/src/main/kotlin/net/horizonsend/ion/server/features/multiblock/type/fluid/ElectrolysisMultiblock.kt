@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.client.display.modular.display.fluid.
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.SingleFluidStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
@@ -25,10 +26,10 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.pane
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.stairs
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.HYDROGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.OXYGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.WATER
+import net.horizonsend.ion.server.features.transport.util.NetworkType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_3
@@ -201,10 +202,13 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		z: Int,
 		world: World,
 		structureDirection: BlockFace
-	) : MultiblockEntity(manager, ElectrolysisMultiblock, x, y, z, world, structureDirection), AsyncTickingMultiblockEntity, FluidStoringEntity, PoweredMultiblockEntity {
+	) : MultiblockEntity(manager, ElectrolysisMultiblock, x, y, z, world, structureDirection), AsyncTickingMultiblockEntity, FluidStoringEntity, PoweredMultiblockEntity, DisplayMultiblockEntity {
 		override val maxPower: Int = 100_000
 		override val multiblock = ElectrolysisMultiblock
 		override val tickingManager: TickingManager = TickingManager(interval = 4)
+
+		override val fluidInputOffsets: Array<Vec3i> = arrayOf()
+		override val powerInputOffsets: Array<Vec3i> = arrayOf(Vec3i(0, -1, 0))
 
 		override val powerStorage: PowerStorage = loadStoredPower(data)
 
@@ -218,7 +222,7 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		private val oxygenStorage by lazy { getNamedStorage("oxygen_tank") }
 		private val waterStorage by lazy { getNamedStorage("water_tank") }
 
-		val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
 			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.45f),
 			SimpleFluidDisplay(waterStorage, +0.0, -0.10, +0.0, 0.45f),
@@ -240,19 +244,18 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		}
 
 		override fun onLoad() {
-			displayHandler.update()
+			registerInputs(NetworkType.FLUID, getFluidInputLocations())
+			registerInputs(NetworkType.POWER, getPowerInputLocations())
 		}
 
 		override fun onUnload() {
-			displayHandler.remove()
+			releaseInputs(NetworkType.FLUID, getFluidInputLocations())
+			releaseInputs(NetworkType.POWER, getPowerInputLocations())
 		}
 
 		override fun handleRemoval() {
-			displayHandler.remove()
-		}
-
-		override fun displaceAdditional(movement: StarshipMovement) {
-			displayHandler.displace(movement)
+			releaseInputs(NetworkType.FLUID, getFluidInputLocations())
+			releaseInputs(NetworkType.POWER, getPowerInputLocations())
 		}
 
 		override fun toString(): String = "Structure direction $structureDirection, display direction ${displayHandler.facing}"
