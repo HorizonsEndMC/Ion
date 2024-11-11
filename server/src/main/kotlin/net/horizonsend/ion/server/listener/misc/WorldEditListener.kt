@@ -6,7 +6,7 @@ import com.sk89q.worldedit.event.Event
 import com.sk89q.worldedit.event.extent.EditSessionEvent
 import com.sk89q.worldedit.util.eventbus.Subscribe
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.transport.IonChangeSet
+import net.horizonsend.ion.server.features.transport.util.IonChangeSet
 import org.bukkit.Bukkit
 
 object WorldEditListener : IonServerComponent(true) {

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.client.display.modular.display
 
-import net.horizonsend.ion.server.features.transport.cache.PowerTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.kyori.adventure.text.Component
 
 class FlowMeterDisplay(
