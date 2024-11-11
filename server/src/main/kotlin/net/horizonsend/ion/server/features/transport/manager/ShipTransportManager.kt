@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.transport.manager
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.cache.FluidTransportCache
-import net.horizonsend.ion.server.features.transport.cache.PowerTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipNetworkHolder
 
