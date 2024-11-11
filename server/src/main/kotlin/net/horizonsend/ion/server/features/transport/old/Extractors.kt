@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.old
 import com.google.gson.Gson
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
 import net.horizonsend.ion.server.features.transport.old.pipe.filter.FilterItemData
 import net.horizonsend.ion.server.features.transport.old.pipe.filter.Filters
@@ -28,17 +29,10 @@ import org.bukkit.event.world.WorldUnloadEvent
 import org.bukkit.inventory.InventoryHolder
 import java.io.File
 import java.nio.file.Files
-import java.util.Timer
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
-import kotlin.concurrent.fixedRateTimer
 
 object Extractors : IonServerComponent() {
-	const val extractorTicksPerSecond = 1.0
-
-	val EXTRACTOR_BLOCK = Material.CRAFTING_TABLE
-
-	private lateinit var timer: Timer
 
 	private val worldDataMap = ConcurrentHashMap<World, MutableSet<Vec3i>>()
 
@@ -47,29 +41,12 @@ object Extractors : IonServerComponent() {
 	override fun onEnable() {
 		return
 		IonServer.server.worlds.forEach(Extractors::loadExtractors)
-
-		Tasks.asyncRepeat(20 * 2, 20 * 2) {
-			worldDataMap.keys.forEach { saveExtractors(it) }
-		}
-
 		listen<WorldLoadEvent> { event -> loadExtractors(event.world) }
-
 		listen<WorldUnloadEvent> { event -> unloadExtractors(event.world) }
-
-		val interval: Long = (1000 / extractorTicksPerSecond).toLong()
-
-		timer = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) {
-			try {
-				worldDataMap.keys.forEach(Extractors::tickExtractors)
-			} catch (exception: Exception) {
-				exception.printStackTrace()
-			}
-		}
 	}
 
 	override fun onDisable() {
 		IonServer.server.worlds.forEach(Extractors::unloadExtractors)
-		timer.cancel()
 	}
 
 	//region Loading and saving
@@ -143,7 +120,7 @@ object Extractors : IonServerComponent() {
 			// this also ensures the chunk is loaded
 			val extractorMaterial: Material? = getBlockTypeSafe(world, x, y, z)
 
-			if (extractorMaterial != EXTRACTOR_BLOCK) {
+			if (extractorMaterial != ExtractorManager.EXTRACTOR_TYPE) {
 				continue
 			}
 
