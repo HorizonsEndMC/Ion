@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.node.util
+package net.horizonsend.ion.server.features.transport.util
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
@@ -97,7 +97,8 @@ fun getIdealPath(world: World, type: NetworkType, fromType: CachedNode, fromPos:
 		queueSet.remove(wrapper.pos)
 	}
 
-	queueAdd(PathfindingNodeWrapper(
+	queueAdd(
+		PathfindingNodeWrapper(
 		world = world,
 		pos = fromPos,
 		node = fromType,
@@ -106,7 +107,8 @@ fun getIdealPath(world: World, type: NetworkType, fromType: CachedNode, fromPos:
 		type = type,
 		g = 0,
 		f = 0
-	))
+	)
+	)
 
 	val visited = IntOpenHashSet()
 
