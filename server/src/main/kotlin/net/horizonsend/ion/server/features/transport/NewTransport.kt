@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.transport.node.manager.TransportManager
+import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.old.Extractors
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
