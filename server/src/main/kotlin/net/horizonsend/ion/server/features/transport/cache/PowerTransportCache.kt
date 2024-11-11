@@ -1,14 +1,13 @@
 package net.horizonsend.ion.server.features.transport.cache
 
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerFlowMeter
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerInputNode
-import net.horizonsend.ion.server.features.transport.node.type.power.SolarPanelNode
-import net.horizonsend.ion.server.features.transport.node.util.NetworkType
-import net.horizonsend.ion.server.features.transport.node.util.calculatePathResistance
-import net.horizonsend.ion.server.features.transport.node.util.getIdealPath
-import net.horizonsend.ion.server.features.transport.node.util.getNetworkDestinations
+import net.horizonsend.ion.server.features.transport.cache.PowerTransportCache.PowerNode.PowerFlowMeter
+import net.horizonsend.ion.server.features.transport.cache.PowerTransportCache.PowerNode.PowerInputNode
+import net.horizonsend.ion.server.features.transport.manager.holders.NetworkHolder
+import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
+import net.horizonsend.ion.server.features.transport.util.getIdealPath
+import net.horizonsend.ion.server.features.transport.util.getNetworkDestinations
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -36,7 +35,7 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		.addSimpleNode(REDSTONE_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(IRON_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(LAPIS_BLOCK, PowerNode.PowerInvertedMergeNode)
-		.addDataHandler<Observer>(OBSERVER) { PowerNode.PowerFlowMeter(it.facing) }
+		.addDataHandler<Observer>(OBSERVER) { PowerFlowMeter(it.facing) }
 		.build()
 
 	sealed interface PowerNode : CachedNode {
@@ -86,6 +85,10 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		data class PowerFlowMeter(val face: BlockFace) : PowerNode {
 			//TODO display
 
+			fun onCompleteChain(transferred: Int) {
+
+			}
+
 			override val pathfindingResistance: Double = 0.5
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = true
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = true
@@ -97,6 +100,10 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = true
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = false
 			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = anyDirection(inputDirection)
+
+			fun distributePower(toSend: Int): Int {
+				return 0
+			}
 		}
 	}
 
@@ -120,19 +127,11 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 //			source.powerStorage.addPower(remainder)
 //		}
 	}
-
-	private fun tickSolarPanel(solarPanelNode: SolarPanelNode) = NewTransport.executor.submit {
-		val powerCheck = solarPanelNode.tickAndGetPower()
-		if (powerCheck == 0) return@submit
-
-//		val destinations: ObjectOpenHashSet<PowerInputNode> = getPowerInputs(solarPanelNode)
-//		runPowerTransfer(solarPanelNode, destinations.toMutableList(), powerCheck)
-	}
 }
 
 // These methods are outside the class for speed
 
-fun getPowerInputs(world: World, origin: BlockKey) = getNetworkDestinations<PowerTransportCache.PowerNode.PowerInputNode>(world, NetworkType.POWER, origin) { true }
+fun getPowerInputs(world: World, origin: BlockKey) = getNetworkDestinations<PowerInputNode>(world, NetworkType.POWER, origin) { true }
 
 /**
  * Runs the power transfer from the source to the destinations. pending rewrite
@@ -143,7 +142,7 @@ private fun runPowerTransfer(world: World, sourcePos: BlockKey, sourceType: Cach
 	val numDestinations = destinations.size
 
 	val paths: Array<Array<CachedNode>?> = Array(numDestinations) { runCatching {
-		getIdealPath(world, NetworkType.POWER, sourceType, sourcePos, destinations[it].position)
+		getIdealPath(world, NetworkType.POWER, sourceType, sourcePos, destinations[it].pos)
 	}.getOrNull() }
 
 	var maximumResistance: Double = -1.0
@@ -201,7 +200,7 @@ private fun runPowerTransfer(world: World, sourcePos: BlockKey, sourceType: Cach
 }
 
 private fun getRemainingCapacity(destination: PowerInputNode): Int {
-	return destination.getPoweredEntities().sumOf { it.powerStorage.getRemainingCapacity() }
+	return 0 // destination.getPoweredEntities().sumOf { it.powerStorage.getRemainingCapacity() }
 }
 
 private fun completeChain(path: Array<CachedNode>?, transferred: Int) {

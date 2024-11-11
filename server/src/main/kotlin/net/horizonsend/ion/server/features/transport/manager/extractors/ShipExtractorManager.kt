@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.node.manager.extractors
+package net.horizonsend.ion.server.features.transport.manager.extractors
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.starship.Starship
