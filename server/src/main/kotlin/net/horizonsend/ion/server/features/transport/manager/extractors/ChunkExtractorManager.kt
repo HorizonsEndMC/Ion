@@ -1,7 +1,7 @@
-package net.horizonsend.ion.server.features.transport.node.manager.extractors
+package net.horizonsend.ion.server.features.transport.manager.extractors
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.features.transport.node.manager.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
