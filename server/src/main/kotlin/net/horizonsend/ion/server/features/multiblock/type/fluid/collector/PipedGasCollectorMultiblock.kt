@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.client.display.modular.display.fluid.
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.CategoryRestrictedInternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
@@ -16,8 +17,8 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory.GAS
+import net.horizonsend.ion.server.features.transport.util.NetworkType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
@@ -106,8 +107,9 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, PipedGasCollectorMultiblock, x, y, z, world, structureDirection), AsyncTickingMultiblockEntity, FluidStoringEntity {
+	) : MultiblockEntity(manager, PipedGasCollectorMultiblock, x, y, z, world, structureDirection), AsyncTickingMultiblockEntity, FluidStoringEntity, DisplayMultiblockEntity {
 		override val tickingManager: TickingManager = TickingManager(interval = 4)
+		override val fluidInputOffsets: Array<Vec3i> = arrayOf(Vec3i(0, -1, 0))
 
 		override val capacities: Array<StorageContainer> = arrayOf(
 			loadStoredResource(data, "tank_1", text("Tank 1"), TANK_1, CategoryRestrictedInternalStorage(500, GAS)),
@@ -115,7 +117,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 			loadStoredResource(data, "tank_3", text("Tank 3"), TANK_3, CategoryRestrictedInternalStorage(500, GAS)),
 		)
 
-		private val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
 			SimpleFluidDisplay(getNamedStorage("tank_1"), +0.0, +0.10, 0.0, 0.45f),
 			SimpleFluidDisplay(getNamedStorage("tank_2"), +0.0, -0.00, 0.0, 0.45f),
@@ -123,19 +125,15 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		).register()
 
 		override fun onLoad() {
-			displayHandler.update()
+			registerInputs(NetworkType.FLUID, getFluidInputLocations())
 		}
 
 		override fun onUnload() {
-			displayHandler.remove()
+			releaseInputs(NetworkType.FLUID, getFluidInputLocations())
 		}
 
 		override fun handleRemoval() {
-			displayHandler.remove()
-		}
-
-		override fun displaceAdditional(movement: StarshipMovement) {
-			displayHandler.displace(movement)
+			releaseInputs(NetworkType.FLUID, getFluidInputLocations())
 		}
 
 		private val worldConfig get() = world.ion.configuration.gasConfiguration
