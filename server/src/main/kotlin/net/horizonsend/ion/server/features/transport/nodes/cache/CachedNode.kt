@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.cache
+package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import org.bukkit.Material
 import org.bukkit.block.BlockFace

@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.transport.cache.CachedNode
+import net.horizonsend.ion.server.features.transport.nodes.cache.CachedNode
 import net.horizonsend.ion.server.features.transport.util.NetworkType
 import net.horizonsend.ion.server.features.transport.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.calculatePathResistance

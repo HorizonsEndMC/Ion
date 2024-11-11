@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.transport.manager.holders
 
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
-import net.horizonsend.ion.server.features.transport.cache.CachedNode
-import net.horizonsend.ion.server.features.transport.cache.TransportCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.CachedNode
+import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport
+package net.horizonsend.ion.server.features.transport.util
 
 import com.fastasyncworldedit.core.history.changeset.AbstractChangeSet
 import com.sk89q.jnbt.CompoundTag
@@ -8,6 +8,7 @@ import com.sk89q.worldedit.world.World
 import com.sk89q.worldedit.world.biome.BiomeType
 import com.sk89q.worldedit.world.block.BlockTypesCache
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.block.Sign
