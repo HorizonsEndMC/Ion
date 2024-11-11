@@ -6,8 +6,8 @@ import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.transport.old.Extractors
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.EXTRACTOR_TYPE
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import org.bukkit.entity.Player
 
@@ -35,14 +35,12 @@ object FixExtractorsCommand : SLCommand() {
 
 			val block = sender.world.getBlockAt(x, y, z)
 
-			if (block.type != Extractors.EXTRACTOR_BLOCK) continue
+			if (block.type != EXTRACTOR_TYPE) continue
 
-			val vec3i = Vec3i(x, y, z)
-
-			if (Extractors.contains(sender.world, vec3i)) continue
+			if (NewTransport.isExtractor(sender.world, x, y, z)) continue
 
 			count++
-			Extractors.add(sender.world, vec3i)
+			NewTransport.addExtractor(sender.world, x, y, z)
 		}
 
 		sender.success("Registered $count new extractors")
