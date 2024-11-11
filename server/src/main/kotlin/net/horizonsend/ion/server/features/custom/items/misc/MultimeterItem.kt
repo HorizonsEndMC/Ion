@@ -8,11 +8,11 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.transport.cache.CachedNode
-import net.horizonsend.ion.server.features.transport.node.util.NetworkType
-import net.horizonsend.ion.server.features.transport.node.util.PathfindingNodeWrapper
-import net.horizonsend.ion.server.features.transport.node.util.calculatePathResistance
-import net.horizonsend.ion.server.features.transport.node.util.getHeuristic
-import net.horizonsend.ion.server.features.transport.node.util.getNeighbors
+import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.util.PathfindingNodeWrapper
+import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
+import net.horizonsend.ion.server.features.transport.util.getHeuristic
+import net.horizonsend.ion.server.features.transport.util.getNeighbors
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_VARIANT
@@ -127,7 +127,8 @@ object MultimeterItem : CustomItem("Multimeter") {
 			queueSet.remove(wrapper.node.hashCode())
 		}
 
-		queueAdd(PathfindingNodeWrapper(
+		queueAdd(
+			PathfindingNodeWrapper(
 			world = world,
 			pos = fromPos,
 			node = fromNode,
@@ -136,7 +137,8 @@ object MultimeterItem : CustomItem("Multimeter") {
 			type = type,
 			g = 0,
 			f = 0
-		))
+		)
+		)
 
 		val visited = LongOpenHashSet()
 
