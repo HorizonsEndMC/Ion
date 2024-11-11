@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.manager.WorldMultiblockManager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.transport.nodes.inputs.WorldInputManager
 import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
@@ -50,6 +51,7 @@ class IonWorld private constructor(
 	val chunkRegions: MutableSet<ChunkRegion> = ObjectOpenHashSet()
 
 	val multiblockManager = WorldMultiblockManager(this)
+	val inputManager = WorldInputManager(this)
 
 	/**
 	 * Gets the IonChunk at the specified coordinates if it is loaded
@@ -126,10 +128,6 @@ class IonWorld private constructor(
 	//TODO
 	// - Terrain Generator
 	// - Worldborder injection
-	// - World multiblock tracker
-	//  - Area shields
-	//  - Mob defenders
-	//  - Base shields?
 
 	companion object : IonServerComponent() {
 		private val WORLD_CONFIGURATION_DIRECTORY = ConfigurationFiles.configurationFolder.resolve("worlds").apply { mkdirs() }
