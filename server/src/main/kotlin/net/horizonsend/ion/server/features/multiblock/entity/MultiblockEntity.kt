@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.transport.util.NetworkType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -183,7 +184,7 @@ abstract class MultiblockEntity(
 		return world.getBlockAt(x, y, z)
 	}
 
-	fun getPosRelative(forward: Int, right: Int, up: Int): Vec3i {
+	fun getPosRelative(right: Int, up: Int, forward: Int): Vec3i {
 		return getRelative(vec3i, structureDirection, right = right, up = up, forward = forward)
 	}
 
@@ -281,5 +282,19 @@ abstract class MultiblockEntity(
 
 	fun markChanged() {
 		manager.markChanged()
+	}
+
+	fun registerInputs(type: NetworkType, locations: Set<Vec3i>) {
+		val inputManager = manager.getInputManager()
+		for (location in locations) {
+			inputManager.registerInput(type, toBlockKey(location), this)
+		}
+	}
+
+	fun releaseInputs(type: NetworkType, locations: Set<Vec3i>) {
+		val inputManager = manager.getInputManager()
+		for (location in locations) {
+			inputManager.deRegisterInput(type, toBlockKey(location), this)
+		}
 	}
 }
