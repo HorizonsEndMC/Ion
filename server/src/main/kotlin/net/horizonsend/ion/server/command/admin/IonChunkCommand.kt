@@ -4,22 +4,14 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.cache.PowerTransportCache
-import net.horizonsend.ion.server.features.transport.node.TransportNode
-import net.horizonsend.ion.server.features.transport.node.manager.PowerNodeManager
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerExtractorNode
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerInputNode
-import net.horizonsend.ion.server.features.transport.node.type.power.PowerPathfindingNode
-import net.horizonsend.ion.server.features.transport.node.util.NetworkType
+import net.horizonsend.ion.server.features.transport.util.NetworkType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component.text
@@ -93,11 +85,11 @@ object IonChunkCommand : SLCommand() {
 		sender.information("${grid.getRawCache().values.distinct().size} unique node(s).")
 
 		when (grid) {
-			is PowerNodeManager -> {
-				sender.information("${grid.solarPanels.size} solar panels")
-				sender.information("${grid.extractors.size} extractors")
-				sender.information("Node list: ${grid.nodes.values.groupBy { it.javaClass.simpleName }.mapValues { it.value.size }.entries.joinToString { it.toString() + "\n" }}")
-			}
+//			is PowerNodeManager -> {
+//				sender.information("${grid.solarPanels.size} solar panels")
+//				sender.information("${grid.extractors.size} extractors")
+//				sender.information("Node list: ${grid.nodes.values.groupBy { it.javaClass.simpleName }.mapValues { it.value.size }.entries.joinToString { it.toString() + "\n" }}")
+//			}
 		}
 	}
 
@@ -143,50 +135,50 @@ object IonChunkCommand : SLCommand() {
 	fun onTestPathfinding(sender: Player) {
 		val targeted = sender.getTargetBlock(null, 10)
 		val ionChunk = targeted.chunk.ion()
-		val grid = NetworkType.POWER.get(ionChunk) as PowerNodeManager
-		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
+//		val grid = NetworkType.POWER.get(ionChunk) as PowerNodeManager
+//		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
+//
+//		val at = grid.nodes[key] ?: return sender.userError("No node at $targeted")
+//		val transferable = at.getTransferableNodes()
 
-		val at = grid.nodes[key] ?: return sender.userError("No node at $targeted")
-		val transferable = at.getTransferableNodes()
-
-		fun getNext(node: TransportNode): Collection<TransportNode> {
-			at as PowerPathfindingNode
-			return at.getNextNodes(node, null)
-		}
-
-		sender.information("Transferable nodes from ${at.javaClass.simpleName}")
-		sender.information(transferable.joinToString(separator = "\n") { next ->
-			"${next.javaClass.simpleName} -> [${getNext(next).joinToString { it.javaClass.simpleName }}]"
-		})
+//		fun getNext(node: TransportNode): Collection<TransportNode> {
+//			at as PowerPathfindingNode
+//			return at.getNextNodes(node, null)
+//		}
+//
+//		sender.information("Transferable nodes from ${at.javaClass.simpleName}")
+//		sender.information(transferable.joinToString(separator = "\n") { next ->
+//			"${next.javaClass.simpleName} -> [${getNext(next).joinToString { it.javaClass.simpleName }}]"
+//		})
 	}
 
 	@Subcommand("test flood")
 	fun onTestFloodFill(sender: Player) {
-		val targeted = sender.getTargetBlock(null, 10)
-		val ionChunk = targeted.chunk.ion()
-		val grid = NetworkType.POWER.get(ionChunk) as PowerNodeManager
-		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
-
-		val at = grid.nodes[key] ?: return sender.userError("No node at $targeted")
-
-			val visitQueue = ArrayDeque<TransportNode>()
-			val visitedSet = ObjectOpenHashSet<TransportNode>()
-			val destinations = ObjectOpenHashSet<PowerInputNode>()
-
-			visitQueue.addAll(at.cachedTransferable)
-			var iterations = 0L
-
-			while (visitQueue.isNotEmpty()) {
-				iterations++
-				val currentNode = visitQueue.removeFirst()
-				Tasks.syncDelay(iterations) { sender.highlightBlock(currentNode.getCenter(), 5L) }
-				visitedSet.add(currentNode)
-
-				if (currentNode is PowerInputNode) {
-					destinations.add(currentNode)
-				}
-
-				visitQueue.addAll(currentNode.cachedTransferable.filterNot { visitedSet.contains(it) })
-			}
+//		val targeted = sender.getTargetBlock(null, 10)
+//		val ionChunk = targeted.chunk.ion()
+//		val grid = NetworkType.POWER.get(ionChunk) as PowerNodeManager
+//		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
+//
+//		val at = grid.nodes[key] ?: return sender.userError("No node at $targeted")
+//
+//			val visitQueue = ArrayDeque<TransportNode>()
+//			val visitedSet = ObjectOpenHashSet<TransportNode>()
+//			val destinations = ObjectOpenHashSet<PowerInputNode>()
+//
+//			visitQueue.addAll(at.cachedTransferable)
+//			var iterations = 0L
+//
+//			while (visitQueue.isNotEmpty()) {
+//				iterations++
+//				val currentNode = visitQueue.removeFirst()
+//				Tasks.syncDelay(iterations) { sender.highlightBlock(currentNode.getCenter(), 5L) }
+//				visitedSet.add(currentNode)
+//
+//				if (currentNode is PowerInputNode) {
+//					destinations.add(currentNode)
+//				}
+//
+//				visitQueue.addAll(currentNode.cachedTransferable.filterNot { visitedSet.contains(it) })
+//			}
 	}
 }
