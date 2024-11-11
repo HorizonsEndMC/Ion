@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.transport.util
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.features.transport.cache.CachedNode
+import net.horizonsend.ion.server.features.transport.nodes.cache.CachedNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
