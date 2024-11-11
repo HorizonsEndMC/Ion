@@ -1,16 +1,24 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache.PowerNode.PowerInputNode
-import net.horizonsend.ion.server.features.transport.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.util.NetworkType
 import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.util.getIdealPath
 import net.horizonsend.ion.server.features.transport.util.getNetworkDestinations
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import org.bukkit.Axis
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.END_ROD
@@ -21,6 +29,7 @@ import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.SPONGE
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
 import org.bukkit.block.data.type.Observer
 import org.bukkit.craftbukkit.v1_20_R3.block.impl.CraftEndRod
 import java.util.concurrent.Future
@@ -36,6 +45,7 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		.addSimpleNode(IRON_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(LAPIS_BLOCK, PowerNode.PowerInvertedMergeNode)
 		.addDataHandler<Observer>(OBSERVER) { PowerFlowMeter(it.facing) }
+		.addSimpleNode(OBSERVER, PowerInputNode)
 		.build()
 
 	sealed interface PowerNode : CachedNode {
@@ -95,15 +105,11 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = listOf(inputDirection to 1) // Forward only
 		}
 
-		data class PowerInputNode(val pos: BlockKey) : PowerNode {
+		data object PowerInputNode : PowerNode {
 			override val pathfindingResistance: Double = 0.0
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = true
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = false
 			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = anyDirection(inputDirection)
-
-			fun distributePower(toSend: Int): Int {
-				return 0
-			}
 		}
 	}
 
@@ -131,18 +137,37 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 
 // These methods are outside the class for speed
 
+/**
+ * Gets the powered entities accessible from this location, assuming it is an input
+ **/
+fun getPoweredEntities(world: World, location: BlockKey): Set<MultiblockEntity> {
+	val inputManager = world.ion.inputManager
+	val registered = inputManager.getHolders(NetworkType.POWER, location)
+	val adjacentBlocks = ADJACENT_BLOCK_FACES.mapNotNull {
+		val block = getBlockIfLoaded(world, getX(location), getY(location), getZ(location)) ?: return@mapNotNull null
+		val adjacent = block.getRelativeIfLoaded(it)?.state as? Sign ?: return@mapNotNull null
+		MultiblockEntities.getMultiblockEntity(adjacent)
+	}
+
+	return registered.plus(adjacentBlocks)
+}
+
+fun distributePower(location: BlockKey, amount: Int): Int {
+	return 0
+}
+
 fun getPowerInputs(world: World, origin: BlockKey) = getNetworkDestinations<PowerInputNode>(world, NetworkType.POWER, origin) { true }
 
 /**
  * Runs the power transfer from the source to the destinations. pending rewrite
  **/
-private fun runPowerTransfer(world: World, sourcePos: BlockKey, sourceType: CachedNode, destinations: List<PowerInputNode>, availableTransferPower: Int): Int {
+private fun runPowerTransfer(world: World, sourcePos: BlockKey, sourceType: CachedNode, destinations: List<BlockKey>, availableTransferPower: Int): Int {
 	if (destinations.isEmpty()) return availableTransferPower
 
 	val numDestinations = destinations.size
 
 	val paths: Array<Array<CachedNode>?> = Array(numDestinations) { runCatching {
-		getIdealPath(world, NetworkType.POWER, sourceType, sourcePos, destinations[it].pos)
+		getIdealPath(world, NetworkType.POWER, sourceType, sourcePos, destinations[it])
 	}.getOrNull() }
 
 	var maximumResistance: Double = -1.0
@@ -178,10 +203,10 @@ private fun runPowerTransfer(world: World, sourcePos: BlockKey, sourceType: Cach
 		val share = shareFactor / shareFactorSum
 
 		val idealSend = (availableTransferPower * share).roundToInt()
-		val toSend = minOf(idealSend, getRemainingCapacity(destination))
+		val toSend = minOf(idealSend, getRemainingCapacity(/*TODO*/))
 
 		// Amount of power that didn't fit
-		val remainder = destination.distributePower(toSend)
+		val remainder = distributePower(destination, toSend)
 		val realTaken = toSend - remainder
 
 		remainingPower -= realTaken
@@ -199,7 +224,7 @@ private fun runPowerTransfer(world: World, sourcePos: BlockKey, sourceType: Cach
 	return remainingPower
 }
 
-private fun getRemainingCapacity(destination: PowerInputNode): Int {
+private fun getRemainingCapacity(): Int {
 	return 0 // destination.getPoweredEntities().sumOf { it.powerStorage.getRemainingCapacity() }
 }
 
