@@ -1,16 +1,11 @@
 package net.horizonsend.ion.server.features.transport.node.manager
 
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.cache.FluidTransportCache
-import net.horizonsend.ion.server.features.transport.cache.TransportCache
-import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.type.fluid.FluidExtractorNode
-import net.horizonsend.ion.server.features.transport.node.type.fluid.FluidInputNode
 import net.horizonsend.ion.server.features.transport.node.type.fluid.FluidNodeFactory
 import net.horizonsend.ion.server.features.transport.node.util.NetworkType
-import net.horizonsend.ion.server.features.transport.node.util.getNetworkDestinations
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FLUID_TRANSPORT
 import org.bukkit.NamespacedKey
 import java.util.concurrent.Future
@@ -39,10 +34,10 @@ class FluidNodeManager(holder: NetworkHolder<FluidTransportCache>) : NodeManager
 
 		val source = extractorNode.getSourcePool().filterNot { it.isFull() }.randomOrNull() ?: return@submit
 
-		val destinations: ObjectOpenHashSet<FluidInputNode> = getFluidInputs(extractorNode)
-		destinations.removeAll(extractorNode.getTransferableNodes().filterIsInstanceTo(ObjectOpenHashSet()))
-
-		if (destinations.isEmpty()) return@submit
+//		val destinations: ObjectOpenHashSet<FluidInputNode> = getFluidInputs(extractorNode)
+//		destinations.removeAll(extractorNode.getTransferableNodes().filterIsInstanceTo(ObjectOpenHashSet()))
+//
+//		if (destinations.isEmpty()) return@submit
 
 //		val transferred = minOf(source.getPower(), check)
 //		val notRemoved = source.storage.removePower(transferred)
@@ -57,5 +52,3 @@ class FluidNodeManager(holder: NetworkHolder<FluidTransportCache>) : NodeManager
 //		}
 	}
 }
-
-fun getFluidInputs(origin: TransportNode) = getNetworkDestinations<FluidInputNode>(origin) { it.isCalling() }
