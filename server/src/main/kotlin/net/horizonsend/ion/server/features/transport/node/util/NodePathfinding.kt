@@ -1,36 +1,78 @@
 package net.horizonsend.ion.server.features.transport.node.util
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.transport.cache.CachedNode
-import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
+import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.kyori.adventure.audience.Audience
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import java.util.PriorityQueue
 import kotlin.math.roundToInt
 
-inline fun <reified T: TransportNode> getNetworkDestinations(origin: TransportNode, check: (T) -> Boolean): ObjectOpenHashSet<T> {
-	val visitQueue = ArrayDeque<TransportNode>()
-	val visitedSet = ObjectOpenHashSet<TransportNode>()
-	val destinations = ObjectOpenHashSet<T>()
+fun getOrCacheNode(type: NetworkType, world: World, pos: BlockKey): CachedNode? {
+	val chunk = IonChunk[world, getX(pos).shr(4), getZ(pos).shr(4)] ?: return null
+	return type.get(chunk).getOrCache(pos)
+}
 
-	visitQueue.addAll(origin.cachedTransferable)
+fun getNextNodes(networkType: NetworkType, world: World, backwards: BlockFace, parentPos: BlockKey, parentType: CachedNode): Map<BlockFace, CachedNode> {
+	val adjacent = ADJACENT_BLOCK_FACES.minus(backwards)
+
+	val map = mutableMapOf<BlockFace, CachedNode>()
+
+	for (adjacentFace in adjacent) {
+		val pos = getRelative(parentPos, adjacentFace)
+		val cached = getOrCacheNode(networkType, world, pos) ?: continue
+
+		if (!cached.canTransferFrom(parentType, adjacentFace) || !parentType.canTransferTo(cached, adjacentFace)) continue
+
+		map[adjacentFace] = cached
+	}
+
+	return map
+}
+
+inline fun <reified T: CachedNode> getNetworkDestinations(world: World, networkType: NetworkType, originPos: BlockKey, check: (T) -> Boolean): LongOpenHashSet {
+	val originNode = getOrCacheNode(networkType, world, originPos) ?: return LongOpenHashSet()
+
+	val visitQueue = ArrayDeque<Triple<BlockFace, BlockKey, CachedNode>>()
+	val visitedSet = LongOpenHashSet()
+	val destinations = LongOpenHashSet()
+
+	val immediate = getNextNodes(
+		networkType = networkType,
+		world = world,
+		backwards = BlockFace.SELF,
+		parentPos = originPos,
+		parentType = originNode
+	)
+
+	visitQueue.addAll(immediate.map { Triple(it.key, getRelative(originPos, it.key), it.value) })
 
 	while (visitQueue.isNotEmpty()) {
-		val currentNode = visitQueue.removeFirst()
-		visitedSet.add(currentNode)
+		val (offset, currentPos, currentNode) = visitQueue.removeFirst()
+		visitedSet.add(currentPos)
 
 		if (currentNode is T && check(currentNode)) {
-			destinations.add(currentNode)
+			destinations.add(currentPos)
 		}
 
-		visitQueue.addAll(currentNode.cachedTransferable.filterNot { visitedSet.contains(it) })
+		val next = getNextNodes(
+			networkType = networkType,
+			world = world,
+			backwards = offset.oppositeFace,
+			parentPos = currentPos,
+			parentType = currentNode
+		).filterNot { visitedSet.contains(getRelative(currentPos, it.key)) }.map { Triple(it.key, getRelative(originPos, it.key), it.value) }
+
+		visitQueue.addAll(next)
 	}
 
 	return destinations
@@ -43,16 +85,16 @@ fun getIdealPath(world: World, type: NetworkType, fromType: CachedNode, fromPos:
 	// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
 	val queue = PriorityQueue<PathfindingNodeWrapper> { o1, o2 -> o2.f.compareTo(o1.f) }
 	// The hash set here is to speed up the .contains() check further down the road, which is slow with the queue.
-	val queueSet = IntOpenHashSet()
+	val queueSet = LongOpenHashSet()
 
 	fun queueAdd(wrapper: PathfindingNodeWrapper) {
 		queue.add(wrapper)
-		queueSet.add(wrapper.node.hashCode())
+		queueSet.add(wrapper.pos)
 	}
 
 	fun queueRemove(wrapper: PathfindingNodeWrapper) {
 		queue.remove(wrapper)
-		queueSet.remove(wrapper.node.hashCode())
+		queueSet.remove(wrapper.pos)
 	}
 
 	queueAdd(PathfindingNodeWrapper(
@@ -84,7 +126,7 @@ fun getIdealPath(world: World, type: NetworkType, fromType: CachedNode, fromPos:
 			if (visited.contains(neighbor.node.hashCode())) continue
 			neighbor.f = (neighbor.g + getHeuristic(neighbor, to))
 
-			if (queueSet.contains(neighbor.node.hashCode())) {
+			if (queueSet.contains(neighbor.pos)) {
 				val existingNeighbor = queue.first { it.node === neighbor.node }
 				if (neighbor.g < existingNeighbor.g) {
 					existingNeighbor.g = neighbor.g
@@ -100,8 +142,16 @@ fun getIdealPath(world: World, type: NetworkType, fromType: CachedNode, fromPos:
 }
 
 // Wraps neighbor nodes in a data class to store G and F values for pathfinding. Should probably find a better solution
-fun getNeighbors(current: PathfindingNodeWrapper): Array<PathfindingNodeWrapper> {
-	val transferable = current.network?.getNextNodes(current.offset, current.pos, current.node)?.toList() ?: return arrayOf()
+fun getNeighbors(current: PathfindingNodeWrapper, audience: Audience? = null): Array<PathfindingNodeWrapper> {
+	val transferable = getNextNodes(
+		current.type,
+		current.world,
+		backwards = current.offset.oppositeFace,
+		parentPos = current.pos,
+		parentType = current.node
+	).toList()
+
+	audience?.information("${transferable.size} transferable nodes")
 
 	return Array(transferable.size) {
 		val (neighborFace, neighborType) = transferable[it]
