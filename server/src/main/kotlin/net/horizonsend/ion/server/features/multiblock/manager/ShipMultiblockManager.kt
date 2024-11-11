@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.util.NetworkType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -35,6 +36,10 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	override var asyncTickingMultiblockEntities: ConcurrentHashMap<Long, AsyncTickingMultiblockEntity> = ConcurrentHashMap()
 
 	override val world get() = starship.world
+
+	override fun getInputManager(): InputManager {
+		return starship.transportManager.getInputProvider()
+	}
 
 	override fun save() {}
 	override fun getSignUnsavedTime(): Long = 0
