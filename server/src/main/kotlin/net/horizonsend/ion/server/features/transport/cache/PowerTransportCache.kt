@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.transport.cache
 
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.node.TransportNode
 import net.horizonsend.ion.server.features.transport.node.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.node.type.power.PowerInputNode
@@ -93,6 +91,13 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = true
 			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = listOf(inputDirection to 1) // Forward only
 		}
+
+		data class PowerInputNode(val pos: BlockKey) : PowerNode {
+			override val pathfindingResistance: Double = 0.0
+			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = true
+			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = false
+			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = anyDirection(inputDirection)
+		}
 	}
 
 	fun tickExtractor(extractorNode: PowerNode.PowerExtractorNode): Future<*> = NewTransport.executor.submit {
@@ -120,14 +125,14 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		val powerCheck = solarPanelNode.tickAndGetPower()
 		if (powerCheck == 0) return@submit
 
-		val destinations: ObjectOpenHashSet<PowerInputNode> = getPowerInputs(solarPanelNode)
+//		val destinations: ObjectOpenHashSet<PowerInputNode> = getPowerInputs(solarPanelNode)
 //		runPowerTransfer(solarPanelNode, destinations.toMutableList(), powerCheck)
 	}
 }
 
 // These methods are outside the class for speed
 
-fun getPowerInputs(origin: TransportNode) = getNetworkDestinations<PowerInputNode>(origin) { it.isCalling() }
+fun getPowerInputs(world: World, origin: BlockKey) = getNetworkDestinations<PowerTransportCache.PowerNode.PowerInputNode>(world, NetworkType.POWER, origin) { true }
 
 /**
  * Runs the power transfer from the source to the destinations. pending rewrite
