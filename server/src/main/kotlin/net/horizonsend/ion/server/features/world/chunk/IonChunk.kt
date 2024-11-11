@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.world.chunk
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.manager.ChunkMultiblockManager
-import net.horizonsend.ion.server.features.transport.node.manager.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.listener.SLEventListener
