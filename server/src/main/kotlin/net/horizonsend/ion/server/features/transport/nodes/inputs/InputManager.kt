@@ -26,10 +26,12 @@ abstract class InputManager {
 		return getTypeManager(type).getAllHolders(location)
 	}
 
+	fun getLocations(type: NetworkType) = getTypeManager(type).getAllLocations()
+
 	class TypeManager(val manager: InputManager, val type: NetworkType) {
 		private val inputLocations = Long2ObjectOpenHashMap<InputData>()
 
-		fun getAll() = inputLocations.clone()
+		fun getAllLocations() = inputLocations.keys
 
 		fun add(location: BlockKey, holder: MultiblockEntity) {
 			when (val present: InputData? = inputLocations.get(location)) {
