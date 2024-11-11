@@ -1,11 +1,12 @@
 package net.horizonsend.ion.server.features.transport.manager
 
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportCache
-import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.manager.extractors.ChunkExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ChunkNetworkHolder
+import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -17,6 +18,10 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager() {
 	override val powerNodeManager = ChunkNetworkHolder(this) { PowerTransportCache(it) }
 	override val fluidNodeManager = ChunkNetworkHolder(this) { FluidTransportCache(it) }
 //	val pipeGrid = PowerNodeManager(this) // TODO
+
+	override fun getInputProvider(): InputManager {
+		return chunk.region.world.inputManager
+	}
 
 	fun setup() {
 		powerNodeManager.handleLoad()
