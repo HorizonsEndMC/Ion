@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -58,6 +59,7 @@ object PowerCellMultiblock : Multiblock(), EntityMultiblock<PowerCellMultiblock.
 		structureFace: BlockFace
 	) : SimplePoweredEntity(data, PowerCellMultiblock, manager, x, y, z, world, structureFace, 50_000), LegacyMultiblockEntity, PoweredMultiblockEntity {
 		override val displayHandler = standardPowerDisplay(this)
+		override val powerInputOffsets: Array<Vec3i> = arrayOf(Vec3i(0, 0, 0))
 
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
