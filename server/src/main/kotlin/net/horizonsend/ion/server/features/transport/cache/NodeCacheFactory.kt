@@ -21,7 +21,7 @@ class NodeCacheFactory private constructor(private val materialHandlers: Map<Mat
 		val materialHandlers = mutableMapOf<Material, MaterialHandler<*>>()
 
 		inline fun <reified T: BlockData> addDataHandler(material: Material, noinline constructor: (T) -> CachedNode): Builder {
-			this.materialHandlers[material] = MaterialHandler<T>(T::class, constructor)
+			this.materialHandlers[material] = MaterialHandler(T::class, constructor)
 			return this
 		}
 

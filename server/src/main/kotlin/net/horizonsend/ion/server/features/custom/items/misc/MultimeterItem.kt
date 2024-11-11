@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.misc
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -137,7 +138,7 @@ object MultimeterItem : CustomItem("Multimeter") {
 			f = 0
 		))
 
-		val visited = IntOpenHashSet()
+		val visited = LongOpenHashSet()
 
 		// Safeguard
 		var iterations = 0L
@@ -150,14 +151,14 @@ object MultimeterItem : CustomItem("Multimeter") {
 			if (current.pos == toPos) return current.buildPath()
 
 			queueRemove(current)
-			visited.add(current.node.hashCode())
+			visited.add(current.pos)
 
-			val neighbors = getNeighbors(current)
+			val neighbors = getNeighbors(current, audience)
 			if (neighbors.isEmpty()) audience.userError("Empty neighbors")
 
 			for (newNeighbor in neighbors) {
-				audience.information("new neighbor: ${newNeighbor.node} at ${toVec3i(newNeighbor.pos)}")
-				if (visited.contains(newNeighbor.node.hashCode())) {
+				audience.information("new neighbor: ${newNeighbor} at ${toVec3i(newNeighbor.pos)}")
+				if (visited.contains(newNeighbor.pos)) {
 					audience.information("conmtinue")
 					continue
 				}
