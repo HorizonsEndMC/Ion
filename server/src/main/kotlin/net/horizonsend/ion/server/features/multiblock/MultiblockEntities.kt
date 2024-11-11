@@ -49,6 +49,11 @@ object MultiblockEntities : SLEventListener() {
 		return getMultiblockEntity(origin.world, origin.x, origin.y, origin.z)
 	}
 
+	fun getMultiblockEntity(sign: Sign): MultiblockEntity? {
+		val origin = MultiblockEntity.getOriginFromSign(sign)
+		return getMultiblockEntity(sign.world, origin.x, origin.y, origin.z)
+	}
+
 	/**
 	 * Add a new multiblock entity to the chunk
 	 **/
