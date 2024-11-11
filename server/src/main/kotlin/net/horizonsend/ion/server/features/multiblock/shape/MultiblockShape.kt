@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BATTLECRUI
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_CASING
-import net.horizonsend.ion.server.features.transport.old.Extractors
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.EXTRACTOR_TYPE
 import net.horizonsend.ion.server.features.transport.old.Wires
 import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
@@ -415,7 +415,7 @@ class MultiblockShape {
 		fun daylightSensor() = filteredTypes("daylight sensor") { it.isDaylightSensor }
 		fun craftingTable() = type(Material.CRAFTING_TABLE)
 
-		fun extractor() = type(Extractors.EXTRACTOR_BLOCK)
+		fun extractor() = type(EXTRACTOR_TYPE)
 
 		fun glowstone() = type(Material.GLOWSTONE)
 
