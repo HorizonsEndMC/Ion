@@ -75,6 +75,19 @@ object IonChunkCommand : SLCommand() {
 		}
 	}
 
+	@Subcommand("dump extractors")
+	@CommandCompletion("power") /* |item|gas") */
+	fun dumpExtractors(sender: Player, network: NetworkType) {
+		val ionChunk = sender.chunk.ion()
+		val extractors = network.get(ionChunk).holder.getExtractorManager()
+
+		sender.information("${extractors.getExtractors().size} covered position(s).")
+
+		extractors.getExtractors().forEach { pos ->
+			sender.highlightBlock(toVec3i(pos), 50L)
+		}
+	}
+
 	@Subcommand("dump")
 	@CommandCompletion("power")
 	fun dumpNetwork(sender: Player, network: NetworkType) {

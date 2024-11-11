@@ -23,6 +23,14 @@ class ShipExtractorManager(val starship: Starship) : ExtractorManager() {
 		return true
 	}
 
+	override fun removeExtractor(x: Int, y: Int, z: Int): Boolean {
+		return extractors.remove(toBlockKey(x, y, z))
+	}
+
+	override fun removeExtractor(key: BlockKey): Boolean {
+		return extractors.remove(key)
+	}
+
 	fun loadExtractors() {
 		starship.iterateBlocks { x, y, z -> registerExtractor(x, y, z, true) }
 	}
