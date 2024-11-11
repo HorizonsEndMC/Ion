@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.cache
+package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe

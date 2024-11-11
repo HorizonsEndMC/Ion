@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.configuration
+package net.horizonsend.ion.server.features.transport
 
 import kotlinx.serialization.Serializable
 
