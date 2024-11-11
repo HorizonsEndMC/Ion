@@ -1,8 +1,8 @@
-package net.horizonsend.ion.server.features.transport.cache
+package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.cache.PowerTransportCache.PowerNode.PowerFlowMeter
-import net.horizonsend.ion.server.features.transport.cache.PowerTransportCache.PowerNode.PowerInputNode
+import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache.PowerNode.PowerFlowMeter
+import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.util.NetworkType
 import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
