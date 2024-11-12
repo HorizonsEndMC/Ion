@@ -37,7 +37,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.type.Observer
 import org.bukkit.craftbukkit.v1_20_R3.block.impl.CraftEndRod
-import java.util.concurrent.Future
 import kotlin.math.roundToInt
 
 class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : TransportCache(holder) {
@@ -113,7 +112,8 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		}
 	}
 
-	fun tickExtractor(location: BlockKey, world: World): Future<*> = NewTransport.executor.submit {
+	override fun tickExtractor(location: BlockKey) { NewTransport.executor.submit {
+		val world = holder.getWorld()
 		val sources = getExtractorSourcePool(location, world).filterNot { it.powerStorage.isEmpty() }
 		val source = sources.randomOrNull() ?: return@submit //TODO take from all
 
@@ -144,7 +144,7 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		if (remainder > 0) {
 			source.powerStorage.addPower(remainder)
 		}
-	}
+	}}
 }
 
 // These methods are outside the class for speed
