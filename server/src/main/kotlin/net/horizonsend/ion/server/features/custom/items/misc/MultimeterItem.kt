@@ -91,7 +91,7 @@ object MultimeterItem : CustomItem("Multimeter") {
 
 		val firstNode = networkType.get(firstChunk).getOrCache(firstPoint) ?: return audience.information("There is no node at ${toVec3i(firstPoint)}")
 
-		val path = getIdealPath(world, networkType, audience, firstPoint, firstNode, secondPoint)
+		val path = getIdealPath(audience, CachedNode.NodePositionData(firstNode, world, firstPoint, BlockFace.SELF), secondPoint)
 		val resistance = calculatePathResistance(path) ?: return audience.userError("There is no path connecting these nodes")
 		audience.information("The resistance from ${firstNode.javaClass.simpleName} at ${toVec3i(firstPoint)} to ${toVec3i(secondPoint)} at ${toVec3i(secondPoint)} is $resistance")
 	}
@@ -111,7 +111,7 @@ object MultimeterItem : CustomItem("Multimeter") {
 	/**
 	 * Uses the A* algorithm to find the shortest available path between these two nodes.
 	 **/
-	private fun getIdealPath(world: World, type: NetworkType, audience: Audience, fromPos: BlockKey, fromNode: CachedNode, toPos: BlockKey): Array<CachedNode>? {
+	private fun getIdealPath(audience: Audience, fromNode: CachedNode.NodePositionData, toPos: BlockKey): Array<CachedNode.NodePositionData>? {
 		// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
 		val queue = PriorityQueue<PathfindingNodeWrapper> { o1, o2 -> o2.f.compareTo(o1.f) }
 		// The hash set here is to speed up the .contains() check further down the road, which is slow with the queue.
@@ -127,18 +127,12 @@ object MultimeterItem : CustomItem("Multimeter") {
 			queueSet.remove(wrapper.node.hashCode())
 		}
 
-		queueAdd(
-			PathfindingNodeWrapper(
-			world = world,
-			pos = fromPos,
+		queueAdd(PathfindingNodeWrapper(
 			node = fromNode,
 			parent = null,
-			offset = BlockFace.SELF,
-			type = type,
 			g = 0,
 			f = 0
-		)
-		)
+		))
 
 		val visited = LongOpenHashSet()
 
@@ -148,19 +142,19 @@ object MultimeterItem : CustomItem("Multimeter") {
 		while (queue.isNotEmpty() && iterations < 150) {
 			iterations++
 			val current = queue.minBy { it.f }
-			Tasks.syncDelay(iterations) { audience.highlightBlock(toVec3i(current.pos), 5L) }
-			audience.information("current: ${current.node.javaClass.simpleName} at ${toVec3i(current.pos)}")
-			if (current.pos == toPos) return current.buildPath()
+			Tasks.syncDelay(iterations) { audience.highlightBlock(toVec3i(current.node.position), 5L) }
+			audience.information("current: ${current.node.javaClass.simpleName} at ${toVec3i(current.node.position)}")
+			if (current.node.position == toPos) return current.buildPath()
 
 			queueRemove(current)
-			visited.add(current.pos)
+			visited.add(current.node.position)
 
 			val neighbors = getNeighbors(current, audience)
 			if (neighbors.isEmpty()) audience.userError("Empty neighbors")
 
 			for (newNeighbor in neighbors) {
-				audience.information("new neighbor: ${newNeighbor} at ${toVec3i(newNeighbor.pos)}")
-				if (visited.contains(newNeighbor.pos)) {
+				audience.information("new neighbor: ${newNeighbor} at ${toVec3i(newNeighbor.node.position)}")
+				if (visited.contains(newNeighbor.node.position)) {
 					audience.information("conmtinue")
 					continue
 				}
