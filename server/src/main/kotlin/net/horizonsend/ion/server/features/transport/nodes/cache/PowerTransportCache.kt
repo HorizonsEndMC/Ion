@@ -28,6 +28,7 @@ import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.LAPIS_BLOCK
+import org.bukkit.Material.NOTE_BLOCK
 import org.bukkit.Material.OBSERVER
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.SPONGE
@@ -49,51 +50,45 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		.addSimpleNode(IRON_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(LAPIS_BLOCK, PowerNode.PowerInvertedMergeNode)
 		.addDataHandler<Observer>(OBSERVER) { PowerFlowMeter(it.facing) }
-		.addSimpleNode(OBSERVER, PowerInputNode)
+		.addSimpleNode(NOTE_BLOCK, PowerInputNode)
 		.build()
 
 	sealed interface PowerNode : CachedNode {
-		fun anyDirection(inputDirection: BlockFace) = ADJACENT_BLOCK_FACES.minus(inputDirection.oppositeFace).map { it to 1 }
+		override val networkType: NetworkType get() = NetworkType.POWER
 
 		data object SpongeNode : PowerNode {
 			override val pathfindingResistance: Double = 1.0
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = true
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = true
-			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = anyDirection(inputDirection)
+			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 		}
 
 		data class EndRodNode(val axis: Axis) : PowerNode {
 			override val pathfindingResistance: Double = 0.5
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = offset.axis == this.axis
-			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = false
-			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = listOf(inputDirection to 1) // Forward only
+			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = offset.axis == this.axis
+			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(backwards.oppositeFace)
 		}
 
 		data object PowerExtractorNode : PowerNode {
 			override val pathfindingResistance: Double = 0.5
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = false
-			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = true
-			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = anyDirection(inputDirection)
+			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = other !is PowerInputNode
+			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 		}
 
 		data object PowerMergeNode : PowerNode {
 			override val pathfindingResistance: Double = 0.5
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = other is SpongeNode
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = other !is SpongeNode
-			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = listOf(
-				inputDirection to 10,
-				*ADJACENT_BLOCK_FACES.minus(inputDirection).minus(inputDirection.oppositeFace).map { it to 1 }.toTypedArray()
-			)
+			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 		}
 
 		data object PowerInvertedMergeNode : PowerNode {
 			override val pathfindingResistance: Double = 0.5
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = other is EndRodNode
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = other !is EndRodNode
-			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = listOf(
-				inputDirection to 10,
-				*ADJACENT_BLOCK_FACES.minus(inputDirection).minus(inputDirection.oppositeFace).map { it to 1 }.toTypedArray()
-			)
+			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 		}
 
 		data class PowerFlowMeter(val face: BlockFace) : PowerNode {
@@ -106,14 +101,14 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			override val pathfindingResistance: Double = 0.5
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = true
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = true
-			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = listOf(inputDirection to 1) // Forward only
+			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 		}
 
 		data object PowerInputNode : PowerNode {
 			override val pathfindingResistance: Double = 0.0
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = true
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = false
-			override fun getNextNodes(inputDirection: BlockFace): Collection<Pair<BlockFace, Int>> = anyDirection(inputDirection)
+			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 		}
 	}
 
@@ -129,9 +124,12 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		val transferred = minOf(source.powerStorage.getPower(), IonServer.transportSettings.maxPowerRemovedPerExtractorTick)
 		val notRemoved = source.powerStorage.removePower(transferred)
 		val remainder = runPowerTransfer(
-			world,
-			location,
-			PowerNode.PowerExtractorNode,
+			CachedNode.NodePositionData(
+				PowerNode.PowerExtractorNode,
+				world,
+				location,
+				BlockFace.SELF
+			),
 			destinations.toMutableList(),
 			(transferred - notRemoved)
 		)
@@ -147,7 +145,6 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 }
 
 // These methods are outside the class for speed
-
 fun getExtractorSourcePool(extractorLocation: BlockKey, world: World): List<PoweredMultiblockEntity> {
 	return ADJACENT_BLOCK_FACES.flatMap {
 		getPoweredEntities(world, getRelative(extractorLocation, it))
@@ -173,18 +170,18 @@ fun distributePower(location: BlockKey, amount: Int): Int {
 	return 0
 }
 
-fun getPowerInputs(world: World, origin: BlockKey) = getNetworkDestinations<PowerInputNode>(world, NetworkType.POWER, origin) { true }
+fun getPowerInputs(world: World, origin: BlockKey) = getNetworkDestinations<PowerInputNode>(NetworkType.POWER, world, origin) { true }
 
 /**
  * Runs the power transfer from the source to the destinations. pending rewrite
  **/
-private fun runPowerTransfer(world: World, sourcePos: BlockKey, sourceType: CachedNode, destinations: List<BlockKey>, availableTransferPower: Int): Int {
+private fun runPowerTransfer(source: CachedNode.NodePositionData, destinations: List<BlockKey>, availableTransferPower: Int): Int {
 	if (destinations.isEmpty()) return availableTransferPower
 
 	val numDestinations = destinations.size
 
-	val paths: Array<Array<CachedNode>?> = Array(numDestinations) { runCatching {
-		getIdealPath(world, NetworkType.POWER, sourceType, sourcePos, destinations[it])
+	val paths: Array<Array<CachedNode.NodePositionData>?> = Array(numDestinations) { runCatching {
+		getIdealPath(source, destinations[it])
 	}.getOrNull() }
 
 	var maximumResistance: Double = -1.0
@@ -245,7 +242,7 @@ private fun getRemainingCapacity(): Int {
 	return 0 // destination.getPoweredEntities().sumOf { it.powerStorage.getRemainingCapacity() }
 }
 
-private fun completeChain(path: Array<CachedNode>?, transferred: Int) {
+private fun completeChain(path: Array<CachedNode.NodePositionData>?, transferred: Int) {
 	path?.filterIsInstance(PowerFlowMeter::class.java)?.forEach { it.onCompleteChain(transferred) }
 }
 
