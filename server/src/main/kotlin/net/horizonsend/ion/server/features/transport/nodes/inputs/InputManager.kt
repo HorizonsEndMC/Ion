@@ -26,12 +26,17 @@ abstract class InputManager {
 		return getTypeManager(type).getAllHolders(location)
 	}
 
+	fun getInputData(type: NetworkType, location: BlockKey): TypeManager.InputData? =
+		getTypeManager(type).getRaw(location)
+
 	fun getLocations(type: NetworkType) = getTypeManager(type).getAllLocations()
 
 	class TypeManager(val manager: InputManager, val type: NetworkType) {
 		private val inputLocations = Long2ObjectOpenHashMap<InputData>()
 
 		fun getAllLocations() = inputLocations.keys
+
+		fun getRaw(location: BlockKey): InputData? = inputLocations[location]
 
 		fun add(location: BlockKey, holder: MultiblockEntity) {
 			when (val present: InputData? = inputLocations.get(location)) {
@@ -52,11 +57,7 @@ abstract class InputManager {
 		}
 
 		fun getAllHolders(location: BlockKey): Set<MultiblockEntity> {
-			return when (val present: InputData? = inputLocations.get(location)) {
-				is SingleMultiblockInput -> setOf(present.holder)
-				is SharedMultiblockInput -> present.getAllHolders()
-				null -> setOf()
-			}
+			return inputLocations.get(location)?.getHolders() ?: setOf()
 		}
 
 		fun removeAll(location: BlockKey) {
@@ -69,11 +70,16 @@ abstract class InputManager {
 
 		sealed interface InputData {
 			fun contains(holder: MultiblockEntity): Boolean
+			fun getHolders(): Set<MultiblockEntity>
 		}
 
 		data class SingleMultiblockInput(val holder: MultiblockEntity) : InputData {
 			override fun contains(holder: MultiblockEntity): Boolean {
 				return this.holder == holder
+			}
+
+			override fun getHolders(): Set<MultiblockEntity> {
+				return setOf(holder)
 			}
 		}
 
@@ -82,6 +88,10 @@ abstract class InputManager {
 
 			override fun contains(holder: MultiblockEntity): Boolean {
 				return holders.contains(holder)
+			}
+
+			override fun getHolders(): Set<MultiblockEntity> {
+				return holders
 			}
 
 			fun add(multiblockEntity: MultiblockEntity) {
