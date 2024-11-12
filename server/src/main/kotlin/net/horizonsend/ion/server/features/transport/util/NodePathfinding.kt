@@ -22,16 +22,16 @@ fun getOrCacheNode(type: NetworkType, world: World, pos: BlockKey): CachedNode? 
 	return type.get(chunk).getOrCache(pos)
 }
 
-fun getNextNodes(networkType: NetworkType, world: World, backwards: BlockFace, parentPos: BlockKey, parentType: CachedNode): Map<BlockFace, CachedNode> {
+fun getNextNodes(networkType: NetworkType, world: World, backwards: BlockFace, currentPos: BlockKey, parentType: CachedNode?): Map<BlockFace, CachedNode> {
 	val adjacent = ADJACENT_BLOCK_FACES.minus(backwards)
 
 	val map = mutableMapOf<BlockFace, CachedNode>()
 
 	for (adjacentFace in adjacent) {
-		val pos = getRelative(parentPos, adjacentFace)
+		val pos = getRelative(currentPos, adjacentFace)
 		val cached = getOrCacheNode(networkType, world, pos) ?: continue
 
-		if (!cached.canTransferFrom(parentType, adjacentFace) || !parentType.canTransferTo(cached, adjacentFace)) continue
+		if (parentType != null && (!cached.canTransferFrom(parentType, adjacentFace) || !parentType.canTransferTo(cached, adjacentFace))) continue
 
 		map[adjacentFace] = cached
 	}
@@ -50,7 +50,7 @@ inline fun <reified T: CachedNode> getNetworkDestinations(world: World, networkT
 		networkType = networkType,
 		world = world,
 		backwards = BlockFace.SELF,
-		parentPos = originPos,
+		currentPos = originPos,
 		parentType = originNode
 	)
 
@@ -68,7 +68,7 @@ inline fun <reified T: CachedNode> getNetworkDestinations(world: World, networkT
 			networkType = networkType,
 			world = world,
 			backwards = offset.oppositeFace,
-			parentPos = currentPos,
+			currentPos = currentPos,
 			parentType = currentNode
 		).filterNot { visitedSet.contains(getRelative(currentPos, it.key)) }.map { Triple(it.key, getRelative(originPos, it.key), it.value) }
 
@@ -149,7 +149,7 @@ fun getNeighbors(current: PathfindingNodeWrapper, audience: Audience? = null): A
 		current.type,
 		current.world,
 		backwards = current.offset.oppositeFace,
-		parentPos = current.pos,
+		currentPos = current.pos,
 		parentType = current.node
 	).toList()
 
