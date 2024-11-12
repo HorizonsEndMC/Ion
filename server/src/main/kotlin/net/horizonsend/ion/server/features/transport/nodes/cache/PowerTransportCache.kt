@@ -1,7 +1,10 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache.PowerNode.PowerFlowMeter
@@ -14,6 +17,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
@@ -113,29 +117,42 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		}
 	}
 
-	fun tickExtractor(extractorNode: PowerNode.PowerExtractorNode): Future<*> = NewTransport.executor.submit {
-//		val source = extractorNode.getSourcePool().filterNot { it.powerStorage.isEmpty() }.randomOrNull() ?: return@submit
-//
-//		val destinations: ObjectOpenHashSet<PowerInputNode> = getPowerInputs(extractorNode)
+	fun tickExtractor(location: BlockKey, world: World): Future<*> = NewTransport.executor.submit {
+		val sources = getExtractorSourcePool(location, world).filterNot { it.powerStorage.isEmpty() }
+		val source = sources.randomOrNull() ?: return@submit
+
+		val destinations: LongOpenHashSet = getPowerInputs(world, location)
 //		destinations.removeAll(extractorNode.getTransferableNodes().filterIsInstanceTo(ObjectOpenHashSet()))
 //
-//		if (destinations.isEmpty()) return@submit
+		if (destinations.isEmpty()) return@submit
 //
-//		val transferred = minOf(source.powerStorage.getPower(), powerCheck)
-//		val notRemoved = source.powerStorage.removePower(transferred)
-//		val remainder = runPowerTransfer(extractorNode, destinations.toMutableList(), (transferred - notRemoved))
-//
-//		if (transferred == remainder) {
-//			//TODO skip growing number of ticks if nothing to do
-//		}
-//
-//		if (remainder > 0) {
-//			source.powerStorage.addPower(remainder)
-//		}
+		val transferred = minOf(source.powerStorage.getPower(), IonServer.transportSettings.maxPowerRemovedPerExtractorTick)
+		val notRemoved = source.powerStorage.removePower(transferred)
+		val remainder = runPowerTransfer(
+			world,
+			location,
+			PowerNode.PowerExtractorNode,
+			destinations.toMutableList(),
+			(transferred - notRemoved)
+		)
+
+		if (transferred == remainder) {
+			//TODO skip growing number of ticks if nothing to do
+		}
+
+		if (remainder > 0) {
+			source.powerStorage.addPower(remainder)
+		}
 	}
 }
 
 // These methods are outside the class for speed
+
+fun getExtractorSourcePool(extractorLocation: BlockKey, world: World): List<PoweredMultiblockEntity> {
+	return ADJACENT_BLOCK_FACES.flatMap {
+		getPoweredEntities(world, getRelative(extractorLocation, it))
+	}.filterIsInstance<PoweredMultiblockEntity>()
+}
 
 /**
  * Gets the powered entities accessible from this location, assuming it is an input

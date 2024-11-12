@@ -4,17 +4,26 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.transport.nodes.cache.CachedNode
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.util.getNextNodes
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component.text
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 
 @CommandAlias("ionchunk")
@@ -129,7 +138,7 @@ object IonChunkCommand : SLCommand() {
 		val grid = network.get(ionChunk)
 		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
 
-		sender.information("Targeted node: ${grid.getRawCache()[key]}")
+		sender.information("Targeted node: ${grid.getOrCache(key)}")
 	}
 
 	@Subcommand("test extractor")
@@ -141,57 +150,89 @@ object IonChunkCommand : SLCommand() {
 
 		val node = grid.getCached(key)
 		if (node !is PowerTransportCache.PowerNode.PowerExtractorNode) return
-		grid.tickExtractor(node)
+		grid.tickExtractor(key, sender.world)
 	}
 
 	@Subcommand("test pathfinding")
 	fun onTestPathfinding(sender: Player) {
 		val targeted = sender.getTargetBlock(null, 10)
 		val ionChunk = targeted.chunk.ion()
-//		val grid = NetworkType.POWER.get(ionChunk) as PowerNodeManager
-//		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
-//
-//		val at = grid.nodes[key] ?: return sender.userError("No node at $targeted")
-//		val transferable = at.getTransferableNodes()
+		val grid = NetworkType.POWER.get(ionChunk) as PowerTransportCache
+		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
 
-//		fun getNext(node: TransportNode): Collection<TransportNode> {
-//			at as PowerPathfindingNode
-//			return at.getNextNodes(node, null)
-//		}
-//
-//		sender.information("Transferable nodes from ${at.javaClass.simpleName}")
-//		sender.information(transferable.joinToString(separator = "\n") { next ->
-//			"${next.javaClass.simpleName} -> [${getNext(next).joinToString { it.javaClass.simpleName }}]"
-//		})
+		val at = grid.getOrCache(key) ?: return sender.userError("No node at $targeted")
+		val transferable = getNextNodes(
+			NetworkType.POWER,
+			sender.world,
+			backwards = BlockFace.SELF,
+			key,
+			at
+		)
+
+		fun getNext(dir: BlockFace): Collection<CachedNode> {
+			return getNextNodes(
+				NetworkType.POWER,
+				sender.world,
+				backwards = dir.oppositeFace,
+				getRelative(key, dir),
+				at
+			).values
+		}
+
+		sender.information("Transferable nodes from ${at.javaClass.simpleName}")
+		sender.information(transferable.entries.joinToString(separator = "\n") { (offset, type) ->
+			"${type.javaClass.simpleName} -> [${getNext(offset).joinToString { it.javaClass.simpleName }}]"
+		})
 	}
 
 	@Subcommand("test flood")
 	fun onTestFloodFill(sender: Player) {
-//		val targeted = sender.getTargetBlock(null, 10)
-//		val ionChunk = targeted.chunk.ion()
-//		val grid = NetworkType.POWER.get(ionChunk) as PowerNodeManager
-//		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
-//
-//		val at = grid.nodes[key] ?: return sender.userError("No node at $targeted")
-//
-//			val visitQueue = ArrayDeque<TransportNode>()
-//			val visitedSet = ObjectOpenHashSet<TransportNode>()
-//			val destinations = ObjectOpenHashSet<PowerInputNode>()
-//
-//			visitQueue.addAll(at.cachedTransferable)
-//			var iterations = 0L
-//
-//			while (visitQueue.isNotEmpty()) {
-//				iterations++
-//				val currentNode = visitQueue.removeFirst()
-//				Tasks.syncDelay(iterations) { sender.highlightBlock(currentNode.getCenter(), 5L) }
-//				visitedSet.add(currentNode)
-//
-//				if (currentNode is PowerInputNode) {
-//					destinations.add(currentNode)
-//				}
-//
-//				visitQueue.addAll(currentNode.cachedTransferable.filterNot { visitedSet.contains(it) })
-//			}
+		val targeted = sender.getTargetBlock(null, 10)
+		val ionChunk = targeted.chunk.ion()
+		val grid = NetworkType.POWER.get(ionChunk) as PowerTransportCache
+		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
+
+		val at = grid.getOrCache(key) ?: return sender.userError("No node at $targeted")
+		val visitQueue = ArrayDeque<Pair<BlockKey, CachedNode>>()
+		val visitedSet = LongOpenHashSet()
+		val destinations = LongOpenHashSet()
+
+		visitQueue.addAll(getNextNodes(
+			NetworkType.POWER,
+			sender.world,
+			BlockFace.SELF,
+			key,
+			at
+		).toList().map { getRelative(key, it.first) to it.second })
+
+		println("Initial queue:")
+		println(visitQueue.toList())
+
+		var iterations = 0L
+
+		while (visitQueue.isNotEmpty()) {
+			iterations++
+			val (currentPos, currentType) = visitQueue.removeFirst()
+			Tasks.syncDelay(iterations) { sender.highlightBlock(toVec3i(currentPos), 5L) }
+			visitedSet.add(currentPos)
+
+			println("Queue size: ${visitQueue.size}")
+			if (currentType is PowerInputNode) {
+				destinations.add(currentPos)
+			}
+
+			val next = getNextNodes(
+				NetworkType.POWER,
+				sender.world,
+				BlockFace.SELF,
+				currentPos,
+				currentType
+			).toList().map { getRelative(key, it.first) to it.second }
+
+			println("next from $currentType: $next")
+
+			visitQueue.addAll(next.filterNot { visitedSet.contains(it.first) })
+			println("Queue size: ${visitQueue.size}")
+		}
 	}
 }
