@@ -187,7 +187,7 @@ class AIFaction private constructor(
 				text("✦马铃薯✦", 吃饭人_STANDARD),
 				text("✦薯叶✦", 吃饭人_STANDARD),
 			)
-			.addNames(0,
+			.addNames(1,
 				text("✨飞行员✨", 吃饭人_STANDARD),
 				text("✨面包✨", 吃饭人_STANDARD),
 				text("✨蛋糕✨", 吃饭人_STANDARD),
@@ -197,7 +197,7 @@ class AIFaction private constructor(
 				text("✨马铃薯✨", 吃饭人_STANDARD),
 				text("✨薯叶✨", 吃饭人_STANDARD),
 			)
-			.addNames(0,
+			.addNames(2,
 				text("\uD83C\uDF5E飞行员\uD83C\uDF5E", 吃饭人_STANDARD),
 				text("\uD83C\uDF5E 面包\uD83C\uDF5E", 吃饭人_STANDARD),
 				text("\uD83E\uDD50蛋糕\uD83E\uDD50", 吃饭人_STANDARD),
