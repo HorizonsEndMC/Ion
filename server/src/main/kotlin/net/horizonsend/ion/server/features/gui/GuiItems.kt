@@ -41,7 +41,7 @@ object GuiItems {
         private val name: String,
         private val customGuiItem: GuiItem,
         private val lore: List<Component>? = null,
-        private val callback: () -> Unit,
+        private val callback: (ClickType, Player, InventoryClickEvent) -> Unit
     ) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
@@ -52,7 +52,7 @@ object GuiItems {
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            callback()
+            callback(clickType, player, event)
             notifyWindows()
         }
     }
@@ -60,7 +60,7 @@ object GuiItems {
     class CustomItemControlItem(
         private val customItem: CustomItem,
         private val lore: List<Component>? = null,
-        private val callback: () -> Unit
+        private val callback: (ClickType, Player, InventoryClickEvent) -> Unit
     ) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(customItem.constructItemStack().updateMeta {
@@ -69,7 +69,7 @@ object GuiItems {
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-            callback()
+            callback(clickType, player, event)
             notifyWindows()
         }
     }
