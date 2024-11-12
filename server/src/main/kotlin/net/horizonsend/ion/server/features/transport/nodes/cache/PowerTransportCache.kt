@@ -109,20 +109,23 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = true
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = false
 			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+			fun getPoweredEntities(world: World, location: BlockKey) = world.ion.inputManager.getHolders(NetworkType.POWER, location).filterIsInstance<PoweredMultiblockEntity>()
 		}
 	}
 
 	fun tickExtractor(location: BlockKey, world: World): Future<*> = NewTransport.executor.submit {
 		val sources = getExtractorSourcePool(location, world).filterNot { it.powerStorage.isEmpty() }
-		val source = sources.randomOrNull() ?: return@submit
+		val source = sources.randomOrNull() ?: return@submit //TODO take from all
 
-		val destinations: LongOpenHashSet = getPowerInputs(world, location)
-//		destinations.removeAll(extractorNode.getTransferableNodes().filterIsInstanceTo(ObjectOpenHashSet()))
-//
+		val destinations: LongOpenHashSet = getNetworkDestinations<PowerInputNode>(NetworkType.POWER, world, location) {
+			world.ion.inputManager.getHolders(type, it.position).isNotEmpty()
+		}
+
 		if (destinations.isEmpty()) return@submit
-//
+
 		val transferred = minOf(source.powerStorage.getPower(), IonServer.transportSettings.maxPowerRemovedPerExtractorTick)
 		val notRemoved = source.powerStorage.removePower(transferred)
+
 		val remainder = runPowerTransfer(
 			CachedNode.NodePositionData(
 				PowerNode.PowerExtractorNode,
@@ -134,9 +137,9 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			(transferred - notRemoved)
 		)
 
-		if (transferred == remainder) {
-			//TODO skip growing number of ticks if nothing to do
-		}
+//		if (transferred == remainder) {
+//			TODO skip growing number of ticks if nothing to do
+//		}
 
 		if (remainder > 0) {
 			source.powerStorage.addPower(remainder)
@@ -166,11 +169,9 @@ fun getPoweredEntities(world: World, location: BlockKey): Set<MultiblockEntity> 
 	return registered.plus(adjacentBlocks)
 }
 
-fun distributePower(location: BlockKey, amount: Int): Int {
+fun distributePower(destinations: List<PoweredMultiblockEntity>, amount: Int): Int {
 	return 0
 }
-
-fun getPowerInputs(world: World, origin: BlockKey) = getNetworkDestinations<PowerInputNode>(NetworkType.POWER, world, origin) { true }
 
 /**
  * Runs the power transfer from the source to the destinations. pending rewrite
@@ -214,13 +215,15 @@ private fun runPowerTransfer(source: CachedNode.NodePositionData, destinations: 
 
 	for ((index, destination) in destinations.withIndex()) {
 		val shareFactor = shareFactors[index] ?: continue
+		val inputData = PowerInputNode.getPoweredEntities(source.world, destination)
+
 		val share = shareFactor / shareFactorSum
 
 		val idealSend = (availableTransferPower * share).roundToInt()
-		val toSend = minOf(idealSend, getRemainingCapacity(/*TODO*/))
+		val toSend = minOf(idealSend, getRemainingCapacity(inputData))
 
 		// Amount of power that didn't fit
-		val remainder = distributePower(destination, toSend)
+		val remainder = distributePower(inputData, toSend)
 		val realTaken = toSend - remainder
 
 		remainingPower -= realTaken
@@ -238,8 +241,8 @@ private fun runPowerTransfer(source: CachedNode.NodePositionData, destinations: 
 	return remainingPower
 }
 
-private fun getRemainingCapacity(): Int {
-	return 0 // destination.getPoweredEntities().sumOf { it.powerStorage.getRemainingCapacity() }
+private fun getRemainingCapacity(destinations: List<PoweredMultiblockEntity>): Int {
+	return destinations.sumOf { it.powerStorage.getRemainingCapacity() }
 }
 
 private fun completeChain(path: Array<CachedNode.NodePositionData>?, transferred: Int) {
