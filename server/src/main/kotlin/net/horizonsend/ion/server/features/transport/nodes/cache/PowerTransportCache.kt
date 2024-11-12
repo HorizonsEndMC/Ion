@@ -169,8 +169,34 @@ fun getPoweredEntities(world: World, location: BlockKey): Set<MultiblockEntity> 
 	return registered.plus(adjacentBlocks)
 }
 
-fun distributePower(destinations: List<PoweredMultiblockEntity>, amount: Int): Int {
-	return 0
+fun distributePower(destinations: List<PoweredMultiblockEntity>, power: Int): Int {
+	val entities = destinations.filterTo(mutableListOf()) { !it.powerStorage.isFull() }
+	if (entities.isEmpty()) return power
+
+	// Skip math for most scenarios
+	if (entities.size == 1) return entities.first().powerStorage.addPower(power)
+
+	var remainingPower = power
+
+	while (remainingPower > 0) {
+		if (entities.isEmpty()) break
+
+		val share = remainingPower / entities.size
+		val minRemaining = entities.minOf { it.powerStorage.getRemainingCapacity() }
+		val distributed = minOf(minRemaining, share)
+
+		val iterator = entities.iterator()
+		while (iterator.hasNext()) {
+			val entity = iterator.next()
+
+			val r = entity.powerStorage.addPower(distributed)
+			if (entity.powerStorage.isFull()) iterator.remove()
+
+			remainingPower -= (distributed - r)
+		}
+	}
+
+	return remainingPower
 }
 
 /**
