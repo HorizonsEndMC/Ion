@@ -39,9 +39,7 @@ abstract class TransportCache(val holder: NetworkHolder<*> /* TODO temp network 
 	}
 
 	fun cache(location: BlockKey, block: Block): CachedNode? {
-		println("Caching")
 		val type = nodeFactory.cache(block)
-		println("Type: $type")
 		val state = if (type == null) CacheState.Empty else CacheState.Present(type)
 
 		cache[location] = state
