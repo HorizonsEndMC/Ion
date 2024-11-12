@@ -104,7 +104,6 @@ fun getIdealPath(from: CachedNode.NodePositionData, to: BlockKey): Array<CachedN
 			}
 		}
 	}
-
 	return null
 }
 
@@ -168,12 +167,14 @@ data class PathfindingNodeWrapper(
 		other as PathfindingNodeWrapper
 
 		if (node != other.node) return false
+		if (parent != other.parent) return false
 		if (g != other.g) return false
 		return f == other.f
 	}
 
 	override fun hashCode(): Int {
 		var result = node.hashCode()
+		result = 31 * result + (parent?.hashCode() ?: 0)
 		result = 31 * result + g
 		result = 31 * result + f
 		return result
