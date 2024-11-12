@@ -15,8 +15,11 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportC
 import net.horizonsend.ion.server.features.transport.util.NetworkType
 import net.horizonsend.ion.server.features.transport.util.getNetworkDestinations
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component.text
@@ -129,24 +132,17 @@ object IonChunkCommand : SLCommand() {
 
 	@Subcommand("get node look")
 	fun getNode(sender: Player, network: NetworkType) {
-		val targeted = sender.getTargetBlock(null, 10)
-		val ionChunk = targeted.chunk.ion()
-		val grid = network.get(ionChunk)
-		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
-
-		sender.information("Targeted node: ${grid.getOrCache(key)}")
+		val (node, location) = requireLookingAt(sender, network)
+		sender.information("Targeted node: $node at ${toVec3i(location)}")
 	}
 
 	@Subcommand("test extractor")
 	fun onTick(sender: Player) {
-		val targeted = sender.getTargetBlock(null, 10)
-		val ionChunk = targeted.chunk.ion()
-		val grid = NetworkType.POWER.get(ionChunk) as PowerTransportCache
-		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
-
-		val node = grid.getCached(key)
-		if (node !is PowerTransportCache.PowerNode.PowerExtractorNode) return
-		grid.tickExtractor(key, sender.world)
+		val (node, location) = requireLookingAt(sender, NetworkType.POWER)
+		if (node !is PowerTransportCache.PowerNode.PowerExtractorNode) fail { "Extractor not targeted" }
+		val chunk = IonChunk.getFromWorldCoordinates(sender.world, getX(location), getZ(location)) ?: fail { "Chunk not loaded" }
+		val grid = NetworkType.POWER.get(chunk) as PowerTransportCache
+		grid.tickExtractor(location, sender.world)
 	}
 
 	@Subcommand("test flood")
