@@ -14,6 +14,7 @@ import kotlin.random.Random
 
 object SpaceMap : IonServerComponent(true) {
 	private lateinit var markerSet: MarkerSet
+	private lateinit var gravityWellMarkerSet: MarkerSet
 
 	override fun onEnable() {
 		if (!getPluginManager().isPluginEnabled("dynmap")) {
@@ -31,6 +32,8 @@ object SpaceMap : IonServerComponent(true) {
 
 		markerAPI.getMarkerSet("space")?.deleteMarkerSet()
 		markerSet = markerAPI.createMarkerSet("space", "Space", null, false)
+		markerAPI.getMarkerSet("gravity_well")?.deleteMarkerSet()
+		gravityWellMarkerSet = markerAPI.createMarkerSet("gravity_well", "Gravity Wells", null, false)
 
 		for (star in Space.getStars()) {
 			if (star.name == "EdenHack") continue
@@ -46,7 +49,7 @@ object SpaceMap : IonServerComponent(true) {
 				false // ??
 			)
 
-			markerSet.createCircleMarker(
+			gravityWellMarkerSet.createCircleMarker(
 				"${star.id}_gravity_well",
 				"${star.name}'s Gravity Well",
 				false,
@@ -109,7 +112,7 @@ object SpaceMap : IonServerComponent(true) {
 			}
 
 			// gravity well indicator
-			markerSet.createCircleMarker(
+			gravityWellMarkerSet.createCircleMarker(
 				"${planet.id}_gravity_well",
 				"${planet.name}'s Gravity Well",
 				false,
