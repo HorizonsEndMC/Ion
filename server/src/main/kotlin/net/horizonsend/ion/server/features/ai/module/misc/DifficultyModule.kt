@@ -28,8 +28,8 @@ class DifficultyModule(
 
 	companion object {
 
-		val maxDifficulty = 0
-		val minDifficulty = 2
+		val maxDifficulty = 2
+		val minDifficulty = 0
 
 		fun regularSpawnDifficultySupplier(world: String) : Supplier<Int> {
 			return when (world) {

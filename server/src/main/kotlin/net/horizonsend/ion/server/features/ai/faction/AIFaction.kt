@@ -370,12 +370,12 @@ class AIFaction private constructor(
 		)
 		val PIRATES = builder("PIRATES", PIRATE_SATURATED_RED.value())
 			.setMessagePrefix("<$PIRATE_SATURATED_RED>Receiving transmission from pirate vessel")
-			.addNames(0, pirateNames.map { ("Rowdy"+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(0, pirateNames.map { ("Deliquent"+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(1, pirateNames.map { ("Wanted"+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(1, pirateNames.map { ("Criminal"+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(2, pirateNames.map { ("Capo"+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(2, pirateNames.map { ("Vicious"+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(0, pirateNames.map { ("Rowdy "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(0, pirateNames.map { ("Deliquent "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(1, pirateNames.map { ("Wanted "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(1, pirateNames.map { ("Criminal "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(2, pirateNames.map { ("Capo "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(2, pirateNames.map { ("Vicious "+it).toComponent(PIRATE_LIGHT_RED) })
 			.addSmackMessages(
 				"Nice day, Nice Ship. I think ill take it!",
 				"I'll plunder your booty!",
