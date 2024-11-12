@@ -14,6 +14,7 @@ abstract class TransportManager {
 	abstract fun getInputProvider(): InputManager
 
 	fun tick() {
-
+		powerNodeManager.network.tick()
+		fluidNodeManager.network.tick()
 	}
 }
