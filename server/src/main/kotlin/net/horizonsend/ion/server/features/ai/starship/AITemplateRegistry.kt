@@ -143,7 +143,7 @@ object AITemplateRegistry {
 	val MALINGSHU_REINFORCEMENT = registerTemplate(builder(
 		identifier = "MALINGSHU_REINFORCEMENT",
 		template = StarshipTemplateRegistry.MALINGSHU,
-		controllerFactory = AIControllerFactories.frigate,
+		controllerFactory = AIControllerFactories.miniFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
