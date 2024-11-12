@@ -17,6 +17,14 @@ abstract class TransportCache(val holder: NetworkHolder<*> /* TODO temp network 
 	abstract val type: NetworkType
 	abstract val nodeFactory: NodeCacheFactory
 
+	fun tick() {
+		for (extractor in holder.getExtractorManager().getExtractors()) {
+			tickExtractor(extractor)
+		}
+	}
+
+	abstract fun tickExtractor(location: BlockKey)
+
 	fun isCached(at: BlockKey): Boolean = cache.containsKey(at)
 
 	fun getCached(at: BlockKey): CachedNode? {
