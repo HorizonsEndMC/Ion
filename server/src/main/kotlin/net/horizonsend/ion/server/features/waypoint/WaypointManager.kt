@@ -343,6 +343,34 @@ object WaypointManager : IonServerComponent() {
         }
     }
 
+	/**
+	 * Helper function for finding a distance between two locations in space
+	 */
+	fun findShortestPathBetweenLocations(loc1: Location, loc2: Location): GraphPath<WaypointVertex, WaypointEdge>? {
+		val tempGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
+		clonePlayerGraphFromMain(tempGraph)
+
+		val loc1Vertex = WaypointVertex(
+			name = "Location 1",
+			icon = SidebarIcon.PLUS_CROSS_ICON.text.first(),
+			loc = loc1,
+			linkedWaypoint = null
+		)
+		tempGraph.addVertex(loc1Vertex)
+		connectVerticesInSameWorld(tempGraph, loc1Vertex)
+
+		val loc2Vertex = WaypointVertex(
+			name = "Location 2",
+			icon = SidebarIcon.PLUS_CROSS_ICON.text.first(),
+			loc = loc2,
+			linkedWaypoint = null
+		)
+		tempGraph.addVertex(loc2Vertex)
+		connectVerticesInSameWorld(tempGraph, loc2Vertex)
+
+		return DijkstraShortestPath.findPathBetween(tempGraph, loc1Vertex, loc2Vertex)
+	}
+
     fun updatePlayerPaths(player: Player) {
         val pathList = findShortestPath(player)
         // null pathList implies destinations exist but route cannot be found; save the current path
