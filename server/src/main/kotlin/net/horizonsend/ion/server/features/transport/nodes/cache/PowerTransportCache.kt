@@ -1,7 +1,11 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplay
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
@@ -22,9 +26,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.faces
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import org.bukkit.Axis
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.END_ROD
@@ -50,7 +58,7 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		.addSimpleNode(REDSTONE_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(IRON_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(LAPIS_BLOCK, PowerNode.PowerInvertedMergeNode)
-		.addDataHandler<Observer>(OBSERVER) { data, loc -> PowerFlowMeter(data.facing, loc) }
+		.addDataHandler<Observer>(OBSERVER) { data, loc -> PowerFlowMeter(this, data.facing, loc) }
 		.addSimpleNode(NOTE_BLOCK, PowerInputNode)
 		.build()
 
@@ -95,11 +103,55 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 		}
 
-		data class PowerFlowMeter(var face: BlockFace, val location: BlockKey) : PowerNode, ComplexCachedNode {
-			//TODO display
+		data class PowerFlowMeter(val cache: PowerTransportCache, var face: BlockFace, val location: BlockKey) : PowerNode, ComplexCachedNode {
+			val displayHandler = DisplayHandlers.newBlockOverlay(
+				cache.holder.getWorld(),
+				toVec3i(location),
+				face,
+				FlowMeterDisplay(this, 0.0, 0.0, 0.0, 0.7f)
+			).register()
+
+			private val STORED_AVERAGES = 20
+			private val averages = mutableListOf<TransferredPower>()
 
 			fun onCompleteChain(transferred: Int) {
+				addTransferred(TransferredPower(transferred, System.currentTimeMillis()))
+				displayHandler.update()
+			}
 
+			private fun addTransferred(transferredSnapshot: TransferredPower) {
+				val currentSize = averages.size
+
+				if (currentSize < STORED_AVERAGES) {
+					averages.add(transferredSnapshot)
+					return
+				}
+
+				// If it is full, shift all averages to the right
+				for (index in 18 downTo 0) {
+					averages[index + 1] = averages[index]
+				}
+
+				averages[0] = transferredSnapshot
+			}
+
+			private fun calculateAverage(): Double {
+				val sum = averages.sumOf { it.transferred }
+
+				val timeDiff = (System.currentTimeMillis() - averages.minOf { it.time }) / 1000.0
+
+				return sum / timeDiff
+			}
+
+			fun formatFlow(): Component {
+				var avg = runCatching { calculateAverage().roundToHundredth() }.getOrDefault(0.0)
+
+				// If no averages, or no power has been moved in 5 seconds, go to 0
+				if (averages.isEmpty() || System.currentTimeMillis() - averages.maxOf { it.time } > 5000) {
+					avg = 0.0
+				}
+
+				return ofChildren(FlowMeterDisplay.firstLine, text(avg, GREEN), FlowMeterDisplay.secondLine)
 			}
 
 			override val pathfindingResistance: Double = 0.5
@@ -109,8 +161,10 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 
 			override fun onTranslate(movement: StarshipMovement) {
 				this.face = movement.displaceFace(this.face)
-				//TODO rotate / move display
+				displayHandler.displace(movement)
 			}
+
+			private data class TransferredPower(val transferred: Int, val time: Long)
 		}
 
 		data object PowerInputNode : PowerNode {
@@ -282,7 +336,7 @@ private fun getRemainingCapacity(destinations: List<PoweredMultiblockEntity>): I
 }
 
 private fun completeChain(path: Array<CachedNode.NodePositionData>?, transferred: Int) {
-	path?.filterIsInstance(PowerFlowMeter::class.java)?.forEach { it.onCompleteChain(transferred) }
+	path?.forEach { if (it.type is PowerFlowMeter) it.type.onCompleteChain(transferred) }
 }
 
 // I hate this function but it works
