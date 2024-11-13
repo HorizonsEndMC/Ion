@@ -465,7 +465,7 @@ object PilotedStarships : IonServerComponent() {
 					.append(Component.text(" with ${activePlayerStarship.initialBlockCount} blocks."))
 			)
 
-			if (isOversized(activePlayerStarship)) {
+			if (activePlayerStarship.isOversized()) {
 				player.userError("Ship is over max block count! Power output reduced by ${(ReactorSubsystem.OVERSIZE_POWER_PENALTY * 100).toInt()}%!")
 			}
 
@@ -562,5 +562,4 @@ object PilotedStarships : IonServerComponent() {
 
 	fun getDisplayName(data: StarshipData): Component = data.name?.let { MiniMessage.miniMessage().deserialize(it) } ?: data.starshipType.actualType.displayNameComponent
 
-	fun isOversized(starship: Starship) = starship.initialBlockCount > (starship.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt()
 }

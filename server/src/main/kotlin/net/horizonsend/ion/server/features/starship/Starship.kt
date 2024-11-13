@@ -644,6 +644,8 @@ class Starship (
 	fun getDisplayNamePlain(): String = getDisplayName().plainText()
 	//endregion
 
+	fun isOversized() = this.initialBlockCount > this.type.maxSize && (this.initialBlockCount <= (this.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
+
 	init {
 		IonWorld[world].starships.add(this)
 	}
