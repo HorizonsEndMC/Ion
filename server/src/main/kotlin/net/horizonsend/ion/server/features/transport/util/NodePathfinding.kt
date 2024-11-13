@@ -2,14 +2,12 @@ package net.horizonsend.ion.server.features.transport.util
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.kyori.adventure.audience.Audience
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import java.util.PriorityQueue
@@ -20,11 +18,11 @@ fun getOrCacheNode(type: CacheType, world: World, pos: BlockKey): Node? {
 	return type.get(chunk).getOrCache(pos)
 }
 
-inline fun <reified T: Node> getNetworkDestinations(cacheType: CacheType, world: World, originPos: BlockKey, check: (Node.NodePositionData) -> Boolean): LongOpenHashSet {
-	val originNode = getOrCacheNode(cacheType, world, originPos) ?: return LongOpenHashSet()
+inline fun <reified T: Node> getNetworkDestinations(cacheType: CacheType, world: World, originPos: BlockKey, check: (Node.NodePositionData) -> Boolean): List<BlockKey> {
+	val originNode = getOrCacheNode(cacheType, world, originPos) ?: return listOf()
 
 	val visitQueue = ArrayDeque<Node.NodePositionData>()
-	val visitedSet = LongOpenHashSet()
+	val visited = LongOpenHashSet()
 	val destinations = LongOpenHashSet()
 
 	visitQueue.addAll(originNode.getNextNodes(
@@ -35,18 +33,14 @@ inline fun <reified T: Node> getNetworkDestinations(cacheType: CacheType, world:
 
 	while (visitQueue.isNotEmpty()) {
 		val current = visitQueue.removeFirst()
-		visitedSet.add(current.position)
+		visited.add(current.position)
 
-		if (current.type is T && check(current)) {
-			destinations.add(current.position)
-		}
+		if (current.type is T && check(current)) destinations.add(current.position)
 
-		val next = current.getNextNodes().filterNot { visitedSet.contains(it.position) || visitQueue.contains(it) }
-
-		visitQueue.addAll(next)
+		visitQueue.addAll(current.getNextNodes().filterNot { visited.contains(it.position) || visitQueue.contains(it) })
 	}
 
-	return destinations
+	return destinations.toList()
 }
 
 /**
@@ -95,6 +89,7 @@ fun getIdealPath(from: Node.NodePositionData, to: BlockKey): Array<Node.NodePosi
 
 			if (queueSet.contains(neighbor.node.position)) {
 				val existingNeighbor = queue.first { it.node === neighbor.node }
+
 				if (neighbor.g < existingNeighbor.g) {
 					existingNeighbor.g = neighbor.g
 					existingNeighbor.parent = neighbor.parent
@@ -104,14 +99,13 @@ fun getIdealPath(from: Node.NodePositionData, to: BlockKey): Array<Node.NodePosi
 			}
 		}
 	}
+
 	return null
 }
 
 // Wraps neighbor nodes in a data class to store G and F values for pathfinding. Should probably find a better solution
-fun getNeighbors(current: PathfindingNodeWrapper, audience: Audience? = null): Array<PathfindingNodeWrapper> {
-	val transferable = current.node.getNextNodes().toList()
-
-	audience?.information("${transferable.size} transferable nodes")
+fun getNeighbors(current: PathfindingNodeWrapper): Array<PathfindingNodeWrapper> {
+	val transferable = current.node.getNextNodes()
 
 	return Array(transferable.size) {
 		val next = transferable[it]
