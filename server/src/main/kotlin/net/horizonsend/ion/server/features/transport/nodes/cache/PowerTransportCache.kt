@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
@@ -35,8 +34,8 @@ import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.SPONGE
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.block.Sign
 import org.bukkit.block.data.type.Observer
+import org.bukkit.block.data.type.WallSign
 import org.bukkit.craftbukkit.v1_20_R3.block.impl.CraftEndRod
 import kotlin.math.roundToInt
 
@@ -55,18 +54,21 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 	override fun tickExtractor(location: BlockKey, delta: Double) { NewTransport.executor.submit {
 		val world = holder.getWorld()
-		val sources = getExtractorSourcePool(location, world).filterNot { it.powerStorage.isEmpty() }
+		val sources = getPowerExtractorSourcePool(location, world)
 		val source = sources.randomOrNull() ?: return@submit //TODO take from all
 
-		val destinations: LongOpenHashSet = getNetworkDestinations<PowerInputNode>(CacheType.POWER, world, location) {
-			world.ion.inputManager.getHolders(type, it.position).isNotEmpty()
+		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
+		val destinations: List<BlockKey> = getNetworkDestinations<PowerInputNode>(CacheType.POWER, world, location) { node ->
+			world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
 		}
 
 		if (destinations.isEmpty()) return@submit
 
 		val transferLimit = (IonServer.transportSettings.extractorConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
 		val transferred = minOf(source.powerStorage.getPower(), transferLimit)
-		val notRemoved = source.powerStorage.removePower(transferred)
+
+		// Store this just in case
+		val missing = source.powerStorage.removePower(transferred)
 
 		val remainder = runPowerTransfer(
 			Node.NodePositionData(
@@ -75,42 +77,128 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 				location,
 				BlockFace.SELF
 			),
-			destinations.toMutableList(),
-			(transferred - notRemoved)
+			destinations,
+			(transferred - missing)
 		)
-
-//		if (transferred == remainder) {
-//			TODO skip growing number of ticks if nothing to do
-//		}
 
 		if (remainder > 0) {
 			source.powerStorage.addPower(remainder)
 		}
 	}}
-}
 
-// These methods are outside the class for speed
-fun getExtractorSourcePool(extractorLocation: BlockKey, world: World): List<PoweredMultiblockEntity> {
-	return ADJACENT_BLOCK_FACES.flatMap {
-		getPoweredEntities(world, getRelative(extractorLocation, it))
-	}.filterIsInstance<PoweredMultiblockEntity>()
+	fun getPowerExtractorSourcePool(extractorLocation: BlockKey, world: World): List<PoweredMultiblockEntity> {
+		val sources = mutableListOf<PoweredMultiblockEntity>()
+
+		for (face in ADJACENT_BLOCK_FACES) {
+			val inputLocation = getRelative(extractorLocation, face)
+			if (holder.getOrCacheGlobalNode(inputLocation) !is PowerInputNode) continue
+			val entities = getInputEntities(world, inputLocation)
+
+			for (entity in entities) {
+				if (entity !is PoweredMultiblockEntity) continue
+				if (entity.powerStorage.isFull()) continue
+				sources.add(entity)
+			}
+		}
+
+		return sources
+	}
+
+	/**
+	 * Runs the power transfer from the source to the destinations. pending rewrite
+	 **/
+	private fun runPowerTransfer(source: Node.NodePositionData, rawDestinations: List<BlockKey>, availableTransferPower: Int): Int {
+		if (rawDestinations.isEmpty()) return availableTransferPower
+
+		val filteredDestinations = rawDestinations.filter { destinationLoc ->
+			getInputEntities(holder.getWorld(), destinationLoc).any { it is PoweredMultiblockEntity && !it.powerStorage.isFull() }
+		}
+
+		val numDestinations = filteredDestinations.size
+
+		val paths: Array<Array<Node.NodePositionData>?> = Array(numDestinations) { runCatching {
+			getIdealPath(source, filteredDestinations[it])
+		}.getOrNull() }
+
+		var maximumResistance: Double = -1.0
+
+		// Perform the calc & max find in the same loop
+		val pathResistance: Array<Double?> = Array(numDestinations) {
+			val res = calculatePathResistance(paths[it])
+			if (res != null && maximumResistance < res) maximumResistance = res
+
+			res
+		}
+
+		// All null, no paths found
+		if (maximumResistance == -1.0) return availableTransferPower
+
+		var shareFactorSum = 0.0
+
+		// Get a parallel array containing the ascending order of resistances
+		val sortedIndexes = getSorted(pathResistance)
+
+		val shareFactors: Array<Double?> = Array(numDestinations) { index ->
+			val resistance = pathResistance[index] ?: return@Array null
+			val fac = (numDestinations - sortedIndexes[index]).toDouble() / (resistance / maximumResistance)
+			shareFactorSum += fac
+
+			fac
+		}
+
+		var remainingPower = availableTransferPower
+
+		for ((index, destination) in filteredDestinations.withIndex()) {
+			val shareFactor = shareFactors[index] ?: continue
+			val inputData = PowerInputNode.getPoweredEntities(source.world, destination)
+
+			val share = shareFactor / shareFactorSum
+
+			val idealSend = (availableTransferPower * share).roundToInt()
+			val toSend = minOf(idealSend, getRemainingCapacity(inputData))
+
+			// Amount of power that didn't fit
+			val remainder = distributePower(inputData, toSend)
+			val realTaken = toSend - remainder
+
+			remainingPower -= realTaken
+			completeChain(paths[index], realTaken)
+
+			if (remainder == 0) continue
+
+			// Get the proportion of the amount of power that sent compared to the ideal calculations.
+			val usedShare = realTaken.toDouble() / idealSend.toDouble()
+			// Use that to get a proportion of the share factor, and remove that from the sum.
+			val toRemove = shareFactor * usedShare
+			shareFactorSum -= toRemove
+		}
+
+		return remainingPower
+	}
 }
 
 /**
  * Gets the powered entities accessible from this location, assuming it is an input
+ * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
  **/
-fun getPoweredEntities(world: World, location: BlockKey): Set<MultiblockEntity> {
+fun getInputEntities(world: World, location: BlockKey): Set<MultiblockEntity> {
 	val inputManager = world.ion.inputManager
 	val registered = inputManager.getHolders(CacheType.POWER, location)
+	val block = getBlockIfLoaded(world, getX(location), getY(location), getZ(location)) ?: return setOf()
+
 	val adjacentBlocks = ADJACENT_BLOCK_FACES.mapNotNull {
-		val block = getBlockIfLoaded(world, getX(location), getY(location), getZ(location)) ?: return@mapNotNull null
-		val adjacent = block.getRelativeIfLoaded(it)?.state as? Sign ?: return@mapNotNull null
-		MultiblockEntities.getMultiblockEntity(adjacent)
+		val adjacent = block.getRelativeIfLoaded(it)
+		val data = adjacent?.blockData as? WallSign ?: return@mapNotNull null
+		MultiblockEntities.getMultiblockEntity(adjacent.x, adjacent.y, adjacent.z, world, data)
 	}
 
 	return registered.plus(adjacentBlocks)
 }
 
+/**
+ * Distributes power to the provided list of entities
+ * Returns the amount that would not fit
+ **/
 fun distributePower(destinations: List<PoweredMultiblockEntity>, power: Int): Int {
 	val entities = destinations.filterTo(mutableListOf()) { !it.powerStorage.isFull() }
 	if (entities.isEmpty()) return power
@@ -136,74 +224,6 @@ fun distributePower(destinations: List<PoweredMultiblockEntity>, power: Int): In
 
 			remainingPower -= (distributed - r)
 		}
-	}
-
-	return remainingPower
-}
-
-/**
- * Runs the power transfer from the source to the destinations. pending rewrite
- **/
-private fun runPowerTransfer(source: Node.NodePositionData, destinations: List<BlockKey>, availableTransferPower: Int): Int {
-	if (destinations.isEmpty()) return availableTransferPower
-
-	val numDestinations = destinations.size
-
-	val paths: Array<Array<Node.NodePositionData>?> = Array(numDestinations) { runCatching {
-		getIdealPath(source, destinations[it])
-	}.getOrNull() }
-
-	var maximumResistance: Double = -1.0
-
-	// Perform the calc & max find in the same loop
-	val pathResistance: Array<Double?> = Array(numDestinations) {
-		val res = calculatePathResistance(paths[it])
-		if (res != null && maximumResistance < res) maximumResistance = res
-
-		res
-	}
-
-	// All null, no paths found
-	if (maximumResistance == -1.0) return availableTransferPower
-
-	var shareFactorSum = 0.0
-
-	// Get a parallel array containing the ascending order of resistances
-	val sortedIndexes = getSorted(pathResistance)
-
-	val shareFactors: Array<Double?> = Array(numDestinations) { index ->
-		val resistance = pathResistance[index] ?: return@Array null
-		val fac = (numDestinations - sortedIndexes[index]).toDouble() / (resistance / maximumResistance)
-		shareFactorSum += fac
-
-		fac
-	}
-
-	var remainingPower = availableTransferPower
-
-	for ((index, destination) in destinations.withIndex()) {
-		val shareFactor = shareFactors[index] ?: continue
-		val inputData = PowerInputNode.getPoweredEntities(source.world, destination)
-
-		val share = shareFactor / shareFactorSum
-
-		val idealSend = (availableTransferPower * share).roundToInt()
-		val toSend = minOf(idealSend, getRemainingCapacity(inputData))
-
-		// Amount of power that didn't fit
-		val remainder = distributePower(inputData, toSend)
-		val realTaken = toSend - remainder
-
-		remainingPower -= realTaken
-		completeChain(paths[index], realTaken)
-
-		if (remainder == 0) continue
-
-		// Get the proportion of the amount of power that sent compared to the ideal calculations.
-		val usedShare = realTaken.toDouble() / idealSend.toDouble()
-		// Use that to get a proportion of the share factor, and remove that from the sum.
-		val toRemove = shareFactor * usedShare
-		shareFactorSum -= toRemove
 	}
 
 	return remainingPower
