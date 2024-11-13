@@ -78,6 +78,7 @@ import org.bukkit.Material.JUKEBOX
 import org.bukkit.Material.LADDER
 import org.bukkit.Material.LANTERN
 import org.bukkit.Material.LAPIS_BLOCK
+import org.bukkit.Material.LAVA_CAULDRON
 import org.bukkit.Material.LECTERN
 import org.bukkit.Material.LEVER
 import org.bukkit.Material.LIGHTNING_ROD
@@ -125,6 +126,7 @@ import org.bukkit.Material.POTTED_WARPED_FUNGUS
 import org.bukkit.Material.POTTED_WARPED_ROOTS
 import org.bukkit.Material.POTTED_WHITE_TULIP
 import org.bukkit.Material.POTTED_WITHER_ROSE
+import org.bukkit.Material.POWDER_SNOW_CAULDRON
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.REDSTONE_LAMP
 import org.bukkit.Material.REDSTONE_TORCH
@@ -151,6 +153,7 @@ import org.bukkit.Material.TORCH
 import org.bukkit.Material.TRAPPED_CHEST
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WALL_TORCH
+import org.bukkit.Material.WATER_CAULDRON
 import org.bukkit.Material.WAXED_COPPER_BLOCK
 import org.bukkit.Material.WAXED_EXPOSED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
@@ -214,6 +217,9 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	LEVER,
 	FLOWER_POT,
 	CAULDRON,
+	WATER_CAULDRON,
+	LAVA_CAULDRON,
+	POWDER_SNOW_CAULDRON,
 	ANVIL,
 	BOOKSHELF,
 	LADDER,
