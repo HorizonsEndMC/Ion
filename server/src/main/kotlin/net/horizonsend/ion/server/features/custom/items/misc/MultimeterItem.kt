@@ -7,8 +7,8 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.transport.nodes.cache.CachedNode
-import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.util.getHeuristic
@@ -87,23 +87,23 @@ object MultimeterItem : CustomItem("Multimeter") {
 		val secondPoint = itemStack.itemMeta.persistentDataContainer.get(Z, LONG) ?: return
 
 		val networkTypeIndex = itemStack.itemMeta.persistentDataContainer.getOrDefault(NODE_VARIANT, INTEGER, 0)
-		val networkType = NetworkType.entries[networkTypeIndex]
+		val cacheType = CacheType.entries[networkTypeIndex]
 
-		val firstNode = networkType.get(firstChunk).getOrCache(firstPoint) ?: return audience.information("There is no node at ${toVec3i(firstPoint)}")
+		val firstNode = cacheType.get(firstChunk).getOrCache(firstPoint) ?: return audience.information("There is no node at ${toVec3i(firstPoint)}")
 
-		val path = getIdealPath(audience, CachedNode.NodePositionData(firstNode, world, firstPoint, BlockFace.SELF), secondPoint)
+		val path = getIdealPath(audience, Node.NodePositionData(firstNode, world, firstPoint, BlockFace.SELF), secondPoint)
 		val resistance = calculatePathResistance(path) ?: return audience.userError("There is no path connecting these nodes")
 		audience.information("The resistance from ${firstNode.javaClass.simpleName} at ${toVec3i(firstPoint)} to ${toVec3i(secondPoint)} at ${toVec3i(secondPoint)} is $resistance")
 	}
 
 	private fun cycleNetworks(audience: Audience, world: World, itemStack: ItemStack) {
 		val currentIndex = itemStack.itemMeta.persistentDataContainer.getOrDefault(NODE_VARIANT, INTEGER, 0)
-		val newIndex = (currentIndex + 1) % NetworkType.entries.size
+		val newIndex = (currentIndex + 1) % CacheType.entries.size
 		itemStack.updateMeta {
 			it.persistentDataContainer.set(NODE_VARIANT, INTEGER, newIndex)
 		}
 
-		audience.success("Set network type to ${NetworkType.entries[newIndex]}")
+		audience.success("Set network type to ${CacheType.entries[newIndex]}")
 
 		tryCheckResistance(audience, world, itemStack)
 	}
@@ -111,7 +111,7 @@ object MultimeterItem : CustomItem("Multimeter") {
 	/**
 	 * Uses the A* algorithm to find the shortest available path between these two nodes.
 	 **/
-	private fun getIdealPath(audience: Audience, fromNode: CachedNode.NodePositionData, toPos: BlockKey): Array<CachedNode.NodePositionData>? {
+	private fun getIdealPath(audience: Audience, fromNode: Node.NodePositionData, toPos: BlockKey): Array<Node.NodePositionData>? {
 		// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
 		val queue = PriorityQueue<PathfindingNodeWrapper> { o1, o2 -> o2.f.compareTo(o1.f) }
 		// The hash set here is to speed up the .contains() check further down the road, which is slow with the queue.

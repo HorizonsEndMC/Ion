@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
-import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -45,7 +45,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	override fun getSignUnsavedTime(): Long = 0
 	override fun markChanged() {}
 
-	override fun getNetwork(type: NetworkType): TransportCache {
+	override fun getNetwork(type: CacheType): TransportCache {
 		return type.get(starship)
 	}
 
