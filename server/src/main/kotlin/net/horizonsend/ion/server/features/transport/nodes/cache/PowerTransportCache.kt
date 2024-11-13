@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.holders.NetworkHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache.PowerNode.PowerFlowMeter
@@ -21,6 +22,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.faces
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import org.bukkit.Axis
@@ -62,11 +64,14 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 		}
 
-		data class EndRodNode(val axis: Axis) : PowerNode {
+		data class EndRodNode(var axis: Axis) : PowerNode, ComplexCachedNode {
 			override val pathfindingResistance: Double = 0.5
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = offset.axis == this.axis
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = offset.axis == this.axis
 			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(backwards.oppositeFace)
+			override fun onTranslate(movement: StarshipMovement) {
+				this.axis = movement.displaceFace(this.axis.faces.first).axis
+			}
 		}
 
 		data object PowerExtractorNode : PowerNode {
@@ -90,7 +95,7 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 		}
 
-		data class PowerFlowMeter(val face: BlockFace, val location: BlockKey) : PowerNode {
+		data class PowerFlowMeter(var face: BlockFace, val location: BlockKey) : PowerNode, ComplexCachedNode {
 			//TODO display
 
 			fun onCompleteChain(transferred: Int) {
@@ -101,6 +106,11 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			override fun canTransferFrom(other: CachedNode, offset: BlockFace): Boolean = true
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = true
 			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+
+			override fun onTranslate(movement: StarshipMovement) {
+				this.face = movement.displaceFace(this.face)
+				//TODO rotate / move display
+			}
 		}
 
 		data object PowerInputNode : PowerNode {
