@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager.extractors
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
@@ -8,13 +9,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.Material
 
 abstract class ExtractorManager {
-	abstract fun getExtractors(): List<BlockKey>
+	abstract fun getExtractors(): Collection<ExtractorData>
 
 	fun registerExtractor(key: BlockKey, ensureExtractor: Boolean): Boolean = registerExtractor(getX(key), getY(key), getZ(key), ensureExtractor)
 	abstract fun registerExtractor(x: Int, y: Int, z: Int, ensureExtractor: Boolean): Boolean
 
-	abstract fun removeExtractor(key: BlockKey): Boolean
-	abstract fun removeExtractor(x: Int, y: Int, z: Int): Boolean
+	abstract fun removeExtractor(key: BlockKey): ExtractorData?
+	abstract fun removeExtractor(x: Int, y: Int, z: Int): ExtractorData?
 
 	fun isExtractor(x: Int, y: Int, z: Int): Boolean = isExtractor(toBlockKey(x, y, z))
 	abstract fun isExtractor(key: BlockKey): Boolean
@@ -25,4 +26,20 @@ abstract class ExtractorManager {
 
 	open fun onLoad() {}
 	open fun onSave() {}
+
+	class ExtractorData(val pos: BlockKey) {
+		private var lastTicked = System.currentTimeMillis()
+
+		private fun getDelta(time: Long): Double {
+			val diff = time - lastTicked
+			return (diff.toDouble() / IonServer.transportSettings.extractorConfiguration.extractorTickIntervalMS.toDouble())
+		}
+
+		fun markTicked(): Double {
+			val now = System.currentTimeMillis()
+			val delta = getDelta(now)
+			lastTicked = now
+			return delta
+		}
+	}
 }
