@@ -18,12 +18,8 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.IRON_BLOCK
@@ -35,7 +31,6 @@ import org.bukkit.Material.SPONGE
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Observer
-import org.bukkit.block.data.type.WallSign
 import org.bukkit.craftbukkit.v1_20_R3.block.impl.CraftEndRod
 import kotlin.math.roundToInt
 
@@ -184,13 +179,8 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 fun getInputEntities(world: World, location: BlockKey): Set<MultiblockEntity> {
 	val inputManager = world.ion.inputManager
 	val registered = inputManager.getHolders(CacheType.POWER, location)
-	val block = getBlockIfLoaded(world, getX(location), getY(location), getZ(location)) ?: return setOf()
 
-	val adjacentBlocks = ADJACENT_BLOCK_FACES.mapNotNull {
-		val adjacent = block.getRelativeIfLoaded(it)
-		val data = adjacent?.blockData as? WallSign ?: return@mapNotNull null
-		MultiblockEntities.getMultiblockEntity(adjacent.x, adjacent.y, adjacent.z, world, data)
-	}
+	val adjacentBlocks = stupidOffsets.mapNotNull { MultiblockEntities.getMultiblockEntity(world, it.x, it.y, it.z) }
 
 	return registered.plus(adjacentBlocks)
 }
@@ -259,3 +249,27 @@ fun getSorted(pathResistance: Array<Double?>): IntArray {
 
 	return ranks
 }
+
+val stupidOffsets: Array<Vec3i> = arrayOf(
+	// Upper ring
+	Vec3i(1, 1, 0),
+	Vec3i(-1, 1, 0),
+	Vec3i(0, 1, 1),
+	Vec3i(0, 1, -1),
+	// Lower ring
+	Vec3i(1, -1, 0),
+	Vec3i(-1, -1, 0),
+	Vec3i(0, -1, 1),
+	Vec3i(0, -1, -1),
+
+	// Middle ring
+	Vec3i(2, 0, 0),
+	Vec3i(-2, 0, 0),
+	Vec3i(0, 0, -2),
+	Vec3i(0, 0, -2),
+
+	Vec3i(1, 0, 1),
+	Vec3i(-1, 0, 1),
+	Vec3i(1, 0, -1),
+	Vec3i(-1, 0, -1),
+)
