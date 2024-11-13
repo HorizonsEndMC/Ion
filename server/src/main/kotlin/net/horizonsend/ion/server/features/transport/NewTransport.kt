@@ -87,6 +87,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	}
 
 	fun handleBlockEvent(world: World, x: Int, y: Int, z: Int, previousType: Material?, newType: Material) = Tasks.async {
+		invalidateCache(world, x, y, z)
 		if (previousType == EXTRACTOR_TYPE && newType != EXTRACTOR_TYPE) return@async removeExtractor(world, x, y, z)
 		if (newType == EXTRACTOR_TYPE) return@async addExtractor(world, x, y, z)
 	}
