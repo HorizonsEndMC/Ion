@@ -39,6 +39,7 @@ import net.horizonsend.ion.server.features.starship.event.StarshipDetectedEvent
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
@@ -267,6 +268,9 @@ object StarshipComputers : IonServerComponent() {
 				DeactivatedPlayerStarships.updateState(data, state)
 
 				player.success("Re-detected! New size ${state.blockMap.size.toText()}")
+				if (state.blockMap.size > data.starshipType.actualType.maxSize) {
+					player.userError("Detected starship is oversized! It will suffer a performance penalty.")
+				}
 			}
 		}
 	}
