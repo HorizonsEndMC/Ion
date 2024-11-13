@@ -14,7 +14,10 @@ abstract class TransportManager {
 	abstract fun getInputProvider(): InputManager
 
 	fun tick() {
-		powerNodeManager.network.tick()
-		fluidNodeManager.network.tick()
+		for (extractor in extractorManager.getExtractors()) {
+			val delta = extractor.markTicked()
+			powerNodeManager.network.tickExtractor(extractor.pos, delta)
+			fluidNodeManager.network.tickExtractor(extractor.pos, delta)
+		}
 	}
 }

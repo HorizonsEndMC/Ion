@@ -91,8 +91,8 @@ object IonChunkCommand : SLCommand() {
 
 		sender.information("${extractors.getExtractors().size} covered position(s).")
 
-		extractors.getExtractors().forEach { pos ->
-			sender.highlightBlock(toVec3i(pos), 50L)
+		extractors.getExtractors().forEach { extractor ->
+			sender.highlightBlock(toVec3i(extractor.pos), 50L)
 		}
 	}
 
@@ -142,7 +142,7 @@ object IonChunkCommand : SLCommand() {
 		if (node !is PowerTransportCache.PowerNode.PowerExtractorNode) fail { "Extractor not targeted" }
 		val chunk = IonChunk.getFromWorldCoordinates(sender.world, getX(location), getZ(location)) ?: fail { "Chunk not loaded" }
 		val grid = NetworkType.POWER.get(chunk) as PowerTransportCache
-		grid.tickExtractor(location)
+		grid.tickExtractor(location, 1.0)
 	}
 
 	@Subcommand("test flood")

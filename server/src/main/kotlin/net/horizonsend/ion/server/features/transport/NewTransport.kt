@@ -32,7 +32,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	override fun onEnable() {
 		executor = Executors.newFixedThreadPool(64, Tasks.namedThreadFactory("wire-transport"))
 
-		val interval: Long = IonServer.transportSettings.extractorTickIntervalMS
+		val interval: Long = IonServer.transportSettings.extractorConfiguration.extractorTickIntervalMS
 
 		monitorThread = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) {
 			transportManagers.forEach {
