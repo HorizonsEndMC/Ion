@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
@@ -464,6 +465,10 @@ object PilotedStarships : IonServerComponent() {
 					.append(Component.text(" with ${activePlayerStarship.initialBlockCount} blocks."))
 			)
 
+			if (isOversized(activePlayerStarship)) {
+				player.userError("Ship is over max block count! Power output reduced by ${(ReactorSubsystem.OVERSIZE_POWER_PENALTY * 100).toInt()}%!")
+			}
+
 			if (carriedShips.any()) {
 				player.information(
 					"${carriedShips.size} carried ship${if (carriedShips.size != 1) "s" else ""}."
@@ -556,4 +561,6 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	fun getDisplayName(data: StarshipData): Component = data.name?.let { MiniMessage.miniMessage().deserialize(it) } ?: data.starshipType.actualType.displayNameComponent
+
+	fun isOversized(starship: Starship) = starship.initialBlockCount > (starship.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt()
 }

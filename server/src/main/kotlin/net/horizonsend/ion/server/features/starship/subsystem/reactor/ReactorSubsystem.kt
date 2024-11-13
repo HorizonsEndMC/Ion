@@ -8,10 +8,16 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 class ReactorSubsystem(
-	starship: ActiveStarship
+	starship: ActiveStarship,
+	powerModifier: Double
 ) : StarshipSubsystem(starship, starship.centerOfMass) {
+
+	companion object {
+		const val OVERSIZE_POWER_PENALTY = 0.5
+	}
+
 	val output: Double =
-		Math.cbrt(starship.initialBlockCount.coerceAtLeast(500).toDouble()) * 3000.0 * (starship.type.poweroverrider)
+		Math.cbrt(starship.initialBlockCount.coerceAtLeast(500).toDouble()) * 3000.0 * (starship.type.poweroverrider) * powerModifier
 	val powerDistributor = PowerDistributor()
 	val weaponCapacitor = WeaponCapacitor(this)
 	val heavyWeaponBooster = HeavyWeaponBooster(this)
