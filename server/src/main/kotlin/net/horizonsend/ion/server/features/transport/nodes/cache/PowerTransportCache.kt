@@ -48,7 +48,7 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		.addSimpleNode(REDSTONE_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(IRON_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(LAPIS_BLOCK, PowerNode.PowerInvertedMergeNode)
-		.addDataHandler<Observer>(OBSERVER) { data, _ -> PowerFlowMeter(data.facing) }
+		.addDataHandler<Observer>(OBSERVER) { data, loc -> PowerFlowMeter(data.facing, loc) }
 		.addSimpleNode(NOTE_BLOCK, PowerInputNode)
 		.build()
 
@@ -90,7 +90,7 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 		}
 
-		data class PowerFlowMeter(val face: BlockFace) : PowerNode {
+		data class PowerFlowMeter(val face: BlockFace, val location: BlockKey) : PowerNode {
 			//TODO display
 
 			fun onCompleteChain(transferred: Int) {
