@@ -42,4 +42,6 @@ interface CachedNode {
 	data class NodePositionData(val type: CachedNode, val world: World, val position: BlockKey, val offset: BlockFace) {
 		fun getNextNodes(): List<NodePositionData> = type.getNextNodes(world, position, offset.oppositeFace)
 	}
+
+	fun onInvalidate() {}
 }

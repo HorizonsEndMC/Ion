@@ -55,11 +55,11 @@ abstract class TransportCache(val holder: NetworkHolder<*> /* TODO temp network 
 	}
 
 	fun invalidate(x: Int, y: Int, z: Int) {
-		return invalidate(toBlockKey(x, y, z))
+		invalidate(toBlockKey(x, y, z))
 	}
 
 	fun invalidate(key: BlockKey) {
-		cache.remove(key)
+		(cache.remove(key) as? CacheState.Present)?.node?.onInvalidate()
 	}
 
 	fun getRawCache() = cache
