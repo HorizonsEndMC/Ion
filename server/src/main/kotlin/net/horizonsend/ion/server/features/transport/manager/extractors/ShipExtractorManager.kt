@@ -1,16 +1,16 @@
 package net.horizonsend.ion.server.features.transport.manager.extractors
 
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 
 class ShipExtractorManager(val starship: Starship) : ExtractorManager() {
-	val extractors = LongOpenHashSet()
+	val extractors = Long2ObjectOpenHashMap<ExtractorData>()
 
-	override fun getExtractors(): List<BlockKey> {
-		return extractors.toList()
+	override fun getExtractors(): Collection<ExtractorData> {
+		return extractors.values
 	}
 
 	override fun isExtractor(key: BlockKey): Boolean {
@@ -19,15 +19,16 @@ class ShipExtractorManager(val starship: Starship) : ExtractorManager() {
 
 	override fun registerExtractor(x: Int, y: Int, z: Int, ensureExtractor: Boolean): Boolean {
 		if (ensureExtractor && getBlockTypeSafe(starship.world, x, y, z) != EXTRACTOR_TYPE) return false
-		extractors.add(toBlockKey(x, y, z))
+		val key = toBlockKey(x, y, z)
+		extractors[key] = ExtractorData(key)
 		return true
 	}
 
-	override fun removeExtractor(x: Int, y: Int, z: Int): Boolean {
+	override fun removeExtractor(x: Int, y: Int, z: Int): ExtractorData? {
 		return extractors.remove(toBlockKey(x, y, z))
 	}
 
-	override fun removeExtractor(key: BlockKey): Boolean {
+	override fun removeExtractor(key: BlockKey): ExtractorData? {
 		return extractors.remove(key)
 	}
 
@@ -36,6 +37,6 @@ class ShipExtractorManager(val starship: Starship) : ExtractorManager() {
 	}
 
 	fun releaseExtractors() {
-
+		//TODO
 	}
 }
