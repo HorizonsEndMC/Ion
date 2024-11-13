@@ -176,7 +176,7 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 		}
 	}
 
-	override fun tickExtractor(location: BlockKey) { NewTransport.executor.submit {
+	override fun tickExtractor(location: BlockKey, delta: Double) { NewTransport.executor.submit {
 		val world = holder.getWorld()
 		val sources = getExtractorSourcePool(location, world).filterNot { it.powerStorage.isEmpty() }
 		val source = sources.randomOrNull() ?: return@submit //TODO take from all
@@ -187,7 +187,8 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 
 		if (destinations.isEmpty()) return@submit
 
-		val transferred = minOf(source.powerStorage.getPower(), IonServer.transportSettings.maxPowerRemovedPerExtractorTick)
+		val transferLimit = (IonServer.transportSettings.extractorConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
+		val transferred = minOf(source.powerStorage.getPower(), transferLimit)
 		val notRemoved = source.powerStorage.removePower(transferred)
 
 		val remainder = runPowerTransfer(
