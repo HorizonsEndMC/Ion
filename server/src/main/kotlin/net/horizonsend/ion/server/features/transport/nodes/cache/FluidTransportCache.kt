@@ -9,7 +9,7 @@ class FluidTransportCache(holder: NetworkHolder<FluidTransportCache>): Transport
 	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
 		.build()
 
-	override fun tickExtractor(location: BlockKey) {
+	override fun tickExtractor(location: BlockKey, delta: Double) {
 
 	}
 }
