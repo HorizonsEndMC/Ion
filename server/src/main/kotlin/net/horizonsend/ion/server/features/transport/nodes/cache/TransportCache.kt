@@ -14,15 +14,16 @@ import org.bukkit.block.Block
 
 abstract class TransportCache(val holder: CacheHolder<*> /* TODO temp network holder, works for now */) {
 	private val cache: Long2ObjectOpenHashMap<CacheState> = Long2ObjectOpenHashMap()
+	private val mutex = Any()
 
 	abstract val type: CacheType
 	abstract val nodeFactory: NodeCacheFactory
 
 	abstract fun tickExtractor(location: BlockKey, delta: Double)
 
-	fun isCached(at: BlockKey): Boolean = cache.containsKey(at)
+	fun isCached(at: BlockKey): Boolean = synchronized(mutex) { cache.containsKey(at) }
 
-	fun getCached(at: BlockKey): Node? {
+	fun getCached(at: BlockKey): Node? = synchronized(mutex) {
 		val state = cache[at] ?: return null
 		return when (state) {
 			is CacheState.Empty -> null
@@ -41,7 +42,7 @@ abstract class TransportCache(val holder: CacheHolder<*> /* TODO temp network ho
 		cache(location, block)
 	}
 
-	fun cache(location: BlockKey, block: Block): Node? {
+	fun cache(location: BlockKey, block: Block): Node? = synchronized(mutex) {
 		val type = nodeFactory.cache(block)
 		val state = if (type == null) CacheState.Empty else CacheState.Present(type)
 
@@ -49,11 +50,11 @@ abstract class TransportCache(val holder: CacheHolder<*> /* TODO temp network ho
 		return type
 	}
 
-	fun invalidate(x: Int, y: Int, z: Int) {
+	fun invalidate(x: Int, y: Int, z: Int) = synchronized(mutex) {
 		invalidate(toBlockKey(x, y, z))
 	}
 
-	fun invalidate(key: BlockKey) {
+	fun invalidate(key: BlockKey) = synchronized(mutex) {
 		(cache.remove(key) as? CacheState.Present)?.node?.onInvalidate()
 	}
 
