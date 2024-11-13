@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.transport.util
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.features.transport.nodes.cache.CachedNode
+import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -15,15 +15,15 @@ import org.bukkit.block.BlockFace
 import java.util.PriorityQueue
 import kotlin.math.roundToInt
 
-fun getOrCacheNode(type: NetworkType, world: World, pos: BlockKey): CachedNode? {
+fun getOrCacheNode(type: CacheType, world: World, pos: BlockKey): Node? {
 	val chunk = IonChunk[world, getX(pos).shr(4), getZ(pos).shr(4)] ?: return null
 	return type.get(chunk).getOrCache(pos)
 }
 
-inline fun <reified T: CachedNode> getNetworkDestinations(networkType: NetworkType, world: World, originPos: BlockKey, check: (CachedNode.NodePositionData) -> Boolean): LongOpenHashSet {
-	val originNode = getOrCacheNode(networkType, world, originPos) ?: return LongOpenHashSet()
+inline fun <reified T: Node> getNetworkDestinations(cacheType: CacheType, world: World, originPos: BlockKey, check: (Node.NodePositionData) -> Boolean): LongOpenHashSet {
+	val originNode = getOrCacheNode(cacheType, world, originPos) ?: return LongOpenHashSet()
 
-	val visitQueue = ArrayDeque<CachedNode.NodePositionData>()
+	val visitQueue = ArrayDeque<Node.NodePositionData>()
 	val visitedSet = LongOpenHashSet()
 	val destinations = LongOpenHashSet()
 
@@ -52,7 +52,7 @@ inline fun <reified T: CachedNode> getNetworkDestinations(networkType: NetworkTy
 /**
  * Uses the A* algorithm to find the shortest available path between these two nodes.
  **/
-fun getIdealPath(from: CachedNode.NodePositionData, to: BlockKey): Array<CachedNode.NodePositionData>? {
+fun getIdealPath(from: Node.NodePositionData, to: BlockKey): Array<Node.NodePositionData>? {
 	// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
 	val queue = PriorityQueue<PathfindingNodeWrapper> { o1, o2 -> o2.f.compareTo(o1.f) }
 	// The hash set here is to speed up the .contains() check further down the road, which is slow with the queue.
@@ -137,13 +137,13 @@ fun getHeuristic(wrapper: PathfindingNodeWrapper, destination: BlockKey): Int {
  * @param parent The parent node
  **/
 data class PathfindingNodeWrapper(
-	val node: CachedNode.NodePositionData,
+	val node: Node.NodePositionData,
 	var parent: PathfindingNodeWrapper?,
 	var g: Int,
 	var f: Int
 ) {
  	// Compiles the path
-	fun buildPath(): Array<CachedNode.NodePositionData> {
+	fun buildPath(): Array<Node.NodePositionData> {
 		val list = mutableListOf(this.node)
 		var current: PathfindingNodeWrapper? = this
 
@@ -182,6 +182,6 @@ data class PathfindingNodeWrapper(
 	//</editor-fold>
 }
 
-fun calculatePathResistance(path: Array<CachedNode.NodePositionData>?): Double? {
+fun calculatePathResistance(path: Array<Node.NodePositionData>?): Double? {
 	return path?.sumOf { it.type.pathfindingResistance }
 }
