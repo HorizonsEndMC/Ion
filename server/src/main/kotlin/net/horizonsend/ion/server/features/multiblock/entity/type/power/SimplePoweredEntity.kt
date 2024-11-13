@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
-import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
@@ -46,14 +46,14 @@ abstract class SimplePoweredEntity(
 	).register()
 
 	override fun onLoad() {
-		registerInputs(NetworkType.POWER, getPowerInputLocations())
+		registerInputs(CacheType.POWER, getPowerInputLocations())
 	}
 
 	override fun handleRemoval() {
-		releaseInputs(NetworkType.POWER, getPowerInputLocations())
+		releaseInputs(CacheType.POWER, getPowerInputLocations())
 	}
 
 	override fun onUnload() {
-		releaseInputs(NetworkType.POWER, getPowerInputLocations())
+		releaseInputs(CacheType.POWER, getPowerInputLocations())
 	}
 }

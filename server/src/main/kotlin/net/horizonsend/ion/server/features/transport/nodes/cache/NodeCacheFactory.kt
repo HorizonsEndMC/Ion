@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
+import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
@@ -10,7 +11,7 @@ import org.bukkit.block.data.BlockData
 import kotlin.reflect.KClass
 
 class NodeCacheFactory private constructor(private val materialHandlers: Map<Material, MaterialHandler<*>>) {
-	fun cache(block: Block): CachedNode? {
+	fun cache(block: Block): Node? {
 		val type = block.getTypeSafe() ?: return null
 		val materialFactory = materialHandlers[type] ?: return null
 		val blockData = getBlockDataSafe(block.world, block.x, block.y, block.z) ?: return null
@@ -22,12 +23,12 @@ class NodeCacheFactory private constructor(private val materialHandlers: Map<Mat
 	class Builder	{
 		val materialHandlers = mutableMapOf<Material, MaterialHandler<*>>()
 
-		inline fun <reified T: BlockData> addDataHandler(material: Material, noinline constructor: (T, BlockKey) -> CachedNode): Builder {
+		inline fun <reified T: BlockData> addDataHandler(material: Material, noinline constructor: (T, BlockKey) -> Node): Builder {
 			this.materialHandlers[material] = MaterialHandler(T::class, constructor)
 			return this
 		}
 
-		fun addSimpleNode(material: Material, node: CachedNode): Builder {
+		fun addSimpleNode(material: Material, node: Node): Builder {
 			this.materialHandlers[material] = MaterialHandler(BlockData::class) { _, _ -> node }
 			return this
 		}
@@ -37,8 +38,8 @@ class NodeCacheFactory private constructor(private val materialHandlers: Map<Mat
 		}
 	}
 
-	class MaterialHandler<T: BlockData>(val blockDataClass: KClass<T>, val constructor: (T, BlockKey) -> CachedNode) {
-		fun construct(blockData: BlockData, key: BlockKey): CachedNode {
+	class MaterialHandler<T: BlockData>(val blockDataClass: KClass<T>, val constructor: (T, BlockKey) -> Node) {
+		fun construct(blockData: BlockData, key: BlockKey): Node {
 			@Suppress("UNCHECKED_CAST")
 			return constructor.invoke(blockData as T, key)
 		}
