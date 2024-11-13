@@ -1,7 +1,13 @@
 package net.horizonsend.ion.server.features.client.display.modular.display
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.newline
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 
 class FlowMeterDisplay(
 	private val meter: PowerTransportCache.PowerNode.PowerFlowMeter,
@@ -14,6 +20,11 @@ class FlowMeterDisplay(
 	override fun deRegister() {}
 
 	override fun getText(): Component {
-		return Component.text("0")
+		return meter.formatFlow()
+	}
+
+	companion object {
+		val firstLine = text("E: ", YELLOW)
+		val secondLine = ofChildren(newline(), text("E ", YELLOW), text("/ ", HE_MEDIUM_GRAY), text("Sec", GREEN))
 	}
 }
