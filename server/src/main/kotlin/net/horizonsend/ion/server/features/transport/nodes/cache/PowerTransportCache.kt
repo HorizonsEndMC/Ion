@@ -159,6 +159,10 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 			override fun canTransferTo(other: CachedNode, offset: BlockFace): Boolean = true
 			override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 
+			override fun onInvalidate() {
+				displayHandler.remove()
+			}
+
 			override fun onTranslate(movement: StarshipMovement) {
 				this.face = movement.displaceFace(this.face)
 				displayHandler.displace(movement)
