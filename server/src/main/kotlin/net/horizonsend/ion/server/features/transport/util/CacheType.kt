@@ -8,23 +8,23 @@ import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.NamespacedKey
 
-enum class NetworkType(val namespacedKey: NamespacedKey) {
+enum class CacheType(val namespacedKey: NamespacedKey) {
 	POWER(NamespacedKeys.POWER_TRANSPORT) {
 		override fun get(chunk: IonChunk): PowerTransportCache {
-			return chunk.transportNetwork.powerNodeManager.network
+			return chunk.transportNetwork.powerNodeManager.cache
 		}
 
 		override fun get(ship: ActiveStarship): PowerTransportCache {
-			return ship.transportManager.powerNodeManager.network
+			return ship.transportManager.powerNodeManager.cache
 		}
 	},
 	FLUID(NamespacedKeys.FLUID_TRANSPORT) {
 		override fun get(chunk: IonChunk): FluidTransportCache {
-			return chunk.transportNetwork.fluidNodeManager.network
+			return chunk.transportNetwork.fluidNodeManager.cache
 		}
 
 		override fun get(ship: ActiveStarship): FluidTransportCache {
-			return ship.transportManager.fluidNodeManager.network
+			return ship.transportManager.fluidNodeManager.cache
 		}
 	},
 
@@ -36,6 +36,6 @@ enum class NetworkType(val namespacedKey: NamespacedKey) {
 
 	companion object {
 		private val byKey = entries.associateBy { it.namespacedKey }
-		operator fun get(key: NamespacedKey): NetworkType = byKey[key]!!
+		operator fun get(key: NamespacedKey): CacheType = byKey[key]!!
 	}
 }

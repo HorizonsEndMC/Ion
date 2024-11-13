@@ -29,7 +29,7 @@ import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.sta
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.HYDROGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.OXYGEN
 import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.WATER
-import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_3
@@ -244,18 +244,18 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		}
 
 		override fun onLoad() {
-			registerInputs(NetworkType.FLUID, getFluidInputLocations())
-			registerInputs(NetworkType.POWER, getPowerInputLocations())
+			registerInputs(CacheType.FLUID, getFluidInputLocations())
+			registerInputs(CacheType.POWER, getPowerInputLocations())
 		}
 
 		override fun onUnload() {
-			releaseInputs(NetworkType.FLUID, getFluidInputLocations())
-			releaseInputs(NetworkType.POWER, getPowerInputLocations())
+			releaseInputs(CacheType.FLUID, getFluidInputLocations())
+			releaseInputs(CacheType.POWER, getPowerInputLocations())
 		}
 
 		override fun handleRemoval() {
-			releaseInputs(NetworkType.FLUID, getFluidInputLocations())
-			releaseInputs(NetworkType.POWER, getPowerInputLocations())
+			releaseInputs(CacheType.FLUID, getFluidInputLocations())
+			releaseInputs(CacheType.POWER, getPowerInputLocations())
 		}
 
 		override fun toString(): String = "Structure direction $structureDirection, display direction ${displayHandler.facing}"

@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
-import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -37,7 +37,7 @@ abstract class MultiblockManager(val log: Logger) {
 
 	fun getAllMultiblockEntities() = multiblockEntities
 
-	abstract fun getNetwork(type: NetworkType): TransportCache
+	abstract fun getNetwork(type: CacheType): TransportCache
 
 	abstract fun getSignUnsavedTime(): Long
 

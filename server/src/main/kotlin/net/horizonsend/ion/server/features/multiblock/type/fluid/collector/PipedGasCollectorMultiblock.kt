@@ -18,7 +18,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory.GAS
-import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
@@ -125,15 +125,15 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		).register()
 
 		override fun onLoad() {
-			registerInputs(NetworkType.FLUID, getFluidInputLocations())
+			registerInputs(CacheType.FLUID, getFluidInputLocations())
 		}
 
 		override fun onUnload() {
-			releaseInputs(NetworkType.FLUID, getFluidInputLocations())
+			releaseInputs(CacheType.FLUID, getFluidInputLocations())
 		}
 
 		override fun handleRemoval() {
-			releaseInputs(NetworkType.FLUID, getFluidInputLocations())
+			releaseInputs(CacheType.FLUID, getFluidInputLocations())
 		}
 
 		private val worldConfig get() = world.ion.configuration.gasConfiguration
