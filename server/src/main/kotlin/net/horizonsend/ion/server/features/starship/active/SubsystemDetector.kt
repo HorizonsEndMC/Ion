@@ -83,7 +83,8 @@ object SubsystemDetector {
 			if (type == Material.OBSERVER) potentialLandingGearBlocks.add(block)
 		}
 
-		starship.reactor = ReactorSubsystem(starship)
+		val oversizeModifier = if (starship.initialBlockCount > starship.type.maxSize) ReactorSubsystem.OVERSIZE_POWER_PENALTY else 1.0
+		starship.reactor = ReactorSubsystem(starship, oversizeModifier)
 		starship.subsystems += starship.reactor
 
 		for (block in potentialThrusterBlocks) {
