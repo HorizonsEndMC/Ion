@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WOOL_TYPES
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
+import org.bukkit.Material.ACTIVATOR_RAIL
 import org.bukkit.Material.ANVIL
 import org.bukkit.Material.BARREL
 import org.bukkit.Material.BEEHIVE
@@ -51,6 +52,7 @@ import org.bukkit.Material.CREEPER_WALL_HEAD
 import org.bukkit.Material.DAMAGED_ANVIL
 import org.bukkit.Material.DAYLIGHT_DETECTOR
 import org.bukkit.Material.DECORATED_POT
+import org.bukkit.Material.DETECTOR_RAIL
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DISPENSER
 import org.bukkit.Material.DRAGON_HEAD
@@ -127,6 +129,8 @@ import org.bukkit.Material.POTTED_WARPED_ROOTS
 import org.bukkit.Material.POTTED_WHITE_TULIP
 import org.bukkit.Material.POTTED_WITHER_ROSE
 import org.bukkit.Material.POWDER_SNOW_CAULDRON
+import org.bukkit.Material.POWERED_RAIL
+import org.bukkit.Material.RAIL
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.REDSTONE_LAMP
 import org.bukkit.Material.REDSTONE_TORCH
@@ -225,6 +229,11 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	LADDER,
 	DAYLIGHT_DETECTOR,
 	NETHER_PORTAL,
+
+	RAIL,
+	POWERED_RAIL,
+	DETECTOR_RAIL,
+	ACTIVATOR_RAIL,
 
 	OBSERVER,
 	REPEATER,
