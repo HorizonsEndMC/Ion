@@ -3,35 +3,35 @@ package net.horizonsend.ion.server.features.transport.nodes.inputs
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class InputManager {
-	private val typeManagers = ConcurrentHashMap<NetworkType, TypeManager>()
+	private val typeManagers = ConcurrentHashMap<CacheType, TypeManager>()
 
-	private fun getTypeManager(type: NetworkType): TypeManager {
+	private fun getTypeManager(type: CacheType): TypeManager {
 		return typeManagers.getOrPut(type) { TypeManager(this, type) }
 	}
 
-	fun registerInput(type: NetworkType, location: BlockKey, holder: MultiblockEntity) {
+	fun registerInput(type: CacheType, location: BlockKey, holder: MultiblockEntity) {
 		getTypeManager(type).add(location, holder)
 	}
 
-	fun deRegisterInput(type: NetworkType, location: BlockKey, holder: MultiblockEntity) {
+	fun deRegisterInput(type: CacheType, location: BlockKey, holder: MultiblockEntity) {
 		getTypeManager(type).remove(location, holder)
 	}
 
-	fun getHolders(type: NetworkType, location: BlockKey): Set<MultiblockEntity> {
+	fun getHolders(type: CacheType, location: BlockKey): Set<MultiblockEntity> {
 		return getTypeManager(type).getAllHolders(location)
 	}
 
-	fun getInputData(type: NetworkType, location: BlockKey): TypeManager.InputData? =
+	fun getInputData(type: CacheType, location: BlockKey): TypeManager.InputData? =
 		getTypeManager(type).getRaw(location)
 
-	fun getLocations(type: NetworkType) = getTypeManager(type).getAllLocations()
+	fun getLocations(type: CacheType) = getTypeManager(type).getAllLocations()
 
-	class TypeManager(val manager: InputManager, val type: NetworkType) {
+	class TypeManager(val manager: InputManager, val type: CacheType) {
 		private val inputLocations = Long2ObjectOpenHashMap<InputData>()
 
 		fun getAllLocations() = inputLocations.keys

@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import net.horizonsend.ion.server.features.transport.manager.holders.NetworkHolder
-import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 
-class FluidTransportCache(holder: NetworkHolder<FluidTransportCache>): TransportCache(holder) {
-	override val type: NetworkType = NetworkType.FLUID
+class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCache(holder) {
+	override val type: CacheType = CacheType.FLUID
 	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
 		.build()
 
