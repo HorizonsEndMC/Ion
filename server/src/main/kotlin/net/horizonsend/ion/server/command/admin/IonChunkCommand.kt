@@ -9,10 +9,11 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
-import net.horizonsend.ion.server.features.transport.nodes.cache.CachedNode
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
-import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache.PowerNode.PowerInputNode
-import net.horizonsend.ion.server.features.transport.util.NetworkType
+import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
+import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.getNetworkDestinations
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -70,7 +71,7 @@ object IonChunkCommand : SLCommand() {
 
 	@Subcommand("dump nodes")
 	@CommandCompletion("power") /* |item|gas") */
-	fun dumpNodes(sender: Player, network: NetworkType) {
+	fun dumpNodes(sender: Player, network: CacheType) {
 		val ionChunk = sender.chunk.ion()
 		val grid = network.get(ionChunk)
 
@@ -85,7 +86,7 @@ object IonChunkCommand : SLCommand() {
 
 	@Subcommand("dump extractors")
 	@CommandCompletion("power") /* |item|gas") */
-	fun dumpExtractors(sender: Player, network: NetworkType) {
+	fun dumpExtractors(sender: Player, network: CacheType) {
 		val ionChunk = sender.chunk.ion()
 		val extractors = network.get(ionChunk).holder.getExtractorManager()
 
@@ -98,7 +99,7 @@ object IonChunkCommand : SLCommand() {
 
 	@Subcommand("dump")
 	@CommandCompletion("power")
-	fun dumpNetwork(sender: Player, network: NetworkType) {
+	fun dumpNetwork(sender: Player, network: CacheType) {
 		val ionChunk = sender.chunk.ion()
 		val grid = network.get(ionChunk)
 
@@ -123,7 +124,7 @@ object IonChunkCommand : SLCommand() {
 	}
 
 	@Subcommand("get node key")
-	fun getNode(sender: Player, key: Long, network: NetworkType) {
+	fun getNode(sender: Player, key: Long, network: CacheType) {
 		val ionChunk = sender.chunk.ion()
 		val grid = network.get(ionChunk)
 
@@ -131,30 +132,30 @@ object IonChunkCommand : SLCommand() {
 	}
 
 	@Subcommand("get node look")
-	fun getNode(sender: Player, network: NetworkType) {
+	fun getNode(sender: Player, network: CacheType) {
 		val (node, location) = requireLookingAt(sender, network)
 		sender.information("Targeted node: $node at ${toVec3i(location)}")
 	}
 
 	@Subcommand("test extractor")
 	fun onTick(sender: Player) {
-		val (node, location) = requireLookingAt(sender, NetworkType.POWER)
-		if (node !is PowerTransportCache.PowerNode.PowerExtractorNode) fail { "Extractor not targeted" }
+		val (node, location) = requireLookingAt(sender, CacheType.POWER)
+		if (node !is PowerNode.PowerExtractorNode) fail { "Extractor not targeted" }
 		val chunk = IonChunk.getFromWorldCoordinates(sender.world, getX(location), getZ(location)) ?: fail { "Chunk not loaded" }
-		val grid = NetworkType.POWER.get(chunk) as PowerTransportCache
+		val grid = CacheType.POWER.get(chunk) as PowerTransportCache
 		grid.tickExtractor(location, 1.0)
 	}
 
 	@Subcommand("test flood")
-	fun onTestFloodFill(sender: Player, network: NetworkType) {
+	fun onTestFloodFill(sender: Player, network: CacheType) {
 		sender.information("Trying to find input nodes")
 		val (cached, location) = requireLookingAt(sender, network)
-		val destinations = getNetworkDestinations<PowerInputNode>(NetworkType.POWER, sender.world, location) { true }
+		val destinations = getNetworkDestinations<PowerInputNode>(CacheType.POWER, sender.world, location) { true }
 		sender.information("${destinations.size} destinations")
 		sender.highlightBlocks(destinations.map(::toVec3i), 50L)
 	}
 
-	private fun requireLookingAt(sender: Player, network: NetworkType): Pair<CachedNode, BlockKey> {
+	private fun requireLookingAt(sender: Player, network: CacheType): Pair<Node, BlockKey> {
 		val targeted = sender.getTargetBlock(null, 10)
 		val ionChunk = targeted.chunk.ion()
 		val grid = network.get(ionChunk)
