@@ -44,11 +44,11 @@ class PowerTransportCache(holder: NetworkHolder<PowerTransportCache>) : Transpor
 	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
 		.addSimpleNode(CRAFTING_TABLE, PowerNode.PowerExtractorNode)
 		.addSimpleNode(SPONGE, PowerNode.SpongeNode)
-		.addDataHandler<CraftEndRod>(END_ROD) { PowerNode.EndRodNode(it.facing.axis) }
+		.addDataHandler<CraftEndRod>(END_ROD) { data, _ -> PowerNode.EndRodNode(data.facing.axis) }
 		.addSimpleNode(REDSTONE_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(IRON_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(LAPIS_BLOCK, PowerNode.PowerInvertedMergeNode)
-		.addDataHandler<Observer>(OBSERVER) { PowerFlowMeter(it.facing) }
+		.addDataHandler<Observer>(OBSERVER) { data, _ -> PowerFlowMeter(data.facing) }
 		.addSimpleNode(NOTE_BLOCK, PowerInputNode)
 		.build()
 
