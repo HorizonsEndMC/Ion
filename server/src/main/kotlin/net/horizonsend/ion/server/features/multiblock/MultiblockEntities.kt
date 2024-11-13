@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
+import org.bukkit.block.Sign as SignState
+import org.bukkit.block.data.type.WallSign as SignData
 import com.destroystokyo.paper.event.server.ServerTickEndEvent
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -11,13 +13,13 @@ import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
 
 /**
@@ -49,9 +51,19 @@ object MultiblockEntities : SLEventListener() {
 		return getMultiblockEntity(origin.world, origin.x, origin.y, origin.z)
 	}
 
-	fun getMultiblockEntity(sign: Sign): MultiblockEntity? {
+	fun getMultiblockEntity(sign: SignState): MultiblockEntity? {
 		val origin = MultiblockEntity.getOriginFromSign(sign)
 		return getMultiblockEntity(sign.world, origin.x, origin.y, origin.z)
+	}
+
+	fun getMultiblockEntity(signLocation: BlockKey, world: World, sign: SignData): MultiblockEntity? {
+		val origin = getRelative(signLocation, sign.facing.oppositeFace)
+		return getMultiblockEntity(world, getX(origin), getY(origin), getZ(origin))
+	}
+
+	fun getMultiblockEntity(signX: Int, signY: Int, signZ: Int, world: World, sign: SignData): MultiblockEntity? {
+		val structureDirection = sign.facing.oppositeFace
+		return getMultiblockEntity(world, signX + structureDirection.modX, signY + structureDirection.modY, signZ + structureDirection.modZ)
 	}
 
 	/**
@@ -88,7 +100,7 @@ object MultiblockEntities : SLEventListener() {
 		return multiblock.createEntity(manager, stored, manager.world, stored.x, stored.y, stored.z, stored.signOffset)
 	}
 
-	fun loadFromSign(sign: Sign) {
+	fun loadFromSign(sign: SignState) {
 		val multiblockType = MultiblockAccess.getFast(sign) as? EntityMultiblock<*> ?: return
 
 		val data = sign.persistentDataContainer.get(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData) ?: return migrateFromSign(sign, multiblockType)
@@ -109,7 +121,7 @@ object MultiblockEntities : SLEventListener() {
 		}
 	}
 
-	fun migrateFromSign(sign: Sign, type: EntityMultiblock<*>) {
+	fun migrateFromSign(sign: SignState, type: EntityMultiblock<*>) {
 		val origin = MultiblockEntity.getOriginFromSign(sign)
 
 		val ionChunk = getIonChunk(sign.world, origin.x, origin.z) ?: return
