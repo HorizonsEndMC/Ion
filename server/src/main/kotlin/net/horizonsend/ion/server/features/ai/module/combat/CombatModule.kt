@@ -67,17 +67,13 @@ abstract class CombatModule(
 
 	/** Fires light weapons (left click) in a direction */
 	protected fun fireLightWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
-		for (player in starship.world.players) {
-			player.debug("Firing heavy weapons: Set: $weaponSet")
-		}
+		starship.debug("Firing light weapons: Set: $weaponSet")
 		AIControlUtils.shootInDirection(controller, direction, leftClick = true, target = target, weaponSet = weaponSet)
 	}
 
 	/** Fires heavy weapons (right click) in a direction */
 	protected fun fireHeavyWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
-		for (player in starship.world.players) {
-			player.debug("Firing heavy weapons: Set: $weaponSet")
-		}
+		starship.debug("Firing heavy weapons: Set: $weaponSet")
 		AIControlUtils.shootInDirection(controller, direction, leftClick = false, target = target, weaponSet = weaponSet)
 	}
 

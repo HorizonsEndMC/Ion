@@ -161,7 +161,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		miniMessageName = miniMessage(text("Malingshu", 吃饭人_STANDARD)),
 		manualWeaponSets = mutableSetOf(
 			WeaponSet(
-			name = "manual",
+			name = "Manual",
 			engagementRangeMin = 0.0,
 			engagementRangeMax = 550.0
 		)
@@ -173,7 +173,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 				engagementRangeMax = 250.0
 			),
 			WeaponSet(
-				name = "tt",
+				name = "TT",
 				engagementRangeMin = 250.0,
 				engagementRangeMax = 550.0
 			)
@@ -242,7 +242,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		schematicName = "Vendetta",
 		type = AI_GUNSHIP,
 		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Vendetta",
-		manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+		manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 		autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 	))
 
@@ -250,7 +250,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		schematicName = "Cormorant",
 		type = AI_GUNSHIP,
 		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Cormorant",
-		manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+		manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 		autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 	))
 
@@ -258,7 +258,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		schematicName = "Mantis",
 		type = AI_GUNSHIP,
 		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Mantis",
-		manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+		manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 		autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 	))
 
@@ -266,7 +266,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		schematicName = "Hernstein",
 		type = AI_GUNSHIP,
 		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Hernstein",
-		manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+		manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 		autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 	))
 
@@ -274,7 +274,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		schematicName = "Fyr",
 		type = AI_GUNSHIP,
 		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Fyr",
-		manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+		manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 		autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 	))
 
@@ -282,7 +282,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		schematicName = "Bloodstar",
 		type = AI_CORVETTE,
 		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Bloodstar",
-		manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+		manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 		autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 	))
 
@@ -363,7 +363,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		type = AI_CORVETTE,
 		miniMessageName = "<$PRIVATEER_DARK_TEAL>Bulwark",
 		manualWeaponSets = mutableSetOf(
-			WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
+			WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 		),
 		autoWeaponSets = mutableSetOf(
 			WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
@@ -375,7 +375,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		type = AI_GUNSHIP,
 		miniMessageName = "<$PRIVATEER_MEDIUM_TEAL>Contractor",
 		manualWeaponSets = mutableSetOf(
-			WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
+			WeaponSet(name = "Manual", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 		),
 		autoWeaponSets = mutableSetOf(
 			WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 550.0)

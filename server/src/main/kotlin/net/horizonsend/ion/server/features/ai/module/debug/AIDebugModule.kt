@@ -21,6 +21,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 			"wander",
 			"offsetSeek",
 			"faceSeek",
+			"fleetGravity",
 			"shieldAwareness",
 			"shipDanger",
 			"borderDanger",
