@@ -1,8 +1,5 @@
 package net.horizonsend.ion.server.features.gui.custom.navigation
 
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
-import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.SPACE_BACKGROUND_CHARACTER
 import net.horizonsend.ion.common.utils.text.colors.Colors
@@ -12,25 +9,24 @@ import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
+import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
+import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -95,11 +91,6 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	}
 
 	companion object {
-		val ionWorldCache: LoadingCache<WorldFlag, Collection<World>> = CacheBuilder.newBuilder().build(
-			CacheLoader.from { worldFlag: WorldFlag ->
-				return@from Bukkit.getWorlds().filter { world -> world.ion.hasFlag(worldFlag) }
-			}
-		)
 
 		fun openWindow(player: Player, world: World) {
 			val gui = NavigationSystemMapGui(player, world)
@@ -122,21 +113,54 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	fun createGui(): Gui {
 
 		val star = Space.getStars().firstOrNull { star -> star.spaceWorld == world }
-		val starItem = if (star != null) getPlanetItems(star.name) else null
+		val starItem = if (star != null) GuiItems.CustomItemControlItem(getPlanetItems(star.name),
+			navigationInstructionComponents(
+				star,
+				star.spaceWorldName,
+				star.location.x,
+				star.location.y,
+				star.location.z)
+			) { clickType: ClickType, player: Player, _: InventoryClickEvent ->
+
+			when (clickType) {
+				ClickType.LEFT -> if (star.spaceWorldName == player.world.name) jumpAction(player, star.location.x, star.location.z)
+				ClickType.RIGHT -> waypointAction(player, star.spaceWorldName, star.location.x, star.location.z)
+				ClickType.SHIFT_LEFT -> {
+					// TODO: Add star info window opener here
+				}
+				ClickType.SHIFT_RIGHT -> {
+					val serverName = IonServer.configuration.serverName
+					val hyperlink = ofChildren(
+						Component.text("Click to open ", TextColor.color(Colors.INFORMATION)),
+						Component.text("[", TextColor.color(Colors.INFORMATION)),
+						Component.text("${star.name} Dynmap", NamedTextColor.AQUA)
+							.decorate(TextDecoration.UNDERLINED)
+							.clickEvent(ClickEvent.clickEvent(
+								ClickEvent.Action.OPEN_URL,
+								"https://$serverName.horizonsend.net/?worldname=${star.spaceWorldName}&x=${star.location.x}&z=${star.location.z}",
+							)),
+						Component.text("]", TextColor.color(Colors.INFORMATION)),
+					)
+					player.sendMessage(hyperlink)
+				}
+				else -> {}
+			}
+		} else null
 
 		planetItems.addAll(Space.getPlanets()
 			.filter { planet -> planet.spaceWorld == world }
 			.sortedBy { planet -> planet.orbitDistance }
 			.map { planet -> GuiItems.CustomItemControlItem(getPlanetItems(planet.name),
 				navigationInstructionComponents(
+					planet,
 					planet.spaceWorldName,
-					planet.x,
-					192,
-					planet.z)
+					planet.location.x,
+					planet.location.y,
+					planet.location.z)
 			) { clickType: ClickType, player: Player, _: InventoryClickEvent ->
 
 				when (clickType) {
-					ClickType.LEFT -> jumpAction(player, planet.name)
+					ClickType.LEFT -> if (planet.spaceWorldName == player.world.name) jumpAction(player, planet.name)
 					ClickType.RIGHT -> waypointAction(player, planet.name)
 					ClickType.SHIFT_LEFT -> {
 						// TODO: Add planet info window opener here
@@ -166,6 +190,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 			.filter { beacon -> beacon.spaceLocation.bukkitWorld() == world }
 			.sortedBy { beacon -> beacon.name }
 			.map { beacon -> GuiItems.CustomControlItem(beacon.name, GuiItem.BEACON, navigationInstructionComponents(
+				beacon,
 				beacon.spaceLocation.world,
 				beacon.spaceLocation.x,
 				beacon.spaceLocation.y,
@@ -173,7 +198,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 			) { clickType: ClickType, _: Player, _: InventoryClickEvent ->
 
 				when (clickType) {
-					ClickType.LEFT -> jumpAction(player, beacon.name.replace(' ', '_'))
+					ClickType.LEFT -> if (beacon.spaceLocation.world == player.world.name) jumpAction(player, beacon.name.replace(' ', '_'))
 					ClickType.RIGHT -> waypointAction(player, beacon.name.replace(' ', '_'))
 					ClickType.SHIFT_LEFT -> {
 						openWindow(player, beacon.destination.bukkitWorld())
@@ -204,6 +229,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 			.sortedBy { bookmark -> bookmark.name }
 			.map { bookmark -> GuiItems.CustomControlItem(bookmark.name, GuiItem.BOOKMARK,
 				navigationInstructionComponents(
+					bookmark,
 					bookmark.worldName,
 					bookmark.x,
 					bookmark.y,
@@ -211,7 +237,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 			{ clickType: ClickType, _: Player, _: InventoryClickEvent ->
 
 				when (clickType) {
-					ClickType.LEFT -> jumpAction(player, bookmark.name)
+					ClickType.LEFT -> if (bookmark.worldName == player.world.name) jumpAction(player, bookmark.name)
 					ClickType.RIGHT -> waypointAction(player, bookmark.name)
 					ClickType.SHIFT_LEFT -> {}
 					ClickType.SHIFT_RIGHT -> {
@@ -236,7 +262,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		)
 		bookmarkCount = bookmarkItems.size
 
-		if (starItem != null) gui.setItem(MIDDLE_COLUMN, 0, SimpleItem(starItem.constructItemStack()))
+		if (starItem != null) gui.setItem(MIDDLE_COLUMN, 0, starItem)
 
 		gui.setItem(0, 5, SimpleItem(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
 			it.displayName(Component.text("Return to Galactic Map").decoration(TextDecoration.ITALIC, false))
@@ -249,23 +275,31 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	}
 
 	private fun updateGui() {
+		// populate arrows
 		gui.setItem(0, PLANET_ROW, if (planetListShift > 0) leftPlanetButton else GuiItems.EmptyItem())
-		gui.setItem(8, PLANET_ROW, if (planetListShift + MAX_ELEMENTS_PER_ROW < planetsInWorld) rightPlanetButton else GuiItems.EmptyItem())
+		gui.setItem(8, PLANET_ROW, if ((planetListShift + 1) * MAX_ELEMENTS_PER_ROW < planetsInWorld) rightPlanetButton else GuiItems.EmptyItem())
 		gui.setItem(0, BEACON_ROW, if (beaconListShift > 0) leftBeaconButton else GuiItems.EmptyItem())
-		gui.setItem(8, BEACON_ROW, if (beaconListShift + MAX_ELEMENTS_PER_ROW < beaconsInWorld) rightBeaconButton else GuiItems.EmptyItem())
+		gui.setItem(8, BEACON_ROW, if ((beaconListShift + 1) * MAX_ELEMENTS_PER_ROW < beaconsInWorld) rightBeaconButton else GuiItems.EmptyItem())
 		gui.setItem(0, BOOKMARK_ROW, if (bookmarkListShift > 0) leftBookmarkButton else GuiItems.EmptyItem())
-		gui.setItem(8, BOOKMARK_ROW, if (bookmarkListShift + MAX_ELEMENTS_PER_ROW < bookmarkCount) rightBookmarkButton else GuiItems.EmptyItem())
+		gui.setItem(8, BOOKMARK_ROW, if ((bookmarkListShift + 1) * MAX_ELEMENTS_PER_ROW < bookmarkCount) rightBookmarkButton else GuiItems.EmptyItem())
 
-		for (widthIndex in 0 until planetItems.size.coerceAtMost(MAX_ELEMENTS_PER_ROW)) {
-			gui.setItem(widthIndex + 1, PLANET_ROW, planetItems[widthIndex + planetListShift])
+		// populate buttons; ensure that index of items will not be out of bounds first
+		for (widthIndex in 0 until MAX_ELEMENTS_PER_ROW) {
+			if (planetItems.size > widthIndex + (planetListShift * MAX_ELEMENTS_PER_ROW)) {
+				gui.setItem(widthIndex + 1, PLANET_ROW, planetItems[widthIndex + (planetListShift * MAX_ELEMENTS_PER_ROW)])
+			} else gui.setItem(widthIndex + 1, PLANET_ROW, GuiItems.EmptyItem())
 		}
 
-		for (widthIndex in 0 until beaconItems.size.coerceAtMost(MAX_ELEMENTS_PER_ROW)) {
-			gui.setItem(widthIndex + 1, BEACON_ROW, beaconItems[widthIndex + beaconListShift])
+		for (widthIndex in 0 until MAX_ELEMENTS_PER_ROW) {
+			if (beaconItems.size > widthIndex + (beaconListShift * MAX_ELEMENTS_PER_ROW)) {
+				gui.setItem(widthIndex + 1, BEACON_ROW, beaconItems[widthIndex + (beaconListShift * MAX_ELEMENTS_PER_ROW)])
+			} else gui.setItem(widthIndex + 1, BEACON_ROW, GuiItems.EmptyItem())
 		}
 
-		for (widthIndex in 0 until bookmarkItems.size.coerceAtMost(MAX_ELEMENTS_PER_ROW)) {
-			gui.setItem(widthIndex + 1, BOOKMARK_ROW, bookmarkItems[widthIndex + bookmarkListShift])
+		for (widthIndex in 0 until MAX_ELEMENTS_PER_ROW) {
+			if (bookmarkItems.size > widthIndex + (bookmarkListShift * MAX_ELEMENTS_PER_ROW)) {
+				gui.setItem(widthIndex + 1, BOOKMARK_ROW, bookmarkItems[widthIndex + (bookmarkListShift * MAX_ELEMENTS_PER_ROW)])
+			} else gui.setItem(widthIndex + 1, BOOKMARK_ROW, GuiItems.EmptyItem())
 		}
 	}
 
@@ -316,14 +350,18 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		}
 	}
 
-	private fun navigationInstructionComponents(worldName: String, x: Int, y: Int, z: Int): List<Component> {
+	private fun navigationInstructionComponents(obj: Any, worldName: String, x: Int, y: Int, z: Int): List<Component> {
 		val list = mutableListOf(
 			locationComponent(worldName, x, y, z),
 			Component.text(repeatString("=", 30)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY),
 		)
 		if (world == player.world) list.add(initiateJumpComponent())
 		list.add(setWaypointComponent())
-		list.add(displayInfoComponent())
+		if (obj is CachedPlanet) {
+			list.add(displayInfoComponent())
+		} else if (obj is ServerConfiguration.HyperspaceBeacon) {
+			list.add(nextSystemComponent())
+		}
 		list.add(seeDynmapComponent())
 
 		return list
@@ -335,7 +373,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		paramColor = NamedTextColor.GREEN,
 		useQuotesAroundObjects = false,
 		world, x, y, z
-	)
+	).decoration(TextDecoration.ITALIC, false)
 
 	private fun initiateJumpComponent(): Component = template(
 		"{0} to initiate hyperspace jump to this location",
@@ -361,6 +399,14 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		"Shift Left Click"
 	).decoration(TextDecoration.ITALIC, false)
 
+	private fun nextSystemComponent(): Component = template(
+		"{0} to display the destination system's map",
+		color = HE_LIGHT_GRAY,
+		paramColor = NamedTextColor.AQUA,
+		useQuotesAroundObjects = false,
+		"Shift Left Click"
+	).decoration(TextDecoration.ITALIC, false)
+
 	private fun seeDynmapComponent(): Component = template(
 		"{0} to see this location on Dynmap",
 		color = HE_LIGHT_GRAY,
@@ -369,10 +415,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		"Shift Right Click"
 	).decoration(TextDecoration.ITALIC, false)
 
-	private fun jumpAction(
-		player: Player,
-		destinationName: String
-	) {
+	private fun jumpAction(player: Player, destinationName: String) {
 		if (ActiveStarships.findByPilot(player) != null) {
 			MiscStarshipCommands.onJump(player, destinationName, null)
 		} else {
@@ -380,14 +423,23 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		}
 	}
 
-	private fun waypointAction(
-		player: Player,
-		waypointName: String
-	) {
+	private fun jumpAction(player: Player, x: Int, z: Int) {
+		if (ActiveStarships.findByPilot(player) != null) {
+			MiscStarshipCommands.onJump(player, x.toString(), z.toString(), null)
+		} else {
+			player.userError("You must be piloting a starship!")
+		}
+	}
+
+	private fun waypointAction(player: Player, waypointName: String) {
 		if (WaypointManager.getLastWaypoint(player) != waypointName) {
 			WaypointCommand.onSetWaypoint(player, waypointName)
 		} else {
 			WaypointCommand.onUndoWaypoint(player)
 		}
+	}
+
+	private fun waypointAction(player: Player, world: String, x: Int, z: Int) {
+		WaypointCommand.onSetWaypoint(player, world, x.toString(), z.toString())
 	}
 }
