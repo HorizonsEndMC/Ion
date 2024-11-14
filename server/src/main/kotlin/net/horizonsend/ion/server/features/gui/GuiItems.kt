@@ -41,7 +41,7 @@ object GuiItems {
         private val name: String,
         private val customGuiItem: GuiItem,
         private val lore: List<Component>? = null,
-        private val callback: (ClickType, Player, InventoryClickEvent) -> Unit
+        private val callback: (ClickType, Player, InventoryClickEvent) -> Unit = { _: ClickType, _: Player, _: InventoryClickEvent -> }
     ) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
@@ -159,6 +159,14 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     DOWN(NamespacedKeys.packKey("ui/down")),
     LEFT(NamespacedKeys.packKey("ui/left")),
     CHECKMARK(NamespacedKeys.packKey("ui/checkmark")),
+    CANCEL(NamespacedKeys.packKey("ui/cancel")),
+    ROUTE_CANCEL(NamespacedKeys.packKey("ui/route_cancel")),
+    ROUTE_UNDO(NamespacedKeys.packKey("ui/route_undo")),
+    ROUTE_JUMP(NamespacedKeys.packKey("ui/route_jump")),
+    ROUTE_CANCEL_GRAY(NamespacedKeys.packKey("ui/route_cancel_gray")),
+    ROUTE_UNDO_GRAY(NamespacedKeys.packKey("ui/route_undo_gray")),
+    ROUTE_JUMP_GRAY(NamespacedKeys.packKey("ui/route_jump_gray")),
+    ROUTE_SEGMENT_2(NamespacedKeys.packKey("ui/route_segment_2")),
     STARFIGHTER(NamespacedKeys.packKey("ui/starfighter")),
     GUNSHIP(NamespacedKeys.packKey("ui/gunship")),
     CORVETTE(NamespacedKeys.packKey("ui/corvette")),
