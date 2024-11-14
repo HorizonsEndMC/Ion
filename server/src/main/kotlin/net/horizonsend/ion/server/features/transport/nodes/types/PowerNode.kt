@@ -47,6 +47,14 @@ sealed interface PowerNode : Node {
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
     }
 
+	data object PowerInputNode : PowerNode {
+		override val pathfindingResistance: Double = 0.0
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = false
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+		fun getPoweredEntities(world: World, location: BlockKey) = world.ion.inputManager.getHolders(CacheType.POWER, location).filterIsInstance<PoweredMultiblockEntity>()
+	}
+
     data object PowerMergeNode : PowerNode {
         override val pathfindingResistance: Double = 0.5
         override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other is SpongeNode
@@ -127,13 +135,5 @@ sealed interface PowerNode : Node {
         }
 
         private data class TransferredPower(val transferred: Int, val time: Long)
-    }
-
-    data object PowerInputNode : PowerNode {
-        override val pathfindingResistance: Double = 0.0
-        override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
-        override fun canTransferTo(other: Node, offset: BlockFace): Boolean = false
-        override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
-        fun getPoweredEntities(world: World, location: BlockKey) = world.ion.inputManager.getHolders(CacheType.POWER, location).filterIsInstance<PoweredMultiblockEntity>()
     }
 }
