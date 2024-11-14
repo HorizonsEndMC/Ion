@@ -27,8 +27,8 @@ class AIControllerFactory private constructor(
 			pilotName = pilotName,
 			setupCoreModules = { coreModules.invoke(it, difficulty) },
 			setupUtilModules = utilModules,
-			manualWeaponSets = autoSets,
-			autoWeaponSets = manualSets,
+			manualWeaponSets = manualSets,
+			autoWeaponSets = autoSets,
 		)
 	}
 
