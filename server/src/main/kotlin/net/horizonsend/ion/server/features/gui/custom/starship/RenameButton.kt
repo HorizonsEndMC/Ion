@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.gui.custom.starship
 
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
@@ -63,12 +62,6 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 	}
 
 	override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-		val data = main.data as? PlayerStarshipData
-		if (data == null) {
-			player.userError("You can only add pilots to player ships!")
-			return
-		}
-
 		openRenameMenu(player)
 	}
 
@@ -94,7 +87,7 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 	}
 
 	private val namePromptPaper = SimpleItem {
-		val data = main.data as PlayerStarshipData
+		val data = main.data
 		val name = data.name
 
 		ItemStack(PAPER)
