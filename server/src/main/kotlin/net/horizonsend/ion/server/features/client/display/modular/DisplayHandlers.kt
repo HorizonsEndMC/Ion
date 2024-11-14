@@ -25,6 +25,7 @@ object DisplayHandlers : IonServerComponent() {
 		val signDirection = entity.structureDirection.oppositeFace
 
 		return TextDisplayHandler(
+			entity,
 			entity.world,
 			entity.x.toDouble() + 0.5,
 			entity.y.toDouble() + 0.4,
@@ -37,7 +38,7 @@ object DisplayHandlers : IonServerComponent() {
 		)
 	}
 
-	fun newBlockOverlay(world: World, block: Vec3i, direction: BlockFace, vararg display: Display): TextDisplayHandler {
+	fun newBlockOverlay(holder: DisplayHandlerHolder, world: World, block: Vec3i, direction: BlockFace, vararg display: Display): TextDisplayHandler {
 		val facingBlock = getRelative(toBlockKey(block), direction)
 
 		val x = getX(facingBlock).toDouble() + 0.5
@@ -45,6 +46,7 @@ object DisplayHandlers : IonServerComponent() {
 		val z = getZ(facingBlock).toDouble() + 0.5
 
 		return TextDisplayHandler(
+			holder,
 			world,
 			x,
 			y,
