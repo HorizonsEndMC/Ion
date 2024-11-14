@@ -33,6 +33,11 @@ class NodeCacheFactory private constructor(private val materialHandlers: Map<Mat
 			return this
 		}
 
+		fun addSimpleNode(materials: Iterable<Material>, node: Node): Builder {
+			for (material in materials) this.materialHandlers[material] = MaterialHandler(BlockData::class) { _, _ -> node }
+			return this
+		}
+
 		fun build(): NodeCacheFactory {
 			return NodeCacheFactory(materialHandlers)
 		}
