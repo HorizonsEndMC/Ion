@@ -4,12 +4,14 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
+import org.bukkit.inventory.ItemStack
 
 class BlockRequirement(
 	val alias: String,
 	var example: (BlockFace) -> BlockData,
 	private val syncCheck: (Block, BlockFace, Boolean) -> Boolean,
-	private val dataCheck: (BlockData) -> Boolean
+	private val dataCheck: (BlockData) -> Boolean,
+	val itemRequirement: ItemRequirement
 ) {
 	operator fun invoke(block: Block, inward: BlockFace, loadChunks: Boolean) = syncCheck.invoke(block, inward, loadChunks)
 
@@ -26,4 +28,9 @@ class BlockRequirement(
 
 		return this
 	}
+
+	class ItemRequirement(
+		val itemCheck: (ItemStack) -> Boolean,
+		val consumeItem: (ItemStack) -> Boolean
+	)
 }
