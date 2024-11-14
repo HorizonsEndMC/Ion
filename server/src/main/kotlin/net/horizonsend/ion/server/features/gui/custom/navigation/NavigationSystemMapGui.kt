@@ -108,6 +108,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		private const val PLANET_ROW = 1
 		private const val BEACON_ROW = 2
 		private const val BOOKMARK_ROW = 3
+		private const val MENU_ROW = 5
 	}
 
 	fun createGui(): Gui {
@@ -145,6 +146,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 				}
 				else -> {}
 			}
+			updateGui()
 		} else null
 
 		planetItems.addAll(Space.getPlanets()
@@ -182,6 +184,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 					}
 					else -> {}
 				}
+				updateGui()
 			} }
 		)
 		planetsInWorld = planetItems.size
@@ -220,6 +223,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 					}
 					else -> {}
 				}
+				updateGui()
 			} }
 		)
 		beaconsInWorld = beaconItems.size
@@ -257,15 +261,19 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 					}
 					else -> {}
 				}
-
+				updateGui()
 			} }
 		)
 		bookmarkCount = bookmarkItems.size
 
 		if (starItem != null) gui.setItem(MIDDLE_COLUMN, 0, starItem)
 
-		gui.setItem(0, 5, SimpleItem(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-			it.displayName(Component.text("Return to Galactic Map").decoration(TextDecoration.ITALIC, false))
+		gui.setItem(0, MENU_ROW, GuiItems.CustomControlItem("Close Menu", GuiItem.CANCEL) {
+			_: ClickType, _: Player, _: InventoryClickEvent -> player.closeInventory()
+		})
+
+		gui.setItem(1, MENU_ROW, SimpleItem(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+			it.displayName(Component.text("Return To Galactic Map").decoration(TextDecoration.ITALIC, false))
 			it.setCustomModelData(GuiItem.DOWN.customModelData)
 		}))
 
@@ -300,6 +308,30 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 			if (bookmarkItems.size > widthIndex + (bookmarkListShift * MAX_ELEMENTS_PER_ROW)) {
 				gui.setItem(widthIndex + 1, BOOKMARK_ROW, bookmarkItems[widthIndex + (bookmarkListShift * MAX_ELEMENTS_PER_ROW)])
 			} else gui.setItem(widthIndex + 1, BOOKMARK_ROW, GuiItems.EmptyItem())
+		}
+
+		gui.setItem(5, MENU_ROW, GuiItems.CustomControlItem("Current Route:", GuiItem.ROUTE_SEGMENT_2, waypointComponents()))
+
+		if (WaypointManager.getNextWaypoint(player) != null) {
+			gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem("Cancel All Route Waypoints", GuiItem.ROUTE_CANCEL) {
+				_: ClickType, _: Player, _: InventoryClickEvent ->
+				WaypointCommand.onClearWaypoint(player)
+				updateGui()
+			})
+			gui.setItem(7, MENU_ROW, GuiItems.CustomControlItem("Undo The Last Waypoint", GuiItem.ROUTE_UNDO) {
+				_: ClickType, _: Player, _: InventoryClickEvent ->
+				WaypointCommand.onUndoWaypoint(player)
+				updateGui()
+			})
+			gui.setItem(8, MENU_ROW, GuiItems.CustomControlItem("Jump To The Next Waypoint", GuiItem.ROUTE_JUMP) {
+				_: ClickType, _: Player, _: InventoryClickEvent ->
+				MiscStarshipCommands.onJump(player, "auto", null)
+				updateGui()
+			})
+		} else {
+			gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem("Cancel All Route Waypoints", GuiItem.ROUTE_CANCEL_GRAY, listOf(needWaypointComponent())))
+			gui.setItem(7, MENU_ROW, GuiItems.CustomControlItem("Undo The Last Waypoint", GuiItem.ROUTE_UNDO_GRAY, listOf(needWaypointComponent())))
+			gui.setItem(8, MENU_ROW, GuiItems.CustomControlItem("Jump To The Next Waypoint", GuiItem.ROUTE_JUMP_GRAY, listOf(needWaypointComponent())))
 		}
 	}
 
@@ -414,6 +446,20 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		useQuotesAroundObjects = false,
 		"Shift Right Click"
 	).decoration(TextDecoration.ITALIC, false)
+
+	private fun waypointComponents(): List<Component> {
+		val paths = WaypointManager.playerPaths[player.uniqueId]
+		if (paths.isNullOrEmpty()) {
+			return listOf(Component.text("Current route is empty. Add waypoints to your route", NamedTextColor.GOLD)
+				.decoration(TextDecoration.ITALIC, false))
+		}
+
+		return paths.map { path -> Component.text("${path.startVertex.name} to ${path.endVertex.name} (distance ${path.weight.toInt()})", NamedTextColor.AQUA)
+			.decoration(TextDecoration.ITALIC, false) }
+	}
+
+	private fun needWaypointComponent() = Component.text("You need at least one route waypoint set", NamedTextColor.GOLD)
+		.decoration(TextDecoration.ITALIC, false)
 
 	private fun jumpAction(player: Player, destinationName: String) {
 		if (ActiveStarships.findByPilot(player) != null) {
