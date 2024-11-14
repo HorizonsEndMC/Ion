@@ -6,13 +6,13 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 
 class ComplexFluidDisplay(
-	storage: StorageContainer,
+	container: StorageContainer,
 	val title: Component,
 	offsetLeft: Double,
 	offsetUp: Double,
 	offsetBack: Double,
 	scale: Float
-) : FluidDisplay(storage, offsetLeft, offsetUp, offsetBack, scale) {
+) : FluidDisplay(container, offsetLeft, offsetUp, offsetBack, scale) {
 
 	override fun getText(): Component {
 		return ofChildren(title, newline(), formatFluid())
