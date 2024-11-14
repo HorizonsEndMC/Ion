@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.nodes.types
 
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlerHolder
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplay
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
@@ -69,8 +70,11 @@ sealed interface PowerNode : Node {
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
     }
 
-    data class PowerFlowMeter(val cache: PowerTransportCache, var face: BlockFace, val location: BlockKey) : PowerNode, ComplexNode {
+    data class PowerFlowMeter(val cache: PowerTransportCache, var face: BlockFace, val location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder {
+		override var isAlive: Boolean = true
+
         val displayHandler = DisplayHandlers.newBlockOverlay(
+			this,
             cache.holder.getWorld(),
             toVec3i(location),
             face,
@@ -126,6 +130,7 @@ sealed interface PowerNode : Node {
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 
         override fun onInvalidate() {
+			isAlive = false
             displayHandler.remove()
         }
 
