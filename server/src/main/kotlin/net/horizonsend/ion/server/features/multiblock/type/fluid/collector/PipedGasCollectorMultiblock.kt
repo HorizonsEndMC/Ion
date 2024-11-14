@@ -56,9 +56,9 @@ object PipedGasCollectorMultiblock : Multiblock(),
 				x(+1).lightningRod()
 			}
 			y(-1) {
-				x(-1).anyStairs()
+				x(-1).extractor()
 				x(0).fluidInput()
-				x(+1).anyStairs()
+				x(+1).extractor()
 			}
 		}
 		z(+1) {
@@ -112,9 +112,9 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		override val fluidInputOffsets: Array<Vec3i> = arrayOf(Vec3i(0, -1, 0))
 
 		override val capacities: Array<StorageContainer> = arrayOf(
-			loadStoredResource(data, "tank_1", text("Tank 1"), TANK_1, CategoryRestrictedInternalStorage(500, GAS)),
-			loadStoredResource(data, "tank_2", text("Tank 2"), TANK_2, CategoryRestrictedInternalStorage(500, GAS)),
-			loadStoredResource(data, "tank_3", text("Tank 3"), TANK_3, CategoryRestrictedInternalStorage(500, GAS)),
+			loadStoredResource(data, "tank_1", text("Tank 1"), TANK_1, CategoryRestrictedInternalStorage(500, false, GAS)),
+			loadStoredResource(data, "tank_2", text("Tank 2"), TANK_2, CategoryRestrictedInternalStorage(500, false, GAS)),
+			loadStoredResource(data, "tank_3", text("Tank 3"), TANK_3, CategoryRestrictedInternalStorage(500, false, GAS)),
 		)
 
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
