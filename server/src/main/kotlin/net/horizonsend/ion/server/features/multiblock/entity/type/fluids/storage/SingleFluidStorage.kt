@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storag
 
 import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
 
-class SingleFluidStorage(private val storageCapacity: Int, private val restrictedFluid: PipedFluid) : InternalStorage() {
+class SingleFluidStorage(private val storageCapacity: Int, private val restrictedFluid: PipedFluid, override val inputAllowed: Boolean) : InternalStorage() {
 	override var fluidUnsafe: PipedFluid? = restrictedFluid
 
 	override fun getCapacity(): Int = storageCapacity

@@ -5,7 +5,8 @@ import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCate
 
 class CategoryRestrictedInternalStorage(
 	private val storageCapacity: Int,
-	private vararg val allowedCategories: FluidCategory
+	override val inputAllowed: Boolean,
+	private vararg val allowedCategories: FluidCategory,
 ) : InternalStorage() {
 	override fun getCapacity(): Int = storageCapacity
 

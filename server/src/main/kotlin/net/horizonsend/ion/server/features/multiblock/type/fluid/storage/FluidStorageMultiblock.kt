@@ -44,7 +44,7 @@ abstract class FluidStorageMultiblock(val capacity: Int) : Multiblock(), EntityM
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : BasicFluidStoringEntity(manager, multiblock, data, x, y, z, world, structureDirection, UnlimitedInternalStorage(multiblock.capacity)), FluidStoringEntity, DisplayMultiblockEntity {
+	) : BasicFluidStoringEntity(manager, multiblock, data, x, y, z, world, structureDirection, UnlimitedInternalStorage(multiblock.capacity, true)), FluidStoringEntity, DisplayMultiblockEntity {
 		override val fluidInputOffset: Vec3i = Vec3i(0, -1, 0)
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
@@ -63,6 +63,7 @@ abstract class FluidStorageMultiblock(val capacity: Int) : Multiblock(), EntityM
 
 		override fun handleRemoval() {
 			releaseInputs(CacheType.FLUID, getFluidInputLocations())
+
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
