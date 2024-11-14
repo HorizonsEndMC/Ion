@@ -604,7 +604,7 @@ class Starship (
 	/** Gets the component display name of this starship */
 	fun getDisplayName(): Component {
 		return text()
-			.append(this.data.name?.let { miniMessage().deserialize(it) } ?: return type.displayNameComponent)
+			.append(this.data.name?.let { starshipNameSerializer.deserialize(it) } ?: return type.displayNameComponent)
 			.hoverEvent(template(text("A {0} block {1}", HE_LIGHT_GRAY), initialBlockCount, type))
 			.build()
 	}
