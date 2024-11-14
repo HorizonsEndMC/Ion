@@ -15,7 +15,11 @@ abstract class InternalStorage {
 	protected var amountUnsafe: Int = 0
 	protected open var fluidUnsafe: PipedFluid? = null
 
+	abstract val inputAllowed: Boolean
+
 	abstract fun getCapacity(): Int
+
+	fun remainingCapacity() = getCapacity() - getAmount()
 
 	abstract fun canStore(resource: PipedFluid, liters: Int): Boolean
 
