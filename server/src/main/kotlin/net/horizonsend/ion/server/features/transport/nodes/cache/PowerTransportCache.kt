@@ -81,7 +81,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		}
 	}}
 
-	fun getPowerExtractorSourcePool(extractorLocation: BlockKey, world: World): List<PoweredMultiblockEntity> {
+	private fun getPowerExtractorSourcePool(extractorLocation: BlockKey, world: World): List<PoweredMultiblockEntity> {
 		val sources = mutableListOf<PoweredMultiblockEntity>()
 
 		for (face in ADJACENT_BLOCK_FACES) {
@@ -91,7 +91,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 			for (entity in entities) {
 				if (entity !is PoweredMultiblockEntity) continue
-				if (entity.powerStorage.isFull()) continue
+				if (entity.powerStorage.isEmpty()) continue
 				sources.add(entity)
 			}
 		}
