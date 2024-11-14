@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.entity
 
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlerHolder
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -44,7 +45,7 @@ abstract class MultiblockEntity(
 	var world: World,
 
 	var structureDirection: BlockFace
-): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion> {
+): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion>, DisplayHandlerHolder {
 	private var lastRetrieved = System.currentTimeMillis()
 
 	/** Gets the time since this value was last retrieved */
@@ -58,6 +59,7 @@ abstract class MultiblockEntity(
 
 	/** Mark this entity as having been removed */
 	var removed: Boolean = false
+	final override val isAlive: Boolean get() = !removed
 
 	override val persistentDataType: PersistentMultiblockData.Companion = PersistentMultiblockData.Companion
 	val position: BlockKey get() = toBlockKey(x, y, z)
