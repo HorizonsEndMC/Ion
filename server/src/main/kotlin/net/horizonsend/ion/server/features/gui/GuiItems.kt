@@ -27,7 +27,7 @@ object GuiItems {
         private val name: String,
         private val customGuiItem: GuiItem,
         private val lore: List<Component>? = null,
-        private val callback: (ClickType, Player, InventoryClickEvent) -> Unit
+        private val callback: (ClickType, Player, InventoryClickEvent) -> Unit = { _: ClickType, _: Player, _: InventoryClickEvent -> }
     ) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
@@ -117,6 +117,14 @@ enum class GuiItem(val customModelData: Int) {
     RIGHT(103),
     DOWN(104),
     LEFT(105),
+    CANCEL(106),
+    ROUTE_CANCEL(107),
+    ROUTE_UNDO(108),
+    ROUTE_JUMP(109),
+    ROUTE_CANCEL_GRAY(110),
+    ROUTE_UNDO_GRAY(111),
+    ROUTE_JUMP_GRAY(112),
+    ROUTE_SEGMENT_2(113),
     STARFIGHTER(6000),
     GUNSHIP(6001),
     CORVETTE(6002),
