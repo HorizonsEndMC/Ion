@@ -7,6 +7,8 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BATTLECRUI
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_CASING
+import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
+import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.EXTRACTOR_TYPE
 import net.horizonsend.ion.server.features.transport.old.Wires
 import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
@@ -230,7 +232,11 @@ class MultiblockShape {
 				alias = type.toString(),
 				example = { type.createBlockData() },
 				syncCheck = { block, _, loadChunks -> if (loadChunks) block.type == type else block.getTypeSafe() == type },
-				dataCheck = { type == it.material }
+				dataCheck = { type == it.material },
+				itemRequirement = BlockRequirement.ItemRequirement(
+					itemCheck = { type == it.type },
+					consumeItem = { it.amount-- >= 0 }
+				)
 			)
 
 			complete(requirement)
@@ -245,7 +251,11 @@ class MultiblockShape {
 				syncCheck = { block, _, loadChunks ->
 					typeSet.contains(if (loadChunks) block.type else block.getTypeSafe() ?: return@BlockRequirement false)
 				},
-				dataCheck = { typeSet.contains(it.material) }
+				dataCheck = { typeSet.contains(it.material) },
+				itemRequirement = BlockRequirement.ItemRequirement(
+					itemCheck = { typeSet.contains(it.type) },
+					consumeItem = { it.amount-- >= 0 }
+				)
 			)
 
 			complete(requirement)
@@ -262,7 +272,11 @@ class MultiblockShape {
 						getBlockDataSafe(block.world, block.x, block.y, block.z)?.let { CustomBlocks.getByBlockData(it) }
 					} === customBlock
 				},
-				dataCheck = { CustomBlocks.getByBlockData(it) == customBlock }
+				dataCheck = { CustomBlocks.getByBlockData(it) == customBlock },
+				itemRequirement = BlockRequirement.ItemRequirement(
+					itemCheck = { val customItem = it.customItem; customItem is CustomBlockItem && customItem.getCustomBlock() == customBlock },
+					consumeItem = { it.amount-- >= 0 }
+				)
 			)
 
 			complete(requirement)
@@ -319,9 +333,17 @@ class MultiblockShape {
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 					blockData is Slab && blockData.type == DOUBLE
 				},
-				dataCheck = { it is Slab && it.type == DOUBLE }
+				dataCheck = { it is Slab && it.type == DOUBLE },
+				itemRequirement = BlockRequirement.ItemRequirement(
+					itemCheck = { (it.type.isSlab && it.amount >= 2) },
+					consumeItem = {
+						it.amount -= 2
+						it.amount >= 0
+					}
+				),
 			)
 		)
+
 		fun anySlabOrStairs() = filteredTypes("any slab or stairs") { it.isSlab || it.isStairs }
 
 		fun terracottaOrDoubleslab() {
@@ -334,7 +356,14 @@ class MultiblockShape {
 
 					(blockData is Slab && blockData.type == DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
 				},
-				dataCheck = { (it is Slab && it.type == DOUBLE) || it.material.isTerracotta }
+				dataCheck = { (it is Slab && it.type == DOUBLE) || it.material.isTerracotta },
+				itemRequirement = BlockRequirement.ItemRequirement(
+					itemCheck = { (it.type.isSlab && it.amount >= 2) || it.type.isTerracotta  },
+					consumeItem = {
+						if (it.type.isSlab) it.amount -= 2 else it.amount--
+						it.amount >= 0
+					}
+				),
 			)
 		}
 
@@ -468,7 +497,11 @@ class MultiblockShape {
 				val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace
 				return@check facing == inward.oppositeFace
 			},
-			dataCheck = { it is Furnace }
+			dataCheck = { it is Furnace },
+			itemRequirement = BlockRequirement.ItemRequirement(
+				itemCheck = { it.type == Material.FURNACE },
+				consumeItem = { it.amount-- >= 0 }
+			)
 		))
 
 		fun solidBlock() = anyType(
