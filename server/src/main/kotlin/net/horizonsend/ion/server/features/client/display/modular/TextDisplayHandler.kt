@@ -11,6 +11,7 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 
 class TextDisplayHandler(
+	val holder: DisplayHandlerHolder,
 	var world: World,
 	var anchorX: Double,
 	var anchorY: Double,
@@ -24,6 +25,11 @@ class TextDisplayHandler(
 	val displays = listOf(*display)
 
 	fun update() {
+		if (!holder.isAlive) {
+			remove()
+			return
+		}
+
 		displays.forEach {
 			it.update()
 		}
