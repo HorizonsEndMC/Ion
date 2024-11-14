@@ -9,6 +9,7 @@ data class TransportConfiguration(
 	@Serializable
 	data class ExtractorConfiguration(
 		val extractorTickIntervalMS: Long = 2000,
-		val maxPowerRemovedPerExtractorTick: Int = 1000
+		val maxPowerRemovedPerExtractorTick: Int = 1000,
+		val maxFluidRemovedPerExtractorTick: Int = 1000,
 	)
 }
