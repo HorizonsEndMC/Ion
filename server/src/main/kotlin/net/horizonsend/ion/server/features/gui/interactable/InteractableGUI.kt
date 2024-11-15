@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.UUID
 import java.util.function.Consumer
 
-abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
+abstract class InteractableGUI(val viewer: Player) : InventoryHolder {
 	protected abstract val internalInventory: Inventory
 	abstract val inventorySize: Int
 
@@ -56,6 +56,7 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 
 	abstract fun handleClose(event: InventoryCloseEvent)
 
+	abstract fun handleAddItem(slot: Int, item: ItemStack, event: InventoryInteractEvent)
 	abstract fun canAdd(itemStack: ItemStack, slot: Int, player: Player): Boolean
 	abstract fun canRemove(slot: Int, player: Player): Boolean
 	abstract fun itemChanged(changedSlot: Int, changedItem: ItemStack)
@@ -66,9 +67,11 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 			return
 		}
 
+	abstract fun handleRemoveItem(slot: Int, event: InventoryClickEvent)
 		itemChanged(slot, item)
 	}
 
+	abstract fun handleSwapItem(slot: Int, currentItem: ItemStack, new: ItemStack, event: InventoryClickEvent)
 	open fun handleRemoveItem(slot: Int, event: InventoryClickEvent) {
 		buttons[slot]?.accept(event)
 		if (lockedSlots.contains(slot) || !canRemove(slot, event.whoClicked as Player)) {
