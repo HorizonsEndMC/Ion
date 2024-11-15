@@ -5,7 +5,8 @@ import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporterManager
-import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.BlasterListeners
+import net.horizonsend.ion.server.features.custom.items.mods.ToolModMenu
+import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.BlasterListenersb
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractTractorBeam
@@ -77,7 +78,8 @@ val listeners: List<Listener> = listOf(
 	BiomeFixer9001(),
 	AbstractTractorBeam.Companion,
 	PlayerDeathListener,
-	net.horizonsend.ion.server.features.custom.items.type.tool.mods.ToolModMenu,
+	ToolModMenu,
+	InteractableGUI,
 	RecipeModifications,
 	ActivePlayerController.Companion,
 	TransportManager,
