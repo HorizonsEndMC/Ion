@@ -202,6 +202,8 @@ object CustomBlocks {
 		return customItem.map { item -> listOf(item.constructItemStack(amount)) }
 	}
 
+	val MULTIBLOCK_WORKBENCH = register(MultiblockWorkbench)
+
     private fun customItemDrop(identifier: String, amount: Int = 1): Supplier<Collection<ItemStack>> {
         val customItem = CustomItemRegistry.getByIdentifier(identifier)?.constructItemStack() ?: return Supplier { listOf() }
         customItem.amount = amount
