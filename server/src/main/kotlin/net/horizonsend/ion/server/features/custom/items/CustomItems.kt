@@ -439,6 +439,7 @@ object CustomItems {
 	) { ItemModRegistry.FERTILIZER_DISPENSER })
 
 	val PACKAGED_MULTIBLOCK = register(MultiblockToken)
+	val MULTIBLOCK_WORKBENCH = registerCustomBlockItem(identifier = "MULTIBLOCK_WORKBENCH", customModelData = 3001, displayName = text("Multiblock Workbench").itemName) { CustomBlocks.MULTIBLOCK_WORKBENCH }
 	// Tools end
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
