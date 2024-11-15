@@ -126,6 +126,7 @@ object GameplayTweaks : IonServerComponent() {
 		setBlastResistance(Material.NETHERITE_BLOCK, 6.0f)
 		setBlastResistance(Material.RESPAWN_ANCHOR, 6.0f)
 		setBlastResistance(Material.ENCHANTING_TABLE, 6.0f)
+		setBlastResistance(Material.MAGMA_BLOCK, 0.3f)
 
 		// allow underwater explosions, cancel the liquid from actually exploding
 		setBlastResistance(Material.WATER, 0.0f)
