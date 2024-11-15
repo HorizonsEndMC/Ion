@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -30,7 +31,7 @@ class ToolModMenu(
 	override fun getInventory(): Inventory = internalInventory
 
 	override fun setup(view: InventoryView) {
-		view.title = "Tool Modifications"
+		view.setTitle(text("Tool Modifications"))
 
 		populateMods()
 	}

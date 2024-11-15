@@ -1,7 +1,12 @@
 package net.horizonsend.ion.server.features.gui.interactable
 
+import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.kyori.adventure.text.Component
+import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import org.bukkit.Material
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftContainer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.ClickType
@@ -16,7 +21,7 @@ import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import java.util.UUID
 
-abstract class InteractableGUI(val viewer: Player) : InventoryHolder {
+abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 	protected abstract val internalInventory: Inventory
 	abstract val inventorySize: Int
 
@@ -148,5 +153,13 @@ abstract class InteractableGUI(val viewer: Player) : InventoryHolder {
 				holder.handleClose(event)
 			}
 		}
+	}
+
+	protected fun InventoryView.setTitle(title: Component) {
+		val entityPlayer = (player as Player).minecraft
+		val containerId = entityPlayer.containerMenu.containerId
+		val windowType = CraftContainer.getNotchInventoryType(topInventory)
+		entityPlayer.connection.send(ClientboundOpenScreenPacket(containerId, windowType, PaperAdventure.asVanilla(title)))
+		(player as Player).updateInventory()
 	}
 }
