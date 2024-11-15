@@ -8,10 +8,10 @@ import net.horizonsend.ion.common.utils.text.SLOT_OVERLAY_WIDTH
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.leftShift
 import net.horizonsend.ion.common.utils.text.minecraftLength
-import net.horizonsend.ion.common.utils.text.shift
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.shiftToStartOfComponent
+import net.horizonsend.ion.common.utils.text.shift
 import net.horizonsend.ion.common.utils.text.shiftToLine
+import net.horizonsend.ion.common.utils.text.shiftToStartOfComponent
 import net.horizonsend.ion.common.utils.text.slotOverlay
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
@@ -67,8 +67,9 @@ class GuiText(
         alignment: TextAlignment = TextAlignment.LEFT,
         horizontalShift: Int = 0,
         verticalShift: Int = 0
-    ) {
+    ): GuiText {
         add(GuiComponent(component, line, alignment, horizontalShift, verticalShift))
+		return this
     }
 
     /**
@@ -116,13 +117,15 @@ class GuiText(
      * '#' - fully covered slot
      * @param structureData list of strings indicating what each slot should be covered with
      */
-    fun setSlotOverlay(vararg structureData: String) {
+    fun setSlotOverlay(vararg structureData: String): GuiText {
         slotOverlayStructure.clear()
         for (row in structureData) {
             val sanitizedRow = row.replace(" ", "").replace("\n", "")
             slotOverlayStructure.add(sanitizedRow)
 
         }
+
+		return this
     }
 
     /**
