@@ -10,8 +10,6 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -114,7 +112,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	fun createGui(): Gui {
 
 		val star = Space.getStars().firstOrNull { star -> star.spaceWorld == world }
-		val starItem = if (star != null) GuiItems.CustomItemControlItem(getPlanetItems(star.name),
+		val starItem = if (star != null) GuiItems.CustomControlItem(star.name, getPlanetItems(star.name),
 			navigationInstructionComponents(
 				star,
 				star.spaceWorldName,
@@ -152,7 +150,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		planetItems.addAll(Space.getPlanets()
 			.filter { planet -> planet.spaceWorld == world }
 			.sortedBy { planet -> planet.orbitDistance }
-			.map { planet -> GuiItems.CustomItemControlItem(getPlanetItems(planet.name),
+			.map { planet -> GuiItems.CustomControlItem(planet.name, getPlanetItems(planet.name),
 				navigationInstructionComponents(
 					planet,
 					planet.spaceWorldName,
@@ -349,36 +347,36 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	 * @return the custom planet icon ItemStack
 	 * @param name the name of the planet
 	 */
-	private fun getPlanetItems(name: String): CustomItem {
+	private fun getPlanetItems(name: String): GuiItem {
 		return when (name) {
-			"Aerach" -> CustomItems.AERACH
-			"Aret" -> CustomItems.ARET
-			"Chandra" -> CustomItems.CHANDRA
-			"Chimgara" -> CustomItems.CHIMGARA
-			"Damkoth" -> CustomItems.DAMKOTH
-			"Disterra" -> CustomItems.DISTERRA
-			"Eden" -> CustomItems.EDEN
-			"Gahara" -> CustomItems.GAHARA
-			"Herdoli" -> CustomItems.HERDOLI
-			"Ilius" -> CustomItems.ILIUS
-			"Isik" -> CustomItems.ISIK
-			"Kovfefe" -> CustomItems.KOVFEFE
-			"Krio" -> CustomItems.KRIO
-			"Lioda" -> CustomItems.LIODA
-			"Luxiterna" -> CustomItems.LUXITERNA
-			"Qatra" -> CustomItems.QATRA
-			"Rubaciea" -> CustomItems.RUBACIEA
-			"Turms" -> CustomItems.TURMS
-			"Vask" -> CustomItems.VASK
+			"Aerach" -> GuiItem.AERACH_2
+			"Aret" -> GuiItem.ARET_2
+			"Chandra" -> GuiItem.CHANDRA_2
+			"Chimgara" -> GuiItem.CHIMGARA_2
+			"Damkoth" -> GuiItem.DAMKOTH_2
+			"Disterra" -> GuiItem.DISTERRA_2
+			"Eden" -> GuiItem.EDEN_2
+			"Gahara" -> GuiItem.GAHARA_2
+			"Herdoli" -> GuiItem.HERDOLI_2
+			"Ilius" -> GuiItem.ILIUS_2
+			"Isik" -> GuiItem.ISIK_2
+			"Kovfefe" -> GuiItem.KOVFEFE_2
+			"Krio" -> GuiItem.KRIO_2
+			"Lioda" -> GuiItem.LIODA_2
+			"Luxiterna" -> GuiItem.LUXITERNA_2
+			"Qatra" -> GuiItem.QATRA_2
+			"Rubaciea" -> GuiItem.RUBACIEA_2
+			"Turms" -> GuiItem.TURMS_2
+			"Vask" -> GuiItem.VASK_2
 
-			"Asteri" -> CustomItems.ASTERI
-			"EdenHack" -> CustomItems.HORIZON
-			"Ilios" -> CustomItems.ILIOS
-			"Regulus" -> CustomItems.REGULUS
-			"Sirius" -> CustomItems.SIRIUS
+			"Asteri" -> GuiItem.ASTERI_2
+			"EdenHack" -> GuiItem.HORIZON_2
+			"Ilios" -> GuiItem.ILIOS_2
+			"Regulus" -> GuiItem.REGULUS_2
+			"Sirius" -> GuiItem.SIRIUS_2
 
 
-			else -> CustomItems.AERACH
+			else -> GuiItem.AERACH_2
 		}
 	}
 
