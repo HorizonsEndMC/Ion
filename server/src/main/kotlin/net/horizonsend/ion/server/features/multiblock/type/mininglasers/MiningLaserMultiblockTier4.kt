@@ -1066,9 +1066,8 @@ object MiningLaserMultiblockTier4Side : MiningLaserMultiblockTier4() {
 				x(+1).ironBlock()
 			}
 			y(+3) {
-				x(-2).anyStairs()
-				x(-1).ironBlock()
-				x(+0).anyStairs()
+                x(-2).ironBlock()
+                x(+0).ironBlock()
 			}
 
 		}
@@ -1141,7 +1140,7 @@ object MiningLaserMultiblockTier4Side : MiningLaserMultiblockTier4() {
 			}
 			y(+3) {
 				x(-2).steelBlock()
-				x(-1).steelBlock()
+				x(-1).netheriteCasing()
 				x(+0).steelBlock()
 			}
 
@@ -1178,7 +1177,7 @@ object MiningLaserMultiblockTier4Side : MiningLaserMultiblockTier4() {
 			}
 			y(+3) {
 				x(-2).steelBlock()
-				x(-1).steelBlock()
+				x(-1).netheriteCasing()
 				x(+0).steelBlock()
 			}
 
@@ -1307,9 +1306,8 @@ object MiningLaserMultiblockTier4SideMirrored : MiningLaserMultiblockTier4() {
                 x(-1).ironBlock()
             }
             y(+3) {
-                x(+2).anyStairs()
-                x(+1).ironBlock()
-                x(+0).anyStairs()
+                x(+2).ironBlock()
+                x(+0).ironBlock()
             }
 
         }
@@ -1382,7 +1380,7 @@ object MiningLaserMultiblockTier4SideMirrored : MiningLaserMultiblockTier4() {
             }
             y(+3) {
                 x(+2).steelBlock()
-                x(+1).steelBlock()
+                x(+1).netheriteCasing()
                 x(+0).steelBlock()
             }
 
@@ -1419,7 +1417,7 @@ object MiningLaserMultiblockTier4SideMirrored : MiningLaserMultiblockTier4() {
             }
             y(+3) {
                 x(+2).steelBlock()
-                x(+1).steelBlock()
+                x(+1).netheriteCasing()
                 x(+0).steelBlock()
             }
 
