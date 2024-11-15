@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporterManager
 import net.horizonsend.ion.server.features.custom.items.mods.ToolModMenu
+import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractTractorBeam
@@ -82,6 +83,7 @@ val listeners: List<Listener> = listOf(
 	AbstractTractorBeam.Companion,
 	PlayerDeathListener,
 	ToolModMenu,
+	InteractableGUI,
 	RecipeModifications,
 	PersonalTransporterManager,
 	MultiblockEntities,
