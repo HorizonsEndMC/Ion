@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
 import net.horizonsend.ion.server.features.custom.items.CustomItems
@@ -8,11 +7,13 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -54,21 +55,12 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		override val internalInventory: Inventory = IonServer.server.createInventory(this, inventorySize)
 
 		override fun setup(view: InventoryView) {
-			val text = GuiText("Multiblock Workbench")
-			text.add(text("Missing Materials! [Hover]", NamedTextColor.RED), line = 0)
-			text.setSlotOverlay(
-				"# # # # # # # # #",
-				"# # # . . . . . .",
-				"# . # . . . . . .",
-				"# # # . . . . . ."
-			)
-
 			addGuiButton(18, ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
 				it.setCustomModelData(GuiItem.LEFT.customModelData)
 				it.displayName(text("Previous Multiblock").itemName)
 			}) {
 				multiblockIndex = (multiblockIndex - 1).coerceAtLeast(0)
-				updateMultiblock()
+				updateMultiblock(it.view)
 			}
 
 			addGuiButton(20, ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
@@ -76,17 +68,31 @@ object MultiblockWorkbench : InteractableCustomBlock(
 				it.displayName(text("Next Multiblock").itemName)
 			}) {
 				multiblockIndex = (multiblockIndex + 1).coerceAtMost(multiblocks.lastIndex)
-				updateMultiblock()
+				updateMultiblock(it.view)
 			}
 
 			noDropSlots.add(19)
 
-			view.setTitle(text.build())
+			view.setTitle(getGuiText(empty()))
 		}
 
-		private fun updateMultiblock() {
+		private fun getGuiText(secondLine: Component): Component = GuiText("Multiblock Workbench")
+			.setSlotOverlay(
+				"# # # # # # # # #",
+				"# # # . . . . . .",
+				"# . # . . . . . .",
+				"# # # . . . . . ."
+			)
+			.add(secondLine, line = 0)
+			.build()
+
+		private fun setSecondLine(view: InventoryView, secondLine: Component) {
+			view.setTitle(getGuiText(secondLine))
+		}
+
+		private fun updateMultiblock(view: InventoryView) {
 			val atIndex = multiblocks[multiblockIndex]
-			viewer.information(atIndex.toString())
+			setSecondLine(view, atIndex.getDisplayName())
 		}
 
 		private fun isLockedSlot(slot: Int): Boolean {
