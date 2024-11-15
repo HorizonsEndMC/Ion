@@ -89,7 +89,7 @@ class ToolModMenu(
 	}
 
 	override fun handleAddItem(slot: Int, item: ItemStack, event: InventoryInteractEvent) {
-		if (!canAdd(item, event.whoClicked as Player)) {
+		if (!canAdd(item, slot, event.whoClicked as Player)) {
 			event.isCancelled = true
 			return
 		}
@@ -103,7 +103,7 @@ class ToolModMenu(
 	}
 
 	override fun handleSwapItem(slot: Int, currentItem: ItemStack, new: ItemStack, event: InventoryClickEvent) {
-		if (!canAdd(new, event.playerClicker)) {
+		if (!canAdd(new, slot, event.playerClicker)) {
 			event.isCancelled = true
 			return
 		}
@@ -114,7 +114,7 @@ class ToolModMenu(
 		rebuildFromContents(modified)
 	}
 
-	private fun canAdd(itemStack: ItemStack, player: Player): Boolean {
+	override fun canAdd(itemStack: ItemStack, slot: Int, player: Player): Boolean {
 		val customItem = itemStack.customItem
 		if (customItem !is ModificationItem) {
 			return false
@@ -149,13 +149,19 @@ class ToolModMenu(
 		}
 	}
 
+	// No locked slots
+	override fun canRemove(slot: Int, player: Player): Boolean {
+		return true
+	}
+
+	override fun itemChanged(changedSlot: Int, changedItem: ItemStack) {}
+
 	companion object : SLEventListener() {
 		fun create(viewer: Player, itemStack: ItemStack, customItem: ModdedCustomItem): ToolModMenu {
 			val holder = ToolModMenu(viewer, itemStack, customItem)
 			setInventory(viewer.uniqueId, holder)
 
 			return holder
-
 		}
 
 		@EventHandler

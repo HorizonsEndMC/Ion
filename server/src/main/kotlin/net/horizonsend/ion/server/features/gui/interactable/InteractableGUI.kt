@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.gui.interactable
 
 import io.papermc.paper.adventure.PaperAdventure
+import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
@@ -20,10 +21,13 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import java.util.UUID
+import java.util.function.Consumer
 
 abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 	protected abstract val internalInventory: Inventory
 	abstract val inventorySize: Int
+	protected val buttons = mutableMapOf<Int, Consumer<InventoryClickEvent>>()
+	protected val noDropSlots: MutableSet<Int> = mutableSetOf()
 
 	fun open() {
 		// Will return CRAFTING if none is open
@@ -34,15 +38,51 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 		setup(view)
 	}
 
+	fun addGuiButton(slot: Int, item: ItemStack, function: Consumer<InventoryClickEvent>) {
+		internalInventory.setItem(slot, item)
+		buttons[slot] = function
+		noDropSlots.add(slot)
+	}
+
 	abstract fun setup(view: InventoryView)
 
 	abstract fun handleClose(event: InventoryCloseEvent)
 
-	abstract fun handleAddItem(slot: Int, item: ItemStack, event: InventoryInteractEvent)
+	abstract fun canAdd(itemStack: ItemStack, slot: Int, player: Player): Boolean
+	abstract fun canRemove(slot: Int, player: Player): Boolean
+	abstract fun itemChanged(changedSlot: Int, changedItem: ItemStack)
 
-	abstract fun handleRemoveItem(slot: Int, event: InventoryClickEvent)
+	open fun handleAddItem(slot: Int, item: ItemStack, event: InventoryInteractEvent) {
+		if (!canAdd(item, slot, event.whoClicked as Player)) {
+			event.isCancelled = true
+			return
+		}
 
-	abstract fun handleSwapItem(slot: Int, currentItem: ItemStack, new: ItemStack, event: InventoryClickEvent)
+		itemChanged(slot, item)
+	}
+
+	open fun handleRemoveItem(slot: Int, event: InventoryClickEvent) {
+		buttons[slot]?.accept(event)
+		if (!canRemove(slot, event.whoClicked as Player)) {
+			event.isCancelled = true
+			return
+		}
+
+		itemChanged(slot, internalInventory.contents[slot]!!)
+	}
+
+	open fun handleSwapItem(slot: Int, currentItem: ItemStack, new: ItemStack, event: InventoryClickEvent) {
+		buttons[slot]?.accept(event)
+		if (!canAdd(new, slot, event.playerClicker)) {
+			event.isCancelled = true
+			return
+		}
+
+		val modified = internalInventory.contents.toMutableList()
+		modified[slot] = new
+
+		itemChanged(slot, new)
+	}
 
 	/**
 	 * Events from the player's clicked inventory while the mod menu is on top
