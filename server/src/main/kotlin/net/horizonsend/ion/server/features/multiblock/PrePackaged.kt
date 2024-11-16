@@ -1,15 +1,20 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
+import net.horizonsend.ion.server.features.multiblock.shape.BlockRequirement
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Chest
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Directional
@@ -19,6 +24,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
@@ -129,5 +135,55 @@ object PrePackaged {
 		pdc.set(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING, multiblock.javaClass.simpleName)
 
 		destination.set(NamespacedKeys.MULTIBLOCK, PersistentDataType.TAG_CONTAINER, pdc)
+	}
+
+	/** Moves the needed materials for the provided multiblock from the list of items to the destination inventory */
+	fun packageFrom(items: List<ItemStack>, multiblock: Multiblock, destination: Inventory) {
+		val itemRequirements = multiblock.shape.getRequirementMap(BlockFace.NORTH).map { it.value }
+		val missing = mutableListOf<BlockRequirement>()
+
+		for (blockRequirement in itemRequirements) {
+			val requirement = blockRequirement.itemRequirement
+			val success = items.firstOrNull { requirement.itemCheck(it) && requirement.consume(it) }
+
+			if (success == null) {
+				missing.add(blockRequirement)
+				continue
+			}
+
+			val amount = requirement.amountConsumed(success)
+			LegacyItemUtils.addToInventory(destination, success.asQuantity(amount))
+		}
+	}
+
+	fun createPackagedItem(availableItems: List<ItemStack>, multiblock: Multiblock): ItemStack {
+		val base = PackagedMultiblock.createFor(multiblock)
+		return base.updateMeta {
+			it as BlockStateMeta
+
+			@Suppress("UnstableApiUsage")
+			val newState = Material.CHEST.createBlockData().createBlockState() as Chest
+			packageFrom(availableItems, multiblock, newState.inventory)
+
+			it.blockState = newState
+		}
+	}
+
+	/**
+	 * Returns a list of requirements not met by the existing items
+	 **/
+	fun checkRequirements(available: Iterable<ItemStack>, multiblock: Multiblock): List<BlockRequirement> {
+		val items = available.mapTo(mutableListOf()) { it.clone() }
+
+		val itemRequirements = multiblock.shape.getRequirementMap(BlockFace.NORTH).map { it.value }
+		val missing = mutableListOf<BlockRequirement>()
+
+		for (blockRequirement in itemRequirements) {
+			val requirement = blockRequirement.itemRequirement
+			if (items.any { requirement.itemCheck(it) && requirement.consume(it) }) continue
+			missing.add(blockRequirement)
+		}
+
+		return missing
 	}
 }
