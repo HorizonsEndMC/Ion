@@ -235,7 +235,7 @@ class MultiblockShape {
 				dataCheck = { type == it.material },
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { type == it.type },
-					consumeItem = { it.amount-- >= 0 }
+					amountConsumed = { 1 }
 				)
 			)
 
@@ -254,7 +254,7 @@ class MultiblockShape {
 				dataCheck = { typeSet.contains(it.material) },
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { typeSet.contains(it.type) },
-					consumeItem = { it.amount-- >= 0 }
+					amountConsumed = { 1 }
 				)
 			)
 
@@ -275,7 +275,7 @@ class MultiblockShape {
 				dataCheck = { CustomBlocks.getByBlockData(it) == customBlock },
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { val customItem = it.customItem; customItem is CustomBlockItem && customItem.getCustomBlock() == customBlock },
-					consumeItem = { it.amount-- >= 0 }
+					amountConsumed = { 1 }
 				)
 			)
 
@@ -336,10 +336,7 @@ class MultiblockShape {
 				dataCheck = { it is Slab && it.type == DOUBLE },
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { (it.type.isSlab && it.amount >= 2) },
-					consumeItem = {
-						it.amount -= 2
-						it.amount >= 0
-					}
+					amountConsumed = { 2 }
 				),
 			)
 		)
@@ -359,10 +356,7 @@ class MultiblockShape {
 				dataCheck = { (it is Slab && it.type == DOUBLE) || it.material.isTerracotta },
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { (it.type.isSlab && it.amount >= 2) || it.type.isTerracotta  },
-					consumeItem = {
-						if (it.type.isSlab) it.amount -= 2 else it.amount--
-						it.amount >= 0
-					}
+					amountConsumed = { if (it.type.isSlab) 2 else 1 }
 				),
 			)
 		}
@@ -500,7 +494,7 @@ class MultiblockShape {
 			dataCheck = { it is Furnace },
 			itemRequirement = BlockRequirement.ItemRequirement(
 				itemCheck = { it.type == Material.FURNACE },
-				consumeItem = { it.amount-- >= 0 }
+				amountConsumed = { 1 }
 			)
 		))
 
