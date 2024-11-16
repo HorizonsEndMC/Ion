@@ -26,8 +26,14 @@ import java.util.function.Consumer
 abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 	protected abstract val internalInventory: Inventory
 	abstract val inventorySize: Int
+
+	override fun getInventory(): Inventory {
+		return internalInventory
+	}
+
 	protected val buttons = mutableMapOf<Int, Consumer<InventoryClickEvent>>()
 	protected val noDropSlots: MutableSet<Int> = mutableSetOf()
+	protected val lockedSlots: MutableSet<Int> = mutableSetOf()
 
 	fun open() {
 		// Will return CRAFTING if none is open
@@ -53,7 +59,7 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 	abstract fun itemChanged(changedSlot: Int, changedItem: ItemStack)
 
 	open fun handleAddItem(slot: Int, item: ItemStack, event: InventoryInteractEvent) {
-		if (!canAdd(item, slot, event.whoClicked as Player)) {
+		if (lockedSlots.contains(slot) || !canAdd(item, slot, event.whoClicked as Player)) {
 			event.isCancelled = true
 			return
 		}
@@ -63,7 +69,7 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 
 	open fun handleRemoveItem(slot: Int, event: InventoryClickEvent) {
 		buttons[slot]?.accept(event)
-		if (!canRemove(slot, event.whoClicked as Player)) {
+		if (lockedSlots.contains(slot) || !canRemove(slot, event.whoClicked as Player)) {
 			event.isCancelled = true
 			return
 		}
@@ -73,7 +79,7 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 
 	open fun handleSwapItem(slot: Int, currentItem: ItemStack, new: ItemStack, event: InventoryClickEvent) {
 		buttons[slot]?.accept(event)
-		if (!canAdd(new, slot, event.playerClicker)) {
+		if (lockedSlots.contains(slot) || !canAdd(new, slot, event.playerClicker)) {
 			event.isCancelled = true
 			return
 		}
@@ -123,14 +129,17 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 	fun handleDrag(event: InventoryDragEvent) {
 		// If dragging something outside the inventory
 		if (event.rawSlots.none { it < inventorySize }) return
-
 			when {
-			// Unstackable item can't be split across multiple slots
-			event.cursor == null && event.oldCursor.maxStackSize == 1 -> {
-				// Will only end up in a single slot
-				val slot = event.rawSlots.first()
-				handleAddItem(slot, event.newItems[slot]!!, event)
-			}
+				// Unstackable item can't be split across multiple slots
+				event.cursor == null && event.oldCursor.maxStackSize == 1 -> {
+					// Will only end up in a single slot
+					val slot = event.rawSlots.first()
+					handleAddItem(slot, event.newItems[slot]!!, event)
+				}
+				event.rawSlots.size == 1 -> {
+					val slot = event.rawSlots.first()
+					handleAddItem(slot, event.newItems[slot]!!, event)
+				}
 			else -> event.isCancelled = true
 		}
 	}
