@@ -1,9 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.multiblock.shape.BlockRequirement
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -59,8 +56,8 @@ object PrePackaged {
 		return obstructed
 	}
 
-	fun place(player: Player, origin: Block, direction: BlockFace, data: PackagedMultiblockData) {
-		val requirements = data.multiblock.shape.getRequirementMap(direction)
+	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock) {
+		val requirements = multiblock.shape.getRequirementMap(direction)
 		val placements = mutableMapOf<Block, BlockData>()
 
 		for ((offset, requirement) in requirements) {
@@ -90,7 +87,7 @@ object PrePackaged {
 			origin.world.playSound(block.location, soundGroup.placeSound, soundGroup.volume, soundGroup.pitch)
 		}
 
-		if (data.multiblock is SignlessStarshipWeaponMultiblock<*>) return
+		if (multiblock is SignlessStarshipWeaponMultiblock<*>) return
 
 		// Add sign
 		val signPosition = origin.getRelative(direction.oppositeFace, 1)
@@ -103,45 +100,26 @@ object PrePackaged {
 		val sign = signPosition.state as Sign
 
 		// Set the detection name just in case the setup fails
-		sign.getSide(Side.FRONT).line(0, text("[${data.multiblock.name}]"))
+		sign.getSide(Side.FRONT).line(0, text("[${multiblock.name}]"))
 		sign.update()
 
 		MultiblockAccess.tryDetectMultiblock(player, sign, direction, false)
 
-		data.multiblock.setupSign(player, sign)
+		multiblock.setupSign(player, sign)
 	}
 
-	data class PackagedMultiblockData(
-		val multiblock: Multiblock
-	)
-
-	fun getPackagedData(itemStack: ItemStack): PackagedMultiblockData? {
+	fun getTokenData(itemStack: ItemStack): Multiblock? {
 		val data = itemStack.itemMeta.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.TAG_CONTAINER) ?: return null
-		//TODO rework for player packaged items
 		val storageName = data.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)!!
-		val multiblock = MultiblockRegistration.getByStorageName(storageName)!!
-
-		return PackagedMultiblockData(multiblock)
+		return MultiblockRegistration.getByStorageName(storageName)!!
 	}
 
-	fun packageData(data: PackagedMultiblockData, destination: PersistentDataContainer) {
+	fun setTokenData(multiblock: Multiblock, destination: PersistentDataContainer) {
 		val pdc = destination.adapterContext.newPersistentDataContainer()
-		pdc.set(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING, data.multiblock.javaClass.simpleName)
+		pdc.set(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING, multiblock.javaClass.simpleName)
 
 		destination.set(NamespacedKeys.MULTIBLOCK, PersistentDataType.TAG_CONTAINER, pdc)
 	}
 
-	fun itemMatchesRequirement(itemStack: ItemStack, requirement: BlockRequirement): Boolean {
-		val customBlock = itemStack.customItem as? CustomBlockItem
 
-		if (customBlock != null) {
-			return requirement.checkBlockData(customBlock.getCustomBlock().blockData)
-		}
-
-		val type = itemStack.type
-		if (!type.isBlock) return  false
-
-		//TODO something with double slabs
-		return requirement.checkBlockData(type.createBlockData())
-	}
 }
