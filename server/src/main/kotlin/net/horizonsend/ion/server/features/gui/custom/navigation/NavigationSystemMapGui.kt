@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.ores.generation.PlanetOreSettings
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
@@ -383,8 +384,25 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	private fun navigationInstructionComponents(obj: Any, worldName: String, x: Int, y: Int, z: Int): List<Component> {
 		val list = mutableListOf(
 			locationComponent(worldName, x, y, z),
-			Component.text(repeatString("=", 30)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY),
 		)
+
+		// Ore quantity and star
+		if (obj is CachedPlanet) {
+			val planetWorld = obj.planetWorld
+			if (planetWorld != null) {
+				val ores = PlanetOreSettings[planetWorld]?.ores
+				if (ores != null) {
+					val oreComponents = ores.map { ore -> ofChildren(
+							Component.text("${ore.ore.name.replace('_', ' ').lowercase().replaceFirstChar(Char::titlecase)}: ", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false),
+							Component.text(repeatString("*", ore.stars), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false),
+							Component.text(" | ", NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false)
+						) }
+					list.add(Component.textOfChildren(*oreComponents.toTypedArray()))
+				}
+			}
+		}
+
+		list.add(Component.text(repeatString("=", 30)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY))
 		if (world == player.world) list.add(initiateJumpComponent())
 		list.add(setWaypointComponent())
 		if (obj is CachedPlanet) {
