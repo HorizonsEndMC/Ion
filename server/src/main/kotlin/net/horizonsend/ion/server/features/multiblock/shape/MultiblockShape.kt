@@ -233,13 +233,13 @@ class MultiblockShape {
 		fun type(type: Material) {
 			val requirement = BlockRequirement(
 				alias = type.toString(),
-				example = { type.createBlockData() },
+				example = type.createBlockData(),
 				syncCheck = { block, _, loadChunks -> if (loadChunks) block.type == type else block.getTypeSafe() == type },
 				dataCheck = { type == it.material },
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { type == it.type },
 					amountConsumed = { 1 },
-					toBlock = { item, _ -> item.type.createBlockData() }
+					toBlock = { item -> item.type.createBlockData() }
 				)
 			)
 
@@ -251,7 +251,7 @@ class MultiblockShape {
 
 			val requirement = BlockRequirement(
 				alias = alias,
-				example = { types.first().createBlockData() },
+				example = types.first().createBlockData(),
 				syncCheck = { block, _, loadChunks ->
 					typeSet.contains(if (loadChunks) block.type else block.getTypeSafe() ?: return@BlockRequirement false)
 				},
@@ -259,7 +259,7 @@ class MultiblockShape {
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { typeSet.contains(it.type) },
 					amountConsumed = { 1 },
-					toBlock = { item, _ -> item.type.createBlockData() }
+					toBlock = { item -> item.type.createBlockData() }
 				)
 			)
 
@@ -271,7 +271,7 @@ class MultiblockShape {
 		fun customBlock(customBlock: CustomBlock) {
 			val requirement = BlockRequirement(
 				alias = customBlock.identifier,
-				example = { customBlock.blockData },
+				example = customBlock.blockData,
 				syncCheck = { block, _, loadChunks ->
 					if (loadChunks) CustomBlocks.getByBlock(block) else {
 						getBlockDataSafe(block.world, block.x, block.y, block.z)?.let { CustomBlocks.getByBlockData(it) }
@@ -281,7 +281,7 @@ class MultiblockShape {
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { val customItem = it.customItem; customItem is CustomBlockItem && customItem.getCustomBlock() == customBlock },
 					amountConsumed = { 1 },
-					toBlock = { _, _ -> customBlock.blockData }
+					toBlock = { _ -> customBlock.blockData }
 				)
 			)
 
@@ -329,12 +329,7 @@ class MultiblockShape {
 		fun anyDoubleSlab() = complete(
 			BlockRequirement(
 				alias = "any double slab block",
-				example = {
-					Material.STONE_BRICK_SLAB.createBlockData().apply {
-						this as Slab
-						this.type = DOUBLE
-					}
-				},
+				example = (Material.STONE_BRICK_SLAB.createBlockData() as Slab).apply { this.type = DOUBLE },
 				syncCheck = { block, _, loadChunks ->
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 					blockData is Slab && blockData.type == DOUBLE
@@ -343,7 +338,7 @@ class MultiblockShape {
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { (it.type.isSlab && it.amount >= 2) },
 					amountConsumed = { 2 },
-					toBlock = { item, _ -> (item.type.createBlockData() as Slab).apply { this.type = DOUBLE } }
+					toBlock = { item -> (item.type.createBlockData() as Slab).apply { this.type = DOUBLE } }
 				),
 			)
 		)
@@ -353,7 +348,7 @@ class MultiblockShape {
 		fun terracottaOrDoubleslab() {
 			BlockRequirement(
 				alias = "any double slab or terracotta block",
-				example = { Material.CYAN_TERRACOTTA.createBlockData() },
+				example = Material.CYAN_TERRACOTTA.createBlockData(),
 				syncCheck = { block, _, loadChunks ->
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 					val blockType = if (loadChunks) block.type else block.getTypeSafe()
@@ -364,7 +359,7 @@ class MultiblockShape {
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { (it.type.isSlab && it.amount >= 2) || it.type.isTerracotta  },
 					amountConsumed = { if (it.type.isSlab) 2 else 1 },
-					toBlock = { item, _ ->
+					toBlock = { item ->
 						val type = item.type
 						if (type.isSlab) {
 							(type.createBlockData() as Slab).apply { this.type = DOUBLE }
@@ -491,12 +486,7 @@ class MultiblockShape {
 
 		fun machineFurnace() = complete(BlockRequirement(
 			alias = "furnace",
-			example = { direction ->
-				Material.FURNACE.createBlockData {
-					it as Furnace
-					it.facing = direction.oppositeFace
-				}
-			},
+			example = Material.FURNACE.createBlockData(),
 			syncCheck = check@{ block, inward, loadChunks ->
 				val blockData = if (loadChunks) block.getNMSBlockData() else getNMSBlockSateSafe(block.world, block.x, block.y, block.z) ?: return@check false
 
@@ -508,14 +498,12 @@ class MultiblockShape {
 			itemRequirement = BlockRequirement.ItemRequirement(
 				itemCheck = { it.type == Material.FURNACE },
 				amountConsumed = { 1 },
-				toBlock = { _, face ->
-					Material.FURNACE.createBlockData {
-						it as Furnace
-						it.facing = face.oppositeFace
-					}
-				}
+				toBlock = { Material.FURNACE.createBlockData() }
 			)
-		))
+		).addPlacementModification { direction, data ->
+			data as Furnace
+			data.facing = direction.oppositeFace
+		})
 
 		fun solidBlock() = anyType(
 			Material.STONE_BRICKS,
