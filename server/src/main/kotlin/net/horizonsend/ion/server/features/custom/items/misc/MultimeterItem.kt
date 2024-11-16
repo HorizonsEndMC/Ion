@@ -41,7 +41,7 @@ import org.bukkit.persistence.PersistentDataType.INTEGER
 import org.bukkit.persistence.PersistentDataType.LONG
 import java.util.PriorityQueue
 
-object MultimeterItem : CustomItem("Multimeter") {
+object MultimeterItem : CustomItem("MULTIMETER") {
 	override fun constructItemStack(): ItemStack {
 		return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
 			it.displayName(Component.text("Multimeter", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false))
