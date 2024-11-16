@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -92,25 +91,25 @@ object MultiblockWorkbench : InteractableCustomBlock(
 			lockedSlots.add(18)
 			lockedSlots.add(20)
 
-			view.setTitle(getGuiText(currentMultiblock.getDisplayName()))
+			setGuiOverlay(view)
 		}
 
-		private fun getGuiText(secondLine: Component): Component = GuiText("Multiblock Workbench")
-			.setSlotOverlay(
-				"# # # # # # # # #",
-				"# # # . . . . . .",
-				"# . # . . . . . .",
-				"# # # . . . . . ."
-			)
-			.add(secondLine, line = 0)
-			.build()
+		private fun setGuiOverlay(view: InventoryView) {
+			val text = GuiText("Multiblock Workbench")
+				.setSlotOverlay(
+					"# # # # # # # # #",
+					"# # # . . . . . .",
+					"# . # . . . . . .",
+					"# # # . . . . . ."
+				)
+				.add(currentMultiblock.getDisplayName(), line = 0)
+				.build()
 
-		private fun setSecondLine(view: InventoryView, secondLine: Component) {
-			view.setTitle(getGuiText(secondLine))
+			view.setTitle(text)
 		}
 
 		private fun updateMultiblock(view: InventoryView) {
-			setSecondLine(view, currentMultiblock.getDisplayName())
+			setGuiOverlay(view)
 			updateConfirmationButton()
 		}
 
@@ -137,7 +136,7 @@ object MultiblockWorkbench : InteractableCustomBlock(
 			return missing
 		}
 
-		fun packageTo(destination: Inventory) {
+		private fun packageTo(destination: Inventory) {
 			val items = getConsumableItems()
 			val itemRequirements = currentMultiblock.shape.getRequirementMap(BlockFace.NORTH).map { it.value }
 			val missing = mutableListOf<BlockRequirement>()
@@ -161,6 +160,7 @@ object MultiblockWorkbench : InteractableCustomBlock(
 			return base.updateMeta {
 				it as BlockStateMeta
 
+				@Suppress("UnstableApiUsage")
 				val newState = Material.CHEST.createBlockData().createBlockState() as Chest
 				packageTo(newState.inventory)
 
