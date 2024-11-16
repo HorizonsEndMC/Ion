@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftContainer
 import org.bukkit.entity.Player
@@ -48,6 +49,7 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 		internalInventory.setItem(slot, item)
 		buttons[slot] = function
 		noDropSlots.add(slot)
+		lockedSlots.add(slot)
 	}
 
 	abstract fun setup(view: InventoryView)
@@ -129,17 +131,17 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 	fun handleDrag(event: InventoryDragEvent) {
 		// If dragging something outside the inventory
 		if (event.rawSlots.none { it < inventorySize }) return
-			when {
-				// Unstackable item can't be split across multiple slots
-				event.cursor == null && event.oldCursor.maxStackSize == 1 -> {
-					// Will only end up in a single slot
-					val slot = event.rawSlots.first()
-					handleAddItem(slot, event.newItems[slot]!!, event)
-				}
-				event.rawSlots.size == 1 -> {
-					val slot = event.rawSlots.first()
-					handleAddItem(slot, event.newItems[slot]!!, event)
-				}
+		when {
+			// Unstackable item can't be split across multiple slots
+			event.cursor == null && event.oldCursor.maxStackSize == 1 -> {
+				// Will only end up in a single slot
+				val slot = event.rawSlots.first()
+				handleAddItem(slot, event.newItems[slot]!!, event)
+			}
+			event.rawSlots.size == 1 -> {
+				val slot = event.rawSlots.first()
+				handleAddItem(slot, event.newItems[slot]!!, event)
+			}
 			else -> event.isCancelled = true
 		}
 	}
@@ -204,11 +206,33 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 		}
 	}
 
+	/**
+	 * Updates the title of this inventory
+	 **/
 	protected fun InventoryView.setTitle(title: Component) {
 		val entityPlayer = (player as Player).minecraft
 		val containerId = entityPlayer.containerMenu.containerId
 		val windowType = CraftContainer.getNotchInventoryType(topInventory)
 		entityPlayer.connection.send(ClientboundOpenScreenPacket(containerId, windowType, PaperAdventure.asVanilla(title)))
 		(player as Player).updateInventory()
+	}
+
+	/**
+	 * Drops all items in the inventory not added to the noDrop list
+	 **/
+	protected fun dropItems(location: Location) {
+		for ((slot, content) in inventory.contents.withIndex()) {
+			if (noDropSlots.contains(slot)) continue
+			viewer.world.dropItemNaturally(location, content ?: continue)
+		}
+	}
+
+	/**
+	 * Gets all items in the inventory not marked as locked
+	 **/
+	protected fun getUnlockedItems(): List<ItemStack> {
+		return internalInventory.contents.withIndex()
+			.filterNot { lockedSlots.contains(it.index) }
+			.mapNotNull { it.value }
 	}
 }
