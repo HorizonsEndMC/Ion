@@ -21,7 +21,7 @@ object AIControlUtils {
 	/** Will stop moving if provided a null vector **/
 	fun shiftFlyInDirection(controller: AIController, direction: Vector?) {
 		if (direction == null) {
-			controller.setShiftFlying(false)
+			controller.isSneakFlying = false
 			return
 		}
 
@@ -30,7 +30,7 @@ object AIControlUtils {
 		controller.pitch = pitch
 		controller.yaw = yaw
 
-		controller.setShiftFlying(true)
+		controller.isSneakFlying = true
 	}
 
 	/** Will stop moving if provided a null location **/
@@ -40,7 +40,7 @@ object AIControlUtils {
 
 	fun shiftFlyToLocation(controller: AIController, starshipLocation: Vec3i, location: Vec3i?) = Tasks.async {
 		if (location == null) {
-			controller.setShiftFlying(false)
+			controller.isSneakFlying = false
 			return@async
 		}
 

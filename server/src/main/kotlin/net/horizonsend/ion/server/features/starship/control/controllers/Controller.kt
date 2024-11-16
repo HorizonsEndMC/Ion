@@ -10,7 +10,9 @@ import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
+import org.bukkit.util.Vector
 
 abstract class Controller(
 	val damager: Damager,
@@ -52,8 +54,11 @@ abstract class Controller(
 	abstract fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean
 
 	/** Return the display name of the controller */
-	abstract fun getPilotName(): Component
+	abstract val pilotName: Component
 
 	/** Checks whether the controller is sneak flying */
-	abstract fun isSneakFlying(): Boolean
+	abstract val isSneakFlying: Boolean
+
+	/** gets the relative movement vector for controlling direct control*/
+	abstract fun directControlMovementVector(direction : BlockFace): Vector
 }

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
 import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.isSystemOccupied
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
@@ -30,7 +31,8 @@ class LegacyFactionSpawner(
 
 			return@Supplier formatLocationSupplier(bukkitWorld, worldConfig.minDistanceFromPlayer, worldConfig.maxDistanceFromPlayer).get()
 		},
-		SpawnMessage.WorldMessage(spawnMessage)
+		SpawnMessage.WorldMessage(spawnMessage),
+		DifficultyModule::regularSpawnDifficultySupplier
 	)
 ) {
 	init {

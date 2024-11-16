@@ -13,7 +13,8 @@ class BagSpawner(
 	groupMessage: Component?,
 	individualSpawnMessage: SpawnMessage?,
 	vararg bagSpawnedShips: BagSpawnShip,
-) : MultiSpawner(locationProvider, groupMessage, individualSpawnMessage) {
+	difficultySupplier: (String) -> Supplier<Int>,
+) : MultiSpawner(locationProvider, groupMessage, individualSpawnMessage, difficultySupplier) {
 	private val bagSpawnedShips: List<BagSpawnShip> = listOf(*bagSpawnedShips)
 
 	override fun getShips(): List<SpawnedShip> {

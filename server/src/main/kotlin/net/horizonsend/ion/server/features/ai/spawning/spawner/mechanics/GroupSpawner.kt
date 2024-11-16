@@ -14,7 +14,8 @@ class GroupSpawner(
 	private val ships: MutableList<SpawnedShip>,
 	groupMessage: Component?,
 	individualSpawnMessage: SpawnMessage?,
-) : MultiSpawner(locationProvider, groupMessage, individualSpawnMessage) {
+	difficultySupplier: (String) -> Supplier<Int>,
+) : MultiSpawner(locationProvider, groupMessage, individualSpawnMessage, difficultySupplier) {
 	override fun getShips(): List<SpawnedShip> {
 		return ships
 	}

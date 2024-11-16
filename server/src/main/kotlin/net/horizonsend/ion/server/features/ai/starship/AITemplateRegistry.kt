@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.server.configuration.StaticIntegerAmount
+import net.horizonsend.ion.server.configuration.IntegerAmount
 import net.horizonsend.ion.server.configuration.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
@@ -22,6 +23,7 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
@@ -141,7 +143,7 @@ object AITemplateRegistry {
 	val MALINGSHU_REINFORCEMENT = registerTemplate(builder(
 		identifier = "MALINGSHU_REINFORCEMENT",
 		template = StarshipTemplateRegistry.MALINGSHU,
-		controllerFactory = AIControllerFactories.frigate,
+		controllerFactory = AIControllerFactories.miniFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
@@ -167,7 +169,7 @@ object AITemplateRegistry {
 	val MALINGSHU_REINFORCED = registerTemplate(builder(
 		identifier = "MALINGSHU_REINFORCED",
 		template = StarshipTemplateRegistry.MALINGSHU,
-		controllerFactory = AIControllerFactories.frigate,
+		controllerFactory = AIControllerFactories.miniFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
@@ -185,7 +187,7 @@ object AITemplateRegistry {
 	val MIANBAO_REINFORCED = registerTemplate(builder(
 		identifier = "MIANBAO_REINFORCED",
 		template = StarshipTemplateRegistry.MIANBAO,
-		controllerFactory = AIControllerFactories.frigate,
+		controllerFactory = AIControllerFactories.miniFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
@@ -858,6 +860,7 @@ object AITemplateRegistry {
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.build()
@@ -886,6 +889,7 @@ object AITemplateRegistry {
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.build()
@@ -913,7 +917,8 @@ object AITemplateRegistry {
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(150.0, 200.0, 0.0), 1),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(75.0, 150.0, 0.0), 3),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10)
+				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.build()
@@ -957,6 +962,7 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
@@ -987,6 +993,7 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
@@ -1016,6 +1023,7 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
@@ -1045,6 +1053,7 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItems.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
@@ -1109,6 +1118,8 @@ object AITemplateRegistry {
 		private val additionalModules: MutableList<BehaviorConfiguration.AdditionalModule> = mutableListOf()
 		private val rewardProviders: MutableList<AITemplate.AIRewardsProviderConfiguration> = mutableListOf()
 
+		private var difficulty: IntegerAmount = StaticIntegerAmount(3)
+
 		fun addRewardProvider(provider: AITemplate.AIRewardsProviderConfiguration): Builder {
 			rewardProviders += provider
 			return this
@@ -1125,6 +1136,11 @@ object AITemplateRegistry {
 			return this
 		}
 
+		fun setDifficulty(difficulty: IntegerAmount) : Builder{
+			this.difficulty = difficulty
+			return this
+		}
+
 		fun build(): AITemplate {
 			return AITemplate(
 				identifier = this.identifier,
@@ -1134,7 +1150,8 @@ object AITemplateRegistry {
 					engagementRange = this.engagementRange,
 					additionalModules = this.additionalModules
 				),
-				rewardProviders = this.rewardProviders
+				rewardProviders = this.rewardProviders,
+				difficulty = difficulty
 			)
 		}
 	}

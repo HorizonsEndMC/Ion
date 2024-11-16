@@ -17,6 +17,8 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.TradeConfiguration
 import net.horizonsend.ion.server.features.ai.configuration.AISpawningConfiguration
+import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
+import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.EmptyChunkGenerator
@@ -56,6 +58,8 @@ object IonServer : JavaPlugin() {
 	var aiSpawningConfiguration: AISpawningConfiguration = Configuration.load(configurationFolder, "aiSpawning.json")
 	var discordSettings: DiscordConfiguration = Configuration.load(configurationFolder, "discord.json")
 	var legacySettings: LegacyConfig = loadConfig(configurationFolder, "config") // Setting
+	var aiContextConfig: AIContextConfiguration = Configuration.load(configurationFolder, "aiContexts.json")
+	var aiSteeringConfig: AISteeringConfiguration = Configuration.load(configurationFolder, "aiSteering.json")
 
 	override fun onEnable(): Unit =
 		runCatching(::internalEnable).fold(

@@ -7,18 +7,24 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
+import org.bukkit.util.Vector
 
 open class NoOpController(starship: ActiveStarship, previousDamager: Damager?) : Controller(previousDamager ?: noOpDamager, starship, "Idle") {
 	// Can't move
 	override val selectedDirectControlSpeed: Int = 0
 	override val yaw: Float = 0f
 	override val pitch: Float = 0f
-	override fun isSneakFlying(): Boolean = false
+	override val isSneakFlying: Boolean = false
 
 	// Shouldn't be treated like they're still piloting it
 	override fun audience(): Audience = Audience.empty()
 	override fun canDestroyBlock(block: Block): Boolean = false
 	override fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean = false
-	override fun getPilotName(): Component = text("idle")
+
+	override val pilotName: Component = text("idle")
+	override fun directControlMovementVector(direction: BlockFace): Vector {
+		return Vector(0.0,0.0,0.0)
+	}
 }

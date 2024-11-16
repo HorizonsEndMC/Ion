@@ -30,6 +30,15 @@ abstract class ShieldSubsystem(
 	// Abstract so max power can be safely overriden
 	abstract var power: Int
 
+	var pastPower : Int = maxPower
+		set(value) {field = value.coerceIn(0, maxPower)}
+
+
+	var recentDamage : Double = 0.0
+		set(value) {
+			field = value.coerceIn(0.0, maxPower.toDouble())
+		}
+
 	var isReinforcementEnabled = multiblock.isReinforced
 
 	fun isReinforcementActive(): Boolean {

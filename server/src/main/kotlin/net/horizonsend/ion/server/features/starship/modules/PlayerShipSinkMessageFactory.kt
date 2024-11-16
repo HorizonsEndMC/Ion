@@ -163,7 +163,7 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 
 		val newName = when (val controller = starship.controller) {
 			is PlayerController -> text(controller.player.name)
-			else -> controller.getPilotName()
+			else -> controller.pilotName
 		}
 
 		return ofChildren(shipNameFormat, text(", piloted by ", RED), newName).hoverEvent(hover)

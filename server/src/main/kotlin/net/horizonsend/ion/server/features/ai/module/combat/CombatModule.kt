@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.ai.module.combat
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
@@ -11,9 +13,18 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.function.Supplier
+import kotlin.math.PI
+import kotlin.math.acos
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
 
-abstract class CombatModule(controller: AIController, val targetingSupplier: Supplier<AITarget?>) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
-	var shotDeviation: Double = 0.025
+abstract class CombatModule(
+	controller: AIController,
+	val difficulty : DifficultyModule,
+	val targetingSupplier: Supplier<AITarget?>
+) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
+	val shotDeviation: Double get () {return difficulty.shotVariation + 0.025}
 
 	open var shouldFaceTarget: Boolean = false
 
@@ -42,21 +53,19 @@ abstract class CombatModule(controller: AIController, val targetingSupplier: Sup
 	 * Lambda allows modification of the aiming direction
 	 **/
 	protected fun fireAllWeapons(origin: Vec3i, target: Vector, direction: Vector) {
-		if (shotDeviation > 0) {
-			val offsetX = randomDouble(-shotDeviation, shotDeviation)
-			val offsetY = randomDouble(-shotDeviation, shotDeviation)
-			val offsetZ = randomDouble(-shotDeviation, shotDeviation)
 
-			direction.add(Vector(offsetX, offsetY, offsetZ)).normalize()
-		}
+		val shootDirection = sampleDirection(direction)
 
 		val distance = target.distance(origin.toVector())
 
-		val weaponSet = controller.getManualSetInRange(distance)?.name?.lowercase()
+		var weaponSets : List<AIStarshipTemplate.WeaponSet?> = controller.getManualSetsInRange(distance)//?.name?.lowercase()
+		if (weaponSets.isEmpty()) weaponSets = listOf(null)
 
-		Tasks.sync {
-			fireHeavyWeapons(direction, target, weaponSet = weaponSet)
-			fireLightWeapons(direction, target, weaponSet = weaponSet)
+		for (weaponSet in weaponSets){
+			Tasks.sync {
+				fireHeavyWeapons(shootDirection, target, weaponSet = weaponSet?.name?.lowercase())
+				fireLightWeapons(shootDirection, target, weaponSet = weaponSet?.name?.lowercase())
+			}
 		}
 	}
 
@@ -84,5 +93,15 @@ abstract class CombatModule(controller: AIController, val targetingSupplier: Sup
 		}
 
 		AIControlUtils.setAutoWeapons(controller, weaponSet, target.getAutoTurretTarget())
+	}
+
+	private fun sampleDirection(direction: Vector) : Vector{
+		val z = randomDouble(cos(shotDeviation), 1.0)
+		val phi = randomDouble(0.0,2*PI)
+		val r = Vector((1-z*z).pow(0.5)* cos(phi),(1-z*z).pow(0.5)* sin(phi),z)
+		val rotationAxis = direction.clone().crossProduct(Vector(0,0,1))
+		val rotationAngle = acos(direction.dot(Vector(0,0,1)))
+		r.rotateAroundNonUnitAxis(rotationAxis,rotationAngle)
+		return r
 	}
 }
