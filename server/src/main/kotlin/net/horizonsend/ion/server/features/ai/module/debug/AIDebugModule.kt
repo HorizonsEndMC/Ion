@@ -59,7 +59,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 	 * @param direction the direction that the entity will render from with respect to the player
 	 */
 	private fun createAIShipDebug () : MutableList<VectorDisplay> {
-		val mod = controller.getModuleByType<BasicSteeringModule>()?:return mutableListOf()
+		val mod = controller.getCoreModuleByType<BasicSteeringModule>()?:return mutableListOf()
 		val output = mutableListOf<VectorDisplay>()
 		val shipOffset = (controller.starship.max - controller.starship.centerOfMass).y.toDouble()
 		for (i in 0 until shownContexts.size) {
@@ -89,7 +89,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 			rendered =true
 		}
 		displayVectors.forEach { it.update() }
-		val mod = controller.getModuleByType<BasicSteeringModule>()?:return
+		val mod = controller.getCoreModuleByType<BasicSteeringModule>()?:return
 		for (player in controller.starship.world.players) {
 
 			val particle = Particle.REDSTONE

@@ -18,12 +18,8 @@ class StarfighterCombatModule(
 	override fun tick() {
 		val target = targetingSupplier.get() ?: return
 
-		// Get the closest axis
-		starship.speedLimit = -1
-
-		val faceDirection = vectorToBlockFace(getDirection(Vec3i(getCenter()), target.getVec3i(true)), includeVertical = false)
-
-		//rotateToFace(faceDirection)
+		val distance = target.getLocation().toVector().distance(getCenter().toVector())
+		if (distance > 750) {return}
 
 		val direction = getDirection(Vec3i(getCenter()), target.getVec3i(false)).normalize()
 

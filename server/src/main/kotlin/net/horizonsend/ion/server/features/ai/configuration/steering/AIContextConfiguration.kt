@@ -28,8 +28,8 @@ data class AIContextConfiguration(
 	val defaultFleetGravityContextConfiguration: FleetGravityContextConfiguration = FleetGravityContextConfiguration(),
 
 	val defaultShieldAwarenessContextConfiguration: ShieldAwarenessContextConfiguration = ShieldAwarenessContextConfiguration(),
-	val gunshipShieldAwarenessContextConfiguration: ShieldAwarenessContextConfiguration = ShieldAwarenessContextConfiguration(weight = 0.5),
-	val capitalShieldAwarenessContextConfiguration: ShieldAwarenessContextConfiguration = ShieldAwarenessContextConfiguration(weight = 1.0),
+	val gunshipShieldAwarenessContextConfiguration: ShieldAwarenessContextConfiguration = ShieldAwarenessContextConfiguration(weight = 1.5),
+	val capitalShieldAwarenessContextConfiguration: ShieldAwarenessContextConfiguration = ShieldAwarenessContextConfiguration(weight = 3.0),
 
 	val defaultShipDangerContextConfiguration: ShipDangerContextConfiguration = ShipDangerContextConfiguration(),
 
@@ -87,17 +87,16 @@ data class AIContextConfiguration(
 	@Serializable
 	data class FleetGravityContextConfiguration(
 		val weight: Double = 1.0,
-		val falloffMod: Double = 16.0//number was estimated by determining the factor needed to keep 2 6k ships at most
-		//300 blocks apart with wandering only
+		val falloffMod: Double = 25.0
 	)
 
 	@Serializable
 	data class ShieldAwarenessContextConfiguration(
-		val weight: Double = 1.0,
+		val weight: Double = 3.0,
 		val criticalPoint: Double = 0.3,
 		val power: Double = 1.5,
 		val histDecay: Double = 0.98,
-		val verticalDamp :Double = 0.5,
+		val verticalDamp :Double = 0.3,
 		val damageSensitivity : Double = 100.0,
 	)
 
@@ -111,21 +110,21 @@ data class AIContextConfiguration(
 
 	@Serializable
 	data class BorderDangerContextConfiguration(
-		val falloff: Double = 100.0,
+		val falloff: Double = 10.0,
 		val verticalFalloff: Double = 20.0,
 		val dotShift: Double = 0.2
 	)
 
 	@Serializable
 	data class WorldBlockDangerContextConfiguration(
-		val falloff: Double = 15.0,
+		val falloff: Double = 2.0,
 		val dotPower: Double = 3.0,
 		val maxDist: Double = 200.0
 	)
 
 	@Serializable
 	data class ObstructionDangerContextConfiguration(
-		val falloff: Double = 30.0,
+		val falloff: Double = 4.0,
 		val dotShift : Double = 0.3,
 		val dotPower: Double = 1.0,
 		val expireTime: Int = 5 * 1000,

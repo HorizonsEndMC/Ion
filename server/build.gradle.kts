@@ -61,8 +61,8 @@ dependencies {
     implementation("org.jgrapht:jgrapht-core:1.5.2")
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 	implementation("org.apache.commons:commons-collections4:4.4")
-	implementation("org.jetbrains.kotlinx:multik-core:0.2.3")
-	implementation("org.jetbrains.kotlinx:multik-kotlin:0.2.3")
+	implementation("org.jetbrains.kotlinx:multik-core-jvm:0.2.3")
+	implementation("org.jetbrains.kotlinx:multik-kotlin-jvm:0.2.3")
 
 	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.9.2")
 

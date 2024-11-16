@@ -67,7 +67,7 @@ class SteeringSolverModule(
 
 	private fun updateDirectControl() {
 		if (!controller.starship.isDirectControlEnabled)	controller.starship.setDirectControlEnabled(true)
-		if (!difficulty.speedDebuff) controller.isSneakFlying = true
+		controller.isSneakFlying = !difficulty.speedDebuff
 
 		//map onto player slots
 		controller.selectedDirectControlSpeed = round(throttle * 8.0).toInt() + 1

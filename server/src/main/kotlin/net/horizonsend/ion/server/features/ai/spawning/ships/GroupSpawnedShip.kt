@@ -16,6 +16,7 @@ data class GroupSpawnedShip(
 ) : SpawnedShip {
 	override val offsets: MutableList<Supplier<Vector>> = mutableListOf()
     override var absoluteHeight: Double? = null
+	override var pilotName : Component? = null
 
     override fun createController(logger: Logger, starship: ActiveStarship, difficulty: Int): AIController {
         val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
@@ -34,6 +35,9 @@ data class GroupSpawnedShip(
     }
 
     override fun getName(difficulty: Int): Component {
-        return nameProvider.get()
+        if (pilotName == null) {
+			pilotName = nameProvider.get()
+		}
+		return pilotName!!
     }
 }

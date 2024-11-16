@@ -84,7 +84,8 @@ object AIOpponentCommand : SLCommand() {
 
 						processController(summoner, controller)
 						controller
-					}
+					},
+					""
 				) {
 					summoner.success("Summoned ${template.starshipInfo.miniMessageName}")
 				}

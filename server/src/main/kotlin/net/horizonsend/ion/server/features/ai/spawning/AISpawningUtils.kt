@@ -62,8 +62,9 @@ fun createAIShipFromTemplate(
 	template: AITemplate,
 	location: Location,
 	createController: (ActiveControlledStarship) -> Controller,
+	pilotName: String,
 	callback: (ActiveControlledStarship) -> Unit = {}
-) = createShipFromTemplate(logger, template.starshipInfo, location, createController) { starship ->
+) = createShipFromTemplate(logger, template.starshipInfo, location, createController, pilotName) { starship ->
 	logger.info("Attempting to spawn AI starship ${template.identifier}")
 	starship.rewardsProviders.addAll(template.rewardProviders.map { it.createRewardsProvider(starship, template) })
 
@@ -84,6 +85,7 @@ fun createShipFromTemplate(
     template: StarshipTemplate,
     location: Location,
     createController: (ActiveControlledStarship) -> Controller,
+	pilotName: String,
     callback: (ActiveControlledStarship) -> Unit = {}
 ) {
 	val schematic = template.getSchematic() ?: throw SpawningException(
@@ -97,7 +99,7 @@ fun createShipFromTemplate(
 		location,
 		schematic,
 		template.type,
-		template.miniMessageName,
+		 formatPilotName(pilotName) +" " + template.miniMessageName,
 		createController
 	) { starship ->
 		callback(starship)
@@ -260,4 +262,8 @@ fun formatLocationSupplier(centerSupplier: Supplier<Location>, minDistance: Doub
 	debugAudience.debug("Too many attempts to find location")
 
 	return@Supplier null
+}
+
+private fun formatPilotName(fullName : String) : String{
+	return fullName.replace(Regex("""(.?)(?:^|\s|-)+([^\s-])[^\s-]*(?:(?:\s+)(?:the\s+)?(?:jr|sr|II|2nd|III|3rd|IV|4th)\.?${'$'})?"""), "$2.").uppercase()
 }

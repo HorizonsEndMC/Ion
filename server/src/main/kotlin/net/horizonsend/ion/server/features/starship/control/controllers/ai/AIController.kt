@@ -102,6 +102,11 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 		return manualWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
 	}
 
+	/** Returns the weapon set that's range contains the specified distance */
+	fun getManualSetsInRange(distance: Double): List<WeaponSet> {
+		return manualWeaponSets.filter { it.engagementRange.containsDouble(distance) }
+	}
+
 	private val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
 
 	/** Returns the weapon set that's range contains the specified distance */
@@ -109,7 +114,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 		return autoWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
 	}
 
-	inline fun <reified T> getModuleByType(): T? = coreModules.values.filterIsInstance<T>().firstOrNull()
+	inline fun <reified T> getCoreModuleByType(): T? = coreModules.values.filterIsInstance<T>().firstOrNull()
 
 	// Functionality
 	override fun tick() {
@@ -187,7 +192,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 	}
 
 	override fun directControlMovementVector(direction: BlockFace): Vector {
-		return getModuleByType<SteeringSolverModule>()?.directControlMovementVector(direction) ?: Vector(0.0,0.0,0.0)
+		return getCoreModuleByType<SteeringSolverModule>()?.directControlMovementVector(direction) ?: Vector(0.0,0.0,0.0)
 	}
 
 	fun <T: AIModule> getCoreModuleSupplier(identifier: KClass<out AIModule>): Supplier<T> = Supplier {

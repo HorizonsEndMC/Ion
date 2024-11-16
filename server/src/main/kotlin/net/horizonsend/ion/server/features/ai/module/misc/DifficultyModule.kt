@@ -18,8 +18,8 @@ class DifficultyModule(
 
 	val shotVariation : Double get() {
 		return when (internalDifficulty) {
-			0,1 -> 0.3
-			2 -> 0.15
+			0 -> 0.3
+			1 -> 0.15
 			else -> 0.0
 		}
 	}

@@ -28,7 +28,7 @@ class ReinforcementSpawner(
 			WeightedShipSupplier(*reinforcementPool.toTypedArray()),
 			formatLocationSupplier({ reinforced.getCenter().toLocation(reinforced.starship.world) }, 250.0, 500.0),
 			null, // Calling module handles this
-			{_ -> Supplier { reinforced.getModuleByType<DifficultyModule>()?.internalDifficulty ?: 2 }},
+			{_ -> Supplier { reinforced.getCoreModuleByType<DifficultyModule>()?.internalDifficulty ?: 2 }},
 			::setupReinforcementShip
 		)
 	)

@@ -163,7 +163,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			WeaponSet(
 			name = "Manual",
 			engagementRangeMin = 0.0,
-			engagementRangeMax = 550.0
+			engagementRangeMax = 250.0
 		)
 		),
 		autoWeaponSets = mutableSetOf(
@@ -242,7 +242,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		schematicName = "Vendetta",
 		type = AI_GUNSHIP,
 		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Vendetta",
-		manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+		manualWeaponSets = mutableSetOf(WeaponSet(name = "Manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 		autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 	))
 
@@ -265,9 +265,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val HERNSTEIN = registerTemplate(StarshipTemplate(
 		schematicName = "Hernstein",
 		type = AI_GUNSHIP,
-		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Hernstein",
-		manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
-		autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
+		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Hernstein"
 	))
 
 	val FYR = registerTemplate(StarshipTemplate(
@@ -282,7 +280,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		schematicName = "Bloodstar",
 		type = AI_CORVETTE,
 		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Bloodstar",
-		manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+		manualWeaponSets = mutableSetOf(WeaponSet(name = "Manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 		autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 	))
 

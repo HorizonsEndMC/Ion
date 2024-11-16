@@ -26,10 +26,8 @@ class FrigateCombatModule(
 		ticks++
 		val target = targetingSupplier.get() ?: return
 
-		// Get the closest axis
-		starship.speedLimit = -1
-
-		//if (false) handleRotation(target)
+		val distance = target.getLocation().toVector().distance(getCenter().toVector())
+		if (distance > 750) {return}
 
 		val direction = getDirection(Vec3i(getCenter()), target.getVec3i(false)).normalize()
 
@@ -43,21 +41,5 @@ class FrigateCombatModule(
 		if (toggleRandomTargeting && ticks % 40 == 0) {
 			aimAtRandom = !aimAtRandom
 		}
-	}
-
-	private fun handleRotation(target: AITarget) {
-		if (ticks % 900 == 0) {
-			leftFace = !leftFace
-		}
-
-		val targetBlockFace = vectorToBlockFace(getDirection(Vec3i(getCenter()), target.getVec3i(true)), includeVertical = false)
-		val faceDirection = if (leftFace) targetBlockFace.leftFace else targetBlockFace.rightFace
-
-		if (ticks % turnCooldown == 0) {
-			leftFace = !leftFace
-		}
-
-		debugAudience.debug("$this: Trying to face $faceDirection")
-		rotateToFace(faceDirection)
 	}
 }

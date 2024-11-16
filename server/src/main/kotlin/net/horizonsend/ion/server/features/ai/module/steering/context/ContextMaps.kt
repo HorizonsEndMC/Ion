@@ -269,7 +269,7 @@ class FleetGravityContext(
 	override fun populateContext() {
 		clearContext()
 		val fleet = (ship.controller as AIController) //get ships in the same fleet in the same world
-			.getModuleByType<AIFleetManageModule>()?.fleet?.members?.filter {it.get()?.world == ship.world}
+			.getUtilModule(AIFleetManageModule::class.java)?.fleet?.members?.filter {it.get()?.world == ship.world}
 		fleet ?: return
 		if (fleet.size <= 1) return
 		val com = Vector()
@@ -283,7 +283,8 @@ class FleetGravityContext(
 		offset.normalize()
 
 		var R3BlockCount = 0.0
-		fleet.forEach {it.get()?.let { other -> R3BlockCount += other.currentBlockCount.toDouble().pow(1/3.0)}}
+		fleet.forEach {it.get()?.let { other -> R3BlockCount += other.currentBlockCount.toDouble()}}
+		R3BlockCount = R3BlockCount.pow(1/3.0) + 1e-4
 		//R3BlockCount /= fleet.size.toDouble()
 
 		val falloff = R3BlockCount * config.falloffMod
@@ -364,11 +365,12 @@ class ShieldAwarenessContext(
 		override fun populateContext() {
 			dotContext(Vector(0.0,1.0,0.0),0.0,1.0, clipZero = false)
 			for (i in 0 until NUMBINS) {
-				bins[i] = 1 - abs(bins[i])
+				bins[i] = 1 - abs(bins[i]).coerceAtMost(config.verticalDamp*0.3+0.7)
 				bins[i] = bins[i].pow(config.verticalDamp)
 			}
 		}
 	}
+	private val criticalShields = listOf<ShieldSubsystem>()
 	init {
 	    verticalDamp.populateContext()
 		//val previousCenters = ship.shields.map {it.pos.toVector().add(ship.centerOfMass.toVector().multiply(-1.0))}
@@ -392,7 +394,6 @@ class ShieldAwarenessContext(
 		}
 		for (i in 0 until NUMBINS) {
 			val dir = bindir[i]
-			if (abs(dir.dot(Vector(0.0,1.0,0.0))) >= 0.9 ) continue //skip vertical directions
 			val rotatedCenters = ship.shields.map { transformCords(ship,it,dir) }
 			val response = object : ContextMap() {}
 			for (j in 0 until ship.shields.size) {
@@ -400,7 +401,7 @@ class ShieldAwarenessContext(
 				val offset = rotatedCenters[j].clone().normalize()
 				val damage = ((shield.maxPower - shield.power)/
 					(shield.maxPower.toDouble()*(1-config.criticalPoint))).pow(config.power)
-				response.dotContext(offset,-0.3,damage*config.weight)
+				response.dotContext(offset,-0.3,damage)
 			}
 			for (k in 0 until NUMBINS) {
 				response.bins[k] *= incomingFire.bins[k]
@@ -408,6 +409,11 @@ class ShieldAwarenessContext(
 			bins[i] += response.bins.sum()
 			bins[i] *= verticalDamp.bins[i]
 		}
+		//normalize
+		val minDanger = bins.min()
+		addScalar(-minDanger)
+		val maxDanger = bins.max()
+		multScalar(config.weight/(1+maxDanger))
 		checkContext()
 	}
 }
@@ -549,18 +555,19 @@ class BorderDangerContext(
 		val borderCenter = worldborder.center.toVector()
 		val radius = worldborder.size / 2
 		for (i in 0 until NUMBINS) {
+			val horizontalFalloff = config.falloff * ship.currentBlockCount.toDouble().pow(1/3.0)
 			//north border
 			var dir = Vector(0.0,0.0, -1.0)
-			bins[i] += calcDanger(bindir[i], dir, ship.centerOfMass.z.toDouble(), borderCenter.z - radius, config.falloff)
+			bins[i] += calcDanger(bindir[i], dir, ship.centerOfMass.z.toDouble(), borderCenter.z - radius, horizontalFalloff)
 			//south border
 			dir = Vector(0.0,0.0, 1.0)
-			bins[i] += calcDanger(bindir[i],dir,ship.centerOfMass.z.toDouble(), borderCenter.z + radius, config.falloff)
+			bins[i] += calcDanger(bindir[i],dir,ship.centerOfMass.z.toDouble(), borderCenter.z + radius, horizontalFalloff)
 			//west border
 			dir = Vector(-1.0,0.0, 0.0)
-			bins[i] += calcDanger(bindir[i], dir, ship.centerOfMass.x.toDouble(), 	borderCenter.x - radius, config.falloff)
+			bins[i] += calcDanger(bindir[i], dir, ship.centerOfMass.x.toDouble(), 	borderCenter.x - radius, horizontalFalloff)
 			//east border
 			dir = Vector(1.0,0.0, 0.0)
-			bins[i] += calcDanger(bindir[i],dir,ship.centerOfMass.x.toDouble(),borderCenter.x	+ radius, config.falloff)
+			bins[i] += calcDanger(bindir[i],dir,ship.centerOfMass.x.toDouble(),borderCenter.x	+ radius, horizontalFalloff)
 
 			//up border
 			dir = Vector(0.0,1.0, 0.0)
@@ -602,7 +609,8 @@ class WorldBlockDangerContext(
 			val result = world.rayTraceBlocks(shipPos,dir, config.maxDist, FluidCollisionMode.ALWAYS, false) {
 					block -> !ship.contains(block.x, block.y, block.z)} ?: continue
 			val dist = result.hitPosition.add(shipPos.toVector().multiply(-1.0)).length()
-			dotContext(dir, 0.0, config.falloff/ dist, config.dotPower)
+			val falloff = config.falloff * ship.currentBlockCount.toDouble().pow(1/3.0)
+			dotContext(dir, 0.0, falloff/ dist, config.dotPower)
 		}
 	}
 }
@@ -634,7 +642,8 @@ class ObstructionDangerContext(
 			val offset = obstruction.toVector().add(shipPos.clone().multiply(-1.0))
 			val dist = offset.length()
 			offset.normalize()
-			dotContext(offset, config.dotShift, config.falloff/ dist, config.dotPower)
+			val falloff = config.falloff * ship.currentBlockCount.toDouble().pow(1/3.0)
+			dotContext(offset, config.dotShift, falloff/ dist, config.dotPower)
 		}
 	}
 }
