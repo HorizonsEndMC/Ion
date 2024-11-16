@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.custom.items.minerals.MineralItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.MultimeterItem
+import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
@@ -438,7 +439,8 @@ object CustomItems {
 	val FERTILIZER_DISPENSER: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FERTILIZER_DISPENSER", 7014, text("Fertilizer Sprayer").itemName, text("Applies bonemeal to crops in the effected area, if available in the user's inventory", GRAY).itemName
 	) { ItemModRegistry.FERTILIZER_DISPENSER })
 
-	val PACKAGED_MULTIBLOCK = register(MultiblockToken)
+	val MULTIBLOCK_TOKEN = register(MultiblockToken)
+	val PACKAGED_MULTIBLOCK = register(PackagedMultiblock)
 	val MULTIBLOCK_WORKBENCH = registerCustomBlockItem(identifier = "MULTIBLOCK_WORKBENCH", customModelData = 3001, displayName = text("Multiblock Workbench").itemName) { CustomBlocks.MULTIBLOCK_WORKBENCH }
 	// Tools end
 
