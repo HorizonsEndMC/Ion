@@ -8,31 +8,49 @@ import org.bukkit.inventory.ItemStack
 
 class BlockRequirement(
 	val alias: String,
-	var example: (BlockFace) -> BlockData,
+	var example: BlockData,
 	private val syncCheck: (Block, BlockFace, Boolean) -> Boolean,
 	private val dataCheck: (BlockData) -> Boolean,
 	val itemRequirement: ItemRequirement
 ) {
+	private val placementModifications: MutableList<(BlockFace, BlockData) -> Unit> = mutableListOf()
+
 	operator fun invoke(block: Block, inward: BlockFace, loadChunks: Boolean) = syncCheck.invoke(block, inward, loadChunks)
 
 	fun checkBlockData(data: BlockData) = dataCheck.invoke(data)
 
 	fun setExample(blockData: BlockData): BlockRequirement {
-		this.example = { blockData }
+		this.example = blockData
 
 		return this
 	}
 
 	fun setExample(type: Material): BlockRequirement {
-		this.example = { type.createBlockData() }
+		this.example = type.createBlockData()
 
 		return this
+	}
+
+	fun addPlacementModification(modification: (BlockFace, BlockData) -> Unit): BlockRequirement {
+		placementModifications.add(modification)
+
+		return this
+	}
+
+	fun executePlacementModifications(data: BlockData, face: BlockFace) {
+		for (placementModification in placementModifications) {
+			placementModification.invoke(face, data)
+		}
+	}
+
+	fun getExample(face: BlockFace): BlockData {
+		return example.clone().apply { executePlacementModifications(this, face) }
 	}
 
 	class ItemRequirement(
 		val itemCheck: (ItemStack) -> Boolean,
 		val amountConsumed: (ItemStack) -> Int,
-		val toBlock: (ItemStack, BlockFace) -> BlockData
+		val toBlock: (ItemStack) -> BlockData
 	) {
 		fun consume(itemStack: ItemStack): Boolean {
 			itemStack.amount -= amountConsumed(itemStack)

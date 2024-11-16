@@ -90,8 +90,6 @@ object MultiblockCommand : SLCommand() {
 		val face = sign.getFacing().oppositeFace
 
 		lastMatch.shape.getRequirementMap(face).forEach { (coords, requirement) ->
-			val expected =  requirement.example
-
 			val requirementX = coords.x
 			val requirementY = coords.y
 			val requirementZ = coords.z
@@ -106,7 +104,8 @@ object MultiblockCommand : SLCommand() {
 			if (!requirementMet) {
 				val (xx, yy, zz) = Vec3i(relative.location)
 
-				sendEntityPacket(sender, displayBlock(sender.world.minecraft, expected.invoke(face), Vector(xx, yy, zz), 0.5f, true), 10 * 20L)
+
+				sendEntityPacket(sender, displayBlock(sender.world.minecraft, requirement.getExample(face), Vector(xx, yy, zz), 0.5f, true), 10 * 20L)
 				sender.userError(
 					"Block at ${Vec3i(relative.location)} doesn't match! Expected ${requirement.alias}, found ${relative.type}."
 				)
@@ -127,8 +126,6 @@ object MultiblockCommand : SLCommand() {
 
 			val (x, y, z) = absolute
 
-			val blockData = requirement.example
-
 			val existingBlock = sender.world.getBlockAt(x, y, z)
 
 			val event = BlockPlaceEvent(
@@ -143,7 +140,7 @@ object MultiblockCommand : SLCommand() {
 
 			if (!event) return sender.userError("You can't build here!")
 
-			existingBlock.blockData = blockData.invoke(sender.facing)
+			existingBlock.blockData = requirement.getExample(sender.facing)
 		}
 
 		sender.success("Placed ${multiblock.javaClass.simpleName}")
