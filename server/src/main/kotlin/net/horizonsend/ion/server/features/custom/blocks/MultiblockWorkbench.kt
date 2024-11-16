@@ -3,14 +3,13 @@ package net.horizonsend.ion.server.features.custom.blocks
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
 import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
-import net.horizonsend.ion.server.features.multiblock.shape.BlockRequirement
+import net.horizonsend.ion.server.features.multiblock.PrePackaged.checkRequirements
+import net.horizonsend.ion.server.features.multiblock.PrePackaged.createPackagedItem
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
-import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
@@ -18,18 +17,17 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import org.bukkit.block.Chest
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.BlockStateMeta
 import java.util.concurrent.TimeUnit
 
 object MultiblockWorkbench : InteractableCustomBlock(
@@ -62,36 +60,42 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		override val inventorySize = 36
 		override val internalInventory: Inventory = IonServer.server.createInventory(this, inventorySize)
 
+		private companion object {
+			const val LEFT_BUTTON_SLOT = 18
+			const val RESULT_SLOT = 19
+			const val RIGHT_BUTTON_SLOT = 20
+			const val CONFIRM_BUTTON_SLOT = 28
+
+			val BACKGROUND_SLOTS = setOf(0..11, 27..29).flatten()
+			val INVENTORY_SLOTS = setOf(12..17, 21..26, 30..35).flatten()
+		}
+
 		override fun setup(view: InventoryView) {
-			addGuiButton(18, ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+			lockedSlots.addAll(BACKGROUND_SLOTS)
+			setGuiOverlay(view)
+
+			addGuiButton(LEFT_BUTTON_SLOT, ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
 				it.setCustomModelData(GuiItem.LEFT.customModelData)
 				it.displayName(text("Previous Multiblock").itemName)
 			}) {
 				multiblockIndex = (multiblockIndex - 1).coerceAtLeast(0)
-				updateMultiblock(it.view)
+				refreshMultiblock(it.view)
 			}
 
-			addGuiButton(20, ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+			addGuiButton(RIGHT_BUTTON_SLOT, ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
 				it.setCustomModelData(GuiItem.RIGHT.customModelData)
 				it.displayName(text("Next Multiblock").itemName)
 			}) {
 				multiblockIndex = (multiblockIndex + 1).coerceAtMost(multiblocks.lastIndex)
-				updateMultiblock(it.view)
+				refreshMultiblock(it.view)
 			}
 
-			addGuiButton(28, ItemStack(Material.BARRIER).updateMeta {
-				it.setCustomModelData(GuiItem.RIGHT.customModelData)
-				it.displayName(text("Missing Materials!", RED).itemName)
-			}) {
+			addGuiButton(CONFIRM_BUTTON_SLOT, ItemStack(Material.BARRIER)) {
 				tryPack()
 				updateConfirmationButton()
 			}
-
-			lockedSlots.addAll(setOf(0..11, 27..29).flatten())
-			lockedSlots.add(18)
-			lockedSlots.add(20)
-
-			setGuiOverlay(view)
+			// Perform full setup of the button
+			updateConfirmationButton()
 		}
 
 		private fun setGuiOverlay(view: InventoryView) {
@@ -108,77 +112,30 @@ object MultiblockWorkbench : InteractableCustomBlock(
 			view.setTitle(text)
 		}
 
-		private fun updateMultiblock(view: InventoryView) {
+		private fun refreshMultiblock(view: InventoryView) {
 			setGuiOverlay(view)
 			updateConfirmationButton()
 		}
 
-		private val editSlots = setOf(12..17, 21..26, 30..35).flatten()
-
-		private fun getConsumableItems(): List<ItemStack> {
-			return internalInventory.contents.withIndex()
-				.filter { editSlots.contains(it.index) }
-				.mapNotNull { it.value }
-		}
-
-		private fun checkRequirements(): List<BlockRequirement> {
-			val items = getConsumableItems().mapTo(mutableListOf()) { it.clone() }
-
-			val itemRequirements = currentMultiblock.shape.getRequirementMap(BlockFace.NORTH).map { it.value }
-			val missing = mutableListOf<BlockRequirement>()
-
-			for (blockRequirement in itemRequirements) {
-				val requirement = blockRequirement.itemRequirement
-				if (items.any { requirement.itemCheck(it) && requirement.consume(it) }) continue
-				missing.add(blockRequirement)
-			}
-
-			return missing
-		}
-
-		private fun packageTo(destination: Inventory) {
-			val items = getConsumableItems()
-			val itemRequirements = currentMultiblock.shape.getRequirementMap(BlockFace.NORTH).map { it.value }
-			val missing = mutableListOf<BlockRequirement>()
-
-			for (blockRequirement in itemRequirements) {
-				val requirement = blockRequirement.itemRequirement
-				val success = items.firstOrNull { requirement.itemCheck(it) && requirement.consume(it) }
-
-				if (success == null) {
-					missing.add(blockRequirement)
-					continue
-				}
-
-				val amount = requirement.amountConsumed(success)
-				LegacyItemUtils.addToInventory(destination, success.asQuantity(amount))
-			}
-		}
-
-		private fun createPackagedItem(): ItemStack {
-			val base = PackagedMultiblock.createFor(currentMultiblock)
-			return base.updateMeta {
-				it as BlockStateMeta
-
-				@Suppress("UnstableApiUsage")
-				val newState = Material.CHEST.createBlockData().createBlockState() as Chest
-				packageTo(newState.inventory)
-
-				it.blockState = newState
-			}
-		}
-
 		private var ready: Boolean = false
 
+		/**
+		 * Update the confirmation button to indicate whether the item requirements are fulfilled
+		 **/
 		private fun updateConfirmationButton() = Tasks.sync {
-			val item = inventory.contents[28] ?: return@sync
-			val missing = checkRequirements()
+			val item = inventory.contents[CONFIRM_BUTTON_SLOT] ?: return@sync
+			val missing = checkRequirements(getUnlockedItems(), currentMultiblock)
 
 			if (missing.isNotEmpty()) {
 				item.type = Material.BARRIER
+				val missingLore = missing
+					.groupBy { it.alias }
+					// Group by the same alias, count the number needed of that alias. Get a result like "Any slab: 3"
+					.map { (description , entries) -> text("${description.replaceFirstChar { char -> char.uppercase() }}: ${entries.size}", WHITE).itemName }
+
 				item.updateMeta {
 					it.displayName(text("Missing Materials!", RED).itemName)
-					it.lore(missing.groupBy { it.alias }.map { text("${it.key.replaceFirstChar { char -> char.uppercase() }}: ${it.value.size}").itemName })
+					it.lore(missingLore)
 				}
 
 				ready = false
@@ -195,29 +152,28 @@ object MultiblockWorkbench : InteractableCustomBlock(
 			ready = true
 		}
 
+
 		private fun tryPack() {
 			if (!ready) return
-			val packagedItem = createPackagedItem()
+			if (checkRequirements(getUnlockedItems(), currentMultiblock).isNotEmpty()) return // Just double check I don't want a dupe from a stuck ready state
+			val packagedItem = createPackagedItem(getUnlockedItems(), currentMultiblock)
 
-			if (internalInventory.getItem(19)?.isSimilar(packagedItem) == true) { internalInventory.getItem(19)?.let { it.amount++ } } else {
-				internalInventory.setItem(19, packagedItem)
+			// Increment or set the item
+			val currentItem = internalInventory.getItem(RESULT_SLOT)
+
+			if (currentItem == null) {
+				internalInventory.setItem(RESULT_SLOT, packagedItem)
+			} else {
+				currentItem.amount++
 			}
 
+			// Update after items have been consumed
 			updateConfirmationButton()
 		}
 
-		override fun itemChanged(changedSlot: Int, changedItem: ItemStack) {
-			updateConfirmationButton()
-		}
-
+		override fun itemChanged(changedSlot: Int, changedItem: ItemStack) = updateConfirmationButton()
 		override fun canRemove(slot: Int, player: Player): Boolean { return true }
 		override fun canAdd(itemStack: ItemStack, slot: Int, player: Player): Boolean { return true }
-
-		override fun handleClose(event: InventoryCloseEvent) {
-			for ((slot, content) in inventory.contents.withIndex()) {
-				if (noDropSlots.contains(slot)) continue
-				viewer.world.dropItemNaturally(location, content ?: continue)
-			}
-		}
+		override fun handleClose(event: InventoryCloseEvent) = dropItems(location)
 	}
 }
