@@ -31,6 +31,11 @@ class BlockRequirement(
 
 	class ItemRequirement(
 		val itemCheck: (ItemStack) -> Boolean,
-		val consumeItem: (ItemStack) -> Boolean
-	)
+		val amountConsumed: (ItemStack) -> Int
+	) {
+		fun consume(itemStack: ItemStack): Boolean {
+			itemStack.amount -= amountConsumed(itemStack)
+			return itemStack.amount >= 0
+		}
+	}
 }
