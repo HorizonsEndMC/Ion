@@ -106,74 +106,41 @@ object Space : IonServerComponent() {
 			if (event.newState.type.isWater) event.isCancelled = true
 		}
 
-		fun editExplosionBlockList(list: MutableList<Block>, bodyLoc: Vec3i, radius: Int) {
-			list.removeAll { block ->
-				distanceSquared(
-					block.x,
-					block.y,
-					block.z,
-					bodyLoc.x,
-					bodyLoc.y,
-					bodyLoc.z
-				) <= radius.squared()
+		fun editExplosionBlockList(explosionBlocks: MutableList<Block>, bodyLoc: Vec3i, radius: Int) {
+			explosionBlocks.removeAll { block ->
+				distanceSquared(block.x, block.y, block.z, bodyLoc.x, bodyLoc.y, bodyLoc.z) <= radius.squared()
 			}
 		}
 
 		listen<BlockExplodeEvent> { event ->
-			for (star in getStars().filter { it.spaceWorld?.uid == event.block.world.uid }) {
-				// Avoid looping on stars across the galaxy
-				if (distanceSquared(
-						star.location.x,
-						star.location.y,
-						star.location.z,
-						event.block.x,
-						event.block.y,
-						event.block.z,
-					) > (star.outerSphereRadius + event.yield.squared()).squared()) continue
+			for (star in getStars(event.block.world)) {
+				val checkRadius = (star.outerSphereRadius * 1.5).squared()
+				if (distanceSquared(star.location.x, star.location.y, star.location.z, event.block.x, event.block.y, event.block.z) > checkRadius) continue
 
 				editExplosionBlockList(event.blockList(), star.location, star.outerSphereRadius)
 			}
 
-			for (planet in getPlanets().filter { it.spaceWorld?.uid == event.block.world.uid }) {
-				// Avoid looping on stars across the galaxy
-				if (distanceSquared(
-						planet.location.x,
-						planet.location.y,
-						planet.location.z,
-						event.block.x,
-						event.block.y,
-						event.block.z,
-					) > (planet.crustRadius + event.yield.squared()).squared()) continue
+			for (planet in getPlanets(event.block.world)) {
+				val checkRadius = (planet.crustRadius * 1.5).squared()
+				if (distanceSquared(planet.location.x, planet.location.y, planet.location.z, event.block.x, event.block.y, event.block.z) > checkRadius) continue
 
 				editExplosionBlockList(event.blockList(), planet.location, planet.crustRadius)
 			}
 		}
 
 		listen<EntityExplodeEvent> { event ->
-			for (star in getStars().filter { it.spaceWorld?.uid == event.entity.world.uid }) {
-				// Avoid looping on stars across the galaxy
-				if (distanceSquared(
-						star.location.x,
-						star.location.y,
-						star.location.z,
-						event.entity.location.blockX,
-						event.entity.location.blockY,
-						event.entity.location.blockZ,
-					) > (star.outerSphereRadius + event.yield.squared()).squared()) continue
+			for (star in getStars(event.entity.world)) {
+				val checkRadius = (star.outerSphereRadius * 1.5).squared()
+				val location = event.entity.location
+				if (distanceSquared(star.location.x, star.location.y, star.location.z, location.blockX, location.blockY, location.blockZ) > checkRadius) continue
 
 				editExplosionBlockList(event.blockList(), star.location, star.outerSphereRadius)
 			}
 
-			for (planet in getPlanets().filter { it.spaceWorld?.uid == event.entity.world.uid }) {
-				// Avoid looping on stars across the galaxy
-				if (distanceSquared(
-						planet.location.x,
-						planet.location.y,
-						planet.location.z,
-						event.entity.location.blockX,
-						event.entity.location.blockY,
-						event.entity.location.blockZ,
-					) > (planet.crustRadius + event.yield.squared()).squared()) continue
+			for (planet in getPlanets(event.entity.world)) {
+				val checkRadius = (planet.crustRadius * 1.5).squared()
+				val location = event.entity.location
+				if (distanceSquared(planet.location.x, planet.location.y, planet.location.z, location.blockX, location.blockY, location.blockZ) > checkRadius) continue
 
 				editExplosionBlockList(event.blockList(), planet.location, planet.crustRadius)
 			}
@@ -282,8 +249,10 @@ object Space : IonServerComponent() {
 	}
 
 	fun getStars(): List<CachedStar> = stars
+	fun getStars(world: World): List<CachedStar> = stars.filter { it.spaceWorld?.uid == world.uid }
 
 	fun getPlanets(): List<CachedPlanet> = planets
+	fun getPlanets(world: World): List<CachedPlanet> = planets.filter { it.spaceWorld?.uid == world.uid }
 
 	fun getPlanet(planetWorld: World): CachedPlanet? = planetWorldCache[planetWorld].orElse(null)
 
