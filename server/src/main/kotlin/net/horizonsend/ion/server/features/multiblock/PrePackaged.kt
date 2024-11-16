@@ -71,11 +71,14 @@ object PrePackaged {
 			val absolute = Vec3i(origin.x, origin.y, origin.z) + offset
 			val (x, y, z) = absolute
 
+			var usedItem: ItemStack? = null
+
 			if (itemSource != null) {
 				itemSource
 					.filterNotNull()
 					.firstOrNull { requirement.itemRequirement.itemCheck(it) }
 					?.let {
+						usedItem = it.clone()
 						requirement.itemRequirement.consume(it)
 					}
 			}
@@ -94,7 +97,13 @@ object PrePackaged {
 
 			if (!event) return player.userError("You can't build here!")
 
-			placements[existingBlock] = requirement.example.invoke(direction)
+			val placement = if (usedItem == null) {
+				requirement.example.invoke(direction)
+			} else {
+				requirement.itemRequirement.toBlock.invoke(usedItem!!, direction)
+			}
+
+			placements[existingBlock] = placement
 		}
 
 		for ((block, placement) in placements) {
