@@ -98,10 +98,12 @@ object PrePackaged {
 			if (!event) return player.userError("You can't build here!")
 
 			val placement = if (usedItem == null) {
-				requirement.example.invoke(direction)
+				requirement.example.clone()
 			} else {
-				requirement.itemRequirement.toBlock.invoke(usedItem!!, direction)
+				requirement.itemRequirement.toBlock.invoke(usedItem!!)
 			}
+
+			requirement.executePlacementModifications(placement, direction)
 
 			placements[existingBlock] = placement
 		}
