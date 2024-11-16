@@ -71,7 +71,7 @@ object MultiblockToken : CustomItem("MULTIBLOCK_TOKEN") {
 			return
 		}
 
-		runCatching { PrePackaged.place(livingEntity, origin, livingEntity.facing, packagedData) }
+		runCatching { PrePackaged.place(livingEntity, origin, livingEntity.facing, packagedData, null) }
 		itemStack.amount--
 	}
 }
