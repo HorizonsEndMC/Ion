@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.PrePackaged
-import net.horizonsend.ion.server.features.multiblock.PrePackaged.getPackagedData
+import net.horizonsend.ion.server.features.multiblock.PrePackaged.getTokenData
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
@@ -36,7 +36,7 @@ object MultiblockToken : CustomItem("MULTIBLOCK_TOKEN") {
 		val base = constructItemStack()
 
 		return base.updateMeta {
-			PrePackaged.packageData(PrePackaged.PackagedMultiblockData(multiblock), it.persistentDataContainer)
+			PrePackaged.setTokenData(multiblock, it.persistentDataContainer)
 			it.displayName(ofChildren(multiblock.getDisplayName(), text(" Token")).itemName)
 			it.lore(listOf(
 				text("Multiblock: ${multiblock.name.replaceFirstChar { char -> char.uppercase(Locale.getDefault()) }}", GRAY).itemName,
@@ -48,7 +48,7 @@ object MultiblockToken : CustomItem("MULTIBLOCK_TOKEN") {
 	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
 		if (itemStack.type.isAir) return
 
-		val packagedData = getPackagedData(itemStack) ?: run {
+		val packagedData = getTokenData(itemStack) ?: run {
 			livingEntity.userError("The packaged multiblock has no data!")
 			return
 		}
@@ -60,10 +60,10 @@ object MultiblockToken : CustomItem("MULTIBLOCK_TOKEN") {
 		val origin = PrePackaged.getOriginFromPlacement(
 			event.clickedBlock ?: return,
 			livingEntity.facing,
-			packagedData.multiblock.shape
+			packagedData.shape
 		)
 
-		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.multiblock.shape)
+		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.shape)
 
 		if (obstructions.isNotEmpty()) {
 			livingEntity.userError("Placement is obstructed!")
