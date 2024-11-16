@@ -17,6 +17,7 @@ import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -56,13 +57,22 @@ object PrePackaged {
 		return obstructed
 	}
 
-	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock) {
+	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: Inventory?) {
 		val requirements = multiblock.shape.getRequirementMap(direction)
 		val placements = mutableMapOf<Block, BlockData>()
 
 		for ((offset, requirement) in requirements) {
 			val absolute = Vec3i(origin.x, origin.y, origin.z) + offset
 			val (x, y, z) = absolute
+
+			if (itemSource != null) {
+				itemSource
+					.filterNotNull()
+					.firstOrNull { requirement.itemRequirement.itemCheck(it) }
+					?.let {
+						requirement.itemRequirement.consume(it)
+					}
+			}
 
 			val existingBlock = origin.world.getBlockAt(x, y, z)
 
@@ -120,6 +130,4 @@ object PrePackaged {
 
 		destination.set(NamespacedKeys.MULTIBLOCK, PersistentDataType.TAG_CONTAINER, pdc)
 	}
-
-
 }
