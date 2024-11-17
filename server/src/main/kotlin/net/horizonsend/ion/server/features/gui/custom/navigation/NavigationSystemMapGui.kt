@@ -26,6 +26,7 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -40,67 +41,62 @@ import xyz.xenondevs.invui.window.Window
 
 class NavigationSystemMapGui(val player: Player, val world: World) {
 
+	private var currentWindow: Window? = null
 	private val gui = Gui.empty(9, 6)
+
+	// stores amount of shift per horizontal scroller
 	private var planetListShift = 0
 	private var beaconListShift = 0
 	private var bookmarkListShift = 0
 
+	// stores quantity of objects
 	private var planetsInWorld = 0
 	private var beaconsInWorld = 0
 	private var bookmarkCount = 0
 
+	// stores gui item of each object
 	private val planetItems = mutableListOf<Item>()
 	private val beaconItems = mutableListOf<Item>()
 	private val bookmarkItems = mutableListOf<Item>()
 
+	// objects for the left/right buttons
 	private val leftPlanetButton = GuiItems.CustomControlItem("Previous Planet In This System", GuiItem.LEFT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		planetListShift--
-		updateGui()
+		updateGuiShift()
 	}
 
 	private val rightPlanetButton = GuiItems.CustomControlItem("Next Planet In This System", GuiItem.RIGHT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		planetListShift++
-		updateGui()
+		updateGuiShift()
 	}
 
 	private val leftBeaconButton = GuiItems.CustomControlItem("Previous Beacon In This System", GuiItem.LEFT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		beaconListShift--
-		updateGui()
+		updateGuiShift()
 	}
 
 	private val rightBeaconButton = GuiItems.CustomControlItem("Next Beacon In This System", GuiItem.RIGHT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		beaconListShift++
-		updateGui()
+		updateGuiShift()
 	}
 
 	private val leftBookmarkButton = GuiItems.CustomControlItem("Previous Bookmark In This System", GuiItem.LEFT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		bookmarkListShift--
-		updateGui()
+		updateGuiShift()
 	}
 
 	private val rightBookmarkButton = GuiItems.CustomControlItem("Next Bookmark In This System", GuiItem.RIGHT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		bookmarkListShift++
-		updateGui()
+		updateGuiShift()
 	}
 
 	companion object {
-
-		fun openWindow(player: Player, world: World) {
-			val gui = NavigationSystemMapGui(player, world)
-
-			Window.single()
-				.setViewer(player)
-				.setGui(gui.createGui())
-				.setTitle(AdventureComponentWrapper(gui.createText()))
-				.build()
-				.open()
-		}
 
 		private const val MIDDLE_COLUMN = 4
 		private const val MAX_ELEMENTS_PER_ROW = 7
@@ -110,7 +106,10 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		private const val MENU_ROW = 5
 	}
 
-	fun createGui(): Gui {
+	/**
+	 * Initializes the Navigation (System) GUI
+	 */
+	private fun createGui(): Gui {
 
 		val star = Space.getStars().firstOrNull { star -> star.spaceWorld == world }
 		val starItem = if (star != null) GuiItems.CustomControlItem(star.name, getPlanetItems(star.name),
@@ -129,23 +128,11 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 					// TODO: Add star info window opener here
 				}
 				ClickType.SHIFT_RIGHT -> {
-					val serverName = IonServer.configuration.serverName
-					val hyperlink = ofChildren(
-						Component.text("Click to open ", TextColor.color(Colors.INFORMATION)),
-						Component.text("[", TextColor.color(Colors.INFORMATION)),
-						Component.text("${star.name} Dynmap", NamedTextColor.AQUA)
-							.decorate(TextDecoration.UNDERLINED)
-							.clickEvent(ClickEvent.clickEvent(
-								ClickEvent.Action.OPEN_URL,
-								"https://$serverName.horizonsend.net/?worldname=${star.spaceWorldName}&x=${star.location.x}&z=${star.location.z}",
-							)),
-						Component.text("]", TextColor.color(Colors.INFORMATION)),
-					)
-					player.sendMessage(hyperlink)
+					val spaceWorld = star.spaceWorld ?: player.world
+					dynmapLinkAction(star.name, player, spaceWorld, star.location.x, star.location.z)
 				}
 				else -> {}
 			}
-			updateGui()
 		} else null
 
 		planetItems.addAll(Space.getPlanets()
@@ -167,23 +154,11 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 						// TODO: Add planet info window opener here
 					}
 					ClickType.SHIFT_RIGHT -> {
-						val serverName = IonServer.configuration.serverName
-						val hyperlink = ofChildren(
-							Component.text("Click to open ", TextColor.color(Colors.INFORMATION)),
-							Component.text("[", TextColor.color(Colors.INFORMATION)),
-							Component.text("${planet.planetWorldName} Dynmap", NamedTextColor.AQUA)
-								.decorate(TextDecoration.UNDERLINED)
-								.clickEvent(ClickEvent.clickEvent(
-									ClickEvent.Action.OPEN_URL,
-									"https://$serverName.horizonsend.net/?worldname=${planet.spaceWorldName}&x=${planet.location.x}&z=${planet.location.z}",
-								)),
-							Component.text("]", TextColor.color(Colors.INFORMATION)),
-						)
-						player.sendMessage(hyperlink)
+						val spaceWorld = planet.spaceWorld ?: player.world
+						dynmapLinkAction(planet.name, player, spaceWorld, planet.location.x, planet.location.z)
 					}
 					else -> {}
 				}
-				updateGui()
 			} }
 		)
 		planetsInWorld = planetItems.size
@@ -203,26 +178,11 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 					ClickType.LEFT -> if (beacon.spaceLocation.world == player.world.name) jumpAction(player, beacon.name.replace(' ', '_'))
 					ClickType.RIGHT -> waypointAction(player, beacon.name.replace(' ', '_'))
 					ClickType.SHIFT_LEFT -> {
-						openWindow(player, beacon.destination.bukkitWorld())
+						NavigationSystemMapGui(player, world).openMainWindow()
 					}
-					ClickType.SHIFT_RIGHT -> {
-						val serverName = IonServer.configuration.serverName
-						val hyperlink = ofChildren(
-							Component.text("Click to open ", TextColor.color(Colors.INFORMATION)),
-							Component.text("[", TextColor.color(Colors.INFORMATION)),
-							Component.text("${beacon.name} Dynmap", NamedTextColor.AQUA)
-								.decorate(TextDecoration.UNDERLINED)
-								.clickEvent(ClickEvent.clickEvent(
-									ClickEvent.Action.OPEN_URL,
-									"https://$serverName.horizonsend.net/?worldname=${beacon.spaceLocation.world}&x=${beacon.spaceLocation.x}&z=${beacon.spaceLocation.z}",
-								)),
-							Component.text("]", TextColor.color(Colors.INFORMATION)),
-						)
-						player.sendMessage(hyperlink)
-					}
+					ClickType.SHIFT_RIGHT -> dynmapLinkAction(beacon.name, player, beacon.spaceLocation.bukkitWorld(), beacon.spaceLocation.x, beacon.spaceLocation.z)
 					else -> {}
 				}
-				updateGui()
 			} }
 		)
 		beaconsInWorld = beaconItems.size
@@ -244,23 +204,11 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 					ClickType.RIGHT -> waypointAction(player, bookmark.name)
 					ClickType.SHIFT_LEFT -> {}
 					ClickType.SHIFT_RIGHT -> {
-						val serverName = IonServer.configuration.serverName
-						val hyperlink = ofChildren(
-							Component.text("Click to open ", TextColor.color(Colors.INFORMATION)),
-							Component.text("[", TextColor.color(Colors.INFORMATION)),
-							Component.text("${bookmark.name} Dynmap", NamedTextColor.AQUA)
-								.decorate(TextDecoration.UNDERLINED)
-								.clickEvent(ClickEvent.clickEvent(
-									ClickEvent.Action.OPEN_URL,
-									"https://$serverName.horizonsend.net/?worldname=${bookmark.worldName}&x=${bookmark.x}&z=${bookmark.z}",
-								)),
-							Component.text("]", TextColor.color(Colors.INFORMATION)),
-						)
-						player.sendMessage(hyperlink)
+						val spaceWorld = Bukkit.getWorld(bookmark.worldName) ?: player.world
+						dynmapLinkAction(bookmark.name, player, spaceWorld, bookmark.x, bookmark.z)
 					}
 					else -> {}
 				}
-				updateGui()
 			} }
 		)
 		bookmarkCount = bookmarkItems.size
@@ -276,12 +224,37 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 			it.setCustomModelData(GuiItem.DOWN.customModelData)
 		}))
 
-		updateGui()
+		gui.setItem(2, MENU_ROW, GuiItems.CustomControlItem("Search For Destination", GuiItem.MAGNIFYING_GLASS) {
+			_: ClickType, player: Player, _: InventoryClickEvent ->
+			NavigationSearchGui(player).openMainWindow()
+		})
+
+		updateGuiShift()
+		updateGuiRoute()
 
 		return gui
 	}
 
-	private fun updateGui() {
+	private fun open(player: Player): Window {
+		val gui = createGui()
+
+		val window = Window.single()
+				.setViewer(player)
+				.setGui(gui)
+				.setTitle(AdventureComponentWrapper(createText()))
+				.build()
+
+		return window
+	}
+
+	fun openMainWindow() {
+		currentWindow = open(player).apply { open() }
+	}
+
+	/**
+	 * Updates the GUI shifts every time something changes (such as the player clicking a button)
+	 */
+	private fun updateGuiShift() {
 		// populate arrows
 		gui.setItem(0, PLANET_ROW, if (planetListShift > 0) leftPlanetButton else GuiItems.EmptyItem())
 		gui.setItem(8, PLANET_ROW, if ((planetListShift + 1) * MAX_ELEMENTS_PER_ROW < planetsInWorld) rightPlanetButton else GuiItems.EmptyItem())
@@ -308,24 +281,29 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 				gui.setItem(widthIndex + 1, BOOKMARK_ROW, bookmarkItems[widthIndex + (bookmarkListShift * MAX_ELEMENTS_PER_ROW)])
 			} else gui.setItem(widthIndex + 1, BOOKMARK_ROW, GuiItems.EmptyItem())
 		}
+	}
 
+	/**
+	 * Updates the GUI for route-related components
+	 */
+	private fun updateGuiRoute() {
 		gui.setItem(5, MENU_ROW, GuiItems.CustomControlItem("Current Route:", GuiItem.ROUTE_SEGMENT_2, waypointComponents()))
 
 		if (WaypointManager.getNextWaypoint(player) != null) {
 			gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem("Cancel All Route Waypoints", GuiItem.ROUTE_CANCEL) {
-				_: ClickType, _: Player, _: InventoryClickEvent ->
+					_: ClickType, _: Player, _: InventoryClickEvent ->
 				WaypointCommand.onClearWaypoint(player)
-				updateGui()
+				updateGuiRoute()
 			})
 			gui.setItem(7, MENU_ROW, GuiItems.CustomControlItem("Undo The Last Waypoint", GuiItem.ROUTE_UNDO) {
-				_: ClickType, _: Player, _: InventoryClickEvent ->
+					_: ClickType, _: Player, _: InventoryClickEvent ->
 				WaypointCommand.onUndoWaypoint(player)
-				updateGui()
+				updateGuiRoute()
 			})
 			gui.setItem(8, MENU_ROW, GuiItems.CustomControlItem("Jump To The Next Waypoint", GuiItem.ROUTE_JUMP) {
-				_: ClickType, _: Player, _: InventoryClickEvent ->
+					_: ClickType, _: Player, _: InventoryClickEvent ->
 				MiscStarshipCommands.onJump(player, "auto", null)
-				updateGui()
+				updateGuiRoute()
 			})
 		} else {
 			gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem("Cancel All Route Waypoints", GuiItem.ROUTE_CANCEL_GRAY, listOf(needWaypointComponent())))
@@ -334,7 +312,10 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		}
 	}
 
-	fun createText(): Component {
+	/**
+	 * Creates the GUI text and background
+	 */
+	private fun createText(): Component {
 		val header = "${world.name} System Map"
 		val guiText = GuiText(header)
 
@@ -345,7 +326,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 
 	/**
 	 * Gets the associated custom item from the planet's name.
-	 * @return the custom planet icon ItemStack
+	 * @return the custom planet icon GuiItem
 	 * @param name the name of the planet
 	 */
 	private fun getPlanetItems(name: String): GuiItem {
@@ -381,6 +362,9 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		}
 	}
 
+	/**
+	 * Constructs a list of Components used for the lore of objects
+	 */
 	private fun navigationInstructionComponents(obj: Any, worldName: String, x: Int, y: Int, z: Int): List<Component> {
 		val list = mutableListOf(
 			locationComponent(worldName, x, y, z),
@@ -388,18 +372,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 
 		// Ore quantity and star
 		if (obj is CachedPlanet) {
-			val planetWorld = obj.planetWorld
-			if (planetWorld != null) {
-				val ores = PlanetOreSettings[planetWorld]?.ores
-				if (ores != null) {
-					val oreComponents = ores.map { ore -> ofChildren(
-							Component.text("${ore.ore.name.replace('_', ' ').lowercase().replaceFirstChar(Char::titlecase)}: ", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false),
-							Component.text(repeatString("*", ore.stars), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false),
-							Component.text(" | ", NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false)
-						) }
-					list.add(Component.textOfChildren(*oreComponents.toTypedArray()))
-				}
-			}
+			list.add(oreComponent(obj))
 		}
 
 		list.add(Component.text(repeatString("=", 30)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY))
@@ -422,6 +395,22 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		useQuotesAroundObjects = false,
 		world, x, y, z
 	).decoration(TextDecoration.ITALIC, false)
+
+	private fun oreComponent(planet: CachedPlanet): Component {
+		val planetWorld = planet.planetWorld
+		if (planetWorld != null) {
+			val ores = PlanetOreSettings[planetWorld]?.ores
+			if (ores != null) {
+				val oreComponents = ores.map { ore -> ofChildren(
+					Component.text("${ore.ore.name.replace('_', ' ').lowercase().replaceFirstChar(Char::titlecase)}: ", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false),
+					Component.text(repeatString("★", ore.stars), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false),
+					Component.text(" | ", NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false)
+				) }
+				return Component.textOfChildren(*oreComponents.toTypedArray())
+			}
+		}
+		return Component.empty()
+	}
 
 	private fun initiateJumpComponent(): Component = template(
 		"{0} to initiate hyperspace jump to this location",
@@ -480,6 +469,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	private fun jumpAction(player: Player, destinationName: String) {
 		if (ActiveStarships.findByPilot(player) != null) {
 			MiscStarshipCommands.onJump(player, destinationName, null)
+			player.closeInventory()
 		} else {
 			player.userError("You must be piloting a starship!")
 		}
@@ -488,6 +478,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	private fun jumpAction(player: Player, x: Int, z: Int) {
 		if (ActiveStarships.findByPilot(player) != null) {
 			MiscStarshipCommands.onJump(player, x.toString(), z.toString(), null)
+			player.closeInventory()
 		} else {
 			player.userError("You must be piloting a starship!")
 		}
@@ -499,9 +490,26 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		} else {
 			WaypointCommand.onUndoWaypoint(player)
 		}
+		updateGuiRoute()
 	}
 
 	private fun waypointAction(player: Player, world: String, x: Int, z: Int) {
 		WaypointCommand.onSetWaypoint(player, world, x.toString(), z.toString())
+		updateGuiRoute()
+	}
+
+	private fun dynmapLinkAction(name: String, player: Player, spaceWorld: World, x: Int, z: Int) {
+		val serverName = IonServer.configuration.serverName
+		val hyperlink = ofChildren(
+			Component.text("Click to open ", TextColor.color(Colors.INFORMATION)),
+			Component.text("[", TextColor.color(Colors.INFORMATION)),
+			Component.text("$name Dynmap", NamedTextColor.AQUA)
+				.decorate(TextDecoration.UNDERLINED)
+				.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL,
+					"https://$serverName.horizonsend.net/?worldname=$spaceWorld&x=$x&z=$z",
+					)),
+			Component.text("]", TextColor.color(Colors.INFORMATION)),
+		)
+		player.sendMessage(hyperlink)
 	}
 }
