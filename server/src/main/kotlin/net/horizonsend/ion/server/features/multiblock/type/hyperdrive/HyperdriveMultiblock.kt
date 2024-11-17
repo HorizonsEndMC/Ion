@@ -55,6 +55,6 @@ abstract class HyperdriveMultiblock : Multiblock(), InteractableMultiblock {
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		NavigationSystemMapGui.openWindow(player, player.world)
+		NavigationSystemMapGui(player, player.world).openMainWindow()
 	}
 }
