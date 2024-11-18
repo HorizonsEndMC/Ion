@@ -71,8 +71,6 @@ object CustomBlockListeners : SLEventListener() {
 
 		if (customBlock !is InteractableCustomBlock) return
 
-		event.isCancelled = true
-
 		when (event.action) {
 			Action.LEFT_CLICK_BLOCK -> customBlock.onLeftClick(event, clickedBlock)
 			Action.RIGHT_CLICK_BLOCK -> customBlock.onRightClick(event, clickedBlock)
