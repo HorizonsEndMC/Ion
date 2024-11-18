@@ -4,15 +4,17 @@ import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.GUI_HEADER_MARGIN
 import net.horizonsend.ion.common.utils.text.GUI_MARGIN
+import net.horizonsend.ion.common.utils.text.SHIFT_DOWN_MIN
 import net.horizonsend.ion.common.utils.text.SLOT_OVERLAY_WIDTH
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.leftShift
 import net.horizonsend.ion.common.utils.text.minecraftLength
-import net.horizonsend.ion.common.utils.text.shift
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.shiftToStartOfComponent
+import net.horizonsend.ion.common.utils.text.shift
 import net.horizonsend.ion.common.utils.text.shiftToLine
+import net.horizonsend.ion.common.utils.text.shiftToStartOfComponent
 import net.horizonsend.ion.common.utils.text.slotOverlay
+import net.horizonsend.ion.common.utils.text.yFontKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 
@@ -41,7 +43,7 @@ class GuiText(
      * Adds a GuiComponent to the GuiText
      * @param component the GuiComponent to add
      */
-    fun add(component: GuiComponent) {
+    fun add(component: GuiComponent): GuiText {
         val index = guiComponents.indexOfLast { it.isOccupied(component) }
 
         if (index >= 0) {
@@ -51,6 +53,8 @@ class GuiText(
             // append element to the end of the list
             guiComponents.add(component)
         }
+
+		return this
     }
 
     /**
@@ -82,8 +86,9 @@ class GuiText(
      * Adds a GuiBackground to the GuiText
      * @param background the GuiBackground to add
      */
-    fun addBackground(background: GuiBackground) {
+    fun addBackground(background: GuiBackground): GuiText {
         guiBackgrounds.add(background)
+		return this
     }
 
     /**
@@ -166,9 +171,9 @@ class GuiText(
             val rightGuiComponent = guiComponents.find { it.line == line && it.alignment == TextAlignment.RIGHT }
 
             val verticalShift = listOf(
-                leftGuiComponent?.verticalShift ?: 0,
-                centerGuiComponent?.verticalShift ?: 0,
-                rightGuiComponent?.verticalShift ?: 0
+                leftGuiComponent?.verticalShift ?: SHIFT_DOWN_MIN,
+                centerGuiComponent?.verticalShift ?: SHIFT_DOWN_MIN,
+                rightGuiComponent?.verticalShift ?: SHIFT_DOWN_MIN
             ).max()
 
             // get the TextComponents of the GuiComponents with the proper shift, or an empty component if not present
@@ -245,7 +250,8 @@ class GuiText(
     data class GuiBackground(
         val backgroundChar: Char = DEFAULT_BACKGROUND_CHARACTER,
         val backgroundWidth: Int = DEFAULT_GUI_WIDTH,
-        val horizontalShift: Int = 0
+        val horizontalShift: Int = 0,
+		val verticalShift: Int = 0
     )
 
     /**
@@ -255,7 +261,7 @@ class GuiText(
 
     private fun buildGuiBackground(guiBackground: GuiBackground) =
         shift(-GUI_MARGIN + guiBackground.horizontalShift)
-            .append(Component.text(guiBackground.backgroundChar).color(WHITE).font(SPECIAL_FONT_KEY))
+            .append(Component.text(guiBackground.backgroundChar).color(WHITE).font(if (guiBackground.verticalShift == 0) SPECIAL_FONT_KEY else yFontKey(guiBackground.verticalShift)))
             .append(leftShift(guiBackground.backgroundWidth))
 
     /**
