@@ -107,7 +107,7 @@ fun Collection<Audience>.sendMessage(message: ComponentLike) = ForwardingAudienc
 //<editor-fold desc="Custom GUI helper functions">/
 
 val SPECIAL_FONT_KEY = Key.key("horizonsend:special")
-private fun yFontKey(y: Int) = Key.key("horizonsend:y$y")
+fun yFontKey(y: Int) = Key.key("horizonsend:y$y")
 
 const val TEXT_HEIGHT = 9
 // DEFAULT_GUI_WIDTH is the width that text will be formatted within. The actual GUI image width will be this plus
@@ -122,7 +122,7 @@ const val SHIFT_LEFT_MIN = 1
 const val SHIFT_LEFT_MAX = 256
 const val SHIFT_RIGHT_MIN = 1
 const val SHIFT_RIGHT_MAX = 256
-const val SHIFT_DOWN_MIN = 1
+const val SHIFT_DOWN_MIN = -17
 const val SHIFT_DOWN_MAX = 110
 
 // Custom characters begin
@@ -139,6 +139,8 @@ const val DEFAULT_BACKGROUND_CHARACTER = '\uF8FF'
 const val CHETHERITE_CHARACTER = '\uF8FE'
 const val SLOT_OVERLAY_CHARACTER = '\uF8FD'
 const val SPACE_BACKGROUND_CHARACTER = '\uF8FC'
+const val BACKGROUND_EXTENDER = '\uF8FB'
+const val ANVIL_BACKGROUND = '\uF8FA'
 
 // Custom characters end
 

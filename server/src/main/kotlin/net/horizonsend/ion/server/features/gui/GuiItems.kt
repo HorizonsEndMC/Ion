@@ -2,8 +2,10 @@ package net.horizonsend.ion.server.features.gui
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.nations.gui.skullItem
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
@@ -16,6 +18,7 @@ import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
+import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.item.impl.SimpleItem
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.item.impl.controlitem.PageItem
@@ -91,16 +94,29 @@ object GuiItems {
 
     class EmptyItem : SimpleItem(ItemStack(Material.AIR))
 
-    class BlankItem(val item: Item) : ControlItem<Gui>() {
+    class BlankButton(val item: Item) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
                 it.setCustomModelData(GuiItem.EMPTY.customModelData)
-                it.displayName(item.itemProvider.get().displayName().decoration(ITALIC, false))
+                it.displayName(item.itemProvider.get().displayName().itemName)
             })
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) = item.handleClick(clickType, player, event)
     }
+
+	val blankItem get() = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+		it.displayName(empty())
+		it.setCustomModelData(GuiItem.EMPTY.customModelData)
+	}
+
+	fun createButton(displayItem: ItemStack, clickHandler: (ClickType, Player, InventoryClickEvent) -> Unit) = object : AbstractItem() {
+		override fun getItemProvider(): ItemProvider = ItemProvider { displayItem }
+
+		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+			clickHandler.invoke(clickType, player, event)
+		}
+	}
 
     open class PlayerHeadItem(val uuid: UUID, val name: String, val callback: () -> Unit = {}) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
@@ -125,7 +141,7 @@ enum class GuiItem(val customModelData: Int) {
     ROUTE_UNDO_GRAY(111),
     ROUTE_JUMP_GRAY(112),
     ROUTE_SEGMENT_2(113),
-    CHECK_MARK(114),
+    CHECKMARK(114),
     MAGNIFYING_GLASS(115),
     MAGNIFYING_GLASS_GRAY(116),
     ASTERI_2(5105),
