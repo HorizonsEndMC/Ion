@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.gui
 
 import net.horizonsend.ion.server.features.nations.gui.skullItem
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
@@ -71,16 +73,21 @@ object GuiItems {
         }
     }
 
-    class BlankItem(val item: Item) : ControlItem<Gui>() {
+    class BlankButton(val item: Item) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
                 it.setCustomModelData(GuiItem.EMPTY.customModelData)
-                it.displayName(item.itemProvider.get().displayName().decoration(ITALIC, false))
+                it.displayName(item.itemProvider.get().displayName().itemName)
             })
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) = item.handleClick(clickType, player, event)
     }
+
+	val blankItem get() = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+		it.displayName(empty())
+		it.setCustomModelData(GuiItem.EMPTY.customModelData)
+	}
 
 	fun createButton(displayItem: ItemStack, clickHandler: (ClickType, Player, InventoryClickEvent) -> Unit) = object : AbstractItem() {
 		override fun getItemProvider(): ItemProvider = ItemProvider { displayItem }
@@ -105,6 +112,7 @@ enum class GuiItem(val customModelData: Int) {
     RIGHT(103),
     DOWN(104),
     LEFT(105),
+    CHECKMARK(114),
     STARFIGHTER(6000),
     GUNSHIP(6001),
     CORVETTE(6002),

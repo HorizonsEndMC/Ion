@@ -62,7 +62,7 @@ class SettingsSoundGui(val player: Player) : AbstractBackgroundPagedGui {
             gui.addContent(button)
 
             for (i in 1..8) {
-                gui.addContent(GuiItems.BlankItem(button))
+                gui.addContent(GuiItems.BlankButton(button))
             }
         }
 
