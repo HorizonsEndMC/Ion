@@ -172,7 +172,7 @@ object MultiblockRegistration : IonServerComponent() {
 	 *
 	 * E.g. powerbank would contain all tiers of Power Banks
 	 **/
-	private val byDetectionName : Multimap<String, Multiblock> = multimapOf()
+	val byDetectionName : Multimap<String, Multiblock> = multimapOf()
 
 	override fun onEnable() {
 		initMultiblocks()
