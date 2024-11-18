@@ -310,7 +310,7 @@ class MultiblockShape {
 		fun seaLantern() = type(Material.SEA_LANTERN)
 		fun glassPane() = type(Material.GLASS_PANE)
 		fun stainedGlassPane() = filteredTypes("any stained glass pane") { it.isStainedGlassPane }
-		fun anyGlassPane(edit: BlockRequirement.() -> Unit = {}) = filteredTypes("any stained glass", edit = edit) { it.isGlassPane }
+		fun anyGlassPane(edit: BlockRequirement.() -> Unit = {}) = filteredTypes("any stained glass pane", edit = edit) { it.isGlassPane }
 
 		fun anyStairs(edit: BlockRequirement.() -> Unit = { setExample(Material.STONE_BRICK_STAIRS.createBlockData()) }) =
 			filteredTypes("any stair block", edit) { it.isStairs }
