@@ -38,6 +38,7 @@ class SettingsSoundGui(val player: Player) : AbstractBackgroundPagedGui {
     private val buttonsList = listOf(
         EnableButton(),
         CruiseIndicatorSoundButton(),
+		HitmarkerOnHullSoundButton(),
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -72,7 +73,8 @@ class SettingsSoundGui(val player: Player) : AbstractBackgroundPagedGui {
 
         val enabledSettings = listOf(
             PlayerCache[player.uniqueId].enableAdditionalSounds,
-            PlayerCache[player.uniqueId].soundCruiseIndicator
+            PlayerCache[player.uniqueId].soundCruiseIndicator,
+			PlayerCache[player.uniqueId].hitmarkerOnHull,
         )
 
         // create a new GuiText builder
@@ -147,4 +149,15 @@ class SettingsSoundGui(val player: Player) : AbstractBackgroundPagedGui {
             currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
         }
     }
+
+	private inner class HitmarkerOnHullSoundButton: GuiItems.AbstractButtonItem(
+		text("Hitmarker On Hull").decoration(ITALIC, false),
+		ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.SOUND.customModelData) }
+	) {
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            SoundSettingsCommand.onChangeCruiseIndicatorSound(player)
+
+            currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+	}
 }

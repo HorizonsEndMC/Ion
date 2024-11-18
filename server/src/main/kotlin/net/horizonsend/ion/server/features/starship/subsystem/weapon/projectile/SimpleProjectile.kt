@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
@@ -12,6 +13,9 @@ import net.horizonsend.ion.server.features.starship.damager.EntityDamager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.kyori.adventure.key.Key.key
+import net.kyori.adventure.sound.Sound.Source
+import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -155,10 +159,12 @@ abstract class SimpleProjectile(
 			"shieldDamageMultiplier = $starshipShieldDamageMultiplier, \n" +
 			"result = ${fraction * explosionPower * starshipShieldDamageMultiplier}"
 		)
+		var explosionOccurred = false
 		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * starshipShieldDamageMultiplier) {
 			AreaShields.withExplosionPowerOverride(fraction * explosionPower * areaShieldDamageMultiplier) {
 				if (!hasHit) {
-					world.createExplosion(newLoc, explosionPower)
+					// shields/area shields cancel explosion damage
+					explosionOccurred = world.createExplosion(newLoc, explosionPower)
 
 					world.spawnParticle(
 						Particle.FLASH,
@@ -178,7 +184,7 @@ abstract class SimpleProjectile(
 			}
 		}
 
-		if (block != null) addToDamagers(world, block, shooter, explosionPower.roundToInt())
+		if (block != null) addToDamagers(world, block, shooter, explosionPower.roundToInt(), explosionOccurred)
 
 		if (entity != null && entity is LivingEntity) {
 			onHitEntity(entity)
@@ -193,7 +199,7 @@ abstract class SimpleProjectile(
 		}
 	}
 
-	private fun addToDamagers(world: World, block: Block, shooter: Damager, points: Int = 1) {
+	private fun addToDamagers(world: World, block: Block, shooter: Damager, points: Int = 1, explosionOccurred: Boolean = false) {
 		val x = block.x
 		val y = block.y
 		val z = block.z
@@ -201,6 +207,12 @@ abstract class SimpleProjectile(
 		for (otherStarship in ActiveStarships.getInWorld(world)) {
 			if (otherStarship == starship || !otherStarship.contains(x, y, z)) continue
 
+			// plays hitmarker sound if the shot did hull damage (assumes the hit block was part of a starship)
+			if (explosionOccurred) {
+				val player = shooter.starship?.playerPilot?.player
+				if (player != null && PlayerCache[player].hitmarkerOnHull)
+					player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
+			}
 			otherStarship.damagers.getOrPut(shooter) {
 				ShipKillXP.ShipDamageData()
 			}.incrementPoints(points)

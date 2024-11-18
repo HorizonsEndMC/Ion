@@ -29,7 +29,7 @@ object SoundSettingsCommand : SLCommand() {
     }
 
     @Suppress("unused")
-    @Subcommand("sound")
+    @Subcommand("cruiseIndicatorSound")
     fun onChangeCruiseIndicatorSound(sender: Player) {
         val currentSetting = PlayerCache[sender.uniqueId].soundCruiseIndicator
 
@@ -39,6 +39,15 @@ object SoundSettingsCommand : SLCommand() {
         PlayerCache[sender].soundCruiseIndicator = newSetting
         sender.success("Changed cruise indicator sound to ${CruiseIndicatorSounds.entries[newSetting]}")
     }
+
+	@Suppress("unused")
+	@Subcommand("hitmarkerOnHullSound")
+	fun onChangeHitmarkerOnHullSound(sender: Player, @Optional toggle: Boolean?) {
+		val hitmarkerOnHull = toggle ?: !PlayerCache[sender].hitmarkerOnHull
+		SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::hitmarkerOnHull, hitmarkerOnHull))
+		PlayerCache[sender].hitmarkerOnHull = hitmarkerOnHull
+		sender.success("Changed hitmarker one hull sound to $hitmarkerOnHull")
+	}
 
     enum class CruiseIndicatorSounds {
         OFF,
