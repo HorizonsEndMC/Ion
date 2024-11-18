@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
@@ -167,7 +168,7 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     ROUTE_UNDO_GRAY(NamespacedKeys.packKey("ui/route_undo_gray")),
     ROUTE_JUMP_GRAY(NamespacedKeys.packKey("ui/route_jump_gray")),
     ROUTE_SEGMENT_2(NamespacedKeys.packKey("ui/route_segment_2")),
-    CHECK_MARK(NamespacedKeys.packKey("ui/checkmark")),
+    CHECKMARK(NamespacedKeys.packKey("ui/checkmark")),
     MAGNIFYING_GLASS(NamespacedKeys.packKey("ui/magnifying_glass")),
     MAGNIFYING_GLASS_GRAY(NamespacedKeys.packKey("ui/magnifying_glass_gray")),
     ASTERI_2(NamespacedKeys.packKey("planet/asteri_2")),
