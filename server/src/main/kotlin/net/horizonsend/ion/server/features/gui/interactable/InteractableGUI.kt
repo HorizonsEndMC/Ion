@@ -223,7 +223,8 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 	protected fun dropItems(location: Location) {
 		for ((slot, content) in inventory.contents.withIndex()) {
 			if (noDropSlots.contains(slot)) continue
-			viewer.world.dropItemNaturally(location, content ?: continue)
+			viewer.world.dropItemNaturally(location, content?.clone() ?: continue)
+			content.amount = 0 // Ensure no dupes
 		}
 	}
 
