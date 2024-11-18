@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GUN_BARREL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.MOTHERBOARD
+import net.horizonsend.ion.server.features.custom.items.CustomItems.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.server.features.custom.items.CustomItems.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL_RECEIVER
@@ -114,6 +115,7 @@ import org.bukkit.Material.COBWEB
 import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
+import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.CYAN_WOOL
 import org.bukkit.Material.DARK_PRISMARINE
 import org.bukkit.Material.DIAMOND
@@ -145,7 +147,6 @@ import org.bukkit.Material.MAGENTA_WOOL
 import org.bukkit.Material.MELON
 import org.bukkit.Material.MOSS_BLOCK
 import org.bukkit.Material.MOSS_CARPET
-import org.bukkit.Material.NAME_TAG
 import org.bukkit.Material.NAME_TAG
 import org.bukkit.Material.NETHERITE_BLOCK
 import org.bukkit.Material.NETHER_WART
@@ -914,6 +915,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', REACTOR_CONTROL.constructItemStack())
 			setIngredient('y', SUPERCONDUCTOR_CORE.constructItemStack())
 			setIngredient('z', FUEL_CONTROL.constructItemStack())
+		}
+
+		itemStackShapeRecipe("multiblock_workbench", MULTIBLOCK_WORKBENCH.constructItemStack()) {
+			shape("i", "c")
+
+			setIngredient('i', IRON_BLOCK)
+			setIngredient('c', CRAFTING_TABLE)
 		}
 
 		// Tool Mods start
