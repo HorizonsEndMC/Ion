@@ -57,6 +57,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_C
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GUN_BARREL
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MOTHERBOARD
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PISTOL_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_ARMOR_BOOTS
@@ -140,6 +141,8 @@ import org.bukkit.Material.COBWEB
 import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
+import org.bukkit.Material.CRAFTING_TABLE
+import org.bukkit.Material.CYAN_WOOL
 import org.bukkit.Material.DARK_PRISMARINE
 import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
@@ -607,7 +610,16 @@ object Crafting : IonServerComponent() {
 			setIngredient('y', SUPERCONDUCTOR_CORE.constructItemStack())
 			setIngredient('z', FUEL_CONTROL.constructItemStack())
 		}
-		shaped("silk_touch_modifier", SILK_TOUCH_MOD.constructItemStack()) {
+
+		itemStackShapeRecipe("multiblock_workbench", MULTIBLOCK_WORKBENCH.constructItemStack()) {
+			shape("i", "c")
+
+			setIngredient('i', IRON_BLOCK)
+			setIngredient('c', CRAFTING_TABLE)
+		}
+
+		// Tool Mods start
+		itemStackShapeRecipe("silk_touch_modifier", SILK_TOUCH_MOD.constructItemStack()) {
 			shape("gbg", "tst", "ctc")
 
 			setIngredient('g', RAW_GOLD)

@@ -55,6 +55,7 @@ object MultiblockWorkbench : InteractableCustomBlock(
 
 	override fun onRightClick(event: PlayerInteractEvent, block: Block) {
 		val player = event.player
+		event.isCancelled = true
 
 		cooldown.tryExec(player) { openMenu(player, block.location.toCenterLocation()) }
 	}
