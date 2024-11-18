@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
 import net.horizonsend.ion.server.features.custom.items.CustomItems
@@ -18,7 +19,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.horizonsend.ion.server.miscellaneous.utils.text.loreName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -79,7 +82,6 @@ object MultiblockWorkbench : InteractableCustomBlock(
 
 		override fun setup(view: InventoryView) {
 			lockedSlots.addAll(BACKGROUND_SLOTS)
-			setGuiOverlay(view)
 
 			addGuiButton(LEFT_BUTTON_SLOT, ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
 				it.setCustomModelData(GuiItem.LEFT.customModelData)
@@ -103,10 +105,11 @@ object MultiblockWorkbench : InteractableCustomBlock(
 
 			addGuiButton(CONFIRM_BUTTON_SLOT, ItemStack(Material.BARRIER)) {
 				tryPack()
-				updateConfirmationButton()
+				refreshButtons()
 			}
-			// Perform full setup of the button
-			updateConfirmationButton()
+
+			// Perform full setup of the buttons
+			refreshMultiblock(view)
 			isSearching = false
 		}
 
@@ -125,8 +128,23 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		}
 
 		private fun refreshMultiblock(view: InventoryView) {
+			internalInventory.getItem(LEFT_BUTTON_SLOT)?.updateMeta {
+				it.lore(listOf(
+					if ((multiblockIndex - 1) >= 0) ofChildren(
+						text("Previous Multiblock: ", GRAY), multiblocks[multiblockIndex - 1].getDisplayName()
+					).loreName else text("No previous multiblock", RED).loreName
+				))
+			}
+			internalInventory.getItem(RIGHT_BUTTON_SLOT)?.updateMeta {
+				it.lore(listOf(
+					if ((multiblockIndex + 1) <= multiblocks.lastIndex) ofChildren(
+						text("Next Multiblock: ", GRAY), multiblocks[multiblockIndex + 1].getDisplayName()
+					).loreName else text("No previous multiblock", RED).loreName
+				))
+			}
+
 			setGuiOverlay(view)
-			updateConfirmationButton()
+			refreshButtons()
 		}
 
 		private var ready: Boolean = false
@@ -134,7 +152,7 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		/**
 		 * Update the confirmation button to indicate whether the item requirements are fulfilled
 		 **/
-		private fun updateConfirmationButton() = Tasks.sync {
+		private fun refreshButtons() = Tasks.sync {
 			val item = inventory.contents[CONFIRM_BUTTON_SLOT] ?: return@sync
 			val missing = checkRequirements(getUnlockedItems(), currentMultiblock)
 
@@ -179,10 +197,10 @@ object MultiblockWorkbench : InteractableCustomBlock(
 			}
 
 			// Update after items have been consumed
-			updateConfirmationButton()
+			refreshButtons()
 		}
 
-		override fun itemChanged(changedSlot: Int, changedItem: ItemStack) = updateConfirmationButton()
+		override fun itemChanged(changedSlot: Int, changedItem: ItemStack) = refreshButtons()
 		override fun canRemove(slot: Int, player: Player): Boolean { return true }
 		override fun canAdd(itemStack: ItemStack, slot: Int, player: Player): Boolean { return true }
 
@@ -199,7 +217,7 @@ object MultiblockWorkbench : InteractableCustomBlock(
 			TextInputMenu(
 				player,
 				text("Search by Multiblock Name"),
-				text("Test Description"),
+				empty(),
 				backButtonHandler = {
 					this.open()
 					isSearching = false
@@ -217,7 +235,7 @@ object MultiblockWorkbench : InteractableCustomBlock(
 						multiblockIndex = multiblocks.indexOf(multiblock)
 						player.closeInventory()
 						open()
-						updateConfirmationButton()
+						refreshButtons()
 
 						isSearching = false
 					}
