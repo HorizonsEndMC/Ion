@@ -73,8 +73,8 @@ class GuiText(
         verticalShift: Int = 0
     ): GuiText {
         add(GuiComponent(component, line, alignment, horizontalShift, verticalShift))
-    	return this
-	}
+        return this
+    }
 
     /**
      * Adds a default GuiBackground to the GuiText
