@@ -5,16 +5,22 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
+import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.PrePackaged.checkRequirements
 import net.horizonsend.ion.server.features.multiblock.PrePackaged.createPackagedItem
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
+import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
@@ -61,6 +67,7 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		override val internalInventory: Inventory = IonServer.server.createInventory(this, inventorySize)
 
 		private companion object {
+			const val SEARCH_BUTTON_SLOT = 10
 			const val LEFT_BUTTON_SLOT = 18
 			const val RESULT_SLOT = 19
 			const val RIGHT_BUTTON_SLOT = 20
@@ -90,12 +97,17 @@ object MultiblockWorkbench : InteractableCustomBlock(
 				refreshMultiblock(it.view)
 			}
 
+			addGuiButton(SEARCH_BUTTON_SLOT, ItemStack(Material.NAME_TAG).setDisplayNameAndGet(text("Search").itemName)) {
+				openSearchMenu(it.playerClicker)
+			}
+
 			addGuiButton(CONFIRM_BUTTON_SLOT, ItemStack(Material.BARRIER)) {
 				tryPack()
 				updateConfirmationButton()
 			}
 			// Perform full setup of the button
 			updateConfirmationButton()
+			isSearching = false
 		}
 
 		private fun setGuiOverlay(view: InventoryView) {
@@ -146,12 +158,11 @@ object MultiblockWorkbench : InteractableCustomBlock(
 			item.updateMeta {
 				it.lore(listOf())
 				it.displayName(text("Packaged multiblock ready!", GREEN).itemName)
-				it.setCustomModelData(114)
+				it.setCustomModelData(GuiItem.CHECKMARK.customModelData )
 			}
 
 			ready = true
 		}
-
 
 		private fun tryPack() {
 			if (!ready) return
@@ -174,6 +185,59 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		override fun itemChanged(changedSlot: Int, changedItem: ItemStack) = updateConfirmationButton()
 		override fun canRemove(slot: Int, player: Player): Boolean { return true }
 		override fun canAdd(itemStack: ItemStack, slot: Int, player: Player): Boolean { return true }
-		override fun handleClose(event: InventoryCloseEvent) = dropItems(location)
+
+		private var isSearching = false
+
+		override fun handleClose(event: InventoryCloseEvent) {
+			if (isSearching) return
+			dropItems(location)
+		}
+
+		private fun openSearchMenu(player: Player) {
+			isSearching = true
+
+			TextInputMenu(
+				player,
+				text("Search by Multiblock Name"),
+				text("Test Description"),
+				backButtonHandler = {
+					this.open()
+					isSearching = false
+				},
+				inputValidator = { input ->
+					isSearching = true // Double check to make sure this is set whenever something is typed
+					val searchResults = getSearchResults(input)
+
+					if (searchResults.isNotEmpty()) ValidatorResult.ResultsResult(searchResults.map { text(it.javaClass.simpleName, GRAY).itemName })
+						else ValidatorResult.FailureResult(text("No multiblocks found!", RED))
+				},
+				successfulInputHandler = {
+					runCatching {
+						val multiblock = getSearchResults(it).firstOrNull() ?: return@TextInputMenu
+						multiblockIndex = multiblocks.indexOf(multiblock)
+						player.closeInventory()
+						open()
+						updateConfirmationButton()
+
+						isSearching = false
+					}
+				}
+			).open()
+		}
+
+		private fun getSearchResults(input: String): List<Multiblock> {
+			val detectionNames = MultiblockRegistration.byDetectionName.keys()
+				.filter { detectionName -> input.split(' ').all { splitInput -> detectionName.contains(splitInput, ignoreCase = true) } }
+				.mapNotNull(MultiblockRegistration::getByStorageName)
+
+			val classNames = MultiblockRegistration.getAllMultiblocks().map { it.javaClass.simpleName }
+				.filter { className -> input.split(' ').all { splitInput -> className.contains(splitInput, ignoreCase = true) } }
+				.mapNotNull(MultiblockRegistration::getByStorageName)
+
+			return detectionNames
+				.plus(classNames)
+				.distinct()
+				.filter { if (it.requiredPermission != null) viewer.hasPermission(it.requiredPermission!!) else true }
+		}
 	}
 }
