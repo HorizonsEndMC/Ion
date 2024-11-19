@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
@@ -15,11 +13,8 @@ import net.horizonsend.ion.server.features.transport.util.calculatePathResistanc
 import net.horizonsend.ion.server.features.transport.util.getIdealPath
 import net.horizonsend.ion.server.features.transport.util.getNetworkDestinations
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.IRON_BLOCK
@@ -28,7 +23,6 @@ import org.bukkit.Material.NOTE_BLOCK
 import org.bukkit.Material.OBSERVER
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.SPONGE
-import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Observer
 import org.bukkit.craftbukkit.v1_20_R3.block.impl.CraftEndRod
@@ -49,7 +43,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 	override fun tickExtractor(location: BlockKey, delta: Double) { NewTransport.executor.submit {
 		val world = holder.getWorld()
-		val sources = getPowerExtractorSourcePool(location, world)
+		val sources = getExtractorSources<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
 		val source = sources.randomOrNull() ?: return@submit //TODO take from all
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
@@ -81,24 +75,6 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		}
 	}}
 
-	private fun getPowerExtractorSourcePool(extractorLocation: BlockKey, world: World): List<PoweredMultiblockEntity> {
-		val sources = mutableListOf<PoweredMultiblockEntity>()
-
-		for (face in ADJACENT_BLOCK_FACES) {
-			val inputLocation = getRelative(extractorLocation, face)
-			if (holder.getOrCacheGlobalNode(inputLocation) !is PowerInputNode) continue
-			val entities = getInputEntities(world, type, inputLocation)
-
-			for (entity in entities) {
-				if (entity !is PoweredMultiblockEntity) continue
-				if (entity.powerStorage.isEmpty()) continue
-				sources.add(entity)
-			}
-		}
-
-		return sources
-	}
-
 	/**
 	 * Runs the power transfer from the source to the destinations. pending rewrite
 	 **/
@@ -106,7 +82,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		if (rawDestinations.isEmpty()) return availableTransferPower
 
 		val filteredDestinations = rawDestinations.filter { destinationLoc ->
-			getInputEntities(holder.getWorld(), type, destinationLoc).any { it is PoweredMultiblockEntity && !it.powerStorage.isFull() }
+			getInputEntities(destinationLoc).any { it is PoweredMultiblockEntity && !it.powerStorage.isFull() }
 		}
 
 		if (filteredDestinations.isEmpty()) return availableTransferPower
@@ -152,14 +128,20 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 			val share = shareFactor / shareFactorSum
 
 			val idealSend = (availableTransferPower * share).roundToInt()
-			val toSend = minOf(idealSend, getRemainingCapacity(inputData))
+			val remainingCapacity = inputData.sumOf { it.powerStorage.getRemainingCapacity() }
+
+			val toSend = minOf(idealSend, remainingCapacity)
 
 			// Amount of power that didn't fit
 			val remainder = distributePower(inputData, toSend)
 			val realTaken = toSend - remainder
 
 			remainingPower -= realTaken
-			completeChain(paths[index], realTaken)
+
+			runCatching {
+				// Update power flow meters
+				paths[index]?.forEach { if (it.type is PowerFlowMeter) it.type.onCompleteChain(realTaken) }
+			}
 
 			if (remainder == 0) continue
 
@@ -172,106 +154,38 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		return remainingPower
 	}
-}
 
-/**
- * Gets the powered entities accessible from this location, assuming it is an input
- * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
- **/
-fun getInputEntities(world: World, type: CacheType, location: BlockKey): Set<MultiblockEntity> {
-	val inputManager = world.ion.inputManager
-	val registered = inputManager.getHolders(type, location)
+	/**
+	 * Distributes power to the provided list of entities
+	 * Returns the amount that would not fit
+	 **/
+	private fun distributePower(destinations: List<PoweredMultiblockEntity>, power: Int): Int {
+		val entities = destinations.filterTo(mutableListOf()) { !it.powerStorage.isFull() }
+		if (entities.isEmpty()) return power
 
-	val adjacentBlocks = stupidOffsets.mapNotNull { MultiblockEntities.getMultiblockEntity(world, it.x, it.y, it.z) }
+		// Skip math for most scenarios
+		if (entities.size == 1) return entities.first().powerStorage.addPower(power)
 
-	return registered.plus(adjacentBlocks)
-}
+		var remainingPower = power
 
-/**
- * Distributes power to the provided list of entities
- * Returns the amount that would not fit
- **/
-fun distributePower(destinations: List<PoweredMultiblockEntity>, power: Int): Int {
-	val entities = destinations.filterTo(mutableListOf()) { !it.powerStorage.isFull() }
-	if (entities.isEmpty()) return power
+		while (remainingPower > 0) {
+			if (entities.isEmpty()) break
 
-	// Skip math for most scenarios
-	if (entities.size == 1) return entities.first().powerStorage.addPower(power)
+			val share = remainingPower / entities.size
+			val minRemaining = entities.minOf { it.powerStorage.getRemainingCapacity() }
+			val distributed = minOf(minRemaining, share)
 
-	var remainingPower = power
+			val iterator = entities.iterator()
+			while (iterator.hasNext()) {
+				val entity = iterator.next()
 
-	while (remainingPower > 0) {
-		if (entities.isEmpty()) break
+				val r = entity.powerStorage.addPower(distributed)
+				if (entity.powerStorage.isFull()) iterator.remove()
 
-		val share = remainingPower / entities.size
-		val minRemaining = entities.minOf { it.powerStorage.getRemainingCapacity() }
-		val distributed = minOf(minRemaining, share)
-
-		val iterator = entities.iterator()
-		while (iterator.hasNext()) {
-			val entity = iterator.next()
-
-			val r = entity.powerStorage.addPower(distributed)
-			if (entity.powerStorage.isFull()) iterator.remove()
-
-			remainingPower -= (distributed - r)
-		}
-	}
-
-	return remainingPower
-}
-
-private fun getRemainingCapacity(destinations: List<PoweredMultiblockEntity>): Int {
-	return destinations.sumOf { it.powerStorage.getRemainingCapacity() }
-}
-
-private fun completeChain(path: Array<Node.NodePositionData>?, transferred: Int) {
-	path?.forEach { if (it.type is PowerFlowMeter) it.type.onCompleteChain(transferred) }
-}
-
-// I hate this function but it works
-fun getSorted(pathResistance: Array<Double?>): IntArray {
-	// Store the shuffled indicies
-	val ranks = IntArray(pathResistance.size) { it }
-	val tempSorted = pathResistance.clone()
-
-	for (index in ranks.indices) {
-		for (j in 0..< ranks.lastIndex) {
-			if ((tempSorted[j] ?: Double.MAX_VALUE) > (tempSorted[j + 1] ?: Double.MAX_VALUE)) {
-				val temp = tempSorted[j]
-				tempSorted[j] = tempSorted[j + 1]
-				tempSorted[j + 1] = temp
-
-				val prev = ranks[j]
-				ranks[j] = prev + 1
-				ranks[j + 1] = prev
+				remainingPower -= (distributed - r)
 			}
 		}
+
+		return remainingPower
 	}
-
-	return ranks
 }
-
-val stupidOffsets: Array<Vec3i> = arrayOf(
-	// Upper ring
-	Vec3i(1, 1, 0),
-	Vec3i(-1, 1, 0),
-	Vec3i(0, 1, 1),
-	Vec3i(0, 1, -1),
-	// Lower ring
-	Vec3i(1, -1, 0),
-	Vec3i(-1, -1, 0),
-	Vec3i(0, -1, 1),
-	Vec3i(0, -1, -1),
-
-	// Middle ring
-	Vec3i(2, 0, 0),
-	Vec3i(-2, 0, 0),
-	Vec3i(0, 0, -2),
-	Vec3i(0, 0, -2),
-
-	Vec3i(1, 0, 1),
-	Vec3i(-1, 0, 1),
-	Vec3i(1, 0, -1),
-	Vec3i(-1, 0, -1),
-)
