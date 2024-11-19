@@ -44,8 +44,17 @@ abstract class FluidStorageMultiblock(val capacity: Int) : Multiblock(), EntityM
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : BasicFluidStoringEntity(manager, multiblock, data, x, y, z, world, structureDirection, UnlimitedInternalStorage(multiblock.capacity, true)), FluidStoringEntity, DisplayMultiblockEntity {
+	) : BasicFluidStoringEntity(
+		manager,
+		multiblock,
+		data,
+		x, y, z,
+		world,
+		structureDirection,
+		UnlimitedInternalStorage(multiblock.capacity, inputAllowed = true, extractionAllowed = true)
+	), FluidStoringEntity, DisplayMultiblockEntity {
 		override val fluidInputOffset: Vec3i = Vec3i(0, -1, 0)
+
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
 			SplitFluidDisplay(mainStorage, +0.0, -0.0, +0.0, 0.45f),

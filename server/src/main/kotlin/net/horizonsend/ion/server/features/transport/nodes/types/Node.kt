@@ -23,7 +23,7 @@ interface Node {
 	 **/
 	fun canTransferFrom(other: Node, offset: BlockFace): Boolean
 
-	fun getNextNodes(world: World, position: BlockKey, backwards: BlockFace): List<NodePositionData> {
+	fun getNextNodes(world: World, position: BlockKey, backwards: BlockFace, filter: ((Node, BlockFace) -> Boolean)?): List<NodePositionData> {
 		val adjacent = getTransferableDirections(backwards)
 		val nodes = mutableListOf<NodePositionData>()
 
@@ -32,6 +32,7 @@ interface Node {
 			val cached = getOrCacheNode(cacheType, world, pos) ?: continue
 
 			if (!cached.canTransferFrom(this, adjacentFace) || !canTransferTo(cached, adjacentFace)) continue
+			if (filter != null && !filter.invoke(cached, adjacentFace)) continue
 
 			nodes.add(NodePositionData(cached, world, getRelative(position, adjacentFace), adjacentFace))
 		}
@@ -40,7 +41,8 @@ interface Node {
 	}
 
 	data class NodePositionData(val type: Node, val world: World, val position: BlockKey, val offset: BlockFace) {
-		fun getNextNodes(): List<NodePositionData> = type.getNextNodes(world, position, offset.oppositeFace)
+		fun getNextNodes(filter: ((Node, BlockFace) -> Boolean)?): List<NodePositionData> =
+				type.getNextNodes(world, position, offset.oppositeFace, filter)
 	}
 
 	fun onInvalidate() {}
