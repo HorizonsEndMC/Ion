@@ -26,9 +26,9 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.pane
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.stairs
-import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.HYDROGEN
-import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.OXYGEN
-import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids.WATER
+import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.HYDROGEN
+import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.OXYGEN
+import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.WATER
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
@@ -212,10 +212,10 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 
 		override val powerStorage: PowerStorage = loadStoredPower(data)
 
-		override val capacities: Array<StorageContainer> = arrayOf(
-			loadStoredResource(data, "water_tank", text("Water Tank"), TANK_1, SingleFluidStorage(1000, WATER, true)),
-			loadStoredResource(data, "oxygen_tank", text("Oxygen Tank"), TANK_2, SingleFluidStorage(10000, OXYGEN, false)),
-			loadStoredResource(data, "hydrogen_tank", text("Hydrogen Tank"), TANK_3, SingleFluidStorage(10000, HYDROGEN, false))
+		override val fluidStores: Array<StorageContainer> = arrayOf(
+			loadStoredResource(data, "water_tank", text("Water Tank"), TANK_1, SingleFluidStorage(1000, WATER, inputAllowed =  true, extractionAllowed = false)),
+			loadStoredResource(data, "oxygen_tank", text("Oxygen Tank"), TANK_2, SingleFluidStorage(10000, OXYGEN, inputAllowed =  false, extractionAllowed = true)),
+			loadStoredResource(data, "hydrogen_tank", text("Hydrogen Tank"), TANK_3, SingleFluidStorage(10000, HYDROGEN, inputAllowed =  false, extractionAllowed = true))
 		)
 
 		private val hydrogenStorage by lazy { getNamedStorage("hydrogen_tank") }
@@ -231,7 +231,7 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		).register()
 
 		override fun tickAsync() {
-			val remainder = waterStorage.internalStorage.remove(WATER_INCREMENT)
+			val remainder = waterStorage.internalStorage.removeAmount(WATER_INCREMENT)
 			val removed = WATER_INCREMENT - remainder
 
 			oxygenStorage.internalStorage.addAmount(3 * removed)
