@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 
-import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
-import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids
+import net.horizonsend.ion.server.features.transport.fluids.Fluid
+import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry
+import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.EMPTY
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -12,77 +14,80 @@ import org.bukkit.persistence.PersistentDataType
  * Each internal storage can hold a single type of fluid
  **/
 abstract class InternalStorage {
-	protected var amountUnsafe: Int = 0
-	protected open var fluidUnsafe: PipedFluid? = null
+	private var amountUnsafe: Int = 0
+	protected open var fluidUnsafe: Fluid = EMPTY
 
 	abstract val inputAllowed: Boolean
+	abstract val extractionAllowed: Boolean
+
+	protected val mutex: Any = Any()
+
+	fun getFluidType(): Fluid = synchronized(mutex) { fluidUnsafe }
+	fun getAmount(): Int = synchronized(mutex) { amountUnsafe }
 
 	abstract fun getCapacity(): Int
 
 	fun remainingCapacity() = getCapacity() - getAmount()
 
-	abstract fun canStore(resource: PipedFluid, liters: Int): Boolean
+	abstract fun canStore(fluid: FluidStack): Boolean
 
-	fun isEmpty(): Boolean = getStoredFluid() == null || getAmount() == 0
+	abstract fun canStore(type: Fluid): Boolean
 
-	fun isFull(): Boolean = getStoredFluid() != null && getAmount() == getCapacity()
+	fun isEmpty(): Boolean = getFluidType() == EMPTY || getAmount() == 0
 
-	fun remove(amount: Int): Int {
-		val newTotal = getAmount() - amount
+	fun isFull(): Boolean = getFluidType() != EMPTY && getAmount() == getCapacity()
+
+	fun removeAmount(amount: Int): Int {
+		val newAmount = synchronized(mutex) {
+			val newTotal = amountUnsafe - amount
+			val corrected = newTotal.coerceIn(0, getCapacity())
+
+			amountUnsafe = corrected
+			newTotal
+		}
+
+		runUpdates()
+
 		// negative total will be a remainder
-		val notRemoved = if (newTotal < 0) -newTotal else 0
-
-		setAmount(newTotal)
-
-		return notRemoved
-	}
-
-	fun remove(fluid: PipedFluid, amount: Int): Int {
-		if (getStoredFluid() != null && fluid != getStoredFluid()) return amount
-
-		if (getStoredFluid() == null) setFluid(fluid)
-
-		return remove(amount)
+		return if (newAmount < 0) -newAmount else 0
 	}
 
 	fun addAmount(amount: Int): Int {
-		val newTotal = getAmount() + amount
-		val notAdded = if (newTotal > getCapacity()) newTotal - getCapacity() else 0
+		val newAmount = synchronized(mutex) {
+			val newAmount = amountUnsafe + amount
+			val corrected = newAmount.coerceIn(0, getCapacity())
 
-		setAmount(getAmount() + amount)
+			amountUnsafe = corrected
+			newAmount
+		}
 
-		return notAdded
+		runUpdates()
+
+		return if (newAmount > getCapacity()) newAmount - getCapacity() else 0
 	}
 
-	fun addAmount(fluid: PipedFluid, amount: Int): Int {
-		if (getStoredFluid() != null && fluid != getStoredFluid()) return amount
-
-		if (getStoredFluid() == null) setFluid(fluid)
-
-		return addAmount(amount)
-	}
-
-	fun getStoredFluid(): PipedFluid? = fluidUnsafe
-
-	fun getAmount(): Int = amountUnsafe
-
-	fun setContents(fluid: PipedFluid, amount: Int) {
-		setFluid(fluid)
-		setAmount(amount)
+	fun setContents(fluid: FluidStack) {
+		setFluid(fluid.type)
+		setAmount(fluid.amount)
 	}
 
 	fun setAmount(amount: Int) {
-		val corrected = amount.coerceIn(0, getCapacity())
+		val new = synchronized(mutex) {
+			val corrected = amount.coerceIn(0, getCapacity())
 
-		this.amountUnsafe = corrected
+			this.amountUnsafe = corrected
+			corrected
+		}
 
-		if (corrected == 0) setFluid(null)
+		if (new == 0) setFluid(EMPTY)
 
 		runUpdates()
 	}
 
-	fun setFluid(fluid: PipedFluid?) {
-		this.fluidUnsafe = fluid
+	fun setFluid(fluid: Fluid) {
+		synchronized(mutex) {
+			this.fluidUnsafe = fluid
+		}
 
 		runUpdates()
 	}
@@ -91,7 +96,7 @@ abstract class InternalStorage {
 	 * Load storage data from the provided persistent data container
 	 **/
 	fun loadData(pdc: PersistentDataContainer) {
-		val fluid = pdc.get(NamespacedKeys.FLUID, PersistentDataType.STRING)?.let { TransportedFluids[it] }
+		val fluid = pdc.get(NamespacedKeys.FLUID, PersistentDataType.STRING)?.let { FluidRegistry[it] } ?: EMPTY
 		val amount = pdc.getOrDefault(NamespacedKeys.FLUID_AMOUNT, PersistentDataType.INTEGER, 0)
 
 		setFluid(fluid)
@@ -102,7 +107,7 @@ abstract class InternalStorage {
 	 * Save storage data to the provided persistent data container
 	 **/
 	fun saveData(destination: PersistentDataContainer) {
-		val fluid = getStoredFluid() ?: return
+		val fluid = getFluidType()
 		val amount = getAmount()
 
 		destination.set(NamespacedKeys.FLUID, PersistentDataType.STRING, fluid.identifier)
@@ -127,6 +132,6 @@ abstract class InternalStorage {
 	}
 
 	override fun toString(): String {
-		return "${javaClass.simpleName}[capacity= ${getCapacity()} fluid= (${getStoredFluid()}, ${getAmount()})]"
+		return "${javaClass.simpleName}[capacity= ${getCapacity()} fluid= (${getFluidType()}, ${getAmount()})]"
 	}
 }
