@@ -68,12 +68,10 @@ interface FluidStoringEntity {
 	/**
 	 * Adds the amount of the fluid to the first available internal storage
 	 **/
-	fun addFirstAvailable(fluid: FluidStack, debug: Boolean = false): Int {
+	fun addFirstAvailable(fluid: FluidStack): Int {
 		var remaining = fluid.amount
-		if (debug) println("Remain ing: $remaining")
 
 		for (container in fluidStores.filter { it.internalStorage.canStore(fluid.type) }) {
-			if (debug) println("Re ing: $remaining")
 			container.internalStorage.setFluid(fluid.type)
 			val remainder = container.internalStorage.addAmount(remaining)
 			remaining -= (remaining - remainder)
