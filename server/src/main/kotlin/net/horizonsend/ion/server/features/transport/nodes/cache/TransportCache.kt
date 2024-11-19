@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.block.Block
 
-abstract class TransportCache(val holder: CacheHolder<*> /* TODO temp network holder, works for now */) {
+abstract class TransportCache(val holder: CacheHolder<*>) {
 	private val cache: Long2ObjectOpenHashMap<CacheState> = Long2ObjectOpenHashMap()
 	private val mutex = Any()
 
