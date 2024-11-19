@@ -19,7 +19,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.UNWAXED_CHISELED_COPPER_TY
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.Material
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.WAXED_CHISELED_COPPER
@@ -50,7 +49,6 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 	override fun tickExtractor(location: BlockKey, delta: Double) { NewTransport.executor.submit {
 		val world = holder.getWorld()
 		val sources = getFluidExtractorSourcePool(location, world)
-		println("Sources: $sources")
 		val source = sources.randomOrNull() ?: return@submit //TODO take from all
 
 		if (source.getStoredResources().isEmpty()) return@submit
@@ -59,8 +57,6 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		val destinations: List<BlockKey> = getNetworkDestinations<FluidNode.FluidInputNode>(type, world, location) { node ->
 			world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is FluidStoringEntity && !entity.isFull() }
 		}
-
-		println("Destinations: ${destinations.size}")
 
 		if (destinations.isEmpty()) return@submit
 
@@ -97,12 +93,9 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		for (face in ADJACENT_BLOCK_FACES) {
 			val inputLocation = getRelative(extractorLocation, face)
 			if (holder.getOrCacheGlobalNode(inputLocation) !is FluidNode.FluidInputNode) {
-				println("$face isn't a input")
 				continue
 			}
 			val entities = getInputEntities(world, type, inputLocation)
-
-			println("entities: $entities")
 
 			for (entity in entities) {
 				if (entity !is FluidStoringEntity) continue
@@ -114,18 +107,13 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 	}
 
 	fun runFluidTransfer(source: Node.NodePositionData, rawDestinations: List<BlockKey>, fluid: Fluid, amount: Int): Int {
-		println("Transferring $amount $fluid from ${toVec3i(source.position)} to ${rawDestinations.size}")
 		if (rawDestinations.isEmpty()) return amount
 
 		val filteredDestinations = rawDestinations.filter { destinationLoc ->
 			getInputEntities(holder.getWorld(), type, destinationLoc).any { it is FluidStoringEntity && it.anyCapacityCanStore(fluid) }
 		}
 
-		println("$filteredDestinations destinations filtered")
-
 		if (filteredDestinations.isEmpty()) return amount
-
-		println("1")
 
 		val numDestinations = filteredDestinations.size
 
@@ -135,8 +123,6 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 
 		var maximumResistance: Double = -1.0
 
-		println("max resistance: $maximumResistance")
-
 		// Perform the calc & max find in the same loop
 		val pathResistance: Array<Double?> = Array(numDestinations) {
 			val res = calculatePathResistance(paths[it])
@@ -144,8 +130,6 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 
 			res
 		}
-
-		println("max resistance: $maximumResistance")
 
 		// All null, no paths found
 		if (maximumResistance == -1.0) return amount
@@ -166,28 +150,17 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		var remainingAmount = amount
 
 		for ((index, destination) in filteredDestinations.withIndex()) {
-			println("Transferring index $index to ${toVec3i(destination)}")
-
 			val shareFactor = shareFactors[index] ?: continue
-			println("Share factor: $shareFactor")
 			val inputData = FluidNode.FluidInputNode.getFluidEntities(source.world, destination)
-			println("Input entities: ${inputData.size}")
 
 			val share = shareFactor / shareFactorSum
-			println("Share: $share")
-			println("Amount: $amount")
 
 			val idealSend = (amount * share).roundToInt()
-			println("IdealSend: $idealSend")
 			val capacity = getRemainingCapacity(fluid, inputData)
-			println("Capacity: $capacity")
 			val toSend = minOf(idealSend, capacity)
-
-			println("toSend: $toSend")
 
 			// Amount of power that didn't fit
 			val remainder = distributeFluid(inputData, fluid, toSend)
-			println("Distributed, $remainder remaining")
 			val realTaken = toSend - remainder
 
 			remainingAmount -= realTaken
@@ -214,8 +187,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		if (entities.isEmpty()) return amount
 
 		// Skip math for most scenarios
-		println("entities.size: ${entities.size}")
-		if (entities.size == 1) return entities.first().addFirstAvailable(FluidStack(fluid, amount), true)
+		if (entities.size == 1) return entities.first().addFirstAvailable(FluidStack(fluid, amount))
 
 		var remainingPower = amount
 
@@ -230,7 +202,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 			while (iterator.hasNext()) {
 				val entity = iterator.next()
 
-				val r = entity.addFirstAvailable(FluidStack(fluid, amount), true)
+				val r = entity.addFirstAvailable(FluidStack(fluid, amount))
 				if (r > 0) iterator.remove()
 
 				remainingPower -= (distributed - r)
