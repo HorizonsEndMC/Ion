@@ -9,9 +9,7 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
-import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
-import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.getNetworkDestinations
@@ -78,14 +76,13 @@ object IonChunkCommand : SLCommand() {
 		sender.information("${grid.getRawCache().size} covered position(s).")
 		sender.information("${grid.getRawCache().values.distinct().size} unique node(s).")
 
-		grid.getRawCache().forEach { (t, u) ->
+		grid.getRawCache().forEach { (t, _) ->
 			val vec = toVec3i(t)
 			sender.highlightBlock(vec, 50L)
 		}
 	}
 
 	@Subcommand("dump extractors")
-	@CommandCompletion("power") /* |item|gas") */
 	fun dumpExtractors(sender: Player, network: CacheType) {
 		val ionChunk = sender.chunk.ion()
 		val extractors = network.get(ionChunk).holder.getExtractorManager()
@@ -138,11 +135,12 @@ object IonChunkCommand : SLCommand() {
 	}
 
 	@Subcommand("test extractor")
-	fun onTick(sender: Player) {
-		val (node, location) = requireLookingAt(sender, CacheType.POWER)
-		if (node !is PowerNode.PowerExtractorNode) fail { "Extractor not targeted" }
+	fun onTick(sender: Player, type: CacheType) {
+		val (node, location) = requireLookingAt(sender, type)
 		val chunk = IonChunk.getFromWorldCoordinates(sender.world, getX(location), getZ(location)) ?: fail { "Chunk not loaded" }
-		val grid = CacheType.POWER.get(chunk) as PowerTransportCache
+		val grid = type.get(chunk)
+		if (grid.holder.getExtractorManager().isExtractor(location)) fail { "Extractor not targeted" }
+
 		grid.tickExtractor(location, 1.0)
 	}
 
