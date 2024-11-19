@@ -1,16 +1,24 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 
-import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
+import net.horizonsend.ion.server.features.transport.fluids.Fluid
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 
-class SingleFluidStorage(private val storageCapacity: Int, private val restrictedFluid: PipedFluid, override val inputAllowed: Boolean) : InternalStorage() {
-	override var fluidUnsafe: PipedFluid? = restrictedFluid
+class SingleFluidStorage(
+	private val storageCapacity: Int,
+	private val allowedFluid: Fluid,
+	override val inputAllowed: Boolean,
+	override val extractionAllowed: Boolean
+) : InternalStorage() {
+	override var fluidUnsafe: Fluid = allowedFluid
 
 	override fun getCapacity(): Int = storageCapacity
 
-	override fun canStore(resource: PipedFluid, liters: Int): Boolean {
-		if (liters + getAmount() > getCapacity()) return false
+	override fun canStore(fluid: FluidStack): Boolean {
+		if (!canStore(fluid.type)) return false
+		return fluid.amount + getAmount() <= getCapacity()
+	}
 
-		// Check that the fluid attempting to be stored is the same as the one currently stored
-		return (getStoredFluid() == null || resource == restrictedFluid)
+	override fun canStore(type: Fluid): Boolean {
+		return type == allowedFluid
 	}
 }
