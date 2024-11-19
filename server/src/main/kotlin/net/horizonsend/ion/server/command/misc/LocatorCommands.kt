@@ -37,6 +37,8 @@ object LocatorCommands : SLCommand() {
 	fun onGetPos(sender: CommandSender, name: String) = asyncCommand(sender) {
 		val target = Bukkit.getPlayer(name) ?: fail { "Player $name not found!" }
 
+		failIf(target.hasPermission("group.dutymode")) { "Player $name not found!" }
+
 		var relation: NationRelation.Level = NationRelation.Level.NONE
 		var distance = 0.0
 
@@ -99,6 +101,7 @@ object LocatorCommands : SLCommand() {
 
 		val body = players.mapNotNull { player ->
 			val cached = PlayerCache.getIfOnline(player) ?: return@mapNotNull null
+			if (player.hasPermission("group.dutymode")) return@mapNotNull null
 			val nation = cached.nationOid
 
 			var nameColor = NamedTextColor.WHITE

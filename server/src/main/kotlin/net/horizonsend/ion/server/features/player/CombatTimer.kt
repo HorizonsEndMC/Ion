@@ -180,6 +180,8 @@ object CombatTimer : IonServerComponent() {
 		if (!enabled) return
 		if (attacker == defender) return
 
+		if (attacker.hasPermission("group.dutymode") || defender.hasPermission("group.dutymode")) return
+
 		// don't run for combat NPCs
 		if (defender.hasMetadata("NPC")) return
 
@@ -218,6 +220,8 @@ object CombatTimer : IonServerComponent() {
 	 */
 	fun evaluateSvs(shooter: Damager, defendingStarship: ActiveStarship) {
 		if (!enabled) return
+		if (shooter is PlayerDamager && shooter.player.hasPermission("group.dutymode")) return
+		if (defendingStarship.playerPilot?.hasPermission("group.dutymode") == true) return
 
 		if (shooter is AIShipDamager && defendingStarship.controller is PlayerController) {
 			// refresh NPC combat timer if attacker is AI and defender is player
