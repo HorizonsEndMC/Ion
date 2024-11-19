@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory.GAS
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -111,10 +112,10 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		override val tickingManager: TickingManager = TickingManager(interval = 4)
 		override val fluidInputOffsets: Array<Vec3i> = arrayOf(Vec3i(0, -1, 0))
 
-		override val capacities: Array<StorageContainer> = arrayOf(
-			loadStoredResource(data, "tank_1", text("Tank 1"), TANK_1, CategoryRestrictedInternalStorage(500, false, GAS)),
-			loadStoredResource(data, "tank_2", text("Tank 2"), TANK_2, CategoryRestrictedInternalStorage(500, false, GAS)),
-			loadStoredResource(data, "tank_3", text("Tank 3"), TANK_3, CategoryRestrictedInternalStorage(500, false, GAS)),
+		override val fluidStores: Array<StorageContainer> = arrayOf(
+			loadStoredResource(data, "tank_1", text("Tank 1"), TANK_1, CategoryRestrictedInternalStorage(500, inputAllowed = false, extractionAllowed = true, GAS)),
+			loadStoredResource(data, "tank_2", text("Tank 2"), TANK_2, CategoryRestrictedInternalStorage(500, inputAllowed = false, extractionAllowed = true, GAS)),
+			loadStoredResource(data, "tank_3", text("Tank 3"), TANK_3, CategoryRestrictedInternalStorage(500, inputAllowed = false, extractionAllowed = true, GAS)),
 		)
 
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
@@ -147,7 +148,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 				val fluid = gas.fluid
 				val adjusted = (amount * deltaT).roundToInt()
 
-				addFirstAvailable(fluid, adjusted)
+				addFirstAvailable(FluidStack(fluid, adjusted))
 			}
 		}
 
@@ -158,7 +159,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		}
 
 		override fun toString(): String {
-			return "Piped gas collector. Storages: ${capacities.toList()}"
+			return "Piped gas collector. Storages: ${fluidStores.toList()}"
 		}
 	}
 }

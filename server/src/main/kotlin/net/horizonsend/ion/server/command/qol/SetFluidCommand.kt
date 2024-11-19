@@ -11,8 +11,9 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
-import net.horizonsend.ion.server.features.transport.fluids.PipedFluid
-import net.horizonsend.ion.server.features.transport.fluids.TransportedFluids
+import net.horizonsend.ion.server.features.transport.fluids.Fluid
+import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import org.bukkit.entity.Player
 
@@ -21,21 +22,21 @@ import org.bukkit.entity.Player
 object SetFluidCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerCompletion("fluids") {
-			TransportedFluids.getAll().map { it.identifier }
+			FluidRegistry.getAll().map { it.identifier }
 		}
 
-		manager.commandContexts.registerContext(PipedFluid::class.java) {
+		manager.commandContexts.registerContext(Fluid::class.java) {
 			val id = it.popFirstArg()
-			TransportedFluids[id]  ?: throw InvalidCommandArgument("Fluid $id not found!")
+			FluidRegistry[id]  ?: throw InvalidCommandArgument("Fluid $id not found!")
 		}
 
-		manager.commandCompletions.setDefaultCompletion("fluids", PipedFluid::class.java)
+		manager.commandCompletions.setDefaultCompletion("fluids", Fluid::class.java)
 	}
 
 	@Default
 	@CommandCompletion("@fluids 0|1000|500000|2147483647 main")
 	@Suppress("unused")
-	fun onSetFluid(sender: Player, fluid: PipedFluid, amount: Int, storeName: String) {
+	fun onSetFluid(sender: Player, fluid: Fluid, amount: Int, storeName: String) {
 		val selection = runCatching { sender.getSelection() }.getOrNull() ?: fail { "You must make a selection!" }
 
 		if (sender.world.name != selection.world?.name) return
@@ -52,7 +53,7 @@ object SetFluidCommand : SLCommand() {
 			val entity = MultiblockEntities.getMultiblockEntity(sender.world, x, y ,z)
 			if (entity !is FluidStoringEntity) continue
 
-			entity.getNamedStorage(storeName).internalStorage.setContents(fluid, amount)
+			entity.getNamedStorage(storeName).internalStorage.setContents(FluidStack(fluid, amount))
 			hits++
 
 			sender.debug("power sent")

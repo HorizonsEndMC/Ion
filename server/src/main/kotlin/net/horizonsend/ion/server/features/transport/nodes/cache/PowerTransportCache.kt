@@ -87,7 +87,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		for (face in ADJACENT_BLOCK_FACES) {
 			val inputLocation = getRelative(extractorLocation, face)
 			if (holder.getOrCacheGlobalNode(inputLocation) !is PowerInputNode) continue
-			val entities = getInputEntities(world, inputLocation)
+			val entities = getInputEntities(world, type, inputLocation)
 
 			for (entity in entities) {
 				if (entity !is PoweredMultiblockEntity) continue
@@ -106,8 +106,10 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		if (rawDestinations.isEmpty()) return availableTransferPower
 
 		val filteredDestinations = rawDestinations.filter { destinationLoc ->
-			getInputEntities(holder.getWorld(), destinationLoc).any { it is PoweredMultiblockEntity && !it.powerStorage.isFull() }
+			getInputEntities(holder.getWorld(), type, destinationLoc).any { it is PoweredMultiblockEntity && !it.powerStorage.isFull() }
 		}
+
+		if (filteredDestinations.isEmpty()) return availableTransferPower
 
 		val numDestinations = filteredDestinations.size
 
@@ -176,9 +178,9 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
  * Gets the powered entities accessible from this location, assuming it is an input
  * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
  **/
-fun getInputEntities(world: World, location: BlockKey): Set<MultiblockEntity> {
+fun getInputEntities(world: World, type: CacheType, location: BlockKey): Set<MultiblockEntity> {
 	val inputManager = world.ion.inputManager
-	val registered = inputManager.getHolders(CacheType.POWER, location)
+	val registered = inputManager.getHolders(type, location)
 
 	val adjacentBlocks = stupidOffsets.mapNotNull { MultiblockEntities.getMultiblockEntity(world, it.x, it.y, it.z) }
 
