@@ -39,7 +39,7 @@ class LegacyIndustryRecipe(
 				if (resultItem.amount + resultSlot.amount > resultSlot.maxStackSize) return false
 				true
 			}
-			is FluidResult -> context.entity is FluidStoringEntity && context.entity.canStore(result.fluid, result.amount)
+			is FluidResult -> context.entity is FluidStoringEntity && context.entity.getCapacityFor(result.fluid.type) >= result.fluid.amount
 			else -> false
 		}
 	}
