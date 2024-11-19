@@ -14,18 +14,15 @@ import net.horizonsend.ion.server.features.transport.util.calculatePathResistanc
 import net.horizonsend.ion.server.features.transport.util.getIdealPath
 import net.horizonsend.ion.server.features.transport.util.getNetworkDestinations
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.UNWAXED_CHISELED_COPPER_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import org.bukkit.Material
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.WAXED_CHISELED_COPPER
 import org.bukkit.Material.WAXED_EXPOSED_CHISELED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
 import org.bukkit.Material.WAXED_WEATHERED_CHISELED_COPPER
-import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.v1_20_R3.block.impl.CraftLightningRod
 import kotlin.math.roundToInt
@@ -48,7 +45,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 
 	override fun tickExtractor(location: BlockKey, delta: Double) { NewTransport.executor.submit {
 		val world = holder.getWorld()
-		val sources = getFluidExtractorSourcePool(location, world)
+		val sources = getExtractorSources<FluidStoringEntity>(location) { it.isEmpty() }
 		val source = sources.randomOrNull() ?: return@submit //TODO take from all
 
 		if (source.getStoredResources().isEmpty()) return@submit
@@ -87,30 +84,14 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		}
 	} }
 
-	private fun getFluidExtractorSourcePool(extractorLocation: BlockKey, world: World): List<FluidStoringEntity> {
-		val sources = mutableListOf<FluidStoringEntity>()
-
-		for (face in ADJACENT_BLOCK_FACES) {
-			val inputLocation = getRelative(extractorLocation, face)
-			if (holder.getOrCacheGlobalNode(inputLocation) !is FluidNode.FluidInputNode) {
-				continue
-			}
-			val entities = getInputEntities(world, type, inputLocation)
-
-			for (entity in entities) {
-				if (entity !is FluidStoringEntity) continue
-				sources.add(entity)
-			}
-		}
-
-		return sources
-	}
-
-	fun runFluidTransfer(source: Node.NodePositionData, rawDestinations: List<BlockKey>, fluid: Fluid, amount: Int): Int {
+	/**
+	 * Executes the transfer from the source node to the lit of destinations. Transports one fluid at a time.
+	 **/
+	private fun runFluidTransfer(source: Node.NodePositionData, rawDestinations: List<BlockKey>, fluid: Fluid, amount: Int): Int {
 		if (rawDestinations.isEmpty()) return amount
 
 		val filteredDestinations = rawDestinations.filter { destinationLoc ->
-			getInputEntities(holder.getWorld(), type, destinationLoc).any { it is FluidStoringEntity && it.anyCapacityCanStore(fluid) }
+			getInputEntities(destinationLoc).any { it is FluidStoringEntity && it.anyCapacityCanStore(fluid) }
 		}
 
 		if (filteredDestinations.isEmpty()) return amount
@@ -182,7 +163,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		return destinations.sumOf { it.getCapacityFor(fluid) }
 	}
 
-	fun distributeFluid(destinations: List<FluidStoringEntity>, fluid: Fluid, amount: Int): Int {
+	private fun distributeFluid(destinations: List<FluidStoringEntity>, fluid: Fluid, amount: Int): Int {
 		val entities = destinations.filterTo(mutableListOf()) { it.getCapacityFor(fluid) > 0 }
 		if (entities.isEmpty()) return amount
 
@@ -211,7 +192,6 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 
 		return remainingPower
 	}
-
 
 	private fun completeChain(path: Array<Node.NodePositionData>?, transferred: Int) {
 		path?.forEach { if (it.type is PowerNode.PowerFlowMeter) it.type.onCompleteChain(transferred) }
