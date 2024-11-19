@@ -16,7 +16,7 @@ class SimpleFluidDisplay(
 	scale: Float
 ) : FluidDisplay(storage, offsetLeft, offsetUp, offsetBack, scale) {
 	override fun getText(): Component {
-		return ofChildren(formatFluid(), space(), container.internalStorage.getStoredFluid()?.displayName ?: empty)
+		return ofChildren(formatFluid(), space(), container.internalStorage.getFluidType()?.displayName ?: empty)
 	}
 
 	companion object {

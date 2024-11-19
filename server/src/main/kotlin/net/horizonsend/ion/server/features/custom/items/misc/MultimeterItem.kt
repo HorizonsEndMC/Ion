@@ -149,7 +149,7 @@ object MultimeterItem : CustomItem("MULTIMETER") {
 			queueRemove(current)
 			visited.add(current.node.position)
 
-			val neighbors = getNeighbors(current)
+			val neighbors = getNeighbors(current, null)
 			if (neighbors.isEmpty()) audience.userError("Empty neighbors")
 
 			for (newNeighbor in neighbors) {
