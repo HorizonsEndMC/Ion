@@ -105,7 +105,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 		event.player.anvilInput(prompt.toComponent()) { _, answer ->
 			when (id) {
 				2 ->
-					if (answer.contains("august", true) || answer.contains("2022", true))
+					if (answer.contains("august", true) || answer.contains("2021", true))
 						return@anvilInput null
 
 				1 -> {

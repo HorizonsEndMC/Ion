@@ -23,9 +23,10 @@ enum class Environment {
 	VACUUM {
 		private fun checkSuffocation(player: Player) {
 			if (isWearingSpaceSuit(player)) return
-			if (checkPressureField(player)) return
 
 			if (isInside(player.eyeLocation, 1)) return
+
+			if (checkPressureField(player)) return
 
 			player.damage(0.5)
 		}
