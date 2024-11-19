@@ -40,7 +40,7 @@ class PowerStorage(val holder: PoweredMultiblockEntity, amount: Int, val capacit
 
 		runUpdates()
 
-		return if (newAmount > capacity) capacity - newAmount else 0
+		return if (newAmount > capacity) newAmount - capacity else 0
 	}
 
 	/**
