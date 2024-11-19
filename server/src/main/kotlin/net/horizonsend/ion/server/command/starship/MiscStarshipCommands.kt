@@ -202,8 +202,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val navComp: NavCompSubsystem? = Hyperspace.findNavComp(starship) ?: if (starship.type != StarshipType.SHUTTLE) fail { "Intact Navigation Computer not found!" } else null
 		val maxRange: Int = if (navComp == null)
 		// if the ship is a shuttle without a navcomp, just give half range instead of failing entirely
-			NavigationComputerMultiblockBasic.baseRange * (starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
+			(NavigationComputerMultiblockBasic.baseRange * starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
 		else (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
+
+		if (navComp == null) sender.userError("Navigation Computer not found; jump range halved")
 
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
@@ -235,7 +237,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val navComp: NavCompSubsystem? = Hyperspace.findNavComp(starship) ?: if (starship.type != StarshipType.SHUTTLE) fail { "Intact Navigation Computer not found!" } else null
 		val maxRange: Int = if (navComp == null)
 			// if the ship is a shuttle without a navcomp, just give half range instead of failing entirely
-			NavigationComputerMultiblockBasic.baseRange * (starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
+			(NavigationComputerMultiblockBasic.baseRange * starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
 		else (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
 
 		if (navComp == null) sender.userError("Navigation Computer not found; jump range halved")
