@@ -10,7 +10,6 @@ import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import java.util.concurrent.ConcurrentHashMap
 
-
 object FluidRegistry : IonServerComponent() {
 	private val fluids = mutableListOf<Fluid>()
 	private val byIdentifier = ConcurrentHashMap<String, Fluid>()
