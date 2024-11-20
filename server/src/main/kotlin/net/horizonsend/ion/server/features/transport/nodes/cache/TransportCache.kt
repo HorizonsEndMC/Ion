@@ -1,12 +1,14 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.getOrCacheNode
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -16,8 +18,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 
 abstract class TransportCache(val holder: CacheHolder<*>) {
 	private val cache: Long2ObjectOpenHashMap<CacheState> = Long2ObjectOpenHashMap()
@@ -39,8 +43,8 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 	}
 
 	fun getOrCache(location: BlockKey): Node? {
-		if (isCached(location)) return getCached(location)
-			else return cache(location, getBlockIfLoaded(holder.getWorld(), getX(location), getY(location), getZ(location)) ?: return null)
+		if (isCached(location)) return getCached(location).apply { println("Already cached, ${toVec3i(location)} $this") }
+			else return run { println("cache miss"); cache(location, getBlockIfLoaded(holder.getWorld(), getX(location), getY(location), getZ(location)) ?: return null) }
 	}
 
 	fun cache(location: BlockKey) {
@@ -120,6 +124,35 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 		}
 
 		return sources
+	}
+
+	inline fun <reified T: Node> getNetworkDestinations(
+		originPos: BlockKey,
+		check: (Node.NodePositionData) -> Boolean,
+	): List<BlockKey> {
+		val originNode = getOrCacheNode(type, holder.getWorld(), originPos) ?: return listOf()
+
+		val visitQueue = ArrayDeque<Node.NodePositionData>()
+		val visited = LongOpenHashSet()
+		val destinations = LongOpenHashSet()
+
+		visitQueue.addAll(originNode.getNextNodes(
+			world = holder.getWorld(),
+			position = originPos,
+			backwards = BlockFace.SELF,
+			null
+		))
+
+		while (visitQueue.isNotEmpty()) {
+			val current = visitQueue.removeFirst()
+			visited.add(current.position)
+
+			if (current.type is T && check(current)) destinations.add(current.position)
+
+			visitQueue.addAll(current.getNextNodes(null).filterNot { visited.contains(it.position) || visitQueue.contains(it) })
+		}
+
+		return destinations.toList()
 	}
 }
 
