@@ -25,7 +25,7 @@ abstract class ExtractorManager {
 	}
 
 	open fun onLoad() {}
-	open fun onSave() {}
+	open fun save() {}
 
 	class ExtractorData(val pos: BlockKey) {
 		private var lastTicked = System.currentTimeMillis()
