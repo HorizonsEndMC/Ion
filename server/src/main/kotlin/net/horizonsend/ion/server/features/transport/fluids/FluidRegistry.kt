@@ -20,14 +20,14 @@ object FluidRegistry : IonServerComponent() {
 		override val categories: Array<FluidCategory> = arrayOf()
 	})
 
-	val HYDROGEN_GAS = register(GasFluid("HYDROGEN_GAS") { Gasses.HYDROGEN })
-	val NITROGEN_GAS = register(GasFluid("NITROGEN_GAS") { Gasses.NITROGEN })
-	val METHANE_GAS = register(GasFluid("METHANE_GAS") { Gasses.METHANE })
-	val OXYGEN_GAS = register(GasFluid("OXYGEN_GAS") { Gasses.OXYGEN })
-	val CHLORINE_GAS = register(GasFluid("CHLORINE_GAS") { Gasses.CHLORINE })
-	val FLUORINE_GAS = register(GasFluid("FLUORINE_GAS") { Gasses.FLUORINE })
-	val HELIUM_GAS = register(GasFluid("HELIUM_GAS") { Gasses.HELIUM })
-	val CARBON_DIOXIDE_GAS = register(GasFluid("CARBON_DIOXIDE_GAS") { Gasses.CARBON_DIOXIDE })
+	val LOW_PRESSURE_HYDROGEN_GAS = register(GasFluid("LOW_PRESSURE_HYDROGEN_GAS") { Gasses.HYDROGEN })
+	val LOW_PRESSURE_NITROGEN_GAS = register(GasFluid("LOW_PRESSURE_NITROGEN_GAS") { Gasses.NITROGEN })
+	val LOW_PRESSURE_METHANE_GAS = register(GasFluid("LOW_PRESSURE_METHANE_GAS") { Gasses.METHANE })
+	val LOW_PRESSURE_OXYGEN_GAS = register(GasFluid("LOW_PRESSURE_OXYGEN_GAS") { Gasses.OXYGEN })
+	val LOW_PRESSURE_CHLORINE_GAS = register(GasFluid("LOW_PRESSURE_CHLORINE_GAS") { Gasses.CHLORINE })
+	val LOW_PRESSURE_FLUORINE_GAS = register(GasFluid("LOW_PRESSURE_FLUORINE_GAS") { Gasses.FLUORINE })
+	val LOW_PRESSURE_HELIUM_GAS = register(GasFluid("LOW_PRESSURE_HELIUM_GAS") { Gasses.HELIUM })
+	val LOW_PRESSURE_CARBON_DIOXIDE_GAS = register(GasFluid("LOW_PRESSURE_CARBON_DIOXIDE_GAS") { Gasses.CARBON_DIOXIDE })
 
 	val WATER = register(SimpleFluid("WATER", text("Water", BLUE), arrayOf()))
 
