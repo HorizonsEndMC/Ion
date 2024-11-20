@@ -26,8 +26,8 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.pane
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.stairs
-import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.HYDROGEN_GAS
-import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.OXYGEN_GAS
+import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.LOW_PRESSURE_HYDROGEN_GAS
+import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.LOW_PRESSURE_OXYGEN_GAS
 import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.WATER
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
@@ -214,8 +214,8 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 
 		override val fluidStores: Array<StorageContainer> = arrayOf(
 			loadStoredResource(data, "water_tank", text("Water Tank"), TANK_1, SingleFluidStorage(1000, WATER, inputAllowed =  true, extractionAllowed = false)),
-			loadStoredResource(data, "oxygen_tank", text("Oxygen Tank"), TANK_2, SingleFluidStorage(10000, OXYGEN_GAS, inputAllowed =  false, extractionAllowed = true)),
-			loadStoredResource(data, "hydrogen_tank", text("Hydrogen Tank"), TANK_3, SingleFluidStorage(10000, HYDROGEN_GAS, inputAllowed =  false, extractionAllowed = true))
+			loadStoredResource(data, "oxygen_tank", text("Oxygen Tank"), TANK_2, SingleFluidStorage(10000, LOW_PRESSURE_OXYGEN_GAS, inputAllowed =  false, extractionAllowed = true)),
+			loadStoredResource(data, "hydrogen_tank", text("Hydrogen Tank"), TANK_3, SingleFluidStorage(10000, LOW_PRESSURE_HYDROGEN_GAS, inputAllowed =  false, extractionAllowed = true))
 		)
 
 		private val hydrogenStorage by lazy { getNamedStorage("hydrogen_tank") }
