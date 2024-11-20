@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.Power
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.util.getIdealPath
-import net.horizonsend.ion.server.features.transport.util.getNetworkDestinations
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -47,7 +46,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		val source = sources.randomOrNull() ?: return@submit //TODO take from all
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: List<BlockKey> = getNetworkDestinations<PowerInputNode>(CacheType.POWER, world, location) { node ->
+		val destinations: List<BlockKey> = getNetworkDestinations<PowerInputNode>(location) { node ->
 			world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
 		}
 
