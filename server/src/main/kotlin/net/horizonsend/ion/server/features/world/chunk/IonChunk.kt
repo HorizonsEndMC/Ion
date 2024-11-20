@@ -76,6 +76,7 @@ class IonChunk(
 	 **/
 	fun save() {
 		multiblockManager.save()
+		transportNetwork.extractorManager.save()
 	}
 
 	/**
