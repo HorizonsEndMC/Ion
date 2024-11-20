@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.transport.util.getNetworkDestinations
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
@@ -147,8 +146,9 @@ object IonChunkCommand : SLCommand() {
 	@Subcommand("test flood")
 	fun onTestFloodFill(sender: Player, network: CacheType) {
 		sender.information("Trying to find input nodes")
-		val (cached, location) = requireLookingAt(sender, network)
-		val destinations = getNetworkDestinations<PowerInputNode>(CacheType.POWER, sender.world, location) { true }
+		val (_, location) = requireLookingAt(sender, network)
+		val cache = network.get(sender.chunk.ion())
+		val destinations = cache.getNetworkDestinations<PowerInputNode>(location) { true }
 		sender.information("${destinations.size} destinations")
 		sender.highlightBlocks(destinations.map(::toVec3i), 50L)
 	}
