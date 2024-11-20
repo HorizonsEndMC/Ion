@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.util.getIdealPath
-import net.horizonsend.ion.server.features.transport.util.getNetworkDestinations
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.UNWAXED_CHISELED_COPPER_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
@@ -51,7 +50,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		if (source.getStoredResources().isEmpty()) return@submit
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: List<BlockKey> = getNetworkDestinations<FluidNode.FluidInputNode>(type, world, location) { node ->
+		val destinations: List<BlockKey> = getNetworkDestinations<FluidNode.FluidInputNode>(location) { node ->
 			world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is FluidStoringEntity && !entity.isFull() }
 		}
 
