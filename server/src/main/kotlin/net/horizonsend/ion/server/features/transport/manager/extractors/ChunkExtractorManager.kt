@@ -44,7 +44,7 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 		extractors = existing.associateWithTo(Long2ObjectOpenHashMap()) { ExtractorData(it) }
 	}
 
-	override fun onSave() {
+	override fun save() {
 		pdc.set(NamespacedKeys.EXTRACTORS, PersistentDataType.LONG_ARRAY, extractors.keys.toLongArray())
 	}
 }

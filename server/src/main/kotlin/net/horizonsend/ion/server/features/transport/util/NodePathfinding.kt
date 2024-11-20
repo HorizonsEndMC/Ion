@@ -18,32 +18,6 @@ fun getOrCacheNode(type: CacheType, world: World, pos: BlockKey): Node? {
 	return type.get(chunk).getOrCache(pos)
 }
 
-inline fun <reified T: Node> getNetworkDestinations(cacheType: CacheType, world: World, originPos: BlockKey, check: (Node.NodePositionData) -> Boolean): List<BlockKey> {
-	val originNode = getOrCacheNode(cacheType, world, originPos) ?: return listOf()
-
-	val visitQueue = ArrayDeque<Node.NodePositionData>()
-	val visited = LongOpenHashSet()
-	val destinations = LongOpenHashSet()
-
-	visitQueue.addAll(originNode.getNextNodes(
-		world = world,
-		position = originPos,
-		backwards = BlockFace.SELF,
-		null
-	))
-
-	while (visitQueue.isNotEmpty()) {
-		val current = visitQueue.removeFirst()
-		visited.add(current.position)
-
-		if (current.type is T && check(current)) destinations.add(current.position)
-
-		visitQueue.addAll(current.getNextNodes(null).filterNot { visited.contains(it.position) || visitQueue.contains(it) })
-	}
-
-	return destinations.toList()
-}
-
 /**
  * Uses the A* algorithm to find the shortest available path between these two nodes.
  **/
