@@ -1,7 +1,8 @@
+import io.papermc.paperweight.util.path
 import java.io.ByteArrayOutputStream
 
 plugins {
-	id("io.papermc.paperweight.userdev") version "1.7.1"
+	id("io.papermc.paperweight.userdev") version "1.7.5"
 	id("com.github.johnrengelman.shadow")
 
 	kotlin("plugin.serialization")
@@ -30,9 +31,9 @@ repositories {
 dependencies {
 	implementation(project(":common"))
 
-	compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-20231207.202833-1")
+	compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
 	// Platform
-	paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
+	paperweight.paperDevBundle("1.21.3-R0.1-SNAPSHOT")
 
 	// Other Plugins
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("org.bukkit") /* Old Version */ }
@@ -68,9 +69,9 @@ dependencies {
 }
 
 tasks.reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonServer.jar")) }
-tasks.build { dependsOn("reobfJar") }
+paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 
-kotlin.jvmToolchain(17)
+kotlin.jvmToolchain(21)
 
 tasks.withType<AbstractArchiveTask>().configureEach {
 	isPreserveFileTimestamps = false
@@ -86,6 +87,7 @@ val gitHash = String(output.toByteArray()).trim()
 
 val embedHash = tasks.create("embedHash") {
 	doLast {
+		val buildDir = layout.buildDirectory.get().path.toAbsolutePath().toString()
 		File("$buildDir/resources/main").mkdirs()
 		File("$buildDir/resources/main/gitHash").writeText(gitHash)
 	}
