@@ -278,7 +278,7 @@ object ProtectionListener : SLEventListener() {
 
 		blocks.forEach { block ->
 			if (Math.random() < 0.25) {
-				val heart = if (Math.random() > 0.5) Particle.HEART else Particle.VILLAGER_ANGRY
+				val heart = if (Math.random() > 0.5) Particle.HEART else Particle.ANGRY_VILLAGER
 				val particleLoc = block.location.add(Math.random(), 1 + Math.random(), Math.random())
 
 				block.world.spawnParticle(heart, particleLoc, 1)

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.client.networking.packets
 
+import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.server.features.client.networking.IonPacketHandler
 import net.horizonsend.ion.server.features.client.networking.Packets
@@ -8,8 +9,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.chat.ComponentSerialization
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import java.util.Locale
 import kotlin.math.roundToInt
 
 object ShipData : IonPacketHandler() {
@@ -76,8 +79,8 @@ object ShipData : IonPacketHandler() {
 		val weapon = arguments[10] as Double
 		val thruster = arguments[11] as Double
 
-		buf.writeComponent(name)
-		buf.writeComponent(type)
+		buf.writeJsonWithCodec(ComponentSerialization.localizedCodec(Locale.US), PaperAdventure.asVanilla(name), FriendlyByteBuf.MAX_COMPONENT_STRING_LENGTH)
+		buf.writeJsonWithCodec(ComponentSerialization.localizedCodec(Locale.US), PaperAdventure.asVanilla(type), FriendlyByteBuf.MAX_COMPONENT_STRING_LENGTH)
 
 		buf.writeInt(targets.size)
 		targets.forEach {

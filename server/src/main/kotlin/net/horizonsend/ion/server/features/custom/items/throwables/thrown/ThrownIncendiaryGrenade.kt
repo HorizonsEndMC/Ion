@@ -21,7 +21,7 @@ class ThrownIncendiaryGrenade(
 
 	override fun tick() {
 		world.spawnParticle(Particle.SMALL_FLAME, location, 1, 0.0, 0.0, 0.0, 0.0, null)
-		world.spawnParticle(Particle.SMOKE_NORMAL, location, 1, 0.0, 0.0, 0.0, 0.0, null)
+		world.spawnParticle(Particle.SMOKE, location, 1, 0.0, 0.0, 0.0, 0.0, null)
 	}
 
 	override fun onImpact(hitBlock: Block) {
@@ -49,7 +49,7 @@ class ThrownIncendiaryGrenade(
 
 			world.spawnParticle(Particle.FLAME, location, 75, radius, 0.5, radius, 0.0, null)
 			world.spawnParticle(Particle.LAVA, location, 5, radius, 0.5, radius, 0.0, null)
-			world.spawnParticle(Particle.SMOKE_LARGE, location, 5, radius, 0.5, radius, 0.0, null)
+			world.spawnParticle(Particle.SMOKE, location, 5, radius, 0.5, radius, 0.0, null)
 
 			world.getNearbyEntities(location, radius, 0.5, radius)
 				.map { it as? Damageable }

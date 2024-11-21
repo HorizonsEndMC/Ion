@@ -31,8 +31,8 @@ import org.bukkit.Color.fromRGB
 import org.bukkit.Material
 import org.bukkit.Material.matchMaterial
 import org.bukkit.Particle
+import org.bukkit.Particle.DUST
 import org.bukkit.Particle.DustOptions
-import org.bukkit.Particle.REDSTONE
 import org.bukkit.SoundCategory.PLAYERS
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -248,7 +248,7 @@ open class Blaster<T : Balancing>(
 		fireProjectiles(livingEntity)
 	}
 
-	private fun getParticleType(entity: LivingEntity): Particle = REDSTONE // Default
+	private fun getParticleType(entity: LivingEntity): Particle = DUST // Default
 
 	private fun getParticleColor(entity: LivingEntity): Color {
 		if (entity !is Player) return RED // Not Player
@@ -275,7 +275,7 @@ open class Blaster<T : Balancing>(
 			location,
 			livingEntity,
 			balancing,
-			REDSTONE,
+			DUST,
 			explosiveShot,
 			DustOptions(
 				getParticleColor(livingEntity),

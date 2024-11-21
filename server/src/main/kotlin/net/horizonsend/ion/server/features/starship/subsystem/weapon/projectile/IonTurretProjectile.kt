@@ -37,7 +37,7 @@ class IonTurretProjectile(
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		val vector = dir.clone().normalize().multiply(travel)
-		val particle = Particle.REDSTONE
+		val particle = Particle.DUST
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
 
 		helixAroundVector(oldLocation, vector, 0.3, 20, wavelength = 1.0) {

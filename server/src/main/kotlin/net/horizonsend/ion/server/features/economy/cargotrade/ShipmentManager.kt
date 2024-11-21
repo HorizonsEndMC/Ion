@@ -37,20 +37,22 @@ import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.aqua
 import net.horizonsend.ion.server.miscellaneous.utils.bold
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
-import net.horizonsend.ion.server.miscellaneous.utils.getNBTInt
-import net.horizonsend.ion.server.miscellaneous.utils.getNBTString
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import net.horizonsend.ion.server.miscellaneous.utils.red
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.utils.withNBTString
 import net.horizonsend.ion.server.miscellaneous.utils.yellow
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.minecraft.core.component.DataComponentPatch
+import net.minecraft.core.component.DataComponents
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.item.component.CustomData
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.ShulkerBox
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
@@ -509,11 +511,24 @@ object ShipmentManager : IonServerComponent() {
 	}
 
 	private fun withShipmentItemId(itemStack: ItemStack, shipmentId: String): ItemStack {
-		return itemStack.withNBTString("shipment_oid", shipmentId)
+		val nms = CraftItemStack.asNMSCopy(itemStack)
+
+		val nbt = CompoundTag()
+		nbt.putString("shipment_oid", shipmentId)
+
+		val new = DataComponentPatch.builder()
+			.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt))
+			.build()
+
+		nms.applyComponents(new)
+
+		return CraftItemStack.asBukkitCopy(nms)
 	}
 
 	fun getShipmentItemId(item: ItemStack): String? {
-		return item.getNBTString("shipment_oid") ?: item.getNBTInt("shipment_id")?.toString()
+		val nms = CraftItemStack.asNMSCopy(item)
+		val data = nms.components.get(DataComponents.CUSTOM_DATA) ?: return null
+		return data.copyTag().getString("shipment_id")
 	}
 
 	/**

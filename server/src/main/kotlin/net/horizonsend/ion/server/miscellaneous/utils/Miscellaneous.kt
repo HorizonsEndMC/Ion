@@ -21,22 +21,23 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.StructureBlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.border.WorldBorder
-import net.minecraft.world.level.chunk.ChunkStatus
 import net.minecraft.world.level.chunk.LevelChunk
+import net.minecraft.world.level.chunk.status.ChunkStatus
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Color
+import org.bukkit.ExplosionResult
 import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.craftbukkit.v1_20_R3.CraftChunk
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorld
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorldBorder
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer
+import org.bukkit.craftbukkit.CraftChunk
+import org.bukkit.craftbukkit.CraftWorld
+import org.bukkit.craftbukkit.CraftWorldBorder
+import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
-import org.bukkit.event.block.BlockExplodeEvent
+import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.scheduler.BukkitRunnable
 import java.time.Duration
 import kotlin.random.Random
@@ -175,10 +176,10 @@ fun Player.showBlockState(position: BlockPos, state: BlockState, blockEntity: Bl
  *
  * @return whether the explosion was cancelled
  **/
-fun regeneratingBlockChange(source: Entity?, origin: Block, changedBlocks: MutableList<Block>, yield: Float, bypassAreaShields: Boolean): BlockExplodeEvent {
+fun regeneratingBlockChange(source: Entity, origin: Block, changedBlocks: MutableList<Block>, yield: Float, bypassAreaShields: Boolean): EntityExplodeEvent {
 	val world = origin.world
 	val location = origin.location.toCenterLocation()
-	val blockExplodeEvent = BlockExplodeEvent(origin, changedBlocks, yield)
+	val blockExplodeEvent = EntityExplodeEvent(source, origin.location, changedBlocks, yield, ExplosionResult.KEEP)
 
 	if (bypassAreaShields) AreaShields.bypassShieldEvents.add(blockExplodeEvent)
 
