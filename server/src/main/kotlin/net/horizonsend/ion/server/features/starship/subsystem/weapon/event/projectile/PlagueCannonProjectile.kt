@@ -35,7 +35,7 @@ class PlagueCannonProjectile(
 	}
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-		val particle = Particle.REDSTONE
+		val particle = Particle.DUST
 		val dustOptions = DustOptions(Color.GREEN, balancing.particleThickness.toFloat())
 		loc.world.spawnParticle(particle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
 	}

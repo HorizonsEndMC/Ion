@@ -63,7 +63,7 @@ class BlasterListeners : SLEventListener() {
 		val customItem = itemStack.customItem as? Blaster<*> ?: return
 
 		// adding a potion effect because it takes ages for that attack cooldown to come up
-		event.player.addPotionEffect(PotionEffect(PotionEffectType.FAST_DIGGING, 20, 5, false, false, false))
+		event.player.addPotionEffect(PotionEffect(PotionEffectType.HASTE, 20, 5, false, false, false))
 
 		val ammunition = customItem.getAmmunition(itemStack)
 

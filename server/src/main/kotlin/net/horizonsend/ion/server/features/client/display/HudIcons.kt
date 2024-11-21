@@ -96,7 +96,7 @@ object HudIcons : IonServerComponent() {
         // do not render if the planet is closer than the entity render distance
         if (distance < entityRenderDistance * 2) return null
 
-        entity.itemStack = getItemStack(identifier)
+        entity.setItemStack(getItemStack(identifier))
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
         //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
@@ -211,7 +211,7 @@ object HudIcons : IonServerComponent() {
 
         val entity = ClientDisplayEntityFactory.createItemDisplay(player)
 
-        entity.itemStack = CustomItems.PLANET_SELECTOR.constructItemStack()
+        entity.setItemStack(CustomItems.PLANET_SELECTOR.constructItemStack())
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
         //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()

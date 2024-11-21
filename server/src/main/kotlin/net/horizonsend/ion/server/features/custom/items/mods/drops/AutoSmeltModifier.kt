@@ -17,12 +17,12 @@ import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
-import net.minecraft.world.SimpleContainer
 import net.minecraft.world.item.crafting.RecipeHolder
 import net.minecraft.world.item.crafting.RecipeType
+import net.minecraft.world.item.crafting.SingleRecipeInput
 import net.minecraft.world.item.crafting.SmeltingRecipe
 import org.bukkit.Bukkit
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
 import java.util.function.Supplier
@@ -60,12 +60,13 @@ object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
 	private val level get() = Bukkit.getServer().worlds.first().minecraft
 
 	private val smeltedItemCache: LoadingCache<ItemStack, Optional<ItemStack>> = CacheBuilder.newBuilder().build(CacheLoader.from { baseDrop ->
+		val input = SingleRecipeInput(CraftItemStack.asNMSCopy(baseDrop))
 		val optional: Optional<RecipeHolder<SmeltingRecipe>> = level
-			.recipeManager
-			.getRecipeFor(RecipeType.SMELTING, SimpleContainer(CraftItemStack.asNMSCopy(baseDrop)), level)
+			.recipeAccess()
+			.getRecipeFor(RecipeType.SMELTING, input, level)
 
 		optional.map {
-			val itemStack = optional.get().value().getResultItem(level.registryAccess())
+			val itemStack = optional.get().value().assemble(input, level.registryAccess())
 
 			itemStack.copyWithCount(baseDrop.amount).asBukkitCopy()
 		}

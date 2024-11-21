@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import org.bukkit.Material
+import org.bukkit.Registry
 import java.util.EnumSet
 
 /**
  * This should be used instead of Material.values() to avoid encountering legacy materials
  */
-val MATERIALS = Material.values().filterNot { it.isLegacy }
+val MATERIALS: Registry<Material> = Registry.MATERIAL
 
 fun getMatchingMaterials(filter: (Material) -> Boolean): EnumSet<Material> =
 	MATERIALS.filterTo(EnumSet.noneOf(Material::class.java), filter)

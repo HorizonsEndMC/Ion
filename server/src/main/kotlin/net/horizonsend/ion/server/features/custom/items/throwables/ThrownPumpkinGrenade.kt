@@ -31,7 +31,7 @@ class ThrownPumpkinGrenade(
 	var isExploding = false
 
 	override fun tick() {
-		world.spawnParticle(Particle.SPELL_MOB_AMBIENT, location, 0,1.000, 0.482, 0.141)
+		world.spawnParticle(Particle.EFFECT, location, 0,1.000, 0.482, 0.141)
 	}
 
 	override fun onImpact(hitBlock: Block) {
@@ -48,8 +48,8 @@ class ThrownPumpkinGrenade(
 		Tasks.bukkitRunnable {
 			if (item.isDead) return@bukkitRunnable cancel()
 			if (hasImpacted || ticks >= maxOf(ticks, maxTicks - 10)) world.playSound(location, Sound.BLOCK_NOTE_BLOCK_BELL, 10f, 1.0f)
-			world.spawnParticle(Particle.SPELL_MOB_AMBIENT, location, 0,1.000, 0.482, 0.141)
-			world.spawnParticle(Particle.SMOKE_NORMAL, location, 10,2.0, 2.0, 2.0)
+			world.spawnParticle(Particle.EFFECT, location, 0,1.000, 0.482, 0.141)
+			world.spawnParticle(Particle.SMOKE, location, 10,2.0, 2.0, 2.0)
 			explosionTicks++
 
 			if (explosionTicks < 20) return@bukkitRunnable
