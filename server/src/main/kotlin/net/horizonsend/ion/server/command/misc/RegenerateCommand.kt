@@ -35,8 +35,8 @@ import net.minecraft.nbt.NbtOps
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.PalettedContainer
-import net.minecraft.world.level.chunk.storage.ChunkSerializer
 import net.minecraft.world.level.chunk.storage.RegionFile
+import net.minecraft.world.level.chunk.storage.SerializableChunkData
 import org.bukkit.World
 import org.bukkit.entity.Player
 import java.io.File
@@ -47,7 +47,6 @@ object RegenerateCommand : SLCommand() {
 	// The worlds in this folder are stripped down versions of worlds. Basically just renamed region folders
 	private val cleanWorldsFolder: File = IonServer.dataFolder.resolve("worlds")
 	private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-	private val blockStateCodec = ChunkSerializer.BLOCK_STATE_CODEC
 
 	@Subcommand("terrain")
 	@Suppress("unused")
@@ -124,12 +123,12 @@ object RegenerateCommand : SLCommand() {
 
 						val deferred = sections[sectionPos]!! // I hope not
 
-						val dataResult = blockStateCodec.parse(NbtOps.INSTANCE, storedSection.getCompound("block_states"))
+						val dataResult = SerializableChunkData.BLOCK_STATE_CODEC.parse(NbtOps.INSTANCE, storedSection.getCompound("block_states"))
 
-						val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState?>>).getOrThrow(false) {
+						val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState?>>).ifError {
 							sender.serverError("Error reading section blocks: $it")
-							log.warn(it)
-						}
+							log.warn(it.message())
+						}.getOrThrow()
 
 						regenerateSection(sender, sectionY, chunkPos, sectionBlocks, deferred, selection)
 					}
@@ -206,7 +205,8 @@ object RegenerateCommand : SLCommand() {
 		if (!region.exists()) return null
 
 		try {
-			return RegionFile(region.resolve(regionFileName).toPath(), region.toPath(), false)
+			val regionKey = world.minecraft.chunkSource.chunkMap.storageInfo()
+			return RegionFile(regionKey, region.resolve(regionFileName).toPath(), region.toPath(), false)
 		} catch (error: Error) {
 			throw error
 		}

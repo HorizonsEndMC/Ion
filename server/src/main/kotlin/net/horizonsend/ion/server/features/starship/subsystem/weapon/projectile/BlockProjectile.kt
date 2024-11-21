@@ -104,6 +104,8 @@ abstract class BlockProjectile(
 	protected fun sendFakeBlock(block: Block, blockData: BlockData) {
 		val nmsBlockPos = BlockPos(block.x, block.y, block.z)
 		val packet = ClientboundBlockUpdatePacket(nmsBlockPos, blockData.nms)
-		block.chunk.minecraft.playerChunk?.broadcast(packet, false)
+
+		val players = block.chunk.minecraft.`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false)
+		players.forEach { it.connection.send(packet) }
 	}
 }

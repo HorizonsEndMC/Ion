@@ -5,10 +5,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Display
 import net.minecraft.world.entity.EntityType
-import org.bukkit.craftbukkit.v1_20_R3.CraftServer
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftBlockDisplay
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftItemDisplay
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
+import org.bukkit.craftbukkit.CraftServer
+import org.bukkit.craftbukkit.entity.CraftBlockDisplay
+import org.bukkit.craftbukkit.entity.CraftItemDisplay
+import org.bukkit.craftbukkit.entity.CraftTextDisplay
 import org.bukkit.entity.BlockDisplay
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.Player

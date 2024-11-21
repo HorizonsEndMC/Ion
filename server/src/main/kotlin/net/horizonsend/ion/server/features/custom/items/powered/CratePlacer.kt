@@ -19,7 +19,6 @@ import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import net.minecraft.core.BlockPos
-import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.StringTag
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -32,8 +31,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.ShulkerBox
 import org.bukkit.block.data.Directional
 import org.bukkit.block.data.type.Piston
-import org.bukkit.craftbukkit.v1_20_R3.block.CraftShulkerBox
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
+import org.bukkit.craftbukkit.block.CraftShulkerBox
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
@@ -114,11 +113,10 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			val paperItem = itemState.inventory.filterNotNull().first()
 			val nms = CraftItemStack.asNMSCopy(paperItem)
 
-			val itemNBT = CompoundTag()
-			nms.save(itemNBT)
+			val itemNBT = nms.save(player.world.minecraft.registryAccess())
 
 			val boxEntity = target.state as ShulkerBox
-			boxEntity.customName = item.itemMeta.displayName
+			boxEntity.customName(item.itemMeta.displayName())
 			boxEntity.update()
 
 			// Add the raw nms tag for shipment id
@@ -126,7 +124,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			val entity = (target.state as CraftShulkerBox).tileEntity
 			val chunk = entity.location.chunk.minecraft
 			// Save the full compound tag
-			val base = entity.saveWithFullMetadata()
+			val base = entity.saveWithFullMetadata(player.world.minecraft.registryAccess())
 
 			//incomplete crates dont have shipment ids
 			if (id != null) base.put("shipment_oid", StringTag.valueOf(id))
@@ -142,7 +140,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			// Remove old
 			chunk.removeBlockEntity(blockPos)
 
-			val blockEntity = BlockEntity.loadStatic(blockPos, entity.blockState, base)!!
+			val blockEntity = BlockEntity.loadStatic(blockPos, entity.blockState, base, player.world.minecraft.registryAccess())!!
 			chunk.addAndRegisterBlockEntity(blockEntity)
 
 			//event check

@@ -13,11 +13,13 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
-import org.bukkit.craftbukkit.v1_20_R3.persistence.CraftPersistentDataContainer;
-import org.bukkit.craftbukkit.v1_20_R3.persistence.CraftPersistentDataTypeRegistry;
+import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer;
+import org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SignUtils {
     private static final GsonComponentSerializer gson = GsonComponentSerializer.gson();
@@ -81,7 +83,10 @@ public class SignUtils {
 			return new HashMap<>();
 		}
 
-		return pdcNmsCompound.tags;
+		Set<String> keys = pdcNmsCompound.getAllKeys();
+
+		//noinspection DataFlowIssue
+		return keys.stream().collect(Collectors.toMap(v -> v, pdcNmsCompound::get));
 	}
 
 	static public class SignData {

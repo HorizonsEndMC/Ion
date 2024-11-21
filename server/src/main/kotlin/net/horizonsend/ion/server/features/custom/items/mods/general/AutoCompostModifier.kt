@@ -14,7 +14,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.minecraft.world.level.block.ComposterBlock
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 import kotlin.reflect.KClass

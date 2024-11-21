@@ -44,7 +44,7 @@ class FortuneModifier(
 	}
 
 	private val fortunePick = ItemStack(Material.DIAMOND_PICKAXE).updateMeta {
-		it.addEnchant(Enchantment.LOOT_BONUS_BLOCKS, level, true)
+		it.addEnchant(Enchantment.FORTUNE, level, true)
 	}
 
 	override val usedTool: ItemStack = fortunePick

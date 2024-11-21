@@ -51,7 +51,7 @@ class AntiAirCannonProjectile(
 		val color = getColor(playerShooter)
 
 		val dustOptions = Particle.DustTransition(color, Color.BLACK,balancing.particleThickness.toFloat() * 4f)
-		loc.world.spawnParticle(Particle.SMOKE_NORMAL, x, y, z, 10, 0.0, 0.0, 0.0, 0.05)
+		loc.world.spawnParticle(Particle.SMOKE, x, y, z, 10, 0.0, 0.0, 0.0, 0.05)
 		loc.world.spawnParticle(particle, x, y, z, 1, 0.0, 0.0, 0.0, 0.5, dustOptions, force)
 	}
 }

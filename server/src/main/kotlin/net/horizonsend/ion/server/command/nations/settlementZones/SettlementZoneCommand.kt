@@ -27,7 +27,15 @@ import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.action
+import net.horizonsend.ion.server.miscellaneous.utils.colorize
+import net.horizonsend.ion.server.miscellaneous.utils.msg
+import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Color
 import org.bukkit.Material
@@ -135,7 +143,7 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 			}
 
 			for ((x, y, z) in points) {
-				val particle = Particle.REDSTONE
+				val particle = Particle.DUST
 				val color = Color.fromRGB(red, green, blue)
 				val dustOptions = Particle.DustOptions(color, 100f)
 				val count = 0

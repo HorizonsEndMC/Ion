@@ -6,9 +6,11 @@ import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.world.entity.Display
+import net.minecraft.world.entity.PositionMoveRotation
+import net.minecraft.world.entity.Relative
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer
+import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.joml.Quaternionf
@@ -34,7 +36,7 @@ interface DisplayEntityProjectile {
 
 			if (player.location.distance(Vector(displayEntity.x, displayEntity.y, displayEntity.z).toLocation(player.world)) > 100.0) {
 				displayEntity.setPos(player.x,player.y,player.z)
-				val teleportEntityPacket = ClientboundTeleportEntityPacket(displayEntity)
+				val teleportEntityPacket = ClientboundTeleportEntityPacket.teleport(displayEntity.id, PositionMoveRotation.of(displayEntity), setOf<Relative>(), displayEntity.onGround)
 				player.handle.connection.send(teleportEntityPacket)
 			}
 
@@ -60,7 +62,7 @@ interface DisplayEntityProjectile {
 			)
 
 			player.handle.connection.send(packet)
-			displayEntity.entityData.refresh(player.handle)
+			displayEntity.refreshEntityData(player.handle)
 		}
 	}
 
