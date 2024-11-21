@@ -77,7 +77,7 @@ class DisintegratorBeamProjectile(
         )
 
         newLoc.world.spawnParticle(
-            Particle.SMOKE_LARGE,
+            Particle.LARGE_SMOKE,
             newLoc.x,
             newLoc.y,
             newLoc.z,

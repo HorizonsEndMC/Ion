@@ -104,7 +104,7 @@ object PowerArmorManager {
 
 					player.isGliding = true
 					player.velocity = player.velocity.midpoint(player.location.direction.multiply(0.6))
-					player.world.spawnParticle(Particle.SMOKE_NORMAL, player.location, 5)
+					player.world.spawnParticle(Particle.SMOKE, player.location, 5)
 
 					if (!player.world.hasFlag(WorldFlag.ARENA)) {
 						removePower(item, 5)

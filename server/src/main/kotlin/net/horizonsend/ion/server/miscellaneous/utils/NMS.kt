@@ -1,21 +1,17 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
-import net.minecraft.world.item.ItemStack as MinecraftItemStack
-import net.minecraft.world.level.block.Block as MinecraftBlock
-import org.bukkit.block.Block as BukkitBlock
-import org.bukkit.inventory.ItemStack as BukkitItemStack
 import net.minecraft.core.Direction
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.block.Block as MinecraftBlock
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Chunk
 import org.bukkit.World
+import org.bukkit.block.Block as BukkitBlock
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
-import org.bukkit.craftbukkit.v1_20_R3.CraftChunk
-import org.bukkit.craftbukkit.v1_20_R3.block.data.CraftBlockData
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
+import org.bukkit.craftbukkit.CraftChunk
+import org.bukkit.craftbukkit.block.data.CraftBlockData
 
 //region Access Extensions
 inline val BlockData.nms: BlockState get() = (this as CraftBlockData).state
@@ -32,28 +28,6 @@ val Direction.blockFace
 		Direction.WEST -> BlockFace.WEST
 		Direction.EAST -> BlockFace.EAST
 	}
-//endregion
-
-//region NBT
-fun BukkitItemStack.getNBTInt(key: String): Int? {
-	val tag = CraftItemStack.asNMSCopy(this).tag ?: return null
-	if (!tag.contains(key)) return null
-	return tag.getInt(key)
-}
-
-fun BukkitItemStack.withNBTString(key: String, value: String): BukkitItemStack {
-	val nms: MinecraftItemStack = CraftItemStack.asNMSCopy(this)
-	val tag: CompoundTag = nms.tag ?: CompoundTag()
-	tag.putString(key, value)
-	nms.tag = tag
-	return nms.asBukkitCopy().ensureServerConversions()
-}
-
-fun BukkitItemStack.getNBTString(key: String): String? {
-	val tag = CraftItemStack.asNMSCopy(this).tag ?: return null
-	if (!tag.contains(key)) return null
-	return tag.getString(key)
-}
 //endregion
 
 //region Block Data

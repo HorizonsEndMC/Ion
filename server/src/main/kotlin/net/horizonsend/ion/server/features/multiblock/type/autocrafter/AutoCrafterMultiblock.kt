@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.autocrafter
 
-import net.minecraft.world.item.ItemStack as NMSItemStack
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack as CBItemStack
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -15,20 +13,15 @@ import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
-import net.minecraft.core.NonNullList
-import net.minecraft.world.entity.player.Player
-import net.minecraft.world.inventory.AbstractContainerMenu
-import net.minecraft.world.inventory.CraftingContainer
-import net.minecraft.world.inventory.MenuType
-import net.minecraft.world.inventory.TransientCraftingContainer
+import net.minecraft.world.item.crafting.CraftingInput
 import net.minecraft.world.level.block.CrafterBlock
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.craftbukkit.inventory.CraftItemStack as CBItemStack
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
-import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
 
@@ -250,42 +243,15 @@ abstract class AutoCrafterMultiblock(
 		}
 	}
 
-	companion object {															  /* Items */
-		private val itemsField = TransientCraftingContainer::class.java.getDeclaredField("c").apply { isAccessible = true }
-		private fun getItems(inventoryCrafting: CraftingContainer): NonNullList<NMSItemStack> {
-			@Suppress("UNCHECKED_CAST")
-			return itemsField.get(inventoryCrafting) as NonNullList<NMSItemStack>
-		}
-
+	companion object {
 		private val recipeCache: LoadingCache<List<ItemStack?>, Optional<ItemStack>> = CacheBuilder.newBuilder().build(
 			CacheLoader.from { items ->
 				requireNotNull(items)
-				// Create a fake crafting table
-				val craftingContainer = TransientCraftingContainer(
-					object : AbstractContainerMenu(null as MenuType<*>?, -1) {
-						override fun quickMoveStack(player: Player, slot: Int): NMSItemStack = NMSItemStack.EMPTY
-						override fun stillValid(player: Player): Boolean = false
-						override fun getBukkitView(): InventoryView = throw NotImplementedError()
-					},
-					3,
-					3
-				)
-
-				// Get the items of the container with reflection
-				val inventoryItems: NonNullList<NMSItemStack> = getItems(craftingContainer)
-
-				// Set the item in the slot of the dropper to the corresponding crafting square
-				for ((index: Int, material: ItemStack?) in items.withIndex()) {
-					val item: NMSItemStack = if (material != null) CBItemStack.asNMSCopy(material) else NMSItemStack.EMPTY
-					inventoryItems[index] = item
-				}
-
 				val level = Bukkit.getWorlds().first().minecraft
+				val input = CraftingInput.of(3, 3, items.map(CBItemStack::asNMSCopy))
 
 				// Get results for the recipe
-				CrafterBlock.getPotentialResults(level, craftingContainer).map {  recipe ->
-					recipe.assemble(craftingContainer, level.registryAccess()).asBukkitCopy()
-				}
+				CrafterBlock.getPotentialResults(level, input).map { recipe -> recipe.value.assemble(input, level.registryAccess()).asBukkitCopy() }
 			}
 		)
 	}

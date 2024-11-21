@@ -32,6 +32,6 @@ class MiniPhaserProjectile(
 		val count = 1
 		val extra = 0.0
 		val data = null
-		loc.world.spawnParticle(Particle.VILLAGER_HAPPY, x, y, z, count, offset, offset, offset, extra, data, force)
+		loc.world.spawnParticle(Particle.HAPPY_VILLAGER, x, y, z, count, offset, offset, offset, extra, data, force)
 	}
 }

@@ -32,7 +32,7 @@ class QuadTurretProjectile(
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 
 		val particle1 = Particle.GUST
-		val particle2 = Particle.REDSTONE
+		val particle2 = Particle.DUST
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 3f)
 		loc.world.spawnParticle(particle1, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, null, force)
 		loc.world.spawnParticle(particle2, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)

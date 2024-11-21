@@ -63,7 +63,7 @@ class VisualProjectile(
 	}
 
 	private fun moveVisually(travel: Double) {
-		val particle = Particle.REDSTONE
+		val particle = Particle.DUST
 		val dustOptions = Particle.DustOptions(color, particleThickness * 4f)
 
 		loc.alongVector(dir, 1 + extraParticles).forEach {
