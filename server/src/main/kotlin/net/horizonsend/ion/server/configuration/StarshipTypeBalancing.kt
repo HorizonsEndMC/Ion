@@ -245,7 +245,7 @@ data class StarshipTypeBalancing(
 				explosionPower = 1.6875f,
 				volume = 10,
 				pitch = 0.5f,
-				soundName = "entity.firework_rocket.blast_far",
+				soundName = ""horizonsend:starship.weapon.pulse_cannon.shoot"",
 				powerUsage = 2400,
 				length = 2,
 				angleRadiansHorizontal = 0.0,
