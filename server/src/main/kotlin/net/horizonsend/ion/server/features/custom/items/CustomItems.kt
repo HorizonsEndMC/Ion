@@ -54,6 +54,7 @@ import org.bukkit.Material.IRON_HOE
 import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_ORE
 import org.bukkit.Material.RAW_IRON
+import org.bukkit.Material.RAW_IRON_BLOCK
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
@@ -229,8 +230,8 @@ object CustomItems {
 	), Smeltable {
 		override val smeltingResult: Supplier<ItemStack> = Supplier { ALUMINUM_INGOT.constructItemStack() }
 	})
-	val ALUMINUM_BLOCK = registerCustomBlockItem(identifier = "ALUMINUM_BLOCK", customModelData = 1, displayName = text("Aluminum Block")) { CustomBlocks.ALUMINUM_BLOCK }
-	val RAW_ALUMINUM_BLOCK = registerCustomBlockItem(identifier = "RAW_ALUMINUM_BLOCK", customModelData = 1, displayName = text("Raw Aluminum Block").decoration(ITALIC, false)) { CustomBlocks.RAW_ALUMINUM_BLOCK }
+	val ALUMINUM_BLOCK = registerCustomBlockItem(identifier = "ALUMINUM_BLOCK", baseBlock = IRON_BLOCK, customModelData = 1, displayName = text("Aluminum Block")) { CustomBlocks.ALUMINUM_BLOCK }
+	val RAW_ALUMINUM_BLOCK = registerCustomBlockItem(identifier = "RAW_ALUMINUM_BLOCK", baseBlock = RAW_IRON_BLOCK, customModelData = 1, displayName = text("Raw Aluminum Block").decoration(ITALIC, false)) { CustomBlocks.RAW_ALUMINUM_BLOCK }
 	val CHETHERITE = registerSimpleStackable(identifier = "CHETHERITE", customModelData = 2, displayName = text("Chetherite"))
 	val CHETHERITE_ORE : CustomBlockItem = register(object : CustomBlockItem(
 		identifier = "CHETHERITE_ORE",
@@ -241,7 +242,7 @@ object CustomItems {
 	), Smeltable {
 		override val smeltingResult: Supplier<ItemStack> = Supplier { CHETHERITE.constructItemStack() }
 	})
-	val CHETHERITE_BLOCK = registerCustomBlockItem(identifier = "CHETHERITE_BLOCK", customModelData = 2, displayName = text("Chetherite Block").decoration(ITALIC, false)) { CustomBlocks.CHETHERITE_BLOCK }
+	val CHETHERITE_BLOCK = registerCustomBlockItem(identifier = "CHETHERITE_BLOCK", baseBlock = IRON_BLOCK, customModelData = 2, displayName = text("Chetherite Block").decoration(ITALIC, false)) { CustomBlocks.CHETHERITE_BLOCK }
 	val TITANIUM_INGOT = registerSimpleStackable(identifier = "TITANIUM_INGOT", customModelData = 3, displayName = text("Titanium Ingot"))
 	val RAW_TITANIUM : MineralItem = register(object : MineralItem(
 		identifier = "RAW_TITANIUM",
@@ -260,8 +261,8 @@ object CustomItems {
 	), Smeltable {
 		override val smeltingResult: Supplier<ItemStack> = Supplier { TITANIUM_INGOT.constructItemStack() }
 	})
-	val TITANIUM_BLOCK = registerCustomBlockItem(identifier = "TITANIUM_BLOCK", customModelData = 3, displayName = text("Titanium Block")) { CustomBlocks.TITANIUM_BLOCK }
-	val RAW_TITANIUM_BLOCK = registerCustomBlockItem(identifier = "RAW_TITANIUM_BLOCK", customModelData = 3, displayName = text("Raw Titanium Block").decoration(ITALIC, false)) { CustomBlocks.RAW_TITANIUM_BLOCK }
+	val TITANIUM_BLOCK = registerCustomBlockItem(identifier = "TITANIUM_BLOCK", baseBlock = IRON_BLOCK, customModelData = 3, displayName = text("Titanium Block")) { CustomBlocks.TITANIUM_BLOCK }
+	val RAW_TITANIUM_BLOCK = registerCustomBlockItem(identifier = "RAW_TITANIUM_BLOCK", baseBlock = RAW_IRON_BLOCK, customModelData = 3, displayName = text("Raw Titanium Block").decoration(ITALIC, false)) { CustomBlocks.RAW_TITANIUM_BLOCK }
 	val URANIUM = registerSimpleStackable(identifier = "URANIUM", customModelData = 4, displayName = text("Uranium").decoration(ITALIC, false))
 	val RAW_URANIUM : MineralItem = register(object : MineralItem(
 		identifier = "RAW_URANIUM",
@@ -280,13 +281,13 @@ object CustomItems {
 	), Smeltable {
 		override val smeltingResult: Supplier<ItemStack> = Supplier { URANIUM.constructItemStack() }
 	})
-	val URANIUM_BLOCK = registerCustomBlockItem(identifier = "URANIUM_BLOCK", customModelData = 4, displayName = text("Uranium Block").decoration(ITALIC, false)) { CustomBlocks.URANIUM_BLOCK }
-	val RAW_URANIUM_BLOCK = registerCustomBlockItem(identifier = "RAW_URANIUM_BLOCK", customModelData = 4, displayName = text("Raw Uranium Block").decoration(ITALIC, false)) { CustomBlocks.RAW_URANIUM_BLOCK }
+	val URANIUM_BLOCK = registerCustomBlockItem(identifier = "URANIUM_BLOCK", baseBlock = IRON_BLOCK, customModelData = 4, displayName = text("Uranium Block").decoration(ITALIC, false)) { CustomBlocks.URANIUM_BLOCK }
+	val RAW_URANIUM_BLOCK = registerCustomBlockItem(identifier = "RAW_URANIUM_BLOCK", baseBlock = RAW_IRON_BLOCK, customModelData = 4, displayName = text("Raw Uranium Block").decoration(ITALIC, false)) { CustomBlocks.RAW_URANIUM_BLOCK }
 	// Minerals end
 	// Industry start
-	val NETHERITE_CASING = registerCustomBlockItem(identifier = "NETHERITE_CASING", customModelData = 1400, displayName = text("Netherite Casing").decoration(ITALIC, false)) { CustomBlocks.NETHERITE_CASING }
+	val NETHERITE_CASING = registerCustomBlockItem(identifier = "NETHERITE_CASING", baseBlock = IRON_BLOCK, customModelData = 1400, displayName = text("Netherite Casing").decoration(ITALIC, false)) { CustomBlocks.NETHERITE_CASING }
 	val ENRICHED_URANIUM = registerSimpleStackable(identifier = "ENRICHED_URANIUM", customModelData = 1000, displayName = text("Enriched Uranium"))
-	val ENRICHED_URANIUM_BLOCK = registerCustomBlockItem(identifier = "ENRICHED_URANIUM_BLOCK", customModelData = 1000, displayName = text("Enriched Uranium Block")) { CustomBlocks.ENRICHED_URANIUM_BLOCK }
+	val ENRICHED_URANIUM_BLOCK = registerCustomBlockItem(identifier = "ENRICHED_URANIUM_BLOCK", baseBlock = IRON_BLOCK, customModelData = 1000, displayName = text("Enriched Uranium Block")) { CustomBlocks.ENRICHED_URANIUM_BLOCK }
 	val URANIUM_CORE = registerSimpleUnstackable(identifier = "URANIUM_CORE", customModelData = 2000, displayName = text("Uranium Core"))
 	val URANIUM_ROD = registerSimpleUnstackable(identifier = "URANIUM_ROD", customModelData = 2001, displayName = text("Uranium Rod"))
 	val FUEL_ROD_CORE = registerSimpleUnstackable(identifier = "FUEL_ROD_CORE", customModelData = 2002, displayName = text("Fuel Rod Core"))
@@ -306,11 +307,11 @@ object CustomItems {
 	val REACTOR_CONTROL = registerSimpleUnstackable(identifier = "REACTOR_CONTROL", customModelData = 2014, displayName = text("Reactor Control").decoration(BOLD, true))
 	// Superconductor line
 	val SUPERCONDUCTOR = registerSimpleUnstackable(identifier = "SUPERCONDUCTOR", customModelData = 2015, displayName = text("Superconductor"))
-	val SUPERCONDUCTOR_BLOCK = registerCustomBlockItem(identifier = "SUPERCONDUCTOR_BLOCK", customModelData = 1002, displayName = text("Superconductor Block")) { CustomBlocks.SUPERCONDUCTOR_BLOCK }
+	val SUPERCONDUCTOR_BLOCK = registerCustomBlockItem(identifier = "SUPERCONDUCTOR_BLOCK", baseBlock = IRON_BLOCK, customModelData = 1002, displayName = text("Superconductor Block")) { CustomBlocks.SUPERCONDUCTOR_BLOCK }
 	val SUPERCONDUCTOR_CORE = registerSimpleUnstackable(identifier = "SUPERCONDUCTOR_CORE", customModelData = 2016, displayName = text("Superconductor Core", BOLD))
 	// Steel line
 	val STEEL_INGOT = registerSimpleStackable(identifier = "STEEL_INGOT", customModelData = 1001, displayName = text("Steel Ingot"))
-	val STEEL_BLOCK = registerCustomBlockItem(identifier = "STEEL_BLOCK", customModelData = 1001, displayName = text("Steel Block")) { CustomBlocks.STEEL_BLOCK }
+	val STEEL_BLOCK = registerCustomBlockItem(identifier = "STEEL_BLOCK", baseBlock = IRON_BLOCK, customModelData = 1001, displayName = text("Steel Block")) { CustomBlocks.STEEL_BLOCK }
 	val STEEL_PLATE = registerSimpleUnstackable(identifier = "STEEL_PLATE", customModelData = 2017, displayName = text("Steel Plate"))
 	val STEEL_CHASSIS = registerSimpleUnstackable(identifier = "STEEL_CHASSIS", customModelData = 2018, displayName = text("Steel Chassis"))
 	val STEEL_MODULE = registerSimpleUnstackable(identifier = "STEEL_MODULE", customModelData = 2019, displayName = text("Steel Module"))
@@ -320,9 +321,9 @@ object CustomItems {
 	val PROGRESS_HOLDER = register(ProgressHolder)
 	// Industry End
 	// Starship Components Start
-	val BATTLECRUISER_REACTOR_CORE = registerCustomBlockItem(identifier = "BATTLECRUISER_REACTOR_CORE", customModelData = 2000, displayName = text("Battlecruiser Reactor Core", BOLD)) { CustomBlocks.BATTLECRUISER_REACTOR_CORE }
-	val BARGE_REACTOR_CORE = registerCustomBlockItem(identifier = "BARGE_REACTOR_CORE", customModelData = 2002, displayName = text("Barge Reactor Core", BOLD)) { CustomBlocks.BARGE_REACTOR_CORE }
-	val CRUISER_REACTOR_CORE = registerCustomBlockItem(identifier = "CRUISER_REACTOR_CORE", customModelData = 2001, displayName = text("Cruiser Reactor Core", BOLD)) { CustomBlocks.CRUISER_REACTOR_CORE }
+	val BATTLECRUISER_REACTOR_CORE = registerCustomBlockItem(identifier = "BATTLECRUISER_REACTOR_CORE", baseBlock = IRON_BLOCK, customModelData = 2000, displayName = text("Battlecruiser Reactor Core", BOLD)) { CustomBlocks.BATTLECRUISER_REACTOR_CORE }
+	val BARGE_REACTOR_CORE = registerCustomBlockItem(identifier = "BARGE_REACTOR_CORE", baseBlock = IRON_BLOCK, customModelData = 2002, displayName = text("Barge Reactor Core", BOLD)) { CustomBlocks.BARGE_REACTOR_CORE }
+	val CRUISER_REACTOR_CORE = registerCustomBlockItem(identifier = "CRUISER_REACTOR_CORE", baseBlock = IRON_BLOCK, customModelData = 2001, displayName = text("Cruiser Reactor Core", BOLD)) { CustomBlocks.CRUISER_REACTOR_CORE }
 	// Starship Components End
 	// Ship Ammunition Start
 	val UNLOADED_SHELL = registerSimpleUnstackable(identifier = "UNLOADED_SHELL", customModelData = 702, displayName = text("Unloaded Shell"))
@@ -449,14 +450,14 @@ object CustomItems {
 		}
 	})
 
-	private fun registerSimpleStackable(identifier: String, customModelData: Int, displayName: Component): CustomItem = register(object : CustomItem(identifier) {
+	private fun registerSimpleStackable(identifier: String, baseItem: Material = IRON_INGOT, customModelData: Int, displayName: Component): CustomItem = register(object : CustomItem(identifier) {
 		override fun constructItemStack(): ItemStack {
 			val formattedDisplayName = text()
 				.decoration(ITALIC, false)
 				.append(displayName)
 				.build()
 
-			return ItemStack(IRON_INGOT).updateMeta {
+			return ItemStack(baseItem).updateMeta {
 				it.setCustomModelData(customModelData)
 				it.displayName(formattedDisplayName)
 				it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
@@ -464,13 +465,13 @@ object CustomItems {
 		}
 	})
 
-	private fun registerCustomBlockItem(identifier: String, customModelData: Int, displayName: Component, customBlock: Supplier<CustomBlock>): CustomItem {
+	private fun registerCustomBlockItem(identifier: String, baseBlock: Material, customModelData: Int, displayName: Component, customBlock: Supplier<CustomBlock>): CustomItem {
 		val formattedDisplayName = text()
 			.decoration(ITALIC, false)
 			.append(displayName)
 			.build()
 
-		return register(CustomBlockItem(identifier, IRON_BLOCK, customModelData, formattedDisplayName, customBlock))
+		return register(CustomBlockItem(identifier, baseBlock, customModelData, formattedDisplayName, customBlock))
 	}
 
 	private fun <T : CustomItem> register(customItem: T): T {
