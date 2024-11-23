@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.admin.AdminCommands
 import net.horizonsend.ion.server.command.admin.BatteryCommand
-import net.horizonsend.ion.server.command.misc.CombatTimerCommand
 import net.horizonsend.ion.server.command.admin.ConvertCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
@@ -22,11 +21,13 @@ import net.horizonsend.ion.server.command.misc.AIOpponentCommand
 import net.horizonsend.ion.server.command.misc.BlockCommand
 import net.horizonsend.ion.server.command.misc.BountyAdminCommand
 import net.horizonsend.ion.server.command.misc.BountyCommand
+import net.horizonsend.ion.server.command.misc.CombatTimerCommand
 import net.horizonsend.ion.server.command.misc.DyeCommand
 import net.horizonsend.ion.server.command.misc.EnableProtectionMessagesCommand
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.command.misc.GlobalGameRuleCommand
 import net.horizonsend.ion.server.command.misc.IonBroadcastCommand
+import net.horizonsend.ion.server.command.misc.IonSitCommand
 import net.horizonsend.ion.server.command.misc.ListCommand
 import net.horizonsend.ion.server.command.misc.LocatorCommands
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
@@ -186,5 +187,6 @@ val commands: List<SLCommand> = listOf(
 	CombatTimerCommand,
     ForbiddenBlocksCommand,
 	EnableProtectionMessagesCommand,
+	IonSitCommand,
 	SuicideCommand
 )

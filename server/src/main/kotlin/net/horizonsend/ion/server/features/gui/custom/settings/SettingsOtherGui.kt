@@ -1,19 +1,24 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
+import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.server.command.misc.CombatTimerCommand
 import net.horizonsend.ion.server.command.misc.EnableProtectionMessagesCommand
+import net.horizonsend.ion.server.command.misc.IonSitCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration
+import net.luckperms.api.node.NodeEqualityPredicate
+import net.luckperms.api.node.types.PermissionNode
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -28,10 +33,15 @@ import kotlin.math.ceil
 import kotlin.math.min
 
 class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
+	private val lpUserManager = luckPerms.userManager
+	private val lpUser = lpUserManager.getUser(player.uniqueId)
+	private val state: Boolean get() = lpUser?.data()?.contains(sitStateNode, NodeEqualityPredicate.EXACT)?.asBoolean() ?: true
 
     companion object {
         private const val SETTINGS_PER_PAGE = 5
         private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
+
+		val sitStateNode = PermissionNode.builder("ion.sit.allowed").build()
     }
 
     override var currentWindow: Window? = null
@@ -40,6 +50,7 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
         ShowItemSearchItems(),
         EnableCombatTimerAlert(),
         EnableProtectionMessages(),
+		AllowSitting(),
     )
 
     override fun createGui(): PagedGui<Item> {
@@ -75,7 +86,8 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
         val enabledSettings = listOf(
             PlayerCache[player.uniqueId].showItemSearchItem,
             PlayerCache[player.uniqueId].enableCombatTimerAlerts,
-            PlayerCache[player.uniqueId].protectionMessagesEnabled
+            PlayerCache[player.uniqueId].protectionMessagesEnabled,
+			state
         )
 
         // create a new GuiText builder
@@ -155,6 +167,19 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
             EnableProtectionMessagesCommand.defaultCase(player)
 
             currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+        }
+    }
+
+    private inner class AllowSitting : GuiItems.AbstractButtonItem(
+        text("Allow Sitting on Stairs / Slabs").decoration(TextDecoration.ITALIC, false),
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+    ) {
+
+        override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+            IonSitCommand.enableSitting(player, !state)
+
+			// Delay a tick to allow for async luckperms db update
+            Tasks.sync { currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage))) }
         }
     }
 }
