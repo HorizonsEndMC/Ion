@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.entity
 
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlerHolder
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkage
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -9,6 +10,7 @@ import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -23,6 +25,9 @@ import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.persistence.PersistentDataAdapterContext
+import java.util.UUID
+import java.util.function.Supplier
+import kotlin.reflect.KClass
 
 /**
  * @param manager The multiblock manager that this is registered to
@@ -76,8 +81,16 @@ abstract class MultiblockEntity(
 
 	val locationKey = toBlockKey(x, y, z)
 
+	fun processRemoval() {
+		removed = true
+
+		handleRemoval()
+		if (this is DisplayMultiblockEntity) displayHandler.remove()
+		removeLinkages()
+	}
+
 	/** Logic to be run upon the removal of this entity */
-	open fun handleRemoval() {}
+	protected open fun handleRemoval() {}
 
 	/** Removes this multiblock entity */
 	fun remove() {
@@ -87,8 +100,13 @@ abstract class MultiblockEntity(
 	/** Logic to be run upon the unloading of the chunk holding this entity */
 	open fun onUnload() {}
 
+	fun processLoad() {
+		if (this is DisplayMultiblockEntity) displayHandler.update()
+		onLoad()
+	}
+
 	/** Logic to be run upon the loading of the chunk holding this entity, or its creation */
-	open fun onLoad() {}
+	protected open fun onLoad() {}
 
 	open fun displaceAdditional(movement: StarshipMovement) {}
 
@@ -286,6 +304,7 @@ abstract class MultiblockEntity(
 		manager.markChanged()
 	}
 
+	// Section inputs
 	fun registerInputs(type: CacheType, locations: Set<Vec3i>) {
 		val inputManager = manager.getInputManager()
 		for (location in locations) {
@@ -298,5 +317,27 @@ abstract class MultiblockEntity(
 		for (location in locations) {
 			inputManager.deRegisterInput(type, toBlockKey(location), this)
 		}
+	}
+
+	val linkages = mutableMapOf<UUID, BlockKey>()
+
+	protected fun registerLinkage(right: Int, up: Int, forward: Int, linkageDirection: RelativeFace, allowedEntities: Array<KClass<out MultiblockEntity>>): Supplier<MultiblockEntity?> {
+		val realLocKey = toBlockKey(getPosRelative(right, up, forward))
+		val new = MultiblockLinkage(this, allowedEntities, realLocKey, linkageDirection[structureDirection])
+
+		val id = UUID.randomUUID()
+
+		linkages[id] = (realLocKey)
+		manager.getLinkageManager().registerLinkage(realLocKey, new)
+
+		return Supplier {
+			val currentPos = linkages[id] ?: return@Supplier null
+			val linkage = manager.getLinkageManager().getLinkages(currentPos).firstOrNull() { it.owner == this }
+			linkage?.getOtherEnd(manager.getLinkageManager())
+		}
+	}
+
+	private fun removeLinkages() {
+		for (blockKey in linkages.values) manager.getLinkageManager().deRegisterLinkage(blockKey)
 	}
 }
