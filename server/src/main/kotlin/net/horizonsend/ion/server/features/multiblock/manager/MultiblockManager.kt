@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.manager
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
@@ -31,6 +31,8 @@ abstract class MultiblockManager(val log: Logger) {
 
 	abstract fun getInputManager(): InputManager
 
+	abstract fun getLinkageManager(): MultiblockLinkageManager
+
 	abstract fun save()
 
 	abstract fun markChanged()
@@ -49,8 +51,7 @@ abstract class MultiblockManager(val log: Logger) {
 	fun addMultiblockEntity(entity: MultiblockEntity, save: Boolean = true) {
 		multiblockEntities[entity.locationKey] = entity
 
-		entity.onLoad()
-		if (entity is DisplayMultiblockEntity) entity.displayHandler.update()
+		entity.processLoad()
 
 		if (entity is SyncTickingMultiblockEntity) {
 			syncTickingMultiblockEntities[entity.locationKey] = entity
@@ -70,13 +71,11 @@ abstract class MultiblockManager(val log: Logger) {
 		val key = toBlockKey(x, y, z)
 
 		val entity = multiblockEntities.remove(key)
-		entity?.removed = true
 
 		syncTickingMultiblockEntities.remove(key)
 		asyncTickingMultiblockEntities.remove(key)
 
-		entity?.handleRemoval()
-		if (this is DisplayMultiblockEntity) this.displayHandler.remove()
+		entity?.processRemoval()
 
 		return entity
 	}
