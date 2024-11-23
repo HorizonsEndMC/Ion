@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.transport.util.getHeuristic
 import net.horizonsend.ion.server.features.transport.util.getNeighbors
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_VARIANT
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.X
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Z
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -86,7 +86,7 @@ object MultimeterItem : CustomItem("MULTIMETER") {
 		val firstChunk = IonChunk[world, getX(firstPoint).shr(4), getZ(firstPoint).shr(4)] ?: return
 		val secondPoint = itemStack.itemMeta.persistentDataContainer.get(Z, LONG) ?: return
 
-		val networkTypeIndex = itemStack.itemMeta.persistentDataContainer.getOrDefault(NODE_VARIANT, INTEGER, 0)
+		val networkTypeIndex = itemStack.itemMeta.persistentDataContainer.getOrDefault(NODE_TYPE, INTEGER, 0)
 		val cacheType = CacheType.entries[networkTypeIndex]
 
 		val firstNode = cacheType.get(firstChunk).getOrCache(firstPoint) ?: return audience.information("There is no node at ${toVec3i(firstPoint)}")
@@ -97,10 +97,10 @@ object MultimeterItem : CustomItem("MULTIMETER") {
 	}
 
 	private fun cycleNetworks(audience: Audience, world: World, itemStack: ItemStack) {
-		val currentIndex = itemStack.itemMeta.persistentDataContainer.getOrDefault(NODE_VARIANT, INTEGER, 0)
+		val currentIndex = itemStack.itemMeta.persistentDataContainer.getOrDefault(NODE_TYPE, INTEGER, 0)
 		val newIndex = (currentIndex + 1) % CacheType.entries.size
 		itemStack.updateMeta {
-			it.persistentDataContainer.set(NODE_VARIANT, INTEGER, newIndex)
+			it.persistentDataContainer.set(NODE_TYPE, INTEGER, newIndex)
 		}
 
 		audience.success("Set network type to ${CacheType.entries[newIndex]}")
@@ -153,7 +153,7 @@ object MultimeterItem : CustomItem("MULTIMETER") {
 			if (neighbors.isEmpty()) audience.userError("Empty neighbors")
 
 			for (newNeighbor in neighbors) {
-				audience.information("new neighbor: ${newNeighbor} at ${toVec3i(newNeighbor.node.position)}")
+				audience.information("new neighbor: $newNeighbor at ${toVec3i(newNeighbor.node.position)}")
 				if (visited.contains(newNeighbor.node.position)) {
 					audience.information("conmtinue")
 					continue
