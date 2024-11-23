@@ -26,6 +26,6 @@ open class MultiblockLinkage(
 
 	fun getOtherEnd(manager: MultiblockLinkageManager): MultiblockEntity? {
 		val linkages = manager.getLinkages(getLinkLocation())
-		return linkages.firstOrNull { canLink(it.owner) }?.owner
+		return linkages.firstOrNull { canLink(it.owner) && it.linkDirection == linkDirection.oppositeFace }?.owner
 	}
 }
