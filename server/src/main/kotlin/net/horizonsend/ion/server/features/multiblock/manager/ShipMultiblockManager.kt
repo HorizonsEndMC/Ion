@@ -6,6 +6,8 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageManager
+import net.horizonsend.ion.server.features.multiblock.entity.linkages.ShipLinkageManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
@@ -29,6 +31,7 @@ import org.bukkit.block.Sign
 import java.util.concurrent.ConcurrentHashMap
 
 class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServer.slF4JLogger) {
+	private val multiblockLinkageManager = ShipLinkageManager(this)
 	override var multiblockEntities: ConcurrentHashMap<Long, MultiblockEntity> = ConcurrentHashMap()
 
 	/** All the ticked multiblock entities of this chunk */
@@ -41,6 +44,10 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 		return starship.transportManager.getInputProvider()
 	}
 
+	override fun getLinkageManager(): MultiblockLinkageManager {
+		return multiblockLinkageManager
+	}
+
 	override fun save() {}
 	override fun getSignUnsavedTime(): Long = 0
 	override fun markChanged() {}
@@ -50,12 +57,13 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	}
 
 	init {
-	    loadEntities()
-		MultiblockTicking.registerMultiblockManager(this)
+		loadEntities()
 		tryFixEntities()
+		multiblockLinkageManager.pilot()
+		MultiblockTicking.registerMultiblockManager(this)
 	}
 
-	fun loadEntities() {
+	private fun loadEntities() {
 		val worldManager = world.ion.multiblockManager
 
 		starship.iterateBlocks { x, y, z ->
@@ -93,7 +101,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 
 			// If it was lost, don't place it back
 			if (!multiblockEntity.isIntact(checkSign = true)) {
-				multiblockEntity.handleRemoval()
+				multiblockEntity.processRemoval()
 				continue
 			}
 
@@ -106,7 +114,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 
 			// If it was lost, don't place it back
 			if (!(multiblockEntity as MultiblockEntity).isIntact(checkSign = true)) {
-				multiblockEntity.handleRemoval()
+				multiblockEntity.processRemoval()
 				continue
 			}
 
@@ -118,7 +126,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 
 			// If it was lost, don't place it back
 			if (!(multiblockEntity as MultiblockEntity).isIntact(checkSign = true)) {
-				multiblockEntity.handleRemoval()
+				multiblockEntity.processRemoval()
 				continue
 			}
 
@@ -138,7 +146,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 		)
 	}
 
-	fun displaceEntities(movement: StarshipMovement) {
+	fun displace(movement: StarshipMovement) {
 		val newEntities = ConcurrentHashMap<Long, MultiblockEntity>()
 
 		for (entry in multiblockEntities) {
@@ -165,6 +173,8 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 		}
 
 		asyncTickingMultiblockEntities = newAsyncTicking
+
+		multiblockLinkageManager.displace(movement)
 	}
 
 	/** Mostly to be used with blueprint load or loadship, loads entities from their sign data */
