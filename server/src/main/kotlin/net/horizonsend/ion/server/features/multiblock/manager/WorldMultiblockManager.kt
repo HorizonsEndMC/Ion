@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.manager
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.linkages.WorldLinkageManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -13,6 +14,7 @@ import kotlin.reflect.KClass
 
 /** Contains multiblocks that need to be stored at a world level, such as base shields, mob defenders, etc. */
 class WorldMultiblockManager(val world: IonWorld) {
+	val linkageManager = WorldLinkageManager(world)
 	private val worldMultiblocks: ConcurrentHashMap<KClass<out MultiblockEntity>, LinkedBlockingQueue<MultiblockEntity>> = ConcurrentHashMap()
 
 	fun register(multiblockEntity: MultiblockEntity): Boolean {
