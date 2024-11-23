@@ -44,8 +44,6 @@ abstract class InputManager {
 				is SharedMultiblockInput -> present.add(holder)
 				null -> inputLocations[location] = SingleMultiblockInput(holder)
 			}
-
-			return
 		}
 
 		fun remove(location: BlockKey, holder: MultiblockEntity) {

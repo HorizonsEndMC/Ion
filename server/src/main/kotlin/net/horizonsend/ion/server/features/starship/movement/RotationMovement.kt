@@ -6,6 +6,11 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
@@ -102,6 +107,18 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 
 	override fun displaceVector(vector: Vector): Vector {
 		return if (clockwise) vector.clone().rotateAroundY(0.5 * PI) else vector.clone().rotateAroundY(-0.5 * PI)
+	}
+
+	override fun displaceKey(key: BlockKey): BlockKey {
+		val oldX = getX(key)
+		val oldY = getY(key)
+		val oldZ = getZ(key)
+
+		return toBlockKey(
+			displaceX(oldX, oldZ),
+			displaceY(oldY),
+			displaceZ(oldZ, oldX)
+		)
 	}
 
 	override fun onComplete() {
