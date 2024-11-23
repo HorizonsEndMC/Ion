@@ -60,7 +60,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import kotlin.math.ceil
 
-@CommandAlias("bazaar")
+@CommandAlias("bazaar|ah|auctionhouse|shop")
 object BazaarCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		registerAsyncCompletion(manager, "bazaarItemStrings") { c ->
