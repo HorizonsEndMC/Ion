@@ -18,7 +18,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -43,8 +42,8 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 	}
 
 	fun getOrCache(location: BlockKey): Node? {
-		if (isCached(location)) return getCached(location).apply { println("Already cached, ${toVec3i(location)} $this") }
-			else return run { println("cache miss"); cache(location, getBlockIfLoaded(holder.getWorld(), getX(location), getY(location), getZ(location)) ?: return null) }
+		if (isCached(location)) return getCached(location)
+			else return cache(location, getBlockIfLoaded(holder.getWorld(), getX(location), getY(location), getZ(location)) ?: return null)
 	}
 
 	fun cache(location: BlockKey) {
