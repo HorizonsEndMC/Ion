@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsys
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
@@ -57,6 +58,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	abstract fun displaceLocation(oldLocation: Location): Location
 	abstract fun displaceFace(face: BlockFace): BlockFace
 	abstract fun displaceVector(vector: Vector): Vector
+	abstract fun displaceKey(key: BlockKey): BlockKey
 	protected abstract fun movePassenger(passenger: Entity)
 	protected abstract fun onComplete()
 	protected abstract fun blockDataTransform(blockData: BlockState): BlockState
@@ -139,7 +141,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			starship.calculateMinMax()
 			updateCenter()
 			updateSubsystems(world2)
-			starship.multiblockManager.displaceEntities(this)
+			starship.multiblockManager.displace(this)
 
 			onComplete()
 		}
