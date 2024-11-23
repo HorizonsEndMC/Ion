@@ -10,6 +10,8 @@ object NamespacedKeys {
 	val Y = key("y")
 	val Z = key("z")
 
+	val AXIS = key("axis")
+
 	val UP_DOWN = key("up_down")
 	val LEFT_RIGHT = key("left_right")
 	val FORWARD_BACKWARD = key("left_right")
@@ -17,6 +19,9 @@ object NamespacedKeys {
 	// Block Data PDC
 	val BLOCK_STATE = key("block_state")
 	val BLOCK_ENTITY = key("block_entity")
+
+	val TUBE_BUTTONS = key("tube_buttons")
+	val MATERIAL = key("material")
 
 	// Encounters PDC
 	val ENCOUNTER = key("encounter")
@@ -51,20 +56,10 @@ object NamespacedKeys {
 	val CUSTOM_ENTITY = key("custom_entity")
 
 	val SPLITTER_DIRECTION = key("splitter_direction")
-	val DRILL_USER = key("drill_user")
-	val DRILL_USER_NAME = key("drill_user_name")
+	val USER = key("user")
+	val USER_NAME = key("user")
 
 	@Deprecated("") val ORE_CHECK = key("oreCheck")
-
-	val POWER = key("power")
-	val GAS = key("Gas")
-
-	val POWER_TRANSPORT = key("power_transport")
-	val FLUID_TRANSPORT = key("gas_transport")
-	val ITEM_TRANSPORT = key("item_transport")
-
-	val TUBE_BUTTONS = key("tube_buttons")
-	val MATERIAL = key("material")
 
 	val PROGRESS = key("progress")
 	val LAST_PROGRESS_TICK = key("last_progress_tick")
@@ -86,25 +81,19 @@ object NamespacedKeys {
 	val FORBIDDEN_BLOCKS = key("forbidden_blocks")
 	val CARGO_CRATE = key("cargo_crate")
 
+	val POWER = key("power")
+	val GAS = key("Gas")
+
+	val POWER_TRANSPORT = key("power_transport")
+	val FLUID_TRANSPORT = key("gas_transport")
+	val ITEM_TRANSPORT = key("item_transport")
+
 	val STORED_MULTIBLOCK_ENTITIES = key("stored_multiblock_entities")
 	val STORED_MULTIBLOCK_ENTITIES_OLD = key("stored_multiblock_entities_old")
 
-	val RESOURCE_CAPACITY_MAX = key("resource_capacity_max")
-	val RESOURCE_CAPACITY_MIN = key("resource_capacity_min")
-
-	val PROCESSING_PROGRESS = key("processing_progress")
-
-	val NODE_COVERED_POSITIONS = key("node_covered_positions")
-	val AXIS = key("axis")
 	val EXTRACTORS = key("extractors")
-	val SOLAR_CELL_EXTRACTORS = key("solar_cell_extractors")
-	val SOLAR_CELL_DETECTORS = key("solar_cell_detectors")
 
 	val NODE_TYPE = key("node_type")
-
-	val NODE_VARIANT = key("node_variant")
-
-	val NODES = key("chunk_nodes")
 
 	// Fluid storage
 	val FLUID = key("fluid")
