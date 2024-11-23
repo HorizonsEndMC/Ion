@@ -15,8 +15,8 @@ interface UserManagedMultiblockEntity {
 	 * Holds information about who is currently using this multiblock.
 	 **/
 	class UserManager(data: PersistentMultiblockData, private val persistent: Boolean) {
-		private var user: UUID? = data.getAdditionalData(NamespacedKeys.DRILL_USER, UuidDataType())
-		private var userName: String? = data.getAdditionalData(NamespacedKeys.DRILL_USER_NAME, STRING)
+		private var user: UUID? = data.getAdditionalData(NamespacedKeys.USER, UuidDataType())
+		private var userName: String? = data.getAdditionalData(NamespacedKeys.USER_NAME, STRING)
 
 		fun clear() {
 			user = null
@@ -42,8 +42,8 @@ interface UserManagedMultiblockEntity {
 
 		fun saveUserData(store: PersistentMultiblockData) {
 			if (!persistent) return
-			user?.let { store.addAdditionalData(NamespacedKeys.DRILL_USER, UuidDataType(), it) }
-			userName?.let { store.addAdditionalData(NamespacedKeys.DRILL_USER_NAME, STRING, it) }
+			user?.let { store.addAdditionalData(NamespacedKeys.USER, UuidDataType(), it) }
+			userName?.let { store.addAdditionalData(NamespacedKeys.USER_NAME, STRING, it) }
 		}
 	}
 }
