@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.custom.items.misc.MultimeterItem
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
+import net.horizonsend.ion.server.features.custom.items.misc.Wrench
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.powered.CratePlacer
@@ -443,7 +444,7 @@ object CustomItems {
 	val PACKAGED_MULTIBLOCK = register(PackagedMultiblock)
 	val MULTIBLOCK_WORKBENCH = registerCustomBlockItem(identifier = "MULTIBLOCK_WORKBENCH", customModelData = 3001, displayName = text("Multiblock Workbench").itemName) { CustomBlocks.MULTIBLOCK_WORKBENCH }
 
-	val WRENCH = registerSimpleUnstackable("WRENCH", 8000, text("Wrench").itemName)
+	val WRENCH = register(Wrench)
 	// Tools end
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
