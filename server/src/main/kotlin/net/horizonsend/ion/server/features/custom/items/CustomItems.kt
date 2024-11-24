@@ -478,7 +478,7 @@ object CustomItems {
 		}
 	})
 
-	private fun registerCustomBlockItem(identifier: String, baseBlock: Material, customModelData: Int, displayName: Component, customBlock: Supplier<CustomBlock>): CustomItem {
+	private fun registerCustomBlockItem(identifier: String, baseBlock: Material, customModelData: Int, displayName: Component, customBlock: Supplier<CustomBlock>): CustomBlockItem {
 		val formattedDisplayName = text()
 			.decoration(ITALIC, false)
 			.append(displayName)
