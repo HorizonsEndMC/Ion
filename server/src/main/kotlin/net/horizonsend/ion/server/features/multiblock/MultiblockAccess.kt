@@ -31,6 +31,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -278,8 +279,9 @@ object MultiblockAccess : IonServerComponent() {
 		multiblockType.onSignInteract(sign, event.player, event)
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	fun onPlayerBreakBlock(event: BlockBreakEvent) {
+		if (event.isCancelled) return
 		if (getBlockTypeSafe(event.block.world, event.block.x, event.block.y, event.block.z)?.isSign == false) return
 		val sign = event.block.state as? Sign ?: return
 
