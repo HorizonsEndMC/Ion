@@ -2,13 +2,22 @@ package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.shape.BlockRequirement
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.front
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.isSign
+import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
@@ -18,15 +27,19 @@ import org.bukkit.block.Chest
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Directional
+import org.bukkit.block.data.type.WallSign
 import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.persistence.PersistentDataType.STRING
 
 object PrePackaged {
 	fun getOriginFromPlacement(clickedBlock: Block, direction: BlockFace, shape: MultiblockShape): Block {
@@ -115,55 +128,85 @@ object PrePackaged {
 		}
 
 		if (multiblock is SignlessStarshipWeaponMultiblock<*>) return
+		val signItem: ItemStack? = itemSource?.contents?.firstOrNull { it?.type?.isSign == true }
+
+		// If there is an item source but no sign then there is not one available
+		if (itemSource != null && signItem == null) return
+
+		val signType = signItem?.type?.let { getWallSignType(it) } ?: Material.OAK_WALL_SIGN
 
 		// Add sign
 		val signPosition = origin.getRelative(direction.oppositeFace, 1)
-		val signData = Material.OAK_WALL_SIGN.createBlockData { signData ->
+		val signData = signType.createBlockData { signData ->
 			signData as Directional
 			signData.facing = direction.oppositeFace
 		}
 
 		signPosition.blockData = signData
+
 		val sign = signPosition.state as Sign
 
-		// Set the detection name just in case the setup fails
-		sign.getSide(Side.FRONT).line(0, text("[${multiblock.name}]"))
-		sign.update()
+		val signItemMeta = signItem?.itemMeta
+		if (signItemMeta is BlockStateMeta) {
+			val accurateState = signItemMeta.blockState as Sign
+			for ((line, component) in accurateState.front().lines().withIndex()) {
+				sign.front().line(line, component)
+			}
 
-		MultiblockAccess.tryDetectMultiblock(player, sign, direction, false)
+			accurateState.persistentDataContainer.get(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData)?.let {
+				sign.persistentDataContainer.set(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData, it)
+			}
 
-		multiblock.setupSign(player, sign)
+			accurateState.persistentDataContainer.get(MULTIBLOCK, STRING)?.let {
+				sign.persistentDataContainer.set(MULTIBLOCK, STRING, it)
+			}
+
+			sign.update()
+
+			MultiblockEntities.loadFromSign(sign)
+		} else {
+			// Set the detection name just in case the setup fails
+			sign.getSide(Side.FRONT).line(0, text("[${multiblock.name}]"))
+			sign.update()
+
+			MultiblockAccess.tryDetectMultiblock(player, sign, direction, false)
+
+			multiblock.setupSign(player, sign)
+		}
 	}
 
 	fun getTokenData(itemStack: ItemStack): Multiblock? {
-		val data = itemStack.itemMeta.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.TAG_CONTAINER) ?: return null
-		val storageName = data.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)!!
+		val data = itemStack.itemMeta.persistentDataContainer.get(MULTIBLOCK, PersistentDataType.TAG_CONTAINER) ?: return null
+		val storageName = data.get(MULTIBLOCK, STRING)!!
 		return MultiblockRegistration.getByStorageName(storageName)!!
 	}
 
 	fun setTokenData(multiblock: Multiblock, destination: PersistentDataContainer) {
 		val pdc = destination.adapterContext.newPersistentDataContainer()
-		pdc.set(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING, multiblock.javaClass.simpleName)
+		pdc.set(MULTIBLOCK, STRING, multiblock.javaClass.simpleName)
 
-		destination.set(NamespacedKeys.MULTIBLOCK, PersistentDataType.TAG_CONTAINER, pdc)
+		destination.set(MULTIBLOCK, PersistentDataType.TAG_CONTAINER, pdc)
 	}
 
 	/** Moves the needed materials for the provided multiblock from the list of items to the destination inventory */
-	fun packageFrom(items: List<ItemStack>, multiblock: Multiblock, destination: Inventory) {
-		val itemRequirements = multiblock.shape.getRequirementMap(BlockFace.NORTH).map { it.value }
+	private fun packageFrom(items: List<ItemStack>, multiblock: Multiblock, destination: Inventory) {
+		val itemRequirements = getRequirements(multiblock)
 		val missing = mutableListOf<BlockRequirement>()
 
 		for (blockRequirement in itemRequirements) {
 			val requirement = blockRequirement.itemRequirement
-			val success = items.firstOrNull { requirement.itemCheck(it) && requirement.consume(it) }
+			val success = items.firstOrNull { requirement.itemCheck(it) && requirement.consume(it.clone()) }
 
 			if (success == null) {
 				missing.add(blockRequirement)
 				continue
 			}
 
-			val amount = requirement.amountConsumed(success)
-			LegacyItemUtils.addToInventory(destination, success.asQuantity(amount))
+			val toAdd = success.clone()
+			requirement.consume(success)
+
+			val amount = requirement.amountConsumed(toAdd)
+			LegacyItemUtils.addToInventory(destination, toAdd.asQuantity(amount))
 		}
 	}
 
@@ -186,15 +229,101 @@ object PrePackaged {
 	fun checkRequirements(available: Iterable<ItemStack>, multiblock: Multiblock): List<BlockRequirement> {
 		val items = available.mapTo(mutableListOf()) { it.clone() }
 
-		val itemRequirements = multiblock.shape.getRequirementMap(BlockFace.NORTH).map { it.value }
+		val requirements = getRequirements(multiblock)
 		val missing = mutableListOf<BlockRequirement>()
 
-		for (blockRequirement in itemRequirements) {
+		for (blockRequirement in requirements) {
 			val requirement = blockRequirement.itemRequirement
 			if (items.any { requirement.itemCheck(it) && requirement.consume(it) }) continue
 			missing.add(blockRequirement)
 		}
 
 		return missing
+	}
+
+	fun pickUpStructure(player: Player, sign: Sign): ItemStack? {
+		val multiblockType = MultiblockAccess.getFast(sign) ?: return null
+		if (multiblockType is EntityMultiblock<*>) {
+			// Just in case
+			multiblockType.getMultiblockEntity(sign, true)?.saveToSign()
+		}
+
+		val structureDirection = sign.getFacing().oppositeFace
+		val structureOrigin = MultiblockEntity.getOriginFromSign(sign)
+
+		if (!multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) return null
+
+		val requirements = multiblockType.shape.getRequirementMap(structureDirection)
+
+		val toBreak = mutableListOf<Block>()
+		val items = mutableListOf<ItemStack>()
+
+		val signItem = ItemStack(getNormalSignType(sign.type)).updateMeta { meta ->
+			meta as BlockStateMeta
+			meta.blockState = sign
+		}
+
+		for ((offset, requirement) in requirements) {
+			val realBlock = structureOrigin.getRelativeIfLoaded(offset.x, offset.y, offset.z) ?: return null
+			if (!BlockBreakEvent(sign.block, player).callEvent()) return null
+			toBreak.add(realBlock)
+
+			val item = requirement.itemRequirement.toItemStack(realBlock.blockData)
+			items.add(item)
+		}
+
+		items.add(signItem)
+		toBreak.add(sign.block)
+
+		if (!BlockBreakEvent(sign.block, player).callEvent()) return null
+
+		toBreak.asReversed().forEach {
+			val state = it.state
+			if (state is InventoryHolder) {
+				for (item in state.inventory.filterNotNull()) {
+					state.world.dropItemNaturally(state.location.toCenterLocation(), item)
+				}
+			}
+
+			it.setType(Material.AIR, false)
+		}
+
+		return createPackagedItem(items, multiblockType)
+	}
+
+	private fun getRequirements(multiblock: Multiblock): List<BlockRequirement> = multiblock.shape.getRequirementMap(BlockFace.NORTH).values.plus(signRequirement)
+
+	private val signRequirement = BlockRequirement(
+		"any sign",
+		Material.OAK_WALL_SIGN.createBlockData(),
+		syncCheck@{ block, face, loadChunks ->
+			val data = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z) ?: return@syncCheck false
+			if (data !is WallSign) return@syncCheck false
+			if (data.facing != face.oppositeFace) return@syncCheck false
+			true
+		},
+		BlockRequirement.ItemRequirement(
+			itemCheck = { it.type.isSign },
+			amountConsumed = { 1 },
+			toBlock = { item ->
+				val wallVariant = getWallSignType(item.type)
+				wallVariant.createBlockData()
+			},
+			toItemStack = { ItemStack(getNormalSignType(it.material)) }
+		)
+	).addPlacementModification { blockFace, blockData ->
+		blockData as WallSign
+		blockData.facing = blockFace.oppositeFace
+	}
+
+	private fun getWallSignType(material: Material): Material {
+		val variant = material.name.removeSuffix("_SIGN")
+		return runCatching { Material.valueOf(variant + "_WALL_SIGN") }.getOrDefault(Material.OAK_WALL_SIGN)
+	}
+
+	private fun getNormalSignType(material: Material): Material {
+		if (material.isSign && !material.isWallSign) return material
+		val variant = material.name.removeSuffix("_WALL_SIGN")
+		return runCatching { Material.valueOf(variant + "_SIGN") }.getOrDefault(Material.OAK_SIGN)
 	}
 }

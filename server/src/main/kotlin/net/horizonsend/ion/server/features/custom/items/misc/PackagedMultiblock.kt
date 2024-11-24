@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.PrePackaged
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
@@ -36,7 +37,9 @@ object PackagedMultiblock : CustomItem("PACKAGED_MULTIBLOCK") {
 			it.displayName(ofChildren(Component.text("Packaged "), multiblock.getDisplayName()).itemName)
 			it.lore(listOf(
 				Component.text("Multiblock: ${multiblock.name.replaceFirstChar { char -> char.uppercase(Locale.getDefault()) }}", NamedTextColor.GRAY).itemName,
-				Component.text("Variant: ${multiblock.javaClass.simpleName}", NamedTextColor.GRAY).itemName
+				Component.text("Variant: ${multiblock.javaClass.simpleName}", NamedTextColor.GRAY).itemName,
+				Component.text("Left click to preview", NamedTextColor.GRAY).itemName,
+				Component.text("Right click to place", NamedTextColor.GRAY).itemName
 			))
 		}
 	}
@@ -75,5 +78,23 @@ object PackagedMultiblock : CustomItem("PACKAGED_MULTIBLOCK") {
 		}
 
 		itemStack.amount--
+	}
+
+	override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
+		if (livingEntity !is Player) return
+
+		val packagedData = PrePackaged.getTokenData(itemStack) ?: run {
+			livingEntity.userError("The packaged multiblock has no data!")
+			return
+		}
+
+		val origin = PrePackaged.getOriginFromPlacement(
+			event.clickedBlock ?: return,
+			livingEntity.facing,
+			packagedData.shape
+		)
+
+		val locations = packagedData.shape.getLocations(livingEntity.facing).map { Vec3i(origin.x, origin.y, origin.z).plus(it) }
+		livingEntity.highlightBlocks(locations, 100L)
 	}
 }

@@ -45,7 +45,8 @@ object MultiblockWorkbench : InteractableCustomBlock(
 	drops = BlockLoot(
 		requiredTool = null,
 		drops = customItemDrop(CustomItems::MULTIBLOCK_WORKBENCH, 1)
-	)
+	),
+	customBlockItem = { CustomItems.MULTIBLOCK_WORKBENCH }
 ) {
 	private val cooldown = PerPlayerCooldown(5L, TimeUnit.MILLISECONDS)
 

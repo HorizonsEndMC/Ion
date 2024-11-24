@@ -50,6 +50,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Furnace
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Slab.Type.DOUBLE
+import org.bukkit.inventory.ItemStack
 import java.util.EnumSet
 
 class MultiblockShape {
@@ -232,11 +233,11 @@ class MultiblockShape {
 				alias = type.toString(),
 				example = type.createBlockData(),
 				syncCheck = { block, _, loadChunks -> if (loadChunks) block.type == type else block.getTypeSafe() == type },
-				dataCheck = { type == it.material },
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { type == it.type },
 					amountConsumed = { 1 },
-					toBlock = { item -> item.type.createBlockData() }
+					toBlock = { item -> item.type.createBlockData() },
+					toItemStack = { block -> ItemStack(block.material) }
 				)
 			)
 
@@ -252,11 +253,11 @@ class MultiblockShape {
 				syncCheck = { block, _, loadChunks ->
 					typeSet.contains(if (loadChunks) block.type else block.getTypeSafe() ?: return@BlockRequirement false)
 				},
-				dataCheck = { typeSet.contains(it.material) },
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { typeSet.contains(it.type) },
 					amountConsumed = { 1 },
-					toBlock = { item -> item.type.createBlockData() }
+					toBlock = { item -> item.type.createBlockData() },
+					toItemStack = { block -> ItemStack(block.material) }
 				)
 			)
 
@@ -274,11 +275,11 @@ class MultiblockShape {
 						getBlockDataSafe(block.world, block.x, block.y, block.z)?.let { CustomBlocks.getByBlockData(it) }
 					} === customBlock
 				},
-				dataCheck = { CustomBlocks.getByBlockData(it) == customBlock },
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { val customItem = it.customItem; customItem is CustomBlockItem && customItem.getCustomBlock() == customBlock },
 					amountConsumed = { 1 },
-					toBlock = { _ -> customBlock.blockData }
+					toBlock = { _ -> customBlock.blockData },
+					toItemStack = { block -> CustomBlocks.getByBlockData(block)?.customItem?.constructItemStack() ?: ItemStack(Material.AIR) }
 				)
 			)
 
@@ -331,11 +332,11 @@ class MultiblockShape {
 					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 					blockData is Slab && blockData.type == DOUBLE
 				},
-				dataCheck = { it is Slab && it.type == DOUBLE },
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { (it.type.isSlab && it.amount >= 2) },
 					amountConsumed = { 2 },
-					toBlock = { item -> (item.type.createBlockData() as Slab).apply { this.type = DOUBLE } }
+					toBlock = { item -> (item.type.createBlockData() as Slab).apply { this.type = DOUBLE } },
+					toItemStack = { ItemStack(it.material, 2) }
 				),
 			)
 		)
@@ -352,7 +353,6 @@ class MultiblockShape {
 
 					(blockData is Slab && blockData.type == DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
 				},
-				dataCheck = { (it is Slab && it.type == DOUBLE) || it.material.isTerracotta },
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { (it.type.isSlab && it.amount >= 2) || it.type.isTerracotta  },
 					amountConsumed = { if (it.type.isSlab) 2 else 1 },
@@ -361,6 +361,10 @@ class MultiblockShape {
 						if (type.isSlab) {
 							(type.createBlockData() as Slab).apply { this.type = DOUBLE }
 						} else type.createBlockData()
+					},
+					{ block ->
+						val type = block.material
+						if (type.isSlab) ItemStack(type, 2) else ItemStack(type)
 					}
 				),
 			)
@@ -491,11 +495,11 @@ class MultiblockShape {
 				val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace
 				return@check facing == inward.oppositeFace
 			},
-			dataCheck = { it is Furnace },
 			itemRequirement = BlockRequirement.ItemRequirement(
 				itemCheck = { it.type == Material.FURNACE },
 				amountConsumed = { 1 },
-				toBlock = { Material.FURNACE.createBlockData() }
+				toBlock = { Material.FURNACE.createBlockData() },
+				toItemStack = { ItemStack(Material.FURNACE) }
 			)
 		).addPlacementModification { direction, data ->
 			data as Furnace
