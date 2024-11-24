@@ -37,8 +37,10 @@ interface Node {
 			nodes.add(NodePositionData(cached, world, getRelative(position, adjacentFace), adjacentFace))
 		}
 
-		return nodes
+		return filterPositionData(nodes, backwards)
 	}
+
+	fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> = nextNodes
 
 	data class NodePositionData(val type: Node, val world: World, val position: BlockKey, val offset: BlockFace) {
 		fun getNextNodes(filter: ((Node, BlockFace) -> Boolean)?): List<NodePositionData> =
