@@ -61,6 +61,12 @@ sealed interface PowerNode : Node {
         override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other is SpongeNode
         override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is SpongeNode
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+
+		override fun filterPositionData(nextNodes: List<Node.NodePositionData>, backwards: BlockFace): List<Node.NodePositionData> {
+			val forward = backwards.oppositeFace
+			nextNodes.firstOrNull { it.offset == forward }?.let { return listOf(it) }
+			return nextNodes
+		}
     }
 
     data object PowerInvertedMergeNode : PowerNode {
@@ -68,6 +74,12 @@ sealed interface PowerNode : Node {
         override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other is EndRodNode
         override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is EndRodNode
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+
+		override fun filterPositionData(nextNodes: List<Node.NodePositionData>, backwards: BlockFace): List<Node.NodePositionData> {
+			val forward = backwards.oppositeFace
+			nextNodes.firstOrNull { it.offset == forward }?.let { return listOf(it) }
+			return nextNodes
+		}
     }
 
     data class PowerFlowMeter(val cache: PowerTransportCache, var face: BlockFace, val location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder {
