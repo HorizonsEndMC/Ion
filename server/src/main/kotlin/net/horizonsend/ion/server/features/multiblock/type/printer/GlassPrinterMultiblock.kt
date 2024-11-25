@@ -15,7 +15,7 @@ abstract class AbstractGlassPrinterMultiblock : PrinterMultiblock() {
 
 	override fun MultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
 	override fun MultiblockShape.RequirementBuilder.printerCoreBlock() = endRod()
-	override fun MultiblockShape.RequirementBuilder.printerProductBlock() = anyGlass()
+	override fun MultiblockShape.RequirementBuilder.printerProductBlock() = this.anyGlass()
 }
 
 object GlassPrinterMultiblock : AbstractGlassPrinterMultiblock() {

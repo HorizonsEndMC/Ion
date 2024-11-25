@@ -27,7 +27,7 @@ import org.bukkit.persistence.PersistentDataType
 object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 	MiniMessage.miniMessage().deserialize("[Connected]").color(TextColor.fromHexString("#55FF55"))
 ) {
-	override fun MultiblockShape.RequirementBuilder.tubeStateExtension() = anyGlass()
+	override fun MultiblockShape.RequirementBuilder.tubeStateExtension() = this.anyGlass()
 
 	override fun toggle(sign: Sign, player: Player) {
 		if (ActiveStarships.findByBlock(sign.block) != null) {

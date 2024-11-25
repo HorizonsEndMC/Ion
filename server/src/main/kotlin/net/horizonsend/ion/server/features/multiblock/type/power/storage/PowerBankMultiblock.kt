@@ -39,7 +39,7 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMulti
 		z(+0) {
 			y(-1) {
 				x(-1).extractor()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).extractor()
 			}
 
