@@ -7,6 +7,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Fence
+import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
 
 object PrepackagedPreset {
@@ -25,6 +26,14 @@ object PrepackagedPreset {
 		addPlacementModification { multiblockDirection: BlockFace, pane: BlockData ->
 			pane as Fence
 			face.forEach { pane.setFace(it[multiblockDirection], true) }
+		}
+	}
+
+	fun slab(type: Slab.Type): BlockRequirement.() -> Unit = {
+		example = Material.STONE_BRICK_SLAB.createBlockData()
+		addPlacementModification { multiblockDirection: BlockFace, slab: BlockData ->
+			slab as Slab
+			slab.type = type
 		}
 	}
 }
