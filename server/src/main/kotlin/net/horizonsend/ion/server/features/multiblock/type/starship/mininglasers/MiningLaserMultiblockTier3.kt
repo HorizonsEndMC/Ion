@@ -36,7 +36,7 @@ object MiningLaserMultiblockTier3Top : MiningLaserMultiblockTier3() {
 		z(+0) {
 			y(-1) {
 				x(-1).anyPipedInventory()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 
@@ -66,7 +66,7 @@ object MiningLaserMultiblockTier3Top : MiningLaserMultiblockTier3() {
 
 			y(+4) {
 				x(-1).anyStairs()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 		}
@@ -114,9 +114,9 @@ object MiningLaserMultiblockTier3Top : MiningLaserMultiblockTier3() {
 
 			y(+4) {
 				x(-2).anyStairs()
-				x(-1).terracotta()
+				x(-1).anyTerracotta()
 				x(+0).anyStairs()
-				x(+1).terracotta()
+				x(+1).anyTerracotta()
 				x(+2).anyStairs()
 			}
 
@@ -163,11 +163,11 @@ object MiningLaserMultiblockTier3Top : MiningLaserMultiblockTier3() {
 			}
 
 			y(+4) {
-				x(-2).terracotta()
+				x(-2).anyTerracotta()
 				x(-1).anyStairs()
 				x(+0).emeraldBlock()
 				x(+1).anyStairs()
-				x(+2).terracotta()
+				x(+2).anyTerracotta()
 			}
 
 			y(+5) {
@@ -220,9 +220,9 @@ object MiningLaserMultiblockTier3Top : MiningLaserMultiblockTier3() {
 
 			y(+4) {
 				x(-2).anyStairs()
-				x(-1).terracotta()
+				x(-1).anyTerracotta()
 				x(+0).anyStairs()
-				x(+1).terracotta()
+				x(+1).anyTerracotta()
 				x(+2).anyStairs()
 			}
 
@@ -262,7 +262,7 @@ object MiningLaserMultiblockTier3Top : MiningLaserMultiblockTier3() {
 
 			y(+4) {
 				x(-1).anyStairs()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 		}
@@ -279,7 +279,7 @@ object MiningLaserMultiblockTier3TopMirrored : MiningLaserMultiblockTier3() {
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).anyPipedInventory()
 			}
 
@@ -309,7 +309,7 @@ object MiningLaserMultiblockTier3TopMirrored : MiningLaserMultiblockTier3() {
 
 			y(+4) {
 				x(-1).anyStairs()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 		}
@@ -357,9 +357,9 @@ object MiningLaserMultiblockTier3TopMirrored : MiningLaserMultiblockTier3() {
 
 			y(+4) {
 				x(-2).anyStairs()
-				x(-1).terracotta()
+				x(-1).anyTerracotta()
 				x(+0).anyStairs()
-				x(+1).terracotta()
+				x(+1).anyTerracotta()
 				x(+2).anyStairs()
 			}
 
@@ -406,11 +406,11 @@ object MiningLaserMultiblockTier3TopMirrored : MiningLaserMultiblockTier3() {
 			}
 
 			y(+4) {
-				x(-2).terracotta()
+				x(-2).anyTerracotta()
 				x(-1).anyStairs()
 				x(+0).emeraldBlock()
 				x(+1).anyStairs()
-				x(+2).terracotta()
+				x(+2).anyTerracotta()
 			}
 
 			y(+5) {
@@ -463,9 +463,9 @@ object MiningLaserMultiblockTier3TopMirrored : MiningLaserMultiblockTier3() {
 
 			y(+4) {
 				x(-2).anyStairs()
-				x(-1).terracotta()
+				x(-1).anyTerracotta()
 				x(+0).anyStairs()
-				x(+1).terracotta()
+				x(+1).anyTerracotta()
 				x(+2).anyStairs()
 			}
 
@@ -505,7 +505,7 @@ object MiningLaserMultiblockTier3TopMirrored : MiningLaserMultiblockTier3() {
 
 			y(+4) {
 				x(-1).anyStairs()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 		}
@@ -522,7 +522,7 @@ object MiningLaserMultiblockTier3Bottom : MiningLaserMultiblockTier3() {
 		z(+0) {
 			y(+1) {
 				x(-1).anyPipedInventory()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 
@@ -552,7 +552,7 @@ object MiningLaserMultiblockTier3Bottom : MiningLaserMultiblockTier3() {
 
 			y(-4) {
 				x(-1).anyStairs()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 		}
@@ -600,9 +600,9 @@ object MiningLaserMultiblockTier3Bottom : MiningLaserMultiblockTier3() {
 
 			y(-4) {
 				x(-2).anyStairs()
-				x(-1).terracotta()
+				x(-1).anyTerracotta()
 				x(+0).anyStairs()
-				x(+1).terracotta()
+				x(+1).anyTerracotta()
 				x(+2).anyStairs()
 			}
 
@@ -649,11 +649,11 @@ object MiningLaserMultiblockTier3Bottom : MiningLaserMultiblockTier3() {
 			}
 
 			y(-4) {
-				x(-2).terracotta()
+				x(-2).anyTerracotta()
 				x(-1).anyStairs()
 				x(+0).emeraldBlock()
 				x(+1).anyStairs()
-				x(+2).terracotta()
+				x(+2).anyTerracotta()
 			}
 
 			y(-5) {
@@ -706,9 +706,9 @@ object MiningLaserMultiblockTier3Bottom : MiningLaserMultiblockTier3() {
 
 			y(-4) {
 				x(-2).anyStairs()
-				x(-1).terracotta()
+				x(-1).anyTerracotta()
 				x(+0).anyStairs()
-				x(+1).terracotta()
+				x(+1).anyTerracotta()
 				x(+2).anyStairs()
 			}
 
@@ -748,7 +748,7 @@ object MiningLaserMultiblockTier3Bottom : MiningLaserMultiblockTier3() {
 
 			y(-4) {
 				x(-1).anyStairs()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 		}
@@ -765,7 +765,7 @@ object MiningLaserMultiblockTier3BottomMirrored : MiningLaserMultiblockTier3() {
 		z(+0) {
 			y(+1) {
 				x(-1).ironBlock()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).anyPipedInventory()
 			}
 
@@ -795,7 +795,7 @@ object MiningLaserMultiblockTier3BottomMirrored : MiningLaserMultiblockTier3() {
 
 			y(-4) {
 				x(-1).anyStairs()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 		}
@@ -843,9 +843,9 @@ object MiningLaserMultiblockTier3BottomMirrored : MiningLaserMultiblockTier3() {
 
 			y(-4) {
 				x(-2).anyStairs()
-				x(-1).terracotta()
+				x(-1).anyTerracotta()
 				x(+0).anyStairs()
-				x(+1).terracotta()
+				x(+1).anyTerracotta()
 				x(+2).anyStairs()
 			}
 
@@ -892,11 +892,11 @@ object MiningLaserMultiblockTier3BottomMirrored : MiningLaserMultiblockTier3() {
 			}
 
 			y(-4) {
-				x(-2).terracotta()
+				x(-2).anyTerracotta()
 				x(-1).anyStairs()
 				x(+0).emeraldBlock()
 				x(+1).anyStairs()
-				x(+2).terracotta()
+				x(+2).anyTerracotta()
 			}
 
 			y(-5) {
@@ -949,9 +949,9 @@ object MiningLaserMultiblockTier3BottomMirrored : MiningLaserMultiblockTier3() {
 
 			y(-4) {
 				x(-2).anyStairs()
-				x(-1).terracotta()
+				x(-1).anyTerracotta()
 				x(+0).anyStairs()
-				x(+1).terracotta()
+				x(+1).anyTerracotta()
 				x(+2).anyStairs()
 			}
 
@@ -991,7 +991,7 @@ object MiningLaserMultiblockTier3BottomMirrored : MiningLaserMultiblockTier3() {
 
 			y(-4) {
 				x(-1).anyStairs()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 		}
@@ -1009,7 +1009,7 @@ object MiningLaserMultiblockTier3Side : MiningLaserMultiblockTier3() {
 			y(-1) {
 				x(-2).anyStairs()
 				x(-1).anyPipedInventory()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 			}
 
 			y(+0) {
@@ -1187,35 +1187,35 @@ object MiningLaserMultiblockTier3Side : MiningLaserMultiblockTier3() {
 		z(+5) {
 			y(-1) {
 				x(-2).anyStairs()
-				x(-1).terracotta()
+				x(-1).anyTerracotta()
 				x(+0).anyStairs()
 			}
 
 			y(+0) {
 				x(-3).anyStairs()
-				x(-2).terracotta()
+				x(-2).anyTerracotta()
 				x(-1).anyWall()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 
 			y(+1) {
-				x(-3).terracotta()
+				x(-3).anyTerracotta()
 				x(-2).anyWall()
 				x(-1).emeraldBlock()
 				x(+0).anyWall()
-				x(+1).terracotta()
+				x(+1).anyTerracotta()
 			}
 			y(+2) {
 				x(-3).anyStairs()
-				x(-2).terracotta()
+				x(-2).anyTerracotta()
 				x(-1).anyWall()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 			y(+3) {
 				x(-2).anyStairs()
-				x(-1).terracotta()
+				x(-1).anyTerracotta()
 				x(+0).anyStairs()
 			}
 
@@ -1248,7 +1248,7 @@ object MiningLaserMultiblockTier3SideMirrored : MiningLaserMultiblockTier3() {
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).anyPipedInventory()
 				x(+2).anyStairs()
 			}
@@ -1428,35 +1428,35 @@ object MiningLaserMultiblockTier3SideMirrored : MiningLaserMultiblockTier3() {
 		z(+5) {
 			y(-1) {
 				x(+2).anyStairs()
-				x(+1).terracotta()
+				x(+1).anyTerracotta()
 				x(+0).anyStairs()
 			}
 
 			y(+0) {
 				x(+3).anyStairs()
-				x(+2).terracotta()
+				x(+2).anyTerracotta()
 				x(+1).anyWall()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(-1).anyStairs()
 			}
 
 			y(+1) {
-				x(+3).terracotta()
+				x(+3).anyTerracotta()
 				x(+2).anyWall()
 				x(+1).emeraldBlock()
 				x(+0).anyWall()
-				x(-1).terracotta()
+				x(-1).anyTerracotta()
 			}
 			y(+2) {
 				x(+3).anyStairs()
-				x(+2).terracotta()
+				x(+2).anyTerracotta()
 				x(+1).anyWall()
-				x(+0).terracotta()
+				x(+0).anyTerracotta()
 				x(-1).anyStairs()
 			}
 			y(+3) {
 				x(+2).anyStairs()
-				x(+1).terracotta()
+				x(+1).anyTerracotta()
 				x(+0).anyStairs()
 			}
 

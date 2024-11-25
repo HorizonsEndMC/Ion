@@ -22,7 +22,7 @@ object MissileLoaderMultiblock : Multiblock(), EntityMultiblock<MissileLoaderMul
             y(-1) {
                 x(-2).anyStairs()
                 x(-1).ironBlock()
-                x(+0).wireInputComputer()
+                x(+0).powerInput()
                 x(+1).ironBlock()
                 x(+2).anyStairs()
             }
@@ -36,9 +36,9 @@ object MissileLoaderMultiblock : Multiblock(), EntityMultiblock<MissileLoaderMul
         z(+1) {
             y(-1) {
                 x(-2).netheriteBlock()
-                x(-1).type(Material.GRINDSTONE)
+                x(-1).grindstone()
                 x(+0).type(Material.OBSERVER)
-                x(+1).type(Material.GRINDSTONE)
+                x(+1).grindstone()
                 x(+2).netheriteBlock()
             }
             y(0) {
@@ -52,9 +52,9 @@ object MissileLoaderMultiblock : Multiblock(), EntityMultiblock<MissileLoaderMul
         z(+2) {
             y(-1) {
                 x(-2).netheriteBlock()
-                x(-1).type(Material.GRINDSTONE)
+                x(-1).grindstone()
                 x(+0).type(Material.OBSERVER)
-                x(+1).type(Material.GRINDSTONE)
+                x(+1).grindstone()
                 x(+2).netheriteBlock()
             }
             y(0) {
@@ -84,9 +84,9 @@ object MissileLoaderMultiblock : Multiblock(), EntityMultiblock<MissileLoaderMul
         z(+4) {
             y(-1) {
                 x(-2).netheriteBlock()
-                x(-1).type(Material.GRINDSTONE)
+                x(-1).grindstone()
                 x(+0).type(Material.OBSERVER)
-                x(+1).type(Material.GRINDSTONE)
+                x(+1).grindstone()
                 x(+2).netheriteBlock()
             }
             y(0) {
@@ -100,9 +100,9 @@ object MissileLoaderMultiblock : Multiblock(), EntityMultiblock<MissileLoaderMul
         z(+5) {
             y(-1) {
                 x(-2).netheriteBlock()
-                x(-1).type(Material.GRINDSTONE)
+                x(-1).grindstone()
                 x(+0).type(Material.OBSERVER)
-                x(+1).type(Material.GRINDSTONE)
+                x(+1).grindstone()
                 x(+2).netheriteBlock()
             }
             y(0) {

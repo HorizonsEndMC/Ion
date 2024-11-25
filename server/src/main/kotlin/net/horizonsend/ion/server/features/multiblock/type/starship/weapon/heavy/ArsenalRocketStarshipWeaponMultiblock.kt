@@ -28,7 +28,7 @@ sealed class VerticalArsenalStarshipWeaponMultiblock : ArsenalRocketStarshipWeap
 		y(0) {
 			z(+0) {
 			 	 x(-1).anyStairs()
-			 	 x(0).noteBlock()
+			 	 x(0).powerInput()
 			 	 x(+1).anyStairs()
 			}
 			z(1) {

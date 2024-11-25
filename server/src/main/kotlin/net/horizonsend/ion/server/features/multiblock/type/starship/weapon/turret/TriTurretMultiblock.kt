@@ -51,37 +51,37 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 
 			z(-2) {
 				x(-2).ironBlock()
-				x(-1..+1) { concrete() }
+				x(-1..+1) { this.anyConcrete() }
 				x(+2).ironBlock()
 			}
 
 			z(-1) {
 				x(-3).anyStairs()
-				x(-2..+2) { concrete() }
+				x(-2..+2) { this.anyConcrete() }
 				x(+3).anyStairs()
 			}
 
 			z(+0) {
 				x(-3..-2) { terracottaOrDoubleslab() }
-				x(-1..+1) { concrete() }
+				x(-1..+1) { this.anyConcrete() }
 				x(+2..+3) { terracottaOrDoubleslab() }
 			}
 
 			z(+1) {
 				x(-3).anyStairs()
 				x(-2).terracottaOrDoubleslab()
-				x(-1).concrete()
+				x(-1).anyConcrete()
 				x(+0).terracottaOrDoubleslab()
-				x(+1).concrete()
+				x(+1).anyConcrete()
 				x(+2).terracottaOrDoubleslab()
 				x(+3).anyStairs()
 			}
 
 			z(+2) {
 				x(-2).ironBlock()
-				x(-1).concrete()
+				x(-1).anyConcrete()
 				x(+0).terracottaOrDoubleslab()
-				x(+1).concrete()
+				x(+1).anyConcrete()
 				x(+2).ironBlock()
 			}
 

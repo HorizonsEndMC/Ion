@@ -19,12 +19,12 @@ object FluidTankSmall : FluidStorageMultiblock(25_000) {
 		z(1) {
 			y(-1) {
 				x(-1).titaniumBlock()
-				x(+0).copperGrate()
+				x(+0).anyCopperGrate()
 				x(+1).titaniumBlock()
 			}
 			y(+0) {
 				x(-1).titaniumBlock()
-				x(+0).copperGrate()
+				x(+0).anyCopperGrate()
 				x(+1).titaniumBlock()
 			}
 		}
