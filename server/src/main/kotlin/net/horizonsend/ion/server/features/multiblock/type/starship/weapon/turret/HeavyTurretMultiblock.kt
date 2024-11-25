@@ -36,9 +36,9 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 3) {
 				x(-2).anyStairs()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
 				x(+2).anyStairs()
 			}
 			y(getSign() * 4) {
@@ -55,7 +55,7 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 			y(getSign() * 3) {
 				x(-2).anyStairs()
 				x(-1).terracottaOrDoubleslab()
-				x(+0).carbyne()
+				x(+0).anyConcrete()
 				x(+1).terracottaOrDoubleslab()
 				x(+2).anyStairs()
 			}
@@ -72,7 +72,7 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 			y(getSign() * 3) {
 				x(-2).anyStairs()
 				x(-1).terracottaOrDoubleslab()
-				x(+0).carbyne()
+				x(+0).anyConcrete()
 				x(+1).terracottaOrDoubleslab()
 				x(+2).anyStairs()
 			}

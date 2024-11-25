@@ -50,9 +50,9 @@ object AmplifiedGravityWellMultiblock : GravityWellMultiblock() {
 
 			y(+0) {
 				x(-2).type(Material.IRON_BARS)
-				x(-1).glassPane()
-				x(+0).glassPane()
-				x(+1).glassPane()
+				x(-1).anyGlassPane()
+				x(+0).anyGlassPane()
+				x(+1).anyGlassPane()
 				x(+2).type(Material.IRON_BARS)
 			}
 
@@ -75,11 +75,11 @@ object AmplifiedGravityWellMultiblock : GravityWellMultiblock() {
 			}
 
 			y(+0) {
-				x(-2).glass()
+				x(-2).anyGlass()
 				x(-1).anyGlassPane()
 				x(+0).emeraldBlock()
 				x(+1).anyGlassPane()
-				x(+2).glass()
+				x(+2).anyGlass()
 			}
 
 			y(+1) {
@@ -102,9 +102,9 @@ object AmplifiedGravityWellMultiblock : GravityWellMultiblock() {
 
 			y(+0) {
 				x(-2).type(Material.IRON_BARS)
-				x(-1).glassPane()
-				x(+0).glassPane()
-				x(+1).glassPane()
+				x(-1).anyGlassPane()
+				x(+0).anyGlassPane()
+				x(+1).anyGlassPane()
 				x(+2).type(Material.IRON_BARS)
 			}
 

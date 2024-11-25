@@ -40,7 +40,7 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 
 	override fun MultiblockShape.buildStructure() {
 		at(x = -1, y = -1, z = +0).extractor()
-		at(x = +0, y = -1, z = +0).wireInputComputer()
+		at(x = +0, y = -1, z = +0).powerInput()
 		at(x = +1, y = -1, z = +0).extractor()
 		at(x = -1, y = -1, z = +1).type(tierMaterial)
 		at(x = +0, y = -1, z = +1).redstoneBlock()

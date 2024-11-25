@@ -31,7 +31,7 @@ object PowerCellMultiblock : Multiblock(), EntityMultiblock<PowerCellMultiblock.
 		z(+0) {
 			y(+0) {
 				x(-1).anyGlassPane()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyGlassPane()
 			}
 		}

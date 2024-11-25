@@ -29,6 +29,14 @@ object PrepackagedPreset {
 		}
 	}
 
+//	fun wall(vararg face: RelativeFace): BlockRequirement.() -> Unit = {
+//		example = Material.STONE_BRICK_WALL.createBlockData()
+//		addPlacementModification { multiblockDirection: BlockFace, pane: BlockData ->
+//			pane as MultipleFacing
+//			face.forEach { pane.setFace(it[multiblockDirection], true) }
+//		}
+//	}
+
 	fun slab(type: Slab.Type): BlockRequirement.() -> Unit = {
 		example = Material.STONE_BRICK_SLAB.createBlockData()
 		addPlacementModification { multiblockDirection: BlockFace, slab: BlockData ->

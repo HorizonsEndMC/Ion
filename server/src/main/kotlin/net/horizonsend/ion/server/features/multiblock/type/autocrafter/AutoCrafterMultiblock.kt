@@ -58,7 +58,7 @@ abstract class AutoCrafterMultiblock(
 			y(-1) {
 				x(-2).type(tierMaterial)
 				x(-1).anyGlassPane()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyGlassPane()
 				x(+2).type(tierMaterial)
 			}
@@ -76,7 +76,7 @@ abstract class AutoCrafterMultiblock(
 			y(-1) {
 				x(-2).anyGlass() // input pipe
 				x(-1).titaniumBlock()
-				x(+0).craftingTable()
+				x(+0).extractor()
 				x(+1).titaniumBlock()
 				x(+2).extractor()
 			}
@@ -274,7 +274,7 @@ abstract class AutoCrafterMultiblockMirrored(
 			y(-1) {
 				x(-2).type(tierMaterial)
 				x(-1).anyGlassPane()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyGlassPane()
 				x(+2).type(tierMaterial)
 			}
@@ -292,7 +292,7 @@ abstract class AutoCrafterMultiblockMirrored(
 			y(-1) {
 				x(-2).extractor()
 				x(-1).titaniumBlock()
-				x(+0).craftingTable()
+				x(+0).extractor()
 				x(+1).titaniumBlock()
 				x(+2).anyGlass() // input pipe
 			}

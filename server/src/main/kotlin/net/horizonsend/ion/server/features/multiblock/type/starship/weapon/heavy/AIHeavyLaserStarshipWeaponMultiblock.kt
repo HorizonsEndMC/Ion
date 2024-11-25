@@ -20,7 +20,7 @@ object AIHeavyLaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<A
 		at(+0, +0, +2).thrusterBlock()
 		at(+0, +0, +3).type(Material.DROPPER)
 		at(+0, +0, +4).type(Material.DROPPER)
-		at(+0, +0, +5).type(Material.GRINDSTONE)
+		at(+0, +0, +5).grindstone()
 		at(+0, +0, +6).pistonBase()
 	}
 }

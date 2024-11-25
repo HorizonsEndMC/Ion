@@ -23,7 +23,7 @@ object PhaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<PhaserW
 			}
 			z(+5) { x(+0).anyDoubleSlab() }
 			z(+6) { x(+0).hopper() }
-			z(+7) { x(+0).type(Material.GRINDSTONE) }
+			z(+7) { x(+0).grindstone() }
 		}
 	}
 
