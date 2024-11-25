@@ -33,10 +33,10 @@ import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_3
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.BACKWARD
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.FORWARD
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.LEFT
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.OPPOSITE
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.RIGHT
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.SELF
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component
@@ -69,39 +69,39 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
 			y(-1) {
-				x(-2).anyStairs(stairs(OPPOSITE, TOP, STRAIGHT))
+				x(-2).anyStairs(stairs(BACKWARD, TOP, STRAIGHT))
 				x(-1).craftingTable()
 				x(+0).wireInputComputer()
 				x(+1).craftingTable()
-				x(+2).anyStairs(stairs(OPPOSITE, TOP, STRAIGHT))
+				x(+2).anyStairs(stairs(BACKWARD, TOP, STRAIGHT))
 			}
 			y(+0) {
-				x(-2).anyStairs(stairs(SELF, BOTTOM, STRAIGHT))
+				x(-2).anyStairs(stairs(FORWARD, BOTTOM, STRAIGHT))
 				x(-1).anyGlass()
 				x(+0).copperBlock()
 				x(+1).anyGlass()
-				x(+2).anyStairs(stairs(SELF, BOTTOM, STRAIGHT))
+				x(+2).anyStairs(stairs(FORWARD, BOTTOM, STRAIGHT))
 			}
 			y(+1) {
-				x(-2).anyGlassPane(pane(SELF, RIGHT))
+				x(-2).anyGlassPane(pane(FORWARD, RIGHT))
 				x(-1).anyGlass()
 				x(+0).anyGlassPane(pane(LEFT, RIGHT))
 				x(+1).anyGlass()
-				x(+2).anyGlassPane(pane(SELF, LEFT))
+				x(+2).anyGlassPane(pane(FORWARD, LEFT))
 			}
 			y(+2) {
-				x(-2).anyGlassPane(pane(SELF, RIGHT))
+				x(-2).anyGlassPane(pane(FORWARD, RIGHT))
 				x(-1).anyGlass()
 				x(+0).anyGlassPane(pane(LEFT, RIGHT))
 				x(+1).anyGlass()
-				x(+2).anyGlassPane(pane(SELF, LEFT))
+				x(+2).anyGlassPane(pane(FORWARD, LEFT))
 			}
 			y(+3) {
-				x(-2).anyGlassPane(pane(SELF, RIGHT))
+				x(-2).anyGlassPane(pane(FORWARD, RIGHT))
 				x(-1).anyGlass()
 				x(+0).anyGlassPane(pane(LEFT, RIGHT))
 				x(+1).anyGlass()
-				x(+2).anyGlassPane(pane(SELF, LEFT))
+				x(+2).anyGlassPane(pane(FORWARD, LEFT))
 			}
 		}
 		z(1) {
@@ -143,39 +143,39 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		}
 		z(2) {
 			y(-1) {
-				x(-2).anyStairs(stairs(OPPOSITE, TOP, STRAIGHT))
+				x(-2).anyStairs(stairs(BACKWARD, TOP, STRAIGHT))
 				x(-1).titaniumBlock()
 				x(+0).copperBlock()
 				x(+1).titaniumBlock()
-				x(+2).anyStairs(stairs(OPPOSITE, TOP, STRAIGHT))
+				x(+2).anyStairs(stairs(BACKWARD, TOP, STRAIGHT))
 			}
 			y(+0) {
-				x(-2).anyStairs(stairs(OPPOSITE, BOTTOM, STRAIGHT))
+				x(-2).anyStairs(stairs(BACKWARD, BOTTOM, STRAIGHT))
 				x(-1).titaniumBlock()
-				x(+0).anyStairs(stairs(OPPOSITE, BOTTOM, STRAIGHT))
+				x(+0).anyStairs(stairs(BACKWARD, BOTTOM, STRAIGHT))
 				x(+1).titaniumBlock()
-				x(+2).anyStairs(stairs(OPPOSITE, BOTTOM, STRAIGHT))
+				x(+2).anyStairs(stairs(BACKWARD, BOTTOM, STRAIGHT))
 			}
 			y(+1) {
-				x(-2).anyGlassPane(pane(OPPOSITE, RIGHT))
+				x(-2).anyGlassPane(pane(BACKWARD, RIGHT))
 				x(-1).anyGlass()
 				x(+0).anyGlassPane(pane(LEFT, RIGHT))
 				x(+1).anyGlass()
-				x(+2).anyGlassPane(pane(OPPOSITE, LEFT))
+				x(+2).anyGlassPane(pane(BACKWARD, LEFT))
 			}
 			y(+2) {
-				x(-2).anyGlassPane(pane(OPPOSITE, RIGHT))
+				x(-2).anyGlassPane(pane(BACKWARD, RIGHT))
 				x(-1).anyGlass()
 				x(+0).anyGlassPane(pane(LEFT, RIGHT))
 				x(+1).anyGlass()
-				x(+2).anyGlassPane(pane(OPPOSITE, LEFT))
+				x(+2).anyGlassPane(pane(BACKWARD, LEFT))
 			}
 			y(+3) {
-				x(-2).anyGlassPane(pane(OPPOSITE, RIGHT))
+				x(-2).anyGlassPane(pane(BACKWARD, RIGHT))
 				x(-1).anyGlass()
 				x(+0).anyGlassPane(pane(LEFT, RIGHT))
 				x(+1).anyGlass()
-				x(+2).anyGlassPane(pane(OPPOSITE, LEFT))
+				x(+2).anyGlassPane(pane(BACKWARD, LEFT))
 			}
 		}
 	}
