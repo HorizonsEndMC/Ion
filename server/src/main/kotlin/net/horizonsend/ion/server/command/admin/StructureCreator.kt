@@ -6,12 +6,17 @@ import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.EXTRACTOR_TYPE
+import net.horizonsend.ion.server.features.transport.old.Wires
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
+import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isSlab
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
+import net.horizonsend.ion.server.miscellaneous.utils.isTerracotta
+import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
@@ -90,10 +95,16 @@ object StructureCreator : SLCommand() {
 
 	private fun getBlockRequirement(data: BlockData, forwards: BlockFace): String {
 		val customBlock = CustomBlocks.getByBlockData(data)
-		if (customBlock != null) return ".customBlock(CustomBlocks.${customBlock.identifier})"
+		if (customBlock != null) return when (customBlock) {
+			CustomBlocks.TITANIUM_BLOCK -> ".titaniumBlock()"
+			CustomBlocks.ALUMINUM_BLOCK -> ".aluminumBlock()"
+			CustomBlocks.CHETHERITE_BLOCK -> ".chetheriteBlock()"
+			CustomBlocks.STEEL_BLOCK -> ".steelBlock()"
+			else -> ".customBlock(CustomBlocks.${customBlock.identifier})"
+		}
 
 		return when {
-			data.material.isConcrete -> ".carbyne()"
+			data.material.isConcrete -> ".concrete()"
 			data.material == Material.FURNACE -> ".machineFurnace()"
 
 			data.material.isStairs -> {
@@ -113,6 +124,41 @@ object StructureCreator : SLCommand() {
 
 				".anySlab(PrepackagedPreset.slab($type))"
 			}
+
+			data.material.isTerracotta -> ".terracotta()"
+			data.material.isGlass -> ".anyGlass()"
+			data.material == Material.SEA_LANTERN -> ".seaLantern()"
+			data.material == Material.STONE_BRICKS -> ".stoneBrick()"
+
+			data.material == Material.IRON_BLOCK -> ".ironBlock()"
+			data.material == Material.GOLD_BLOCK -> ".goldBlock()"
+			data.material == Material.DIAMOND_BLOCK -> ".diamondBlock()"
+			data.material == Material.NETHERITE_BLOCK -> ".netheriteBlock()"
+			data.material == Material.EMERALD_BLOCK -> ".emeraldBlock()"
+			data.material == Material.REDSTONE_BLOCK -> ".redstoneBlock()"
+			data.material == Material.LAPIS_BLOCK -> ".lapisBlock()"
+
+			data.material == Wires.INPUT_COMPUTER_BLOCK -> ".wireInputComputer()"
+			data.material == Material.FLETCHING_TABLE -> ".fluidInput()"
+			data.material == Material.END_ROD -> ".endRod()"
+			data.material == EXTRACTOR_TYPE -> ".extractor()"
+			data.material == Material.HOPPER -> ".hopper()"
+			data.material == Material.DISPENSER -> ".dispenser()"
+
+			data.material.isTrapdoor -> ".anyTrapdoor()"
+
+			data.material == Material.SPONGE -> ".sponge()"
+			data.material == Material.WET_SPONGE -> ".sponge()"
+
+			data.material == Material.OCHRE_FROGLIGHT -> ".thrusterBlock()"
+			data.material == Material.VERDANT_FROGLIGHT -> ".thrusterBlock()"
+			data.material == Material.PEARLESCENT_FROGLIGHT -> ".thrusterBlock()"
+			data.material == Material.GLOWSTONE -> ".thrusterBlock()"
+			data.material == Material.REDSTONE_LAMP -> ".thrusterBlock()"
+			data.material == Material.MAGMA_BLOCK -> ".thrusterBlock()"
+			data.material == Material.SEA_LANTERN -> ".thrusterBlock()"
+
+			data.material == Material.LIGHTNING_ROD -> ".lightningRod()"
 
 			data.material.isGlassPane -> {
 				data as GlassPane
