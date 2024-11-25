@@ -15,7 +15,7 @@ object MiniPhaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Min
 			z(+1) { x(+0).type(Material.SPONGE) }
 			z(+2) { x(+0).type(Material.IRON_BLOCK) }
 			z(+3) { x(+0).type(Material.HOPPER) }
-			z(+4) { x(+0).type(Material.GRINDSTONE) }
+			z(+4) { x(+0).grindstone() }
 			z(+5) { x(+0).type(Material.END_ROD) }
 		}
 	}
