@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -48,7 +49,16 @@ abstract class MultiblockManager(val log: Logger) {
 	/**
 	 * Handles the addition of a multiblock entity
 	 **/
-	fun addMultiblockEntity(entity: MultiblockEntity, save: Boolean = true) {
+	fun addMultiblockEntity(entity: MultiblockEntity, save: Boolean = true, ensureSign: Boolean = false) {
+		if (ensureSign) {
+			val signOrigin = MultiblockEntity.getSignFromOrigin(entity.world, entity.vec3i, entity.structureDirection)
+			if (!signOrigin.type.isWallSign) {
+				log.info("Removing invalid multiblock entity at ${entity.vec3i} on ${entity.world.name}")
+				entity.remove()
+				return
+			}
+		}
+
 		multiblockEntities[entity.locationKey] = entity
 
 		entity.processLoad()
@@ -67,7 +77,7 @@ abstract class MultiblockManager(val log: Logger) {
 	/**
 	 * Upon the removal of a multiblock sign
 	 **/
-	fun removeMultiblockEntity(x: Int, y: Int, z: Int): MultiblockEntity? {
+	fun removeMultiblockEntity(x: Int, y: Int, z: Int, save: Boolean = true): MultiblockEntity? {
 		val key = toBlockKey(x, y, z)
 
 		val entity = multiblockEntities.remove(key)
@@ -76,6 +86,8 @@ abstract class MultiblockManager(val log: Logger) {
 		asyncTickingMultiblockEntities.remove(key)
 
 		entity?.processRemoval()
+
+		if (save) save()
 
 		return entity
 	}
