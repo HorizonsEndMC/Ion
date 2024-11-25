@@ -36,7 +36,7 @@ object MiningLaserMultiblockTier3Top : MiningLaserMultiblockTier3() {
 		z(+0) {
 			y(-1) {
 				x(-1).anyPipedInventory()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 
@@ -279,7 +279,7 @@ object MiningLaserMultiblockTier3TopMirrored : MiningLaserMultiblockTier3() {
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).anyPipedInventory()
 			}
 
@@ -522,7 +522,7 @@ object MiningLaserMultiblockTier3Bottom : MiningLaserMultiblockTier3() {
 		z(+0) {
 			y(+1) {
 				x(-1).anyPipedInventory()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 
@@ -765,7 +765,7 @@ object MiningLaserMultiblockTier3BottomMirrored : MiningLaserMultiblockTier3() {
 		z(+0) {
 			y(+1) {
 				x(-1).ironBlock()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).anyPipedInventory()
 			}
 
@@ -1009,7 +1009,7 @@ object MiningLaserMultiblockTier3Side : MiningLaserMultiblockTier3() {
 			y(-1) {
 				x(-2).anyStairs()
 				x(-1).anyPipedInventory()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 			}
 
 			y(+0) {
@@ -1248,7 +1248,7 @@ object MiningLaserMultiblockTier3SideMirrored : MiningLaserMultiblockTier3() {
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).anyPipedInventory()
 				x(+2).anyStairs()
 			}
