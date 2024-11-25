@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.command.admin
 
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.SLCommand
@@ -22,6 +23,7 @@ import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
 import org.bukkit.entity.Player
 
+@CommandPermission("ion.admin.structurecreator")
 @CommandAlias("structurecreator")
 object StructureCreator : SLCommand() {
 	@Default
