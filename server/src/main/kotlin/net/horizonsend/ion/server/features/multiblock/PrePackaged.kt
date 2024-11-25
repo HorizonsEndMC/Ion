@@ -51,20 +51,26 @@ object PrePackaged {
 			.getRelative(BlockFace.DOWN, minY) // Go up (down negative blocks) until the origin is high enough to fit the blocks below it
 	}
 
-	fun checkObstructions(origin: Block, direction: BlockFace, shape: MultiblockShape): List<Vec3i> {
+	/**
+	 * @param allowCorrect Allows for correctly placed blocks that are already in the world to be ignored as obstructions
+	 **/
+	fun checkObstructions(origin: Block, direction: BlockFace, shape: MultiblockShape, allowCorrect: Boolean): List<Vec3i> {
 		val requirements = shape.getRequirementMap(direction)
 		val obstructed = mutableListOf<Vec3i>()
 
-		for ((offset, _) in requirements) {
+		for ((offset, requirement) in requirements) {
 			val offsetBlock = origin.getRelativeIfLoaded(offset.x, offset.y, offset.z)
+			val vec = Vec3i(origin.x, origin.y, origin.z).plus(offset)
 
 			if (offsetBlock == null) {
-				obstructed.add(Vec3i(origin.x, origin.y, origin.z).plus(offset))
+				obstructed.add(vec)
 				continue
 			}
 
-			if (!offsetBlock.type.isAir) {
-				obstructed.add(Vec3i(origin.x, origin.y, origin.z).plus(offset))
+			if (allowCorrect) {
+				if (!requirement.invoke(offsetBlock, direction, false) && !offsetBlock.type.isAir) obstructed.add(vec)
+			} else if (!offsetBlock.type.isAir) {
+				obstructed.add(vec)
 			}
 		}
 
@@ -84,6 +90,11 @@ object PrePackaged {
 			val absolute = Vec3i(origin.x, origin.y, origin.z) + offset
 			val (x, y, z) = absolute
 
+			val existingBlock = origin.world.getBlockAt(x, y, z)
+
+			// Already placed, assuming allow merges
+			if (requirement.invoke(existingBlock, direction, false)) continue
+
 			var usedItem: ItemStack? = null
 
 			if (itemSource != null) {
@@ -95,8 +106,6 @@ object PrePackaged {
 						requirement.itemRequirement.consume(it)
 					}
 			}
-
-			val existingBlock = origin.world.getBlockAt(x, y, z)
 
 			val event = BlockPlaceEvent(
 				existingBlock,
@@ -147,32 +156,39 @@ object PrePackaged {
 		val sign = signPosition.state as Sign
 
 		val signItemMeta = signItem?.itemMeta
-		if (signItemMeta is BlockStateMeta) {
+		if (signItemMeta is BlockStateMeta && signItemMeta.hasBlockState()) {
 			val accurateState = signItemMeta.blockState as Sign
-			for ((line, component) in accurateState.front().lines().withIndex()) {
-				sign.front().line(line, component)
+
+			if (accurateState.persistentDataContainer.has(MULTIBLOCK)) {
+				for ((line, component) in accurateState.front().lines().withIndex()) {
+					sign.front().line(line, component)
+				}
+
+				accurateState.persistentDataContainer.get(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData)?.let {
+					sign.persistentDataContainer.set(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData, it)
+				}
+
+				accurateState.persistentDataContainer.get(MULTIBLOCK, STRING)?.let {
+					sign.persistentDataContainer.set(MULTIBLOCK, STRING, it)
+				}
+
+				sign.update()
+
+				MultiblockEntities.loadFromSign(sign)
+				signItem.amount--
+				return
 			}
-
-			accurateState.persistentDataContainer.get(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData)?.let {
-				sign.persistentDataContainer.set(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData, it)
-			}
-
-			accurateState.persistentDataContainer.get(MULTIBLOCK, STRING)?.let {
-				sign.persistentDataContainer.set(MULTIBLOCK, STRING, it)
-			}
-
-			sign.update()
-
-			MultiblockEntities.loadFromSign(sign)
-		} else {
-			// Set the detection name just in case the setup fails
-			sign.getSide(Side.FRONT).line(0, text("[${multiblock.name}]"))
-			sign.update()
-
-			MultiblockAccess.tryDetectMultiblock(player, sign, direction, false)
-
-			multiblock.setupSign(player, sign)
 		}
+
+		signItem?.let { it.amount-- }
+
+		// Set the detection name just in case the setup fails
+		sign.getSide(Side.FRONT).line(0, text("[${multiblock.name}]"))
+		sign.update()
+
+		MultiblockAccess.tryDetectMultiblock(player, sign, direction, false)
+
+		multiblock.setupSign(player, sign)
 	}
 
 	fun getTokenData(itemStack: ItemStack): Multiblock? {

@@ -63,10 +63,10 @@ object MultiblockToken : CustomItem("MULTIBLOCK_TOKEN") {
 			packagedData.shape
 		)
 
-		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.shape)
+		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.shape, livingEntity.isSneaking)
 
 		if (obstructions.isNotEmpty()) {
-			livingEntity.userError("Placement is obstructed!")
+			livingEntity.userError("Placement is obstructed! Crouch to enable block sharing.")
 			livingEntity.highlightBlocks(obstructions, 50L)
 			return
 		}
