@@ -96,7 +96,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 			val entity = MultiblockEntities.loadFromData(multiblock, this, stored)
 
 			// No need to save a load
-			addMultiblockEntity(entity, save = false)
+			addMultiblockEntity(entity, save = false, ensureSign = true)
 		}
 	}
 
