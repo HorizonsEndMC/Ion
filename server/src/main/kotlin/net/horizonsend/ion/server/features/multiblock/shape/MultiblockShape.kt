@@ -2,9 +2,6 @@ package net.horizonsend.ion.server.features.multiblock.shape
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BARGE_REACTOR_CORE
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BATTLECRUISER_REACTOR_CORE
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
@@ -15,7 +12,6 @@ import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
-import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -26,7 +22,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockSateSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isButton
-import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isDaylightSensor
 import net.horizonsend.ion.server.miscellaneous.utils.isDoor
 import net.horizonsend.ion.server.miscellaneous.utils.isFroglight
@@ -34,8 +29,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isRedstoneLamp
 import net.horizonsend.ion.server.miscellaneous.utils.isSlab
-import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
-import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
 import net.horizonsend.ion.server.miscellaneous.utils.isTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
@@ -294,24 +287,15 @@ class MultiblockShape {
 
 		fun filteredTypes(alias: String, edit: BlockRequirement.() -> Unit = {}, filter: (Material) -> Boolean) = anyType(alias, MATERIALS.filter(filter), edit = edit)
 
-		fun carbyne() = anyType("any concrete", CONCRETE_TYPES) { setExample(Material.GRAY_CONCRETE.createBlockData()) }
-
-		fun terracotta() = anyType("any terracotta", TERRACOTTA_TYPES) { setExample(Material.CYAN_TERRACOTTA.createBlockData()) }
-		fun stainedTerracotta() = anyType("any stained terracotta", STAINED_TERRACOTTA_TYPES) { setExample(Material.CYAN_TERRACOTTA.createBlockData()) }
-
-		fun glass() = type(Material.GLASS)
-		fun anvil() = type(Material.ANVIL)
-		fun bcReactorCore() = customBlock(BATTLECRUISER_REACTOR_CORE)
-		fun bargeReactorCore() = customBlock(BARGE_REACTOR_CORE)
-		fun cruiserReactorCore() = customBlock(CRUISER_REACTOR_CORE)
-		fun netheriteCasing() = customBlock(NETHERITE_CASING)
-		fun enrichedUraniumBlock() = customBlock(ENRICHED_URANIUM_BLOCK)
-		fun stainedGlass() = filteredTypes("any stained glass block") { it.isStainedGlass }
-		fun anyGlass() = filteredTypes("any glass block") { it.isGlass }
-		fun seaLantern() = type(Material.SEA_LANTERN)
-		fun glassPane() = type(Material.GLASS_PANE)
-		fun stainedGlassPane() = filteredTypes("any stained glass pane") { it.isStainedGlassPane }
+		// Start presets
+		fun anyConcrete() = anyType("any concrete block", CONCRETE_TYPES) { setExample(Material.GRAY_CONCRETE.createBlockData()) }
+		fun anyTerracotta() = anyType("any terracotta", TERRACOTTA_TYPES) { setExample(Material.CYAN_TERRACOTTA.createBlockData()) }
+		fun anyGlass() = filteredTypes("any glass block", { setExample(Material.BLACK_STAINED_GLASS.createBlockData()) }) { it.isGlass }
 		fun anyGlassPane(edit: BlockRequirement.() -> Unit = {}) = filteredTypes("any stained glass pane", edit = edit) { it.isGlassPane }
+
+		fun stoneBrick() = type(Material.STONE_BRICKS)
+
+		fun seaLantern() = type(Material.SEA_LANTERN)
 
 		fun anyStairs(edit: BlockRequirement.() -> Unit = { setExample(Material.STONE_BRICK_STAIRS.createBlockData()) }) =
 			filteredTypes("any stair block", edit) { it.isStairs }
@@ -341,7 +325,7 @@ class MultiblockShape {
 			)
 		)
 
-		fun anySlabOrStairs() = filteredTypes("any slab or stairs") { it.isSlab || it.isStairs }
+		fun anySlabOrStairs() = filteredTypes("any slab or stairs", { setExample(Material.STONE_BRICK_SLAB) }) { it.isSlab || it.isStairs }
 
 		fun terracottaOrDoubleslab() {
 			BlockRequirement(
@@ -370,10 +354,7 @@ class MultiblockShape {
 			)
 		}
 
-		fun concrete() = filteredTypes("any concrete block") { it.isConcrete }
-
 		fun sculkCatalyst() = type(Material.SCULK_CATALYST)
-		fun stoneBrick() = type(Material.STONE_BRICKS)
 
 		fun ironBlock() = type(Material.IRON_BLOCK)
 		fun goldBlock() = type(Material.GOLD_BLOCK)
@@ -382,6 +363,13 @@ class MultiblockShape {
 		fun emeraldBlock() = type(Material.EMERALD_BLOCK)
 		fun redstoneBlock() = type(Material.REDSTONE_BLOCK)
 		fun lapisBlock() = type(Material.LAPIS_BLOCK)
+
+		fun titaniumBlock() = customBlock(CustomBlocks.TITANIUM_BLOCK)
+		fun aluminumBlock() = customBlock(CustomBlocks.ALUMINUM_BLOCK)
+		fun chetheriteBlock() = customBlock(CustomBlocks.CHETHERITE_BLOCK)
+		fun steelBlock() = customBlock(CustomBlocks.STEEL_BLOCK)
+		fun enrichedUraniumBlock() = customBlock(ENRICHED_URANIUM_BLOCK)
+
 		fun anyCopperVariant() = anyType(
 			Material.COPPER_BLOCK,
 			Material.EXPOSED_COPPER,
@@ -401,7 +389,8 @@ class MultiblockShape {
 			Material.WAXED_OXIDIZED_CUT_COPPER,
 			alias = "any copper variant",
 		)
-		fun copperBlock() = anyType(
+
+		fun anySolidCopperBlock() = anyType(
 			Material.COPPER_BLOCK,
 			Material.EXPOSED_COPPER,
 			Material.WEATHERED_COPPER,
@@ -412,7 +401,24 @@ class MultiblockShape {
 			Material.WAXED_OXIDIZED_COPPER,
 			alias = "any solid copper block"
 		)
-		fun copperGrate() = anyType(
+
+		fun anyWaxedCopperBlock() = anyType(
+			Material.WAXED_COPPER_BLOCK,
+			Material.WAXED_EXPOSED_COPPER,
+			Material.WAXED_WEATHERED_COPPER,
+			Material.WAXED_OXIDIZED_COPPER,
+			alias = "any waxed solid copper block"
+		)
+
+		fun anyUnwaxedCopperBlock() = anyType(
+			Material.COPPER_BLOCK,
+			Material.EXPOSED_COPPER,
+			Material.WEATHERED_COPPER,
+			Material.OXIDIZED_COPPER,
+			alias = "any unwaxed solid copper block"
+		)
+
+		fun anyCopperGrate() = anyType(
 			Material.COPPER_GRATE,
 			Material.EXPOSED_COPPER_GRATE,
 			Material.WEATHERED_COPPER_GRATE,
@@ -421,9 +427,26 @@ class MultiblockShape {
 			Material.WAXED_EXPOSED_COPPER_GRATE,
 			Material.WAXED_WEATHERED_COPPER_GRATE,
 			Material.WAXED_OXIDIZED_COPPER_GRATE,
-			alias = "any copper bulb"
+			alias = "any copper grate"
 		)
-		fun copperBulb() = anyType(
+
+		fun anyUnwaxedCopperGrate() = anyType(
+			Material.COPPER_GRATE,
+			Material.EXPOSED_COPPER_GRATE,
+			Material.WEATHERED_COPPER_GRATE,
+			Material.OXIDIZED_COPPER_GRATE,
+			alias = "any unwaxed copper grate"
+		)
+
+		fun anyWaxedCopperGrate() = anyType(
+			Material.WAXED_COPPER_GRATE,
+			Material.WAXED_EXPOSED_COPPER_GRATE,
+			Material.WAXED_WEATHERED_COPPER_GRATE,
+			Material.WAXED_OXIDIZED_COPPER_GRATE,
+			alias = "any waxed copper grate"
+		)
+
+		fun anyCopperBulb() = anyType(
 			Material.COPPER_BULB,
 			Material.EXPOSED_COPPER_BULB,
 			Material.WEATHERED_COPPER_BULB,
@@ -434,41 +457,50 @@ class MultiblockShape {
 			Material.WAXED_OXIDIZED_COPPER_BULB,
 			alias = "any copper bulb"
 		)
+
+		fun anyWaxedCopperBulb() = anyType(
+			Material.WAXED_COPPER_BULB,
+			Material.WAXED_EXPOSED_COPPER_BULB,
+			Material.WAXED_WEATHERED_COPPER_BULB,
+			Material.WAXED_OXIDIZED_COPPER_BULB,
+			alias = "any waxed copper bulb"
+		)
+
+		fun anyUnwaxedCopperBulb() = anyType(
+			Material.COPPER_BULB,
+			Material.EXPOSED_COPPER_BULB,
+			Material.WEATHERED_COPPER_BULB,
+			Material.OXIDIZED_COPPER_BULB,
+			alias = "any unwaxed copper bulb"
+		)
+
 		fun fluidInput() = type(Material.FLETCHING_TABLE)
-
-		fun titaniumBlock() = customBlock(CustomBlocks.TITANIUM_BLOCK)
-		fun aluminumBlock() = customBlock(CustomBlocks.ALUMINUM_BLOCK)
-		fun chetheriteBlock() = customBlock(CustomBlocks.CHETHERITE_BLOCK)
-		fun steelBlock() = customBlock(CustomBlocks.STEEL_BLOCK)
-		fun wireInputComputer() = type(Wires.INPUT_COMPUTER_BLOCK)
-
-		fun redstoneLamp() = filteredTypes("redstone lamp") { it.isRedstoneLamp }
-
-		fun daylightSensor() = filteredTypes("daylight sensor") { it.isDaylightSensor }
-		fun craftingTable() = type(Material.CRAFTING_TABLE)
-
+		fun powerInput() = type(Wires.INPUT_COMPUTER_BLOCK)
 		fun extractor() = type(EXTRACTOR_TYPE)
-
-		fun glowstone() = type(Material.GLOWSTONE)
 
 		fun sponge() = anyType(Material.SPONGE, Material.WET_SPONGE, alias = "sponge")
 		fun endRod() = type(Material.END_ROD)
-		fun grindstone() = type(Material.GRINDSTONE)
+		fun lightningRod() = type(Material.LIGHTNING_ROD)
 
 		fun hopper() = type(Material.HOPPER)
+		fun anyPipedInventory() = filteredTypes("any container block", edit = { setExample(Material.CHEST.createBlockData()) }) { Pipes.isPipedInventory(it) }
+		fun dispenser() = type(Material.DISPENSER)
+
+		fun netheriteCasing() = customBlock(NETHERITE_CASING)
+
+		fun redstoneLamp() = filteredTypes("redstone lamp") { it.isRedstoneLamp }
+		fun daylightSensor() = filteredTypes("daylight sensor") { it.isDaylightSensor }
+
+		fun grindstone() = type(Material.GRINDSTONE)
 
 		fun anyDoor() = filteredTypes("any door", edit = { setExample(Material.OAK_DOOR.createBlockData()) }) { it.isDoor }
 		fun anyButton() = filteredTypes("any button") { it.isButton }
-
-		fun anyPipedInventory() = filteredTypes("any container block", edit = { setExample(Material.CHEST.createBlockData()) }) { Pipes.isPipedInventory(it) }
 
 		fun pistonBase() = type(Material.PISTON)
 		fun pistonHead() = type(Material.PISTON_HEAD)
 
 		fun furnace() = type(Material.FURNACE)
-		fun dispenser() = type(Material.DISPENSER)
 		fun lodestone() = type(Material.LODESTONE)
-		fun noteBlock() = type(Material.NOTE_BLOCK)
 		fun anyTrapdoor() = filteredTypes("any trapdoor") { it.isTrapdoor }
 		fun anyFroglight() = filteredTypes("any froglight") { it.isFroglight }
 
@@ -482,8 +514,6 @@ class MultiblockShape {
 			Material.SEA_LANTERN,
 			alias = "any light block"
 		)
-
-		fun lightningRod() = type(Material.LIGHTNING_ROD)
 
 		fun machineFurnace() = complete(BlockRequirement(
 			alias = "furnace",

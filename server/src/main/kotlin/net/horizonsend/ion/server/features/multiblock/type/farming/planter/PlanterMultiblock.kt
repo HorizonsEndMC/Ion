@@ -50,7 +50,7 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 		z(0) {
 			y(-1) {
 				x(-1).anyStairs()
-				x(0).noteBlock()
+				x(0).powerInput()
 				x(+1).anyStairs()
 			}
 			y(0) {
