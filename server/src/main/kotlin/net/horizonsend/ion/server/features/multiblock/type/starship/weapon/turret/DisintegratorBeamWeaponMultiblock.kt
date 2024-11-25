@@ -61,9 +61,9 @@ sealed class DisintegratorBeamWeaponMultiblock : Multiblock(), SubsystemMultiblo
 
             z(-2) {
                 x(-2).anyStairs()
-                x(-1).terracotta()
+                x(-1).anyTerracotta()
                 x(+0).anyStairs()
-                x(+1).terracotta()
+                x(+1).anyTerracotta()
                 x(+2).anyStairs()
             }
 
@@ -77,9 +77,9 @@ sealed class DisintegratorBeamWeaponMultiblock : Multiblock(), SubsystemMultiblo
 
             z(+0) {
                 x(-2).anyStairs()
-                x(-1).terracotta()
+                x(-1).anyTerracotta()
                 x(+0).anyStairs()
-                x(+1).terracotta()
+                x(+1).anyTerracotta()
                 x(+2).anyStairs()
             }
 

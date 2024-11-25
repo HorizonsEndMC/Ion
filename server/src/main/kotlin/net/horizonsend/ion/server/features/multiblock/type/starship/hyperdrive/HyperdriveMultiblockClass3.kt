@@ -20,7 +20,7 @@ object HyperdriveMultiblockClass3 : HyperdriveMultiblock() {
 
 		z(+0) {
 			y(-1) {
-				x(0).wireInputComputer()
+				x(0).powerInput()
 			}
 
 			for (y in 0..1) y(y) {

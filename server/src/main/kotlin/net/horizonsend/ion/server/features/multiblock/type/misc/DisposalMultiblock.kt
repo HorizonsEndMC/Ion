@@ -36,7 +36,7 @@ abstract class AbstractDisposalMultiblock : Multiblock(), EntityMultiblock<Abstr
 		z(+0) {
 			y(-1) {
 				if (!mirrored) x(-1).anyPipedInventory() else x(-1).ironBlock()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				if (!mirrored) x(+1).ironBlock() else x(+1).anyPipedInventory()
 			}
 			y(0) {
@@ -49,9 +49,9 @@ abstract class AbstractDisposalMultiblock : Multiblock(), EntityMultiblock<Abstr
 			}
 			z(+1) {
 				y(-1) {
-					x(-1).terracotta()
+					x(-1).anyTerracotta()
 					x(+0).sponge()
-					x(+1).terracotta()
+					x(+1).anyTerracotta()
 				}
 				y(+0) {
 					x(-1).anyGlassPane()

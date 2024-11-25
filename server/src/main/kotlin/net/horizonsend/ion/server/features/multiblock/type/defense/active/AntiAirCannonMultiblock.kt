@@ -95,7 +95,7 @@ object AntiAirCannonBaseMultiblock : Multiblock()/*, PowerStoringMultiblock*/, I
 		z(+0) {
 			y(-1) {
 				x(-1).anyStairs()
-				x(0).wireInputComputer()
+				x(0).powerInput()
 				x(1).anyStairs()
 			}
 
@@ -350,54 +350,54 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 	override fun MultiblockShape.buildStructure() {
 		y(+0) {
 			z(-3) {
-				x(-1).stainedTerracotta()
-				x(+0).stainedTerracotta()
-				x(+1).stainedTerracotta()
+				x(-1).anyTerracotta()
+				x(+0).anyTerracotta()
+				x(+1).anyTerracotta()
 			}
 			z(-2) {
-				x(-2).stainedTerracotta()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).stainedTerracotta()
+				x(-2).anyTerracotta()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyTerracotta()
 			}
 			z(-1) {
 				x(-3).anyStairs()
-				x(-2).carbyne()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).carbyne()
+				x(-2).anyConcrete()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyConcrete()
 				x(+3).anyStairs()
 			}
 			z(0) {
-				x(-3).stainedTerracotta()
-				x(-2).carbyne()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).carbyne()
-				x(+3).stainedTerracotta()
+				x(-3).anyTerracotta()
+				x(-2).anyConcrete()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyConcrete()
+				x(+3).anyTerracotta()
 			}
 			z(1) {
 				x(-3).anyStairs()
-				x(-2).carbyne()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).carbyne()
+				x(-2).anyConcrete()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyConcrete()
 				x(+3).anyStairs()
 			}
 			z(2) {
-				x(-2).stainedTerracotta()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).stainedTerracotta()
+				x(-2).anyTerracotta()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyTerracotta()
 			}
 			z(3) {
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 		}
@@ -407,37 +407,37 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 			}
 			z(-3) {
 				x(-2).anySlab()
-				x(-1).stainedTerracotta()
-				x(+0).carbyne()
-				x(+1).stainedTerracotta()
+				x(-1).anyTerracotta()
+				x(+0).anyConcrete()
+				x(+1).anyTerracotta()
 				x(+2).anySlab()
 			}
 			z(-2) {
-				x(-2).stainedTerracotta()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).stainedTerracotta()
+				x(-2).anyTerracotta()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyTerracotta()
 			}
 			z(-1) {
-				x(-2).stainedTerracotta()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).stainedTerracotta()
+				x(-2).anyTerracotta()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyTerracotta()
 			}
 			z(0) {
-				x(-2).stainedTerracotta()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).stainedTerracotta()
+				x(-2).anyTerracotta()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyTerracotta()
 			}
 			z(1) {
 				x(-2).anySlab()
-				x(-1).stainedTerracotta()
-				x(+0).stainedTerracotta()
-				x(+1).stainedTerracotta()
+				x(-1).anyTerracotta()
+				x(+0).anyTerracotta()
+				x(+1).anyTerracotta()
 				x(+2).anySlab()
 			}
 			z(2) {
@@ -449,33 +449,33 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 		y(+2) {
 			z(-4) {
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).anyTerracotta()
 				x(+1).anyStairs()
 			}
 			z(-3) {
-				x(-2).stainedTerracotta()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).stainedTerracotta()
+				x(-2).anyTerracotta()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyTerracotta()
 			}
 			z(-2) {
 				x(-3).anyTrapdoor()
-				x(-2).stainedTerracotta()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).stainedTerracotta()
+				x(-2).anyTerracotta()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyTerracotta()
 				x(+3).anyTrapdoor()
 			}
 			z(-1) {
 				x(-4).anyStairs()
 				x(-3).anySlab()
-				x(-2).stainedTerracotta()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).stainedTerracotta()
+				x(-2).anyTerracotta()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyTerracotta()
 				x(+3).anySlab()
 				x(+4).anyStairs()
 			}
@@ -507,9 +507,9 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 			z(-2) {
 				x(-3).netheriteBlock()
 				x(-2).anyWall()
-				x(-1).stainedTerracotta()
-				x(0).stainedTerracotta()
-				x(+1).stainedTerracotta()
+				x(-1).anyTerracotta()
+				x(0).anyTerracotta()
+				x(+1).anyTerracotta()
 				x(+2).anyWall()
 				x(+3).netheriteBlock()
 			}
@@ -517,9 +517,9 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 				x(-4).anyWall()
 				x(-3).dispenser()
 				x(-2).titaniumBlock()
-				x(-1).stainedTerracotta()
-				x(0).carbyne()
-				x(+1).stainedTerracotta()
+				x(-1).anyTerracotta()
+				x(0).anyConcrete()
+				x(+1).anyTerracotta()
 				x(+2).titaniumBlock()
 				x(+3).dispenser()
 				x(+4).anyWall()
@@ -541,14 +541,14 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 				x(+3).type(Material.ANVIL)
 			}
 			z(+2) {
-				x(-3).type(Material.GRINDSTONE)
+				x(-3).grindstone()
 				// Air
-				x(+3).type(Material.GRINDSTONE)
+				x(+3).grindstone()
 			}
 			z(+3) {
-				x(-3).type(Material.GRINDSTONE)
+				x(-3).grindstone()
 				// Air
-				x(+3).type(Material.GRINDSTONE)
+				x(+3).grindstone()
 			}
 			z(+4) {
 				x(-3).endRod()

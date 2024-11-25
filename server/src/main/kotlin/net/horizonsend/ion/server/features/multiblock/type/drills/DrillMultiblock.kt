@@ -78,11 +78,11 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 				y(+0) {
 					x(-1).anyPipedInventory()
 					x(+0).machineFurnace()
-					x(+1).wireInputComputer()
+					x(+1).powerInput()
 				}
 			} else {
 				y(+0) {
-					x(-1).wireInputComputer()
+					x(-1).powerInput()
 					x(+0).machineFurnace()
 					x(+1).anyPipedInventory()
 				}

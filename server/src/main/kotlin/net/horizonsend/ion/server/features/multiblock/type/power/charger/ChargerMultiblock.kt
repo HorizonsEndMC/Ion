@@ -40,7 +40,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMul
 		z(+0) {
 			y(-1) {
 				x(-1).anyGlassPane(pane(RelativeFace.RIGHT, RelativeFace.FORWARD))
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyGlassPane(pane(RelativeFace.LEFT, RelativeFace.FORWARD))
 			}
 

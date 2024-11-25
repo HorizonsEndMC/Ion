@@ -70,15 +70,15 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		z(0) {
 			y(-1) {
 				x(-2).anyStairs(stairs(BACKWARD, TOP, STRAIGHT))
-				x(-1).craftingTable()
-				x(+0).wireInputComputer()
-				x(+1).craftingTable()
+				x(-1).extractor()
+				x(+0).powerInput()
+				x(+1).extractor()
 				x(+2).anyStairs(stairs(BACKWARD, TOP, STRAIGHT))
 			}
 			y(+0) {
 				x(-2).anyStairs(stairs(FORWARD, BOTTOM, STRAIGHT))
 				x(-1).anyGlass()
-				x(+0).copperBlock()
+				x(+0).anySolidCopperBlock()
 				x(+1).anyGlass()
 				x(+2).anyStairs(stairs(FORWARD, BOTTOM, STRAIGHT))
 			}
@@ -108,36 +108,36 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 			y(-1) {
 				x(-2).fluidInput()
 				x(-1).redstoneBlock()
-				x(+0).copperBlock()
+				x(+0).anySolidCopperBlock()
 				x(+1).redstoneBlock()
 				x(+2).fluidInput()
 			}
 			y(+0) {
 				x(-2).titaniumBlock()
-				x(-1).copperGrate()
-				x(+0).copperBlock()
-				x(+1).copperGrate()
+				x(-1).anyCopperGrate()
+				x(+0).anySolidCopperBlock()
+				x(+1).anyCopperGrate()
 				x(+2).titaniumBlock()
 			}
 			y(+1) {
 				x(-2).anyGlass()
-				x(-1).copperGrate()
+				x(-1).anyCopperGrate()
 				x(+0).anyGlass()
-				x(+1).copperGrate()
+				x(+1).anyCopperGrate()
 				x(+2).anyGlass()
 			}
 			y(+2) {
 				x(-2).anyGlass()
-				x(-1).copperGrate()
+				x(-1).anyCopperGrate()
 				x(+0).anyGlass()
-				x(+1).copperGrate()
+				x(+1).anyCopperGrate()
 				x(+2).anyGlass()
 			}
 			y(+3) {
 				x(-2).anyGlass()
-				x(-1).copperGrate()
+				x(-1).anyCopperGrate()
 				x(+0).anyGlass()
-				x(+1).copperGrate()
+				x(+1).anyCopperGrate()
 				x(+2).anyGlass()
 			}
 		}
@@ -145,7 +145,7 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 			y(-1) {
 				x(-2).anyStairs(stairs(BACKWARD, TOP, STRAIGHT))
 				x(-1).titaniumBlock()
-				x(+0).copperBlock()
+				x(+0).anySolidCopperBlock()
 				x(+1).titaniumBlock()
 				x(+2).anyStairs(stairs(BACKWARD, TOP, STRAIGHT))
 			}
