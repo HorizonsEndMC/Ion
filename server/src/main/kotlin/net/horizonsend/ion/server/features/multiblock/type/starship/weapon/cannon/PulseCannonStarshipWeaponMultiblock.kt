@@ -16,6 +16,6 @@ object PulseCannonStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Pu
 
 	override fun MultiblockShape.buildStructure() {
 		at(+0, +0, +0).sponge()
-		at(+0, +0, +1).stainedGlass()
+		at(+0, +0, +1).anyGlass()
 	}
 }

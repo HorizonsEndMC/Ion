@@ -8,7 +8,7 @@ object AreaShield20 : AreaShield(radius = 20) {
 			y(-1) {
 				x(-2).anyStairs()
 				x(-1).anyStairs()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyStairs()
 				x(+2).anyStairs()
 			}

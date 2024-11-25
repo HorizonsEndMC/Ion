@@ -28,7 +28,7 @@ object CentrifugeMultiblock : Multiblock(), EntityMultiblock<CentrifugeMultibloc
 			y(-1) {
 				x(-2).steelBlock()
 				x(-1).anyGlassPane()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyGlassPane()
 				x(+2).steelBlock()
 			}
