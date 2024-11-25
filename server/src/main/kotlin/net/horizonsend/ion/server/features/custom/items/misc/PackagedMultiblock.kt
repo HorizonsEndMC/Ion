@@ -7,7 +7,9 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.PrePackaged
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
@@ -73,7 +75,9 @@ object PackagedMultiblock : CustomItem("PACKAGED_MULTIBLOCK") {
 			return
 		}
 
-		runCatching { PrePackaged.place(livingEntity, origin, livingEntity.facing, packagedData, inventory) }.onFailure {
+		val entityData = itemStack.itemMeta.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData)
+
+		runCatching { PrePackaged.place(livingEntity, origin, livingEntity.facing, packagedData, inventory, entityData) }.onFailure {
 			livingEntity.information("ERROR: $it")
 			it.printStackTrace()
 		}.onSuccess {
