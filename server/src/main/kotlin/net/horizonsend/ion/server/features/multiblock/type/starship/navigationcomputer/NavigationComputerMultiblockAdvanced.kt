@@ -3,9 +3,9 @@ package net.horizonsend.ion.server.features.multiblock.type.starship.navigationc
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.FORWARD
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.LEFT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.RIGHT
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.SELF
 import net.kyori.adventure.text.Component
 import org.bukkit.block.data.Bisected.Half.BOTTOM
 import org.bukkit.block.data.Bisected.Half.TOP
@@ -28,11 +28,11 @@ data object VerticalNavigationComputerMultiblockAdvanced : NavigationComputerMul
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
-				x(-2).anyStairs(PrepackagedPreset.stairs(SELF, TOP, shape = STRAIGHT))
-				x(-1).anyStairs(PrepackagedPreset.stairs(SELF, TOP, shape = STRAIGHT))
+				x(-2).anyStairs(PrepackagedPreset.stairs(FORWARD, TOP, shape = STRAIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(FORWARD, TOP, shape = STRAIGHT))
 				x(+0).ironBlock()
-				x(+1).anyStairs(PrepackagedPreset.stairs(SELF, TOP, shape = STRAIGHT))
-				x(+2).anyStairs(PrepackagedPreset.stairs(SELF, TOP, shape = STRAIGHT))
+				x(+1).anyStairs(PrepackagedPreset.stairs(FORWARD, TOP, shape = STRAIGHT))
+				x(+2).anyStairs(PrepackagedPreset.stairs(FORWARD, TOP, shape = STRAIGHT))
 			}
 
 			y(+1) {
@@ -43,11 +43,11 @@ data object VerticalNavigationComputerMultiblockAdvanced : NavigationComputerMul
 				x(+2).ironBlock()
 			}
 			y(+2) {
-				x(-2).anyStairs(PrepackagedPreset.stairs(SELF, BOTTOM, shape = STRAIGHT))
-				x(-1).anyStairs(PrepackagedPreset.stairs(SELF, BOTTOM, shape = STRAIGHT))
+				x(-2).anyStairs(PrepackagedPreset.stairs(FORWARD, BOTTOM, shape = STRAIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(FORWARD, BOTTOM, shape = STRAIGHT))
 				x(+0).ironBlock()
-				x(+1).anyStairs(PrepackagedPreset.stairs(SELF, BOTTOM, shape = STRAIGHT))
-				x(+2).anyStairs(PrepackagedPreset.stairs(SELF, BOTTOM, shape = STRAIGHT))
+				x(+1).anyStairs(PrepackagedPreset.stairs(FORWARD, BOTTOM, shape = STRAIGHT))
+				x(+2).anyStairs(PrepackagedPreset.stairs(FORWARD, BOTTOM, shape = STRAIGHT))
 			}
 		}
 
