@@ -58,16 +58,17 @@ object PackagedMultiblock : CustomItem("PACKAGED_MULTIBLOCK") {
 
 		if (event == null) return
 
+		val direction = livingEntity.facing
 		val origin = PrePackaged.getOriginFromPlacement(
 			event.clickedBlock ?: return,
-			livingEntity.facing,
+			direction,
 			packagedData.shape
 		)
 
-		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.shape)
+		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.shape, livingEntity.isSneaking)
 
 		if (obstructions.isNotEmpty()) {
-			livingEntity.userError("Placement is obstructed!")
+			livingEntity.userError("Placement is obstructed!  Crouch to enable block sharing.")
 			livingEntity.highlightBlocks(obstructions, 50L)
 			return
 		}
@@ -75,6 +76,13 @@ object PackagedMultiblock : CustomItem("PACKAGED_MULTIBLOCK") {
 		runCatching { PrePackaged.place(livingEntity, origin, livingEntity.facing, packagedData, inventory) }.onFailure {
 			livingEntity.information("ERROR: $it")
 			it.printStackTrace()
+		}.onSuccess {
+			// Drop remaining items in packaged multi
+			val dropLocation = origin.getRelative(direction.oppositeFace).location.toCenterLocation()
+
+			for (item in inventory.contents.filterNotNull()) {
+				livingEntity.world.dropItem(dropLocation, item)
+			}
 		}
 
 		itemStack.amount--
