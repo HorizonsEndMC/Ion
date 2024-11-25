@@ -67,11 +67,11 @@ object ItemSplitterMultiblock : Multiblock(), InteractableMultiblock, EntityMult
 				x(+2).anyPipedInventory()
 			}
 			y(+0) {
-				x(-2).craftingTable()
+				x(-2).extractor()
 				x(-1).endRod()
 				x(0).redstoneBlock()
 				x(+1).endRod()
-				x(+2).craftingTable()
+				x(+2).extractor()
 			}
 		}
 		z(+2) {

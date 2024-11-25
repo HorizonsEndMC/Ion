@@ -9,7 +9,7 @@ object AreaShield30 : AreaShield(radius = 30) {
 				x(-3).anyStairs()
 				x(-2).solidBlock()
 				x(-1).diamondBlock()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).diamondBlock()
 				x(+2).solidBlock()
 				x(+3).anyStairs()

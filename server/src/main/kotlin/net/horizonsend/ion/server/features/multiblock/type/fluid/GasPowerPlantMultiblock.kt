@@ -58,7 +58,7 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 			y(-1) {
 				x(-2).anyCopperVariant()
 				x(-1).extractor()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).extractor()
 				x(+2).anyCopperVariant()
 			}

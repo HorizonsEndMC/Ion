@@ -50,7 +50,7 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 		z(0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(0).noteBlock()
+				x(0).powerInput()
 				x(+1).ironBlock()
 			}
 			y(0) {

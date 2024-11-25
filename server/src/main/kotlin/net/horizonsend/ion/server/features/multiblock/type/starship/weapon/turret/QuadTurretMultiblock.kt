@@ -40,9 +40,9 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 		z(-3) {
 			y(getSign() * 3) {
 				x(-2).ironBlock()
-				x(-1).carbyne()
-				x(0).carbyne()
-				x(+1).carbyne()
+				x(-1).anyConcrete()
+				x(0).anyConcrete()
+				x(+1).anyConcrete()
 				x(+2).ironBlock()
 			}
 			y(getSign() * 4) {
@@ -54,11 +54,11 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 		z(-2) {
 			y(getSign() * 3) {
 				x(-3).ironBlock()
-				x(-2).carbyne()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).carbyne()
+				x(-2).anyConcrete()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyConcrete()
 				x(+3).ironBlock()
 			}
 			y(getSign() * 4) {
@@ -75,13 +75,13 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 3) {
 				x(-4).anyStairs()
-				x(-3).carbyne()
-				x(-2).carbyne()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
-				x(+2).carbyne()
-				x(+3).carbyne()
+				x(-3).anyConcrete()
+				x(-2).anyConcrete()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
+				x(+2).anyConcrete()
+				x(+3).anyConcrete()
 				x(+4).anyStairs()
 			}
 			y(getSign() * 4) {
@@ -101,13 +101,13 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 3) {
 				x(-4).terracottaOrDoubleslab()
-				x(-3).carbyne()
+				x(-3).anyConcrete()
 				x(-2).terracottaOrDoubleslab()
-				x(-1).carbyne()
-				x(+0).carbyne()
-				x(+1).carbyne()
+				x(-1).anyConcrete()
+				x(+0).anyConcrete()
+				x(+1).anyConcrete()
 				x(+2).terracottaOrDoubleslab()
-				x(+3).carbyne()
+				x(+3).anyConcrete()
 				x(+4).terracottaOrDoubleslab()
 			}
 			y(getSign() * 4) {
@@ -126,13 +126,13 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 3) {
 				x(-4).anyStairs()
-				x(-3).carbyne()
+				x(-3).anyConcrete()
 				x(-2).terracottaOrDoubleslab()
 				x(-1).terracottaOrDoubleslab()
-				x(+0).carbyne()
+				x(+0).anyConcrete()
 				x(+1).terracottaOrDoubleslab()
 				x(+2).terracottaOrDoubleslab()
-				x(+3).carbyne()
+				x(+3).anyConcrete()
 				x(+4).anyStairs()
 			}
 			y(getSign() * 4) {
@@ -150,7 +150,7 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 				x(-3).ironBlock()
 				x(-2).terracottaOrDoubleslab()
 				x(-1).terracottaOrDoubleslab()
-				x(+0).carbyne()
+				x(+0).anyConcrete()
 				x(+1).terracottaOrDoubleslab()
 				x(+2).terracottaOrDoubleslab()
 				x(+3).ironBlock()
@@ -167,7 +167,7 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 			y(getSign() * 3) {
 				x(-2).ironBlock()
 				x(-1).terracottaOrDoubleslab()
-				x(0).carbyne()
+				x(0).anyConcrete()
 				x(+1).terracottaOrDoubleslab()
 				x(+2).ironBlock()
 			}

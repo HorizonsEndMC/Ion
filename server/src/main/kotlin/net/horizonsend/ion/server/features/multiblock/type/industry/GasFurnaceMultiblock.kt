@@ -29,7 +29,7 @@ object GasFurnaceMultiblock : Multiblock(), EntityMultiblock<GasFurnaceMultibloc
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 			y(+0) {
@@ -65,7 +65,7 @@ object GasFurnaceMultiblock : Multiblock(), EntityMultiblock<GasFurnaceMultibloc
 		z(+3) {
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).craftingTable()
+				x(+0).extractor()
 				x(+1).anyStairs()
 			}
 			y(+0) {
