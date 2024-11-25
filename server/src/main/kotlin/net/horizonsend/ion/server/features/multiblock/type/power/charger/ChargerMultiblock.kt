@@ -16,6 +16,8 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
+import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.pane
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.World
@@ -37,29 +39,29 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMul
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
-				x(-1).anyGlassPane()
+				x(-1).anyGlassPane(pane(RelativeFace.RIGHT, RelativeFace.FORWARD))
 				x(+0).wireInputComputer()
-				x(+1).anyGlassPane()
+				x(+1).anyGlassPane(pane(RelativeFace.LEFT, RelativeFace.FORWARD))
 			}
 
 			y(+0) {
-				x(-1).anyGlassPane()
+				x(-1).anyGlassPane(pane(RelativeFace.RIGHT, RelativeFace.FORWARD))
 				x(+0).machineFurnace()
-				x(+1).anyGlassPane()
+				x(+1).anyGlassPane(pane(RelativeFace.LEFT, RelativeFace.FORWARD))
 			}
 		}
 
 		z(+1) {
 			y(-1) {
-				x(-1).anyGlassPane()
+				x(-1).anyGlassPane(pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
 				x(+0).type(tierMaterial)
-				x(+1).anyGlassPane()
+				x(+1).anyGlassPane(pane(RelativeFace.LEFT, RelativeFace.BACKWARD))
 			}
 
 			y(+0) {
-				x(-1).anyGlassPane()
+				x(-1).anyGlassPane(pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
 				x(+0).type(tierMaterial)
-				x(+1).anyGlassPane()
+				x(+1).anyGlassPane(pane(RelativeFace.LEFT, RelativeFace.BACKWARD))
 			}
 		}
 	}
