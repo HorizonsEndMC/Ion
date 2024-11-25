@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -20,7 +21,7 @@ object PlatePressMultiblock : Multiblock(), EntityMultiblock<PlatePressMultibloc
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 			y(+0) {
@@ -37,7 +38,7 @@ object PlatePressMultiblock : Multiblock(), EntityMultiblock<PlatePressMultibloc
 			}
 			y(+0) {
 				x(-1).ironBlock()
-				x(+0).craftingTable()
+				x(+0).extractor()
 				x(+1).ironBlock()
 			}
 		}
@@ -61,7 +62,7 @@ object PlatePressMultiblock : Multiblock(), EntityMultiblock<PlatePressMultibloc
 			}
 			y(+0) {
 				x(-1).anyGlass()
-				x(+0).anvil()
+				x(+0).type(Material.ANVIL)
 				x(+1).anyGlass()
 			}
 		}

@@ -30,7 +30,7 @@ object CompressorMultiblock : Multiblock(), EntityMultiblock<CompressorMultibloc
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 			y(+0) {
@@ -47,7 +47,7 @@ object CompressorMultiblock : Multiblock(), EntityMultiblock<CompressorMultibloc
 			}
 			y(+0) {
 				x(-1).ironBlock()
-				x(+0).craftingTable()
+				x(+0).extractor()
 				x(+1).ironBlock()
 			}
 		}

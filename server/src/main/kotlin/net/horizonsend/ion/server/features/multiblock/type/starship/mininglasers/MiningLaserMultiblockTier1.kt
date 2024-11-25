@@ -38,7 +38,7 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 		z(+0) {
 			y(-1) {
 				x(-1).anyPipedInventory()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 
@@ -118,7 +118,7 @@ object MiningLaserMultiblockTier1TopMirrored : MiningLaserMultiblockTier1() {
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).anyPipedInventory()
 			}
 
@@ -199,7 +199,7 @@ object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 		z(+0) {
 			y(+1) {
 				x(-1).anyPipedInventory()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 
@@ -280,7 +280,7 @@ object MiningLaserMultiblockTier1BottomMirrored : MiningLaserMultiblockTier1() {
 		z(+0) {
 			y(+1) {
 				x(-1).ironBlock()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(+1).anyPipedInventory()
 			}
 
@@ -361,7 +361,7 @@ object MiningLaserMultiblockTier1Side : MiningLaserMultiblockTier1() {
 		z(+0) {
 			y(-1) {
 				x(+1).ironBlock()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(-1).anyPipedInventory()
 			}
 
@@ -445,7 +445,7 @@ object MiningLaserMultiblockTier1SideMirrored : MiningLaserMultiblockTier1() {
 		z(+0) {
 			y(-1) {
 				x(+1).anyPipedInventory()
-				x(+0).noteBlock()
+				x(+0).powerInput()
 				x(-1).ironBlock()
 			}
 

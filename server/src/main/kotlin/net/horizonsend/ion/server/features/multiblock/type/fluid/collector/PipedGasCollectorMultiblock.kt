@@ -53,7 +53,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		z(0) {
 			y(0) {
 				x(-1).lightningRod()
-				x(0).copperBlock()
+				x(0).anySolidCopperBlock()
 				x(+1).lightningRod()
 			}
 			y(-1) {
@@ -65,12 +65,12 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		z(+1) {
 			y(0) {
 				x(-1).titaniumBlock()
-				x(0).copperGrate()
+				x(0).anyCopperGrate()
 				x(+1).titaniumBlock()
 			}
 			y(-1) {
 				x(-1).titaniumBlock()
-				x(0).copperGrate()
+				x(0).anyCopperGrate()
 				x(+1).titaniumBlock()
 			}
 
@@ -78,12 +78,12 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		z(+2) {
 			y(0) {
 				x(-1).lightningRod()
-				x(0).copperBlock()
+				x(0).anySolidCopperBlock()
 				x(+1).lightningRod()
 			}
 			y(-1) {
 				x(-1).anyStairs()
-				x(0).copperBlock()
+				x(0).anySolidCopperBlock()
 				x(+1).anyStairs()
 			}
 
