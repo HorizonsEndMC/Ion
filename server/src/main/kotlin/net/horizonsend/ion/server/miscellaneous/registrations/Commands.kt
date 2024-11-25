@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.ItemDebugCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
+import net.horizonsend.ion.server.command.admin.StructureCreator
 import net.horizonsend.ion.server.command.admin.WorldCommand
 import net.horizonsend.ion.server.command.economy.BazaarCommand
 import net.horizonsend.ion.server.command.economy.CityNpcCommand
@@ -195,6 +196,7 @@ val commands: List<SLCommand> = listOf(
 	EnableProtectionMessagesCommand,
 	IonSitCommand,
 	SuicideCommand,
+	StructureCreator,
 	NavigationCommand,
 	DisplayDebug
 )
