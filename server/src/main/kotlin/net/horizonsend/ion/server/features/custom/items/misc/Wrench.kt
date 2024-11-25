@@ -37,9 +37,7 @@ object Wrench : CustomItem("WRENCH") {
 	}
 
 	private fun tryPickUpMultiblock(player: Player, sign: Sign) {
-		val item = PrePackaged.pickUpStructure(player, sign) ?: return
-		sign.world.dropItem(sign.location.toCenterLocation(), item)
-
+		PrePackaged.pickUpStructure(player, sign)
 	}
 
 	private fun tryEditFilter(player: Player, sign: Sign) { // State TBD
