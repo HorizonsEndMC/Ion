@@ -12,6 +12,7 @@ class BlockRequirement(
 	private val syncCheck: (Block, BlockFace, Boolean) -> Boolean,
 	val itemRequirement: ItemRequirement
 ) {
+	var blockUpdate: Boolean = false //TODO impl
 	private val placementModifications: MutableList<(BlockFace, BlockData) -> Unit> = mutableListOf()
 
 	operator fun invoke(block: Block, inward: BlockFace, loadChunks: Boolean) = syncCheck.invoke(block, inward, loadChunks)
