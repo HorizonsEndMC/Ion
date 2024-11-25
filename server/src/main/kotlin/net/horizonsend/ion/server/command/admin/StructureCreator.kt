@@ -109,7 +109,7 @@ object StructureCreator : SLCommand() {
 				data as Slab
 				val type = data.type
 
-				if (type == Slab.Type.DOUBLE) return "PrepackagedPreset.doubleSlab()"
+				if (type == Slab.Type.DOUBLE) return ".doubleSlab()"
 
 				".anySlab(PrepackagedPreset.slab($type))"
 			}
