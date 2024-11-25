@@ -27,4 +27,16 @@ enum class RelativeFace {
     };
 
     abstract operator fun get(face: BlockFace): BlockFace
+
+	companion object {
+		operator fun get(forward: BlockFace, relative: BlockFace): RelativeFace {
+			return when {
+				forward == relative -> FORWARD
+				forward.oppositeFace == relative -> BACKWARD
+				forward.rightFace == relative -> RIGHT
+				forward.leftFace == relative -> LEFT
+				else -> throw IllegalArgumentException("Unsupported relationship! Forward: $forward, relative: $relative.")
+			}
+		}
+	}
 }
