@@ -2,8 +2,11 @@ package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.loadFromData
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.setMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.shape.BlockRequirement
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
@@ -82,7 +85,7 @@ object PrePackaged {
 		return obstructed
 	}
 
-	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: Inventory?) {
+	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: Inventory?, entityData: PersistentMultiblockData?) {
 		val requirements = multiblock.shape.getRequirementMap(direction)
 		val placements = mutableMapOf<Block, BlockData>()
 
@@ -155,7 +158,22 @@ object PrePackaged {
 
 		val sign = signPosition.state as Sign
 
+		if (entityData != null && multiblock is EntityMultiblock<*>) {
+			entityData.x = origin.x
+			entityData.y = origin.y
+			entityData.z = origin.z
+			entityData.signOffset = sign.getFacing().oppositeFace
+
+			setMultiblockEntity(sign.world, origin.x, origin.y, origin.z) { manager ->
+				val new = loadFromData(multiblock, manager, entityData)
+				if (new is LegacyMultiblockEntity) new.loadFromSign(sign)
+
+				new
+			}
+		}
+
 		val signItemMeta = signItem?.itemMeta
+
 		if (signItemMeta is BlockStateMeta && signItemMeta.hasBlockState()) {
 			val accurateState = signItemMeta.blockState as Sign
 
@@ -164,17 +182,12 @@ object PrePackaged {
 					sign.front().line(line, component)
 				}
 
-				accurateState.persistentDataContainer.get(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData)?.let {
-					sign.persistentDataContainer.set(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData, it)
-				}
-
 				accurateState.persistentDataContainer.get(MULTIBLOCK, STRING)?.let {
 					sign.persistentDataContainer.set(MULTIBLOCK, STRING, it)
 				}
 
 				sign.update()
 
-				MultiblockEntities.loadFromSign(sign)
 				signItem.amount--
 				return
 			}
@@ -257,17 +270,14 @@ object PrePackaged {
 		return missing
 	}
 
-	fun pickUpStructure(player: Player, sign: Sign): ItemStack? {
-		val multiblockType = MultiblockAccess.getFast(sign) ?: return null
-		if (multiblockType is EntityMultiblock<*>) {
-			// Just in case
-			multiblockType.getMultiblockEntity(sign, true)?.saveToSign()
-		}
+	fun pickUpStructure(player: Player, sign: Sign) {
+		val multiblockType = MultiblockAccess.getFast(sign) ?: return
+		val entityData = (multiblockType as? EntityMultiblock<*>)?.getMultiblockEntity(sign)?.store()
 
 		val structureDirection = sign.getFacing().oppositeFace
 		val structureOrigin = MultiblockEntity.getOriginFromSign(sign)
 
-		if (!multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) return null
+		if (!multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) return
 
 		val requirements = multiblockType.shape.getRequirementMap(structureDirection)
 
@@ -280,8 +290,8 @@ object PrePackaged {
 		}
 
 		for ((offset, requirement) in requirements) {
-			val realBlock = structureOrigin.getRelativeIfLoaded(offset.x, offset.y, offset.z) ?: return null
-			if (!BlockBreakEvent(sign.block, player).callEvent()) return null
+			val realBlock = structureOrigin.getRelativeIfLoaded(offset.x, offset.y, offset.z) ?: return
+			if (!BlockBreakEvent(sign.block, player).callEvent()) return
 			toBreak.add(realBlock)
 
 			val item = requirement.itemRequirement.toItemStack(realBlock.blockData)
@@ -291,7 +301,7 @@ object PrePackaged {
 		items.add(signItem)
 		toBreak.add(sign.block)
 
-		if (!BlockBreakEvent(sign.block, player).callEvent()) return null
+		if (!BlockBreakEvent(sign.block, player).callEvent()) return
 
 		toBreak.asReversed().forEach {
 			val state = it.state
@@ -304,7 +314,13 @@ object PrePackaged {
 			it.setType(Material.AIR, false)
 		}
 
-		return createPackagedItem(items, multiblockType)
+		val item = createPackagedItem(items, multiblockType)
+
+		if (entityData != null) {
+			item.updateMeta { it.persistentDataContainer.set(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData, entityData) }
+		}
+
+		sign.world.dropItem(sign.location.toCenterLocation(), item)
 	}
 
 	private fun getRequirements(multiblock: Multiblock): List<BlockRequirement> = multiblock.shape.getRequirementMap(BlockFace.NORTH).values.plus(signRequirement)
