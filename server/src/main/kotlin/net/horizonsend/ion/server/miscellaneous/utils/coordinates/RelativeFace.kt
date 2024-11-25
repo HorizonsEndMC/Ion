@@ -5,12 +5,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.block.BlockFace
 
 enum class RelativeFace {
-    SELF {
+    FORWARD {
         override fun get(face: BlockFace): BlockFace {
             return face
         }
     },
-    OPPOSITE {
+    BACKWARD {
         override fun get(face: BlockFace): BlockFace {
             return face.oppositeFace
         }
