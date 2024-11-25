@@ -18,19 +18,19 @@ object DoomsdayDeviceWeaponMultiblock : SignlessStarshipWeaponMultiblock<Doomsda
             z(z) {
                 y(-1) {
                     x(-1).aluminumBlock()
-                    x(+0).stainedGlass()
+                    x(+0).anyGlass()
                     x(+1).aluminumBlock()
                 }
 
                 y(+0) {
-                    x(-1).stainedGlass()
+                    x(-1).anyGlass()
                     x(+0).enrichedUraniumBlock()
-                    x(+1).stainedGlass()
+                    x(+1).anyGlass()
                 }
 
                 y(+1) {
                     x(-1).aluminumBlock()
-                    x(+0).stainedGlass()
+                    x(+0).anyGlass()
                     x(+1).aluminumBlock()
                 }
             }

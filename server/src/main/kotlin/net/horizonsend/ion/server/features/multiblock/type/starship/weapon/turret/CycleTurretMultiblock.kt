@@ -57,33 +57,33 @@ sealed class CycleTurretMultiblock : TurretMultiblock() {
 
             z(-2) {
                 x(-2).anySlab()
-                x(-1..1) { terracotta() }
+                x(-1..1) { this.anyTerracotta() }
                 x(+2).anySlab()
             }
 
             z(-1) {
                 x(-3).anyStairs()
-                x(-2..2) { terracotta() }
+                x(-2..2) { this.anyTerracotta() }
                 x(+3).anyStairs()
             }
 
             z(+0) {
                 x(-3).netheriteCasing()
-                x(-2..-1) { terracotta() }
+                x(-2..-1) { this.anyTerracotta() }
                 x(+0).enrichedUraniumBlock()
-                x(+1..2) { terracotta() }
+                x(+1..2) { this.anyTerracotta() }
                 x(+3).netheriteCasing()
             }
 
             z(+1) {
                 x(-3).anyStairs()
-                x(-2..2) { terracotta() }
+                x(-2..2) { this.anyTerracotta() }
                 x(+3).anyStairs()
             }
 
             z(+2) {
                 x(-2).anySlab()
-                x(-1..1) { terracotta() }
+                x(-1..1) { this.anyTerracotta() }
                 x(+2).anySlab()
             }
 
@@ -112,7 +112,7 @@ sealed class CycleTurretMultiblock : TurretMultiblock() {
             z(+0) {
                 x(-2).grindstone()
                 x(-1).ironBlock()
-                x(+0).stainedGlass()
+                x(+0).anyGlass()
                 x(+1).ironBlock()
                 x(+2).grindstone()
             }

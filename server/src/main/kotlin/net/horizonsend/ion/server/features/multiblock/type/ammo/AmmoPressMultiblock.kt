@@ -34,7 +34,7 @@ abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMul
 		z(+0) {
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyStairs()
 			}
 
@@ -52,7 +52,7 @@ abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMul
 
 			y(+0) {
 				x(-1).anySlab()
-				x(+0).type(Material.GRINDSTONE)
+				x(+0).grindstone()
 				x(+1).anySlab()
 			}
 		}
@@ -108,7 +108,7 @@ abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMul
 
 			y(+0) {
 				x(-1).anySlab()
-				x(+0).type(Material.GRINDSTONE)
+				x(+0).grindstone()
 				x(+1).anySlab()
 			}
 		}

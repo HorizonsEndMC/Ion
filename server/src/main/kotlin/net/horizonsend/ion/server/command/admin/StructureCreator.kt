@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isSlab
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
 import net.horizonsend.ion.server.miscellaneous.utils.isTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
+import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
@@ -100,11 +101,22 @@ object StructureCreator : SLCommand() {
 			CustomBlocks.ALUMINUM_BLOCK -> ".aluminumBlock()"
 			CustomBlocks.CHETHERITE_BLOCK -> ".chetheriteBlock()"
 			CustomBlocks.STEEL_BLOCK -> ".steelBlock()"
+			CustomBlocks.ENRICHED_URANIUM_BLOCK -> ".enrichedUraniumBlock()"
+			CustomBlocks.NETHERITE_CASING -> ".netheriteCasing()"
 			else -> ".customBlock(CustomBlocks.${customBlock.identifier})"
 		}
 
 		return when {
-			data.material.isConcrete -> ".concrete()"
+			data.material.isConcrete -> ".anyConcrete()"
+			data.material.isTerracotta -> ".anyTerracotta()"
+			data.material.isGlass -> ".anyGlass()"
+			data.material.isGlassPane -> {
+				data as GlassPane
+				val faces = data.faces.map { RelativeFace[forwards, it] }
+				".anyGlassPane(PrepackagedPreset.pane(${faces.joinToString { it.name }}))"
+			}
+			data.material.isWall -> ".anyWall()"
+
 			data.material == Material.FURNACE -> ".machineFurnace()"
 
 			data.material.isStairs -> {
@@ -113,20 +125,18 @@ object StructureCreator : SLCommand() {
 				val half = data.half
 				val shape = data.shape
 
-				".anyStairs(PrepackagedPreset.stairs($facing, $half, shape = $shape))"
+				".anyStairs(PrepackagedPreset.stairs($facing, Bisected.Half.$half, shape = $shape))"
 			}
 
 			data.material.isSlab -> {
 				data as Slab
 				val type = data.type
 
-				if (type == Slab.Type.DOUBLE) return ".doubleSlab()"
+				if (type == Slab.Type.DOUBLE) return ".anyDoubleSlab()"
 
-				".anySlab(PrepackagedPreset.slab($type))"
+				".anySlab(PrepackagedPreset.slab(Slab.Type.$type))"
 			}
 
-			data.material.isTerracotta -> ".terracotta()"
-			data.material.isGlass -> ".anyGlass()"
 			data.material == Material.SEA_LANTERN -> ".seaLantern()"
 			data.material == Material.STONE_BRICKS -> ".stoneBrick()"
 
@@ -138,8 +148,9 @@ object StructureCreator : SLCommand() {
 			data.material == Material.REDSTONE_BLOCK -> ".redstoneBlock()"
 			data.material == Material.LAPIS_BLOCK -> ".lapisBlock()"
 
-			data.material == Wires.INPUT_COMPUTER_BLOCK -> ".wireInputComputer()"
 			data.material == Material.FLETCHING_TABLE -> ".fluidInput()"
+			data.material == Material.LIGHTNING_ROD -> ".lightningRod()"
+			data.material == Wires.INPUT_COMPUTER_BLOCK -> ".powerInput()"
 			data.material == Material.END_ROD -> ".endRod()"
 			data.material == EXTRACTOR_TYPE -> ".extractor()"
 			data.material == Material.HOPPER -> ".hopper()"
@@ -158,13 +169,6 @@ object StructureCreator : SLCommand() {
 			data.material == Material.MAGMA_BLOCK -> ".thrusterBlock()"
 			data.material == Material.SEA_LANTERN -> ".thrusterBlock()"
 
-			data.material == Material.LIGHTNING_ROD -> ".lightningRod()"
-
-			data.material.isGlassPane -> {
-				data as GlassPane
-				val faces = data.faces.map { RelativeFace[forwards, it] }
-				".anyGlassPane(PrepackagedPreset.pane(${faces.joinToString { it.name }}))"
-			}
 
 			else -> ".type(Material.${data.material.name})"
 		}

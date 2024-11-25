@@ -56,19 +56,19 @@ object HorizontalRocketStarshipWeaponMultiblock : RocketStarshipWeaponMultiblock
 
 			y(-1) {
 				x(-2).anyStairs()
-				x(-1..+1) { concrete() }
+				x(-1..+1) { this.anyConcrete() }
 				x(+2).anyStairs()
 			}
 
 			y(+0) {
 				x(-2).ironBlock()
-				x(-1..+1) { concrete() }
+				x(-1..+1) { this.anyConcrete() }
 				x(+2).ironBlock()
 			}
 
 			y(+1) {
 				x(-2).anyStairs()
-				x(-1..+1) { concrete() }
+				x(-1..+1) { this.anyConcrete() }
 				x(+2).anyStairs()
 			}
 
@@ -187,19 +187,19 @@ sealed class VerticalRocketStarshipWeaponMultiblock : RocketStarshipWeaponMultib
 
 			z(-1) {
 				x(-2).anyStairs()
-				x(-1..+1) { concrete() }
+				x(-1..+1) { this.anyConcrete() }
 				x(+2).anyStairs()
 			}
 
 			z(+0) {
 				x(-2).ironBlock()
-				x(-1..+1) { concrete() }
+				x(-1..+1) { this.anyConcrete() }
 				x(+2).ironBlock()
 			}
 
 			z(+1) {
 				x(-2).anyStairs()
-				x(-1..+1) { concrete() }
+				x(-1..+1) { this.anyConcrete() }
 				x(+2).anyStairs()
 			}
 
