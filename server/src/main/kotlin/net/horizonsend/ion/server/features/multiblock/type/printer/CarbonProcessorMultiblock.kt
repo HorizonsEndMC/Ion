@@ -42,7 +42,7 @@ object CarbonProcessorMultiblock : Multiblock(), EntityMultiblock<CarbonProcesso
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 
