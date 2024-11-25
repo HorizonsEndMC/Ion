@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.autocrafter
 
-import net.minecraft.world.item.ItemStack as NMSItemStack
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack as CBItemStack
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -34,12 +32,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.CraftingContainer
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.inventory.TransientCraftingContainer
+import net.minecraft.world.item.ItemStack as NMSItemStack
 import net.minecraft.world.level.block.CrafterBlock
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack as CBItemStack
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
@@ -63,7 +63,7 @@ abstract class AutoCrafterMultiblock(
 			y(-1) {
 				x(-2).type(tierMaterial)
 				x(-1).anyGlassPane()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyGlassPane()
 				x(+2).type(tierMaterial)
 			}
@@ -81,7 +81,7 @@ abstract class AutoCrafterMultiblock(
 			y(-1) {
 				x(-2).anyGlass() // input pipe
 				x(-1).titaniumBlock()
-				x(+0).craftingTable()
+				x(+0).extractor()
 				x(+1).titaniumBlock()
 				x(+2).extractor()
 			}
@@ -306,7 +306,7 @@ abstract class AutoCrafterMultiblockMirrored(
 			y(-1) {
 				x(-2).type(tierMaterial)
 				x(-1).anyGlassPane()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyGlassPane()
 				x(+2).type(tierMaterial)
 			}
@@ -324,7 +324,7 @@ abstract class AutoCrafterMultiblockMirrored(
 			y(-1) {
 				x(-2).extractor()
 				x(-1).titaniumBlock()
-				x(+0).craftingTable()
+				x(+0).extractor()
 				x(+1).titaniumBlock()
 				x(+2).anyGlass() // input pipe
 			}

@@ -21,14 +21,14 @@ object FluidTankMedium : FluidStorageMultiblock(75_000) {
 			y(+0) {
 				x(-2).anyCopperVariant()
 				x(-1).titaniumBlock()
-				x(+0).copperGrate()
+				x(+0).anyCopperGrate()
 				x(+1).titaniumBlock()
 				x(+2).anyCopperVariant()
 			}
 			y(+1) {
 				x(-2).anyStairs(stairs(FORWARD, BOTTOM, shape = STRAIGHT))
 				x(-1).titaniumBlock()
-				x(+0).copperGrate()
+				x(+0).anyCopperGrate()
 				x(+1).titaniumBlock()
 				x(+2).anyStairs(stairs(FORWARD, BOTTOM, shape = STRAIGHT))
 			}
@@ -37,21 +37,21 @@ object FluidTankMedium : FluidStorageMultiblock(75_000) {
 			y(-1) {
 				x(-2).anyCopperVariant()
 				x(-1).titaniumBlock()
-				x(+0).copperBlock()
+				x(+0).anySolidCopperBlock()
 				x(+1).titaniumBlock()
 				x(+2).anyCopperVariant()
 			}
 			y(+0) {
-				x(-2).copperBulb()
+				x(-2).anyCopperBulb()
 				x(-1).anyGlass()
 				x(+0).anyGlass()
 				x(+1).anyGlass()
-				x(+2).copperBulb()
+				x(+2).anyCopperBulb()
 			}
 			y(+1) {
 				x(-2).anyCopperVariant()
 				x(-1).titaniumBlock()
-				x(+0).copperGrate()
+				x(+0).anyCopperGrate()
 				x(+1).titaniumBlock()
 				x(+2).anyCopperVariant()
 			}
@@ -60,21 +60,21 @@ object FluidTankMedium : FluidStorageMultiblock(75_000) {
 			y(-1) {
 				x(-2).anyStairs(stairs(BACKWARD, TOP, shape = STRAIGHT))
 				x(-1).titaniumBlock()
-				x(+0).copperGrate()
+				x(+0).anyCopperGrate()
 				x(+1).titaniumBlock()
 				x(+2).anyStairs(stairs(BACKWARD, TOP, shape = STRAIGHT))
 			}
 			y(+0) {
 				x(-2).anyCopperVariant()
 				x(-1).titaniumBlock()
-				x(+0).copperGrate()
+				x(+0).anyCopperGrate()
 				x(+1).titaniumBlock()
 				x(+2).anyCopperVariant()
 			}
 			y(+1) {
 				x(-2).anyStairs(stairs(BACKWARD, BOTTOM, shape = STRAIGHT))
 				x(-1).titaniumBlock()
-				x(+0).copperBlock()
+				x(+0).anySolidCopperBlock()
 				x(+1).titaniumBlock()
 				x(+2).anyStairs(stairs(BACKWARD, BOTTOM, shape = STRAIGHT))
 			}
