@@ -4,12 +4,18 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TransportConfiguration(
-	val extractorConfiguration: ExtractorConfiguration = ExtractorConfiguration()
+	val extractorConfiguration: ExtractorConfiguration = ExtractorConfiguration(),
+	val powerConfiguration: PowerTransportConfiguration = PowerTransportConfiguration()
 ) {
 	@Serializable
 	data class ExtractorConfiguration(
 		val extractorTickIntervalMS: Long = 2000,
-		val maxPowerRemovedPerExtractorTick: Int = 1000,
 		val maxFluidRemovedPerExtractorTick: Int = 1000,
+	)
+
+	@Serializable
+	data class PowerTransportConfiguration(
+		val maxPowerRemovedPerExtractorTick: Int = 1000,
+		val solarPanelTickPower: Int = 100
 	)
 }
