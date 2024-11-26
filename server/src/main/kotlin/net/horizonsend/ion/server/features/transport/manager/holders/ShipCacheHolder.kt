@@ -11,18 +11,18 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.World
 import kotlin.properties.Delegates
 
-class ShipCacheHolder<T: TransportCache>(val manager: ShipTransportManager) : CacheHolder<T> {
+class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTransportManager) : CacheHolder<T> {
 	override var cache: T by Delegates.notNull(); private set
 
 	constructor(manager: ShipTransportManager, network: (ShipCacheHolder<T>) -> T) : this(manager) {
 		this.cache = network(this)
 	}
 
-	override fun getWorld(): World = manager.starship.world
+	override fun getWorld(): World = transportManager.starship.world
 
 	override fun handleLoad() {
-		manager.starship.iterateBlocks { x, y, z ->
-			IonChunk[manager.starship.world, x, z]?.let { cache.type.get(it).invalidate(x, y, z) }
+		transportManager.starship.iterateBlocks { x, y, z ->
+			IonChunk[transportManager.starship.world, x, z]?.let { cache.type.get(it).invalidate(x, y, z) }
 			cache.cache(toBlockKey(x, y, z))
 		}
 	}
@@ -37,10 +37,10 @@ class ShipCacheHolder<T: TransportCache>(val manager: ShipTransportManager) : Ca
 	}
 
 	override fun getMultiblockManager(): MultiblockManager {
-		return manager.starship.multiblockManager
+		return transportManager.starship.multiblockManager
 	}
 
 	override fun getExtractorManager(): ExtractorManager {
-		return manager.extractorManager
+		return transportManager.extractorManager
 	}
 }
