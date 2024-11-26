@@ -18,6 +18,15 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			return ship.transportManager.powerNodeManager.cache
 		}
 	},
+	SOLAR_PANELS(NamespacedKeys.POWER_TRANSPORT) {
+		override fun get(chunk: IonChunk): PowerTransportCache {
+			return chunk.transportNetwork.powerNodeManager.cache
+		}
+
+		override fun get(ship: ActiveStarship): PowerTransportCache {
+			return ship.transportManager.powerNodeManager.cache
+		}
+	},
 	FLUID(NamespacedKeys.FLUID_TRANSPORT) {
 		override fun get(chunk: IonChunk): FluidTransportCache {
 			return chunk.transportNetwork.fluidNodeManager.cache
