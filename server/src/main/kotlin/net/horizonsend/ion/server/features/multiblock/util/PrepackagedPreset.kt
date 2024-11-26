@@ -9,6 +9,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
+import org.bukkit.block.data.type.TrapDoor
 
 object PrepackagedPreset {
 	fun stairs(face: RelativeFace, half: Bisected.Half, shape: Stairs.Shape): BlockRequirement.() -> Unit = {
@@ -39,7 +40,7 @@ object PrepackagedPreset {
 
 	fun slab(type: Slab.Type): BlockRequirement.() -> Unit = {
 		example = Material.STONE_BRICK_SLAB.createBlockData()
-		addPlacementModification { multiblockDirection: BlockFace, slab: BlockData ->
+		addPlacementModification { _: BlockFace, slab: BlockData ->
 			slab as Slab
 			slab.type = type
 		}
@@ -47,5 +48,16 @@ object PrepackagedPreset {
 
 	fun blockUpdate(): BlockRequirement.() -> Unit = {
 		blockUpdate = true
+	}
+
+	fun trapdoor(half: Bisected.Half, facing: RelativeFace, powered: Boolean, open: Boolean): BlockRequirement.() -> Unit = {
+		example = Material.OAK_TRAPDOOR.createBlockData()
+		addPlacementModification { structureDirection, data ->
+			data as TrapDoor
+			data.isOpen = open
+			data.isPowered = powered
+			data.half = half
+			data.facing = facing[structureDirection]
+		}
 	}
 }
