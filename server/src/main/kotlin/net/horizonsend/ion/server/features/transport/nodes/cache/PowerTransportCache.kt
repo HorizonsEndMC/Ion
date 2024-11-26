@@ -40,39 +40,65 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		.addSimpleNode(NOTE_BLOCK, PowerInputNode)
 		.build()
 
-	override fun tickExtractor(location: BlockKey, delta: Double) { NewTransport.executor.submit {
-		val world = holder.getWorld()
-		val sources = getExtractorSources<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
-		val source = sources.randomOrNull() ?: return@submit //TODO take from all
+	override fun tickExtractor(location: BlockKey, delta: Double) {
+		val solarCache = holder.transportManager.solarPanelManager.cache
+		if (solarCache.isSolarPanel(location)) NewTransport.executor.submit {
+			val transportPower = solarCache.getPower(holder.getWorld(), location, delta)
+			if (transportPower == 0) return@submit
 
-		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: List<BlockKey> = getNetworkDestinations<PowerInputNode>(location) { node ->
-			world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
+			// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
+			val destinations: List<BlockKey> = getNetworkDestinations<PowerInputNode>(location) { node ->
+				holder.getWorld().ion.inputManager.getHolders(CacheType.POWER, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
+			}
+
+			if (destinations.isEmpty()) return@submit
+
+			holder.transportManager.powerNodeManager.cache.runPowerTransfer(
+				Node.NodePositionData(
+					PowerNode.PowerExtractorNode,
+					holder.getWorld(),
+					location,
+					BlockFace.SELF
+				),
+				destinations,
+				transportPower
+			)
 		}
 
-		if (destinations.isEmpty()) return@submit
+		NewTransport.executor.submit {
+			val world = holder.getWorld()
+			val sources = getExtractorSources<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
+			val source = sources.randomOrNull() ?: return@submit //TODO take from all
 
-		val transferLimit = (IonServer.transportSettings.powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
-		val transferred = minOf(source.powerStorage.getPower(), transferLimit)
+			// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
+			val destinations: List<BlockKey> = getNetworkDestinations<PowerInputNode>(location) { node ->
+				world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
+			}
 
-		// Store this just in case
-		val missing = source.powerStorage.removePower(transferred)
+			if (destinations.isEmpty()) return@submit
 
-		val remainder = runPowerTransfer(
-			Node.NodePositionData(
-				PowerNode.PowerExtractorNode,
-				world,
-				location,
-				BlockFace.SELF
-			),
-			destinations,
-			(transferred - missing)
-		)
+			val transferLimit = (IonServer.transportSettings.powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
+			val transferred = minOf(source.powerStorage.getPower(), transferLimit)
 
-		if (remainder > 0) {
-			source.powerStorage.addPower(remainder)
+			// Store this just in case
+			val missing = source.powerStorage.removePower(transferred)
+
+			val remainder = runPowerTransfer(
+				Node.NodePositionData(
+					PowerNode.PowerExtractorNode,
+					world,
+					location,
+					BlockFace.SELF
+				),
+				destinations,
+				(transferred - missing)
+			)
+
+			if (remainder > 0) {
+				source.powerStorage.addPower(remainder)
+			}
 		}
-	}}
+	}
 
 	/**
 	 * Runs the power transfer from the source to the destinations. pending rewrite
