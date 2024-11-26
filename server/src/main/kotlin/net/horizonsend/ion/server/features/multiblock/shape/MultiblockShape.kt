@@ -224,7 +224,7 @@ class MultiblockShape {
 	class RequirementBuilder(val shape: MultiblockShape, val right: Int, val upward: Int, val inward: Int) {
 		private fun complete(requirement: BlockRequirement) = shape.addRequirement(right, upward, inward, requirement)
 
-		fun type(type: Material) {
+		fun type(type: Material, edit: BlockRequirement.() -> Unit = {}) {
 			val requirement = BlockRequirement(
 				alias = type.toString(),
 				example = type.createBlockData(),
@@ -238,6 +238,8 @@ class MultiblockShape {
 			)
 
 			complete(requirement)
+
+			edit(requirement)
 		}
 
 		fun anyType(vararg types: Material, alias: String, edit: BlockRequirement.() -> Unit = {}) {
@@ -494,7 +496,7 @@ class MultiblockShape {
 		fun redstoneLamp() = filteredTypes("redstone lamp") { it.isRedstoneLamp }
 		fun daylightSensor() = filteredTypes("daylight sensor") { it.isDaylightSensor }
 
-		fun grindstone() = type(Material.GRINDSTONE)
+		fun grindstone(edit: BlockRequirement.() -> Unit = {}) = type(Material.GRINDSTONE, edit)
 
 		fun anyDoor() = filteredTypes("any door", edit = { setExample(Material.OAK_DOOR.createBlockData()) }) { it.isDoor }
 		fun anyButton() = filteredTypes("any button") { it.isButton }
