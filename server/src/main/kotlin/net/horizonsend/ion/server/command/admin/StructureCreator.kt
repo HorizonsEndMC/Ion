@@ -27,6 +27,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.GlassPane
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
+import org.bukkit.block.data.type.TrapDoor
 import org.bukkit.entity.Player
 
 @CommandPermission("ion.admin.structurecreator")
@@ -156,7 +157,11 @@ object StructureCreator : SLCommand() {
 			data.material == Material.HOPPER -> ".hopper()"
 			data.material == Material.DISPENSER -> ".dispenser()"
 
-			data.material.isTrapdoor -> ".anyTrapdoor()"
+			data.material.isTrapdoor -> {
+				data as TrapDoor
+				val facing = RelativeFace[forwards, data.facing]
+				".anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.${data.half}, RelativeFace.$facing, ${data.isPowered}, ${data.isOpen}))"
+			}
 
 			data.material == Material.SPONGE -> ".sponge()"
 			data.material == Material.WET_SPONGE -> ".sponge()"
