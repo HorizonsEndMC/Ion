@@ -12,27 +12,27 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import org.bukkit.World
 import kotlin.properties.Delegates
 
-class ChunkCacheHolder<T: TransportCache> private constructor (val manager: ChunkTransportManager) : CacheHolder<T> {
+class ChunkCacheHolder<T: TransportCache> private constructor (override val transportManager: ChunkTransportManager) : CacheHolder<T> {
 	override var cache: T by Delegates.notNull(); private set
 
 	constructor(manager: ChunkTransportManager, network: (ChunkCacheHolder<T>) -> T) : this(manager) {
 		this.cache = network(this)
 	}
 
-	override fun getWorld(): World = manager.chunk.world
+	override fun getWorld(): World = transportManager.chunk.world
 
 	override fun getOrCacheGlobalNode(key: BlockKey): Node? {
 		val chunkX = getX(key).shr(4)
 		val chunkZ = getZ(key).shr(4)
 
-		val isThisChunk = chunkX == manager.chunk.x && chunkZ == manager.chunk.z
+		val isThisChunk = chunkX == transportManager.chunk.x && chunkZ == transportManager.chunk.z
 
 		if (isThisChunk) {
 			return cache.getOrCache(key)
 		}
 
-		val xDiff = manager.chunk.x - chunkX
-		val zDiff = manager.chunk.z - chunkZ
+		val xDiff = transportManager.chunk.x - chunkX
+		val zDiff = transportManager.chunk.z - chunkZ
 
 		if (xDiff > 1 || xDiff < -1) return null
 		if (zDiff > 1 || zDiff < -1) return null
@@ -46,10 +46,10 @@ class ChunkCacheHolder<T: TransportCache> private constructor (val manager: Chun
 	}
 
 	override fun getMultiblockManager(): MultiblockManager {
-		return manager.chunk.multiblockManager
+		return transportManager.chunk.multiblockManager
 	}
 
 	override fun getExtractorManager(): ExtractorManager {
-		return manager.extractorManager
+		return transportManager.extractorManager
 	}
 }
