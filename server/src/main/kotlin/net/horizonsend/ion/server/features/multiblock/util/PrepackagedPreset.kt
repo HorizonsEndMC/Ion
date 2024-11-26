@@ -6,6 +6,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.BlockData
+import org.bukkit.block.data.Directional
 import org.bukkit.block.data.MultipleFacing
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
@@ -58,6 +59,14 @@ object PrepackagedPreset {
 			data.isPowered = powered
 			data.half = half
 			data.facing = facing[structureDirection]
+		}
+	}
+
+	fun simpleDirectional(face: RelativeFace, example: BlockData? = null): BlockRequirement.() -> Unit = {
+		example?.let { this.example = it }
+		addPlacementModification { blockFace, blockData ->
+			blockData as Directional
+			blockData.facing = face[blockFace]
 		}
 	}
 }
