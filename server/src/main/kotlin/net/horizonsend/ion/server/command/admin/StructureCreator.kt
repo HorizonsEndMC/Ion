@@ -24,6 +24,7 @@ import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
+import org.bukkit.block.data.Directional
 import org.bukkit.block.data.type.GlassPane
 import org.bukkit.block.data.type.Grindstone
 import org.bukkit.block.data.type.Slab
@@ -151,9 +152,7 @@ object StructureCreator : SLCommand() {
 			data.material == Material.LAPIS_BLOCK -> ".lapisBlock()"
 
 			data.material == Material.FLETCHING_TABLE -> ".fluidInput()"
-			data.material == Material.LIGHTNING_ROD -> ".lightningRod()"
 			data.material == Wires.INPUT_COMPUTER_BLOCK -> ".powerInput()"
-			data.material == Material.END_ROD -> ".endRod()"
 			data.material == EXTRACTOR_TYPE -> ".extractor()"
 			data.material == Material.HOPPER -> ".hopper()"
 			data.material == Material.DISPENSER -> ".dispenser()"
@@ -161,13 +160,25 @@ object StructureCreator : SLCommand() {
 			data.material == Material.GRINDSTONE -> {
 				data as Grindstone
 				val facing = RelativeFace[forwards, data.facing]
-				".dispenser(PrepackagedPreset.simpleDirectional(RelativeFace.$facing, example = Material.GRINDSTONE.createBlockData()))"
+				".grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.$facing, example = Material.GRINDSTONE.createBlockData()))"
 			}
 
 			data.material.isTrapdoor -> {
 				data as TrapDoor
 				val facing = RelativeFace[forwards, data.facing]
 				".anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.${data.half}, RelativeFace.$facing, ${data.isPowered}, ${data.isOpen}))"
+			}
+
+			data.material == Material.END_ROD -> {
+				data as Directional
+				val facing = RelativeFace[forwards, data.facing]
+				".endRod(PrepackagedPreset.simpleDirectional(RelativeFace.$facing, example = Material.GRINDSTONE.createBlockData()))"
+			}
+
+			data.material == Material.LIGHTNING_ROD -> {
+				data as Directional
+				val facing = RelativeFace[forwards, data.facing]
+				".lightningRod(PrepackagedPreset.simpleDirectional(RelativeFace.$facing, example = Material.GRINDSTONE.createBlockData()))"
 			}
 
 			data.material == Material.SPONGE -> ".sponge()"
