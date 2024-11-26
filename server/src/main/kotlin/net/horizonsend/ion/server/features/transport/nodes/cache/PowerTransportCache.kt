@@ -52,7 +52,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		if (destinations.isEmpty()) return@submit
 
-		val transferLimit = (IonServer.transportSettings.extractorConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
+		val transferLimit = (IonServer.transportSettings.powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
 		val transferred = minOf(source.powerStorage.getPower(), transferLimit)
 
 		// Store this just in case
@@ -77,7 +77,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	/**
 	 * Runs the power transfer from the source to the destinations. pending rewrite
 	 **/
-	private fun runPowerTransfer(source: Node.NodePositionData, rawDestinations: List<BlockKey>, availableTransferPower: Int): Int {
+	fun runPowerTransfer(source: Node.NodePositionData, rawDestinations: List<BlockKey>, availableTransferPower: Int): Int {
 		if (rawDestinations.isEmpty()) return availableTransferPower
 
 		val filteredDestinations = rawDestinations.filter { destinationLoc ->
