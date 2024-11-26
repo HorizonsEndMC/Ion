@@ -501,7 +501,7 @@ class MultiblockShape {
 
 		fun furnace() = type(Material.FURNACE)
 		fun lodestone() = type(Material.LODESTONE)
-		fun anyTrapdoor() = filteredTypes("any trapdoor") { it.isTrapdoor }
+		fun anyTrapdoor(edit: BlockRequirement.() -> Unit = {}) = filteredTypes("any trapdoor", edit) { it.isTrapdoor }
 		fun anyFroglight() = filteredTypes("any froglight") { it.isFroglight }
 
 		fun thrusterBlock() = anyType(
