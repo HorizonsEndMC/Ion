@@ -24,7 +24,18 @@ enum class RelativeFace {
         override fun get(face: BlockFace): BlockFace {
             return face.leftFace
         }
+    },
+    UP {
+        override fun get(face: BlockFace): BlockFace {
+            return BlockFace.UP
+        }
+    },
+    DOWN {
+        override fun get(face: BlockFace): BlockFace {
+            return BlockFace.DOWN
+        }
     };
+
 
     abstract operator fun get(face: BlockFace): BlockFace
 
