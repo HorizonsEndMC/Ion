@@ -25,6 +25,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.GlassPane
+import org.bukkit.block.data.type.Grindstone
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
 import org.bukkit.block.data.type.TrapDoor
@@ -156,6 +157,12 @@ object StructureCreator : SLCommand() {
 			data.material == EXTRACTOR_TYPE -> ".extractor()"
 			data.material == Material.HOPPER -> ".hopper()"
 			data.material == Material.DISPENSER -> ".dispenser()"
+
+			data.material == Material.GRINDSTONE -> {
+				data as Grindstone
+				val facing = RelativeFace[forwards, data.facing]
+				".dispenser(PrepackagedPreset.simpleDirectional(RelativeFace.$facing, example = Material.GRINDSTONE.createBlockData()))"
+			}
 
 			data.material.isTrapdoor -> {
 				data as TrapDoor
