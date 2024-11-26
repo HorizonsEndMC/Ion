@@ -481,8 +481,8 @@ class MultiblockShape {
 		fun extractor() = type(EXTRACTOR_TYPE)
 
 		fun sponge() = anyType(Material.SPONGE, Material.WET_SPONGE, alias = "sponge")
-		fun endRod() = type(Material.END_ROD)
-		fun lightningRod() = type(Material.LIGHTNING_ROD)
+		fun endRod(edit: BlockRequirement.() -> Unit = {}) = type(Material.END_ROD, edit)
+		fun lightningRod(edit: BlockRequirement.() -> Unit = {}) = type(Material.LIGHTNING_ROD, edit)
 
 		fun hopper() = type(Material.HOPPER)
 		fun anyPipedInventory() = filteredTypes("any container block", edit = { setExample(Material.CHEST.createBlockData()) }) { Pipes.isPipedInventory(it) }
