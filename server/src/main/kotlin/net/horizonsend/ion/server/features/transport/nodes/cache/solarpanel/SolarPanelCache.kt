@@ -1,16 +1,12 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache.solarpanel
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.NodeCacheFactory
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
-import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
-import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.transport.util.getOrCacheNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -40,7 +36,7 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		data object DaylightDetector: SolarPanelComponent
 
 		// Unneeded, just piggyback off of the node cache for speed
-		override val cacheType: CacheType get() = CacheType.POWER
+		override val cacheType: CacheType get() = CacheType.SOLAR_PANELS
 		override val pathfindingResistance: Double get() = 0.0
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf()
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = false
@@ -48,36 +44,11 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 	}
 
 	fun isSolarPanel(extractorKey: BlockKey): Boolean {
-		if (getOrCache(extractorKey) !is SolarPanelComponent.CraftingTable) return false
-		if (getOrCache(getRelative(extractorKey, BlockFace.UP, 1)) !is SolarPanelComponent.DiamondBlock) return false
-		if (getOrCache(getRelative(extractorKey, BlockFace.UP, 2)) !is SolarPanelComponent.DaylightDetector) return false
+		if (getOrCacheNode(CacheType.SOLAR_PANELS, holder.getWorld(), extractorKey) !is SolarPanelComponent.CraftingTable) return false
+		if (getOrCacheNode(CacheType.SOLAR_PANELS, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 1)) !is SolarPanelComponent.DiamondBlock) return false
+		if (getOrCacheNode(CacheType.SOLAR_PANELS, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 2)) !is SolarPanelComponent.DaylightDetector) return false
 		return true
 	}
-
-	override fun tickExtractor(location: BlockKey, delta: Double) { NewTransport.executor.submit {
-		if (!isSolarPanel(location)) return@submit
-
-		val transportPower = getPower(holder.getWorld(), location, delta)
-		if (transportPower == 0) return@submit
-
-		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: List<BlockKey> = getNetworkDestinations<PowerInputNode>(location) { node ->
-			holder.getWorld().ion.inputManager.getHolders(type, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
-		}
-
-		if (destinations.isEmpty()) return@submit
-
-		holder.transportManager.powerNodeManager.cache.runPowerTransfer(
-			Node.NodePositionData(
-				PowerNode.PowerExtractorNode,
-				holder.getWorld(),
-				location,
-				BlockFace.SELF
-			),
-			destinations,
-			transportPower
-		)
-	}}
 
 	fun getPower(world: World, detectorPosition: BlockKey, delta: Double): Int {
 		val powerMultiplier = if (world.environment == World.Environment.NORMAL) 1.0 else 0.5
@@ -87,4 +58,6 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		val base = IonServer.transportSettings.powerConfiguration.solarPanelTickPower * delta
 		return (base * powerRatio * powerMultiplier).roundToInt()
 	}
+
+	override fun tickExtractor(location: BlockKey, delta: Double) {  }
 }
