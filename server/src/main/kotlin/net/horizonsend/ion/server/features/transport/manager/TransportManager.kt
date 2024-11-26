@@ -4,11 +4,13 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.Extracto
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.solarpanel.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 
 abstract class TransportManager {
 	abstract val extractorManager: ExtractorManager
 	abstract val powerNodeManager: CacheHolder<PowerTransportCache>
+	abstract val solarPanelManager: CacheHolder<SolarPanelCache>
 	abstract val fluidNodeManager: CacheHolder<FluidTransportCache>
 
 	abstract fun getInputProvider(): InputManager
