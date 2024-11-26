@@ -107,7 +107,10 @@ class DecomposeTask(
 
 				if (blockData.material.isAir) continue
 
-				if (!BlockBreakEvent(block, player).callEvent()) continue
+				val testEvent = BlockBreakEvent(block, player)
+				testEvent.isDropItems = false
+
+				if (!testEvent.callEvent()) continue
 
 				if (firstBlock == null) { firstBlock = blockData }
 
