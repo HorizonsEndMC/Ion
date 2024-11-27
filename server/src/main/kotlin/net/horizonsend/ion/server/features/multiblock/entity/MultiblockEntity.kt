@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.Location
@@ -290,6 +291,13 @@ abstract class MultiblockEntity(
 			val multiblockDirection = sign.getFacing().oppositeFace
 
 			return sign.block.getRelative(multiblockDirection)
+		}
+
+		/** Get the multiblock's origin from its sign */
+		fun getOriginFromSignIfLoaded(sign: Sign): Block? {
+			val multiblockDirection = sign.getFacing().oppositeFace
+
+			return sign.block.getRelativeIfLoaded(multiblockDirection)
 		}
 
 		/** Get the sign position from a multiblock's orientation and origin */

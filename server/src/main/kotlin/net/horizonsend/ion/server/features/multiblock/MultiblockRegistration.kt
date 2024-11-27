@@ -279,7 +279,9 @@ object MultiblockRegistration : IonServerComponent() {
 		// Gas
 		registerMultiblock(PipedGasCollectorMultiblock)
 		registerMultiblock(CanisterGasCollectorMultiblock, "GasCollectorMultiblock")
+		registerMultiblock(CanisterGasCollectorMultiblock)
 		registerMultiblock(CanisterVentMultiblock, "VentMultiblock")
+		registerMultiblock(CanisterVentMultiblock)
 		registerMultiblock(GasPowerPlantMultiblock)
 
 		registerMultiblock(ElectrolysisMultiblock)
