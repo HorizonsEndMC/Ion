@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isAdjacent
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.block.Block
@@ -78,7 +79,16 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 		val inputManager = holder.getWorld().ion.inputManager
 		val registered = inputManager.getHolders(type, location)
 
-		val adjacentBlocks = stupidOffsets.mapNotNull { MultiblockEntities.getMultiblockEntity(holder.getWorld(), it.x, it.y, it.z) }
+		// The stupid offsets are a list of locations that a multiblock entity would be accessible from if its sign were touching the provided location
+		// Doing a call to try to find a sign is a lot more expensive since it has a getChunk call
+		//
+		// If this actually finds an entity, it makes sure that its sign block is adjacent to the input
+		val adjacentBlocks = stupidOffsets.mapNotNull {
+			MultiblockEntities.getMultiblockEntity(holder.getWorld(), it.x, it.y, it.z)?.takeIf { entity ->
+				val signLoc = entity.getSignKey()
+				isAdjacent(signLoc, location)
+			}
+		}
 
 		return registered.plus(adjacentBlocks)
 	}
