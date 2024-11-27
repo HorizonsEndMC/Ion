@@ -28,7 +28,7 @@ object SignFixerEntrance {
 				val block = chunk.inner.getBlock(x, y, z)
 				val state = block.state as Sign
 
-				DataFixers.handleMultiblockSignLoad(state)
+				DataFixers.handleSignLoad(state)
 			}
 		}
 	}
