@@ -79,7 +79,7 @@ abstract class MultiblockEntity(
 	 **/
 	val vec3i get() = Vec3i(x, y, z)
 
-	val locationKey = toBlockKey(x, y, z)
+	val locationKey get() = toBlockKey(x, y, z)
 
 	fun processRemoval() {
 		removed = true
@@ -153,6 +153,8 @@ abstract class MultiblockEntity(
 	}
 
 	fun getSignLocation() = getSignFromOrigin(world, vec3i, structureDirection).location
+	fun getSignBlock() = getSignFromOrigin(world, vec3i, structureDirection)
+	fun getSignKey() = getRelative(locationKey, structureDirection.oppositeFace)
 
 	/**
 	 * Gets the origin block of this multiblock
