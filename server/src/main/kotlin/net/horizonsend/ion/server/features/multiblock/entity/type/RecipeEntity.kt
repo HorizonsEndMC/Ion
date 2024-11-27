@@ -15,6 +15,7 @@ interface RecipeEntity : ProgressMultiblock, SyncTickingMultiblockEntity {
 	}
 
 	override fun tick() {
+		return
 		executeRecipes()
 	}
 
