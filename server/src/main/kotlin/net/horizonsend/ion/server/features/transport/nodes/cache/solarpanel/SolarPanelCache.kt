@@ -50,7 +50,8 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		return true
 	}
 
-	fun getPower(world: World, detectorPosition: BlockKey, delta: Double): Int {
+	fun getPower(world: World, extractPos: BlockKey, delta: Double): Int {
+		val detectorPosition = getRelative(extractPos, BlockFace.UP, 2)
 		val powerMultiplier = if (world.environment == World.Environment.NORMAL) 1.0 else 0.5
 		val data = getBlockDataSafe(world, getX(detectorPosition), getY(detectorPosition), getZ(detectorPosition)) as? DaylightDetector ?: return 0
 		val powerRatio = data.power.toDouble() / data.maximumPower.toDouble()
