@@ -201,6 +201,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		}
 
 		fun disable() {
+			if (!userManager.currentlyUsed()) return
 			val sign = getSign() ?: return
 
 			userManager.clear()
