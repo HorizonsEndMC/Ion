@@ -53,14 +53,13 @@ object DataFixers: IonServerComponent() {
 			chunk.dataVersion = chunkDataFixer.dataVersion
 		}
 
-		return
 		SignFixerEntrance.iterateChunk(chunk)
 	}
 
-	fun handleMultiblockSignLoad(sign: Sign) {
+	fun handleSignLoad(sign: Sign) {
 		val dataVersion = sign.persistentDataContainer.getOrDefault(DATA_VERSION, INTEGER, 0)
 
-		for (signFixer in signDataFixers.filter { it.dataVersion > dataVersion }) {
+		for (signFixer in signDataFixers.filter { it.dataVersion > dataVersion }.sortedBy { it.dataVersion }) {
 			signFixer.fixSign(sign)
 
 			sign.persistentDataContainer.set(DATA_VERSION, INTEGER, signFixer.dataVersion)

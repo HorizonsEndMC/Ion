@@ -112,8 +112,14 @@ class IonChunk(
 
 			loadingTasks.add(key)
 
-			ChunkRegion.loadChunk(event.chunk)
-			loadingTasks.remove(key)
+			try {
+				ChunkRegion.loadChunk(event.chunk)
+			} catch (e: Throwable) {
+				log.info("Problem when loading IonChunk ${event.chunk.x} ${event.chunk.z} in ${event.chunk.world.name}: ")
+				e.printStackTrace()
+			} finally {
+				loadingTasks.remove(key)
+			}
 		}
 
 		@EventHandler
