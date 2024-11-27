@@ -16,6 +16,7 @@ import org.joml.Vector3f
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.Consumer
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.atan
 import kotlin.math.atan2
@@ -537,3 +538,19 @@ fun Location.getLocationNear(minDistance: Double, maxDistance: Double): Location
 fun Vec3i.toChunkLocal(): Vec3i = Vec3i(x % 16, y, z % 16)
 
 fun Vec3i.getRelative(direction: BlockFace, distance: Int = 1) = plus(Vec3i(direction.modX * distance, direction.modY * distance, direction.modZ * distance))
+
+fun isAdjacent(first: BlockKey, other: BlockKey): Boolean {
+	val xDiff = abs(getX(first) - getX(other))
+	val yDiff = abs(getY(first) - getY(other))
+	val zDiff = abs(getZ(first) - getZ(other))
+
+	return (xDiff + yDiff + zDiff) == 1
+}
+
+fun isAdjacent(first: Vec3i, other: Vec3i): Boolean {
+	val xDiff = abs(first.x - other.x)
+	val yDiff = abs(first.y - other.y)
+	val zDiff = abs(first.z - other.z)
+
+	return (xDiff + yDiff + zDiff) == 1
+}
