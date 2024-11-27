@@ -135,6 +135,8 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
 		override fun tick() {
+			if (!userManager.currentlyUsed()) return
+			// Logout condition
 			val player = userManager.getUserPlayer() ?: return disable()
 
 			drillCount[player.uniqueId] = drillCount.getOrDefault(player.uniqueId, 0) + 1
@@ -201,7 +203,6 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		}
 
 		fun disable() {
-			if (!userManager.currentlyUsed()) return
 			val sign = getSign() ?: return
 
 			userManager.clear()
