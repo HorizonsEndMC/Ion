@@ -100,7 +100,7 @@ object StarshipFactories : IonServerComponent() {
 				continue
 			}
 
-			val key = blockKey(pos.x + offsetX + targetX, pos.y + offsetY + targetY, pos.z + offsetZ + targetZ)
+			val key = blockKey(pos.x() + offsetX + targetX, pos.y() + offsetY + targetY, pos.z() + offsetZ + targetZ)
 
 			blocks[key] = data
 

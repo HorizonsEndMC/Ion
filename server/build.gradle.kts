@@ -1,5 +1,8 @@
 import io.papermc.paperweight.util.path
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.lang.String
 
 plugins {
 	id("io.papermc.paperweight.userdev") version "1.7.5"
@@ -23,6 +26,7 @@ repositories {
 	maven("https://repo.decalium.ru/releases") // Persistent Data Types
 	maven("https://repo.xenondevs.xyz/releases") // InvUI
 	maven("https://repo.papermc.io/repository/maven-public/") // FAWE api
+	maven("https://maven.enginehub.org/repo/") // FAWE Alt
 	maven("https://repo.codemc.io/repository/maven-snapshots/") // AnvilGUI
 
 	maven("https://repo.horizonsend.net/mirror")
@@ -63,7 +67,8 @@ dependencies {
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 	implementation("org.apache.commons:commons-collections4:4.4")
 
-	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.9.2")
+	implementation(platform("com.intellectualsites.bom:bom-newest:1.51"))
+	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.12.2")
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }
