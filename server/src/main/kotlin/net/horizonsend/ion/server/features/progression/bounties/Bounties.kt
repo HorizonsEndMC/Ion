@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.BountyCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
@@ -39,6 +40,8 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 object Bounties : IonServerComponent() {
+	private const val MIN_BOUNTY_LEVEL = 10
+
 	/** Time between claiming bounties on a player **/
 	val coolDown get() = Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(2))
 
@@ -60,6 +63,7 @@ object Bounties : IonServerComponent() {
 	}
 
 	fun claimBounty(hunter: Player, targetId: SLPlayerId, targetName: String, targetBounty: Double) = Tasks.async {
+		if (Levels[hunter] < MIN_BOUNTY_LEVEL) return@async hunter.userError("You must be level $MIN_BOUNTY_LEVEL before you can claim a bounty!")
 		if (hasActive(hunter.slPlayerId, targetId)) return@async hunter.userError("You already have an active bounty on $targetName!")
 		if (!canClaim(hunter.slPlayerId, targetId)) return@async hunter.userError("You already claimed a bounty on $targetName in the last two days!")
 
@@ -92,6 +96,7 @@ object Bounties : IonServerComponent() {
 		return !mostRecent.completed
 	}
 
+	@Suppress("unused")
 	@EventHandler(priority = EventPriority.HIGH)
 	fun onPlayerKill(event: PlayerDeathEvent) = Tasks.async {
 		if (isNotSurvival()) return@async
@@ -123,6 +128,7 @@ object Bounties : IonServerComponent() {
 		}
 	}
 
+	@Suppress("unused")
 	@EventHandler
 	fun onShipSink(event: StarshipExplodeEvent) {
 		if (isNotSurvival()) return
