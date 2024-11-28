@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.powered
 import fr.skytasul.guardianbeam.Laser
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
@@ -20,7 +21,6 @@ import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
-import net.minecraft.nbt.NbtUtils
 import net.minecraft.nbt.StringTag
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.FluidCollisionMode
@@ -98,6 +98,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			if (item == null) continue
 
 			if (!item.type.isShulkerBox) continue
+			if (CargoCrates[item] == null) continue
 
 			val itemState = (item.itemMeta as BlockStateMeta).blockState as ShulkerBox
 			//attempt to place the crate
@@ -135,7 +136,7 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 
 			base.put("Items", items)
 
-			println(NbtUtils.structureToSnbt(base))
+//			println(NbtUtils.structureToSnbt(base))
 
 			val blockPos = BlockPos(x, y, z)
 			// Remove old

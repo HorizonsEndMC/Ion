@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
+import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -144,7 +145,7 @@ class PowerDrill(
 			val blockType = block.type
 			val customBlock = CustomBlocks.getByBlock(block)
 
-			if (blockType == Material.BEDROCK || blockType == Material.BARRIER) {
+			if (blockType == Material.BEDROCK || blockType == Material.BARRIER || blockType.isShulkerBox) {
 				return false
 			}
 
