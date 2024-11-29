@@ -1,15 +1,14 @@
 package net.horizonsend.ion.server.features.world
 
 import com.destroystokyo.paper.event.server.ServerTickStartEvent
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.manager.WorldMultiblockManager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.transport.nodes.inputs.WorldInputManager
-import net.horizonsend.ion.server.features.world.chunk.ChunkRegion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
 import net.horizonsend.ion.server.features.world.data.DataFixers
@@ -28,7 +27,6 @@ import org.bukkit.event.world.WorldSaveEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import org.bukkit.persistence.PersistentDataType.INTEGER
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.DeprecationLevel.ERROR
 
 class IonWorld private constructor(
@@ -46,9 +44,7 @@ class IonWorld private constructor(
 	 *
 	 * Value: The IonChunk at that location
 	 **/
-	private val chunks: ConcurrentHashMap<Long, IonChunk> = ConcurrentHashMap()
-	val regionPositions: ConcurrentHashMap<Long, ChunkRegion> = ConcurrentHashMap()
-	val chunkRegions: MutableSet<ChunkRegion> = ObjectOpenHashSet()
+	private val chunks: Long2ObjectOpenHashMap<IonChunk> = Long2ObjectOpenHashMap()
 
 	val multiblockManager = WorldMultiblockManager(this)
 	val inputManager = WorldInputManager(this)
@@ -68,6 +64,8 @@ class IonWorld private constructor(
 	fun getChunk(key: Long): IonChunk? {
 		return chunks[key]
 	}
+
+	fun isChunkLoaded(key: Long) = chunks.keys.contains(key)
 
 	/**
 	 * Adds the chunk

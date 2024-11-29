@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.transport.old.Extractors
 import net.horizonsend.ion.server.features.transport.old.TransportConfig
-import net.horizonsend.ion.server.features.transport.old.Wires
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -19,7 +18,6 @@ import org.bukkit.entity.Player
 import org.slf4j.Logger
 import java.lang.management.ManagementFactory
 import java.lang.management.ThreadInfo
-import java.util.concurrent.Executors
 
 @CommandPermission("starlegacy.transportdebug")
 @CommandAlias("transportdebug|transportbug")
@@ -35,15 +33,6 @@ object TransportDebugCommand : SLCommand() {
 	@Subcommand("clearbusy")
 	fun onClearBusy(sender: CommandSender) {
 		Extractors.BUSY_PIPE_EXTRACTORS.clear()
-	}
-
-	@Suppress("Unused")
-	@Subcommand("clear wirequeue")
-	fun onClearQueue(sender: CommandSender) {
-		val wireQueue = Wires.thread
-
-		wireQueue.shutdownNow()
-		Wires.thread = Executors.newSingleThreadExecutor(Wires.threadFactory)
 	}
 
 	@Subcommand("dump inputs")
