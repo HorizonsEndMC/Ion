@@ -27,10 +27,16 @@ object MultiblockTicking : IonServerComponent() {
 
 	private fun tickSyncMultiblocks() = iterateManagers { manager ->
 		for ((key, syncTicking) in manager.syncTickingMultiblockEntities) runCatching {
-			if (SyncTickingMultiblockEntity.preTick(syncTicking as MultiblockEntity)) syncTicking.tick()
+			checkStructureAsyncThenTick(syncTicking)
 		}.onFailure { e ->
 			log.warn("Exception ticking multiblock ${syncTicking.javaClass.simpleName} at ${toVec3i(key)}: ${e.message}")
 			e.printStackTrace()
+		}
+	}
+
+	private fun checkStructureAsyncThenTick(entity: SyncTickingMultiblockEntity) = Tasks.async {
+		if (SyncTickingMultiblockEntity.preTick(entity as MultiblockEntity)) Tasks.sync {
+			entity.tick()
 		}
 	}
 
