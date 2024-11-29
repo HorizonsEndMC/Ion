@@ -22,19 +22,16 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.locks.ReentrantLock
 
 abstract class TransportCache(val holder: CacheHolder<*>) {
 	private val cache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap()
-	private val mutex = Any()
-	private val lock = ReentrantLock()
 
 	abstract val type: CacheType
 	abstract val nodeFactory: NodeCacheFactory
 
 	abstract fun tickExtractor(location: BlockKey, delta: Double)
 
-	fun isCached(at: BlockKey): Boolean = cache.keys.contains(at)
+	fun isCached(at: BlockKey): Boolean = cache.containsKey(at)
 
 	fun getCached(at: BlockKey): Node? {
 		val state = cache[at] ?: return null
