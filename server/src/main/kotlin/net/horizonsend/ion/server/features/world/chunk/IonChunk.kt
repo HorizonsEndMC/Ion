@@ -21,10 +21,7 @@ import org.bukkit.persistence.PersistentDataType.INTEGER
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
 
-class IonChunk(
-	val inner: Chunk,
-	val region: ChunkRegion,
-) {
+class IonChunk(val inner: Chunk) {
 	var dataVersion = inner.persistentDataContainer.getOrDefault(NamespacedKeys.DATA_VERSION, INTEGER, 0)
 		set	(value) {
 			world.persistentDataContainer.set(NamespacedKeys.DATA_VERSION, INTEGER, value)
@@ -113,7 +110,10 @@ class IonChunk(
 			loadingTasks.add(key)
 
 			try {
-				ChunkRegion.loadChunk(event.chunk)
+				val chunk = event.chunk
+				if (chunk.world.ion.isChunkLoaded(key)) return
+
+				val ionChunk = registerChunk(chunk)
 			} catch (e: Throwable) {
 				log.info("Problem when loading IonChunk ${event.chunk.x} ${event.chunk.z} in ${event.chunk.world.name}: ")
 				e.printStackTrace()
@@ -132,11 +132,10 @@ class IonChunk(
 		 *
 		 * It is imperative that every exception generated be handled
 		 **/
-		fun registerChunk(chunk: Chunk, region: ChunkRegion): IonChunk {
+		fun registerChunk(chunk: Chunk): IonChunk {
 			val ionWorld = chunk.world.ion
 
-			val ionChunk = IonChunk(chunk, region)
-			region.chunks[chunk.chunkKey] = ionChunk
+			val ionChunk = IonChunk(chunk)
 
 			ionWorld.addChunk(ionChunk)
 
@@ -157,7 +156,6 @@ class IonChunk(
 			val removed = ionWorld.removeChunk(chunk) ?: return log.warn("Removed unregistered IonChunk!")
 
 			removed.onUnload()
-			ChunkRegion.unloadChunk(removed)
 		}
 
 		/**
