@@ -54,6 +54,7 @@ class NodeCacheFactory private constructor(private val materialHandlers: Map<Mat
 	}
 
 	class MaterialHandler<T: BlockData>(val blockDataClass: KClass<T>, val constructor: (T, BlockKey) -> Node) {
+		@Synchronized
 		fun construct(blockData: BlockData, key: BlockKey): Node {
 			@Suppress("UNCHECKED_CAST")
 			return constructor.invoke(blockData as T, key)
