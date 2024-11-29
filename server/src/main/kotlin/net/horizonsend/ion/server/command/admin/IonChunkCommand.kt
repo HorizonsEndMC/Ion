@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -116,7 +115,6 @@ object IonChunkCommand : SLCommand() {
 		val ionChunk = sender.chunk.ion()
 
 		sender.information("Chunk: $ionChunk")
-		sender.information("World has: ${ionChunk.world.ion.regionPositions.values.distinct().size} unique regions")
 	}
 
 	@Subcommand("get node key")

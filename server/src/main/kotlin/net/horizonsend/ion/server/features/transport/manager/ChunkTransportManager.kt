@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportC
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.solarpanel.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -20,10 +21,9 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager() {
 	override val powerNodeManager = ChunkCacheHolder(this) { PowerTransportCache(it) }
 	override val solarPanelManager = ChunkCacheHolder(this) { SolarPanelCache(it) }
 	override val fluidNodeManager = ChunkCacheHolder(this) { FluidTransportCache(it) }
-//	val pipeGrid = PowerNodeManager(this) // TODO
 
 	override fun getInputProvider(): InputManager {
-		return chunk.region.world.inputManager
+		return chunk.world.ion.inputManager
 	}
 
 	fun setup() {
