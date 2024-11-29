@@ -153,6 +153,8 @@ abstract class AutoCrafterMultiblock(
 		private fun getRecipeHolder(): Inventory? = getInventory(0, 0, 1)
 		private fun getOutput(): Inventory? = getInventory(+2, 0, 1)
 
+		private var resultHash: Int? = null
+
 		override fun tick() {
 			val inputInventory: Inventory = getInput() ?: return sleepWithStatus(text("Not Intact", RED), 500)
 			val recipeHolder: Inventory = getRecipeHolder() ?: return sleepWithStatus(text("Not Intact", RED), 500)
@@ -246,8 +248,15 @@ abstract class AutoCrafterMultiblock(
 				if (basePower != power) {
 					powerStorage.setPower(power)
 				} else {
-					// Nothing crafted, could be temporary resource shortage, pause for shorter time period
-					sleepWithStatus(result.displayName(), 200)
+					val newHash = result.hashCode()
+					if (resultHash != newHash) {
+						// Skip re-computing the display name, small but adds up with big factories
+						resultHash = newHash
+						// Nothing crafted, could be temporary resource shortage, pause for shorter time period
+						sleepWithStatus(result.displayName(), 200)
+					}  else {
+						tickingManager.sleep(200)
+					}
 				}
 			}
 		}
