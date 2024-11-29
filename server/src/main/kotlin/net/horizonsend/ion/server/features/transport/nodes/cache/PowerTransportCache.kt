@@ -73,7 +73,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 				location,
 				BlockFace.SELF
 			),
-			destinations,
+			destinations.take(IonServer.transportSettings.powerConfiguration.maxExtractorDestinations),
 			(transferred - missing)
 		)
 
@@ -100,7 +100,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 				location,
 				BlockFace.SELF
 			),
-			destinations,
+			destinations.take(IonServer.transportSettings.powerConfiguration.maxSolarDestinations),
 			transportPower
 		)
 	}
