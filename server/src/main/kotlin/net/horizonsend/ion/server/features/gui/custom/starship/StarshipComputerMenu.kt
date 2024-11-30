@@ -211,6 +211,19 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 
 				DeactivatedPlayerStarships.updateState(data, state)
 
+				if (state.blockMap.size > data.starshipType.actualType.maxSize) {
+					future.complete(DetectionResult(listOf(
+						text("Success!", GREEN).itemName,
+						text("Re-detected! New size ${state.blockMap.size.toText()}", GREEN).itemName,
+						text("Detected starship is oversized! It will suffer a performance penalty.", RED).itemName
+					)))
+
+					player.success("Re-detected! New size ${state.blockMap.size.toText()}")
+					player.userError("Detected starship is oversized! It will suffer a performance penalty.")
+
+					return@async
+				}
+
 				future.complete(DetectionResult(listOf(
 					text("Success!", GREEN).itemName,
 					text("Re-detected! New size ${state.blockMap.size.toText()}", GREEN).itemName
