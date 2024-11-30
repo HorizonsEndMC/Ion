@@ -15,7 +15,8 @@ enum class GeneratorFuel(private val item: ItemStack, val cooldown: Int, val pow
 	CHARCOAL(itemStack(Material.CHARCOAL), cooldown = 40, power = 400),
 	COAL_BLOCK(itemStack(Material.COAL_BLOCK), cooldown = 300, power = 4000),
 	REDSTONE(itemStack(Material.REDSTONE), cooldown = 75, power = 750),
-	REDSTONE_BLOCK(itemStack(Material.REDSTONE_BLOCK), cooldown = 350, power = 6500);
+	REDSTONE_BLOCK(itemStack(Material.REDSTONE_BLOCK), cooldown = 350, power = 6500),
+	DRIED_KELP_BLOCK(itemStack(Material.DRIED_KELP_BLOCK), cooldown = 60, power = 800);
 
 	companion object {
 		private val itemMap: Map<String, GeneratorFuel> = values().associateBy { createKey(it.item) }
