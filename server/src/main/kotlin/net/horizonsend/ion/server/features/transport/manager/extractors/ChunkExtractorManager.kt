@@ -9,7 +9,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import org.bukkit.persistence.PersistentDataType
 
 class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManager() {
-	var extractors = Long2ObjectOpenHashMap<ExtractorData>()
+	val extractors = Long2ObjectOpenHashMap<ExtractorData>()
+
+	var needsSave: Boolean = false
 
 	private val mutex = Any()
 
@@ -22,14 +24,17 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 		if (!manager.chunk.isInBounds(x, y, z)) return false
 		val key = toBlockKey(x, y, z)
 		extractors[key] = ExtractorData(key)
+		needsSave = true
 		return true
 	}
 
 	override fun removeExtractor(x: Int, y: Int, z: Int): ExtractorData? = synchronized(mutex) {
+		needsSave = true
 		return extractors.remove(toBlockKey(x, y, z))
 	}
 
 	override fun removeExtractor(key: BlockKey): ExtractorData? = synchronized(mutex) {
+		needsSave = true
 		return extractors.remove(key)
 	}
 
@@ -37,14 +42,12 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 		return extractors.contains(key)
 	}
 
-	private val pdc get() = manager.chunk.inner.persistentDataContainer
-
-	override fun onLoad() = synchronized(mutex) {
-		val existing = pdc.get(NamespacedKeys.EXTRACTORS, PersistentDataType.LONG_ARRAY) ?: return
-		extractors = existing.associateWithTo(Long2ObjectOpenHashMap()) { ExtractorData(it) }
+	override fun onLoad(): Unit = synchronized(mutex) {
+		val existing = manager.chunk.inner.persistentDataContainer.get(NamespacedKeys.EXTRACTORS, PersistentDataType.LONG_ARRAY) ?: return
+		existing.associateWithTo(extractors) { ExtractorData(it) }
 	}
 
 	override fun save() {
-		pdc.set(NamespacedKeys.EXTRACTORS, PersistentDataType.LONG_ARRAY, extractors.keys.toLongArray())
+		manager.chunk.inner.persistentDataContainer.set(NamespacedKeys.EXTRACTORS, PersistentDataType.LONG_ARRAY, extractors.keys.toLongArray())
 	}
 }
