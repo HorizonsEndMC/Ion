@@ -82,6 +82,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -599,11 +600,13 @@ class Starship (
 
 	//region Display Name
 	/** Gets the minimessage display name of this starship */
-	fun getDisplayNameMiniMessage(): String = this.data.name ?: this.type.displayNameMiniMessage
+	fun getDisplayNameMiniMessage(): String = starshipNameSerializer.serialize(getDisplayName())
 
 	/** Gets the component display name of this starship */
 	fun getDisplayName(): Component {
 		return text()
+			.color(WHITE)
+			.decoration(TextDecoration.ITALIC, false)
 			.append(this.data.name?.let { starshipNameSerializer.deserialize(it) } ?: return type.displayNameComponent)
 			.hoverEvent(template(text("A {0} block {1}", HE_LIGHT_GRAY), initialBlockCount, type))
 			.build()
