@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.transport.manager
 
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.ChunkExtractorManager
-import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ChunkCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -16,7 +15,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
 
 class ChunkTransportManager(val chunk: IonChunk) : TransportManager() {
-	override val extractorManager: ExtractorManager = ChunkExtractorManager(this)
+	override val extractorManager: ChunkExtractorManager = ChunkExtractorManager(this)
 
 	override val powerNodeManager = ChunkCacheHolder(this) { PowerTransportCache(it) }
 	override val solarPanelManager = ChunkCacheHolder(this) { SolarPanelCache(it) }
@@ -24,6 +23,10 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager() {
 
 	override fun getInputProvider(): InputManager {
 		return chunk.world.ion.inputManager
+	}
+
+	init {
+	    extractorManager.onLoad()
 	}
 
 	fun setup() {
