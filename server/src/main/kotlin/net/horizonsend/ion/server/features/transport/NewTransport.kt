@@ -7,9 +7,11 @@ import net.horizonsend.ion.server.features.starship.event.build.StarshipPlaceBlo
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.EXTRACTOR_TYPE
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.event.EventHandler
@@ -43,6 +45,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 				}
 			}
 		}
+
+		Tasks.asyncRepeat(120L, 120L, ::saveExtractors)
 	}
 
 	override fun onDisable() {
@@ -132,6 +136,14 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		Tasks.sync {
 			for (block in event.blocks) {
 				ensureExtractor(piston.world, piston.x, piston.y, piston.z)
+			}
+		}
+	}
+
+	fun saveExtractors() {
+		for (world in Bukkit.getWorlds().map { it.ion }) {
+			val chunks = world.getAllChunks().values.forEach { chunk ->
+				chunk.transportNetwork.extractorManager.takeIf { it.needsSave }?.save()
 			}
 		}
 	}

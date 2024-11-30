@@ -233,4 +233,6 @@ class IonWorld private constructor(
 	fun saveForbiddenBlocks() {
 		world.persistentDataContainer.set(FORBIDDEN_BLOCKS, LONG_ARRAY, detectionForbiddenBlocks.toLongArray())
 	}
+
+	fun getAllChunks() = chunks
 }
