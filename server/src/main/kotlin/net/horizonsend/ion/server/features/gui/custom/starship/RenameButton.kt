@@ -39,6 +39,11 @@ import xyz.xenondevs.invui.window.AnvilWindow
 class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 	companion object {
 		val starshipNameSerializer = MiniMessage.builder()
+			.preProcessor { enteredText ->
+				enteredText
+					.replace("\uE032", "")
+					.replace("\uE033", "")
+			}
 			.tags(TagResolver.resolver(
 				StandardTags.font(),
 				StandardTags.decorations(TextDecoration.ITALIC),
@@ -53,7 +58,12 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 			)).build()
 	}
 
-	var newName = ""
+	private var newName = ""
+		set(value) {
+			field = value
+				.replace("\uE032", "")
+				.replace("\uE033", "")
+		}
 
 	override fun getItemProvider(): ItemProvider = ItemProvider {
 		ItemStack(Material.NAME_TAG)
