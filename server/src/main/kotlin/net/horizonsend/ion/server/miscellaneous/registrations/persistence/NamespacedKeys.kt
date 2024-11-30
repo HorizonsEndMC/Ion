@@ -84,6 +84,8 @@ object NamespacedKeys {
 	val POWER = key("power")
 	val GAS = key("Gas")
 
+	val FILTER_DATA = key("filter_data")
+
 	val POWER_TRANSPORT = key("power_transport")
 	val FLUID_TRANSPORT = key("gas_transport")
 	val ITEM_TRANSPORT = key("item_transport")
