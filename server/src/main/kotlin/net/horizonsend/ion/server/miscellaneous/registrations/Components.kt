@@ -89,6 +89,8 @@ import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeacons
 import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCooldown
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.filters.FilterAccess
+import net.horizonsend.ion.server.features.transport.filters.FilterBlocks
 import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry
 import net.horizonsend.ion.server.features.transport.old.Extractors
 import net.horizonsend.ion.server.features.transport.old.TransportConfig
@@ -145,6 +147,8 @@ val components: List<IonComponent> = listOf(
 	PowerMachines,
 	AreaShields,
 
+	FilterBlocks,
+	FilterAccess,
 	TransportConfig.Companion,
 	Extractors,
 	Pipes,
