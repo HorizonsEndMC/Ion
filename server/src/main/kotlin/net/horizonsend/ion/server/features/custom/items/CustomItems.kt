@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.custom.items.misc.MultimeterItem
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
+import net.horizonsend.ion.server.features.custom.items.misc.TransportFilterItem
 import net.horizonsend.ion.server.features.custom.items.misc.Wrench
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
@@ -32,6 +33,7 @@ import net.horizonsend.ion.server.features.custom.items.throwables.ThrownPumpkin
 import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownDetonator
 import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownSmokeGrenade
 import net.horizonsend.ion.server.features.machine.PowerMachines
+import net.horizonsend.ion.server.features.transport.filters.FilterBlocks
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
@@ -446,6 +448,10 @@ object CustomItems {
 
 	val WRENCH = register(Wrench)
 	// Tools end
+
+	// Filter Block Items
+	val FLUID_FILTER: TransportFilterItem = register(TransportFilterItem("FLUID_FILTER", text("Fluid Filter").itemName) { FilterBlocks.FLUID_FILTER })
+//	val ITEM_FILTER = register(TransportFilterItem())
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun registerSimpleUnstackable(identifier: String, customModelData: Int, displayName: Component): CustomItem = register(object : CustomItem(identifier) {
