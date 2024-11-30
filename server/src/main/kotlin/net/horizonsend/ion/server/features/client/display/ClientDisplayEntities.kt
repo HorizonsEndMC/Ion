@@ -20,6 +20,7 @@ import net.minecraft.world.entity.monster.Slime
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
+import org.bukkit.block.data.type.Chest
 import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -228,6 +229,12 @@ object ClientDisplayEntities : IonServerComponent() {
 		val block = createBlockDisplay(level)
 		val offset = (-scale / 2) + 0.5
 		block.block = level.world.getBlockAt(pos.x.toInt(),pos.y.toInt(),pos.z.toInt()).blockData
+		try { // if searched container is a chest
+			val data = block.block as Chest
+			data.type = Chest.Type.SINGLE
+			block.block = data
+		}catch(_: ClassCastException) {}
+
 		block.isGlowing = true
 		block.transformation = Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf())
 
