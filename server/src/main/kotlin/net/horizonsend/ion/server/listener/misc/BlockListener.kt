@@ -22,7 +22,8 @@ object BlockListener : SLEventListener() {
 		if (event.block.type == Material.END_PORTAL) {
 			event.isCancelled = true
 			return
-		} else if(event.block.type.isGlassPane) {
+		}
+		if(event.block.type.isGlassPane) {
 			for(face in CARDINAL_BLOCK_FACES) {
 				val relative = event.block.getRelativeIfLoaded(face) ?: continue
 				if(relative.type != Material.GRINDSTONE) continue
