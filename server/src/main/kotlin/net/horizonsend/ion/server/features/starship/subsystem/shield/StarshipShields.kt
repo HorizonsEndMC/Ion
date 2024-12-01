@@ -4,11 +4,15 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debugRed
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.PerWorld
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
@@ -261,6 +265,10 @@ object StarshipShields : IonServerComponent() {
 			return
 		}
 
+		if (starship.controller is PlayerController  && (starship.controller as PlayerController).player.hasProtection()){
+			if (handleNewProt(starship)) return
+		}
+
 		val blocks = blockList.filter { b -> starship.contains(b.x, b.y, b.z) }
 
 		if (blocks.isEmpty()) {
@@ -415,5 +423,15 @@ object StarshipShields : IonServerComponent() {
 				nmsLevel.getChunkAt(pos).playerChunk?.broadcast(packet, false)
 			}
 		}
+	}
+
+	private fun handleNewProt(starship: ActiveStarship) : Boolean{
+		val player = (starship.controller as PlayerController).player
+		if (player.world.hasFlag(WorldFlag.NOT_SECURE)) return false
+		for (damager in starship.damagers.keys) {
+			val otherDamagers = damager.starship?.damagers?.keys ?: continue
+			if (otherDamagers.any { it.starship?.playerPilot == player }) {return false}
+		}
+		return true
 	}
 }
