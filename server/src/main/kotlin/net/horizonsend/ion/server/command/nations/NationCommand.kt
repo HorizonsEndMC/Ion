@@ -109,6 +109,10 @@ internal object NationCommand : SLCommand() {
 
 		val query = if (nationId == null) EMPTY_BSON else Nation::_id ne nationId
 
+		val brightness = calculatePerceivedLightness(red, green, blue)
+
+		failIf(brightness < 0.4) {"That color is too dark! Brightness: $brightness"}
+
 		for (results in Nation.findProps(query, Nation::name, Nation::color)) {
 			val nationName = results[Nation::name]
 			val nationColor = Color.fromRGB(results[Nation::color])
@@ -116,12 +120,13 @@ internal object NationCommand : SLCommand() {
 			val r1 = color.red.toDouble()
 			val g1 = color.green.toDouble()
 			val b1 = color.blue.toDouble()
+
 			val r2 = nationColor.red.toDouble()
 			val g2 = nationColor.green.toDouble()
 			val b2 = nationColor.blue.toDouble()
 			val distance = distance(r1, g1, b1, r2, g2, b2)
 
-			failIf(distance < 10) { "That color is too similar to the color of the nation $nationName! Distance: $distance" }
+			failIf(distance < 20) { "That color is too similar to the color of the nation $nationName! Distance: $distance" }
 
 			log.info("Distance from $nationName: $distance")
 		}
