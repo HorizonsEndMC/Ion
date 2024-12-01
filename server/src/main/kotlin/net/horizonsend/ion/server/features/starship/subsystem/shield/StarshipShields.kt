@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.shield
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.command.admin.debugRed
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 //import net.horizonsend.ion.server.features.nations.NationBuffTypes
@@ -11,8 +12,11 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectTypes
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
@@ -248,6 +252,10 @@ object StarshipShields : IonServerComponent() {
 			return
 		}
 
+		if (starship.controller is PlayerController  && (starship.controller as PlayerController).player.hasProtection()){
+			if (handleNewProt(starship)) return
+		}
+
 		val blocks = blockList.filter { b -> starship.contains(b.x, b.y, b.z) }
 
 		if (blocks.isEmpty()) {
@@ -386,5 +394,15 @@ object StarshipShields : IonServerComponent() {
 		percent <= 0.70     -> Material.LIGHT_BLUE_STAINED_GLASS // close to CYAN tier
 		percent <= 0.85     -> Material.LIGHT_BLUE_STAINED_GLASS
 		else                -> Material.BLUE_STAINED_GLASS
+	}
+
+	private fun handleNewProt(starship: ActiveStarship) : Boolean{
+		val player = (starship.controller as PlayerController).player
+		if (player.world.hasFlag(WorldFlag.NOT_SECURE)) return false
+		for (damager in starship.damagers.keys) {
+			val otherDamagers = damager.starship?.damagers?.keys ?: continue
+			if (otherDamagers.any { it.starship?.playerPilot == player }) {return false}
+		}
+		return true
 	}
 }
