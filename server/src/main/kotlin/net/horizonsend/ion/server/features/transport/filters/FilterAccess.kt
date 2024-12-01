@@ -39,7 +39,7 @@ object FilterAccess : IonServerComponent() {
 		type.openGUI(event.player, filterData)
 	}
 
-	fun tryDrop(block: Block, state: Barrel, type: FilterBlock) {
+	private fun tryDrop(block: Block, state: Barrel, type: FilterBlock) {
 		val dropLocation = block.location.toCenterLocation()
 		val item = type.customItem.createFor(state)
 
