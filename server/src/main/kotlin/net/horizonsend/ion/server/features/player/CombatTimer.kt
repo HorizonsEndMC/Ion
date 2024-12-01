@@ -158,6 +158,9 @@ object CombatTimer : IonServerComponent() {
 		if (!isNpcCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
 			player.alert("You are now in combat (NPC)")
 			player.sendMessage(npcTimerAlertComponent(reason))
+			if (player.hasProtection() && !player.world.hasFlag(WorldFlag.NOT_SECURE)) {
+				player.sendMessage(newPlayerAlertComponent())
+			}
 		}
 
 		npcTimer[player.uniqueId] = System.currentTimeMillis() + NPC_TIMER_MINS.toMillis()
@@ -172,6 +175,9 @@ object CombatTimer : IonServerComponent() {
 		if (!isPvpCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
 			player.alert("You are now in combat (PVP)")
 			player.sendMessage(pvpTimerAlertComponent(reason))
+			if (player.hasProtection() && !player.world.hasFlag(WorldFlag.NOT_SECURE)) {
+				player.sendMessage(newPlayerAlertComponent())
+			}
 		}
 
 		pvpTimer[player.uniqueId] = System.currentTimeMillis() + PVP_TIMER_MINS.toMillis()
@@ -371,6 +377,34 @@ object CombatTimer : IonServerComponent() {
 					newline(),
 					text("- Remaining within ${MAINTAIN_COMBAT_DIST.toInt()} blocks of unfriendly and enemy starships will refresh your combat tag", HE_LIGHT_BLUE),
 					)),
+			newline(),
+			lineBreak(45),
+		)
+	}
+
+	private fun newPlayerAlertComponent(): Component {
+		return ofChildren(
+			text(repeatString(" ", 8) + "YOU HAVE NEW PLAYER PROTECTION", GOLD).decorate(BOLD),
+			newline(),
+			text("You are immune to most forms of damage", HE_LIGHT_BLUE),
+			newline(),
+			text("Consequences: ", HE_MEDIUM_GRAY),
+			text("[Hover]", HE_LIGHT_BLUE)
+				.hoverEvent(ofChildren(
+					text("- You will not take damage from other ships", HE_LIGHT_BLUE),
+					newline(),
+					text("- You are protected by new player rules", HE_LIGHT_BLUE),
+					newline(),
+					text("- Players are forbidden from attacking you unprovoked", HE_LIGHT_BLUE),
+					newline(),
+					text("- Items/Ship will be returned if you die", HE_LIGHT_BLUE),
+					newline(),
+					text("- You or your Combat NPC can be killed within safe zones", HE_LIGHT_BLUE),
+					newline(),
+					text("- Moderation will rule in favor of you", HE_LIGHT_BLUE),
+				)),
+			newline(),
+			text(repeatString(" ", 8) + "DO NOT ATTACK. ATTACKING WILL CANCEL YOUR PROTECTION", DARK_RED).decorate(BOLD),
 			newline(),
 			lineBreak(45),
 		)
