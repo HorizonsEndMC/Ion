@@ -22,6 +22,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.Colors
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -109,6 +110,10 @@ internal object NationCommand : SLCommand() {
 
 		val query = if (nationId == null) EMPTY_BSON else Nation::_id ne nationId
 
+		val lightness = calculatePerceivedLightness(red, green, blue)
+
+		failIf(lightness < 0.4) {"That color is too dark! Lightness: $lightness}
+
 		for (results in Nation.findProps(query, Nation::name, Nation::color)) {
 			val nationName = results[Nation::name]
 			val nationColor = Color.fromRGB(results[Nation::color])
@@ -121,7 +126,7 @@ internal object NationCommand : SLCommand() {
 			val b2 = nationColor.blue.toDouble()
 			val distance = distance(r1, g1, b1, r2, g2, b2)
 
-			failIf(distance < 10) { "That color is too similar to the color of the nation $nationName! Distance: $distance" }
+			failIf(distance < 20) { "That color is too similar to the color of the nation $nationName! Distance: $distance" }
 
 			log.info("Distance from $nationName: $distance")
 		}
