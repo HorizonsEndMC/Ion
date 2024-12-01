@@ -35,7 +35,7 @@ interface AmmunitionHoldingItem : CustomModeledItem {
 			.decoration(ITALIC, false)
 			.append(text("Refill: ", GRAY))
 			.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
-	} else null
+	} else empty()
 
 	fun getAmmoCountComponent(count: Int): Component = StoredValues.AMMO.formatLore(count, getMaximumAmmunition())
 
@@ -64,14 +64,14 @@ interface AmmunitionHoldingItem : CustomModeledItem {
 				.decoration(ITALIC, false)
 				.append(text("Refill: ", GRAY))
 				.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
-		} else null
+		} else empty()
 
 		val magazineTypeComponent = if (this is Blaster<*> && getConsumesAmmo()) {
 			empty()
 				.decoration(ITALIC, false)
 				.append(text("Magazine: ", GRAY))
 				.append(magazineType.displayName).color(AQUA)
-		} else null
+		} else empty()
 
 		StoredValues.AMMO.setAmount(itemStack, ammunition)
 
