@@ -3,13 +3,13 @@ package net.horizonsend.ion.server.features.transport.filters
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.misc.Wrench
-import net.horizonsend.ion.server.features.transport.filters.FilterBlock.Companion.FILTER_MATERIAL
 import net.horizonsend.ion.server.features.transport.filters.FilterBlock.Companion.FILTER_STATE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import org.bukkit.Material
 import org.bukkit.block.Barrel
+import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 
 object FilterAccess : IonServerComponent() {
@@ -25,20 +25,23 @@ object FilterAccess : IonServerComponent() {
 		state as Barrel
 
 		val type = FilterBlocks.getFilterBlock(state) ?: return
-		val filterData = state.persistentDataContainer.get(NamespacedKeys.FILTER_DATA, FilterData) ?: return
+
+		if (event.player.isSneaking) {
+			tryDrop(clicked, state, type)
+			return
+		}
+
+		val filterData = state.persistentDataContainer.get(NamespacedKeys.FILTER_DATA, FilterData)
 
 		type.openGUI(event.player, filterData)
 	}
 
-	@EventHandler
-	fun onBlockBreak(event: BlockBreakEvent) {
-		if (event.block.type != FILTER_MATERIAL) return
+	fun tryDrop(block: Block, state: Barrel, type: FilterBlock) {
+		val dropLocation = block.location.toCenterLocation()
+		val item = type.customItem.createFor(state)
 
-		val state = event.block.state
-		if (state !is Barrel) return
+		block.type = Material.AIR
 
-		val filterType = FilterBlocks.getFilterBlock(state) ?: return
-		event.isDropItems = false
-
+		block.world.dropItemNaturally(dropLocation, item)
 	}
 }
