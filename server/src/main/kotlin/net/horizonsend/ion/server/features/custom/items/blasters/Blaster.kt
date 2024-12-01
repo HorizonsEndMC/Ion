@@ -19,6 +19,7 @@ import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source.PLAYER
 import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.translatable
 import net.kyori.adventure.text.format.NamedTextColor
@@ -67,21 +68,21 @@ open class Blaster<T : Balancing>(
 		val base = getFullItem()
 
 		// Should always have lore
-		val lore = base.itemMeta.lore()!!.toTypedArray()
+		val lore = base.itemMeta.lore()?.toTypedArray() ?: arrayOf()
 
 		val refillTypeComponent = if (getConsumesAmmo()) text()
 				.decoration(ITALIC, false)
 				.append(text("Refill: ", GRAY))
 				.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
 				.build()
-		else null
+		else empty()
 
 		val magazineTypeComponent = if (getConsumesAmmo()) text()
 				.decoration(TextDecoration.ITALIC, false)
-				.append(text("Magazine: ", NamedTextColor.GRAY))
-				.append(magazineType.displayName).color(NamedTextColor.AQUA)
+				.append(text("Magazine: ", GRAY))
+				.append(magazineType.displayName).color(AQUA)
 				.build()
-		else null
+		else empty()
 
 		return base.updateMeta {
 			it.lore(mutableListOf(
