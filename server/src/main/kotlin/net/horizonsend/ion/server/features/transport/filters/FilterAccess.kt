@@ -15,9 +15,6 @@ import org.bukkit.event.player.PlayerInteractEvent
 object FilterAccess : IonServerComponent() {
 	@EventHandler(priority = EventPriority.NORMAL)
 	fun onPlayerInteract(event: PlayerInteractEvent) {
-		val interactedWith = event.item ?: return
-		if (interactedWith.customItem !is Wrench) return
-
 		val clicked = event.clickedBlock ?: return
 		val state = clicked.state
 
@@ -25,6 +22,12 @@ object FilterAccess : IonServerComponent() {
 		state as Barrel
 
 		val type = FilterBlocks.getFilterBlock(state) ?: return
+
+		val interactedWith = event.item ?: return
+		if (interactedWith.customItem !is Wrench) {
+			event.isCancelled = true
+			return
+		}
 
 		if (event.player.isSneaking) {
 			tryDrop(clicked, state, type)
