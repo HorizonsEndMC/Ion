@@ -21,6 +21,7 @@ import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend/ion/common.utils.text.colors.Colors
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
