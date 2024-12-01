@@ -38,7 +38,7 @@ class FilterBlock(val identifier: String, val cacheType: CacheType, private val 
 		return baseState
 	}
 
-	fun openGUI(player: Player, data: FilterData?) {
+	fun openGUI(player: Player, data: FilterData<*>?) {
 		println("$player $data")
 	}
 
