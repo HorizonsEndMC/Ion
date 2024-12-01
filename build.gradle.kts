@@ -31,7 +31,7 @@ fun downloadJenkinsArtifact(domain: String, project: String, filter: String, loc
 	println("Done!")
 }
 
-fun downloadModrinthArtifact(project: String, targetVersion: String = "1.20.4") {
+fun downloadModrinthArtifact(project: String, targetVersion: String = "1.21.3") {
 	val targetLoader = "paper"
 
 	print("Downloading $project... ")
@@ -67,7 +67,6 @@ tasks.create("downloadTestServerDependencies") {
 	doFirst {
 		downloadJenkinsArtifact("ci.athion.net", "FastAsyncWorldEdit", "contains(.,'Bukkit')", "artifacts")
 		downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'bukkit/')", "bukkit/loader/build/libs")
-		downloadJenkinsArtifact("ci.dmulloy2.net", "ProtocolLib", "", "build/libs")
 		downloadModrinthArtifact("unifiedmetrics", targetVersion = "1.19.4")
 	}
 }
