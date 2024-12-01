@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.npcs.createNamedMemoryRegistry
 import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
-import net.horizonsend.ion.server.miscellaneous.utils.loadChunkAsync
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.loadChunkAsync
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.EntityType

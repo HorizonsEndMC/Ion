@@ -9,6 +9,8 @@ abstract class CustomItem(val identifier: String) {
 	/** Left Click **/
 	open fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {}
 
+	open val cancelSecondaryInteract: Boolean = true
+
 	/** Right Click **/
 	open fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {}
 

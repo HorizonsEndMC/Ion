@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.listener.fixers
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Bukkit
 import org.bukkit.block.Biome
 import org.bukkit.event.EventHandler

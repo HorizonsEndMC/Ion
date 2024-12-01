@@ -14,8 +14,13 @@ import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.minerals.MineralItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
+import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
+import net.horizonsend.ion.server.features.custom.items.misc.MultimeterItem
+import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
+import net.horizonsend.ion.server.features.custom.items.misc.TransportFilterItem
+import net.horizonsend.ion.server.features.custom.items.misc.Wrench
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.powered.CratePlacer
@@ -28,7 +33,8 @@ import net.horizonsend.ion.server.features.custom.items.throwables.ThrownPumpkin
 import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownDetonator
 import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownSmokeGrenade
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.features.transport.filters.FilterBlocks
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -405,6 +411,8 @@ object CustomItems {
 		text(toolName, GRAY)
 	).itemName
 
+	val MULTIMETER = register(MultimeterItem)
+
 	val POWER_DRILL_BASIC = register(PowerDrill(identifier = "POWER_DRILL_BASIC", displayName = formatToolName("Basic", HE_LIGHT_ORANGE, "Drill"), modLimit = 2, basePowerCapacity = 50_000, customModelData = 1))
 	val POWER_DRILL_ENHANCED = register(PowerDrill(identifier = "POWER_DRILL_ENHANCED", displayName = formatToolName("Enhanced", fromHexString("#00FFA1")!!, "Drill"), modLimit = 4, basePowerCapacity = 75_000, customModelData = 4))
 	val POWER_DRILL_ADVANCED = register(PowerDrill(identifier = "POWER_DRILL_ADVANCED", displayName = formatToolName("Advanced", fromHexString("#B12BC9")!!, "Drill"), modLimit = 6, basePowerCapacity = 100_000, customModelData = 7))
@@ -431,8 +439,19 @@ object CustomItems {
 	val AUTO_COMPOST: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_AUTO_COMPOST", 7011, text("Auto Compost Modifier").itemName, text("Sends applicable drops through a composter, turning them into bonemeal.", GRAY).itemName,) { ItemModRegistry.AUTO_COMPOST })
 	val RANGE_3: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_RANGE_3", 7012, text("Range Addon +3").itemName, text("Expands the working area by 3 blocks", GRAY).itemName) { ItemModRegistry.AOE_3 })
 	val EXTENDED_BAR: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_EXTENDED_BAR", 7013, text("Extended Chainsaw Bar").itemName, text("Allows a chainsaw to cut down larger trees", GRAY).itemName) { ItemModRegistry.EXTENDED_BAR })
-	val FERTILIZER_DISPENSER: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FERTILIZER_DISPENSER", 7014, text("Fertilizer Sprayer").itemName, text("Applies bonemeal to crops in the effected area, if available in the user's inventory", GRAY).itemName) { ItemModRegistry.FERTILIZER_DISPENSER })
+	val FERTILIZER_DISPENSER: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FERTILIZER_DISPENSER", 7014, text("Fertilizer Sprayer").itemName, text("Applies bonemeal to crops in the effected area, if available in the user's inventory", GRAY).itemName
+	) { ItemModRegistry.FERTILIZER_DISPENSER })
+
+	val MULTIBLOCK_TOKEN = register(MultiblockToken)
+	val PACKAGED_MULTIBLOCK = register(PackagedMultiblock)
+	val MULTIBLOCK_WORKBENCH = registerCustomBlockItem(identifier = "MULTIBLOCK_WORKBENCH", baseBlock = IRON_BLOCK, customModelData = 3001, displayName = text("Multiblock Workbench").itemName) { CustomBlocks.MULTIBLOCK_WORKBENCH }
+
+	val WRENCH = register(Wrench)
 	// Tools end
+
+	// Filter Block Items
+	val FLUID_FILTER: TransportFilterItem = register(TransportFilterItem("FLUID_FILTER", text("Fluid Filter").itemName) { FilterBlocks.FLUID_FILTER })
+//	val ITEM_FILTER = register(TransportFilterItem())
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun registerSimpleUnstackable(identifier: String, customModelData: Int, displayName: Component): CustomItem = register(object : CustomItem(identifier) {
@@ -465,7 +484,7 @@ object CustomItems {
 		}
 	})
 
-	private fun registerCustomBlockItem(identifier: String, baseBlock: Material, customModelData: Int, displayName: Component, customBlock: Supplier<CustomBlock>): CustomItem {
+	private fun registerCustomBlockItem(identifier: String, baseBlock: Material, customModelData: Int, displayName: Component, customBlock: Supplier<CustomBlock>): CustomBlockItem {
 		val formattedDisplayName = text()
 			.decoration(ITALIC, false)
 			.append(displayName)

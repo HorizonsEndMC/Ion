@@ -1,8 +1,11 @@
 package net.horizonsend.ion.server.features.multiblock
 
+import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isValidYLevel
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.isValidYLevel
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -15,12 +18,13 @@ import org.bukkit.entity.Player
 
 abstract class Multiblock {
 	abstract val name: String
+	open val alternativeDetectionNames: Array<String> = arrayOf()
 
 	abstract val signText: Array<Component?>
 
 	open val requiredPermission: String? = null
 
-	open fun matchesSign(lines: Array<Component>): Boolean {
+	open fun matchesSign(lines: List<Component>): Boolean {
 		for (i in 0..3) {
 			if (signText[i] != null && signText[i] != lines[i]) {
 				return false
@@ -65,13 +69,20 @@ abstract class Multiblock {
 		originBlock: Block,
 		inward: BlockFace,
 		loadChunks: Boolean = true,
-		particles: Boolean = false
+		particles: Boolean = false,
 	): Boolean {
 		return shape.checkRequirements(originBlock, inward, loadChunks, particles)
 	}
 
 	open fun matchesUndetectedSign(sign: Sign): Boolean {
-		return (sign.getSide(Side.FRONT).line(0) as TextComponent).content().equals("[$name]", ignoreCase = true)
+		val line = sign.getSide(Side.FRONT).line(0)
+		val content = (line as? TextComponent)?.content() ?: line.plainText()
+
+		return alternativeDetectionNames
+			.toMutableList()
+			.plus(name)
+			.map { "[$it]" }
+			.any { it.equals(content, ignoreCase = true) }
 	}
 
 	open fun setupSign(player: Player, sign: Sign) {
@@ -80,7 +91,7 @@ abstract class Multiblock {
 		for (i in 0..3) {
 			val text = signText[i]
 			if (text != null) {
-				sign.getSide(Side.FRONT).line(i, text)
+				sign.line(i, text)
 			}
 		}
 
@@ -100,4 +111,12 @@ abstract class Multiblock {
 	}
 
 	protected open fun onTransformSign(player: Player, sign: Sign) {}
+
+	companion object {
+		fun getOrigin(sign: Sign): Vec3i {
+			val face = sign.getFacing()
+
+			return Vec3i(sign.location).minus(Vec3i(face.modX, 0, face.modZ))
+		}
+	}
 }

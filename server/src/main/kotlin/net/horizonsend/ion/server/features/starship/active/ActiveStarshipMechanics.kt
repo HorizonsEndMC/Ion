@@ -23,7 +23,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWea
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
@@ -112,6 +112,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	private fun destroyLowHullIntegrityShips() {
 		ActiveStarships.all().forEach { ship ->
 			ship.updateHullIntegrity()
+
 			if (ship.hullIntegrity < MAX_SAFE_HULL_INTEGRITY) {
 				ship.alert("Critical hull integrity failure!")
 

@@ -4,6 +4,7 @@ import net.minecraft.world.item.ItemStack as MinecraftItemStack
 import net.minecraft.world.level.block.Block as MinecraftBlock
 import org.bukkit.block.Block as BukkitBlock
 import org.bukkit.inventory.ItemStack as BukkitItemStack
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.Blocks

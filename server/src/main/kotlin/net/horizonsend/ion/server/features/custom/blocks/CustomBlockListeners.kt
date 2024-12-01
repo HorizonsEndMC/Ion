@@ -25,7 +25,7 @@ object CustomBlockListeners : SLEventListener() {
         val hand = event.hand
         val itemStack = player.inventory.getItem(hand).clone()
         val item: net.horizonsend.ion.server.features.custom.items.CustomBlockItem = itemStack.customItem as? net.horizonsend.ion.server.features.custom.items.CustomBlockItem ?: return
-        val blockData: BlockData = item.getCustomBlock()?.blockData ?: return
+        val blockData: BlockData = item.getCustomBlock().blockData
 
         event.block.location.block.setBlockData(blockData, true)
     }
@@ -69,8 +69,6 @@ object CustomBlockListeners : SLEventListener() {
 		val customBlock = clickedBlock.customBlock ?: return
 
 		if (customBlock !is InteractableCustomBlock) return
-
-		event.isCancelled = true
 
 		when (event.action) {
 			Action.LEFT_CLICK_BLOCK -> customBlock.onLeftClick(event, clickedBlock)

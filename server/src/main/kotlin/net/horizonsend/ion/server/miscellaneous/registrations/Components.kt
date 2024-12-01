@@ -8,9 +8,10 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
+import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons
-import net.horizonsend.ion.server.features.client.networking.serverbound.PacketHandler
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateRestrictions
@@ -26,15 +27,16 @@ import net.horizonsend.ion.server.features.gear.Gear
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.machine.decomposer.Decomposers
 import net.horizonsend.ion.server.features.misc.AutoRestart
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
 import net.horizonsend.ion.server.features.misc.ProxyMessaging
 import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.horizonsend.ion.server.features.multiblock.type.crafting.MultiblockRecipes
+import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
+import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
+import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipes
 import net.horizonsend.ion.server.features.multiblock.type.misc.Halloweeeeeen
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
@@ -80,15 +82,21 @@ import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeacons
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
-import net.horizonsend.ion.server.features.transport.Extractors
-import net.horizonsend.ion.server.features.transport.TransportConfig
-import net.horizonsend.ion.server.features.transport.Wires
-import net.horizonsend.ion.server.features.transport.pipe.Pipes
-import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
+import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.filters.FilterAccess
+import net.horizonsend.ion.server.features.transport.filters.FilterBlocks
+import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry
+import net.horizonsend.ion.server.features.transport.old.Extractors
+import net.horizonsend.ion.server.features.transport.old.TransportConfig
+import net.horizonsend.ion.server.features.transport.old.Wires
+import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
+import net.horizonsend.ion.server.features.transport.old.pipe.filter.Filters
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.data.DataFixers
+import net.horizonsend.ion.server.listener.misc.WorldEditListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
-import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 
 val components: List<IonComponent> = listOf(
@@ -99,8 +107,10 @@ val components: List<IonComponent> = listOf(
 	Caches,
 	Discord,
 	Notify,
+	DataFixers,
 	Shuttles,
 	ProxyMessaging,
+	IonWorld,
 
 	PlayerXPLevelCache,
 	Levels,
@@ -120,16 +130,21 @@ val components: List<IonComponent> = listOf(
 
 	StationSieges,
 
-	Multiblocks,
 	MultiblockRecipes,
+	MultiblockRegistration,
+	MultiblockAccess,
+	MultiblockTicking,
 	PowerMachines,
 	AreaShields,
 
+	FilterBlocks,
+	FilterAccess,
 	TransportConfig.Companion,
 	Extractors,
 	Pipes,
 	Filters,
 	Wires,
+	NewTransport,
 
 	Gear,
 
@@ -144,6 +159,7 @@ val components: List<IonComponent> = listOf(
 	ShipmentManager,
 
 	Gasses,
+	FluidRegistry,
 
 	Bazaars,
 	Merchants,
@@ -174,7 +190,6 @@ val components: List<IonComponent> = listOf(
 	StarshipDealers,
 	TutorialNPCs,
 	ShipKillXP,
-	Decomposers,
 
 	ChatChannel.ChannelActions,
 	ChannelSelections,
@@ -184,7 +199,6 @@ val components: List<IonComponent> = listOf(
 	DutyModeMonitor,
 	EventLogger,
 	Sidebar,
-	PacketHandler,
 
 	SpaceMap,
 	NationsMap,
@@ -210,5 +224,7 @@ val components: List<IonComponent> = listOf(
 	Fleets,
 	ContactsJammingSidebar,
 	CombatTimer,
+	WorldEditListener,
+	DisplayHandlers,
 	Halloweeeeeen,
 )

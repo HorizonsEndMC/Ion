@@ -13,12 +13,13 @@ import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledIte
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
-import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
-import net.minecraft.core.BlockPos
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Material
 import org.bukkit.SoundCategory
@@ -134,7 +135,7 @@ class PowerHoe(
 		}
 
 		for ((key, items) in drops) {
-			val location = BlockPos.of(key).toLocation(origin.world)
+			val location = toVec3i(key).toLocation(origin.world)
 			items.forEach { origin.world.dropItemNaturally(location, it) }
 		}
 
@@ -149,7 +150,7 @@ class PowerHoe(
 		player: Player,
 		mods: Array<ItemModification>,
 		block: Block,
-		drops: MutableMap<Long, Collection<ItemStack>>,
+		drops: MutableMap<BlockKey, Collection<ItemStack>>,
 		usage: UsageReference
 	): Boolean {
 		val data = block.blockData
@@ -183,7 +184,7 @@ class PowerHoe(
 		val dropList = dropSource.getDrop(block)
 
 		usage.multiplier = PowerDrill.handleModifiers(dropList, dropModifiers)
-		drops[BlockPos.asLong(block.x, block.y, block.z)] = dropList
+		drops[toBlockKey(block.x, block.y, block.z)] = dropList
 
 		var replacement = Material.AIR.createBlockData()
 

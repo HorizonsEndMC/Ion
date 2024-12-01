@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY

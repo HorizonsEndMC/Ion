@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.features.custom.ItemConverters
-import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -28,17 +28,15 @@ object FurnaceListener : SLEventListener() {
 		val signBlock = state.block.getRelativeIfLoaded(directional.facing) ?: return
 
 		val type = signBlock.type
-		if (!type.isWallSign) {
-			return
-		}
+		if (!type.isWallSign) return
 
 		val sign = signBlock.getState(false) as Sign
 		val checkStructure = false
 		val loadChunks = false
-		val multiblock = Multiblocks[sign, checkStructure, loadChunks]
+		val multiblock = MultiblockAccess.getMultiblock(sign, checkStructure, loadChunks)
 
 		if (multiblock is FurnaceMultiblock) {
-			if (Multiblocks[sign, true, false] !== multiblock) {
+			if (!multiblock.signMatchesStructure(sign, loadChunks = false, particles = false)) {
 				event.isCancelled = true
 				return
 			}
@@ -56,21 +54,6 @@ object FurnaceListener : SLEventListener() {
 		val source: ItemStack = event.source
 		val item = source.customItem
 
-		// Legacy custom item smelting
-		if (net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems[source] is
-					net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem &&
-			item == null
-			) {
-			event.result = when (source.itemMeta.customModelData) {
-				1 -> CustomItems.ALUMINUM_INGOT.constructItemStack()
-				2 -> CustomItems.CHETHERITE.constructItemStack()
-				3 -> CustomItems.TITANIUM_INGOT.constructItemStack()
-				4 -> CustomItems.URANIUM.constructItemStack()
-				else -> ItemStack(Material.AIR)
-			}
-			return
-		}
-
 		// If customItem has the Smeltable interface, get the smeltable customItem result
 		if (item is Smeltable) {
 			event.result = item.smeltingResult.get()
@@ -86,7 +69,7 @@ object FurnaceListener : SLEventListener() {
 		}
 
 		val sign = signBlock.getState(false) as Sign
-		val multiblock = Multiblocks[sign, false]
+		val multiblock: Multiblock? = null
 
 		if (multiblock != null && !multiblock.name.contains("furnace")) {
 			event.isCancelled = true

@@ -34,7 +34,7 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.NavigationComputerMultiblockBasic
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
@@ -64,6 +64,9 @@ import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.normalize
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -72,7 +75,6 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.block.Sign
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -305,7 +307,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		destinationWorld: World,
 		maxRange: Int,
 		sender: Player,
-		tier: Int?,
+		tier: Int?
 	) {
 		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) }
 			?: Hyperspace.findHyperdrive(starship) ?: fail {
@@ -687,16 +689,13 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onToggleDrills(sender: Player, enabled: Boolean) {
 		val starship = getStarshipPiloting(sender)
 
-		val signs = starship.drills.mapNotNull {
-			val (x, y, z) = it.pos
+		val entities = starship.multiblockManager.getAllMultiblockEntities().values.filterIsInstance<DrillMultiblock.DrillMultiblockEntity>()
 
-			starship.world.getBlockAt(x, y, z).state as? Sign
-		}
-
-		val user = if (enabled) sender.name else null
-
-		for (sign in signs) {
-			DrillMultiblock.setUser(sign, user)
+		for (entity in entities) {
+			if (enabled) {
+				val sign = entity.getSign() ?: continue
+				entity.enable(sender, sign)
+			} else entity.disable()
 		}
 	}
 

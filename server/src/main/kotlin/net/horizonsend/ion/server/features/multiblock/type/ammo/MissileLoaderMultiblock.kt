@@ -1,22 +1,28 @@
 package net.horizonsend.ion.server.features.multiblock.type.ammo
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.ProgressManager
+import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import org.bukkit.Material
-import org.bukkit.block.Furnace
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
 
-object MissileLoaderMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
-
+object MissileLoaderMultiblock : Multiblock(), EntityMultiblock<MissileLoaderMultiblock.MissileLoaderMultiblockEntity> {
     override fun MultiblockShape.buildStructure() {
         z(+0) {
             y(-1) {
                 x(-2).anyStairs()
                 x(-1).ironBlock()
-                x(+0).wireInputComputer()
+                x(+0).powerInput()
                 x(+1).ironBlock()
                 x(+2).anyStairs()
             }
@@ -30,9 +36,9 @@ object MissileLoaderMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
         z(+1) {
             y(-1) {
                 x(-2).netheriteBlock()
-                x(-1).type(Material.GRINDSTONE)
+                x(-1).grindstone()
                 x(+0).type(Material.OBSERVER)
-                x(+1).type(Material.GRINDSTONE)
+                x(+1).grindstone()
                 x(+2).netheriteBlock()
             }
             y(0) {
@@ -46,9 +52,9 @@ object MissileLoaderMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
         z(+2) {
             y(-1) {
                 x(-2).netheriteBlock()
-                x(-1).type(Material.GRINDSTONE)
+                x(-1).grindstone()
                 x(+0).type(Material.OBSERVER)
-                x(+1).type(Material.GRINDSTONE)
+                x(+1).grindstone()
                 x(+2).netheriteBlock()
             }
             y(0) {
@@ -78,9 +84,9 @@ object MissileLoaderMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
         z(+4) {
             y(-1) {
                 x(-2).netheriteBlock()
-                x(-1).type(Material.GRINDSTONE)
+                x(-1).grindstone()
                 x(+0).type(Material.OBSERVER)
-                x(+1).type(Material.GRINDSTONE)
+                x(+1).grindstone()
                 x(+2).netheriteBlock()
             }
             y(0) {
@@ -94,9 +100,9 @@ object MissileLoaderMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
         z(+5) {
             y(-1) {
                 x(-2).netheriteBlock()
-                x(-1).type(Material.GRINDSTONE)
+                x(-1).grindstone()
                 x(+0).type(Material.OBSERVER)
-                x(+1).type(Material.GRINDSTONE)
+                x(+1).grindstone()
                 x(+2).netheriteBlock()
             }
             y(0) {
@@ -133,9 +139,25 @@ object MissileLoaderMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
         line4 = null
     )
 
-    override val maxPower = 250_000
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): MissileLoaderMultiblockEntity {
+		return MissileLoaderMultiblockEntity(data, manager, x, y, z, world, structureDirection)
+	}
 
-    override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-        handleRecipe(this, event, furnace, sign)
-    }
+	class MissileLoaderMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureFace: BlockFace
+	) : SimplePoweredEntity(data, MissileLoaderMultiblock, manager, x, y, z, world, structureFace, 250_000), LegacyMultiblockEntity, PoweredMultiblockEntity, RecipeEntity {
+		override val displayHandler = standardPowerDisplay(this)
+		override val progressManager: ProgressManager = ProgressManager(data)
+		override val tickingManager: TickingManager = TickingManager(20)
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
+	}
 }

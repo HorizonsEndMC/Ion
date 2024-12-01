@@ -7,9 +7,11 @@ import net.horizonsend.ion.server.command.admin.ConvertCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
+import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.ItemDebugCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
+import net.horizonsend.ion.server.command.admin.StructureCreator
 import net.horizonsend.ion.server.command.admin.WorldCommand
 import net.horizonsend.ion.server.command.economy.BazaarCommand
 import net.horizonsend.ion.server.command.economy.CityNpcCommand
@@ -62,6 +64,7 @@ import net.horizonsend.ion.server.command.qol.ContainerCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.PersonalTransporterCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
+import net.horizonsend.ion.server.command.qol.SetFluidCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
 import net.horizonsend.ion.server.command.space.SpaceGenCommand
@@ -148,6 +151,7 @@ val commands: List<SLCommand> = listOf(
 	SpaceGenCommand,
 	ConfigurationCommands,
 	WorldCommand,
+	IonChunkCommand,
 	ConvertCommand,
 	CustomItemCommand,
 	IonCommand,
@@ -157,6 +161,7 @@ val commands: List<SLCommand> = listOf(
 	CheckProtectionCommand,
 	FixExtractorsCommand,
 	SetPowerCommand,
+	SetFluidCommand,
 	RegenerateCommand,
 	RemoveGhostShipCommand,
 
@@ -188,5 +193,6 @@ val commands: List<SLCommand> = listOf(
     ForbiddenBlocksCommand,
 	EnableProtectionMessagesCommand,
 	IonSitCommand,
-	SuicideCommand
+	SuicideCommand,
+	StructureCreator
 )

@@ -1,21 +1,21 @@
 package net.horizonsend.ion.server.features.multiblock.type.industry
 
-import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import org.bukkit.block.Furnace
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
-import org.bukkit.inventory.InventoryHolder
 
-object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
-	override val maxPower: Int = 250_000
+object GasFurnaceMultiblock : Multiblock(), EntityMultiblock<GasFurnaceMultiblock.GasFurnaceMultiblockEntity> {
 	override val name = "gasfurnace"
 
 	override val signText = createSignText(
@@ -29,7 +29,7 @@ object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 			y(+0) {
@@ -65,7 +65,7 @@ object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+3) {
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).craftingTable()
+				x(+0).extractor()
 				x(+1).anyStairs()
 			}
 			y(+0) {
@@ -76,17 +76,25 @@ object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		}
 	}
 
-	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-		handleRecipe(this, event, furnace, sign)
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): GasFurnaceMultiblockEntity {
+		return GasFurnaceMultiblockEntity(data, manager, x, y, z, world, structureDirection)
+	}
 
-		if (furnace.inventory.fuel?.customItem != CustomItems.GAS_CANISTER_EMPTY) return
+	class GasFurnaceMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureFace: BlockFace
+	) : SimplePoweredEntity(data, GasFurnaceMultiblock, manager, x, y, z, world, structureFace, 250_000), LegacyMultiblockEntity, PoweredMultiblockEntity, RecipeEntity {
+		override val displayHandler = standardPowerDisplay(this)
+		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
+		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
-		val inventoryHolder = furnace.block.getRelative(sign.getFacing().oppositeFace, 3).state as InventoryHolder
-
-		val noFit = inventoryHolder.inventory.addItem(Gasses.EMPTY_CANISTER).values.isNotEmpty()
-
-		if (noFit) return
-
-		furnace.inventory.fuel = null
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
 	}
 }

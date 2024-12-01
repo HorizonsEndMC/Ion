@@ -18,13 +18,9 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
-import net.horizonsend.ion.server.miscellaneous.utils.component1
-import net.horizonsend.ion.server.miscellaneous.utils.component2
-import net.horizonsend.ion.server.miscellaneous.utils.component3
-import net.horizonsend.ion.server.miscellaneous.utils.component4
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Location
@@ -142,8 +138,7 @@ object ProtectionListener : SLEventListener() {
 
 		if (isRegionDenied(player, location)) denied = true
 
-		val (world, x, y, z) = location
-		val shipContaining = DeactivatedPlayerStarships.getContaining(world, x.toInt(), y.toInt(), z.toInt())
+		val shipContaining = DeactivatedPlayerStarships.getContaining(location.world, location.blockX, location.blockY, location.blockZ)
 
 		// Need to also check for null
 		if (shipContaining !is PlayerStarshipData?) return true
