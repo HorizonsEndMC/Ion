@@ -101,7 +101,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.Material.AIR
 import org.bukkit.Material.AMETHYST_SHARD
 import org.bukkit.Material.BELL
 import org.bukkit.Material.BLACKSTONE
@@ -251,11 +250,11 @@ object Crafting : IonServerComponent() {
 
 		// Saddle
 		shapedRecipe("saddle", SADDLE) {
-			shape("lll", "tat")
+			shape("lll", "t t")
 
 			setIngredient('l', LEATHER)
 			setIngredient('t', TRIPWIRE_HOOK)
-			setIngredient('a', AIR)
+//			setIngredient('a', AIR)
 		}
 
 		// Nametag
@@ -286,40 +285,36 @@ object Crafting : IonServerComponent() {
 
 		// Ochre Froglight
 		shapedRecipe("ochre_froglight", OCHRE_FROGLIGHT) {
-			shape("xhx", "hlh", "xhx")
+			shape(" h ", "hlh", " h ")
 
 			setIngredient('h', HONEYCOMB)
 			setIngredient('l', SHROOMLIGHT)
-			setIngredient('x', AIR)
 		}
 
 		// Verdant Froglight
 		shapedRecipe("verdant_froglight", VERDANT_FROGLIGHT) {
-			shape("xsx", "sls", "xsx")
+			shape(" s ", "sls", " s ")
 
 			setIngredient('s', SLIME_BALL)
 			setIngredient('l', SHROOMLIGHT)
-			setIngredient('x', AIR)
 		}
 
 		// Pearlescent Froglight
 		shapedRecipe("pearlescent_froglight", PEARLESCENT_FROGLIGHT) {
-			shape("xax", "ala", "xax")
+			shape(" a ", "ala", " a ")
 
 			setIngredient('a', AMETHYST_SHARD)
 			setIngredient('l', SHROOMLIGHT)
-			setIngredient('x', AIR)
 		}
 
 		// Spore Blossom
 		shapedRecipe("spore_blossom", SPORE_BLOSSOM) {
-			shape("xax", "ctc", "xmx")
+			shape(" a ", "ctc", " m ")
 
 			setIngredient('a', AMETHYST_SHARD)
 			setIngredient('t', PINK_TULIP)
 			setIngredient('c', MOSS_CARPET)
 			setIngredient('m', MOSS_BLOCK)
-			setIngredient('x', AIR)
 		}
 
 		// Prismarine Crystals
@@ -336,24 +331,22 @@ object Crafting : IonServerComponent() {
 
 		// Cobweb
 		shapedRecipe("cobweb", COBWEB) {
-			shape("sxs", "xsx", "sxs")
+			shape("s s", " s ", "s s")
 
 			setIngredient('s', STRING)
 		}
 
 		//Unloaded Turret Shell Crafting
 		itemStackShapeRecipe("Unloaded__Shell", UNLOADED_SHELL.constructItemStack()) {
-			shape("xyx", "xzx", "xxx")
+			shape(" y ", " z ")
 
-			setIngredient('x', AIR)
 			setIngredient('y', LAPIS_LAZULI)
 			setIngredient('z', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 		}
 
 		itemStackShapeRecipe("Uncharged_Shell", UNCHARGED_SHELL.constructItemStack()) {
-			shape("xyx", "xzx", "xxx")
+			shape(" y ", " z ")
 
-			setIngredient('x', AIR)
 			setIngredient('y', PRISMARINE_CRYSTALS)
 			setIngredient('z', COPPER_INGOT)
 		}
@@ -381,195 +374,189 @@ object Crafting : IonServerComponent() {
 
 		// Pistol Receiver Crafting
 		itemStackShapeRecipe("pistol_receiver", PISTOL_RECEIVER.constructItemStack()) {
-			shape("xxx", "irt", "xxx")
+			shape("irt")
 
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('r', REDSTONE_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
-			setIngredient('x', AIR)
 		}
 
 		// Rifle Receiver Crafting
 		itemStackShapeRecipe("rifle_receiver", RIFLE_RECEIVER.constructItemStack()) {
-			shape("xtx", "igt", "xtx")
+			shape(" t ", "igt", " t ")
 
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('g', GOLD_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
-			setIngredient('x', AIR)
 		}
 
 		// SMB Receiver Crafting
 		itemStackShapeRecipe("smb_receiver", SMB_RECEIVER.constructItemStack()) {
-			shape("xtx", "idx", "xtx")
+			shape(" t ", "id ", " t ")
 
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('d', DIAMOND_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
-			setIngredient('x', AIR)
 		}
 
 		// Sniper Receiver Crafting
 		itemStackShapeRecipe("sniper_receiver", SNIPER_RECEIVER.constructItemStack()) {
-			shape("xtx", "ieb", "xtx")
+			shape(" t ", "ieb", " t ")
 
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('e', EMERALD_BLOCK)
 			setIngredient('b', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
 			setIngredient('i', IRON_TRAPDOOR)
-			setIngredient('x', AIR)
 		}
 
 		// Shotgun Receiver Crafting
 		itemStackShapeRecipe("shotgun_receiver", SHOTGUN_RECEIVER.constructItemStack()) {
-			shape("xxx", "icb", "xtx")
+			shape("   ", "icb", " t ")
 
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('c', COPPER_BLOCK)
 			setIngredient('b', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
 			setIngredient('i', IRON_TRAPDOOR)
-			setIngredient('x', AIR)
 		}
 
 		// Cannon Receiver Crafting
 		itemStackShapeRecipe("cannon_receiver", CANNON_RECEIVER.constructItemStack()) {
-			shape("xxx", "xba", "gxx")
+			shape("   ", " ba", "g  ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('b', ExactChoice(ALUMINUM_BLOCK.constructItemStack()))
 			setIngredient('g', GOLD_INGOT)
-			setIngredient('x', AIR)
 		}
 
 		// Pistol Crafting
 		itemStackShapeRecipe("pistol", PISTOL.constructItemStack()) {
-			shape("xxx", "apb", "cxx")
+			shape("   ", "apb", "c  ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', PISTOL_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
-			setIngredient('x', AIR)
+
 		}
 
 		// Rifle Crafting
 		itemStackShapeRecipe("rifle", RIFLE.constructItemStack()) {
-			shape("xxx", "apb", "acx")
+			shape("   ", "apb", "ac ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', RIFLE_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
-			setIngredient('x', AIR)
+
 		}
 
 		// SMB Crafting
 		itemStackShapeRecipe("submachine_blaster", SUBMACHINE_BLASTER.constructItemStack()) {
-			shape("xxx", "apb", "acx")
+			shape("   ", "apb", "ac ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', SMB_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
-			setIngredient('x', AIR)
+
 		}
 
 		// Sniper Crafting
 		itemStackShapeRecipe("sniper", CustomItems.SNIPER.constructItemStack()) {
-			shape("xgx", "apb", "acx")
+			shape(" g ", "apb", "ac ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', SNIPER_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
 			setIngredient('g', GLASS)
-			setIngredient('x', AIR)
+
 		}
 
 		// Shotgun Crafting
 		itemStackShapeRecipe("shotgun", CustomItems.SHOTGUN.constructItemStack()) {
-			shape("xxb", "apb", "acx")
+			shape("  b", "apb", "ac ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', SHOTGUN_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
-			setIngredient('x', AIR)
+
 		}
 
 		// Cannon Crafting
 		itemStackShapeRecipe("cannon", CustomItems.CANNON.constructItemStack()) {
-			shape("xax", "xcb", "pxx")
+			shape(" a ", " cb", "p  ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', CANNON_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
-			setIngredient('x', AIR)
+
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 		}
 
 		// Basic Power Drill Crafting
 		itemStackShapeRecipe("power_drill_basic", POWER_DRILL_BASIC.constructItemStack()) {
-			shape("ixx", "xbt", "xts")
+			shape("i  ", " bt", " ts")
 
 			setIngredient('i', ExactChoice(ItemStack(IRON_INGOT)))
 			setIngredient('b', ExactChoice(BATTERY_MEDIUM.singleItem()))
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('s', STICK)
-			setIngredient('x', AIR)
+
 		}
 
 		// Enhanced Power Drill Crafting
 		itemStackShapeRecipe("power_drill_enhanced", POWER_DRILL_ENHANCED.constructItemStack()) {
-			shape("iix", "idc", "xts")
+			shape("ii ", "idc", " ts")
 
 			setIngredient('i', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
 			setIngredient('d', ExactChoice(POWER_DRILL_BASIC.constructItemStack()))
 			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
 			setIngredient('t', ExactChoice(URANIUM_BLOCK.constructItemStack()))
 			setIngredient('s', ExactChoice(BATTERY_LARGE.singleItem()))
-			setIngredient('x', AIR)
+
 		}
 
 		// Advanced Power Drill Crafting
 		itemStackShapeRecipe("power_drill_advanced", POWER_DRILL_ADVANCED.constructItemStack()) {
-			shape("iix", "idc", "xts")
+			shape("ii ", "idc", " ts")
 
 			setIngredient('i', ExactChoice(STEEL_PLATE.constructItemStack()))
 			setIngredient('d', ExactChoice(POWER_DRILL_ENHANCED.constructItemStack()))
 			setIngredient('c', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
 			setIngredient('t', ExactChoice(SUPERCONDUCTOR.constructItemStack()))
 			setIngredient('s', ExactChoice(STEEL_CHASSIS.constructItemStack()))
-			setIngredient('x', AIR)
+
 		}
 
 		// Basic Power Chainsaw
 		itemStackShapeRecipe("power_chainsaw_basic", POWER_CHAINSAW_BASIC.constructItemStack()) {
-			shape("iix", "idc", "xcs")
+			shape("ii ", "idc", " cs")
 
 			setIngredient('i', ExactChoice(ItemStack(IRON_INGOT)))
 			setIngredient('d', ExactChoice(BATTERY_MEDIUM.singleItem()))
 			setIngredient('c', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('s', STICK)
-			setIngredient('x', AIR)
+
 		}
 
 		// Enhanced Power Chainsaw
 		itemStackShapeRecipe("power_chainsaw_enhanced", POWER_CHAINSAW_ENHANCED.constructItemStack()) {
-			shape("iix", "idc", "xus")
+			shape("ii ", "idc", " us")
 
 			setIngredient('i', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
 			setIngredient('d', ExactChoice(POWER_CHAINSAW_BASIC.constructItemStack()))
 			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
 			setIngredient('u', ExactChoice(URANIUM_BLOCK.constructItemStack()))
 			setIngredient('s', ExactChoice(BATTERY_LARGE.singleItem()))
-			setIngredient('x', AIR)
+
 		}
 
 		// Advanced Power Chainsaw Crafting
 		itemStackShapeRecipe("power_chainsaw_advanced", POWER_CHAINSAW_ADVANCED.constructItemStack()) {
-			shape("pbx", "bdc", "xts")
+			shape("pb ", "bdc", " ts")
 
 			setIngredient('p', ExactChoice(STEEL_PLATE.constructItemStack()))
 			setIngredient('b', ExactChoice(STEEL_BLOCK.constructItemStack()))
@@ -577,52 +564,52 @@ object Crafting : IonServerComponent() {
 			setIngredient('c', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
 			setIngredient('t', ExactChoice(SUPERCONDUCTOR.constructItemStack()))
 			setIngredient('s', ExactChoice(STEEL_CHASSIS.constructItemStack()))
-			setIngredient('x', AIR)
+
 		}
 
 		// Basic Power Hoe
 		itemStackShapeRecipe("power_hoe_basic", POWER_HOE_BASIC.constructItemStack()) {
-			shape("xib", "xsi", "ccx")
+			shape(" ib", " si", "cc ")
 
 			setIngredient('b', ExactChoice(BATTERY_MEDIUM.singleItem()))
 			setIngredient('i', COPPER_INGOT)
 			setIngredient('c', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('s', STICK)
-			setIngredient('x', AIR)
+
 		}
 
 		// Enhanced Power Hoe
 		itemStackShapeRecipe("power_hoe_enhanced", POWER_HOE_ENHANCED.constructItemStack()) {
-			shape("xus", "xdc", "iix")
+			shape(" us", " dc", "ii ")
 
 			setIngredient('d', ExactChoice(POWER_HOE_BASIC.constructItemStack()))
 			setIngredient('i', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
 			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
 			setIngredient('u', ExactChoice(URANIUM_BLOCK.constructItemStack()))
 			setIngredient('s', ExactChoice(BATTERY_LARGE.singleItem()))
-			setIngredient('x', AIR)
+
 		}
 
 		// Advanced Power Hoe Crafting
 		itemStackShapeRecipe("power_hoe_advanced", POWER_HOE_ADVANCED.constructItemStack()) {
-			shape("xtu", "xdc", "ssx")
+			shape(" tu", " dc", "ss ")
 
 			setIngredient('d', ExactChoice(POWER_HOE_ENHANCED.constructItemStack()))
 			setIngredient('s', ExactChoice(STEEL_BLOCK.constructItemStack()))
 			setIngredient('c', ExactChoice(CIRCUIT_BOARD.constructItemStack()))
 			setIngredient('t', ExactChoice(SUPERCONDUCTOR.constructItemStack()))
 			setIngredient('u', ExactChoice(STEEL_CHASSIS.constructItemStack()))
-			setIngredient('x', AIR)
+
 		}
 
 		itemStackShapeRecipe("crate_placer", CustomItems.CRATE_PLACER.constructItemStack()) {
-			shape("xsx", "xcd", "txx")
+			shape(" s ", " cd", "t  ")
 
 			setIngredient('s', ExactChoice(STEEL_INGOT.constructItemStack()))
 			setIngredient('t', GAS_CANISTER_EMPTY.constructItemStack())
 			setIngredient('d', DIAMOND)
 			setIngredient('c', CIRCUITRY.constructItemStack())
-			setIngredient('x', AIR)
+
 		}
 
 		// Circuitry Crafting 1
@@ -651,38 +638,38 @@ object Crafting : IonServerComponent() {
 
 		// Standard Magazine Crafting
 		itemStackShapeRecipe("standard_magazine", STANDARD_MAGAZINE.constructItemStack()) {
-			shape("xxx", "rlr", "ttt")
+			shape("   ", "rlr", "ttt")
 
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('l', LAPIS_BLOCK)
 			setIngredient('r', REDSTONE)
-			setIngredient('x', AIR)
+
 		}
 
 		// Special Magazine Crafting
 		itemStackShapeRecipe("special_magazine", SPECIAL_MAGAZINE.constructItemStack()) {
-			shape("xxx", "rer", "ttt")
+			shape("   ", "rer", "ttt")
 
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('e', EMERALD_BLOCK)
 			setIngredient('r', REDSTONE)
-			setIngredient('x', AIR)
+
 		}
 
 		// Empty Gas Canister Crafting
 		itemStackShapeRecipe("empty_gas_canister", GAS_CANISTER_EMPTY.constructItemStack()) {
-			shape("xix", "igi", "xix")
+			shape(" i ", "igi", " i ")
 
 			setIngredient('i', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('g', GLASS_PANE)
-			setIngredient('x', AIR)
+
 		}
 
 		// Crude Fuel Crafting
 //		itemStackShapeRecipe("crude_fuel", CRUDE_FUEL.constructItemStack()) {
-//			shape("xxx", "yzy", "xxx")
+//			shape("   ", "yzy", "   ")
 //
-//			setIngredient('x', AIR)
+//
 //			setIngredient('y', GAS_CANISTER_EMPTY.constructItemStack())
 //			setIngredient('z', DIAMOND)
 //		}
@@ -1018,12 +1005,11 @@ object Crafting : IonServerComponent() {
 		}
 
 		itemStackShapeRecipe("extended_bar_modifier", EXTENDED_BAR.constructItemStack()) {
-			shape("stx", "tct", "xts")
+			shape("st ", "tct", " ts")
 
 			setIngredient('s', STEEL_PLATE.constructItemStack())
 			setIngredient('t', TITANIUM_INGOT.constructItemStack())
 			setIngredient('c', STEEL_CHASSIS.constructItemStack())
-			setIngredient('x', AIR)
 		}
 
 		itemStackShapeRecipe("aoe_1_modifier", RANGE_1.constructItemStack()) {
