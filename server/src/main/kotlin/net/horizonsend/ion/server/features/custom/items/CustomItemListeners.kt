@@ -28,7 +28,7 @@ class CustomItemListeners : SLEventListener() {
 		when (event.action) {
 			Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
 				customItem.handleSecondaryInteract(event.player, event.player.inventory.itemInMainHand, event)
-				if (customItem !is CustomBlockItem) {
+				if (customItem !is CustomBlockItem && customItem.cancelSecondaryInteract) {
 					event.isCancelled = true
 				}
 			}
