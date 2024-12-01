@@ -104,7 +104,6 @@ object MultiblockCommand : SLCommand() {
 			if (!requirementMet) {
 				val (xx, yy, zz) = Vec3i(relative.location)
 
-
 				sendEntityPacket(sender, displayBlock(sender.world.minecraft, requirement.getExample(face), Vector(xx, yy, zz), 0.5f, true), 10 * 20L)
 				sender.userError(
 					"Block at ${Vec3i(relative.location)} doesn't match! Expected ${requirement.alias}, found ${relative.type}."
