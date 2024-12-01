@@ -205,7 +205,6 @@ object MultiblockRecipes : IonServerComponent() {
 
 		for (inputMat in inputMatches) {
 			val resultMat = outputMatches.first { it.name == inputMat.name.replace(Regex(inputMatch),replaceStr) }
-			println(resultMat)
 			val recipe = registerRecipe(
 				FurnaceMultiblockRecipe(
 					multiblock = GasFurnaceMultiblock,
