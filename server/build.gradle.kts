@@ -1,8 +1,5 @@
 import io.papermc.paperweight.util.path
-import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.lang.String
 
 plugins {
 	id("io.papermc.paperweight.userdev") version "1.7.5"
@@ -73,7 +70,6 @@ dependencies {
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }
 
-tasks.reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonServer.jar")) }
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 
 kotlin.jvmToolchain(21)
@@ -100,4 +96,13 @@ val embedHash = tasks.create("embedHash") {
 
 tasks.classes {
 	dependsOn(embedHash)
+}
+
+tasks.shadowJar {
+	archiveFileName.set("IonServer.jar")
+	destinationDirectory.set(file(rootProject.projectDir.absolutePath + "/build"))
+}
+
+tasks.build {
+	dependsOn(tasks.shadowJar)
 }
