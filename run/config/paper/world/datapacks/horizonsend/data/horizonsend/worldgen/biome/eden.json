@@ -1,12 +1,5 @@
 {
   "effects": {
-	"ambient_sound": "minecraft:ambient.underwater.loop.additions.ultra_rare ",
-    "mood_sound": {
-      "sound": "minecraft:ambient.underwater.loop.additions.ultra_rare",
-      "tick_delay": 400,
-      "block_search_extent": 8,
-      "offset": 2.0
-    },
     "additions_sound": {
       "sound": "minecraft:entity.warden.nearby_close",
       "tick_chance": 0.001
@@ -16,35 +9,10 @@
     "water_color": 7444407,
     "water_fog_color": 4871282,
 	"grass_color": 3880781,
-	"foliage_color": 4343143,
-	"particle": {
-	  "probability": 0.05,
-      "options": {
-        "type": "minecraft:ambient_entity_effect"
-		}
-	 }
+	"foliage_color": 4343143
   },
-  "carvers": {
-    "air": []
-  },
-  "features": [
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [
-      "minecraft:sculk_vein",
-      "minecraft:sculk_patch_deep_dark"
-    ],
-    [],
-    [
-      "minecraft:glow_lichen"
-	],
-    []
-  ],
+  "carvers": [],
+  "features": [],
   "spawners": {
     "monster": [
       {
