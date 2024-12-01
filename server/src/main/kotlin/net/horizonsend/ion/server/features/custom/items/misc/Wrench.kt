@@ -50,14 +50,9 @@ object Wrench : CustomItem("WRENCH") {
 		val state = clickedBlock.state
 
 		if (livingEntity.isSneaking && state is Sign) return tryPickUpMultiblock(livingEntity, state)
-		if (state is Sign) return tryEditFilter(livingEntity, state)
 	}
 
 	private fun tryPickUpMultiblock(player: Player, sign: Sign) {
 		PrePackaged.pickUpStructure(player, sign)
-	}
-
-	private fun tryEditFilter(player: Player, sign: Sign) { // State TBD
-
 	}
 }
