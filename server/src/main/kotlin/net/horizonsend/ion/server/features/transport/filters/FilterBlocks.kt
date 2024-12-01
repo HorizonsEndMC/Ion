@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.transport.filters
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.misc.TransportFilterItem
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import org.bukkit.Material
@@ -22,14 +22,14 @@ object FilterBlocks : IonServerComponent() {
 
 	val FLUID_FILTER: FilterBlock = registerFilter("FLUID_FILTER", CacheType.FLUID) { CustomItems.FLUID_FILTER }
 
-	private fun registerFilter(identifier: String, cacheType: CacheType, customItemSupplier: Supplier<CustomItem>): FilterBlock {
+	private fun registerFilter(identifier: String, cacheType: CacheType, customItemSupplier: Supplier<TransportFilterItem>): FilterBlock {
 		val data = FilterBlock(identifier, cacheType, customItemSupplier)
 		filters[identifier] = data
 		return data
 	}
 }
 
-class FilterBlock(val identifier: String, val cacheType: CacheType, private val customItemSupplier: Supplier<CustomItem>) {
+class FilterBlock(val identifier: String, val cacheType: CacheType, private val customItemSupplier: Supplier<TransportFilterItem>) {
 	val customItem get() = customItemSupplier.get()
 
 	fun createState(): Barrel {
@@ -38,7 +38,7 @@ class FilterBlock(val identifier: String, val cacheType: CacheType, private val 
 		return baseState
 	}
 
-	fun openGUI(player: Player, data: FilterData) {
+	fun openGUI(player: Player, data: FilterData?) {
 		println("$player $data")
 	}
 
