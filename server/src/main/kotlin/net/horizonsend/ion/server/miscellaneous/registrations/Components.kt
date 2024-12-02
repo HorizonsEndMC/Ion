@@ -48,6 +48,7 @@ import net.horizonsend.ion.server.features.player.CombatNPCs
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
 import net.horizonsend.ion.server.features.player.EventLogger
+import net.horizonsend.ion.server.features.player.NMSAchievements
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -91,6 +92,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 
 val components: List<IonComponent> = listOf(
+	NMSAchievements,
 	GameplayTweaks,
 	DBManager,
 	RedisActions,
