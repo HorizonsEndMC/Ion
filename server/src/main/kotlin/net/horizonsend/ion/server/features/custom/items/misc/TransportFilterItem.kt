@@ -16,7 +16,7 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.persistence.PersistentDataType.STRING
 import java.util.function.Supplier
 
-class TransportFilterItem(identifier: String, val displayName: Component, private val filterBlock: Supplier<FilterBlock>) : CustomItem(identifier) {
+class TransportFilterItem(identifier: String, val displayName: Component, private val filterBlock: Supplier<FilterBlock<*>>) : CustomItem(identifier) {
 	override fun constructItemStack(): ItemStack {
 		return ItemStack(Material.BARREL).updateMeta { meta ->
 			meta as BlockStateMeta
