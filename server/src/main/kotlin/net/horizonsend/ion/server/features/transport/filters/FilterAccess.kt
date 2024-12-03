@@ -36,10 +36,10 @@ object FilterAccess : IonServerComponent() {
 
 		val filterData = state.persistentDataContainer.get(NamespacedKeys.FILTER_DATA, FilterData)
 
-		type.openGUI(event.player, filterData)
+		type.openGUI(event.player, state, filterData)
 	}
 
-	private fun tryDrop(block: Block, state: Barrel, type: FilterBlock) {
+	private fun tryDrop(block: Block, state: Barrel, type: FilterBlock<*>) {
 		val dropLocation = block.location.toCenterLocation()
 		val item = type.customItem.createFor(state)
 
