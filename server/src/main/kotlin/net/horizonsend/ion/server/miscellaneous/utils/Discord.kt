@@ -86,7 +86,7 @@ fun Embed.jda(): MessageEmbed {
 	color?.let { builder.setColor(it) }
 	fields?.let { for (field in it) builder.addField(field.jda()) }
 	image?.let { builder.setImage(it) }
-	thumbnail?.let { builder.setImage(it) }
+	thumbnail?.let { builder.setThumbnail(it) }
 	author?.let { builder.setAuthor(it.name, it.url, it.icon_url) }
 	footer?.let { builder.setFooter(it.text, it.icon_url) }
 //	url?.let { builder.setUrl(url) }
