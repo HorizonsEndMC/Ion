@@ -105,7 +105,7 @@ class TextInputMenu(
 
 				return base.updateLore(result.results.take(5).plus(
 					if (more) {
-						template(text("{0} more results", WHITE), bracketed(text(result.results.size, AQUA)))
+						template(text("{0} more results", WHITE), bracketed(text(result.results.size - 5, AQUA)))
 					} else empty()
 				))
 			}

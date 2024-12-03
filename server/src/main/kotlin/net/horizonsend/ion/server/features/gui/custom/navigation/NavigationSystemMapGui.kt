@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.gui.custom.navigation
 
+import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.SPACE_BACKGROUND_CHARACTER
 import net.horizonsend.ion.common.utils.text.colors.Colors
@@ -13,9 +14,15 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.custom.misc.ItemMenu
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.features.ores.generation.PlanetOreSettings
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.CachedPlanet
+import net.horizonsend.ion.server.features.space.CachedStar
+import net.horizonsend.ion.server.features.space.CelestialBody
+import net.horizonsend.ion.server.features.space.NamedCelestialBody
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
@@ -112,104 +119,26 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	private fun createGui(): Gui {
 
 		val star = Space.getStars().firstOrNull { star -> star.spaceWorld == world }
-		val starItem = if (star != null) GuiItems.CustomControlItem(star.name, getPlanetItems(star.name),
-			navigationInstructionComponents(
-				star,
-				star.spaceWorldName,
-				star.location.x,
-				star.location.y,
-				star.location.z)
-			) { clickType: ClickType, player: Player, _: InventoryClickEvent ->
-
-			when (clickType) {
-				ClickType.LEFT -> if (star.spaceWorldName == player.world.name) jumpAction(player, star.location.x, star.location.z)
-				ClickType.RIGHT -> waypointAction(player, star.spaceWorldName, star.location.x, star.location.z)
-				ClickType.SHIFT_LEFT -> {
-					// TODO: Add star info window opener here
-				}
-				ClickType.SHIFT_RIGHT -> {
-					val spaceWorld = star.spaceWorld ?: player.world
-					dynmapLinkAction(star.name, player, spaceWorld, star.location.x, star.location.z)
-				}
-				else -> {}
-			}
-		} else null
+		val starItem = if (star != null) createStarCustomControlItem(star) else null
 
 		planetItems.addAll(Space.getPlanets()
 			.filter { planet -> planet.spaceWorld == world }
 			.sortedBy { planet -> planet.orbitDistance }
-			.map { planet -> GuiItems.CustomControlItem(planet.name, getPlanetItems(planet.name),
-				navigationInstructionComponents(
-					planet,
-					planet.spaceWorldName,
-					planet.location.x,
-					planet.location.y,
-					planet.location.z)
-			) { clickType: ClickType, player: Player, _: InventoryClickEvent ->
-
-				when (clickType) {
-					ClickType.LEFT -> if (planet.spaceWorldName == player.world.name) jumpAction(player, planet.name)
-					ClickType.RIGHT -> waypointAction(player, planet.name)
-					ClickType.SHIFT_LEFT -> {
-						// TODO: Add planet info window opener here
-					}
-					ClickType.SHIFT_RIGHT -> {
-						val spaceWorld = planet.spaceWorld ?: player.world
-						dynmapLinkAction(planet.name, player, spaceWorld, planet.location.x, planet.location.z)
-					}
-					else -> {}
-				}
-			} }
+			.map { planet -> createPlanetCustomControlItem(planet) }
 		)
 		planetsInWorld = planetItems.size
 
 		beaconItems.addAll(IonServer.configuration.beacons
 			.filter { beacon -> beacon.spaceLocation.bukkitWorld() == world }
 			.sortedBy { beacon -> beacon.name }
-			.map { beacon -> GuiItems.CustomControlItem(beacon.name, GuiItem.BEACON, navigationInstructionComponents(
-				beacon,
-				beacon.spaceLocation.world,
-				beacon.spaceLocation.x,
-				beacon.spaceLocation.y,
-				beacon.spaceLocation.z)
-			) { clickType: ClickType, _: Player, _: InventoryClickEvent ->
-
-				when (clickType) {
-					ClickType.LEFT -> if (beacon.spaceLocation.world == player.world.name) jumpAction(player, beacon.name.replace(' ', '_'))
-					ClickType.RIGHT -> waypointAction(player, beacon.name.replace(' ', '_'))
-					ClickType.SHIFT_LEFT -> {
-						NavigationSystemMapGui(player, world).openMainWindow()
-					}
-					ClickType.SHIFT_RIGHT -> dynmapLinkAction(beacon.name, player, beacon.spaceLocation.bukkitWorld(), beacon.spaceLocation.x, beacon.spaceLocation.z)
-					else -> {}
-				}
-			} }
+			.map { beacon -> createBeaconCustomControlItem(beacon) }
 		)
 		beaconsInWorld = beaconItems.size
 
 		bookmarkItems.addAll(BookmarkCommand.getBookmarks(player)
 			.filter { bookmark -> bookmark.worldName == world.name }
 			.sortedBy { bookmark -> bookmark.name }
-			.map { bookmark -> GuiItems.CustomControlItem(bookmark.name, GuiItem.BOOKMARK,
-				navigationInstructionComponents(
-					bookmark,
-					bookmark.worldName,
-					bookmark.x,
-					bookmark.y,
-					bookmark.z))
-			{ clickType: ClickType, _: Player, _: InventoryClickEvent ->
-
-				when (clickType) {
-					ClickType.LEFT -> if (bookmark.worldName == player.world.name) jumpAction(player, bookmark.name)
-					ClickType.RIGHT -> waypointAction(player, bookmark.name)
-					ClickType.SHIFT_LEFT -> {}
-					ClickType.SHIFT_RIGHT -> {
-						val spaceWorld = Bukkit.getWorld(bookmark.worldName) ?: player.world
-						dynmapLinkAction(bookmark.name, player, spaceWorld, bookmark.x, bookmark.z)
-					}
-					else -> {}
-				}
-			} }
+			.map { bookmark -> createBookmarkCustomControlItem(bookmark) }
 		)
 		bookmarkCount = bookmarkItems.size
 
@@ -226,7 +155,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 
 		gui.setItem(2, MENU_ROW, GuiItems.CustomControlItem("Search For Destination", GuiItem.MAGNIFYING_GLASS) {
 			_: ClickType, player: Player, _: InventoryClickEvent ->
-			NavigationSearchGui(player).openMainWindow()
+			openSearchMenu(player)
 		})
 
 		updateGuiShift()
@@ -249,6 +178,52 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 
 	fun openMainWindow() {
 		currentWindow = open(player).apply { open() }
+	}
+
+	private fun openSearchMenu(player: Player) {
+		TextInputMenu(
+			player, Component.text("Search for destination"), Component.text("Enter a destination name"),
+			backButtonHandler = { this.openMainWindow() },
+			inputValidator = { input ->
+				if (input.isEmpty()) ValidatorResult.FailureResult(Component.text("Search for a destination first!", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false)) else {
+					val searchResults = getSearchResults(input)
+
+					if (searchResults.isNotEmpty()) ValidatorResult.ResultsResult(searchResults.map { obj ->
+						when (obj) {
+							is NamedCelestialBody -> Component.text(obj.name, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+							is ServerConfiguration.HyperspaceBeacon -> Component.text(obj.name, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+							is Bookmark -> Component.text(obj.name, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+							else -> Component.empty()
+						}
+					}) else ValidatorResult.FailureResult(Component.text("No destinations found!", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false))
+				}
+			},
+			successfulInputHandler = { input ->
+				val searchResults = getSearchResults(input)
+				val newGui = ItemMenu(Component.text("Search result: $input"), player, searchResults.map { obj ->
+					// converts the list of matching objects to the corresponding GUI item
+					when (obj) {
+						is CachedPlanet -> createPlanetCustomControlItem(obj)
+						is CachedStar -> createStarCustomControlItem(obj)
+						is ServerConfiguration.HyperspaceBeacon -> createBeaconCustomControlItem(obj)
+						is Bookmark -> createBookmarkCustomControlItem(obj)
+						else -> GuiItems.EmptyItem()
+					}
+				}, backButtonHandler = { this.openMainWindow() })
+				newGui.openMainWindow()
+			},
+		).open()
+	}
+
+	private fun getSearchResults(input: String): List<Any> {
+		val celestialBodies: List<CelestialBody> = Space.getStars().plus(Space.getPlanets())
+			.filter { body -> input.split(' ').all { splitInput -> body.name.contains(splitInput, ignoreCase = true) } }
+		val beacons: List<ServerConfiguration.HyperspaceBeacon> = IonServer.configuration.beacons
+			.filter { beacon -> input.split(' ').all { splitInput -> beacon.name.contains(splitInput, ignoreCase = true) } }
+		val bookmarks: List<Bookmark> = BookmarkCommand.getBookmarks(player)
+			.filter { bookmark -> input.split(' ').all { splitInput -> bookmark.name.contains(splitInput, ignoreCase = true) } }
+
+		return celestialBodies.plus(beacons).plus(bookmarks)
 	}
 
 	/**
@@ -387,6 +362,127 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 
 		return list
 	}
+
+	private fun createBookmarkCustomControlItem(bookmark: Bookmark) =
+		GuiItems.CustomControlItem(
+			bookmark.name, GuiItem.BOOKMARK,
+			navigationInstructionComponents(
+				bookmark,
+				bookmark.worldName,
+				bookmark.x,
+				bookmark.y,
+				bookmark.z
+			)
+		)
+		{ clickType: ClickType, _: Player, _: InventoryClickEvent ->
+
+			when (clickType) {
+				ClickType.LEFT -> if (bookmark.worldName == player.world.name) jumpAction(player, bookmark.name)
+				ClickType.RIGHT -> waypointAction(player, bookmark.name)
+				ClickType.SHIFT_LEFT -> {}
+				ClickType.SHIFT_RIGHT -> {
+					val spaceWorld = Bukkit.getWorld(bookmark.worldName) ?: player.world
+					dynmapLinkAction(bookmark.name, player, spaceWorld, bookmark.x, bookmark.z)
+				}
+
+				else -> {}
+			}
+		}
+
+	private fun createBeaconCustomControlItem(beacon: ServerConfiguration.HyperspaceBeacon) =
+		GuiItems.CustomControlItem(
+			beacon.name, GuiItem.BEACON, navigationInstructionComponents(
+				beacon,
+				beacon.spaceLocation.world,
+				beacon.spaceLocation.x,
+				beacon.spaceLocation.y,
+				beacon.spaceLocation.z
+			)
+		) { clickType: ClickType, _: Player, _: InventoryClickEvent ->
+
+			when (clickType) {
+				ClickType.LEFT -> if (beacon.spaceLocation.world == player.world.name) jumpAction(
+					player,
+					beacon.name.replace(' ', '_')
+				)
+
+				ClickType.RIGHT -> waypointAction(player, beacon.name.replace(' ', '_'))
+				ClickType.SHIFT_LEFT -> {
+					NavigationSystemMapGui(player, world).openMainWindow()
+				}
+
+				ClickType.SHIFT_RIGHT -> dynmapLinkAction(
+					beacon.name,
+					player,
+					beacon.spaceLocation.bukkitWorld(),
+					beacon.spaceLocation.x,
+					beacon.spaceLocation.z
+				)
+
+				else -> {}
+			}
+		}
+
+	private fun createPlanetCustomControlItem(planet: CachedPlanet) =
+		GuiItems.CustomControlItem(
+			planet.name, getPlanetItems(planet.name),
+			navigationInstructionComponents(
+				planet,
+				planet.spaceWorldName,
+				planet.location.x,
+				planet.location.y,
+				planet.location.z
+			)
+		) { clickType: ClickType, player: Player, _: InventoryClickEvent ->
+
+			when (clickType) {
+				ClickType.LEFT -> if (planet.spaceWorldName == player.world.name) jumpAction(player, planet.name)
+				ClickType.RIGHT -> waypointAction(player, planet.name)
+				ClickType.SHIFT_LEFT -> {
+					// TODO: Add planet info window opener here
+				}
+
+				ClickType.SHIFT_RIGHT -> {
+					val spaceWorld = planet.spaceWorld ?: player.world
+					dynmapLinkAction(planet.name, player, spaceWorld, planet.location.x, planet.location.z)
+				}
+
+				else -> {}
+			}
+		}
+
+	private fun createStarCustomControlItem(star: CachedStar) =
+		GuiItems.CustomControlItem(
+			star.name, getPlanetItems(star.name),
+			navigationInstructionComponents(
+				star,
+				star.spaceWorldName,
+				star.location.x,
+				star.location.y,
+				star.location.z
+			)
+		) { clickType: ClickType, player: Player, _: InventoryClickEvent ->
+
+			when (clickType) {
+				ClickType.LEFT -> if (star.spaceWorldName == player.world.name) jumpAction(
+					player,
+					star.location.x,
+					star.location.z
+				)
+
+				ClickType.RIGHT -> waypointAction(player, star.spaceWorldName, star.location.x, star.location.z)
+				ClickType.SHIFT_LEFT -> {
+					// TODO: Add star info window opener here
+				}
+
+				ClickType.SHIFT_RIGHT -> {
+					val spaceWorld = star.spaceWorld ?: player.world
+					dynmapLinkAction(star.name, player, spaceWorld, star.location.x, star.location.z)
+				}
+
+				else -> {}
+			}
+		}
 
 	private fun locationComponent(world: String, x: Int, y: Int, z: Int): Component = template(
 		"{0} @ [{1}, {2}, {3}]",
