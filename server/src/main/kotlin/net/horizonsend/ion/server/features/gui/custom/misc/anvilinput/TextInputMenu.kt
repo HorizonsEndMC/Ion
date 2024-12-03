@@ -98,7 +98,7 @@ class TextInputMenu(
 			if (result is ValidatorResult.ResultsResult) {
 				val more = result.results.size > 5
 				it.lore(result.results.take(5).plus(if (more) {
-					template(text("{0} more results", WHITE), bracketed(text(result.results.size, AQUA))).itemName
+					template(text("{0} more results", WHITE), bracketed(text(result.results.size - 5, AQUA))).itemName
 				} else empty()))
 			}
 		}
