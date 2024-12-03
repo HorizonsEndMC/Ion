@@ -265,17 +265,22 @@ object StarshipShields : IonServerComponent() {
 			return
 		}
 
-		if (starship.controller is PlayerController  && (starship.controller as PlayerController).player.hasProtection()){
-			if (handleNewProt(starship)) return
-		}
-
 		val blocks = blockList.filter { b -> starship.contains(b.x, b.y, b.z) }
 
 		if (blocks.isEmpty()) {
 			return
 		}
 
-		val damagedPercent = blocks.size.toFloat() / size.toFloat()
+		var damagedPercent = blocks.size.toFloat() / size.toFloat()
+
+		println(starship.playerPilot?.hasProtection())
+
+		if (starship.playerPilot?.hasProtection() == true){
+			println("Fired")
+			if (handleNewProt(starship)){
+				damagedPercent = 0.0f
+			}
+		}
 
 		shieldLoop@
 		for (shield: ShieldSubsystem in starship.shields) {
