@@ -3,9 +3,12 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.filters.FilterBlocks
+import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.types.FilterNode
 import net.horizonsend.ion.server.features.transport.nodes.types.FluidNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
@@ -40,6 +43,10 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		.addSimpleNode(Material.REDSTONE_BLOCK, FluidNode.FluidMergeNode)
 		.addSimpleNode(Material.IRON_BLOCK, FluidNode.FluidMergeNode)
 		.addSimpleNode(Material.LAPIS_BLOCK, FluidNode.FluidInvertedMergeNode)
+		.addFilterHandler(FilterBlocks.FLUID_FILTER) { data, location ->
+			@Suppress("UNCHECKED_CAST")
+			FluidNode.FluidFilterNode(data as FilterData<Fluid>, location)
+		}
 		.build()
 
 	override fun tickExtractor(location: BlockKey, delta: Double) { NewTransport.executor.submit {
@@ -98,7 +105,9 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		val numDestinations = filteredDestinations.size
 
 		val paths: Array<Array<Node.NodePositionData>?> = Array(numDestinations) { runCatching {
-			getIdealPath(source, filteredDestinations[it]) { node, _ -> node is FluidNode && node.canTransport(fluid) }
+			getIdealPath(source, filteredDestinations[it]) { node, _ ->
+				(node is FluidNode) && (@Suppress("UNCHECKED_CAST") (node as? FilterNode<Fluid>)?.canTransfer(fluid) ?: true)
+			}
 		}.getOrNull() }
 
 		var maximumResistance: Double = -1.0
