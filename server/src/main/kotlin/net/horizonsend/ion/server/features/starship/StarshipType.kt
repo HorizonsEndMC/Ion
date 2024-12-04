@@ -136,6 +136,7 @@ enum class StarshipType(
 		color = "#ff8000",
 		overridePermission = "ion.ships.override.1",
 		dynmapIcon = "starfighter",
+		concretePercent = 0.1,
 		balancingSupplier = IonServer.starshipBalancing::interceptor
 	),
 	GUNSHIP(
