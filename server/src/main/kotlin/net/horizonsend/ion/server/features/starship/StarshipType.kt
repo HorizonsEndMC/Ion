@@ -123,6 +123,21 @@ enum class StarshipType(
 		overridePermission = "ion.ships.ai.starfighter",
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiStarfighter
 	),
+	INTERCEPTOR(
+		displayName = "Interceptor",
+		icon = SidebarIcon.STARFIGHTER_ICON.text,
+		minSize = 150,
+		maxSize = 350,
+		minLevel = 1,
+		containerPercent = 0.025,
+		crateLimitMultiplier = 0.5,
+		menuItemMaterial = Material.IRON_NUGGET,
+		isWarship = true,
+		color = "#ff8000",
+		overridePermission = "ion.ships.override.1",
+		dynmapIcon = "starfighter",
+		balancingSupplier = IonServer.starshipBalancing::interceptor
+	),
 	GUNSHIP(
 		displayName = "Gunship",
 		icon = SidebarIcon.GUNSHIP_ICON.text,
