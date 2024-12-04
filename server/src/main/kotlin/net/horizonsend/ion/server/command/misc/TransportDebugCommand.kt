@@ -7,7 +7,6 @@ import io.papermc.paper.util.StacktraceDeobfuscator
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
-import net.horizonsend.ion.server.features.transport.old.Extractors
 import net.horizonsend.ion.server.features.transport.old.TransportConfig
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -27,12 +26,6 @@ object TransportDebugCommand : SLCommand() {
 	fun reload(sender: CommandSender) {
 		TransportConfig.reload()
 		sender.success("Reloaded config")
-	}
-
-	@Suppress("Unused")
-	@Subcommand("clearbusy")
-	fun onClearBusy(sender: CommandSender) {
-		Extractors.BUSY_PIPE_EXTRACTORS.clear()
 	}
 
 	@Subcommand("dump inputs")
