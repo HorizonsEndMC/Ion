@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
-import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -17,7 +16,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager() {
 	private val inputManager = ShipInputManager(this)
 
 	override val powerNodeManager = ShipCacheHolder(this) { PowerTransportCache(it) }
-	override val solarPanelManager: CacheHolder<SolarPanelCache> = ShipCacheHolder(this) { SolarPanelCache(it) }
+	override val solarPanelManager: ShipCacheHolder<SolarPanelCache> = ShipCacheHolder(this) { SolarPanelCache(it) }
 	override val fluidNodeManager = ShipCacheHolder(this) { FluidTransportCache(it) }
 
 	init {
@@ -25,17 +24,26 @@ class ShipTransportManager(val starship: Starship) : TransportManager() {
 	}
 
 	fun load() {
-		NewTransport.registerTransportManager(this)
+		powerNodeManager.capture()
+		solarPanelManager.capture()
+		fluidNodeManager.capture()
 		extractorManager.loadExtractors()
+		NewTransport.registerTransportManager(this)
 	}
 
 	fun release() {
-		NewTransport.removeTransportManager(this)
+		powerNodeManager.release()
+		solarPanelManager.release()
+		fluidNodeManager.release()
 		extractorManager.releaseExtractors()
+		NewTransport.removeTransportManager(this)
 	}
 
 	fun displace(movement: StarshipMovement) {
-
+		powerNodeManager.displace(movement)
+		solarPanelManager.displace(movement)
+		fluidNodeManager.displace(movement)
+		extractorManager.displace(movement)
 	}
 
 	override fun getInputProvider(): InputManager {
