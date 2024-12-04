@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -24,7 +26,7 @@ import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class TransportCache(val holder: CacheHolder<*>) {
-	private val cache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap()
+	private var cache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap()
 
 	abstract val type: CacheType
 	abstract val nodeFactory: NodeCacheFactory
@@ -69,6 +71,18 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 	}
 
 	fun getRawCache() = cache
+
+	fun displace(movement: StarshipMovement) {
+		val new = ConcurrentHashMap<BlockKey, CacheState>()
+
+		for ((key, cached) in new) {
+			val newKey = movement.displaceKey(key)
+			if (cached is ComplexNode) cached.displace(movement)
+			new[newKey] = cached
+		}
+
+		cache = new
+	}
 
 	/**
 	 * Gets the powered entities accessible from this location, assuming it is an input

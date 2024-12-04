@@ -40,7 +40,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSu
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
-import net.horizonsend.ion.server.features.transport.old.Extractors
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -57,7 +56,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import org.bukkit.boss.BarColor
@@ -118,8 +116,6 @@ object PilotedStarships : IonServerComponent() {
 		setupShieldDisplayIndicators(starship)
 
 		StarshipShields.updateShieldBars(starship)
-
-		removeExtractors(starship)
 
 		callback(starship)
 	}
@@ -185,14 +181,6 @@ object PilotedStarships : IonServerComponent() {
 		}
 	}
 
-	private fun removeExtractors(starship: ActiveControlledStarship) {
-		starship.iterateBlocks { x, y, z ->
-			if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
-				Extractors.remove(starship.world, Vec3i(x, y, z))
-			}
-		}
-	}
-
 	fun isPiloted(starship: ActiveControlledStarship): Boolean {
 		if (starship.controller is UnpilotedController) return false
 		if (starship.controller is NoOpController) return false
@@ -225,12 +213,6 @@ object PilotedStarships : IonServerComponent() {
 
 		starship.shieldBars.values.forEach { it.removeAll() }
 		starship.shieldBars.clear()
-
-		starship.iterateBlocks { x, y, z ->
-			if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
-				Extractors.add(starship.world, Vec3i(x, y, z))
-			}
-		}
 
 		StarshipUnpilotedEvent(starship, controller, unpilotedController).callEvent()
 	}
