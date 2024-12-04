@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
-import net.horizonsend.ion.server.features.transport.old.Extractors
 import net.horizonsend.ion.server.features.transport.old.pipe.filter.FilterData
 import net.horizonsend.ion.server.features.transport.old.pipe.filter.FilterItemData
 import net.horizonsend.ion.server.features.transport.old.pipe.filter.Filters
@@ -97,7 +96,7 @@ object Pipes : IonServerComponent() {
 					while (!inventoryCheckTasks.isEmpty()) {
 						val task = inventoryCheckTasks.poll()
 						val data = task.data
-						Extractors.BUSY_PIPE_EXTRACTORS.remove(data.extractor)
+//						Extractors.BUSY_PIPE_EXTRACTORS.remove(data.extractor)
 						pending.decrementAndGet()
 						val world = data.world
 						worldCounts.getOrPut(world, ::AtomicInteger).incrementAndGet()
@@ -523,7 +522,7 @@ object Pipes : IonServerComponent() {
 
 	private fun queueNotBusy(extractor: Vec3i) {
 		Tasks.syncDelay(5) {
-			Extractors.BUSY_PIPE_EXTRACTORS.remove(extractor)
+//			Extractors.BUSY_PIPE_EXTRACTORS.remove(extractor)
 		}
 	}
 
