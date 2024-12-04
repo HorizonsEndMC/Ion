@@ -56,7 +56,7 @@ interface PoweredItem : LoreCustomItem {
 	}
 
 	companion object PowerLoreManager : LoreCustomItem.CustomItemLoreManager() {
-		private val powerPrefix = text("Power: ", HEColorScheme.HE_MEDIUM_GRAY)
+		val powerPrefix = text("Power: ", HEColorScheme.HE_MEDIUM_GRAY)
 
 		override fun getLineAllotment(itemStack: ItemStack): Int {
 			return 1
