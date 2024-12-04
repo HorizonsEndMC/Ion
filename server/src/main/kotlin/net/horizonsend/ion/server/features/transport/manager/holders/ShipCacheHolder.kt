@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.transport.manager.holders
 
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
@@ -42,5 +44,23 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 
 	override fun getExtractorManager(): ExtractorManager {
 		return transportManager.extractorManager
+	}
+
+	fun capture() {
+		transportManager.starship.iterateBlocks { x, y, z ->
+			NewTransport.invalidateCache(getWorld(), x, y, z)
+
+			cache.cache(toBlockKey(x, y, z))
+		}
+	}
+
+	fun displace(movement: StarshipMovement) {
+		cache.displace(movement)
+	}
+
+	fun release() {
+		transportManager.starship.iterateBlocks { x, y, z ->
+			NewTransport.invalidateCache(getWorld(), x, y, z)
+		}
 	}
 }

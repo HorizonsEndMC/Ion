@@ -36,7 +36,7 @@ sealed interface PowerNode : Node {
         override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = offset.axis == this.axis
         override fun canTransferTo(other: Node, offset: BlockFace): Boolean = offset.axis == this.axis
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(backwards.oppositeFace)
-        override fun onTranslate(movement: StarshipMovement) {
+        override fun displace(movement: StarshipMovement) {
             this.axis = movement.displaceFace(this.axis.faces.first).axis
         }
     }
@@ -146,7 +146,7 @@ sealed interface PowerNode : Node {
             displayHandler.remove()
         }
 
-        override fun onTranslate(movement: StarshipMovement) {
+        override fun displace(movement: StarshipMovement) {
             this.face = movement.displaceFace(this.face)
             displayHandler.displace(movement)
         }
