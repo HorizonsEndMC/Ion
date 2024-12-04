@@ -172,9 +172,9 @@ class Starship(
 	//endregion
 
 	// Start region transport
-	val multiblockManager = ShipMultiblockManager(this)
-
 	val transportManager = ShipTransportManager(this)
+
+	val multiblockManager = ShipMultiblockManager(this)
 	// Endregion
 
 	//region Ship Blocks & Hitbox
