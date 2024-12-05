@@ -166,18 +166,19 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	/** Mostly to be used with blueprint load or loadship, loads entities from their sign data */
 	private fun tryFixEntities() {
 		starship.iterateBlocks { x, y, z ->
-			if (isOccupied(x, y, z)) return@iterateBlocks
-
 			val type = getBlockTypeSafe(world, x, y, z)
 			if (type?.isWallSign != true) return@iterateBlocks
 
 			val state = world.getBlockState(x, y, z) as? Sign ?: return@iterateBlocks
+			val origin = MultiblockEntity.getOriginFromSign(state)
+
+			if (isOccupied(origin.x, origin.y, origin.z)) return@iterateBlocks
+
 			val multiblock = MultiblockAccess.getFast(state)
 			if (multiblock !is EntityMultiblock<*>) return@iterateBlocks
 
 			val data = state.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData) ?: return MultiblockEntities.migrateFromSign(state, multiblock)
 
-			val origin = MultiblockEntity.getOriginFromSign(state)
 
 			// In case it moved
 			data.x = origin.x
