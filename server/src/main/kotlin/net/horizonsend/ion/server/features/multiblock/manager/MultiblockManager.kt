@@ -60,6 +60,7 @@ abstract class MultiblockManager(val log: Logger) {
 			}
 		}
 
+		multiblockEntities.remove(entity.locationKey)?.processRemoval()
 		multiblockEntities[entity.locationKey] = entity
 
 		entity.processLoad()

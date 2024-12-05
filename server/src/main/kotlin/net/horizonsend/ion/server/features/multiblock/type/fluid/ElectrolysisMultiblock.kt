@@ -187,8 +187,14 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		val entity = getMultiblockEntity(sign) ?: return player.alert("NULL")
 
-		entity.displayHandler.displays.forEach {
-			player.highlightBlock(it.entity.blockPosition().toVec3i(), 10L)
+		val handler = entity.displayHandler
+		player.information("Location ${handler.blockX}, ${handler.blockY}, ${handler.blockZ}")
+		player.information("Facing ${handler.facing}")
+
+		entity.displayHandler.displays.forEach { display ->
+			player.information("Display $display")
+			player.information("Offset ${display.getLocation(handler)}")
+			player.highlightBlock(display.entity.blockPosition().toVec3i(), 10L)
 		}
 
 		player.information(entity.toString())
