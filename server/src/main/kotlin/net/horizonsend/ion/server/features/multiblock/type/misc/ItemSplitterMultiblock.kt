@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SPLITTER_DIRECTION
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -130,6 +131,7 @@ object ItemSplitterMultiblock : Multiblock(), InteractableMultiblock, EntityMult
 		private var isBlacklist: Boolean
 	) : MultiblockEntity(manager, ItemSplitterMultiblock, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, LegacyMultiblockEntity {
 		override val tickingManager: TickingManager = TickingManager(interval = 20)
+		override val inputsData: InputsData = none()
 
 		override fun tick() {
 			val filterItems = getBlacklist() ?: return
