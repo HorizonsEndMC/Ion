@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.types
 
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.transport.util.getOrCacheNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import org.bukkit.World
@@ -23,13 +22,20 @@ interface Node {
 	 **/
 	fun canTransferFrom(other: Node, offset: BlockFace): Boolean
 
-	fun getNextNodes(world: World, position: BlockKey, backwards: BlockFace, filter: ((Node, BlockFace) -> Boolean)?): List<NodePositionData> {
+	fun getNextNodes(
+		world: World,
+		position: BlockKey,
+		backwards: BlockFace,
+		cachedNodeProvider: (CacheType, World, BlockKey) -> Node?,
+		filter: ((Node, BlockFace) -> Boolean)?
+	): List<NodePositionData> {
 		val adjacent = getTransferableDirections(backwards)
 		val nodes = mutableListOf<NodePositionData>()
 
 		for (adjacentFace in adjacent) {
 			val pos = getRelative(position, adjacentFace)
-			val cached = getOrCacheNode(cacheType, world, pos) ?: continue
+//			val cached = getOrCacheNode(cacheType, world, pos) ?: continue
+			val cached = cachedNodeProvider.invoke(cacheType, world, pos) ?: continue
 
 			if (!cached.canTransferFrom(this, adjacentFace) || !canTransferTo(cached, adjacentFace)) continue
 			if (filter != null && !filter.invoke(cached, adjacentFace)) continue
@@ -43,8 +49,8 @@ interface Node {
 	fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> = nextNodes
 
 	data class NodePositionData(val type: Node, val world: World, val position: BlockKey, val offset: BlockFace) {
-		fun getNextNodes(filter: ((Node, BlockFace) -> Boolean)?): List<NodePositionData> =
-				type.getNextNodes(world, position, offset.oppositeFace, filter)
+		fun getNextNodes(cachedNodeProvider: (CacheType, World, BlockKey) -> Node?, filter: ((Node, BlockFace) -> Boolean)?): List<NodePositionData> =
+				type.getNextNodes(world, position, offset.oppositeFace, cachedNodeProvider, filter)
 	}
 
 	fun onInvalidate() {}
