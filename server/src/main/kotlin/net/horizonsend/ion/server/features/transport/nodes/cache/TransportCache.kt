@@ -54,7 +54,12 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 		cache(location, block)
 	}
 
-	fun cache(location: BlockKey, block: Block): Node? {
+	private val mutex = Any()
+
+	fun cache(location: BlockKey, block: Block): Node? = synchronized(mutex)  {
+		// On race conditions
+		cache[location]?.let { return@synchronized (it as? CacheState.Present)?.node }
+
 		val type = nodeFactory.cache(block)
 		val state = if (type == null) CacheState.Empty else CacheState.Present(type)
 

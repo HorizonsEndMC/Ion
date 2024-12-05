@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import org.bukkit.Location
 import org.bukkit.World
@@ -95,6 +96,8 @@ object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntit
 		world: World,
 		signDirection: BlockFace
 	) : MultiblockEntity(manager, MobDefender, x, y, z, world, signDirection) {
+		override val inputsData: InputsData = none()
+
 		override fun onLoad() {
 			world.ion.multiblockManager.register(this)
 		}
