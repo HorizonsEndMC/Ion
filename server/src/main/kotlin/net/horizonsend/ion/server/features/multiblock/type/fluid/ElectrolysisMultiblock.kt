@@ -29,7 +29,7 @@ import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset.sta
 import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.LOW_PRESSURE_HYDROGEN_GAS
 import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.LOW_PRESSURE_OXYGEN_GAS
 import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.WATER
-import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_3
@@ -207,9 +207,6 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		override val multiblock = ElectrolysisMultiblock
 		override val tickingManager: TickingManager = TickingManager(interval = 4)
 
-		override val fluidInputOffsets: Array<Vec3i> = arrayOf(Vec3i(-2, -1, 1), Vec3i(+2, -1, 1))
-		override val powerInputOffsets: Array<Vec3i> = arrayOf(Vec3i(0, -1, 0))
-
 		override val powerStorage: PowerStorage = loadStoredPower(data)
 
 		override val fluidStores: Array<StorageContainer> = arrayOf(
@@ -243,20 +240,11 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 			savePowerData(store)
 		}
 
-		override fun onLoad() {
-			registerInputs(CacheType.FLUID, getFluidInputLocations())
-			registerInputs(CacheType.POWER, getPowerInputLocations())
-		}
-
-		override fun onUnload() {
-			releaseInputs(CacheType.FLUID, getFluidInputLocations())
-			releaseInputs(CacheType.POWER, getPowerInputLocations())
-		}
-
-		override fun handleRemoval() {
-			releaseInputs(CacheType.FLUID, getFluidInputLocations())
-			releaseInputs(CacheType.POWER, getPowerInputLocations())
-		}
+		override val inputsData: InputsData = InputsData.builder(this)
+			.addPowerInput(0, -1, 0)
+			.addFluidInput(-2, -1, 1)
+			.addFluidInput(+2, -1, 1)
+			.build()
 
 //		override fun toString(): String = "Structure direction $structureDirection, display direction ${displayHandler.facing}"
 

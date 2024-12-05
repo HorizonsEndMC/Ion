@@ -46,7 +46,7 @@ class TextDisplayHandler(
 
 	fun register(): TextDisplayHandler {
 		displays.forEach {
-			it.setParent(this)
+			it.initialize(this)
 			it.register()
 		}
 
@@ -58,9 +58,9 @@ class TextDisplayHandler(
 	fun getLocation(): Location {
 		val rightFace = if (facing.axis == Axis.Y) BlockFace.NORTH else facing.rightFace
 
-		val offsetX = rightFace.modX * offsetRight + facing.modX * offsetForward
+		val offsetX = (rightFace.modX * offsetRight) + (facing.modX * offsetForward)
 		val offsetY = offsetUp
-		val offsetZ = rightFace.modZ * offsetRight + facing.modZ * offsetForward
+		val offsetZ = (rightFace.modZ * offsetRight) + (facing.modZ * offsetForward)
 
 		return Location(world, anchorX + offsetX, anchorY + offsetY, anchorZ + offsetZ)
 	}
