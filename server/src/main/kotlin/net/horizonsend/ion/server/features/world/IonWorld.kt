@@ -4,12 +4,14 @@ import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.data.DataVersioned
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawner
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
@@ -19,13 +21,14 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldSaveEvent
 import org.bukkit.event.world.WorldUnloadEvent
+import org.bukkit.persistence.PersistentDataType.INTEGER
 import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
 import kotlin.DeprecationLevel.ERROR
 
 class IonWorld private constructor(
 	val world: World,
 	val starships: MutableList<ActiveStarship> = mutableListOf()
-) {
+) : DataVersioned<World> {
 	/**
 	 * The world configuration
 	 *
@@ -148,5 +151,15 @@ class IonWorld private constructor(
 
 	fun saveForbiddenBlocks() {
 		world.persistentDataContainer.set(FORBIDDEN_BLOCKS, LONG_ARRAY, detectionForbiddenBlocks.toLongArray())
+	}
+
+	override val latestDataVersion: Int = 0
+
+	override fun getDataVersion(subject: World): Int {
+		return subject.persistentDataContainer.getOrDefault(NamespacedKeys.DATA_VERSION, INTEGER, 0)
+	}
+
+	override fun setDataVersion(subject: World, version: Int) {
+		return subject.persistentDataContainer.set(NamespacedKeys.DATA_VERSION, INTEGER, version)
 	}
 }
