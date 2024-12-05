@@ -120,7 +120,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		val numDestinations = filteredDestinations.size
 
 		val paths: Array<Array<Node.NodePositionData>?> = Array(numDestinations) { runCatching {
-			getIdealPath(source, filteredDestinations[it])
+			getIdealPath(source, filteredDestinations[it], holder.nodeProvider)
 		}.getOrNull() }
 
 		var maximumResistance: Double = -1.0
