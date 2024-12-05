@@ -1,35 +1,32 @@
 package net.horizonsend.ion.server.features.custom
 
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponent
 import net.horizonsend.ion.server.features.custom.items.components.LoreManager
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.data.DataVersioned
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
 open class NewCustomItem(
 	val identifier: String,
-	val baseItemFactory: ItemFactory,
+	val displayName: Component,
+	baseItemFactory: ItemFactory,
 	private val customComponents: List<CustomItemComponent>,
 	override val latestDataVersion: Int = 0
 ) : DataVersioned<ItemStack> {
-	fun constructItemStack(): ItemStack {
-		val base = baseItemFactory.construct()
+	protected val baseItemFactory = ItemFactory.builder(baseItemFactory)
+		.setNameSupplier { displayName.itemName }
+		.addPDCEntry(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
+		.addModifier { base -> customComponents.forEach { it.decorateBase(base) } }
+		.addModifier { base -> decorateItemStack(base) }
+		.setLoreSupplier { base -> assembleLore(base) }
+		.build()
 
-		base.updateMeta { it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier) }
-		base.setData(DataComponentTypes.LORE, ItemLore.lore(assembleLore(base)))
-
-		customComponents.forEach { it.decorateBase(base) }
-		decorateItemStack(base)
-
-		return base
-	}
+	fun constructItemStack(): ItemStack = baseItemFactory.construct()
 
 	open fun decorateItemStack(base: ItemStack) {}
 
