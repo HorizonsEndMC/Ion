@@ -105,7 +105,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		val numDestinations = filteredDestinations.size
 
 		val paths: Array<Array<Node.NodePositionData>?> = Array(numDestinations) { runCatching {
-			getIdealPath(source, filteredDestinations[it]) { node, _ ->
+			getIdealPath(source, filteredDestinations[it], holder.nodeProvider) { node, _ ->
 				(node is FluidNode) && (@Suppress("UNCHECKED_CAST") (node as? FilterNode<Fluid>)?.canTransfer(fluid) ?: true)
 			}
 		}.getOrNull() }
