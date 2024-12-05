@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.transport.nodes.inputs.ShipInputManag
 
 class ShipTransportManager(val starship: Starship) : TransportManager() {
 	override val extractorManager: ShipExtractorManager = ShipExtractorManager(starship)
-	private val inputManager = ShipInputManager(this)
+	val inputManager = ShipInputManager(this)
 
 	override val powerNodeManager = ShipCacheHolder(this) { PowerTransportCache(it) }
 	override val solarPanelManager: ShipCacheHolder<SolarPanelCache> = ShipCacheHolder(this) { SolarPanelCache(it) }
