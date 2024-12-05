@@ -103,6 +103,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 
 	fun onUnload() {
 		multiblockEntities.values.forEach {
+			it.releaseInputs()
 			it.onUnload()
 
 			if (it is DisplayMultiblockEntity) it.displayHandler.remove()
