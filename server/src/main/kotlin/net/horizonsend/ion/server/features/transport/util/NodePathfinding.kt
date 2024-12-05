@@ -21,7 +21,7 @@ fun getOrCacheNode(type: CacheType, world: World, pos: BlockKey): Node? {
 /**
  * Uses the A* algorithm to find the shortest available path between these two nodes.
  **/
-fun getIdealPath(from: Node.NodePositionData, to: BlockKey, pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null): Array<Node.NodePositionData>? {
+fun getIdealPath(from: Node.NodePositionData, to: BlockKey, cachedNodeProvider: (CacheType, World, BlockKey) -> Node?, pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null): Array<Node.NodePositionData>? {
 	// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
 	val queue = PriorityQueue<PathfindingNodeWrapper> { o1, o2 -> o2.f.compareTo(o1.f) }
 	// The hash set here is to speed up the .contains() check further down the road, which is slow with the queue.
@@ -58,7 +58,7 @@ fun getIdealPath(from: Node.NodePositionData, to: BlockKey, pathfindingFilter: (
 		queueRemove(current)
 		visited.add(current.node.hashCode())
 
-		for (neighbor in getNeighbors(current, pathfindingFilter)) {
+		for (neighbor in getNeighbors(current, cachedNodeProvider, pathfindingFilter)) {
 			if (visited.contains(neighbor.node.hashCode())) continue
 			neighbor.f = (neighbor.g + getHeuristic(neighbor, to))
 
@@ -79,8 +79,12 @@ fun getIdealPath(from: Node.NodePositionData, to: BlockKey, pathfindingFilter: (
 }
 
 // Wraps neighbor nodes in a data class to store G and F values for pathfinding. Should probably find a better solution
-fun getNeighbors(current: PathfindingNodeWrapper, filter: ((Node, BlockFace) -> Boolean)?): Array<PathfindingNodeWrapper> {
-	val transferable = current.node.getNextNodes(filter)
+fun getNeighbors(
+	current: PathfindingNodeWrapper,
+	cachedNodeProvider: (CacheType, World, BlockKey) -> Node?,
+	filter: ((Node, BlockFace) -> Boolean)?
+): Array<PathfindingNodeWrapper> {
+	val transferable = current.node.getNextNodes(cachedNodeProvider, filter)
 
 	return Array(transferable.size) {
 		val next = transferable[it]
