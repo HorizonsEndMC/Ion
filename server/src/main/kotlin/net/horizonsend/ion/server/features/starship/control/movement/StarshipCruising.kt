@@ -334,7 +334,7 @@ object StarshipCruising : IonServerComponent() {
 		starship.cruiseData = CruiseData(starship)
 	}
 
-	fun isCruising(starship: ActiveControlledStarship) = starship.cruiseData.targetDir != null
+	fun isCruising(starship: ActiveControlledStarship) = starship.cruiseData.velocity.lengthSquared() != 0.0
 
 	enum class Diagonal {
 		DIAGONAL_LEFT { override fun getRightFace(forward: BlockFace): BlockFace { return forward.leftFace } },
