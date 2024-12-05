@@ -19,7 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory.GAS
-import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_1
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TANK_2
@@ -110,7 +110,6 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		structureDirection: BlockFace,
 	) : MultiblockEntity(manager, PipedGasCollectorMultiblock, x, y, z, world, structureDirection), AsyncTickingMultiblockEntity, FluidStoringEntity, DisplayMultiblockEntity {
 		override val tickingManager: TickingManager = TickingManager(interval = 4)
-		override val fluidInputOffsets: Array<Vec3i> = arrayOf(Vec3i(0, -1, 0))
 
 		override val fluidStores: Array<StorageContainer> = arrayOf(
 			loadStoredResource(data, "tank_1", text("Tank 1"), TANK_1, CategoryRestrictedInternalStorage(500, inputAllowed = false, extractionAllowed = true, GAS)),
@@ -125,17 +124,9 @@ object PipedGasCollectorMultiblock : Multiblock(),
 			SimpleFluidDisplay(getNamedStorage("tank_3"), +0.0, -0.10, 0.0, 0.45f)
 		).register()
 
-		override fun onLoad() {
-			registerInputs(CacheType.FLUID, getFluidInputLocations())
-		}
-
-		override fun onUnload() {
-			releaseInputs(CacheType.FLUID, getFluidInputLocations())
-		}
-
-		override fun handleRemoval() {
-			releaseInputs(CacheType.FLUID, getFluidInputLocations())
-		}
+		override val inputsData: InputsData = InputsData.builder(this)
+			.addFluidInput(0, -1, 0)
+			.build()
 
 		private val worldConfig get() = world.ion.configuration.gasConfiguration
 

@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidSt
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.UnlimitedInternalStorage
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -60,20 +60,9 @@ abstract class FluidStorageMultiblock(val capacity: Int) : Multiblock(), EntityM
 			SplitFluidDisplay(mainStorage, +0.0, -0.0, +0.0, 0.45f),
 		).register()
 
-		override val fluidInputOffsets: Array<Vec3i> = arrayOf(Vec3i(0, -1, 0))
-
-		override fun onLoad() {
-			registerInputs(CacheType.FLUID, getFluidInputLocations())
-		}
-
-		override fun onUnload() {
-			releaseInputs(CacheType.FLUID, getFluidInputLocations())
-		}
-
-		override fun handleRemoval() {
-			releaseInputs(CacheType.FLUID, getFluidInputLocations())
-
-		}
+		override val inputsData: InputsData = InputsData.builder(this)
+			.addFluidInput(0, -1, 0)
+			.build()
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 			storeFluidData(store, adapterContext)
