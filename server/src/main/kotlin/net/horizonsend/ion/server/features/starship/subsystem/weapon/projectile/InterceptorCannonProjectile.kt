@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.text.Component
@@ -30,7 +29,7 @@ class InterceptorCannonProjectile(
 	override val soundName: String = balancing.soundName
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		if (starship.type == StarshipType.STARFIGHTER || starship.type == StarshipType.INTERCEPTOR) {
+		if (starship.initialBlockCount < 1000) {
 			impactLocation.createExplosion(12.0f)
 		}
 	}
