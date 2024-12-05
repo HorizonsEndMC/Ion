@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.transport.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.util.getHeuristic
 import net.horizonsend.ion.server.features.transport.util.getNeighbors
+import net.horizonsend.ion.server.features.transport.util.getOrCacheNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
@@ -149,7 +150,7 @@ object MultimeterItem : CustomItem("MULTIMETER") {
 			queueRemove(current)
 			visited.add(current.node.position)
 
-			val neighbors = getNeighbors(current, null)
+			val neighbors = getNeighbors(current, { cacheType, world, pos -> getOrCacheNode(cacheType, world, pos) },null)
 			if (neighbors.isEmpty()) audience.userError("Empty neighbors")
 
 			for (newNeighbor in neighbors) {

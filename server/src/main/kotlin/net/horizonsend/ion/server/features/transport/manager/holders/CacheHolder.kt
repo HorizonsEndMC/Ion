@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
 
@@ -39,4 +40,6 @@ interface CacheHolder <T: TransportCache> {
 	fun getMultiblockManager(): MultiblockManager
 
 	fun getExtractorManager(): ExtractorManager
+
+	abstract val nodeProvider: (CacheType, World, BlockKey) -> Node?
 }

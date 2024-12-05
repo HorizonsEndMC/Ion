@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.transport.manager.ShipTransportManage
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -62,5 +63,9 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 		transportManager.starship.iterateBlocks { x, y, z ->
 			NewTransport.invalidateCache(getWorld(), x, y, z)
 		}
+	}
+
+	override val nodeProvider: (CacheType, World, BlockKey) -> Node? = { cacheType, world, pos ->
+		getInternalNode(pos)
 	}
 }

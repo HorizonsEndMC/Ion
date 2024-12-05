@@ -167,6 +167,7 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 			world = holder.getWorld(),
 			position = originPos,
 			backwards = BlockFace.SELF,
+			holder.nodeProvider,
 			null
 		))
 
@@ -176,7 +177,7 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 
 			if (current.type is T && check(current)) destinations.add(current.position)
 
-			visitQueue.addAll(current.getNextNodes(null).filterNot { visited.contains(it.position) || visitQueue.contains(it) })
+			visitQueue.addAll(current.getNextNodes(holder.nodeProvider, null).filterNot { visited.contains(it.position) || visitQueue.contains(it) })
 		}
 
 		return destinations.toList()
