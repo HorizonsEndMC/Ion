@@ -1,11 +1,15 @@
 package net.horizonsend.ion.server.features.custom.items.util
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.HORIZONSEND_NAMESPACE
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import java.util.function.Consumer
 import java.util.function.Supplier
 
@@ -14,6 +18,8 @@ class ItemFactory private constructor(
 	val customModel: String?,
 	val maxStackSize: Int?,
 	val nameSupplier: Supplier<Component>?,
+	val loreSupplier: ((ItemStack) -> List<Component>)?,
+	val itemModifiers: List<Consumer<ItemStack>>
 ) {
 	fun construct(): ItemStack {
 		val base = ItemStack(material)
@@ -21,6 +27,9 @@ class ItemFactory private constructor(
 		if (customModel != null) base.setData(DataComponentTypes.ITEM_MODEL, Key.key(HORIZONSEND_NAMESPACE, customModel))
 		if (maxStackSize != null) base.setData(DataComponentTypes.MAX_STACK_SIZE, maxStackSize)
 		if (nameSupplier != null) base.setData(DataComponentTypes.CUSTOM_NAME, nameSupplier.get())
+		if (loreSupplier != null) base.setData(DataComponentTypes.LORE, ItemLore.lore(loreSupplier.invoke(base)))
+
+		itemModifiers.forEach { it.accept(base) }
 
 		return base
 	}
@@ -30,11 +39,22 @@ class ItemFactory private constructor(
 		modifier.accept(base)
 	}
 
-	class Builder {
+	class Builder() {
+		constructor(from: ItemFactory) : this() {
+			this.material = from.material
+			this.customModel = from.customModel
+			this.maxStackSize = from.maxStackSize
+			this.nameSupplier = from.nameSupplier
+			this.loreSupplier = from.loreSupplier
+			this.itemModifiers = from.itemModifiers.toMutableList()
+		}
+
 		private var material = Material.WARPED_FUNGUS_ON_A_STICK
 		private var customModel: String? = null
 		private var maxStackSize: Int? = null
 		private var nameSupplier: Supplier<Component>? = null
+		private var loreSupplier: ((ItemStack) -> List<Component>)? = null
+		private var itemModifiers: MutableList<Consumer<ItemStack>> = mutableListOf()
 
 		fun setMaterial(material: Material): Builder {
 			this.material = material
@@ -57,13 +77,44 @@ class ItemFactory private constructor(
 			return this
 		}
 
+		fun setLoreSupplier(loreSupplier: (ItemStack) -> List<Component>): Builder {
+			this.loreSupplier = loreSupplier
+			return this
+		}
+
+		fun addModifier(modifier: Consumer<ItemStack>): Builder {
+			this.itemModifiers += modifier
+			return this
+		}
+
+		fun <T : Any> addPDCEntry(key: NamespacedKey, type: PersistentDataType<*, T>, value: T): Builder {
+			return addModifier { it.itemMeta.persistentDataContainer.set(key, type, value) }
+		}
+
 		fun build(): ItemFactory {
 			return ItemFactory(
 				material = this.material,
 				customModel = this.customModel,
 				maxStackSize = this.maxStackSize,
 				nameSupplier = this.nameSupplier,
+				loreSupplier = this.loreSupplier,
+				itemModifiers = this.itemModifiers,
 			)
 		}
+	}
+
+	companion object Preset {
+		fun builder() = Builder()
+		fun builder(from: ItemFactory) = Builder(from)
+
+		val baseIngotItem = builder()
+			.setMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+			.setMaxStackSize(64)
+			.build()
+
+		val titaniumIngotItem = builder(baseIngotItem)
+			.setCustomModel("items/titanium_ingot")
+			.setNameSupplier { Component.text("Titanium Ingot").itemName }
+			.build()
 	}
 }
