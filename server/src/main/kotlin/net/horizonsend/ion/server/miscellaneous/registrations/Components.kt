@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons
+import net.horizonsend.ion.server.features.data.migrator.DataMigrators
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateRestrictions
@@ -93,7 +94,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 
 val components: List<IonComponent> = listOf(
-	NMSAchievements,
 	GameplayTweaks,
 	DBManager,
 	RedisActions,
@@ -111,8 +111,10 @@ val components: List<IonComponent> = listOf(
 	NPCTraits,
 	CombatNPCs,
 
+	DataMigrators,
 	CustomRecipes,
 	Crafting,
+	NMSAchievements,
 
 	Space,
 	Orbits,
