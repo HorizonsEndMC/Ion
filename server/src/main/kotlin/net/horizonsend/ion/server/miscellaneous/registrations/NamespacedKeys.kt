@@ -77,4 +77,7 @@ object NamespacedKeys {
 	val FORBIDDEN_BLOCKS = key("forbidden_blocks")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
+
+	// Used for datapacks and resource packs
+	const val HORIZONSEND_NAMESPACE = "horizonsend"
 }
