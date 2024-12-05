@@ -65,7 +65,7 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 		}
 	}
 
-	override val nodeProvider: (CacheType, World, BlockKey) -> Node? = { cacheType, world, pos ->
+	override val nodeProvider: (CacheType, World, BlockKey) -> Node? = { _, _, pos ->
 		getInternalNode(pos)
 	}
 }
