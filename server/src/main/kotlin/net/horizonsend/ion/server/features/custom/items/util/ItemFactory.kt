@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.custom.items.util
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.HORIZONSEND_NAMESPACE
-import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -107,14 +106,16 @@ class ItemFactory private constructor(
 		fun builder() = Builder()
 		fun builder(from: ItemFactory) = Builder(from)
 
-		val baseIngotItem = builder()
+		fun ItemFactory.withModel(model: String) = builder(this).setCustomModel(model).build()
+
+		val stackableCustomItem = builder()
 			.setMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
 			.setMaxStackSize(64)
 			.build()
 
-		val titaniumIngotItem = builder(baseIngotItem)
-			.setCustomModel("items/titanium_ingot")
-			.setNameSupplier { Component.text("Titanium Ingot").itemName }
+		val unStackableCustomItem = builder()
+			.setMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+			.setMaxStackSize(1)
 			.build()
 	}
 }
