@@ -6,22 +6,28 @@ import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
+import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -153,5 +159,80 @@ object MultiblockCommand : SLCommand() {
 
 		destination.inventory.addItem(MultiblockToken.constructFor(prePackagedType))
 		sender.information("Added to inventory")
+	}
+
+	@Subcommand("debug dump entities chunk")
+	@CommandCompletion("true|false")
+	fun onDumpEntitiesChunk(sender: Player, @Optional visual: Boolean?, @Optional page: Int?) {
+		val manager = sender.chunk.ion().multiblockManager
+		val entities = manager.getAllMultiblockEntities().toList()
+
+		sender.sendMessage(
+			formatPaginatedMenu(
+				entities.size,
+				"/ionchunk dumpentities ${visual ?: false}",
+				page ?: 1,
+			) { index ->
+				val (key, entity) = entities[index]
+
+				val vec = toVec3i(key)
+
+				text("$vec : $entity")
+			})
+
+		if (visual == true) {
+			for ((key, _) in entities) {
+				val vec = toVec3i(key)
+
+				sender.highlightBlock(vec, 30L)
+			}
+		}
+
+		sender.information("Sync Ticked: ${manager.syncTickingMultiblockEntities}")
+		sender.information("Async Ticked: ${manager.asyncTickingMultiblockEntities}")
+	}
+
+	@Subcommand("debug dump entities ship")
+	@CommandCompletion("true|false")
+	fun onDumpEntitiesShip(sender: Player, @Optional visual: Boolean?, @Optional page: Int?) {
+		val ship = getStarshipPiloting(sender)
+		val manager = ship.multiblockManager
+		val entities = manager.getAllMultiblockEntities().toList()
+
+		sender.sendMessage(
+			formatPaginatedMenu(
+				entities.size,
+				"/ionchunk dumpentities ${visual ?: false}",
+				page ?: 1,
+			) { index ->
+				val (key, entity) = entities[index]
+
+				val vec = toVec3i(key)
+
+				text("$vec : $entity")
+			})
+
+		if (visual == true) {
+			for ((key, _) in entities) {
+				val vec = toVec3i(key)
+
+				sender.highlightBlock(vec, 30L)
+			}
+		}
+
+		sender.information("Sync Ticked: ${manager.syncTickingMultiblockEntities}")
+		sender.information("Async Ticked: ${manager.asyncTickingMultiblockEntities}")
+	}
+
+	@Subcommand("debug remove all entities")
+	fun onRemoveAll(sender: Player) {
+		val ionChunk = sender.chunk.ion()
+		val entities = ionChunk.multiblockManager.getAllMultiblockEntities()
+
+		for ((key, _) in entities) {
+			val (x, y, z) = toVec3i(key)
+
+			ionChunk.multiblockManager.removeMultiblockEntity(x, y, z)
+		}
 	}
 }
