@@ -5,11 +5,6 @@ import net.horizonsend.ion.server.features.client.display.modular.display.Displa
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -23,37 +18,32 @@ object DisplayHandlers : IonServerComponent() {
 
 	fun newMultiblockSignOverlay(entity: MultiblockEntity, vararg display: Display): TextDisplayHandler {
 		val signDirection = entity.structureDirection.oppositeFace
+		val signLocation = entity.getSignLocation()
 
 		return TextDisplayHandler(
 			entity,
 			entity.world,
-			entity.x.toDouble() + 0.5,
-			entity.y.toDouble() + 0.4,
-			entity.z.toDouble() + 0.5,
-			offsetRight = 0.0,
-			offsetUp = 0.0,
-			offsetForward = 0.61,
+			signLocation.blockX,
+			signLocation.blockY,
+			signLocation.blockZ,
+			0.0,
+			-0.1,
+			-0.39, // Back up towards the sign
 			signDirection,
 			*display
 		)
 	}
 
 	fun newBlockOverlay(holder: DisplayHandlerHolder, world: World, block: Vec3i, direction: BlockFace, vararg display: Display): TextDisplayHandler {
-		val facingBlock = getRelative(toBlockKey(block), direction)
-
-		val x = getX(facingBlock).toDouble() + 0.5
-		val y = getY(facingBlock).toDouble() + 0.35
-		val z = getZ(facingBlock).toDouble() + 0.5
-
 		return TextDisplayHandler(
 			holder,
 			world,
-			x,
-			y,
-			z,
-			offsetRight = 0.0,
-			offsetUp = 0.0,
-			offsetForward = -0.45,
+			block.x,
+			block.y,
+			block.z,
+			0.0,
+			-0.15,
+			0.55,
 			direction,
 			*display
 		)

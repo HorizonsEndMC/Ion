@@ -18,6 +18,7 @@ import net.minecraft.world.entity.EntityType
 import org.bukkit.Axis.Y
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.Color
+import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.v1_20_R3.CraftServer
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
@@ -32,7 +33,7 @@ abstract class Display(
 	private val offsetForward: Double,
 	val scale: Float
 ) {
-	var shownPlayers = mutableSetOf<UUID>()
+	private var shownPlayers = mutableSetOf<UUID>()
 
 	protected lateinit var handler: TextDisplayHandler
 	lateinit var entity: TextDisplay; private set
@@ -60,6 +61,23 @@ abstract class Display(
 
 	val mutex = Any()
 
+	fun getLocation(parent: TextDisplayHandler): Location {
+		val rightFace = if (parent.facing.axis == Y) BlockFace.NORTH else parent.facing.rightFace
+
+		val offsetX = (rightFace.modX * offsetRight) + (parent.facing.modX * offsetForward)
+		val offsetY = offsetUp
+		val offsetZ = (rightFace.modZ * offsetRight) + (parent.facing.modZ * offsetForward)
+
+		val parentLoc = parent.getLocation()
+
+		return Location(
+			parent.world,
+			parentLoc.x + offsetX,
+			parentLoc.y + offsetY,
+			parentLoc.z + offsetZ
+		)
+	}
+
 	fun initialize(parent: TextDisplayHandler) = synchronized(mutex) {
 		if (isInitializing || this::handler.isInitialized) {
 			return@synchronized
@@ -69,36 +87,24 @@ abstract class Display(
 
 		this.handler = parent
 
-		val rightFace = if (parent.facing.axis == Y) BlockFace.NORTH else parent.facing.rightFace
-
-		val offsetX = rightFace.modX * offsetRight + parent.facing.modX * offsetForward
-		val offsetY = offsetUp
-		val offsetZ = rightFace.modZ * offsetRight + parent.facing.modZ * offsetForward
-
-		val parentLoc = parent.getLocation()
+		val location = getLocation(parent)
 
 		runCatching {
 			entity = createEntity(parent).getNMSData(
-				parentLoc.x + offsetX,
-				parentLoc.y + offsetY,
-				parentLoc.z + offsetZ
+				location.x,
+				location.y,
+				location.z
 			)
 		}
 	}
 
 	fun resetPosition(parent: TextDisplayHandler) {
-		val rightFace = if (parent.facing.axis == Y) BlockFace.NORTH else parent.facing.rightFace
-
-		val offsetX = (rightFace.modX * offsetRight) + (parent.facing.modX * offsetForward)
-		val offsetY = offsetUp
-		val offsetZ = (rightFace.modZ * offsetRight) + (parent.facing.modZ * offsetForward)
-
-		val parentLoc = parent.getLocation()
+		val location = getLocation(parent)
 
 		entity.teleportTo(
-			parentLoc.x + offsetX,
-			parentLoc.y + offsetY,
-			parentLoc.z + offsetZ
+			location.x,
+			location.y,
+			location.z
 		)
 
 		entity.setTransformation(com.mojang.math.Transformation(
