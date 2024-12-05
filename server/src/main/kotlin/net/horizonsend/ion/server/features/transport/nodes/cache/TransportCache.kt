@@ -80,9 +80,10 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 	fun displace(movement: StarshipMovement) {
 		val new = ConcurrentHashMap<BlockKey, CacheState>()
 
-		for ((key, cached) in new) {
+		for ((key, cached) in cache) {
 			val newKey = movement.displaceKey(key)
-			if (cached is ComplexNode) cached.displace(movement)
+			val presentNode = (cached as? CacheState.Present)?.node
+			if (presentNode is ComplexNode) presentNode.displace(movement)
 			new[newKey] = cached
 		}
 
