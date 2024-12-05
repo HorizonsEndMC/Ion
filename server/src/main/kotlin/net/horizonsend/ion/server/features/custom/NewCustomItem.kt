@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttr
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponent
 import net.horizonsend.ion.server.features.custom.items.components.LoreManager
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
+import net.horizonsend.ion.server.features.data.DataVersioned
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
@@ -15,19 +16,16 @@ import org.bukkit.persistence.PersistentDataType
 open class NewCustomItem(
 	val identifier: String,
 	val baseItemFactory: ItemFactory,
-	private val customComponents: List<CustomItemComponent>
-) {
+	private val customComponents: List<CustomItemComponent>,
+	override val latestDataVersion: Int = 0
+) : DataVersioned<ItemStack> {
 	fun constructItemStack(): ItemStack {
 		val base = baseItemFactory.construct()
 
-		base.updateMeta {
-			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
-		}
-
+		base.updateMeta { it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier) }
 		base.setData(DataComponentTypes.LORE, ItemLore.lore(assembleLore(base)))
 
 		customComponents.forEach { it.decorateBase(base) }
-
 		decorateItemStack(base)
 
 		return base
@@ -55,4 +53,12 @@ open class NewCustomItem(
 	}
 
 	fun getAttributes(itemStack: ItemStack): List<CustomItemAttribute> = customComponents.flatMap { it.getAttributes(itemStack) }
+
+	override fun getDataVersion(subject: ItemStack): Int {
+		return subject.persistentDataContainer.getOrDefault(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER, 0)
+	}
+
+	override fun setDataVersion(subject: ItemStack, version: Int) {
+		subject.itemMeta.persistentDataContainer.set(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER, version)
+	}
 }
