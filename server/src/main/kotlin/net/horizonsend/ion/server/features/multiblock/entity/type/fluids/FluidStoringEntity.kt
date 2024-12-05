@@ -16,12 +16,6 @@ import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER
 
 interface FluidStoringEntity {
 	val fluidStores: Array<StorageContainer>
-	val fluidInputOffsets: Array<Vec3i>
-
-	fun getFluidInputLocations(): Set<Vec3i> {
-		this as MultiblockEntity
-		return fluidInputOffsets.mapTo(mutableSetOf()) { (right, up, forward) -> getPosRelative(right, up, forward) }
-	}
 
 	/**
 	 * Returns the first capacity, if one is available, that can store the fluid stack
