@@ -13,11 +13,11 @@ import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
 
 class FlowMeterDisplay(
 	private val meter: PowerNode.PowerFlowMeter,
-	offsetLeft: Double,
+	offsetRight: Double,
 	offsetUp: Double,
-	offsetBack: Double,
+	offsetForward: Double,
 	scale: Float
-): Display(offsetLeft, offsetUp, offsetBack, scale) {
+): Display(offsetRight, offsetUp, offsetForward, scale) {
 	override fun register() {}
 	override fun deRegister() {}
 
@@ -35,21 +35,5 @@ class FlowMeterDisplay(
 
 		println("Create entity $this")
 		return super.createEntity(parent)
-	}
-
-	@Synchronized
-	override fun display() {
-		println("Display")
-		super.display()
-	}
-
-	override fun remove() {
-		println("Remove")
-		super.remove()
-	}
-
-	override fun update() {
-		println("Update")
-		super.update()
 	}
 }

@@ -139,6 +139,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			updateCenter()
 			updateSubsystems(world2)
 			starship.multiblockManager.displace(this)
+			starship.transportManager.displace(this)
 
 			onComplete()
 		}
