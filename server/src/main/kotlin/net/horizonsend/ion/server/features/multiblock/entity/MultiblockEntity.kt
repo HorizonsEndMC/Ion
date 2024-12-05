@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.linkages.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -85,6 +85,7 @@ abstract class MultiblockEntity(
 	fun processRemoval() {
 		removed = true
 
+		releaseInputs()
 		handleRemoval()
 		if (this is DisplayMultiblockEntity) displayHandler.remove()
 		removeLinkages()
@@ -102,6 +103,7 @@ abstract class MultiblockEntity(
 	open fun onUnload() {}
 
 	fun processLoad() {
+		registerInputs()
 		if (this is DisplayMultiblockEntity) displayHandler.update()
 		onLoad()
 	}
@@ -211,6 +213,10 @@ abstract class MultiblockEntity(
 		return getRelative(vec3i, structureDirection, right = right, up = up, forward = forward)
 	}
 
+	fun getKeyRelative(right: Int, up: Int, forward: Int): BlockKey {
+		return toBlockKey(getRelative(vec3i, structureDirection, right = right, up = up, forward = forward))
+	}
+
 	fun getInventory(right: Int, up: Int, forward: Int): Inventory? {
 		return (getBlockRelative( right = right, up = up, forward = forward).getState(false) as? InventoryHolder)?.inventory
 	}
@@ -315,19 +321,18 @@ abstract class MultiblockEntity(
 	}
 
 	// Section inputs
-	fun registerInputs(type: CacheType, locations: Set<Vec3i>) {
-		val inputManager = manager.getInputManager()
-		for (location in locations) {
-			inputManager.registerInput(type, toBlockKey(location), this)
-		}
+	abstract val inputsData: InputsData
+
+	fun registerInputs() {
+		inputsData.registerInputs()
 	}
 
-	fun releaseInputs(type: CacheType, locations: Set<Vec3i>) {
-		val inputManager = manager.getInputManager()
-		for (location in locations) {
-			inputManager.deRegisterInput(type, toBlockKey(location), this)
-		}
+	fun releaseInputs() {
+		inputsData.releaseInputs()
 	}
+
+	// Util
+	protected fun none(): InputsData = InputsData.builder(this).build()
 
 	val linkages = mutableMapOf<UUID, BlockKey>()
 

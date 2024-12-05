@@ -16,7 +16,6 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Display.TextDisplay
 import net.minecraft.world.entity.EntityType
 import org.bukkit.Axis.Y
-import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.Color
 import org.bukkit.block.BlockFace
@@ -30,7 +29,7 @@ import java.util.UUID
 abstract class Display(
 	private val offsetRight: Double,
 	private val offsetUp: Double,
-	private val offsetBack: Double,
+	private val offsetForward: Double,
 	val scale: Float
 ) {
 	var shownPlayers = mutableSetOf<UUID>()
@@ -57,30 +56,42 @@ abstract class Display(
 		)
 	}
 
-	fun setParent(parent: TextDisplayHandler) {
+	private var isInitializing = false
+
+	val mutex = Any()
+
+	fun initialize(parent: TextDisplayHandler) = synchronized(mutex) {
+		if (isInitializing || this::handler.isInitialized) {
+			return@synchronized
+		}
+
+		isInitializing = true
+
 		this.handler = parent
 
 		val rightFace = if (parent.facing.axis == Y) BlockFace.NORTH else parent.facing.rightFace
 
-		val offsetX = rightFace.modX * offsetRight + parent.facing.modX * offsetBack
+		val offsetX = rightFace.modX * offsetRight + parent.facing.modX * offsetForward
 		val offsetY = offsetUp
-		val offsetZ = rightFace.modZ * offsetRight + parent.facing.modZ * offsetBack
+		val offsetZ = rightFace.modZ * offsetRight + parent.facing.modZ * offsetForward
 
 		val parentLoc = parent.getLocation()
 
-		entity = createEntity(parent).getNMSData(
-			parentLoc.x + offsetX,
-			parentLoc.y + offsetY,
-			parentLoc.z + offsetZ
-		)
+		runCatching {
+			entity = createEntity(parent).getNMSData(
+				parentLoc.x + offsetX,
+				parentLoc.y + offsetY,
+				parentLoc.z + offsetZ
+			)
+		}
 	}
 
 	fun resetPosition(parent: TextDisplayHandler) {
 		val rightFace = if (parent.facing.axis == Y) BlockFace.NORTH else parent.facing.rightFace
 
-		val offsetX = rightFace.modX * offsetRight + parent.facing.modX * offsetBack
+		val offsetX = (rightFace.modX * offsetRight) + (parent.facing.modX * offsetForward)
 		val offsetY = offsetUp
-		val offsetZ = rightFace.modZ * offsetRight + parent.facing.modZ * offsetBack
+		val offsetZ = (rightFace.modZ * offsetRight) + (parent.facing.modZ * offsetForward)
 
 		val parentLoc = parent.getLocation()
 
@@ -112,15 +123,15 @@ abstract class Display(
 		entity.text = PaperAdventure.asVanilla(text)
 	}
 
-	fun remove() {
-		for (shownPlayer in shownPlayers) Bukkit.getPlayer(shownPlayer)?.minecraft?.connection?.send(
+	open fun remove() {
+		for (shownPlayer in shownPlayers) getPlayer(shownPlayer)?.minecraft?.connection?.send(
 			ClientboundRemoveEntitiesPacket(entity.id)
 		)
 
 		shownPlayers.clear()
 	}
 
-	fun display() {
+	open fun display() {
 		if (!::handler.isInitialized) return
 
 		update()
@@ -128,7 +139,7 @@ abstract class Display(
 
 	private val distSquared = (50.0 * 50.0)
 
-	fun update() {
+	open fun update() {
 		setText(getText())
 
 		val chunk = entity.level().world.getChunkAtIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
