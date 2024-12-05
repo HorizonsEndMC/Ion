@@ -39,7 +39,7 @@ open class NewCustomItem(
 		while (iterator.hasNext()) {
 			val manager = iterator.next()
 
-			newLore.addAll(manager.getLines(itemStack))
+			newLore.addAll(manager.getLines(this, itemStack))
 
 			if (manager.shouldIncludeSeparator() && iterator.hasNext()) {
 				newLore += Component.newline()
