@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -145,5 +146,25 @@ abstract class MultiblockManager(val log: Logger) {
 	}
 
 	fun isOccupied(x: Int, y: Int, z: Int): Boolean = multiblockEntities.containsKey(toBlockKey(x, y, z))
+
+	fun handleTransfer(location: BlockKey, destination: MultiblockManager) {
+		val atLocation = get(location) ?: return
+		atLocation.releaseInputs()
+		atLocation.manager = this
+		multiblockEntities.remove(location)
+
+		destination.multiblockEntities[location] = atLocation
+		atLocation.registerInputs()
+
+		if (atLocation is SyncTickingMultiblockEntity) {
+			destination.syncTickingMultiblockEntities[location] = atLocation
+			syncTickingMultiblockEntities.remove(location)
+		}
+
+		if (atLocation is AsyncTickingMultiblockEntity) {
+			destination.asyncTickingMultiblockEntities[location] = atLocation
+			asyncTickingMultiblockEntities.remove(location)
+		}
+	}
 }
 

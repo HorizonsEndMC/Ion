@@ -70,21 +70,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 			val modernBlockKey = toBlockKey(x, y, z)
 			val manager = worldManager.getChunkManager(modernBlockKey) ?: return@iterateBlocks
 
-			manager.getAllMultiblockEntities()[modernBlockKey]?.let {
-				multiblockEntities[modernBlockKey] = it
-				it.manager = this
-				manager.getAllMultiblockEntities().remove(modernBlockKey)
-			} ?: return@iterateBlocks
-
-			manager.syncTickingMultiblockEntities[modernBlockKey]?.let {
-				syncTickingMultiblockEntities[modernBlockKey] = it
-				manager.syncTickingMultiblockEntities.remove(modernBlockKey)
-			}
-
-			manager.asyncTickingMultiblockEntities[modernBlockKey]?.let {
-				asyncTickingMultiblockEntities[modernBlockKey] = it
-				manager.asyncTickingMultiblockEntities.remove(modernBlockKey)
-			}
+			manager.handleTransfer(modernBlockKey, this)
 		}
 	}
 
@@ -93,7 +79,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 		releaseEntities()
 	}
 
-	fun releaseEntities() {
+	private fun releaseEntities() {
 		val worldManager = world.ion.multiblockManager
 
 		for ((key, multiblockEntity) in multiblockEntities) {

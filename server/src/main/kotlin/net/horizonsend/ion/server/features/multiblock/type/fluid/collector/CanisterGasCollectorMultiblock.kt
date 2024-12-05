@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -70,6 +71,8 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 	) : MultiblockEntity(manager, CanisterGasCollectorMultiblock, x, y, z, world, structureDirection), SyncTickingMultiblockEntity {
 		val configuration get() = IonServer.globalGassesConfiguration
 		override val tickingManager: TickingManager = TickingManager(20)
+
+		override val inputsData: InputsData = none()
 
 		override fun tick() {
 			val furnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return
