@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
@@ -72,5 +73,7 @@ object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMulti
 			furnaceInventory.fuel = null
 			furnaceInventory.result = Gasses.EMPTY_CANISTER
 		}
+
+		override val inputsData: InputsData = none()
 	}
 }
