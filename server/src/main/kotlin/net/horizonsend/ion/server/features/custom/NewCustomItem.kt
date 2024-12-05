@@ -15,7 +15,7 @@ open class NewCustomItem(
 	val identifier: String,
 	val displayName: Component,
 	baseItemFactory: ItemFactory,
-	private val customComponents: List<CustomItemComponent>,
+	private val customComponents: List<CustomItemComponent> = listOf(),
 	override val latestDataVersion: Int = 0
 ) : DataVersioned<ItemStack> {
 	protected val baseItemFactory = ItemFactory.builder(baseItemFactory)
