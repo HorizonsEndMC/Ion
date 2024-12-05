@@ -31,7 +31,7 @@ class InterceptorCannonProjectile(
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		if (starship.type == StarshipType.STARFIGHTER || starship.type == StarshipType.INTERCEPTOR) {
-			impactLocation.createExplosion(4.0f)
+			impactLocation.createExplosion(12.0f)
 		}
 	}
 }
