@@ -1,12 +1,15 @@
 package net.horizonsend.ion.server.listener.misc
 
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.custom.ItemConverters
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
+import net.horizonsend.ion.server.features.custom.items.attribute.SmeltingResultAttribute
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem as LegacyBlockItem
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.Material
@@ -54,13 +57,10 @@ object FurnaceListener : SLEventListener() {
 	@EventHandler
 	fun onFurnaceSmeltCustomOre(event: FurnaceSmeltEvent) {
 		val source: ItemStack = event.source
-		val item = source.customItem
+		val customItem = source.newCustomItem
 
 		// Legacy custom item smelting
-		if (net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems[source] is
-					net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem &&
-			item == null
-			) {
+		if (LegacyCustomItems[source] is LegacyBlockItem && customItem == null) {
 			event.result = when (source.itemMeta.customModelData) {
 				1 -> CustomItems.ALUMINUM_INGOT.constructItemStack()
 				2 -> CustomItems.CHETHERITE.constructItemStack()
@@ -72,9 +72,12 @@ object FurnaceListener : SLEventListener() {
 		}
 
 		// If customItem has the Smeltable interface, get the smeltable customItem result
-		if (item is Smeltable) {
-			event.result = item.smeltingResult.get()
-			return
+		if (customItem != null) {
+			val smeltingAttribute = customItem.getAttributes(source).filterIsInstance<SmeltingResultAttribute>().firstOrNull()
+			if (smeltingAttribute != null) {
+				event.result = smeltingAttribute.result.get()
+				return
+			}
 		}
 
 		val furnace = event.block.getState(false) as Furnace
