@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.custom
 
 import io.papermc.paper.event.block.BlockPreDispenseEvent
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.components.ListenerComponent
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Material
@@ -42,7 +41,7 @@ object NewCustomItemListeners : SLEventListener() {
 	// For durability manipulation
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onPlayerItemDamageEvent(event: PlayerItemDamageEvent) {
-		if (event.item.customItem == null) return
+		if (event.item.newCustomItem == null) return
 		if (event.item.itemMeta !is Damageable) return
 		event.isCancelled = true
 	}
