@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.horizonsend.ion.server.features.custom.ItemConverters
+import net.horizonsend.ion.server.features.custom.NewCustomItemListeners
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
-import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporterManager
 import net.horizonsend.ion.server.features.custom.items.mods.ToolModMenu
@@ -63,7 +63,7 @@ val listeners: List<Listener> = listOf(
 	// Ion
 	BlasterListeners(),
 	CancelListeners(),
-	CustomItemListeners(),
+	NewCustomItemListeners,
 	CustomBlockListeners,
 	ItemConverters,
 	EdenFixer9000(),
