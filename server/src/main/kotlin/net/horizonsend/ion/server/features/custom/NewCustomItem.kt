@@ -15,7 +15,7 @@ open class NewCustomItem(
 	val identifier: String,
 	val displayName: Component,
 	baseItemFactory: ItemFactory,
-	private val customComponents: List<CustomItemComponent> = listOf(),
+	val customComponents: List<CustomItemComponent> = listOf(),
 	override val latestDataVersion: Int = 0
 ) : DataVersioned<ItemStack> {
 	protected val baseItemFactory = ItemFactory.builder(baseItemFactory)
@@ -28,7 +28,7 @@ open class NewCustomItem(
 
 	fun constructItemStack(): ItemStack = baseItemFactory.construct()
 
-	open fun decorateItemStack(base: ItemStack) {}
+	protected open fun decorateItemStack(base: ItemStack) {}
 
 	private fun assembleLore(itemStack: ItemStack): List<Component> {
 		val managersSorted = customComponents.filterIsInstance<LoreManager>().sortedByDescending { it.priority }
