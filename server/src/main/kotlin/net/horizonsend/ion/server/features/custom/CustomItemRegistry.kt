@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom
 
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.custom.NewCustomItemListeners.sortCustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.withModel
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
@@ -12,8 +13,12 @@ object CustomItemRegistry : IonServerComponent() {
 	private val customItems = mutableMapOf<String, NewCustomItem>()
 	val ALL get() = customItems.values
 
-	val GUN_BARREL = register(NewCustomItem("GUN_BARREL", text("Gun Barrel"), unStackableCustomItem.withModel("items/gun_barrel")))
-	val CIRCUITRY = register(NewCustomItem("CIRCUITRY", text("Circuitry"), unStackableCustomItem.withModel("items/circuitry")))
+	val GUN_BARREL = register(NewCustomItem("GUN_BARREL", text("Gun Barrel"), unStackableCustomItem.withModel("item/industry/gun_barrel")))
+	val CIRCUITRY = register(NewCustomItem("CIRCUITRY", text("Circuitry"), unStackableCustomItem.withModel("item/industry/circuitry")))
+
+	init {
+		sortCustomItemListeners()
+	}
 
 	fun <T : NewCustomItem> register(item: T): T {
 		customItems[item.identifier] = item
