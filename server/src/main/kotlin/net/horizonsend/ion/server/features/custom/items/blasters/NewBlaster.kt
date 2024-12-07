@@ -34,7 +34,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 
-class NewBlaster<T : Balancing>(
+open class NewBlaster<T : Balancing>(
 	identifier: String,
 	displayName: Component,
 	itemFactory: ItemFactory,
@@ -55,7 +55,7 @@ class NewBlaster<T : Balancing>(
 
 	val balancing get() = balancingSupplier.get()
 
-	fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
+	open fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
 		if (shooter is Player) {
 			if (shooter.hasCooldown(blasterItem.type)) return // Cooldown
 
@@ -121,7 +121,7 @@ class NewBlaster<T : Balancing>(
 		fireProjectiles(shooter)
 	}
 
-	private fun fireProjectiles(livingEntity: LivingEntity) {
+	open fun fireProjectiles(livingEntity: LivingEntity) {
 		val location = livingEntity.eyeLocation.clone()
 
 		location.y -= 0.125
