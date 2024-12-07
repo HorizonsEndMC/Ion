@@ -2,8 +2,11 @@ package net.horizonsend.ion.server.command.nations
 
 import co.aikar.commands.annotation.CommandAlias
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.nations.NationRole
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.nations.StationSieges
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
 
 internal object SiegeCommand : SLCommand() {
@@ -31,6 +34,11 @@ internal object SiegeCommand : SLCommand() {
 	}
 
 	private fun beginSiege(sender: Player) {
+		if (!NationRole.hasPermission(sender.slPlayerId, NationRole.Permission.START_NATION_SIEGE)) {
+			sender.userError("Your nation prevents you from starting station sieges!")
+			return
+		}
+
 		StationSieges.beginSiege(sender)
 	}
 }
