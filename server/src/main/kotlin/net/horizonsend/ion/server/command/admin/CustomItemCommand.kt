@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.command.admin
 
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
 import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
@@ -13,16 +12,17 @@ import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.getByIdentifier
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.getByIdentifier
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 @CommandAlias("customitem|legacycustomitem")
 object CustomItemCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
-		manager.commandCompletions.registerCompletion("customItem") { _ -> CustomItems.identifiers }
+		manager.commandCompletions.registerCompletion("customItem") { _ -> CustomItemRegistry.identifiers }
 		manager.commandContexts.registerContext(CustomItem::class.java) { c: BukkitCommandExecutionContext ->
 			val arg = c.popFirstArg()
 			return@registerContext LegacyCustomItems[arg]
