@@ -54,7 +54,7 @@ interface AmmunitionHoldingItem : CustomModeledItem {
 
 	fun getAmmunition(itemStack: ItemStack): Int = StoredValues.AMMO.getAmount(itemStack)
 
-	open fun setAmmunition(itemStack: ItemStack, inventory: Inventory, ammunition: Int) {
+	fun setAmmunition(itemStack: ItemStack, inventory: Inventory, ammunition: Int) {
 		@Suppress("NAME_SHADOWING") val ammunition = ammunition.coerceIn(0, getMaximumAmmunition())
 
 		val ammoCountComponent = StoredValues.AMMO.formatLore(ammunition, getMaximumAmmunition())
