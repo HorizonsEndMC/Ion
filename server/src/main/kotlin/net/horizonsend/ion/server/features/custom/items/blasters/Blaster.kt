@@ -179,8 +179,7 @@ open class Blaster<T : Balancing>(
 		}
 
 		(inventory.holder as? Audience)?.sendActionBar(
-			text("Ammo: ${ammunition.coerceIn(0, balancing.capacity)} / " +
-					"${balancing.capacity}", NamedTextColor.RED)
+			text("Ammo: ${ammunition.coerceIn(0, balancing.capacity)} / ${balancing.capacity}", NamedTextColor.RED)
 		)
 	}
 

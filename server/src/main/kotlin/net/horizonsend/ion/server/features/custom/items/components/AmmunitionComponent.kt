@@ -19,7 +19,7 @@ class AmmunitionComponent(val balancingSupplier: Supplier<out AmmoStorageBalanci
 		AMMO.setAmount(baseItem, balancingSupplier.get().capacity)
 	}
 
-	fun setAmmo(customItem: NewCustomItem, itemStack: ItemStack, amount: Int) {
+	fun setAmmo(itemStack: ItemStack, amount: Int) {
 		val corrected = amount.coerceAtMost(balancingSupplier.get().capacity)
 
 		AMMO.setAmount(itemStack, corrected)
