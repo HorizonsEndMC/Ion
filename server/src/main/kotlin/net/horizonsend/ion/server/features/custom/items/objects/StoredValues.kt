@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.objects
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -26,7 +27,7 @@ enum class StoredValues(
 			text(amount, AQUA),
 			text(" / ", GRAY),
 			text(maxAmount, AQUA)
-		)
+		).itemLore
 	},
 
 	POWER(NamespacedKeys.POWER) {
@@ -35,7 +36,7 @@ enum class StoredValues(
 			text(amount, GREEN),
 			text(" / ", GRAY),
 			text(maxAmount, YELLOW)
-		)
+		).itemLore
 	}
 
 	;
