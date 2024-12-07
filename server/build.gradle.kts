@@ -50,7 +50,6 @@ dependencies {
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.18")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
-	implementation("io.github.config4k:config4k:0.7.0")
 	implementation("net.wesjd:anvilgui:1.9.2-SNAPSHOT")
 	implementation("io.github.skytasul:guardianbeam:2.3.6")
 	implementation("xyz.xenondevs.invui:invui:1.39")
