@@ -11,14 +11,14 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class Magazine<T : PVPBalancingConfiguration.EnergyWeapons.AmmoStorageBalancing>(
+class Magazine(
 	identifier: String,
 
 	override val material: Material,
 	override val customModelData: Int,
 	override val displayName: Component,
 
-	private val balancingSupplier: Supplier<T>
+	private val balancingSupplier: Supplier<PVPBalancingConfiguration.EnergyWeapons.AmmoStorage>
 ) : CustomItem(identifier), AmmunitionHoldingItem {
 	val balancing get() = balancingSupplier.get()
 	override fun getMaximumAmmunition(): Int = balancing.capacity

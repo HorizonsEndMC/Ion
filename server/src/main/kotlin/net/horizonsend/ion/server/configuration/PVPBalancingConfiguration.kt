@@ -46,7 +46,7 @@ data class PVPBalancingConfiguration(
 		val pistol: Singleshot = Singleshot(
 			damage = 3.0,
 			damageFalloffMultiplier = 0.0,
-			magazineSize = 10,
+			capacity = 10,
 			ammoPerRefill = 20,
 			packetsPerShot = 2,
 			pitch = 1.0f,
@@ -67,7 +67,7 @@ data class PVPBalancingConfiguration(
 		val rifle: Singleshot = Singleshot(
 			damage = 5.5,
 			damageFalloffMultiplier = 0.0,
-			magazineSize = 20,
+			capacity = 20,
 			ammoPerRefill = 20,
 			packetsPerShot = 1,
 			pitch = 1f,
@@ -88,7 +88,7 @@ data class PVPBalancingConfiguration(
 		val submachineBlaster: Singleshot = Singleshot(
 			damage = 1.5,
 			damageFalloffMultiplier = 0.0,
-			magazineSize = 45,
+			capacity = 45,
 			ammoPerRefill = 20,
 			packetsPerShot = 1,
 			pitch = 2f,
@@ -109,7 +109,7 @@ data class PVPBalancingConfiguration(
 		val sniper: Singleshot = Singleshot(
 			damage = 12.0,
 			damageFalloffMultiplier = 30.0,
-			magazineSize = 5,
+			capacity = 5,
 			ammoPerRefill = 20,
 			packetsPerShot = 5,
 			pitch = 0f,
@@ -131,7 +131,7 @@ data class PVPBalancingConfiguration(
 			damage = 1.75,
 			damageFalloffMultiplier = 0.25,
 			delay = 0,
-			magazineSize = 4,
+			capacity = 4,
 			ammoPerRefill = 20,
 			offsetMax = 0.05,
 			packetsPerShot = 2,
@@ -156,7 +156,7 @@ data class PVPBalancingConfiguration(
 			damage = 0.5,
 			explosionPower = 4.0f,
 			damageFalloffMultiplier = 0.0,
-			magazineSize = 60,
+			capacity = 60,
 			ammoPerRefill = 20,
 			packetsPerShot = 1,
 			pitch = 1f,
@@ -191,7 +191,7 @@ data class PVPBalancingConfiguration(
 			override val damage: Double,
 			override val explosionPower: Float = 0f,
 			override val damageFalloffMultiplier: Double,
-			override val magazineSize: Int,
+			override val capacity: Int,
 			override val ammoPerRefill: Int,
 			override val packetsPerShot: Int,
 			override val pitch: Float,
@@ -207,7 +207,8 @@ data class PVPBalancingConfiguration(
 			override val timeBetweenShots: Int,
 			override val shotDeviation: Double,
 			override val mobDamageMultiplier: Double,
-			override val consumesAmmo: Boolean
+			override val consumesAmmo: Boolean,
+			override val displayDurability: Boolean = true
 		) : Balancing()
 
 		@Serializable
@@ -219,7 +220,7 @@ data class PVPBalancingConfiguration(
 			override val damage: Double,
 			override val explosionPower: Float = 0f,
 			override val damageFalloffMultiplier: Double,
-			override val magazineSize: Int,
+			override val capacity: Int,
 			override val ammoPerRefill: Int,
 			override val packetsPerShot: Int,
 			override val pitch: Float,
@@ -235,19 +236,19 @@ data class PVPBalancingConfiguration(
 			override val timeBetweenShots: Int,
 			override val shotDeviation: Double,
 			override val mobDamageMultiplier: Double,
-			override val consumesAmmo: Boolean
+			override val consumesAmmo: Boolean,
+			override val displayDurability: Boolean = true
 		) : Balancing()
 
 		@Serializable
 		data class AmmoStorage(
 			override val capacity: Int,
 			override val refillType: String,
-			override val ammoPerRefill: Int
-		) : AmmoStorageBalancing
+			override val ammoPerRefill: Int,
+			override val displayDurability: Boolean = true
+		) : AmmoStorageBalancing, AmmoLoaderUsable
 
-		abstract class Balancing : ProjectileBalancing {
-			abstract val magazineSize: Int
-			abstract val ammoPerRefill: Int
+		abstract class Balancing : ProjectileBalancing, AmmoStorageBalancing {
 			abstract val packetsPerShot: Int
 			abstract val pitch: Float
 			abstract val recoil: Float
@@ -273,6 +274,11 @@ data class PVPBalancingConfiguration(
 
 		interface AmmoStorageBalancing {
 			val capacity: Int
+			val ammoPerRefill: Int
+			val displayDurability: Boolean
+		}
+
+		interface AmmoLoaderUsable {
 			val refillType: String
 			val ammoPerRefill: Int
 		}

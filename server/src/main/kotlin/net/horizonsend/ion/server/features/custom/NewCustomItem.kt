@@ -15,9 +15,10 @@ open class NewCustomItem(
 	val identifier: String,
 	val displayName: Component,
 	baseItemFactory: ItemFactory,
-	val customComponents: List<CustomItemComponent> = listOf(),
 	override val latestDataVersion: Int = 0
 ) : DataVersioned<ItemStack> {
+	open val customComponents: List<CustomItemComponent> = listOf()
+
 	protected val baseItemFactory = ItemFactory.builder(baseItemFactory)
 		.setNameSupplier { displayName.itemName }
 		.addPDCEntry(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
