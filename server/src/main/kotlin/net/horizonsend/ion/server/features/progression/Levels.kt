@@ -1,13 +1,14 @@
 package net.horizonsend.ion.server.features.progression
 
+import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import net.horizonsend.ion.server.sharedDataFolder
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
@@ -25,7 +26,9 @@ import kotlin.math.roundToInt
 /** Balancing config for e.g. level up cost */
 internal lateinit var LEVEL_BALANCING: LevelsConfig
 
+@Serializable
 data class LevelsConfig(val creditsPerXP: Double = 2.5, val cost: CostSection = CostSection()) {
+	@Serializable
 	data class CostSection(val base: Int = 500, val increase: Double = 50.0, val step: Int = 10)
 }
 
@@ -46,7 +49,7 @@ object Levels : IonServerComponent() {
 	}
 
 	fun reloadConfig() {
-		LEVEL_BALANCING = loadConfig(sharedDataFolder, "level_balancing")
+		LEVEL_BALANCING = Configuration.load(sharedDataFolder, "level_balancing")
 	}
 
 	/** Marks the player to be checked in the secondly level-up check */

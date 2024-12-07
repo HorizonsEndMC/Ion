@@ -1,6 +1,7 @@
 package net.horizonsend.ion.common.utils.configuration
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -18,6 +19,8 @@ object Configuration {
 		prettyPrint = true
 		prettyPrintIndent = "\t"
 	}
+
+	fun getJson() = json
 
 	@OptIn(ExperimentalSerializationApi::class)
 	inline fun <reified T> load(directory: File, fileName: String): T {
@@ -59,8 +62,15 @@ object Configuration {
 		json.encodeToStream(clazz, file.outputStream())
 	}
 
-	inline fun <reified T> write(clazz: T): String {
+	@OptIn(ExperimentalSerializationApi::class)
+	fun <T> save(strategy: SerializationStrategy<T>, directory: File, fileName: String) {
+		directory.mkdirs()
+		val file = directory.resolve(fileName)
 
+		json.encodeToStream(strategy, file.outputStream())
+	}
+
+	inline fun <reified T> write(clazz: T): String {
 		return json.encodeToString(clazz)
 	}
 }
