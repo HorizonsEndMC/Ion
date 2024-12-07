@@ -69,7 +69,7 @@ class BlasterListeners : SLEventListener() {
 
 		event.player.sendActionBar(
 			Component.text(
-				"Ammo: $ammunition / ${customItem.balancing.magazineSize}",
+				"Ammo: $ammunition / ${customItem.balancing.capacity}",
 				NamedTextColor.RED
 			)
 		)
@@ -94,7 +94,7 @@ class BlasterListeners : SLEventListener() {
 	fun onPrepareItemCraftEvent(event: PrepareItemCraftEvent) {
 		if (!event.isRepair) return // Will always be a combination of 2 items.
 
-		val craftedItems = event.inventory.matrix.filter { it?.customItem is Magazine<*> }.filterNotNull()
+		val craftedItems = event.inventory.matrix.filter { it?.customItem is Magazine }.filterNotNull()
 
 		// Only magazines of the same type accepted
 		if (craftedItems.isEmpty() ||
@@ -103,7 +103,7 @@ class BlasterListeners : SLEventListener() {
 			return
 		}
 
-		val resultItem = craftedItems.first().customItem as Magazine<*>
+		val resultItem = craftedItems.first().customItem as Magazine
 		val totalAmmo = craftedItems.sumOf { resultItem.getAmmunition(it) }.coerceIn(0..resultItem.balancing.capacity)
 		val resultItemStack = CustomItems.getByIdentifier(resultItem.identifier)!!.constructItemStack()
 		resultItem.setAmmunition(resultItemStack, event.inventory, totalAmmo)
