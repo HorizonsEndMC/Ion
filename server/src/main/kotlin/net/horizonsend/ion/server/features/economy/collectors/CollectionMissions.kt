@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import kotlinx.serialization.Serializable
 import net.citizensnpcs.api.event.NPCLeftClickEvent
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.horizonsend.ion.common.database.Oid
@@ -12,6 +13,7 @@ import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.CompletedCollectionMission
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.miscellaneous.randomRange
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServer
@@ -27,7 +29,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
-import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.sharedDataFolder
 import net.kyori.adventure.text.Component
@@ -48,6 +49,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 object CollectionMissions : IonServerComponent() {
+	@Serializable
 	data class Config(val generateAmount: Int = 27, val xpPerCreditRoot: Double = 0.5, val buyMultiplier: Double = 2.0)
 
 	private lateinit var config: Config
@@ -96,7 +98,7 @@ object CollectionMissions : IonServerComponent() {
 		)
 
 	fun rebalance() {
-		config = loadConfig(sharedDataFolder, "collection_missions")
+		config = Configuration.load(sharedDataFolder, "collection_missions.json")
 		reset()
 	}
 
