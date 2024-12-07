@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.FeatureFlags
 import net.horizonsend.ion.server.configuration.GlobalGassesConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
@@ -28,7 +29,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.miscellaneous.registrations.listeners
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -44,6 +44,8 @@ val ServerConfiguration get() = IonServer.configuration
 val sharedDataFolder by lazy { File(LegacySettings.sharedFolder).apply { mkdirs() } }
 
 object IonServer : JavaPlugin() {
+	val configurationProvider = ConfigurationFiles // Ensure initialization
+
 	val configurationFolder = dataFolder.resolve("configuration").apply { mkdirs() }
 
 	var featureFlags: FeatureFlags = Configuration.load(configurationFolder, "features.json")
@@ -55,7 +57,8 @@ object IonServer : JavaPlugin() {
 	var tradeConfiguration: TradeConfiguration = Configuration.load(configurationFolder, "trade.json")
 	var aiSpawningConfiguration: AISpawningConfiguration = Configuration.load(configurationFolder, "aiSpawning.json")
 	var discordSettings: DiscordConfiguration = Configuration.load(configurationFolder, "discord.json")
-	var legacySettings: LegacyConfig = loadConfig(configurationFolder, "config") // Setting
+	var legacySettings: LegacyConfig = Configuration.load(configurationFolder, "config.json") // Setting
+
 
 	override fun onEnable(): Unit =
 		runCatching(::internalEnable).fold(

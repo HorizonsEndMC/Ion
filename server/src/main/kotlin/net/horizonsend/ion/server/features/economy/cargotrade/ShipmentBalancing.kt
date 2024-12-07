@@ -1,17 +1,20 @@
 package net.horizonsend.ion.server.features.economy.cargotrade
 
+import kotlinx.serialization.Serializable
+import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.sharedDataFolder
-import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 
 lateinit var balancing: ShipmentBalancing.ShipmentBalancingConfig
 
 object ShipmentBalancing : IonServerComponent() {
 	data class ShipmentBalancingConfig(
+		@Serializable
 		val generator: GeneratorSection = GeneratorSection(),
 		val importExport: ImportExportSection = ImportExportSection(),
 		val settlementProfits: SettlementProfitSection = SettlementProfitSection()
 	) {
+		@Serializable
 		data class GeneratorSection(
 			val shipmentsPerCity: Int = 9,
 			val regenerateIntervalMinutes: Int = 30,
@@ -30,16 +33,19 @@ object ShipmentBalancing : IonServerComponent() {
 			val maxShipmentSize: Int = 219
 		)
 
+		@Serializable
 		data class ImportExportSection(
 			val baseCrateXP: Double = 2.0,
 			val minXPFactor: Double = 0.5,
 			val maxXPFactor: Double = 1.5
 		)
 
+		@Serializable
 		data class SettlementProfitSection(
 			val creditsPortion: Double = 0.05,
 			val xp: XPSection = XPSection()
 		) {
+			@Serializable
 			data class XPSection(
 				val sameTerritoryPortion: Double = 0.3,
 				val samePlanetPortion: Double = 0.2,
@@ -51,6 +57,6 @@ object ShipmentBalancing : IonServerComponent() {
 	override fun onEnable() = reload()
 
 	fun reload() {
-		balancing = loadConfig(sharedDataFolder, "shipment_balancing")
+		balancing = Configuration.load(sharedDataFolder, "shipment_balancing.json")
 	}
 }

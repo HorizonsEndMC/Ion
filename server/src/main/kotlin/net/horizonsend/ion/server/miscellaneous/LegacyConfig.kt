@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.miscellaneous
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class LegacyConfig(
 	// @Comment("Path to folder to keep configuration files shared between servers in")
 	val sharedFolder: String = "shared/starlegacy",
@@ -16,6 +19,7 @@ data class LegacyConfig(
 	// @Comment("Settings for chat channels")
 	val chat: Chat = Chat()
 ) {
+	@Serializable
 	data class Chat(
 		// @Comment("The maximum amount of blocks away someone can be and still see someone's local chat")
 		val localDistance: Int = 200,
