@@ -50,7 +50,7 @@ open class Blaster<T : Balancing>(
 	override val material: Material,
 	override val customModelData: Int,
 	override val displayName: Component,
-	val magazineType: Magazine<*>,
+	val magazineType: Magazine,
 	val particleSize: Float,
 	val soundRange: Double,
 	val soundFire: String,
@@ -107,11 +107,11 @@ open class Blaster<T : Balancing>(
 			for (magazineItem in livingEntity.inventory) {
 				if (magazineItem == null) continue // check not null
 				val magazineCustomItem: CustomItem = magazineItem.customItem ?: continue // To get magazine properties
-				if (ammo >= balancing.magazineSize) continue // Check if blaster magazine is full
+				if (ammo >= balancing.capacity) continue // Check if blaster magazine is full
 				if (magazineCustomItem.identifier != magazineType.identifier) continue // Only correct magazine
 
 				val magazineAmmo = (magazineCustomItem as AmmunitionHoldingItem).getAmmunition(magazineItem)
-				val amountToTake = (balancing.magazineSize - ammo).coerceAtMost(magazineAmmo)
+				val amountToTake = (balancing.capacity - ammo).coerceAtMost(magazineAmmo)
 				magazineCustomItem.setAmmunition(magazineItem, livingEntity.inventory, magazineAmmo - amountToTake)
 
 				ammo += amountToTake
@@ -119,7 +119,7 @@ open class Blaster<T : Balancing>(
 		}
 
 		if (livingEntity.world.hasFlag(WorldFlag.ARENA) || !balancing.consumesAmmo) {
-			ammo = balancing.magazineSize
+			ammo = balancing.capacity
 		}
 
 		if (ammo - originalAmmo == 0) {
@@ -150,7 +150,7 @@ open class Blaster<T : Balancing>(
 			)
 		}
 
-		livingEntity.sendActionBar(text("Ammo: $ammo / ${balancing.magazineSize}", NamedTextColor.RED))
+		livingEntity.sendActionBar(text("Ammo: $ammo / ${balancing.capacity}", NamedTextColor.RED))
 
 		// Start reload
 		livingEntity.location.world.playSound(
@@ -162,7 +162,7 @@ open class Blaster<T : Balancing>(
 		)
 	}
 
-	override fun getMaximumAmmunition(): Int = balancing.magazineSize
+	override fun getMaximumAmmunition(): Int = balancing.capacity
 
 	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
 		fireWeapon(livingEntity, itemStack)
@@ -179,8 +179,8 @@ open class Blaster<T : Balancing>(
 		}
 
 		(inventory.holder as? Audience)?.sendActionBar(
-			text("Ammo: ${ammunition.coerceIn(0, balancing.magazineSize)} / " +
-					"${balancing.magazineSize}", NamedTextColor.RED)
+			text("Ammo: ${ammunition.coerceIn(0, balancing.capacity)} / " +
+					"${balancing.capacity}", NamedTextColor.RED)
 		)
 	}
 
