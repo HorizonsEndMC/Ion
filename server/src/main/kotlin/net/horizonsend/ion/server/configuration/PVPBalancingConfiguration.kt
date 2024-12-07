@@ -67,6 +67,11 @@ data class PVPBalancingConfiguration(
 			consumesAmmo = false,
 			soundReloadStart = SoundInfo("horizonsend:blaster.pistol.reload.start", volume = 1f, source = Sound.Source.PLAYER),
 			soundReloadFinish = SoundInfo("horizonsend:blaster.pistol.reload.finish", volume = 1f, source = Sound.Source.PLAYER),
+			soundFire = SoundInfo("horizonsend:blaster.pistol.shoot", volume = 1f, source = Sound.Source.PLAYER),
+			soundWhizz = SoundInfo("horizonsend:blaster.whizz.standard", volume = 1f, source = Sound.Source.PLAYER),
+			soundShell = SoundInfo("horizonsend:blaster.pistol.shell", volume = 1f, source = Sound.Source.PLAYER),
+			particleSize = 0.25f,
+			soundRange = 50.0,
 			magazineIdentifier = "STANDARD_MAGAZINE"
 		),
 		val rifle: Singleshot = Singleshot(
@@ -91,6 +96,11 @@ data class PVPBalancingConfiguration(
 			consumesAmmo = true,
 			soundReloadStart = SoundInfo("horizonsend:blaster.rifle.reload.start", volume = 1f, source = Sound.Source.PLAYER),
 			soundReloadFinish = SoundInfo("horizonsend:blaster.rifle.reload.finish", volume = 1f, source = Sound.Source.PLAYER),
+			soundFire = SoundInfo("horizonsend:blaster.rifle.shoot", volume = 1f, source = Sound.Source.PLAYER),
+			soundWhizz = SoundInfo("horizonsend:blaster.whizz.standard", volume = 1f, source = Sound.Source.PLAYER),
+			soundShell = SoundInfo("horizonsend:blaster.rifle.shell", volume = 1f, source = Sound.Source.PLAYER),
+			particleSize = 0.25f,
+			soundRange = 50.0,
 			magazineIdentifier = "STANDARD_MAGAZINE"
 		),
 		val submachineBlaster: Singleshot = Singleshot(
@@ -115,6 +125,11 @@ data class PVPBalancingConfiguration(
 			consumesAmmo = true,
 			soundReloadStart = SoundInfo("horizonsend:blaster.submachine_blaster.reload.start", volume = 1f, source = Sound.Source.PLAYER),
 			soundReloadFinish = SoundInfo("horizonsend:blaster.submachine_blaster.reload.finish", volume = 1f, source = Sound.Source.PLAYER),
+			soundFire = SoundInfo("horizonsend:blaster.submachine_blaster.shoot", volume = 1f, source = Sound.Source.PLAYER),
+			soundWhizz = SoundInfo("horizonsend:blaster.whizz.standard", volume = 1f, source = Sound.Source.PLAYER),
+			soundShell = SoundInfo("horizonsend:blaster.submachine_blaster.shell", volume = 1f, source = Sound.Source.PLAYER),
+			particleSize = 0.25f,
+			soundRange = 50.0,
 			magazineIdentifier = "STANDARD_MAGAZINE"
 		),
 		val sniper: Singleshot = Singleshot(
@@ -139,6 +154,11 @@ data class PVPBalancingConfiguration(
 			consumesAmmo = true,
 			soundReloadStart = SoundInfo("horizonsend:blaster.sniper.reload.start", volume = 1f, source = Sound.Source.PLAYER),
 			soundReloadFinish = SoundInfo("horizonsend:blaster.sniper.reload.finish", volume = 1f, source = Sound.Source.PLAYER),
+			soundFire = SoundInfo("horizonsend:blaster.sniper.shoot", volume = 1f, source = Sound.Source.PLAYER),
+			soundWhizz = SoundInfo("horizonsend:blaster.whizz.sniper", volume = 1f, source = Sound.Source.PLAYER),
+			soundShell = SoundInfo("horizonsend:blaster.sniper.shell", volume = 1f, source = Sound.Source.PLAYER),
+			particleSize = 0.5f,
+			soundRange = 100.0,
 			magazineIdentifier = "SPECIAL_MAGAZINE"
 		),
 		val shotgun: Multishot = Multishot(
@@ -166,6 +186,11 @@ data class PVPBalancingConfiguration(
 			consumesAmmo = true,
 			soundReloadStart = SoundInfo("horizonsend:blaster.shotgun.reload.start", volume = 1f, source = Sound.Source.PLAYER),
 			soundReloadFinish = SoundInfo("horizonsend:blaster.shotgun.reload.finish", volume = 1f, source = Sound.Source.PLAYER),
+			soundFire = SoundInfo("horizonsend:blaster.shotgun.shoot", volume = 1f, source = Sound.Source.PLAYER),
+			soundWhizz = SoundInfo("horizonsend:blaster.whizz.standard", volume = 1f, source = Sound.Source.PLAYER),
+			soundShell = SoundInfo("horizonsend:blaster.shotgun.shell", volume = 1f, source = Sound.Source.PLAYER),
+			particleSize = 0.25f,
+			soundRange = 50.0,
 			magazineIdentifier = "SPECIAL_MAGAZINE"
 		),
 
@@ -192,7 +217,13 @@ data class PVPBalancingConfiguration(
 			consumesAmmo = true,
 			soundReloadStart = SoundInfo("horizonsend:blaster.cannon.reload.start", volume = 1f, source = Sound.Source.PLAYER),
 			soundReloadFinish = SoundInfo("horizonsend:blaster.cannon.reload.finish", volume = 1f, source = Sound.Source.PLAYER),
-			magazineIdentifier = "STANDARD_MAGAZINE"
+			soundFire = SoundInfo("horizonsend:blaster.cannon.shoot", volume = 1f, source = Sound.Source.PLAYER),
+			soundWhizz = SoundInfo("horizonsend:blaster.whizz.standard", volume = 1f, source = Sound.Source.PLAYER),
+			soundShell = SoundInfo("horizonsend:blaster.sniper.shell", volume = 1f, source = Sound.Source.PLAYER),
+			soundRange = 50.0,
+			particleSize = 0.80f,
+			magazineIdentifier = "STANDARD_MAGAZINE",
+			explosiveShot = true
 		),
 
 		val standardMagazine: AmmoStorage = AmmoStorage(
@@ -223,6 +254,7 @@ data class PVPBalancingConfiguration(
 			override val shouldBypassHitTicks: Boolean,
 			override val shouldHeadshot: Boolean,
 			override val shouldPassThroughEntities: Boolean,
+			override val particleSize: Float,
 			override val speed: Double,
 			override val timeBetweenShots: Int,
 			override val shotDeviation: Double,
@@ -231,8 +263,14 @@ data class PVPBalancingConfiguration(
 			override val displayDurability: Boolean = true,
 			override val magazineIdentifier: String,
 
+			override val soundRange: Double,
 			override val soundReloadStart: SoundInfo,
-			override val soundReloadFinish: SoundInfo
+			override val soundReloadFinish: SoundInfo,
+			override val soundFire: SoundInfo,
+			override val soundWhizz: SoundInfo,
+			override val soundShell: SoundInfo,
+
+			override val explosiveShot: Boolean = false
 		) : Balancing()
 
 		@Serializable
@@ -256,6 +294,7 @@ data class PVPBalancingConfiguration(
 			override val shouldBypassHitTicks: Boolean,
 			override val shouldHeadshot: Boolean,
 			override val shouldPassThroughEntities: Boolean,
+			override val particleSize: Float,
 			override val speed: Double,
 			override val timeBetweenShots: Int,
 			override val shotDeviation: Double,
@@ -264,8 +303,14 @@ data class PVPBalancingConfiguration(
 			override val displayDurability: Boolean = true,
 			override val magazineIdentifier: String,
 
+			override val soundRange: Double,
 			override val soundReloadStart: SoundInfo,
-			override val soundReloadFinish: SoundInfo
+			override val soundReloadFinish: SoundInfo,
+			override val soundFire: SoundInfo,
+			override val soundWhizz: SoundInfo,
+			override val soundShell: SoundInfo,
+
+			override val explosiveShot: Boolean = false
 		) : Balancing()
 
 		@Serializable
@@ -286,6 +331,10 @@ data class PVPBalancingConfiguration(
 			abstract val timeBetweenShots: Int
 			abstract val consumesAmmo: Boolean
 
+			abstract val soundRange: Double
+			abstract val soundFire: SoundInfo
+			abstract val soundWhizz: SoundInfo
+			abstract val soundShell: SoundInfo
 			abstract val soundReloadStart: SoundInfo
 			abstract val soundReloadFinish: SoundInfo
 		}
@@ -302,6 +351,8 @@ data class PVPBalancingConfiguration(
 			val shouldHeadshot: Boolean
 			val mobDamageMultiplier: Double
 			val shotDeviation: Double
+			val explosiveShot: Boolean
+			val particleSize: Float
 		}
 
 		interface AmmoStorageBalancing {
