@@ -33,7 +33,6 @@ import org.bukkit.Material
 import org.bukkit.Material.matchMaterial
 import org.bukkit.Particle
 import org.bukkit.Particle.DUST
-import org.bukkit.Particle.DustOptions
 import org.bukkit.SoundCategory.PLAYERS
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -271,18 +270,18 @@ open class Blaster<T : Balancing>(
 
 		location.add(location.direction.clone().multiply(0.125))
 
-		RayTracedParticleProjectile(
-			location,
-			livingEntity,
-			balancing,
-			DUST,
-			explosiveShot,
-			DustOptions(
-				getParticleColor(livingEntity),
-				particleSize
-			),
-			soundWhizz,
-		).fire()
+//		RayTracedParticleProjectile(
+//			location,
+//			livingEntity,
+//			balancing,
+//			DUST,
+//			explosiveShot,
+//			DustOptions(
+//				getParticleColor(livingEntity),
+//				particleSize
+//			),
+//			soundWhizz,
+//		).fire()
 	}
 
 	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: InventoryHolder): Boolean {

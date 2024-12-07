@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.ProjectileBalancing
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -40,7 +41,7 @@ class RayTracedParticleProjectile(
 	val particle: Particle,
 	private val explosiveShot: Boolean,
 	private val dustOptions: DustOptions?,
-	private val soundWhizz: String
+	private val soundWhizz: StarshipSounds.SoundInfo
 ) {
 	var damage = balancing.damage
 
@@ -195,7 +196,8 @@ class RayTracedParticleProjectile(
 			if ((it !in nearMissPlayers) && (location.distance(it.location) < whizzDistance)) {
 				var pitchFactor = 1.0f
 				if (it.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) pitchFactor = 0.5f
-				it.playSound(sound(key(soundWhizz), Source.PLAYER, 1.0f, pitchFactor))
+
+				it.playSound(soundWhizz.copy(pitch = pitchFactor).sound, location.x, location.y, location.z)
 				nearMissPlayers.add(it)
 			}
 		}
