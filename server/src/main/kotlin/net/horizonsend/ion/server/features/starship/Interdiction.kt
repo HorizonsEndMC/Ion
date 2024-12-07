@@ -61,6 +61,12 @@ object Interdiction : IonServerComponent() {
 	}
 
 	fun toggleGravityWell(starship: ActiveStarship) {
+		if (StarshipCruising.isCruising(starship)) {
+			starship.setIsInterdicting(false)
+			starship.userError("Cannot activate gravity well while cruising")
+			return
+		}
+
 		when (starship.isInterdicting) {
 			true -> for (player in starship.world.getNearbyPlayers(
 				starship.centerOfMass.toLocation(starship.world),

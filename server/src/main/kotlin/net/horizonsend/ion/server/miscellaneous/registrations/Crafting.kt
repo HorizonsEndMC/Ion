@@ -132,6 +132,7 @@ import org.bukkit.Material.GRAY_WOOL
 import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.GREEN_WOOL
 import org.bukkit.Material.HONEYCOMB
+import org.bukkit.Material.HONEYCOMB_BLOCK
 import org.bukkit.Material.HOPPER
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_INGOT
@@ -329,6 +330,9 @@ object Crafting : IonServerComponent() {
 
 		// Nether Wart Block -> Nether Warts
 		shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
+
+		// Honeycomb Block -> Honeycomb
+		shapelessRecipe("honeycomb", ItemStack(HONEYCOMB, 9), arrayOf(HONEYCOMB_BLOCK))
 
 		// Cobweb
 		shapedRecipe("cobweb", COBWEB) {
