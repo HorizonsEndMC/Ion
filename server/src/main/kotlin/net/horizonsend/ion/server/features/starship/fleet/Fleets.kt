@@ -22,7 +22,6 @@ object Fleets : IonServerComponent() {
         }
     }
 
-    @Suppress("unused")
     @EventHandler
     fun onPlayerLeave(event: PlayerQuitEvent) {
         val player = event.player

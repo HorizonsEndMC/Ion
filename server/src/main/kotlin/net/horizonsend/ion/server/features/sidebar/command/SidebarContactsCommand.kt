@@ -17,14 +17,12 @@ import org.litote.kmongo.setValue
 @CommandAlias("sidebar")
 object SidebarContactsCommand : SLCommand() {
 	@Subcommand("contacts")
-	@Suppress("unused")
-	fun defaultCase(
+    fun defaultCase(
 		sender: Player
 	) {
 		sender.userError("Usage: /sidebar contacts <option> [toggle]")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts enable")
 	fun onEnableContacts(
 		sender: Player
@@ -34,7 +32,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Enabled contacts on sidebar")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts disable")
 	fun onDisableContacts(
 		sender: Player
@@ -44,7 +41,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Disabled contacts on sidebar")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts distance")
 	fun onSetContactsDistance(
 		sender: Player,
@@ -56,7 +52,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed contacts distance to $newDistance")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts maxNameLength")
 	fun onSetContactsMaxNameLength(
 		sender: Player,
@@ -68,7 +63,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed contacts max name length to $newLength")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts sortOrder")
 	fun onChangeContactsSortOrder(sender: Player) {
 		val currentSetting = PlayerCache[sender.uniqueId].contactsSort
@@ -80,7 +74,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed contacts sorting method to ${ContactsSidebar.ContactsSorting.entries[newSetting]}")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts coloring")
 	fun onChangeContactsColoring(sender: Player) {
 		val currentSetting = PlayerCache[sender.uniqueId].contactsColoring
@@ -92,7 +85,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed contacts coloring to ${ContactsSidebar.ContactsColoring.entries[newSetting]}")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts starship")
 	fun onToggleStarship(
 		sender: Player,
@@ -104,7 +96,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed starship visibility to $contactsStarships")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts lastStarship")
 	fun onToggleLastStarship(
 		sender: Player,
@@ -116,7 +107,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed last starship visibility to $contactsLastStarship")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts planet")
 	fun onTogglePlanets(
 		sender: Player,
@@ -128,7 +118,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed planet visibility to $contactsPlanets")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts star")
 	fun onToggleStars(
 		sender: Player,
@@ -140,7 +129,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed star visibility to $starsEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts beacon")
 	fun onToggleBeacons(
 		sender: Player,
@@ -152,7 +140,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed beacon visibility to $beaconsEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts station")
 	fun onToggleStations(
 		sender: Player,
@@ -164,7 +151,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed station visibility to $stationsEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts bookmark")
 	fun onToggleBookmarks(
 		sender: Player,
@@ -176,7 +162,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed bookmark visibility to $bookmarksEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts ai")
 	fun onToggleAi(
 		sender: Player,
@@ -188,7 +173,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed AI starship visibility to $aiEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts none")
 	fun onToggleNone(
 		sender: Player,
@@ -200,7 +184,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed no relation starship visibility to $noneEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts enemy")
 	fun onToggleEnemy(
 		sender: Player,
@@ -212,7 +195,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed enemy starship visibility to $enemyEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts unfriendly")
 	fun onToggleUnfriendly(
 		sender: Player,
@@ -224,7 +206,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed unfriendly starship visibility to $unfriendlyEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts neutral")
 	fun onToggleNeutral(
 		sender: Player,
@@ -236,7 +217,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed neutral starship visibility to $neutralEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts friendly")
 	fun onToggleFriendly(
 		sender: Player,
@@ -248,7 +228,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed friendly starship visibility to $friendlyEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts ally")
 	fun onToggleAlly(
 		sender: Player,
@@ -260,7 +239,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed ally starship visibility to $allyEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts nation")
 	fun onToggleNation(
 		sender: Player,
@@ -272,7 +250,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed nation starship visibility to $nationEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts aiStation")
 	fun onToggleAiStation(
 		sender: Player,
@@ -284,7 +261,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed AI station visibility to $aiStationEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts noneStation")
 	fun onToggleNoneStation(
 		sender: Player,
@@ -296,7 +272,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed no relation station visibility to $noneStationEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts enemyStation")
 	fun onToggleEnemyStation(
 		sender: Player,
@@ -308,7 +283,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed enemy station visibility to $enemyStationEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts unfriendlyStation")
 	fun onToggleUnfriendlyStation(
 		sender: Player,
@@ -320,7 +294,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed unfriendly station visibility to $unfriendlyStationEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts neutralStation")
 	fun onToggleNeutralStation(
 		sender: Player,
@@ -332,7 +305,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed neutral station visibility to $neutralStationEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts friendlyStation")
 	fun onToggleFriendlyStation(
 		sender: Player,
@@ -344,7 +316,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed friendly station visibility to $friendlyStationEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts allyStation")
 	fun onToggleAllyStation(
 		sender: Player,
@@ -356,7 +327,6 @@ object SidebarContactsCommand : SLCommand() {
 		sender.success("Changed ally station visibility to $allyStationEnabled")
 	}
 
-	@Suppress("unused")
 	@Subcommand("contacts nationStation")
 	fun onToggleNationStation(
 		sender: Player,

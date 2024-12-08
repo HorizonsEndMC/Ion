@@ -32,7 +32,7 @@ interface DisplayEntityProjectile {
 				continue
 			}
 
-			val displayEntity = displayEntities[player as CraftPlayer] ?: makeDisplayEntity(player) ?: continue
+			val displayEntity = displayEntities[player as CraftPlayer] ?: makeDisplayEntity(player)
 
 			if (player.location.distance(Vector(displayEntity.x, displayEntity.y, displayEntity.z).toLocation(player.world)) > 100.0) {
 				displayEntity.setPos(player.x,player.y,player.z)

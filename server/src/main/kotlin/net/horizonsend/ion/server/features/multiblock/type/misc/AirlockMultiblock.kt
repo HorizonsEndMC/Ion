@@ -78,7 +78,7 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 
 		val component = if (enabled) { ON } else { OFF }
 
-		sign.getSide(Side.FRONT).line(1, component)
+		sign.getSide(FRONT).line(1, component)
 		sign.update()
 	}
 }

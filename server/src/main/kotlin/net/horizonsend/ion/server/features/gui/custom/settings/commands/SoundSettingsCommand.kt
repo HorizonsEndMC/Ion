@@ -16,7 +16,6 @@ import org.litote.kmongo.setValue
 object SoundSettingsCommand : SLCommand() {
 
     @Default
-    @Suppress("unused")
     @Subcommand("sound")
     fun onToggleEnableAdditionalSounds(
         sender: Player,
@@ -28,7 +27,6 @@ object SoundSettingsCommand : SLCommand() {
         sender.success("Changed enabled additional sounds to $enableAdditionalSounds")
     }
 
-    @Suppress("unused")
     @Subcommand("cruiseIndicatorSound")
     fun onChangeCruiseIndicatorSound(sender: Player) {
         val currentSetting = PlayerCache[sender.uniqueId].soundCruiseIndicator
@@ -40,7 +38,6 @@ object SoundSettingsCommand : SLCommand() {
         sender.success("Changed cruise indicator sound to ${CruiseIndicatorSounds.entries[newSetting]}")
     }
 
-	@Suppress("unused")
 	@Subcommand("hitmarkerOnHullSound")
 	fun onChangeHitmarkerOnHullSound(sender: Player, @Optional toggle: Boolean?) {
 		val hitmarkerOnHull = toggle ?: !PlayerCache[sender].hitmarkerOnHull

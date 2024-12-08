@@ -141,7 +141,6 @@ object WaypointCommand : SLCommand() {
     }
 
     // reload graphs with new vertices
-    @Suppress("unused")
     @Subcommand("reload")
     @CommandCompletion("main|player")
     @CommandPermission("waypoint.reload")
@@ -164,7 +163,6 @@ object WaypointCommand : SLCommand() {
     }
 
     // print status of main graph
-    @Suppress("unused")
     @Subcommand("main")
     @CommandCompletion("vertex|edge")
     @CommandPermission("waypoint.print")
@@ -189,7 +187,6 @@ object WaypointCommand : SLCommand() {
     }
 
     // print status of player's own graph
-    @Suppress("unused")
     @Subcommand("player")
     @CommandCompletion("vertex|edge")
     @CommandPermission("waypoint.print")
@@ -214,7 +211,6 @@ object WaypointCommand : SLCommand() {
     }
 
     // gets a celestial object and outputs waypoint data
-    @Suppress("unused")
     @Subcommand("get")
     @CommandCompletion("@planets|@hyperspaceGates")
     @CommandPermission("waypoint.print")
@@ -234,7 +230,6 @@ object WaypointCommand : SLCommand() {
         }
     }
 
-    @Suppress("unused")
     @Subcommand("list")
     @Description("Prints detailed information of all waypoints on a navigation route")
     fun onPrintPath(
@@ -257,7 +252,6 @@ object WaypointCommand : SLCommand() {
         }
     }
 
-    @Suppress("unused")
     @Subcommand("jumps")
     @CommandPermission("waypoint.print")
     @Description("DEBUG: Gets number of jumps manually")
@@ -268,7 +262,6 @@ object WaypointCommand : SLCommand() {
         sender.information("Number of jumps: $jumps")
     }
 
-    @Suppress("unused")
     @Subcommand("string")
     @CommandPermission("waypoint.print")
     @Description("DEBUG: Gets the route string manually")

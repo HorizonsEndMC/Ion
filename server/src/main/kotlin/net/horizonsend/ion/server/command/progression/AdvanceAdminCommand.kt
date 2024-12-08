@@ -115,8 +115,8 @@ object AdvanceAdminCommand : net.horizonsend.ion.server.command.SLCommand() {
 				newLevel--
 			}
 
-			if (newLevel <= 0) break;
-		}
+			if (newLevel <= 0) break
+        }
 
 		SLXP.setAsync(playerId, newXp)
 		PlayerXPLevelCache.setLevel(playerId, newLevel)

@@ -37,7 +37,6 @@ object Sidebar : IonServerComponent() {
 		scoreboardLibrary.close()
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onPlayerJoin(event: PlayerJoinEvent) {
 		val sidebar = scoreboardLibrary.createSidebar()
@@ -45,7 +44,6 @@ object Sidebar : IonServerComponent() {
 		playerSidebars[event.player.uniqueId] = MainSidebar(event.player, sidebar)
 	}
 
-	@Suppress("unused")
 	@EventHandler
 	fun onPlayerLeave(event: PlayerQuitEvent) {
 		val sidebar = playerSidebars[event.player.uniqueId] ?: return

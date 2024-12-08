@@ -62,7 +62,6 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-@Suppress("unused")
 @CommandAlias("settlement|s")
 internal object SettlementCommand : SLCommand() {
 	private val settlementMessageColor = TextColor.fromHexString("#00C4C4")
@@ -340,7 +339,6 @@ internal object SettlementCommand : SLCommand() {
 		sender.success("Set tax to $newTax")
 	}
 
-	@Suppress("unused")
 	@Subcommand("top|list")
 	@Description("View the top settlements on Horizon's End")
 	fun onTop(sender: CommandSender, @Optional page: Int?): Unit = asyncCommand(sender) {
@@ -699,8 +697,7 @@ internal object SettlementCommand : SLCommand() {
 	}
 
 	@Subcommand("trusted list")
-	@Suppress("unused")
-	fun onTrustedList(sender: Player) {
+    fun onTrustedList(sender: Player) {
 		val settlementId = requireSettlementIn(sender)
 		requireSettlementPermission(sender, settlementId, SettlementRole.Permission.MANAGE_ROLES)
 
@@ -720,8 +717,7 @@ internal object SettlementCommand : SLCommand() {
 	@Subcommand("trusted add player")
 	@Description("Give a player build access to the settlement")
 	@CommandCompletion("@players")
-	@Suppress("unused")
-	fun onTrustedAddPlayer(sender: Player, player: String) = asyncCommand(sender) {
+    fun onTrustedAddPlayer(sender: Player, player: String) = asyncCommand(sender) {
 		val settlementId = requireSettlementIn(sender)
 		requireSettlementPermission(sender, settlementId, SettlementRole.Permission.MANAGE_ROLES)
 
@@ -744,8 +740,7 @@ internal object SettlementCommand : SLCommand() {
 	@Subcommand("trusted add settlement")
 	@Description("Give a settlement build access to the settlement")
 	@CommandCompletion("@settlements")
-	@Suppress("unused")
-	fun onTrustedAddSettlement(sender: Player, settlement: String) = asyncCommand(sender) {
+    fun onTrustedAddSettlement(sender: Player, settlement: String) = asyncCommand(sender) {
 		val ownerSettlementId = requireSettlementIn(sender)
 		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
 
@@ -769,8 +764,7 @@ internal object SettlementCommand : SLCommand() {
 	@Subcommand("trusted add nation")
 	@Description("Give a nation build access to the settlement")
 	@CommandCompletion("@nations")
-	@Suppress("unused")
-	fun onTrustedAddNation(sender: Player, nation: String) = asyncCommand(sender) {
+    fun onTrustedAddNation(sender: Player, nation: String) = asyncCommand(sender) {
 		val ownerSettlementId = requireSettlementIn(sender)
 		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
 
@@ -794,8 +788,7 @@ internal object SettlementCommand : SLCommand() {
 	@Subcommand("trusted remove player")
 	@Description("Revoke a player's build access to the settlement")
 	@CommandCompletion("@players")
-	@Suppress("unused")
-	fun onTrustedRemovePlayer(sender: Player, player: String) = asyncCommand(sender) {
+    fun onTrustedRemovePlayer(sender: Player, player: String) = asyncCommand(sender) {
 		val ownerSettlementId = requireSettlementIn(sender)
 		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
 
@@ -819,8 +812,7 @@ internal object SettlementCommand : SLCommand() {
 	@Subcommand("trusted remove settlement")
 	@Description("Give a settlement build access to the settlement")
 	@CommandCompletion("@settlements")
-	@Suppress("unused")
-	fun onTrustedRemoveSettlement(sender: Player, settlement: String) = asyncCommand(sender) {
+    fun onTrustedRemoveSettlement(sender: Player, settlement: String) = asyncCommand(sender) {
 		val ownerSettlementId = requireSettlementIn(sender)
 		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
 
@@ -844,8 +836,7 @@ internal object SettlementCommand : SLCommand() {
 	@Subcommand("trusted remove nation")
 	@Description("Give a nation build access to the settlement")
 	@CommandCompletion("@nations")
-	@Suppress("unused")
-	fun onTrustedRemoveNation(sender: Player, nation: String) = asyncCommand(sender) {
+    fun onTrustedRemoveNation(sender: Player, nation: String) = asyncCommand(sender) {
 		val ownerSettlementId = requireSettlementIn(sender)
 		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
 
@@ -868,8 +859,7 @@ internal object SettlementCommand : SLCommand() {
 
 	@Subcommand("motd set")
 	@Description("Set the message of the day of your settlement")
-	@Suppress("unused")
-	fun onSetMOTD(sender: Player, newMotd: String) {
+    fun onSetMOTD(sender: Player, newMotd: String) {
 		val ownerSettlementId = requireSettlementIn(sender)
 		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
 
@@ -880,8 +870,7 @@ internal object SettlementCommand : SLCommand() {
 
 	@Subcommand("motd clear")
 	@Description("Clear the message of the day of your settlement")
-	@Suppress("unused")
-	fun onclearMOTD(sender: Player) {
+    fun onclearMOTD(sender: Player) {
 		val ownerSettlementId = requireSettlementIn(sender)
 		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
 

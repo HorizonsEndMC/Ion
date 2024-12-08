@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.ai.module.combat.FrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.MultiTargetFrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.StarfighterCombatModule
 import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
-import net.horizonsend.ion.server.features.ai.module.misc.DirectControlWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.FleeModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.TrackingModule

@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.custom.items.mods.tool.drill.VeinMine
 import net.horizonsend.ion.server.features.custom.items.mods.tool.hoe.FertilizerDispenser
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 
-@Suppress("unused")
 object ItemModRegistry {
 	val mods: MutableMap<String, ItemModification> = mutableMapOf()
 

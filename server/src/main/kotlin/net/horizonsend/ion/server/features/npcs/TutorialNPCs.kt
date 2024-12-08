@@ -8,7 +8,6 @@ import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.configuration.UUIDSerializer
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
