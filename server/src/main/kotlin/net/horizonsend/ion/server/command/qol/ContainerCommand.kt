@@ -20,7 +20,6 @@ import org.bukkit.inventory.InventoryHolder
 @CommandAlias("container")
 @CommandPermission("ion.containercommand")
 object ContainerCommand : SLCommand() {
-	@Suppress("unused")
 	@Subcommand("empty")
 	@CommandCompletion("@anyItem")
 	fun onEmpty(sender: Player, @Optional str: String?) {
@@ -63,7 +62,6 @@ object ContainerCommand : SLCommand() {
 		}
 	}
 
-	@Suppress("unused")
 	@Subcommand("fill")
 	@CommandCompletion("@anyItem")
 	fun onFill(sender: Player, str: String) {

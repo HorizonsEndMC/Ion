@@ -215,7 +215,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		}
 	},
 
-	ContentDesign(ofChildren(text("Content", GREEN), text("Design", RED)), listOf("contentdesign", "cd", "slcd"), NamedTextColor.GOLD) {
+	ContentDesign(ofChildren(text("Content", GREEN), text("Design", RED)), listOf("contentdesign", "cd", "slcd"), GOLD) {
 		override fun onChat(player: Player, event: AsyncChatEvent) {
 			if (!player.hasPermission("chat.channel.contentdesign")) {
 				player.userError("You don't have access to that!")

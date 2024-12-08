@@ -14,14 +14,12 @@ import org.litote.kmongo.setValue
 @CommandAlias("sidebar")
 object SidebarCombatTimerCommand : SLCommand() {
     @Subcommand("combattimer")
-    @Suppress("unused")
     fun defaultCase(
         sender: Player
     ) {
         sender.userError("Usage: /sidebar combattimer <option> [toggle]")
     }
 
-    @Suppress("unused")
     @Subcommand("combattimer enable")
     fun onEnableCombatTimer(
         sender: Player
@@ -31,7 +29,6 @@ object SidebarCombatTimerCommand : SLCommand() {
         sender.success("Enabled combat timer info on sidebar")
     }
 
-    @Suppress("unused")
     @Subcommand("combattimer disable")
     fun onDisableCombatTimer(
         sender: Player

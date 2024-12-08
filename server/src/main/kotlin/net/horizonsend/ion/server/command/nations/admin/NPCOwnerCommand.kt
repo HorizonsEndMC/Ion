@@ -29,8 +29,7 @@ internal object NPCOwnerCommand : net.horizonsend.ion.server.command.SLCommand()
 	}
 
 	@Subcommand("create tradecity")
-	@Suppress("unused")
-	fun onCreateTC(sender: Player, name: String, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
+    fun onCreateTC(sender: Player, name: String, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
 		val territory = requireTerritoryIn(sender)
 		validateName(name)
 		val color = validateColor(red, green, blue)
@@ -39,8 +38,7 @@ internal object NPCOwnerCommand : net.horizonsend.ion.server.command.SLCommand()
 	}
 
 	@Subcommand("create territory")
-	@Suppress("unused")
-	fun onCreateTerritory(sender: Player, name: String, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
+    fun onCreateTerritory(sender: Player, name: String, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
 		val territory = requireTerritoryIn(sender)
 		validateName(name)
 		val color = validateColor(red, green, blue)
@@ -58,8 +56,7 @@ internal object NPCOwnerCommand : net.horizonsend.ion.server.command.SLCommand()
 	}
 
 	@Subcommand("set color")
-	@Suppress("unused")
-	fun onSetColor(sender: Player, name: String, red: Int, green: Int, blue: Int) {
+    fun onSetColor(sender: Player, name: String, red: Int, green: Int, blue: Int) {
 		val city = NPCTerritoryOwner.findOne(NPCTerritoryOwner::name eq name) ?: fail { "City $name not found!" }
 
 		val color = validateColor(red, green, blue)

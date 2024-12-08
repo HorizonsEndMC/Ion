@@ -11,7 +11,6 @@ import org.litote.kmongo.setValue
 
 @CommandAlias("enableprotectionmessages")
 object EnableProtectionMessagesCommand : SLCommand() {
-    @Suppress("unused")
     fun defaultCase(
         sender: Player
     ) {

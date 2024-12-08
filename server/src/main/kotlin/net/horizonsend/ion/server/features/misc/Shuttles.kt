@@ -49,7 +49,7 @@ object Shuttles : IonServerComponent() {
 		.build(
 			CacheLoader.from { name ->
 				requireNotNull(name)
-				requireNotNull(getSchematicFile(name)).exists()
+				getSchematicFile(name).exists()
 				return@from readSchematic(getSchematicFile(name))
 					?: error("Failed to read schematic $name")
 			}
@@ -238,7 +238,7 @@ object Shuttles : IonServerComponent() {
 			region.shift(BlockVector3.at(dx1, dy1, dz1))
 
 			region.chunks.asSequence()
-				.map { world1.getChunkAtIfLoaded(it.blockX, it.blockZ) }
+				.map { world1.getChunkAtIfLoaded(it.x(), it.z()) }
 				.filterNotNull()
 				.map { it.entities }
 				.flatMap { it.asSequence() }

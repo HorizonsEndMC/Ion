@@ -16,7 +16,6 @@ import org.bukkit.entity.Player
 @CommandPermission("ion.spacegen")
 @CommandAlias("spacegen")
 object SpaceGenCommand : SLCommand() {
-	@Suppress("unused")
 	@CommandCompletion("Range")
 	@Subcommand("regenerate")
 	fun onRegenerate(sender: Player, @Optional @Default("0") range: Int) {
