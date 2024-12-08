@@ -40,7 +40,7 @@ class ConfigurationFile<T: Any>(val configurationClass: KClass<out T>, val direc
 
 		val configuration: T = if (file.exists()) json.decodeFromStream(serializer, file.inputStream()) else json.decodeFromString(serializer, "{}")
 
-		try { save(serializer, directory, fileName) } catch (_: IOException) {
+		try { save(configurationClass, configuration, directory, fileName) } catch (_: IOException) {
 			System.err.println("Couldn't re-save configuration, this could cause problems later!")
 		}
 
