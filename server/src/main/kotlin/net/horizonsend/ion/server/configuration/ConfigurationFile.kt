@@ -15,7 +15,11 @@ class ConfigurationFile<T: Any>(val configurationClass: KClass<out T>, val direc
 	private var instance: T = load()
 
 	fun reload() {
-		instance = load()
+		instance = try {
+			load()
+		} catch (e: Throwable) {
+			throw Throwable("There was an error loading $fileName.json:", e)
+		}
 	}
 
 	fun saveToDisk() {

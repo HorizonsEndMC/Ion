@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.command.CommandSender
 import kotlin.reflect.KMutableProperty
@@ -176,7 +177,7 @@ object ConfigurationCommands : SLCommand() {
 
 	@Subcommand("config reload")
 	fun onConfigReload(sender: CommandSender) {
-		ConfigurationFiles.reload()
+		kotlin.runCatching { ConfigurationFiles.reload() }.onFailure { sender.sendMessage(formatException(it)) }
 
 		reloadOthers()
 
