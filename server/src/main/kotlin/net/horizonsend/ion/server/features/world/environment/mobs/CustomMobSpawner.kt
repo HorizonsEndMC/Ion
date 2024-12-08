@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.world.environment.mobs
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldSettings
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ENTITY
@@ -13,7 +13,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.persistence.PersistentDataType.BOOLEAN
 
 class CustomMobSpawner(val world: IonWorld, mobs: List<WorldSettings.SpawnedMob>) {
-	val mobs = mobs.plus(IonServer.configuration.globalCustomSpawns)
+	val mobs = mobs.plus(ConfigurationFiles.serverConfiguration().globalCustomSpawns)
 	// Expand this in the future with custom gear, etc
 
 	fun handleSpawnEvent(event: CreatureSpawnEvent) {

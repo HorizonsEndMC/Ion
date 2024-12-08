@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.client.display
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.custom.items.CustomItems
@@ -575,7 +575,7 @@ object HudIcons : IonServerComponent() {
         }
 
         // Rendering beacon
-        val beaconList = IonServer.configuration.beacons.filter { it.spaceLocation.bukkitWorld() == player.world }
+        val beaconList = ConfigurationFiles.serverConfiguration().beacons.filter { it.spaceLocation.bukkitWorld() == player.world }
         for (beacon in beaconList) {
             val hudName = BEACON_PREFIX + beacon.name
 

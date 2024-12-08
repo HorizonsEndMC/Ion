@@ -11,10 +11,8 @@ import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.luckPerms
-import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
-import net.horizonsend.ion.server.features.npcs.registries
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -99,7 +97,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	}
 
 	fun Player.updateProtection() {
-		if (!LegacySettings.master) return
+		if (!ConfigurationFiles.legacySettings().master) return
 
 		val lpUser = lpUserManager.getUser(uniqueId)!!
 

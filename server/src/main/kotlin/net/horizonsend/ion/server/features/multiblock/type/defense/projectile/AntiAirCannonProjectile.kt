@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.defense.projectile
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.damager.damager
@@ -26,7 +26,7 @@ class AntiAirCannonProjectile(
 	dir,
 	playerShooter.damager()
 ) {
-	override val balancing: StarshipWeapons.ProjectileBalancing = IonServer.starshipBalancing.antiAirCannon
+	override val balancing: StarshipWeapons.ProjectileBalancing = ConfigurationFiles.starshipBalancing().antiAirCannon
 	override val volume: Int = balancing.volume
 	override val pitch: Float = balancing.pitch
 	override val speed = balancing.speed

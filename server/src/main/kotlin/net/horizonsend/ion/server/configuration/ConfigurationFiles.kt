@@ -7,12 +7,10 @@ import net.horizonsend.ion.server.miscellaneous.LegacyConfig
 import java.io.File
 
 object ConfigurationFiles {
-	val configurationFolder = IonServer.configurationFolder
+	val configurationFolder = IonServer.dataFolder.resolve("configuration").apply { mkdirs() }
 	val sharedDataFolder by lazy { File(legacySettings.get().sharedFolder).apply { mkdirs() } }
 
 	private val configurationFiles = mutableListOf<ConfigurationFile<*>>()
-
-	fun reload() = configurationFiles.forEach { it.reload() }
 
 	val legacySettings = defineConfigurationFile<LegacyConfig>(configurationFolder, "legacyConfiguration")
 
@@ -22,6 +20,8 @@ object ConfigurationFiles {
 
 	val starshipBalancing = defineConfigurationFile<StarshipTypeBalancing>(configurationFolder, "starshipbalancing")
 
+	val pvpBalancing = defineConfigurationFile<PVPBalancingConfiguration>(configurationFolder, "pvpBalancing")
+
 	val globalGassesConfiguration = defineConfigurationFile<GlobalGassesConfiguration>(configurationFolder, "gasses")
 
 	val tradeConfiguration = defineConfigurationFile<TradeConfiguration>(configurationFolder, "trade")
@@ -30,16 +30,11 @@ object ConfigurationFiles {
 
 	val discordSettings = defineConfigurationFile<DiscordConfiguration>(configurationFolder, "discord")
 
-
-
-	inline fun <reified T: Any> defineConfigurationFile(directory: File, fileName: String): ConfigurationFile<T> {
+	private inline fun <reified T: Any> defineConfigurationFile(directory: File, fileName: String): ConfigurationFile<T> {
 		val new = ConfigurationFile(T::class, directory, fileName)
 		return new
 	}
 
-	fun ensureSharedDataFolder(): ConfigurationFiles {
-		//TODO
-
-		return this
-	}
+	fun reload() = configurationFiles.forEach { it.reload() }
+	fun saveToDisk() = configurationFiles.forEach { it.saveToDisk() }
 }

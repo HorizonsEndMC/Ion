@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.nations
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.sharedDataFolder
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
 
 lateinit var NATIONS_BALANCE: NationsBalancing.Config
 

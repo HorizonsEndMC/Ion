@@ -30,6 +30,7 @@ import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
@@ -63,7 +64,13 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.A
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.normalize
+import net.horizonsend.ion.server.miscellaneous.utils.parseData
+import net.horizonsend.ion.server.miscellaneous.utils.uploadAsync
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -91,10 +98,10 @@ import kotlin.math.roundToInt
 object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerCompletion("hyperspaceGates") {
-			IonServer.configuration.beacons.map { it.name.replace(" ", "_") }
+			ConfigurationFiles.serverConfiguration().beacons.map { it.name.replace(" ", "_") }
 		}
 		manager.commandCompletions.registerCompletion("hyperspaceGatesInWorld") { e ->
-			IonServer.configuration.beacons
+			ConfigurationFiles.serverConfiguration().beacons
 				.filter { beacon -> beacon.spaceLocation.world == e.player.world.name }
 				.map { it.name.replace(" ", "_") }
 		}
@@ -266,7 +273,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				192,
 				it.location.z
 			)
-		} ?: IonServer.configuration.beacons.firstOrNull {
+		} ?: ConfigurationFiles.serverConfiguration().beacons.firstOrNull {
 			it.name.replace(" ", "_") == destination
 		}?.spaceLocation
 		?: BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {

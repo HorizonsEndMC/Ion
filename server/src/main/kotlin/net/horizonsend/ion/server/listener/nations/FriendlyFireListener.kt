@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.listener.nations
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -42,7 +42,7 @@ object FriendlyFireListener : SLEventListener() {
 	}
 
 	fun isFriendlyFire(damaged: Player, damager: Player): Boolean {
-		if (LegacySettings.allowFriendlyFire) {
+		if (ConfigurationFiles.legacySettings().allowFriendlyFire) {
 			return false
 		}
 

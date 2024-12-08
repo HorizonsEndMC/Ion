@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.configuration.UUIDSerializer
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.npcs.traits.ShipDealerTrait
 import net.horizonsend.ion.server.features.tutorial.npcs.TutorialNPCType
@@ -105,7 +106,7 @@ object TutorialNPCs : IonServerComponent(true) {
 	fun onClickNPC(event: NPCRightClickEvent) {
 		if (!manager.contains(event.npc)) return
 
-		if (!IonServer.featureFlags.tutorials) {
+		if (!ConfigurationFiles.featureFlags().tutorials) {
 			event.clicker.serverError("Tutorials are not enabled on this server, this NPC was probably placed in error.")
 			return
 		}
