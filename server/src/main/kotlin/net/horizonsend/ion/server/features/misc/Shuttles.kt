@@ -226,13 +226,13 @@ object Shuttles : IonServerComponent() {
 			val (x1, y1, z1) = pos1
 			val (x2, y2, z2) = pos2
 
-			val dx1 = x1 - schematic.origin.blockX
-			val dy1 = y1 - schematic.origin.blockY
-			val dz1 = z1 - schematic.origin.blockZ
+			val dx1 = x1 - schematic.origin.x()
+			val dy1 = y1 - schematic.origin.y()
+			val dz1 = z1 - schematic.origin.z()
 
-			val dx2 = x2 - schematic.origin.blockX
-			val dy2 = y2 - schematic.origin.blockY
-			val dz2 = z2 - schematic.origin.blockZ
+			val dx2 = x2 - schematic.origin.x()
+			val dy2 = y2 - schematic.origin.y()
+			val dz2 = z2 - schematic.origin.z()
 
 			val region: Region = schematic.region.clone()
 			region.shift(BlockVector3.at(dx1, dy1, dz1))

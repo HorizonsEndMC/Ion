@@ -7,7 +7,6 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
@@ -144,9 +143,9 @@ object StarshipDealers : IonServerComponent(true) {
 
 		for (i in 0..5000) {
 			val targetVec = Vec3i(target)
-			val dx = targetVec.x - schematic.origin.x
-			val dy = targetVec.y - schematic.origin.y
-			val dz = targetVec.z - schematic.origin.z
+			val dx = targetVec.x - schematic.origin.x()
+			val dy = targetVec.y - schematic.origin.y()
+			val dz = targetVec.z - schematic.origin.z()
 
 			var obstructed = false
 			for (blockVector3 in schematic.region) {
@@ -154,9 +153,9 @@ object StarshipDealers : IonServerComponent(true) {
 					continue
 				}
 
-				val x = blockVector3.x + dx
-				val y = blockVector3.y + dy
-				val z = blockVector3.z + dz
+				val x = blockVector3.x() + dx
+				val y = blockVector3.y() + dy
+				val z = blockVector3.z() + dz
 
 				if (!world.worldBorder.isInside(Location(world, x.toDouble(), y.toDouble(), z.toDouble()))) {
 					obstructed = true

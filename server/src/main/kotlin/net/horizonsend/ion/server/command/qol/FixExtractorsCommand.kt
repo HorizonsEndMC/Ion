@@ -29,9 +29,9 @@ object FixExtractorsCommand : SLCommand() {
 		var count = 0
 
 		for (blockPosition in selection) {
-			val x = blockPosition.x
-			val y = blockPosition.y
-			val z = blockPosition.z
+			val x = blockPosition.x()
+			val y = blockPosition.y()
+			val z = blockPosition.z()
 
 			val block = sender.world.getBlockAt(x, y, z)
 
