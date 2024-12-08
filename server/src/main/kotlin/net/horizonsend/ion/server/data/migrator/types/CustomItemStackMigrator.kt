@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.data.migrator.types
+package net.horizonsend.ion.server.data.migrator.types
 
 import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems

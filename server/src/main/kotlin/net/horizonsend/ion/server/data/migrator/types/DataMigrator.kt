@@ -1,6 +1,6 @@
-package net.horizonsend.ion.server.features.data.migrator.types
+package net.horizonsend.ion.server.data.migrator.types
 
-import net.horizonsend.ion.server.features.data.DataVersioned
+import net.horizonsend.ion.server.data.DataVersioned
 
 /**
  * Not safe for implementation on its own. Must be registered.
