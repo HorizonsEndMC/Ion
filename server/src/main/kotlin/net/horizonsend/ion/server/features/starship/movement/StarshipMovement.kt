@@ -47,7 +47,7 @@ import kotlin.math.sqrt
 
 abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: World? = null) {
 	// null if the ship is not a player ship
-	private val playerShip: ActiveControlledStarship? = starship as? ActiveControlledStarship
+	private val playerShip: ActiveControlledStarship? = starship
 
 	abstract fun displaceX(oldX: Int, oldZ: Int): Int
 	abstract fun displaceY(oldY: Int): Int

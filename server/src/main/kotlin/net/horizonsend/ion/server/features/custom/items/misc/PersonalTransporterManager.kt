@@ -81,7 +81,6 @@ object PersonalTransporterManager : SLEventListener() {
         return inviteList.filterValues { it == target.uniqueId }.keys
     }
 
-    @Suppress("unused")
     @EventHandler
     fun onPlayerLeave(event: PlayerQuitEvent) {
         val player = event.player

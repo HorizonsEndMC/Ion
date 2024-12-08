@@ -11,14 +11,12 @@ import org.bukkit.entity.Player
 
 @CommandAlias("personaltransporter")
 object PersonalTransporterCommand : SLCommand() {
-    @Suppress("unused")
     @Subcommand("cancel")
     fun onCancelTeleportRequest(sender: Player) {
         PersonalTransporterManager.removeTpRequest(sender)
         sender.success("Removed teleport request (if there was one)")
     }
 
-    @Suppress("unused")
     @Subcommand("accept")
     fun onAcceptTeleportRequest(sender: Player, requesterName: String) {
         val requester = Bukkit.getPlayer(requesterName)
@@ -38,7 +36,6 @@ object PersonalTransporterCommand : SLCommand() {
         }
     }
 
-    @Suppress("unused")
     @Subcommand("deny")
     fun onDenyTeleportRequest(sender: Player, requesterName: String) {
         val requester = Bukkit.getPlayer(requesterName)

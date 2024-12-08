@@ -51,7 +51,7 @@ class HyperspaceMovement(
 	}
 
 	override fun run() {
-		if (!isPiloted(ship as ActiveControlledStarship)) {
+		if (!isPiloted(ship)) {
 			cancel()
 			return
 		}

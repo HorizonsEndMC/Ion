@@ -55,10 +55,6 @@ class ArsenalRocketStarshipWeaponSubsystem(
 		return arrayOf(BlockFace.SELF, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH)
 	}
 
-	override fun isAcceptableDirection(face: BlockFace): Boolean {
-		return super.isAcceptableDirection(face)
-	}
-
 	override fun isIntact(): Boolean {
 		val block = pos.toLocation(starship.world).block
 		val inward = if (face in arrayOf(BlockFace.UP, BlockFace.DOWN)) BlockFace.NORTH else face
