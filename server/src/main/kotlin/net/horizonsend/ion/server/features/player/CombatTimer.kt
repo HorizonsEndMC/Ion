@@ -8,8 +8,8 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
@@ -55,7 +55,7 @@ object CombatTimer : IonServerComponent() {
 	private val pvpTimer = mutableMapOf<UUID, Long>()
 
 	override fun onEnable() {
-		enabled = IonServer.featureFlags.combatTimers
+		enabled = ConfigurationFiles.featureFlags().combatTimers
 
 		if (!enabled) return
 

@@ -1,13 +1,15 @@
 package net.horizonsend.ion.common.utils.configuration
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
+import kotlinx.serialization.serializer
 import java.io.File
 import java.io.IOException
+import kotlin.reflect.KClass
+import kotlin.reflect.full.starProjectedType
 
 object Configuration {
 	@PublishedApi
@@ -20,7 +22,7 @@ object Configuration {
 		prettyPrintIndent = "\t"
 	}
 
-	fun getJson() = json
+	fun getJsonSerializer() = json
 
 	@OptIn(ExperimentalSerializationApi::class)
 	inline fun <reified T> load(directory: File, fileName: String): T {
@@ -63,11 +65,11 @@ object Configuration {
 	}
 
 	@OptIn(ExperimentalSerializationApi::class)
-	fun <T> save(strategy: SerializationStrategy<T>, directory: File, fileName: String) {
+	fun <T : Any> save(clazz: KClass<out T>, instance: T, directory: File, fileName: String) {
 		directory.mkdirs()
 		val file = directory.resolve(fileName)
 
-		json.encodeToStream(strategy, file.outputStream())
+		json.encodeToStream(json.serializersModule.serializer(clazz.starProjectedType), instance, file.outputStream())
 	}
 
 	inline fun <reified T> write(clazz: T): String {

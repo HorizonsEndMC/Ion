@@ -16,10 +16,11 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.miscellaneous.randomRange
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.stringItemCache
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -30,7 +31,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.horizonsend.ion.server.sharedDataFolder
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.textOfChildren
@@ -131,7 +131,7 @@ object CollectionMissions : IonServerComponent() {
 
 		val profitLastDay = CompletedCollectionMission.profitIn(player.slPlayerId, stationId, 24L)
 
-		if (profitLastDay >= IonServer.tradeConfiguration.ecoStationConfiguration.maxProfitPerStationPerDay) {
+		if (profitLastDay >= ConfigurationFiles.tradeConfiguration().ecoStationConfiguration.maxProfitPerStationPerDay) {
 			player.userError("You've reached the sell limit at this station today. Please come back tomorrow.")
 			return@async
 		}
@@ -255,7 +255,7 @@ object CollectionMissions : IonServerComponent() {
 		Tasks.async {
 			val profitLastDay = CompletedCollectionMission.profitIn(player.slPlayerId, stationId, 24L)
 
-			if (profitLastDay >= IonServer.tradeConfiguration.ecoStationConfiguration.maxProfitPerStationPerDay) {
+			if (profitLastDay >= ConfigurationFiles.tradeConfiguration().ecoStationConfiguration.maxProfitPerStationPerDay) {
 				player.userError("You've reached the sell limit at this station today. Please come back tomorrow.")
 				return@async
 			}

@@ -20,6 +20,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
@@ -106,7 +107,7 @@ object StationSieges : IonServerComponent() {
 			)
 
 			IonServer.server.sendMessage(message)
-			if (IonServer.legacySettings.master) Discord.sendEmbed(IonServer.discordSettings.globalChannel, (Embed(
+			if (ConfigurationFiles.legacySettings().master) Discord.sendEmbed(ConfigurationFiles.discordSettings().globalChannel, (Embed(
 				description = "Siege Station $lastStationName's siege hour has ended."
 			)))
 		}
@@ -124,7 +125,7 @@ object StationSieges : IonServerComponent() {
 			).hoverEvent(text("Current Owner: ${station.nation?.let { NationCache[it].name } ?: "None"}. Location: ${station.world}, (${station.x}, ${station.z})"))
 
 			IonServer.server.sendMessage(message)
-			if (IonServer.legacySettings.master) Discord.sendEmbed(IonServer.discordSettings.globalChannel, Embed(
+			if (ConfigurationFiles.legacySettings().master) Discord.sendEmbed(ConfigurationFiles.discordSettings().globalChannel, Embed(
 				description = "Siege Station ${station.name}'s siege hour has began! It can be besieged for the rest of the hour with /siege!."
 			))
 		}
@@ -157,7 +158,7 @@ object StationSieges : IonServerComponent() {
 		val stationName = CapturableStation.findPropById(siege.stationId, CapturableStation::name) ?: "??NULL??"
 
 		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>Siege of Space Station $stationName by $playerName has failed!"))
-		Discord.sendMessage(IonServer.discordSettings.eventsChannel, "Siege of Space Station **$stationName** by **$playerName** has failed!")
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "Siege of Space Station **$stationName** by **$playerName** has failed!")
 	}
 
 	fun beginSiege(player: Player) = asyncLocked {
@@ -230,7 +231,7 @@ object StationSieges : IonServerComponent() {
 			}
 		}
 
-		if (IonServer.featureFlags.economy) {
+		if (ConfigurationFiles.featureFlags().economy) {
 			if (!VAULT_ECO.has(player, NATIONS_BALANCE.capturableStation.siegeCost.toDouble())) {
 				player.userError("You need C${NATIONS_BALANCE.capturableStation.siegeCost} to begin a siege.")
 				return@asyncLocked
@@ -254,7 +255,7 @@ object StationSieges : IonServerComponent() {
 		val oldNationName = NationCache[oldNation].name
 
 		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>${player.name} of $nationName began a siege on Space Station ${station.name}! (Current Nation: $oldNationName)"))
-		Discord.sendMessage(IonServer.discordSettings.eventsChannel, "**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}")
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}")
 
 		player.rewardAchievement(Achievement.SIEGE_STATION)
 	}
@@ -329,7 +330,7 @@ object StationSieges : IonServerComponent() {
 
 			Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>Space Station ${station.name} has been captured by $playerName of $nationName from $oldNationName." +
 				" $nationName now has $nowCaptured stations!"))
-			Discord.sendMessage(IonServer.discordSettings.eventsChannel, "Space Station **${station.name}** has been captured by **$playerName of $nationName** from **$oldNationName**")
+			Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "Space Station **${station.name}** has been captured by **$playerName of $nationName** from **$oldNationName**")
 
 			SLXP.addAsync(player, NATIONS_BALANCE.capturableStation.siegerXP)
 

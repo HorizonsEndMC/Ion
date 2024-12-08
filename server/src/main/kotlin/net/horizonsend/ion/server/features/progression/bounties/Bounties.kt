@@ -9,8 +9,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.BountyCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.progression.Levels
@@ -219,5 +219,5 @@ object Bounties : IonServerComponent() {
 		}
 	}
 
-	fun isNotSurvival(): Boolean = !IonServer.configuration.serverName.equals("Survival", ignoreCase = true)
+	fun isNotSurvival(): Boolean = !ConfigurationFiles.serverConfiguration().serverName.equals("Survival", ignoreCase = true)
 }

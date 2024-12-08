@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.gas
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.GasCanister
@@ -24,9 +24,9 @@ object Gasses : IonServerComponent(false) {
 			identifier = "HYDROGEN",
 			displayName = text("Hydrogen", NamedTextColor.RED),
 			containerIdentifier = "GAS_CANISTER_HYDROGEN",
-			powerPerUnit = IonServer.globalGassesConfiguration.gasses.hydrogen.powerPerUnit,
-			cooldown = IonServer.globalGassesConfiguration.gasses.hydrogen.cooldown,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::hydrogen
+			powerPerUnit = ConfigurationFiles.globalGassesConfiguration().gasses.hydrogen.powerPerUnit,
+			cooldown = ConfigurationFiles.globalGassesConfiguration().gasses.hydrogen.cooldown,
+			configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::hydrogen
 		) {}
 	)
 	val NITROGEN = registerGas(
@@ -34,9 +34,9 @@ object Gasses : IonServerComponent(false) {
 			identifier = "NITROGEN",
 			displayName = text("Nitrogen", NamedTextColor.RED),
 			containerIdentifier = "GAS_CANISTER_NITROGEN",
-			powerPerUnit = IonServer.globalGassesConfiguration.gasses.nitrogen.powerPerUnit,
-			cooldown = IonServer.globalGassesConfiguration.gasses.nitrogen.cooldown,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::nitrogen
+			powerPerUnit = ConfigurationFiles.globalGassesConfiguration().gasses.nitrogen.powerPerUnit,
+			cooldown = ConfigurationFiles.globalGassesConfiguration().gasses.nitrogen.cooldown,
+			configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::nitrogen
 		) {}
 	)
 	val METHANE = registerGas(
@@ -44,9 +44,9 @@ object Gasses : IonServerComponent(false) {
 			identifier = "METHANE",
 			displayName = text("Methane", NamedTextColor.RED),
 			containerIdentifier = "GAS_CANISTER_METHANE",
-			powerPerUnit = IonServer.globalGassesConfiguration.gasses.methane.powerPerUnit,
-			cooldown = IonServer.globalGassesConfiguration.gasses.methane.cooldown,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::methane
+			powerPerUnit = ConfigurationFiles.globalGassesConfiguration().gasses.methane.powerPerUnit,
+			cooldown = ConfigurationFiles.globalGassesConfiguration().gasses.methane.cooldown,
+			configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::methane
 		) {}
 	)
 
@@ -56,8 +56,8 @@ object Gasses : IonServerComponent(false) {
 			identifier = "OXYGEN",
 			displayName = text("Oxygen", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_OXYGEN",
-			powerMultiplier = IonServer.globalGassesConfiguration.gasses.oxygen.powerMultiplier,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::oxygen
+			powerMultiplier = ConfigurationFiles.globalGassesConfiguration().gasses.oxygen.powerMultiplier,
+			configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::oxygen
 		) {}
 	)
 	val CHLORINE = registerGas(
@@ -65,8 +65,8 @@ object Gasses : IonServerComponent(false) {
 			identifier = "CHLORINE",
 			displayName = text("Chlorine", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_CHLORINE",
-			powerMultiplier = IonServer.globalGassesConfiguration.gasses.chlorine.powerMultiplier,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::chlorine
+			powerMultiplier = ConfigurationFiles.globalGassesConfiguration().gasses.chlorine.powerMultiplier,
+			configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::chlorine
 		) {}
 	)
 	val FLUORINE = registerGas(
@@ -74,8 +74,8 @@ object Gasses : IonServerComponent(false) {
 			identifier = "FLUORINE",
 			displayName = text("Fluorine", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_FLUORINE",
-			powerMultiplier = IonServer.globalGassesConfiguration.gasses.fluorine.powerMultiplier,
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::fluorine
+			powerMultiplier = ConfigurationFiles.globalGassesConfiguration().gasses.fluorine.powerMultiplier,
+			configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::fluorine
 		) {}
 	)
 
@@ -85,7 +85,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "HELIUM",
 			displayName = text("Helium", NamedTextColor.BLUE),
 			containerIdentifier = "GAS_CANISTER_HELIUM",
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::helium
+			configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::helium
 		) {}
 	)
 	val CARBON_DIOXIDE = registerGas(
@@ -93,7 +93,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "CARBON_DIOXIDE",
 			displayName = text("Carbon Dioxide", NamedTextColor.BLUE),
 			containerIdentifier = "GAS_CANISTER_CARBON_DIOXIDE",
-			configurationSupplier = IonServer.globalGassesConfiguration.gasses::carbonDioxide
+			configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::carbonDioxide
 		) {}
 	)
 

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -18,7 +18,7 @@ class PlagueCannonProjectile(
 	dir: Vector,
 	shooter: Damager
 ) : StickyParticleProjectile(starship, Component.text("Plague Cannon"), loc, dir, shooter) {
-	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.plagueCannon ?: IonServer.starshipBalancing.nonStarshipFired.plagueCannon
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.plagueCannon ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.plagueCannon
 	override val range: Double = balancing.range
 	override var speed: Double = balancing.speed
 	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier

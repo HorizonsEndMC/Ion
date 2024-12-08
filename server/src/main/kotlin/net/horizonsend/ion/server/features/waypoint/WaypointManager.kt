@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
@@ -177,7 +178,7 @@ object WaypointManager : IonServerComponent() {
         }
 
         // add all beacons as vertices to mainGraph
-        for (beacon in IonServer.configuration.beacons) {
+        for (beacon in ConfigurationFiles.serverConfiguration().beacons) {
             // 2 vertices for each beacon's entry and exit point
             val vertexEntry = WaypointVertex(
                 name = beacon.name.replace(" ", "_"),

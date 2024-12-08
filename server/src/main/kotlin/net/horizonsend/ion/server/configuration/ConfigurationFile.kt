@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.configuration
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.serializer
 import net.horizonsend.ion.common.utils.configuration.Configuration
@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.utils.configuration.Configuration.save
 import java.io.File
 import java.io.IOException
 import kotlin.reflect.KClass
+import kotlin.reflect.full.starProjectedType
 
 class ConfigurationFile<T: Any>(val configurationClass: KClass<out T>, val directory: File, val fileName: String) {
 	private var instance: T = load()
@@ -17,16 +18,22 @@ class ConfigurationFile<T: Any>(val configurationClass: KClass<out T>, val direc
 		instance = load()
 	}
 
+	fun saveToDisk() {
+		save(configurationClass, instance, directory, fileName)
+	}
+
 	fun get(): T = instance
 
-	@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
+	operator fun invoke() = get()
+
+	@OptIn(ExperimentalSerializationApi::class)
 	private fun load(): T {
 		directory.mkdirs()
 		val file = directory.resolve(fileName)
 
-		val serializer = configurationClass.serializer()
+		val json = Configuration.getJsonSerializer()
+		val serializer = json.serializersModule.serializer(configurationClass.starProjectedType) as KSerializer<T>
 
-		val json = Configuration.getJson()
 		val configuration: T = if (file.exists()) json.decodeFromStream(serializer, file.inputStream()) else json.decodeFromString(serializer, "{}")
 
 		try { save(serializer, directory, fileName) } catch (_: IOException) {

@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.CHETHERITE_CHARACTER
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItems
@@ -146,7 +146,7 @@ class Achievements(val player: Player) : AbstractBackgroundPagedGui {
 }
 
 fun Player.rewardAchievement(achievement: Achievement, callback: () -> Unit = {}) = Tasks.async {
-	if (!LegacySettings.master) return@async
+	if (!ConfigurationFiles.legacySettings().master) return@async
 
 	val playerData = SLPlayer[this]
 	if (playerData.achievements.map { Achievement.valueOf(it) }.find { it == achievement } != null) return@async
