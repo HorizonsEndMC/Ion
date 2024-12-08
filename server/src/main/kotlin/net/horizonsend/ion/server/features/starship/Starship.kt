@@ -12,10 +12,8 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.MessageFactory
-import net.horizonsend.ion.common.utils.text.bracketed
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
-import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.randomString
 import net.horizonsend.ion.common.utils.text.template
@@ -76,11 +74,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
@@ -351,11 +346,7 @@ class Starship (
 			return false
 		} catch (e: Throwable) {
 			serverError("There was an unhandled exception during movement! Please forward this to staff")
-			val stackTrace = "$e\n" + e.stackTrace.joinToString(separator = "\n")
-
-			val exceptionMessage = ofChildren(text(e.message ?: "No message provided", RED), space(), bracketed(text("Hover for info", HEColorScheme.HE_LIGHT_GRAY)))
-				.hoverEvent(text(stackTrace))
-				.clickEvent(ClickEvent.copyToClipboard(stackTrace))
+			val exceptionMessage = formatException(e)
 
 			sendMessage(exceptionMessage)
 
