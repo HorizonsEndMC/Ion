@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.data
+package net.horizonsend.ion.server.data
 
 interface DataVersioned <T: Any> {
 	val latestDataVersion: Int

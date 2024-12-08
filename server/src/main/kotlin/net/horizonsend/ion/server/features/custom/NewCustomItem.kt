@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.custom
 
+import net.horizonsend.ion.server.data.DataVersioned
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponent
 import net.horizonsend.ion.server.features.custom.items.components.LoreManager
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
-import net.horizonsend.ion.server.features.data.DataVersioned
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
