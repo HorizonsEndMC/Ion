@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFol
 lateinit var balancing: ShipmentBalancing.ShipmentBalancingConfig
 
 object ShipmentBalancing : IonServerComponent() {
+	@Serializable
 	data class ShipmentBalancingConfig(
 		@Serializable
 		val generator: GeneratorSection = GeneratorSection(),
