@@ -6,7 +6,7 @@ import net.citizensnpcs.api.npc.NPCDataStore
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.configuration.UUIDSerializer
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.entity.EntityType
 import java.util.UUID
@@ -81,6 +81,6 @@ class JsonNPCStore(private val start: Int, val name: String) : NPCDataStore {
 	}
 
 	companion object {
-		val npcStorageDirectory = IonServer.configurationFolder.resolve("npcs").apply { mkdirs() }
+		val npcStorageDirectory = ConfigurationFiles.configurationFolder.resolve("npcs").apply { mkdirs() }
 	}
 }

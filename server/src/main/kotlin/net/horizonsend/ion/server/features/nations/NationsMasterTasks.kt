@@ -14,7 +14,7 @@ import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -33,7 +33,7 @@ import java.lang.Integer.min
 
 object NationsMasterTasks : IonServerComponent() {
 	override fun onEnable() {
-		if (LegacySettings.master) {
+		if (ConfigurationFiles.legacySettings().master) {
 			// 20 ticks * 60 = 1 minute, 20 ticks * 60 * 60 = 1 hour
 			Tasks.asyncRepeat(20 * 60, 20 * 60 * 60, ::executeAll)
 		}

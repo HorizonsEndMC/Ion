@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -23,7 +23,7 @@ class PumpkinCannonProjectile(
 	direction: Vector,
 	shooter: Damager
 ) : BlockProjectile(starship, name, loc, direction, shooter) {
-	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.pumpkinCannon ?: IonServer.starshipBalancing.nonStarshipFired.pumpkinCannon
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.pumpkinCannon ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.pumpkinCannon
 	override val blockMap: Map<Vec3i, BlockData> = faces
 
 	companion object {

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.gas
 
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.GasCanister
@@ -47,7 +47,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		at(0, 0, 1).hopper()
 	}
 
-	val configuration = IonServer.globalGassesConfiguration
+	val configuration = ConfigurationFiles.globalGassesConfiguration()
 
 	override fun onFurnaceTick(
 		event: FurnaceBurnEvent,
@@ -100,7 +100,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 			result.amount.toDouble()
 		} ?: return
 
-		val delta = IonServer.globalGassesConfiguration.collectorTickInterval / 20L
+		val delta = ConfigurationFiles.globalGassesConfiguration().collectorTickInterval / 20L
 		val amount = (random.amount * weight) * (delta)
 
 		Tasks.sync {

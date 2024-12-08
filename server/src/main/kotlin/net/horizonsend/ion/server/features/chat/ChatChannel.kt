@@ -17,8 +17,8 @@ import net.horizonsend.ion.common.utils.text.formatSpacePrefix
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.command.misc.GToggleCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.messages.NationsChatMessage
 import net.horizonsend.ion.server.features.chat.messages.NormalChatMessage
@@ -60,7 +60,7 @@ import org.bukkit.entity.Player
 enum class ChatChannel(val displayName: Component, val commandAliases: List<String>, val messageColor: TextColor) {
 	GLOBAL(text("Global", DARK_GREEN), listOf("global", "g"), WHITE) {
 		override fun onChat(player: Player, event: AsyncChatEvent) {
-			if (LegacySettings.chat.noGlobalWorlds.contains(player.world.name)) {
+			if (ConfigurationFiles.legacySettings().chat.noGlobalWorlds.contains(player.world.name)) {
 				player.userErrorAction("You can't use global chat in this world! <italic>(If you need assistance, please use /msg)")
 			}
 
@@ -103,7 +103,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 	},
 
 	LOCAL(text("Local", YELLOW), listOf("local", "l"), YELLOW) {
-		private val distanceSquared = LegacySettings.chat.localDistance * LegacySettings.chat.localDistance
+		private val distanceSquared = ConfigurationFiles.legacySettings().chat.localDistance * ConfigurationFiles.legacySettings().chat.localDistance
 
 		override fun onChat(player: Player, event: AsyncChatEvent) {
 			val component = formatChatMessage(text("Local ", YELLOW, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
@@ -359,7 +359,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 			val sender = message.sender
 
 			for (player in Bukkit.getOnlinePlayers()) {
-				if (LegacySettings.chat.noGlobalWorlds.contains(player.world.name)) continue
+				if (ConfigurationFiles.legacySettings().chat.noGlobalWorlds.contains(player.world.name)) continue
 				if (PlayerCache[player].blockedPlayerIDs.contains(sender)) continue
 
 				if (GToggleCommand.noGlobalInheritanceNode != null) {

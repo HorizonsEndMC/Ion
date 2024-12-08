@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.repeatString
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
@@ -291,7 +291,7 @@ object ContactsSidebar {
         } else listOf()
 
         val beacons: List<ServerConfiguration.HyperspaceBeacon> = if (beaconsEnabled) {
-            IonServer.configuration.beacons.filter {
+            ConfigurationFiles.serverConfiguration().beacons.filter {
                 it.spaceLocation.bukkitWorld() == player.world &&
                         it.spaceLocation.toLocation().toVector()
                             .distanceSquared(sourceVector) <= getContactsDistanceSq(player)

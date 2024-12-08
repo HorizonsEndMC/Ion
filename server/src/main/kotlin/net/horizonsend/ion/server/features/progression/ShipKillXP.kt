@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.progression
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.player.CombatNPCKillEvent
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -67,7 +67,7 @@ object ShipKillXP : IonServerComponent() {
 			""".trimIndent()
 		)
 
-		if (IonServer.featureFlags.economy) starship.rewardsProviders.forEach { it.triggerReward() }
+		if (ConfigurationFiles.featureFlags().economy) starship.rewardsProviders.forEach { it.triggerReward() }
 		starship.sinkMessageFactory.execute()
 	}
 }

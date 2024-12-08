@@ -18,7 +18,7 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.string
-import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.unpackTerritoryPolygon
@@ -45,7 +45,7 @@ class RegionTerritory(territory: Territory) :
 	var polygon: Polygon = unpackTerritoryPolygon(territory.polygonData); private set
 
 	val oldCost
-		get() = sqrt((polygon.bounds.width * polygon.bounds.height).toDouble()).times(LegacySettings.territoryCost).toInt()
+		get() = sqrt((polygon.bounds.width * polygon.bounds.height).toDouble()).times(ConfigurationFiles.legacySettings().territoryCost).toInt()
 	val cost: Int
 		get() {
 			val n = polygon.npoints

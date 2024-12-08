@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -44,7 +44,7 @@ object CryoPods: SLEventListener() {
 			return@async
 		}
 
-		Cryopod.create(player.slPlayerId, pos, IonServer.configuration.serverName ?: "Survival", worldName)
+		Cryopod.create(player.slPlayerId, pos, ConfigurationFiles.serverConfiguration().serverName ?: "Survival", worldName)
 		player.success("Set Cryopod")
 	}
 
