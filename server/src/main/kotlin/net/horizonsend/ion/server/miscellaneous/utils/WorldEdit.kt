@@ -105,7 +105,7 @@ fun placeSchematicEfficiently(
 			if (blockData.material.isAir) {
 				continue
 			}
-			val blockKey = blockKey(vector.x, vector.y, vector.z)
+			val blockKey = blockKey(vector.x(), vector.y(), vector.z())
 			queue[blockKey] = blockData.nms
 		}
 

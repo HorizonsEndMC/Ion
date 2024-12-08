@@ -86,7 +86,7 @@ class Vec3i: DBVec3i {
 
 	constructor(location: Location) : super(location.blockX, location.blockY, location.blockZ)
 
-	constructor(vector: BlockVector3) : super(vector.blockX, vector.blockY, vector.blockZ)
+	constructor(vector: BlockVector3) : super(vector.x(), vector.y(), vector.z())
 
 	fun toLocation(world: World): Location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
 

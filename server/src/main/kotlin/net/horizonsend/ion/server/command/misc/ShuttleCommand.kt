@@ -23,7 +23,7 @@ import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
-import java.util.*
+import java.util.Locale
 
 @CommandAlias("shuttle")
 @CommandPermission("starlegacy.shuttle.admin")
@@ -168,14 +168,14 @@ object ShuttleCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val file = validateSchematicFile(shuttle.schematic)
 		val schem: Clipboard = readSchematic(file) ?: fail { "Failed to read schematic" }
 
-		val dx = ox - schem.origin.blockX
-		val dy = oy - schem.origin.blockY
-		val dz = oz - schem.origin.blockZ
+		val dx = ox - schem.origin.x()
+		val dy = oy - schem.origin.y()
+		val dz = oz - schem.origin.z()
 
 		for (vec in schem.region) {
-			val x = vec.blockX + dx
-			val y = vec.blockY + dy
-			val z = vec.blockZ + dz
+			val x = vec.x() + dx
+			val y = vec.y() + dy
+			val z = vec.z() + dz
 			failIf(getBlockTypeSafe(world, x, y, z)?.isAir != true) { "Blocked at $x $y $z" }
 			val block = world.getBlockAt(x, y, z)
 			world.spawnParticle(Particle.BLOCK_MARKER, block.location.toCenterLocation(), 1)
