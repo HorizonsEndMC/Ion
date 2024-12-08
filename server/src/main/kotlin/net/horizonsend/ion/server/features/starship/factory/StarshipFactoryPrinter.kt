@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.setNMSBlockData
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.javautil.SignUtils
+import net.starlegacy.javautil.SignUtilsf
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData

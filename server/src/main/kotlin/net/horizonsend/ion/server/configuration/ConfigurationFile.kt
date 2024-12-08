@@ -27,6 +27,10 @@ class ConfigurationFile<T: Any>(private val configurationClass: KClass<out T>, p
 		save(configurationClass, instance, directory, fileName)
 	}
 
+	fun saveToDisk() {
+		save(configurationClass, instance, directory, fileName)
+	}
+
 	fun get(): T = instance
 
 	operator fun invoke() = get()
