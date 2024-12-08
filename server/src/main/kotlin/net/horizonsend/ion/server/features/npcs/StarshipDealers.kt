@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.nations.gui.item
 import net.horizonsend.ion.server.features.npcs.traits.ShipDealerTrait
@@ -37,7 +38,7 @@ object StarshipDealers : IonServerComponent(true) {
 	val manager = NPCManager(log, "StarshipDealerNPCs")
 
 	private val lastBuyTimes = mutableMapOf<ServerConfiguration.Ship, MutableMap<UUID, Long>>()
-	val schematicMap = IonServer.configuration.soldShips.associateWith { it.schematic() }
+	val schematicMap = ConfigurationFiles.serverConfiguration().soldShips.associateWith { it.schematic() }
 
 	override fun onEnable() {
 		manager.enableRegistry()

@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.text
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
@@ -73,8 +73,8 @@ object CustomItems {
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
 	// Magazines Start
-	val STANDARD_MAGAZINE = register(Magazine("STANDARD_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 1, text("Standard Magazine").decoration(ITALIC, false), IonServer.pvpBalancing.energyWeapons::standardMagazine))
-	val SPECIAL_MAGAZINE = register(Magazine("SPECIAL_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 2, text("Special Magazine").decoration(ITALIC, false), IonServer.pvpBalancing.energyWeapons::specialMagazine))
+	val STANDARD_MAGAZINE = register(Magazine("STANDARD_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 1, text("Standard Magazine").decoration(ITALIC, false), ConfigurationFiles.pvpBalancing().energyWeapons::standardMagazine))
+	val SPECIAL_MAGAZINE = register(Magazine("SPECIAL_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 2, text("Special Magazine").decoration(ITALIC, false), ConfigurationFiles.pvpBalancing().energyWeapons::specialMagazine))
 	// Magazines End
 	// Guns Start
 	val PISTOL = register(Blaster(
@@ -91,7 +91,7 @@ object CustomItems {
 		soundReloadStart = "horizonsend:blaster.pistol.reload.start",
 		soundReloadFinish = "horizonsend:blaster.pistol.reload.finish",
 		explosiveShot = false,
-		balancingSupplier = IonServer.pvpBalancing.energyWeapons::pistol
+		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::pistol
 	))
 	val RIFLE = register(Blaster(
 		identifier = "RIFLE",
@@ -107,7 +107,7 @@ object CustomItems {
 		soundReloadStart = "horizonsend:blaster.rifle.reload.start",
 		soundReloadFinish = "horizonsend:blaster.rifle.reload.finish",
 		explosiveShot = false,
-		balancingSupplier = IonServer.pvpBalancing.energyWeapons::rifle
+		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::rifle
 	))
 	val SUBMACHINE_BLASTER = register(object : Blaster<Singleshot>(
 		identifier = "SUBMACHINE_BLASTER",
@@ -123,7 +123,7 @@ object CustomItems {
 		soundReloadStart = "horizonsend:blaster.submachine_blaster.reload.start",
 		soundReloadFinish = "horizonsend:blaster.submachine_blaster.reload.finish",
 		explosiveShot = false,
-		balancingSupplier = IonServer.pvpBalancing.energyWeapons::submachineBlaster
+		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::submachineBlaster
 	) {
 		// Allows fire above 300 rpm
 		override fun handleSecondaryInteract(
@@ -161,7 +161,7 @@ object CustomItems {
 		soundReloadStart = "horizonsend:blaster.shotgun.reload.start",
 		soundReloadFinish = "horizonsend:blaster.shotgun.reload.finish",
 		explosiveShot = false,
-		balancingSupplier = IonServer.pvpBalancing.energyWeapons::shotgun
+		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::shotgun
 	) {
 		override fun fireProjectiles(livingEntity: LivingEntity) {
 			for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
@@ -181,7 +181,7 @@ object CustomItems {
 		soundReloadStart = "horizonsend:blaster.sniper.reload.start",
 		soundReloadFinish = "horizonsend:blaster.sniper.reload.finish",
 		explosiveShot = false,
-		balancingSupplier = IonServer.pvpBalancing.energyWeapons::sniper
+		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::sniper
 	))
 	val CANNON = register(Blaster(
 		identifier = "CANNON",
@@ -197,7 +197,7 @@ object CustomItems {
 		soundReloadStart = "horizonsend:blaster.cannon.reload.start",
 		soundReloadFinish = "horizonsend:blaster.cannon.reload.finish",
 		explosiveShot = true,
-		balancingSupplier = IonServer.pvpBalancing.energyWeapons::cannon
+		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::cannon
 	))
 	// Guns End
 	// Gun Parts Start
@@ -359,12 +359,12 @@ object CustomItems {
 			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem = thrown.invoke(item, maxTicks, damageSource)
 		})
 
-	val DETONATOR = registerThrowable("DETONATOR", 1101, ofChildren(text("Thermal ", RED), text("Detonator", GRAY)).itemName, IonServer.pvpBalancing.throwables::detonator) { item, maxTicks, source -> ThrownDetonator(item, maxTicks, source, IonServer.pvpBalancing.throwables::detonator) }
-	val SMOKE_GRENADE = registerThrowable("SMOKE_GRENADE", 1102, ofChildren(text("Smoke ", DARK_GREEN), text("Grenade", GRAY)).itemName, IonServer.pvpBalancing.throwables::smokeGrenade) { item, maxTicks, source -> ThrownSmokeGrenade(item, maxTicks, source) }
+	val DETONATOR = registerThrowable("DETONATOR", 1101, ofChildren(text("Thermal ", RED), text("Detonator", GRAY)).itemName, ConfigurationFiles.pvpBalancing().throwables::detonator) { item, maxTicks, source -> ThrownDetonator(item, maxTicks, source, ConfigurationFiles.pvpBalancing().throwables::detonator) }
+	val SMOKE_GRENADE = registerThrowable("SMOKE_GRENADE", 1102, ofChildren(text("Smoke ", DARK_GREEN), text("Grenade", GRAY)).itemName, ConfigurationFiles.pvpBalancing().throwables::smokeGrenade) { item, maxTicks, source -> ThrownSmokeGrenade(item, maxTicks, source) }
 
-	val PUMPKIN_GRENADE = register(object : ThrowableCustomItem("PUMPKIN_GRENADE", 0, ofChildren(text("Pumpkin ", GOLD), text("Grenade", GREEN)).itemName, IonServer.pvpBalancing.throwables::detonator) {
+	val PUMPKIN_GRENADE = register(object : ThrowableCustomItem("PUMPKIN_GRENADE", 0, ofChildren(text("Pumpkin ", GOLD), text("Grenade", GREEN)).itemName, ConfigurationFiles.pvpBalancing().throwables::detonator) {
 		override fun constructItemStack(): ItemStack = super.constructItemStack().apply { type = Material.PUMPKIN }.updateMeta { it.lore(mutableListOf(text("Spooky", LIGHT_PURPLE))) }
-		override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem = ThrownPumpkinGrenade(item, maxTicks, damageSource, IonServer.pvpBalancing.throwables::detonator)
+		override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem = ThrownPumpkinGrenade(item, maxTicks, damageSource, ConfigurationFiles.pvpBalancing().throwables::detonator)
 	})
 	// Throwables end
 	// Planets start

@@ -4,7 +4,7 @@ import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.ServerConfiguration
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
@@ -20,7 +20,7 @@ object DutyModeMonitor : IonServerComponent() {
 	private fun isInDutyMode(player: Player) = player.hasPermission("group.dutymode")
 
 	override fun onEnable() {
-		val url = ServerConfiguration.dutyModeMonitorWebhook ?: return
+		val url = ConfigurationFiles.serverConfiguration().dutyModeMonitorWebhook ?: return
 		val builder = WebhookClientBuilder(url)
 
 		val client: WebhookClient =  try {

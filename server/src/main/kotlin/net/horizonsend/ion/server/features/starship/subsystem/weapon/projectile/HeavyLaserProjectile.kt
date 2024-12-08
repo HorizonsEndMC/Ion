@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -19,7 +19,7 @@ class HeavyLaserProjectile(
     baseAimDistance: Int,
     sound: String
 ) : TrackingLaserProjectile(starship, name, loc, dir, shooter, originalTarget, baseAimDistance) {
-	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.heavyLaser ?: IonServer.starshipBalancing.nonStarshipFired.heavyLaser
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.heavyLaser ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.heavyLaser
 	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
 	override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
 	override val maxDegrees: Double = balancing.maxDegrees

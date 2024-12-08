@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.place
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.store
 import net.horizonsend.ion.server.features.world.generation.generators.interfaces.WorldGenerator
@@ -32,7 +33,7 @@ object WorldGenerationManager : SLEventListener() {
 		val serverLevel = event.world
 
 		// TODO
-		IonServer.configuration.spaceGenConfig[event.world.name]?.let { config ->
+		ConfigurationFiles.serverConfiguration().spaceGenConfig[event.world.name]?.let { config ->
 			log.info("Creating generator for ${serverLevel.name}")
 			worldGenerators[serverLevel] =
 				SpaceGenerator(

@@ -5,25 +5,16 @@ import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
-import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.configuration.FeatureFlags
-import net.horizonsend.ion.server.configuration.GlobalGassesConfiguration
-import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
-import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
-import net.horizonsend.ion.server.configuration.TradeConfiguration
-import net.horizonsend.ion.server.features.ai.configuration.AISpawningConfiguration
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.configurationFolder
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.EmptyChunkGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.SpaceBiomeProvider
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.LegacyConfig
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.miscellaneous.registrations.listeners
@@ -35,30 +26,10 @@ import org.bukkit.event.Listener
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
-import java.io.File
 import kotlin.system.measureTimeMillis
 
-val LegacySettings get() = IonServer.legacySettings
-val ServerConfiguration get() = IonServer.configuration
-
-val sharedDataFolder by lazy { File(LegacySettings.sharedFolder).apply { mkdirs() } }
-
 object IonServer : JavaPlugin() {
-	val configurationProvider = ConfigurationFiles // Ensure initialization
-
-	val configurationFolder = dataFolder.resolve("configuration").apply { mkdirs() }
-
-	var featureFlags: FeatureFlags = Configuration.load(configurationFolder, "features.json")
-	var pvpBalancing: PVPBalancingConfiguration = Configuration.load(configurationFolder, "pvpbalancing.json")
-	var starshipBalancing: StarshipTypeBalancing = Configuration.load(configurationFolder, "starshipbalancing.json")
-
-	var configuration: ServerConfiguration = Configuration.load(configurationFolder, "server.json")
-	var globalGassesConfiguration: GlobalGassesConfiguration = Configuration.load(configurationFolder, "gasses.json")
-	var tradeConfiguration: TradeConfiguration = Configuration.load(configurationFolder, "trade.json")
-	var aiSpawningConfiguration: AISpawningConfiguration = Configuration.load(configurationFolder, "aiSpawning.json")
-	var discordSettings: DiscordConfiguration = Configuration.load(configurationFolder, "discord.json")
-	var legacySettings: LegacyConfig = Configuration.load(configurationFolder, "config.json") // Setting
-
+	val configProvider = ConfigurationFiles // Ensure initialization
 
 	override fun onEnable(): Unit =
 		runCatching(::internalEnable).fold(
@@ -68,7 +39,7 @@ object IonServer : JavaPlugin() {
 					slF4JLogger.info(message)
 
 					try {
-						Discord.sendMessage(discordSettings.changelogChannel,"${configuration.serverName} $message")
+						Discord.sendMessage(ConfigurationFiles.discordSettings().changelogChannel,"${ConfigurationFiles.serverConfiguration().serverName} $message")
 					} catch (e: Exception) {
 						slF4JLogger.error(e.message)
 						e.printStackTrace()

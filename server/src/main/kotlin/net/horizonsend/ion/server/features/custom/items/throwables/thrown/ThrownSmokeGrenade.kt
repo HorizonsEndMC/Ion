@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.throwables.thrown
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
 import org.bukkit.Particle
 import org.bukkit.block.Block
@@ -11,7 +12,7 @@ class ThrownSmokeGrenade(
 	item: Item,
 	maxTicks: Int,
 	damageSource: Entity?,
-) : ThrownCustomItem(item, maxTicks, damageSource, IonServer.pvpBalancing.throwables::smokeGrenade) {
+) : ThrownCustomItem(item, maxTicks, damageSource, ConfigurationFiles.pvpBalancing().throwables::smokeGrenade) {
 	private var isExploding = false
 
 	override fun onImpact(hitBlock: Block) {

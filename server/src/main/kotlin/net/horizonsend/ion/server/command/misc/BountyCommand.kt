@@ -14,8 +14,8 @@ import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.progression.bounties.Bounties
 import net.horizonsend.ion.server.features.progression.bounties.BountiesMenu
@@ -35,7 +35,7 @@ import org.litote.kmongo.inc
 
 @CommandAlias("bounty")
 object BountyCommand : SLCommand() {
-	private fun requireBountiesEnabled() = failIf(!IonServer.featureFlags.bounties) { "Bounties are disabled on this server!" }
+	private fun requireBountiesEnabled() = failIf(!ConfigurationFiles.featureFlags().bounties) { "Bounties are disabled on this server!" }
 
 	@Default
 	@Subcommand("menu")

@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.space
 
 import net.horizonsend.ion.common.utils.text.createHtmlLink
 import net.horizonsend.ion.common.utils.text.wrapStyle
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit.getPluginManager
@@ -68,7 +68,7 @@ object SpaceMap : IonServerComponent(true) {
 		}
 
 		for (planet in Space.getPlanets()) {
-			val serverName = IonServer.configuration.serverName
+			val serverName = ConfigurationFiles.serverConfiguration().serverName
 			val link = "https://$serverName.horizonsend.net/?worldname=${planet.planetWorldName}"
 
 			val planetDescription = "${planet.name} \n \n ${planet.description}"

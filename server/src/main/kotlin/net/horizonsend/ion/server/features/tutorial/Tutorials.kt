@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.tutorial
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.tutorial.tutorials.FlightTutorial
 import net.horizonsend.ion.server.features.tutorial.tutorials.Tutorial
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -19,7 +20,7 @@ object Tutorials : IonServerComponent() {
 	)
 
 	override fun onEnable() {
-		if (!IonServer.featureFlags.tutorials) return
+		if (!ConfigurationFiles.featureFlags().tutorials) return
 
 		listen<PlayerQuitEvent> { event ->
 			tutorials.forEach { it.endTutorial(event.player) }
