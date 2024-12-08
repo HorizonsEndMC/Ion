@@ -2,12 +2,15 @@ package net.horizonsend.ion.common.utils.text
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -277,4 +280,12 @@ fun commandPrompt(shownText: String, color: TextColor, command: String): Compone
 	return bracketed(text(shownText, color, ITALIC))
 		.hoverEvent(text(command))
 		.clickEvent(ClickEvent.runCommand(command))
+}
+
+fun formatException(throwable: Throwable): Component {
+	val stackTrace = "$throwable\n" + throwable.stackTrace.joinToString(separator = "\n")
+
+	return ofChildren(text(throwable.message ?: "No message provided", RED), space(), bracketed(text("Hover for info", HE_LIGHT_GRAY)))
+		.hoverEvent(text(stackTrace))
+		.clickEvent(ClickEvent.copyToClipboard(stackTrace))
 }
