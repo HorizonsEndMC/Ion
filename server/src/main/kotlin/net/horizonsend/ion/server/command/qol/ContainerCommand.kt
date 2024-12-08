@@ -34,7 +34,7 @@ object ContainerCommand : SLCommand() {
 		var count = 0
 		val containerList = mutableListOf<InventoryHolder>()
 		for (blockPosition in selection) {
-			val block = sender.world.getBlockAt(blockPosition.x, blockPosition.y, blockPosition.z).state as? InventoryHolder ?: continue
+			val block = sender.world.getBlockAt(blockPosition.x(), blockPosition.y(), blockPosition.z()).state as? InventoryHolder ?: continue
 			containerList.add(block)
 			sender.debug(""+containerList.size)
 		}
@@ -78,7 +78,7 @@ object ContainerCommand : SLCommand() {
 		var count = 0
 		val containerList = mutableListOf<InventoryHolder>()
 		for (blockPosition in selection) {
-			val block = sender.world.getBlockAt(blockPosition.x, blockPosition.y, blockPosition.z).state as? InventoryHolder ?: continue
+			val block = sender.world.getBlockAt(blockPosition.x(), blockPosition.y(), blockPosition.z()).state as? InventoryHolder ?: continue
 			containerList.add(block)
 		}
 		Tasks.async {
