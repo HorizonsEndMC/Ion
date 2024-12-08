@@ -1,9 +1,9 @@
-package net.horizonsend.ion.server.features.data.migrator
+package net.horizonsend.ion.server.data.migrator
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.data.migrator.types.CustomItemStackMigrator
-import net.horizonsend.ion.server.features.data.migrator.types.DataMigrator
-import net.horizonsend.ion.server.features.data.migrator.types.WorldDataMigrator
+import net.horizonsend.ion.server.data.migrator.types.CustomItemStackMigrator
+import net.horizonsend.ion.server.data.migrator.types.DataMigrator
+import net.horizonsend.ion.server.data.migrator.types.WorldDataMigrator
 
 object DataMigrators : IonServerComponent() {
 	override fun onEnable() {
