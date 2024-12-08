@@ -28,7 +28,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import java.time.Instant
-import java.util.Locale
 import java.util.UUID
 
 private val lastMoved = HashMap<UUID, Long>()

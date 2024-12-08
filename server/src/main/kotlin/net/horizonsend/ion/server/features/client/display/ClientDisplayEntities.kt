@@ -266,7 +266,6 @@ object ClientDisplayEntities : IonServerComponent() {
      * Handler that adds a new entry to the DisplayEntityData map when a player joins the server.
      * @param event PlayerJoinEvent
      */
-    @Suppress("unused")
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         map[event.player.uniqueId] = mutableMapOf()
@@ -276,7 +275,6 @@ object ClientDisplayEntities : IonServerComponent() {
      * Handler that removes an entry from the DisplayEntityData map when a player leaves the server.
      * @param event PlayerQuitEvent
      */
-    @Suppress("unused")
     @EventHandler
     fun onPlayerLeave(event: PlayerQuitEvent) {
         if (map[event.player.uniqueId] != null) {

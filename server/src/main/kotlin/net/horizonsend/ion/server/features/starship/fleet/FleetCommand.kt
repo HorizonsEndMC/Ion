@@ -14,7 +14,6 @@ import org.bukkit.entity.Player
 @CommandAlias("fleet|f")
 object FleetCommand : SLCommand() {
     @Subcommand("create")
-    @Suppress("unused")
     fun onFleetCreate(sender: Player) {
         if (Fleets.findByMember(sender) != null) {
             sender.userError("You are already in a fleet")
@@ -26,7 +25,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("disband")
-    @Suppress("unused")
     fun onFleetDisband(sender: Player) {
         val fleet = getFleet(sender) ?: return
 
@@ -41,7 +39,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("list")
-    @Suppress("unused")
     fun onFleetList(sender: Player) {
         val fleet = getFleet(sender) ?: return
 
@@ -49,7 +46,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("leave")
-    @Suppress("unused")
     fun onFleetLeave(sender: Player) {
         val fleet = getFleet(sender) ?: return
 
@@ -63,7 +59,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("kick")
-    @Suppress("unused")
     @CommandCompletion("@players")
     fun onFleetKick(sender: Player, memberName: String) {
         val fleet = getFleet(sender) ?: return
@@ -95,7 +90,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("transfer")
-    @Suppress("unused")
     @CommandCompletion("@players")
     fun onFleetTransfer(sender: Player, memberName: String) {
         val fleet = getFleet(sender) ?: return
@@ -126,7 +120,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("invite")
-    @Suppress("unused")
     @CommandCompletion("@players")
     fun onFleetInvite(sender: Player, inviteName: String) {
         val fleet = getFleet(sender) ?: return
@@ -154,7 +147,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("removeInvite")
-    @Suppress("unused")
     @CommandCompletion("@players")
     fun onFleetRemoveInvite(sender: Player, inviteName: String) {
         val fleet = getFleet(sender) ?: return
@@ -185,7 +177,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("join")
-    @Suppress("unused")
     @CommandCompletion("@players")
     fun onFleetJoin(sender: Player, inviterName: String) {
         if (Fleets.findByMember(sender) != null) {
@@ -216,7 +207,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("clearbroadcast|clearbc")
-    @Suppress("unused")
     fun onFleetClearBroadcast(sender: Player) {
         val fleet = getFleet(sender) ?: return
 
@@ -230,7 +220,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("broadcast|bc")
-    @Suppress("unused")
     @CommandCompletion("@players")
     fun onFleetBroadcast(sender: Player, broadcast: String) {
         val fleet = getFleet(sender) ?: return
@@ -245,7 +234,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("jump")
-    @Suppress("unused")
     @Description("Jump fleet to a set of coordinates, a hyperspace beacon, or a planet")
     fun onFleetJump(sender: Player) {
         val fleet = getFleet(sender) ?: return
@@ -261,7 +249,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("jump")
-    @Suppress("unused")
     @CommandCompletion("x|z")
     @Description("Jump fleet to a set of coordinates, a hyperspace beacon, or a planet")
     fun onFleetJump(sender: Player, xCoordinate: String, zCoordinate: String) {
@@ -278,7 +265,6 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("jump")
-    @Suppress("unused")
     @CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld")
     @Description("Jump fleet to a set of coordinates, a hyperspace beacon, or a planet")
     fun onFleetJump(sender: Player, destination: String) {

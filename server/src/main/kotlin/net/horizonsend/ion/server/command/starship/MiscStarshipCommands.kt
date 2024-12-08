@@ -199,7 +199,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	@Suppress("unused")
 	@CommandAlias("jump")
 	@CommandCompletion("x|z")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
@@ -228,7 +227,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		else -> string.toIntOrNull() ?: fail { "&cInvalid X or Z coordinate! Must be a number." }
 	}
 
-	@Suppress("unused")
 	@CommandAlias("jump")
 	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
@@ -526,7 +524,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		StarshipDestruction.vanish(ship)
 	}
 
-	@Suppress("unused")
 	@CommandAlias("directcontrol|dc|DC")
 	fun onDirectControl(sender: Player) {
 		val starship = getStarshipPiloting(sender)

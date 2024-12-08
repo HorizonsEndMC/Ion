@@ -114,7 +114,6 @@ object BountyCommand : SLCommand() {
 	@Subcommand("claim")
 	@Description("Acquire a bounty")
 	@CommandCompletion("@players")
-	@Suppress("unused")
 	fun claim(sender: Player, targetName: String, @Optional amount: Double? = null) = asyncCommand(sender) {
 		requireBountiesEnabled()
 		requireEconomyEnabled()
@@ -143,7 +142,6 @@ object BountyCommand : SLCommand() {
 
 	@Subcommand("top")
 	@Description("List your active bounties")
-	@Suppress("unused")
 	fun top(sender: Player, @Optional page: Int? = null) = asyncCommand(sender) {
 		if ((page ?: 1) <= 0) return@asyncCommand sender.userError("Page must not be less than or equal to zero!")
 

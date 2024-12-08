@@ -735,7 +735,6 @@ object HudIcons : IonServerComponent() {
      * Event handler that updates HUD planets when a player teleports.
      * @param event PlayerTeleportEvent
      */
-    @Suppress("unused")
     @EventHandler
     private fun onPlayerTeleport(event: PlayerTeleportEvent) {
         Tasks.sync {

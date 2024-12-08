@@ -49,7 +49,6 @@ object RegenerateCommand : SLCommand() {
 	private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	@Subcommand("terrain")
-	@Suppress("unused")
 	fun onRegenerateTerrain(sender: Player) {
 		val selection = sender.getSelection() ?: return sender.userError("You must make a selection!")
 
@@ -213,7 +212,6 @@ object RegenerateCommand : SLCommand() {
 	}
 
 	@Subcommand("ores")
-	@Suppress("unused")
 	fun onRegenerateOres(sender: Player) {
 		val selection = sender.getSelection() ?: fail { "You must make a selection!" }
 
@@ -270,7 +268,6 @@ object RegenerateCommand : SLCommand() {
 	}
 
 	@Subcommand("all")
-	@Suppress("unused")
 	fun onRegenerateAll(sender: Player) {
 		val selection = sender.getSelection() ?: return sender.userError("You must make a selection!")
 
