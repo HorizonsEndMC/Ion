@@ -15,30 +15,26 @@ import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 @CommandPermission("ion.broadcast")
 object IonBroadcastCommand : SLCommand() {
 	@Subcommand("global chat")
-	@Suppress("unused")
-	fun onNotifyGlobal(message: String) {
+    fun onNotifyGlobal(message: String) {
 		Notify.chatAndGlobal(miniMessage().deserialize(message))
 	}
 
 	@Subcommand("global embed")
-	@Suppress("unused")
-	fun onNotifyGlobalEmbed(message: String) {
+    fun onNotifyGlobalEmbed(message: String) {
 		val embed = processString(message)
 
 		Discord.sendEmbed(ConfigurationFiles.discordSettings().globalChannel, embed)
 	}
 
 	@Subcommand("events embed")
-	@Suppress("unused")
-	fun onNotifyEventsEmbed(message: String) {
+    fun onNotifyEventsEmbed(message: String) {
 		val embed = processString(message)
 
 		Discord.sendEmbed(ConfigurationFiles.discordSettings().eventsChannel, embed)
 	}
 
 	@Subcommand("events message")
-	@Suppress("unused")
-	fun onNotifyEventsMessage(message: String) {
+    fun onNotifyEventsMessage(message: String) {
 		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, message)
 	}
 

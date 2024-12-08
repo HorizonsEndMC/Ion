@@ -146,8 +146,7 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock {
 			player.teleport(
 				location,
 				TeleportCause.PLUGIN,
-				TeleportFlag.Relative.PITCH,
-				TeleportFlag.Relative.YAW,
+				TeleportFlag.Relative.VELOCITY_ROTATION
 			)
 
 			event?.isCancelled = true

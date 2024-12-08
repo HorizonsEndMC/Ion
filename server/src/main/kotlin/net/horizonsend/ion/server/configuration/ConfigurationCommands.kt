@@ -17,7 +17,6 @@ import kotlin.reflect.jvm.javaType
 
 @CommandAlias("ion")
 @CommandPermission("ion.config")
-@Suppress("unused")
 object ConfigurationCommands : SLCommand() {
 	private val starshipTypes = StarshipTypeBalancing::class.memberProperties
 	private val starshipBalancingOptions = StarshipBalancing::class.memberProperties

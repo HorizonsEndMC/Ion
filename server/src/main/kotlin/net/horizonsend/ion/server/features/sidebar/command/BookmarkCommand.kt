@@ -41,7 +41,6 @@ object BookmarkCommand : SLCommand() {
     }
 
     @Subcommand("save")
-    @Suppress("unused")
     @CommandCompletion("name")
     fun onSave(sender: Player, @Optional name: String?) {
         if (!name.isNullOrBlank()) {
@@ -82,7 +81,6 @@ object BookmarkCommand : SLCommand() {
     }
 
     @Subcommand("delete")
-    @Suppress("unused")
     @CommandCompletion("@bookmarks")
     fun onDelete(sender: Player, name: String) {
         val bookmark = Bookmark.find(and(Bookmark::owner eq sender.slPlayerId, Bookmark::name eq name)).first()
@@ -95,7 +93,6 @@ object BookmarkCommand : SLCommand() {
     }
 
     @Subcommand("list")
-    @Suppress("unused")
     fun onCacheList(sender: Player) {
         val bookmarks: List<Bookmark> = getBookmarks(sender).sortedByDescending { it.name }
 

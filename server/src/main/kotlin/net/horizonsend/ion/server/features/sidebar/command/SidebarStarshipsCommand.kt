@@ -15,14 +15,12 @@ import org.litote.kmongo.setValue
 @CommandAlias("sidebar")
 object SidebarStarshipsCommand : SLCommand() {
     @Subcommand("starship")
-    @Suppress("unused")
     fun defaultCase(
         sender: Player
     ) {
         sender.userError("Usage: /sidebar starship <option> [toggle]")
     }
 
-    @Suppress("unused")
     @Subcommand("starship enable")
     fun onEnableStarships(
         sender: Player
@@ -32,7 +30,6 @@ object SidebarStarshipsCommand : SLCommand() {
         sender.success("Enabled starship info on sidebar")
     }
 
-    @Suppress("unused")
     @Subcommand("starship disable")
     fun onDisableStarships(
         sender: Player
@@ -42,7 +39,6 @@ object SidebarStarshipsCommand : SLCommand() {
         sender.success("Disabled starship info on sidebar")
     }
 
-    @Suppress("unused")
     @Subcommand("starship advanced")
     fun onToggleAdvancedStarshipInfo(
         sender: Player,
@@ -54,7 +50,6 @@ object SidebarStarshipsCommand : SLCommand() {
         sender.success("Changed advanced starship info to $advancedStarshipInfo")
     }
 
-    @Suppress("unused")
     @Subcommand("starship rotateCompass")
     fun onToggleRotateCompass(
         sender: Player,

@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.custom.items.throwables.thrown
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
 import org.bukkit.Particle

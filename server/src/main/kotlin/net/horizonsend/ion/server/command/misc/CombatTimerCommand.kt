@@ -20,7 +20,6 @@ import org.litote.kmongo.setValue
 object CombatTimerCommand : SLCommand() {
 
     @Subcommand("toggle")
-    @Suppress("unused")
     @CommandCompletion("true|false")
     @Description("Toggle combat timer alerts")
     fun onToggle(sender: Player, @Optional toggle: Boolean?) {
@@ -36,7 +35,6 @@ object CombatTimerCommand : SLCommand() {
     }
 
     @Subcommand("npc give")
-    @Suppress("unused")
     @CommandPermission("ion.combattimer")
     @CommandCompletion("@players")
     @Description("Apply an NPC combat tag to a player")
@@ -48,7 +46,6 @@ object CombatTimerCommand : SLCommand() {
     }
 
     @Subcommand("npc remove")
-    @Suppress("unused")
     @CommandPermission("ion.combattimer")
     @CommandCompletion("@players")
     @Description("Remove an NPC combat tag from a player")
@@ -60,7 +57,6 @@ object CombatTimerCommand : SLCommand() {
     }
 
     @Subcommand("pvp give")
-    @Suppress("unused")
     @CommandPermission("ion.combattimer")
     @CommandCompletion("@players")
     @Description("Apply a PvP combat tag to a player")
@@ -72,7 +68,6 @@ object CombatTimerCommand : SLCommand() {
     }
 
     @Subcommand("pvp remove")
-    @Suppress("unused")
     @CommandPermission("ion.combattimer")
     @CommandCompletion("@players")
     @Description("Remove a PvP combat tag from a player")

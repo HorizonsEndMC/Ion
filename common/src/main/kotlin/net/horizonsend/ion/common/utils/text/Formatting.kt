@@ -141,7 +141,7 @@ fun formatPageFooter(
 	currentPage: Int,
 	maxPage: Int,
 	color: TextColor = HEColorScheme.HE_MEDIUM_GRAY,
-	paramColor: TextColor = HEColorScheme.HE_LIGHT_GRAY
+	paramColor: TextColor = HE_LIGHT_GRAY
 ): Component {
 	val ratio = template(text("Page {0}/{1}", color), paramColor = paramColor, currentPage, maxPage)
 
@@ -219,7 +219,7 @@ inline fun formatPaginatedMenu(
 	currentPage: Int,
 	maxPerPage: Int = 10,
 	color: TextColor = HEColorScheme.HE_MEDIUM_GRAY,
-	paramColor: TextColor = HEColorScheme.HE_LIGHT_GRAY,
+	paramColor: TextColor = HE_LIGHT_GRAY,
 	footerSeparator: Component? = null,
 	entryProvider: (Int) -> Component
 ): Component {
@@ -259,7 +259,7 @@ fun formatPaginatedMenu(
 	currentPage: Int,
 	maxPerPage: Int = 10,
 	color: TextColor = HEColorScheme.HE_MEDIUM_GRAY,
-	paramColor: TextColor = HEColorScheme.HE_LIGHT_GRAY,
+	paramColor: TextColor = HE_LIGHT_GRAY,
 	footerSeparator: Component? = null,
 ): Component = formatPaginatedMenu(
 	entries.size,
