@@ -20,9 +20,9 @@ object RemoveGhostShipCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val selection = requireSelection(sender)
 
 		for (pos in selection) {
-			val x = pos.x
-			val y = pos.y
-			val z = pos.z
+			val x = pos.x()
+			val y = pos.y()
+			val z = pos.z()
 
 			val ship = DeactivatedPlayerStarships[sender.world, x, y, z] ?: continue
 

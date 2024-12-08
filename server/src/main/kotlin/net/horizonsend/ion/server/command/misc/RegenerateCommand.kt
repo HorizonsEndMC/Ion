@@ -61,47 +61,47 @@ object RegenerateCommand : SLCommand() {
 		val time = System.currentTimeMillis()
 
 		val sections = mutableMapOf<Triple<Int, Int, Int>, CompletableDeferred<Pair<ChunkPos, CompletedSection>>>()
-		val sectionsHeight = IntRange(selection.minimumPoint.y.shr(4), selection.maximumPoint.y.shr(4))
+		val sectionsHeight = IntRange(selection.minimumPoint.y().shr(4), selection.maximumPoint.y().shr(4))
 
 		// Group by string first to avoid getting the region dozens of times
 		val regionsToChunksMap = selection.chunks.groupBy {
-			val regionX = it.x.shr(5)
-			val regionZ = it.z.shr(5)
+			val regionX = it.x().shr(5)
+			val regionZ = it.z().shr(5)
 
 			"r.$regionX.$regionZ.mca"
 		}
 
 		for (chunk in selection.chunkCubes) {
-			sections[Triple(chunk.x, chunk.y, chunk.z)] = CompletableDeferred()
+			sections[Triple(chunk.x(), chunk.y(), chunk.z())] = CompletableDeferred()
 		}
 
 		for ((regionFile, chunks) in regionsToChunksMap) {
 			scope.launch {
 				val region = getRegion(world, regionFile) ?: return@launch sender.serverError(
-					"Region file ${chunks.first().x.shr(5)}, ${chunks.first().z.shr(5)} doesn't exist!"
+					"Region file ${chunks.first().x().shr(5)}, ${chunks.first().z().shr(5)} doesn't exist!"
 				)
 
 				for (chunk in chunks) scope.launch chunk@{
 					fun removeDeferredChunkSections() {
-						val chunkSections = sections.filterKeys { it.first == chunk.x && it.third == chunk.z }
+						val chunkSections = sections.filterKeys { it.first == chunk.x() && it.third == chunk.z() }
 
 						for ((location, _) in chunkSections) {
 							sections.remove(location)
 						}
 					}
 
-					val chunkPos = ChunkPos(chunk.x, chunk.z)
+					val chunkPos = ChunkPos(chunk.x(), chunk.z())
 
 					if (!region.doesChunkExist(chunkPos)) {
 						removeDeferredChunkSections()
-						sender.serverError("Chunk [${chunk.x}, ${chunk.z}] was not in Region file ${chunks.first().x.shr(5)}! Skipping.")
+						sender.serverError("Chunk [${chunk.x()}, ${chunk.z()}] was not in Region file ${chunks.first().x().shr(5)}! Skipping.")
 						return@chunk
 					}
 
 					val chunkData = region.getChunkDataInputStream(chunkPos)?.let { NbtIo.read(it) }
 
 					if (chunkData == null) {
-						sender.serverError("Chunk [${chunk.x}, ${chunk.z}] could not be read from Region file ${chunks.first().x.shr(5)}! Skipping.")
+						sender.serverError("Chunk [${chunk.x()}, ${chunk.z()}] could not be read from Region file ${chunks.first().x().shr(5)}! Skipping.")
 						removeDeferredChunkSections()
 						return@chunk
 					}
@@ -112,7 +112,7 @@ object RegenerateCommand : SLCommand() {
 
 					section@
 					for (sectionY in sectionsHeight) {
-						val sectionPos = Triple(chunk.x, sectionY, chunk.z)
+						val sectionPos = Triple(chunk.x(), sectionY, chunk.z())
 						val storedSection = sectionsList[sectionY.toByte()]
 
 						if (storedSection == null) {
@@ -224,8 +224,8 @@ object RegenerateCommand : SLCommand() {
 		feedback.information("Regenerating ores")
 		val chunks = region.chunks
 		val deferredChunks = chunks.map { pos ->
-			val x = pos.x
-			val z = pos.z
+			val x = pos.x()
+			val z = pos.z()
 
 			world.getChunkAtAsync(x, z)
 		}

@@ -23,7 +23,7 @@ object SetPowerCommand : SLCommand() {
 	fun onSetPower(sender: Player, amount: Int, @Optional ignoreLimit: Boolean?) {
 		val maxSelectionVolume = 200000
 		val selection = sender.getSelection() ?: return
-		
+
 		if(selection.volume > maxSelectionVolume) {
 			sender.userError("Selection too large! The maximum volume is $maxSelectionVolume.")
 			return
@@ -32,9 +32,9 @@ object SetPowerCommand : SLCommand() {
 		if(sender.world.name != selection.world?.name) return
 
 		for (blockPosition in selection) {
-			val x = blockPosition.x
-			val y = blockPosition.y
-			val z = blockPosition.z
+			val x = blockPosition.x()
+			val y = blockPosition.y()
+			val z = blockPosition.z()
 
 			val block = sender.world.getBlockAt(x, y, z)
 			sender.debug("checking block at $x $y $z")
