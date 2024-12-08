@@ -7,8 +7,8 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -27,7 +27,7 @@ object AISpawningManager : IonServerComponent(true) {
 	val context = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
 	// General AI configuration
-	val config = IonServer.aiSpawningConfiguration
+	val config get() = ConfigurationFiles.aiSpawningConfiguration()
 
 	override fun onEnable() {
 		Tasks.syncRepeat(0L, 0L, AISpawningManager::tickSpawners)

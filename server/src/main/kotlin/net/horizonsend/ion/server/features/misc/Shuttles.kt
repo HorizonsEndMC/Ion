@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.misc.Shuttle
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.nations.gui.openConfirmMenu
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
@@ -26,7 +27,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
-import net.horizonsend.ion.server.sharedDataFolder
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
