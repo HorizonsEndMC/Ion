@@ -2,23 +2,23 @@ package net.horizonsend.ion.server.data.migrator.types.item.migrator
 
 import io.papermc.paper.datacomponent.DataComponentType.Valued
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
+import net.horizonsend.ion.server.data.migrator.types.item.aspect.ChangeIdentifierMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.aspect.ChangeTypeMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.aspect.CustomNameMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.aspect.ItemAspectMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.aspect.ItemComponentMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.aspect.PullLoreMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.aspect.SetLoreMigrator
-import net.horizonsend.ion.server.data.migrator.types.item.predicate.ItemMigratorPredicate
+import net.horizonsend.ion.server.data.migrator.types.item.predicate.CustomItemPredicate
 import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 class AspectMigrator private constructor(
-	predicate: ItemMigratorPredicate,
 	val customItem: NewCustomItem,
 	private val aspects: Set<ItemAspectMigrator>
-) : CustomItemStackMigrator(predicate) {
+) : CustomItemStackMigrator(CustomItemPredicate(customItem.identifier)) {
 	override fun registerTo(map: MutableMap<String, CustomItemStackMigrator>) {
 		map[customItem.identifier] = this
 	}
@@ -40,11 +40,13 @@ class AspectMigrator private constructor(
 		return if (replaced) MigratorResult.Replacement(item) else MigratorResult.Mutation()
 	}
 
-	class Builder(
-		private val predicate: ItemMigratorPredicate,
-		private val customItem: NewCustomItem,
-	) {
+	class Builder(private val customItem: NewCustomItem, ) {
 		private val aspects: MutableSet<ItemAspectMigrator> = mutableSetOf()
+
+		fun changeIdentifier(old: String, new: String): Builder {
+			aspects.add(ChangeIdentifierMigrator(old, new))
+			return this
+		}
 
 		fun setItemMaterial(newMaterial: Material): Builder {
 			aspects.add(ChangeTypeMigrator(newMaterial))
@@ -76,12 +78,12 @@ class AspectMigrator private constructor(
 			return this
 		}
 
-		fun build(): AspectMigrator = AspectMigrator(predicate, customItem, aspects)
+		fun build(): AspectMigrator = AspectMigrator(customItem, aspects)
 	}
 
 	companion object {
-		fun builder(predicate: ItemMigratorPredicate, customItem: NewCustomItem): Builder {
-			return Builder(predicate, customItem)
+		fun builder(customItem: NewCustomItem): Builder {
+			return Builder(customItem)
 		}
 	}
 }
