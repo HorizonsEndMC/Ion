@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.crafting
 
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
@@ -117,7 +118,7 @@ object MultiblockRecipes : IonServerComponent() {
 	val CIRCUIT_BOARD_FABRICATION = registerRecipe(
 		ProcessingMultiblockRecipe(
 		multiblock = CircuitfabMultiblock,
-		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItems.CIRCUITRY, 1), progressHolderResult = CustomItems.CIRCUIT_BOARD),
+		smelting = ProgressHolderItemIngredient(initialIngredient = ConsumedItemIngredient(CustomItemRegistry.CIRCUITRY, 1), progressHolderResult = CustomItems.CIRCUIT_BOARD),
 		resources = listOf(power(100)),
 		result = ProgressItemResult(CustomItems.CIRCUIT_BOARD, 60L * 60L * 20L, SoundResult("horizonsend:industry.cirfab", SoundCategory.BLOCKS, 1.0f, 1.0f))
 	)
