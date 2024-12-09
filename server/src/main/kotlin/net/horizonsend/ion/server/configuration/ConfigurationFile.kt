@@ -11,14 +11,15 @@ import java.io.IOException
 import kotlin.reflect.KClass
 import kotlin.reflect.full.starProjectedType
 
-class ConfigurationFile<T: Any>(val configurationClass: KClass<out T>, val directory: File, val fileName: String) {
+class ConfigurationFile<T: Any>(private val configurationClass: KClass<out T>, private val directory: File, fileName: String) {
+	private val fileName = "$fileName.json"
 	private var instance: T = load()
 
 	fun reload() {
 		instance = try {
 			load()
 		} catch (e: Throwable) {
-			throw Throwable("There was an error loading $fileName.json:", e)
+			throw Throwable("There was an error loading $fileName:", e)
 		}
 	}
 
