@@ -1,20 +1,17 @@
 package net.horizonsend.ion.server.data.migrator.types
 
-import net.horizonsend.ion.server.data.DataVersioned
+import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 
 /**
  * Not safe for implementation on its own. Must be registered.
  * @see DataMigrators
  **/
-abstract class DataMigrator<Z: Any, T: DataVersioned<Z>>(val dataVersion: Int) : Comparable<DataMigrator<Z, T>> {
-	override fun compareTo(other: DataMigrator<Z, T>): Int {
-		return dataVersion.compareTo(other.dataVersion)
-	}
+abstract class DataMigrator<T: Any, W: Any> {
+	protected abstract fun performMigration(subject: T, wrapper: W) : MigratorResult<T>
 
-	protected abstract fun performMigration(subject: Z, wrapper: T)
+	fun migrate(subject: T, wrapper: W): MigratorResult<T> {
+		val result = performMigration(subject, wrapper)
 
-	fun migrate(subject: Z, wrapper: T) {
-		performMigration(subject, wrapper)
-		wrapper.setDataVersion(subject, dataVersion)
+		return result
 	}
 }
