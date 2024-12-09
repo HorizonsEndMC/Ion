@@ -25,15 +25,14 @@ object DataMigrators : IonServerComponent() {
 	private fun registerDataVersions() {
 		registerDataVersion(DataVersion.builder(0).build()) // To align to index
 
-		registerDataVersion(
-			DataVersion
-				.builder(1)
-				.addMigrator(AspectMigrator
-					.builder(CustomItemPredicate(CustomItemRegistry.CANNON.identifier), CustomItemRegistry.CANNON)
-					.setItemMaterial(Material.SNOW)
-					.setCustomName(Component.text("Test"))
-					.build())
-				.build()
+		registerDataVersion(DataVersion
+			.builder(1)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemPredicate(CustomItemRegistry.CANNON.identifier), CustomItemRegistry.CANNON)
+				.setItemMaterial(Material.SNOW)
+				.setCustomName(Component.text("Test"))
+				.build())
+			.build()
 		)
 	}
 
