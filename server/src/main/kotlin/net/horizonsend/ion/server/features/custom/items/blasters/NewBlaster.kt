@@ -6,13 +6,13 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Balancing
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.custom.NewCustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.components.AmmunitionComponent
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponent
 import net.horizonsend.ion.server.features.custom.items.components.ListenerComponent
-import net.horizonsend.ion.server.features.custom.items.objects.AmmunitionHoldingItem
+import net.horizonsend.ion.server.features.custom.items.components.MagazineTypeComponent
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -44,15 +44,21 @@ open class NewBlaster<T : Balancing>(
 	displayName,
 	itemFactory,
 ) {
+	val balancing get() = balancingSupplier.get()
+
 	protected val ammoComponent = AmmunitionComponent(balancingSupplier)
+	protected val magazineComponent = MagazineTypeComponent(balancingSupplier) { CustomItemRegistry.getByIdentifier(balancing.magazineIdentifier)!! }
+
+	override fun decorateItemStack(base: ItemStack) {
+		ammoComponent.setAmmo(base, this, balancing.capacity)
+	}
 
 	override val customComponents: List<CustomItemComponent> = listOf(
 		ammoComponent,
+		magazineComponent,
 		ListenerComponent.interactListener(this) { event, _, item -> fire(event.player, item) },
 		ListenerComponent.playerSwapHandsListener(this) { event, _, item -> reload(event.player, item) }
 	)
-
-	val balancing get() = balancingSupplier.get()
 
 	open fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
 		if (shooter is Player) {
@@ -156,7 +162,7 @@ open class NewBlaster<T : Balancing>(
 			return false
 		}
 
-		ammoComponent.setAmmo(itemStack, ammo - 1)
+		ammoComponent.setAmmo(itemStack, this, ammo - 1)
 
 		(livingEntity as? Player)?.setCooldown(itemStack.type, (balancing.timeBetweenShots - 1).coerceAtLeast(0))
 
@@ -174,13 +180,17 @@ open class NewBlaster<T : Balancing>(
 
 		if (balancing.consumesAmmo) {
 			for (magazineItem in livingEntity.inventory.filterNotNull()) {
-				val magazineCustomItem: CustomItem = magazineItem.customItem ?: continue // To get magazine properties
-				if (ammo >= balancing.capacity) continue // Check if blaster magazine is full
+				if (ammo >= balancing.capacity) break // Check if blaster magazine is full
+
+				val magazineCustomItem = magazineItem.newCustomItem ?: continue // To get magazine properties
+				if (magazineCustomItem !is NewMagazine) continue // Just to smart cast
+
 				if (magazineCustomItem.identifier != balancing.magazineIdentifier) continue // Only correct magazine
 
-				val magazineAmmo = (magazineCustomItem as AmmunitionHoldingItem).getAmmunition(magazineItem)
+				val magazineAmmo = magazineCustomItem.ammoComponent.getAmmo(magazineItem)
 				val amountToTake = (balancing.capacity - ammo).coerceAtMost(magazineAmmo)
-				magazineCustomItem.setAmmunition(magazineItem, livingEntity.inventory, magazineAmmo - amountToTake)
+
+				magazineCustomItem.ammoComponent.setAmmo(magazineItem, magazineCustomItem, magazineAmmo - amountToTake)
 
 				ammo += amountToTake
 			}
@@ -198,7 +208,7 @@ open class NewBlaster<T : Balancing>(
 
 		livingEntity.setCooldown(blasterItem.type, this.balancing.reload)
 
-		ammoComponent.setAmmo(blasterItem, ammo)
+		ammoComponent.setAmmo(blasterItem, this, ammo)
 
 		livingEntity.sendActionBar(template(text("Ammo: {0} / {1}", RED), ammo.coerceIn(0, balancing.capacity), balancing.capacity))
 		if (ammo <= 0) livingEntity.playSound(sound(key("minecraft:block.iron_door.open"), PLAYER, 5f, 2.00f))

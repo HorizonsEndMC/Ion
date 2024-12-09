@@ -72,7 +72,8 @@ data class PVPBalancingConfiguration(
 			soundShell = SoundInfo("horizonsend:blaster.pistol.shell", volume = 1f, source = Sound.Source.PLAYER),
 			particleSize = 0.25f,
 			soundRange = 50.0,
-			magazineIdentifier = "STANDARD_MAGAZINE"
+			magazineIdentifier = "STANDARD_MAGAZINE",
+			refillType = "minecraft:lapis_lazuli",
 		),
 		val rifle: Singleshot = Singleshot(
 			damage = 5.5,
@@ -101,7 +102,8 @@ data class PVPBalancingConfiguration(
 			soundShell = SoundInfo("horizonsend:blaster.rifle.shell", volume = 1f, source = Sound.Source.PLAYER),
 			particleSize = 0.25f,
 			soundRange = 50.0,
-			magazineIdentifier = "STANDARD_MAGAZINE"
+			magazineIdentifier = "STANDARD_MAGAZINE",
+			refillType = "minecraft:lapis_lazuli",
 		),
 		val submachineBlaster: Singleshot = Singleshot(
 			damage = 1.5,
@@ -130,7 +132,8 @@ data class PVPBalancingConfiguration(
 			soundShell = SoundInfo("horizonsend:blaster.submachine_blaster.shell", volume = 1f, source = Sound.Source.PLAYER),
 			particleSize = 0.25f,
 			soundRange = 50.0,
-			magazineIdentifier = "STANDARD_MAGAZINE"
+			magazineIdentifier = "STANDARD_MAGAZINE",
+			refillType = "minecraft:lapis_lazuli",
 		),
 		val sniper: Singleshot = Singleshot(
 			damage = 12.0,
@@ -159,7 +162,8 @@ data class PVPBalancingConfiguration(
 			soundShell = SoundInfo("horizonsend:blaster.sniper.shell", volume = 1f, source = Sound.Source.PLAYER),
 			particleSize = 0.5f,
 			soundRange = 100.0,
-			magazineIdentifier = "SPECIAL_MAGAZINE"
+			magazineIdentifier = "SPECIAL_MAGAZINE",
+			refillType = "minecraft:emerald",
 		),
 		val shotgun: Multishot = Multishot(
 			damage = 1.75,
@@ -191,7 +195,8 @@ data class PVPBalancingConfiguration(
 			soundShell = SoundInfo("horizonsend:blaster.shotgun.shell", volume = 1f, source = Sound.Source.PLAYER),
 			particleSize = 0.25f,
 			soundRange = 50.0,
-			magazineIdentifier = "SPECIAL_MAGAZINE"
+			magazineIdentifier = "SPECIAL_MAGAZINE",
+			refillType = "minecraft:emerald",
 		),
 
 		val cannon: Singleshot = Singleshot(
@@ -223,7 +228,8 @@ data class PVPBalancingConfiguration(
 			soundRange = 50.0,
 			particleSize = 0.80f,
 			magazineIdentifier = "STANDARD_MAGAZINE",
-			explosiveShot = true
+			explosiveShot = true,
+			refillType = "minecraft:lapis_lazuli",
 		),
 
 		val standardMagazine: AmmoStorage = AmmoStorage(
@@ -262,6 +268,7 @@ data class PVPBalancingConfiguration(
 			override val consumesAmmo: Boolean,
 			override val displayDurability: Boolean = true,
 			override val magazineIdentifier: String,
+			override val refillType: String,
 
 			override val soundRange: Double,
 			override val soundReloadStart: SoundInfo,
@@ -302,6 +309,7 @@ data class PVPBalancingConfiguration(
 			override val consumesAmmo: Boolean,
 			override val displayDurability: Boolean = true,
 			override val magazineIdentifier: String,
+			override val refillType: String,
 
 			override val soundRange: Double,
 			override val soundReloadStart: SoundInfo,
@@ -355,9 +363,8 @@ data class PVPBalancingConfiguration(
 			val particleSize: Float
 		}
 
-		interface AmmoStorageBalancing {
+		interface AmmoStorageBalancing : AmmoLoaderUsable {
 			val capacity: Int
-			val ammoPerRefill: Int
 			val displayDurability: Boolean
 		}
 
