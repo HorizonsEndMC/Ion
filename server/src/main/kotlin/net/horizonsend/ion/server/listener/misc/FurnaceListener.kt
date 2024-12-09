@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.ItemConverters
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.SmeltingResultAttribute
@@ -46,7 +45,6 @@ object FurnaceListener : SLEventListener() {
 				return
 			}
 
-			ItemConverters.handleFurnaceInventory(state.inventory)
 			multiblock.onFurnaceTick(event, state, sign)
 		}
 	}
