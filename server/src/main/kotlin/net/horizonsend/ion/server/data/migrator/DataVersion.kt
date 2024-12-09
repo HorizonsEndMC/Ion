@@ -19,7 +19,7 @@ class DataVersion private constructor(
 		context.migrate(migratorFor)
 	}
 
-	fun migrateInventory(inventory: Inventory, chunkVersion: Int) {
+	fun migrateInventory(inventory: Inventory) {
 		for ((index, item) in inventory.contents.withIndex()) {
 			if (item == null) continue
 			val customItemIdentifier = item.persistentDataContainer.get(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING) ?: continue
