@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.components
 
-import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.AmmoLoaderUsable
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.AmmoStorageBalancing
 import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
@@ -9,8 +9,12 @@ import net.horizonsend.ion.server.features.custom.items.objects.StoredValues.AMM
 import net.horizonsend.ion.server.features.custom.items.powered.CratePlacer.updateDurability
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.Component.translatable
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.Material
-import org.bukkit.entity.Damageable
+import org.bukkit.Material.matchMaterial
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
@@ -19,14 +23,13 @@ class AmmunitionComponent(val balancingSupplier: Supplier<out AmmoStorageBalanci
 		AMMO.setAmount(baseItem, balancingSupplier.get().capacity)
 	}
 
-	fun setAmmo(itemStack: ItemStack, amount: Int) {
+	fun setAmmo(itemStack: ItemStack, customItem: NewCustomItem, amount: Int) {
 		val corrected = amount.coerceAtMost(balancingSupplier.get().capacity)
 
 		AMMO.setAmount(itemStack, corrected)
+		customItem.refreshLore(itemStack)
 
-		if (balancingSupplier.get().displayDurability && itemStack.itemMeta is Damageable) {
-			updateDurability(itemStack, corrected, balancingSupplier.get().capacity)
-		}
+		if (balancingSupplier.get().displayDurability) updateDurability(itemStack, corrected, balancingSupplier.get().capacity)
 	}
 
 	fun getAmmo(itemStack: ItemStack): Int {
@@ -34,15 +37,21 @@ class AmmunitionComponent(val balancingSupplier: Supplier<out AmmoStorageBalanci
 	}
 
 	override val priority: Int = 200
-	override fun shouldIncludeSeparator(): Boolean = true
+	override fun shouldIncludeSeparator(): Boolean = false
 
 	override fun getLines(customItem: NewCustomItem, itemStack: ItemStack): List<Component> {
-		return listOf(AMMO.formatLore(getAmmo(itemStack), balancingSupplier.get().capacity).itemLore)
+		val balancing = balancingSupplier.get()
+		val lines = listOf(
+			AMMO.formatLore(getAmmo(itemStack), balancingSupplier.get().capacity).itemLore,
+			ofChildren(text("Refill: ", GRAY), translatable(matchMaterial(balancing.refillType)!!.translationKey(), AQUA)).itemLore
+		)
+
+		return lines
 	}
 
 	override fun getAttributes(baseItem: ItemStack): Iterable<CustomItemAttribute> {
 		val balancing = balancingSupplier.get()
-		if (balancing is AmmoLoaderUsable) return listOf(AmmunitionRefillType(Material.valueOf(balancing.refillType))) //TODO enum usage of material
-		return listOf()
+		return listOf(AmmunitionRefillType(Material.valueOf(balancing.refillType))) //TODO enum usage of material
+
 	}
 }
