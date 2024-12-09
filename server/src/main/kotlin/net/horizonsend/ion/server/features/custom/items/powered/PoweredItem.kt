@@ -1,17 +1,16 @@
 package net.horizonsend.ion.server.features.custom.items.powered
 
+import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.StoredValues
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
-import kotlin.math.roundToInt
 
 interface PoweredItem : LoreCustomItem {
 	/** Whether the power should be displayed in the durability bar */
@@ -38,11 +37,8 @@ interface PoweredItem : LoreCustomItem {
 	}
 
 	fun updateDurability(itemStack: ItemStack, power: Int, capacity: Int) {
-		itemStack.updateMeta {
-			it as Damageable
-
-			it.damage = (itemStack.type.maxDurability - power.toDouble() / capacity * itemStack.type.maxDurability).roundToInt()
-		}
+		itemStack.setData(DataComponentTypes.MAX_DAMAGE, capacity)
+		itemStack.setData(DataComponentTypes.DAMAGE, capacity - power)
 	}
 
 	fun removePower(itemStack: ItemStack, amount: Int) {
