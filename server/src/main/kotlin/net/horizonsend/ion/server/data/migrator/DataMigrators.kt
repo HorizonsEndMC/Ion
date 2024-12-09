@@ -48,10 +48,7 @@ object DataMigrators : IonServerComponent() {
 			.build()
 		)
 
-		registerDataVersion(DataVersion
-			.builder(2)
-			.build()
-		)
+
 	}
 
 	private fun registerDataVersion(dataVersion: DataVersion) {
@@ -62,12 +59,11 @@ object DataMigrators : IonServerComponent() {
 		val chunkVersion = chunk.persistentDataContainer.getOrDefault(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER, 0)
 		if (chunkVersion == lastDataVersion) return
 
-		val nextVersion = minOf(chunkVersion + 1, lastDataVersion)
-		val toApply = dataVersions.subList(nextVersion, lastDataVersion)
+		val toApply = getVersions(chunkVersion)
 
 		val snapshot = chunk.chunkSnapshot
 
-		for (x in 0..15) for (y in chunk.world.minHeight..chunk.world.maxHeight) for (z in 0..15) {
+		for (x in 0..15) for (y in chunk.world.minHeight until chunk.world.maxHeight) for (z in 0..15) {
 			val type = snapshot.getBlockType(x, y, z)
 			if (Pipes.isPipedInventory(type)) {
 				val state = chunk.getBlock(x, y, z).state as InventoryHolder
@@ -80,10 +76,11 @@ object DataMigrators : IonServerComponent() {
 		val playerVersion = player.persistentDataContainer.getOrDefault(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER, 0)
 		if (playerVersion == lastDataVersion) return
 
-		val nextVersion = minOf(playerVersion + 1, lastDataVersion)
-		val toApply = dataVersions.subList(nextVersion, lastDataVersion)
+		migrateInventory(player.inventory, getVersions(playerVersion))
+	}
 
-		migrateInventory(player.inventory, toApply)
+	private fun getVersions(dataVersion: Int): List<DataVersion> {
+		return dataVersions.subList(dataVersion + 1, lastDataVersion + 1 /* Exclusive */)
 	}
 
 	private fun migrateInventory(inventory: Inventory, versions: List<DataVersion>) {
