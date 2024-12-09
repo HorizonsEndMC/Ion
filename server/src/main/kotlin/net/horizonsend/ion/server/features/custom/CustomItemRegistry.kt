@@ -32,18 +32,18 @@ object CustomItemRegistry : IonServerComponent() {
 	val BLASTER_PISTOL = register(NewBlaster(
 		identifier = "BLASTER_PISTOL",
 		displayName = text("Blaster Pistol", RED, BOLD).itemName,
-		itemFactory = ItemFactory.builder().setMaterial(DIAMOND_HOE).setCustomModel("weapon/blaster/pistol").build(),
+		itemFactory = ItemFactory.builder().setMaterial(DIAMOND_HOE).setCustomModel("pistol").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::pistol
 	))
 	val BLASTER_RIFLE = register(NewBlaster(
 		identifier = "BLASTER_RIFLE",
 		displayName = text("Blaster Rifle", RED, BOLD).itemName,
-		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("weapon/blaster/rifle").build(),
+		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("rifle").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::rifle
 	))
 	val SUBMACHINE_BLASTER = register(object : NewBlaster<Singleshot>(
 		identifier = "SUBMACHINE_BLASTER",
-		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("weapon/blaster/submachine_blaster").build(),
+		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("submachine_blaster").build(),
 		displayName = text("Submachine Blaster", RED, BOLD).decoration(ITALIC, false),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::submachineBlaster
 	) {
@@ -61,7 +61,7 @@ object CustomItemRegistry : IonServerComponent() {
 	val BLASTER_SHOTGUN = register(object : NewBlaster<Multishot>(
 		identifier = "BLASTER_SHOTGUN",
 		displayName = text("Blaster Shotgun", RED, BOLD).decoration(ITALIC, false),
-		itemFactory = ItemFactory.builder().setMaterial(GOLDEN_HOE).setCustomModel("weapon/blaster/shotgun").build(),
+		itemFactory = ItemFactory.builder().setMaterial(GOLDEN_HOE).setCustomModel("shotgun").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::shotgun
 	) {
 		override fun fireProjectiles(livingEntity: LivingEntity) {
@@ -71,13 +71,13 @@ object CustomItemRegistry : IonServerComponent() {
 	val BLASTER_SNIPER = register(NewBlaster(
 		identifier = "BLASTER_SNIPER",
 		displayName = text("Blaster Sniper", RED, BOLD).decoration(ITALIC, false),
-		itemFactory = ItemFactory.builder().setMaterial(GOLDEN_HOE).setCustomModel("weapon/blaster/sniper").build(),
+		itemFactory = ItemFactory.builder().setMaterial(GOLDEN_HOE).setCustomModel("sniper").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::sniper
 	))
 	val BLASTER_CANNON = register(NewBlaster(
 		identifier = "BLASTER_CANNON",
 		displayName = text("Blaster Cannon", RED, BOLD).decoration(ITALIC, false),
-		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("weapon/blaster/cannon").build(),
+		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("cannon").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::cannon
 	))
 
