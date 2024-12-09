@@ -47,11 +47,6 @@ class AspectMigrator private constructor(
 			return this
 		}
 
-		fun setCustomName(new: Component): Builder {
-			aspects.add(CustomNameMigrator(new))
-			return this
-		}
-
 		fun <T : Any> setDataComponent(type: Valued<T>, value: T): Builder {
 			aspects.add(ItemComponentMigrator(type, value))
 			return this
@@ -62,7 +57,17 @@ class AspectMigrator private constructor(
 			return this
 		}
 
-		fun pullLoreMigrator(from: NewCustomItem): Builder {
+		fun pullLore(from: NewCustomItem): Builder {
+			aspects.add(PullLoreMigrator(from))
+			return this
+		}
+
+		fun setCustomName(new: Component): Builder {
+			aspects.add(CustomNameMigrator(new))
+			return this
+		}
+
+		fun pullName(from: NewCustomItem): Builder {
 			aspects.add(PullLoreMigrator(from))
 			return this
 		}
