@@ -43,7 +43,6 @@ open class NewBlaster<T : Balancing>(
 	identifier,
 	displayName,
 	itemFactory,
-	1
 ) {
 	protected val ammoComponent = AmmunitionComponent(balancingSupplier)
 
