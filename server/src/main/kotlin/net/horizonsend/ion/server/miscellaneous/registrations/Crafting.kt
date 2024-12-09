@@ -3,6 +3,16 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 //import net.horizonsend.ion.server.features.custom.items.CustomItems.CRUDE_FUEL
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_CANNON
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_PISTOL
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_RIFLE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_SHOTGUN
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_SNIPER
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CIRCUITRY
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.GUN_BARREL
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SPECIAL_MAGAZINE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.STANDARD_MAGAZINE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SUBMACHINE_BLASTER
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.ALUMINUM_INGOT
@@ -14,7 +24,6 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.BATTLECRUISE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CHETHERITE_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItems.CIRCUITRY
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CIRCUIT_BOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.DETONATOR
@@ -32,10 +41,8 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.FUEL_ROD_COR
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_OXYGEN
-import net.horizonsend.ion.server.features.custom.items.CustomItems.GUN_BARREL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.NETHERITE_CASING
-import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CAPACITY_25
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CAPACITY_50
@@ -66,22 +73,18 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTIVE_PLA
 import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTOR_CONTROL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTOR_FRAME
 import net.horizonsend.ion.server.features.custom.items.CustomItems.REINFORCED_FRAME
-import net.horizonsend.ion.server.features.custom.items.CustomItems.RIFLE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RIFLE_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SHOTGUN_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SILK_TOUCH_MOD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SMB_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SMOKE_GRENADE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SNIPER_RECEIVER
-import net.horizonsend.ion.server.features.custom.items.CustomItems.SPECIAL_MAGAZINE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_ASSEMBLY
 import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_CHASSIS
 import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_INGOT
 import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_MODULE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_PLATE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.SUBMACHINE_BLASTER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SUPERCONDUCTOR
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SUPERCONDUCTOR_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SUPERCONDUCTOR_CORE
@@ -429,7 +432,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		// Pistol Crafting
-		itemStackShapeRecipe("pistol", PISTOL.constructItemStack()) {
+		itemStackShapeRecipe("pistol", BLASTER_PISTOL.constructItemStack()) {
 			shape("   ", "apb", "c  ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
@@ -440,7 +443,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		// Rifle Crafting
-		itemStackShapeRecipe("rifle", RIFLE.constructItemStack()) {
+		itemStackShapeRecipe("rifle", BLASTER_RIFLE.constructItemStack()) {
 			shape("   ", "apb", "ac ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
@@ -462,7 +465,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		// Sniper Crafting
-		itemStackShapeRecipe("sniper", CustomItems.SNIPER.constructItemStack()) {
+		itemStackShapeRecipe("sniper", BLASTER_SNIPER.constructItemStack()) {
 			shape(" g ", "apb", "ac ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
@@ -474,7 +477,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		// Shotgun Crafting
-		itemStackShapeRecipe("shotgun", CustomItems.SHOTGUN.constructItemStack()) {
+		itemStackShapeRecipe("shotgun", BLASTER_SHOTGUN.constructItemStack()) {
 			shape("  b", "apb", "ac ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
@@ -485,7 +488,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		// Cannon Crafting
-		itemStackShapeRecipe("cannon", CustomItems.CANNON.constructItemStack()) {
+		itemStackShapeRecipe("cannon", BLASTER_CANNON.constructItemStack()) {
 			shape(" a ", " cb", "p  ")
 
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
