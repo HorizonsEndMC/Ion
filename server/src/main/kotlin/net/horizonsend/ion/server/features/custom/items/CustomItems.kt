@@ -6,12 +6,8 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.text
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
-import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
-import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
-import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.minerals.MineralItem
 import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
 import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
@@ -29,7 +25,6 @@ import net.horizonsend.ion.server.features.custom.items.throwables.thrown.Thrown
 import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownSmokeGrenade
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
@@ -47,10 +42,7 @@ import net.kyori.adventure.text.format.TextColor.fromHexString
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
-import org.bukkit.Material.DIAMOND_HOE
-import org.bukkit.Material.GOLDEN_HOE
 import org.bukkit.Material.IRON_BLOCK
-import org.bukkit.Material.IRON_HOE
 import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_ORE
 import org.bukkit.Material.RAW_IRON
@@ -58,12 +50,9 @@ import org.bukkit.Material.RAW_IRON_BLOCK
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
-import org.bukkit.entity.LivingEntity
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
 import java.util.function.Supplier
-import kotlin.math.roundToInt
 
 // budget minecraft registry lmao
 @Suppress("unused")
@@ -71,138 +60,6 @@ object CustomItems {
 	// If we want to be extra fancy we can replace this with some fastutils thing later .
 	val ALL get() = customItems.values
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
-
-	// Magazines Start
-	val STANDARD_MAGAZINE = register(Magazine("STANDARD_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 1, text("Standard Magazine").decoration(ITALIC, false), ConfigurationFiles.pvpBalancing().energyWeapons::standardMagazine))
-	val SPECIAL_MAGAZINE = register(Magazine("SPECIAL_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 2, text("Special Magazine").decoration(ITALIC, false), ConfigurationFiles.pvpBalancing().energyWeapons::specialMagazine))
-	// Magazines End
-	// Guns Start
-	val PISTOL = register(Blaster(
-		identifier = "PISTOL",
-		material = DIAMOND_HOE,
-		customModelData = 1,
-		displayName = text("Blaster Pistol", RED, BOLD).decoration(ITALIC, false),
-		magazineType = STANDARD_MAGAZINE,
-		particleSize = 0.25f,
-		soundRange = 50.0,
-		soundFire = "horizonsend:blaster.pistol.shoot",
-		soundWhizz = "horizonsend:blaster.whizz.standard",
-		soundShell = "horizonsend:blaster.pistol.shell",
-		soundReloadStart = "horizonsend:blaster.pistol.reload.start",
-		soundReloadFinish = "horizonsend:blaster.pistol.reload.finish",
-		explosiveShot = false,
-		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::pistol
-	))
-	val RIFLE = register(Blaster(
-		identifier = "RIFLE",
-		material = IRON_HOE,
-		customModelData = 1,
-		displayName = text("Blaster Rifle", RED, BOLD).decoration(ITALIC, false),
-		magazineType = STANDARD_MAGAZINE,
-		particleSize = 0.25f,
-		soundRange = 50.0,
-		soundFire = "horizonsend:blaster.rifle.shoot",
-		soundWhizz = "horizonsend:blaster.whizz.standard",
-		soundShell = "horizonsend:blaster.rifle.shell",
-		soundReloadStart = "horizonsend:blaster.rifle.reload.start",
-		soundReloadFinish = "horizonsend:blaster.rifle.reload.finish",
-		explosiveShot = false,
-		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::rifle
-	))
-	val SUBMACHINE_BLASTER = register(object : Blaster<Singleshot>(
-		identifier = "SUBMACHINE_BLASTER",
-		material = IRON_HOE,
-		customModelData = 2,
-		displayName = text("Submachine Blaster", RED, BOLD).decoration(ITALIC, false),
-		magazineType = STANDARD_MAGAZINE,
-		particleSize = 0.25f,
-		soundRange = 50.0,
-		soundFire = "horizonsend:blaster.submachine_blaster.shoot",
-		soundWhizz = "horizonsend:blaster.whizz.standard",
-		soundShell = "horizonsend:blaster.submachine_blaster.shell",
-		soundReloadStart = "horizonsend:blaster.submachine_blaster.reload.start",
-		soundReloadFinish = "horizonsend:blaster.submachine_blaster.reload.finish",
-		explosiveShot = false,
-		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::submachineBlaster
-	) {
-		// Allows fire above 300 rpm
-		override fun handleSecondaryInteract(
-			livingEntity: LivingEntity,
-			itemStack: ItemStack,
-			event: PlayerInteractEvent?
-		) {
-			val repeatCount = if (balancing.timeBetweenShots >= 4) {
-				1
-			} else {
-				(4.0 / balancing.timeBetweenShots).roundToInt()
-			}
-			val division = 4.0 / balancing.timeBetweenShots
-			for (count in 0 until repeatCount) {
-				val delay = (count * division).toLong()
-				if (delay > 0) {
-					Tasks.syncDelay(delay) { super.handleSecondaryInteract(livingEntity, itemStack, event) }
-				} else {
-					super.handleSecondaryInteract(livingEntity, itemStack, event)
-				}
-			}
-		}
-	})
-	val SHOTGUN = register(object : Blaster<Multishot>(
-		identifier = "SHOTGUN",
-		material = GOLDEN_HOE,
-		customModelData = 1,
-		displayName = text("Blaster Shotgun", RED, BOLD).decoration(ITALIC, false),
-		magazineType = SPECIAL_MAGAZINE,
-		particleSize = 0.25f,
-		soundRange = 50.0,
-		soundFire = "horizonsend:blaster.shotgun.shoot",
-		soundWhizz = "horizonsend:blaster.whizz.standard",
-		soundShell = "horizonsend:blaster.shotgun.shell",
-		soundReloadStart = "horizonsend:blaster.shotgun.reload.start",
-		soundReloadFinish = "horizonsend:blaster.shotgun.reload.finish",
-		explosiveShot = false,
-		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::shotgun
-	) {
-		override fun fireProjectiles(livingEntity: LivingEntity) {
-			for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
-		}
-	})
-	val SNIPER = register(Blaster(
-		identifier = "SNIPER",
-		material = GOLDEN_HOE,
-		customModelData = 2,
-		displayName = text("Blaster Sniper", RED, BOLD).decoration(ITALIC, false),
-		magazineType = SPECIAL_MAGAZINE,
-		particleSize = 0.5f,
-		soundRange = 100.0,
-		soundFire = "horizonsend:blaster.sniper.shoot",
-		soundWhizz = "horizonsend:blaster.whizz.sniper",
-		soundShell = "horizonsend:blaster.sniper.shell",
-		soundReloadStart = "horizonsend:blaster.sniper.reload.start",
-		soundReloadFinish = "horizonsend:blaster.sniper.reload.finish",
-		explosiveShot = false,
-		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::sniper
-	))
-	val CANNON = register(Blaster(
-		identifier = "CANNON",
-		material = IRON_HOE,
-		customModelData = 3,
-		displayName = text("Blaster Cannon", RED, BOLD).decoration(ITALIC, false),
-		magazineType = STANDARD_MAGAZINE,
-		particleSize = 0.80f,
-		soundRange = 50.0,
-		soundFire = "horizonsend:blaster.cannon.shoot",
-		soundWhizz = "horizonsend:blaster.whizz.standard",
-		soundShell = "horizonsend:blaster.sniper.shell",
-		soundReloadStart = "horizonsend:blaster.cannon.reload.start",
-		soundReloadFinish = "horizonsend:blaster.cannon.reload.finish",
-		explosiveShot = true,
-		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::cannon
-	))
-	// Guns End
-	// Gun Parts Start
-	val GUN_BARREL = registerSimpleUnstackable("GUN_BARREL", 500, text("Gun Barrel"))
-	val CIRCUITRY = registerSimpleUnstackable("CIRCUITRY", 501, text("Circuitry"))
 
 	val PISTOL_RECEIVER = registerSimpleUnstackable("PISTOL_RECEIVER", 502, text("Pistol Receiver"))
 	val RIFLE_RECEIVER = registerSimpleUnstackable("RIFLE_RECEIVER", 503, text("Rifle Receiver"))
