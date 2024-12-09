@@ -31,23 +31,19 @@ import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
-import xyz.xenondevs.invui.item.impl.SimpleItem
 import xyz.xenondevs.invui.window.Window
 
 class NavigationSystemMapGui(val player: Player, val world: World) {
@@ -152,10 +148,9 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 			_: ClickType, _: Player, _: InventoryClickEvent -> player.closeInventory()
 		})
 
-		gui.setItem(1, MENU_ROW, SimpleItem(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-			it.displayName(Component.text("Return To Galactic Map").decoration(TextDecoration.ITALIC, false))
-			it.setCustomModelData(GuiItem.DOWN.customModelData)
-		}))
+		gui.setItem(1, MENU_ROW, GuiItems.CustomControlItem("Return To Galactic Menu", GuiItem.DOWN) {
+			_: ClickType, _: Player, _: InventoryClickEvent -> NavigationGalacticMapGui(player).openMainWindow()
+		})
 
 		gui.setItem(2, MENU_ROW, GuiItems.CustomControlItem("Search For Destination", GuiItem.MAGNIFYING_GLASS) {
 			_: ClickType, player: Player, _: InventoryClickEvent ->
