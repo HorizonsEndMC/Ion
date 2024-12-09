@@ -3,27 +3,27 @@ package net.horizonsend.ion.server.data.migrator
 import net.horizonsend.ion.server.data.migrator.types.DataMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.ItemMigrationContext
 import net.horizonsend.ion.server.data.migrator.types.item.migrator.CustomItemStackMigrator
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 
 class DataVersion private constructor(
 	val versionNumber: Int,
 	private val customItemMigrators: MutableMap<String, CustomItemStackMigrator>
 ) : Comparable<DataVersion> {
-	fun migrateItem(inventory: Inventory, index: Int, itemStack: ItemStack, customItem: NewCustomItem, chunkVersion: Int) {
-		val migratorFor = customItemMigrators[customItem.identifier] ?: return
-		val context = ItemMigrationContext(inventory, index, itemStack, customItem)
+	fun migrateItem(inventory: Inventory, index: Int, itemStack: ItemStack, customItemIdentifier: String) {
+		val migratorFor = customItemMigrators[customItemIdentifier] ?: return
+		val context = ItemMigrationContext(inventory, index, itemStack)
 
-		context.migrate(migratorFor, chunkVersion)
+		context.migrate(migratorFor)
 	}
 
 	fun migrateInventory(inventory: Inventory, chunkVersion: Int) {
 		for ((index, item) in inventory.contents.withIndex()) {
 			if (item == null) continue
-			val customItem = item.newCustomItem ?: continue
-			migrateItem(inventory, index, item, customItem, chunkVersion)
+			val customItemIdentifier = item.persistentDataContainer.get(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING) ?: continue
+			migrateItem(inventory, index, item, customItemIdentifier)
 		}
 	}
 
@@ -32,7 +32,7 @@ class DataVersion private constructor(
 
 		fun addMigrator(migrator: DataMigrator<*, *>): Builder {
 			when (migrator) {
-				is CustomItemStackMigrator -> customItemMigrators[migrator.customItem.identifier] = migrator
+				is CustomItemStackMigrator -> migrator.registerTo(customItemMigrators)
 			}
 
 			return this
