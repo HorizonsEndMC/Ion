@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.data.migrator
 
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.data.migrator.types.item.migrator.IdentifierUpdate
 import net.horizonsend.ion.server.data.migrator.types.item.migrator.LegacyNameFixer
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
@@ -39,6 +40,16 @@ object DataMigrators : IonServerComponent() {
 				"LOADED_SHELL", "UNCHARGED_SHELL", "CHARGED_SHELL", "ARSENAL_MISSILE", "PUMPKIN_GRENADE", "UNLOADED_ARSENAL_MISSILE", "ACTIVATED_ARSENAL_MISSILE",
 				"GAS_CANISTER_EMPTY",
 			))
+			.addMigrator(IdentifierUpdate("PISTOL", "BLASTER_PISTOL"))
+			.addMigrator(IdentifierUpdate("RIFLE", "BLASTER_RIFLE"))
+			.addMigrator(IdentifierUpdate("SHOTGUN", "BLASTER_SHOTGUN"))
+			.addMigrator(IdentifierUpdate("SNIPER", "BLASTER_SNIPER"))
+			.addMigrator(IdentifierUpdate("CANNON", "BLASTER_CANNON"))
+			.build()
+		)
+
+		registerDataVersion(DataVersion
+			.builder(2)
 			.build()
 		)
 	}
