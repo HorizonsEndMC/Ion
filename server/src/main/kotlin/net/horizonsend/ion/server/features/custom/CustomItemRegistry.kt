@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Energy
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.custom.NewCustomItemListeners.sortCustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.blasters.NewBlaster
+import net.horizonsend.ion.server.features.custom.items.blasters.NewMagazine
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.withModel
@@ -29,6 +30,19 @@ object CustomItemRegistry : IonServerComponent() {
 	val ALL get() = customItems.values
 
 	// Guns Start
+	val STANDARD_MAGAZINE = register(NewMagazine(
+		identifier = "STANDARD_MAGAZINE",
+		displayName = text("Standard Magazine").decoration(ITALIC, false),
+		itemFactory = ItemFactory.builder(unStackableCustomItem).setCustomModel("standard_magazine").build(),
+		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::standardMagazine
+	))
+	val SPECIAL_MAGAZINE = register(NewMagazine(
+		identifier = "SPECIAL_MAGAZINE",
+		displayName = text("Special Magazine").decoration(ITALIC, false),
+		itemFactory = ItemFactory.builder(unStackableCustomItem).setCustomModel("special_magazine").build(),
+		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::specialMagazine
+	))
+
 	val BLASTER_PISTOL = register(NewBlaster(
 		identifier = "BLASTER_PISTOL",
 		displayName = text("Blaster Pistol", RED, BOLD).itemName,
