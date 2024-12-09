@@ -2,7 +2,9 @@ package net.horizonsend.ion.server.features.gui.custom.navigation
 
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.text.SPACE_BACKGROUND_CHARACTER
+import net.horizonsend.ion.common.utils.text.SPACE_BLUE_NEBULA_CHARACTER
+import net.horizonsend.ion.common.utils.text.SPACE_RED_NEBULA_CHARACTER
+import net.horizonsend.ion.common.utils.text.SPACE_SCREEN_CHARACTER
 import net.horizonsend.ion.common.utils.text.colors.Colors
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -27,6 +29,8 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
@@ -294,7 +298,19 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		val header = "${world.name} System Map"
 		val guiText = GuiText(header)
 
-		guiText.addBackground(GuiText.GuiBackground(backgroundChar = SPACE_BACKGROUND_CHARACTER))
+		guiText.addBackground(GuiText.GuiBackground(backgroundChar = SPACE_SCREEN_CHARACTER))
+
+		if (world.hasFlag(WorldFlag.NO_SHIP_LOCKS)) {
+			guiText.addBackground(GuiText.GuiBackground(
+				backgroundChar = SPACE_RED_NEBULA_CHARACTER,
+				backgroundWidth = 143 // width of left edge to right side of image (150) - 7 for text margin
+			))
+		} else {
+			guiText.addBackground(GuiText.GuiBackground(
+				backgroundChar = SPACE_BLUE_NEBULA_CHARACTER,
+				backgroundWidth = 143
+			))
+		}
 
 		return guiText.build()
 	}
@@ -408,7 +424,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 
 				ClickType.RIGHT -> waypointAction(player, beacon.name.replace(' ', '_'))
 				ClickType.SHIFT_LEFT -> {
-					NavigationSystemMapGui(player, world).openMainWindow()
+					NavigationSystemMapGui(player, beacon.destination.bukkitWorld()).openMainWindow()
 				}
 
 				ClickType.SHIFT_RIGHT -> dynmapLinkAction(
