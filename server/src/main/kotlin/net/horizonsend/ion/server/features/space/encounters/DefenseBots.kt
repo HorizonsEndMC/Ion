@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.space.encounters
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -69,7 +69,7 @@ object DefenseBots : Encounter(identifier = "defense_bots") {
 				this.equipment.itemInMainHandDropChance = 0.0f
 				this.equipment.itemInOffHandDropChance = 1.0f
 
-				val weirdPistol = CustomItems.PISTOL.constructItemStack()
+				val weirdPistol = CustomItemRegistry.BLASTER_PISTOL.constructItemStack()
 				weirdPistol.type = Material.BOW
 				weirdPistol.updateMeta {
 					it.displayName(

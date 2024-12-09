@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
@@ -31,10 +32,10 @@ object ConvertCommand : SLCommand() { // I imagine we'll need more than blasters
 		}
 
 		val newVersion = when (heldItem.itemMeta.customModelData) {
-			1 -> CustomItems.PISTOL
-			2 -> CustomItems.RIFLE
-			3 -> CustomItems.SNIPER
-			4 -> CustomItems.CANNON
+			1 -> CustomItemRegistry.BLASTER_PISTOL
+			2 -> CustomItemRegistry.BLASTER_RIFLE
+			3 -> CustomItemRegistry.BLASTER_SNIPER
+			4 -> CustomItemRegistry.BLASTER_CANNON
 			else -> {
 				sender.information("Sorry, but there is no current equivalent for the cannon, one will come soon")
 				return
