@@ -16,10 +16,14 @@ import org.bukkit.inventory.ItemStack
 
 class AspectMigrator private constructor(
 	predicate: ItemMigratorPredicate,
-	customItem: NewCustomItem,
+	val customItem: NewCustomItem,
 	private val aspects: Set<ItemAspectMigrator>
-) : CustomItemStackMigrator(predicate, customItem) {
-	override fun performMigration(subject: ItemStack, wrapper: NewCustomItem): MigratorResult<ItemStack> {
+) : CustomItemStackMigrator(predicate) {
+	override fun registerTo(map: MutableMap<String, CustomItemStackMigrator>) {
+		map[customItem.identifier] = this
+	}
+
+	override fun performMigration(subject: ItemStack): MigratorResult<ItemStack> {
 		val iterator = aspects.iterator()
 		var item = subject
 		var replaced = false
