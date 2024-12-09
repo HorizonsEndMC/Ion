@@ -1,15 +1,15 @@
 package net.horizonsend.ion.server.data.migrator
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.data.migrator.types.item.migrator.AspectMigrator
-import net.horizonsend.ion.server.data.migrator.types.item.predicate.CustomItemPredicate
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.data.migrator.types.item.migrator.LegacyNameFixer
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.kyori.adventure.text.Component
 import org.bukkit.Chunk
-import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.persistence.PersistentDataType
@@ -27,11 +27,18 @@ object DataMigrators : IonServerComponent() {
 
 		registerDataVersion(DataVersion
 			.builder(1)
-			.addMigrator(AspectMigrator
-				.builder(CustomItemPredicate(CustomItemRegistry.CANNON.identifier), CustomItemRegistry.CANNON)
-				.setItemMaterial(Material.SNOW)
-				.setCustomName(Component.text("Test"))
-				.build())
+			.addMigrator(LegacyNameFixer(
+				"DETONATOR", "SMOKE_GRENADE", "PUMPKIN_GRENADE", "GUN_BARREL", "CIRCUITRY", "PISTOL_RECEIVER", "RIFLE_RECEIVER",
+				"SMB_RECEIVER", "SNIPER_RECEIVER", "SHOTGUN_RECEIVER", "CANNON_RECEIVER", "ALUMINUM_INGOT", "ALUMINUM_BLOCK", "RAW_ALUMINUM_BLOCK",
+				"CHETHERITE", "CHETHERITE_BLOCK", "TITANIUM_INGOT", "TITANIUM_BLOCK", "RAW_TITANIUM_BLOCK", "URANIUM", "URANIUM_BLOCK",
+				"RAW_URANIUM_BLOCK", "NETHERITE_CASING", "ENRICHED_URANIUM", "ENRICHED_URANIUM_BLOCK", "URANIUM_CORE", "URANIUM_ROD", "FUEL_ROD_CORE",
+				"FUEL_CELL", "FUEL_CONTROL", "REACTIVE_COMPONENT", "REACTIVE_HOUSING", "REACTIVE_PLATING", "REACTIVE_CHASSIS", "REACTIVE_MEMBRANE",
+				"REACTIVE_ASSEMBLY", "FABRICATED_ASSEMBLY", "CIRCUIT_BOARD", "MOTHERBOARD", "REACTOR_CONTROL", "SUPERCONDUCTOR", "SUPERCONDUCTOR_BLOCK",
+				"SUPERCONDUCTOR_CORE", "STEEL_INGOT", "STEEL_BLOCK", "STEEL_PLATE", "STEEL_CHASSIS", "STEEL_MODULE", "STEEL_ASSEMBLY",
+				"REINFORCED_FRAME", "REACTOR_FRAME", "PROGRESS_HOLDER", "BATTLECRUISER_REACTOR_CORE", "BARGE_REACTOR_CORE", "CRUISER_REACTOR_CORE", "UNLOADED_SHELL",
+				"LOADED_SHELL", "UNCHARGED_SHELL", "CHARGED_SHELL", "ARSENAL_MISSILE", "PUMPKIN_GRENADE", "UNLOADED_ARSENAL_MISSILE", "ACTIVATED_ARSENAL_MISSILE",
+				"GAS_CANISTER_EMPTY",
+			))
 			.build()
 		)
 	}
@@ -72,5 +79,15 @@ object DataMigrators : IonServerComponent() {
 		for (dataVersion in versions) {
 			dataVersion.migrateInventory(inventory, dataVersion.versionNumber)
 		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	fun onPlayerLogin(event: PlayerJoinEvent) {
+		migrate(event.player)
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	fun onChunkLoad(event: ChunkLoadEvent) {
+		migrate(event.chunk)
 	}
 }
