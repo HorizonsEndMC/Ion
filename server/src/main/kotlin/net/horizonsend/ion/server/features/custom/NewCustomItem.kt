@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.custom
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponent
 import net.horizonsend.ion.server.features.custom.items.components.LoreManager
@@ -46,6 +48,10 @@ open class NewCustomItem(
 		}
 
 		return newLore
+	}
+
+	fun refreshLore(itemStack: ItemStack) {
+		itemStack.setData(DataComponentTypes.LORE, ItemLore.lore(assembleLore(itemStack)))
 	}
 
 	fun getAttributes(itemStack: ItemStack): List<CustomItemAttribute> = customComponents.flatMap { it.getAttributes(itemStack) }
