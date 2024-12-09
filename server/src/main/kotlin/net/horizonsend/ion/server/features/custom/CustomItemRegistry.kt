@@ -29,14 +29,14 @@ object CustomItemRegistry : IonServerComponent() {
 	val ALL get() = customItems.values
 
 	// Guns Start
-	val PISTOL = register(NewBlaster(
-		identifier = "PISTOL",
+	val BLASTER_PISTOL = register(NewBlaster(
+		identifier = "BLASTER_PISTOL",
 		displayName = text("Blaster Pistol", RED, BOLD).itemName,
 		itemFactory = ItemFactory.builder().setMaterial(DIAMOND_HOE).setCustomModel("item/weapon/blaster/pistol").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::pistol
 	))
-	val RIFLE = register(NewBlaster(
-		identifier = "RIFLE",
+	val BLASTER_RIFLE = register(NewBlaster(
+		identifier = "BLASTER_RIFLE",
 		displayName = text("Blaster Rifle", RED, BOLD).itemName,
 		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("item/weapon/blaster/rifle").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::rifle
@@ -58,8 +58,8 @@ object CustomItemRegistry : IonServerComponent() {
 			}
 		}
 	})
-	val SHOTGUN = register(object : NewBlaster<Multishot>(
-		identifier = "SHOTGUN",
+	val BLASTER_SHOTGUN = register(object : NewBlaster<Multishot>(
+		identifier = "BLASTER_SHOTGUN",
 		displayName = text("Blaster Shotgun", RED, BOLD).decoration(ITALIC, false),
 		itemFactory = ItemFactory.builder().setMaterial(GOLDEN_HOE).setCustomModel("item/weapon/blaster/shotgun").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::shotgun
@@ -68,14 +68,14 @@ object CustomItemRegistry : IonServerComponent() {
 			for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
 		}
 	})
-	val SNIPER = register(NewBlaster(
-		identifier = "SNIPER",
+	val BLASTER_SNIPER = register(NewBlaster(
+		identifier = "BLASTER_SNIPER",
 		displayName = text("Blaster Sniper", RED, BOLD).decoration(ITALIC, false),
 		itemFactory = ItemFactory.builder().setMaterial(GOLDEN_HOE).setCustomModel("item/weapon/blaster/sniper").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::sniper
 	))
-	val CANNON = register(NewBlaster(
-		identifier = "CANNON",
+	val BLASTER_CANNON = register(NewBlaster(
+		identifier = "BLASTER_CANNON",
 		displayName = text("Blaster Cannon", RED, BOLD).decoration(ITALIC, false),
 		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("item/weapon/blaster/sniper").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::cannon
