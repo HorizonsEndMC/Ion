@@ -31,10 +31,14 @@ object NewCustomItemListeners : SLEventListener() {
 
 	fun sortCustomItemListeners() {
 		for (newCustomItem in CustomItemRegistry.ALL) {
-			newCustomItem.customComponents.filterIsInstanceTo<ListenerComponent<PlayerInteractEvent, *>, MutableSet<ListenerComponent<PlayerInteractEvent, *>>>(getListeners(interactListeners, newCustomItem))
-			newCustomItem.customComponents.filterIsInstanceTo<ListenerComponent<PlayerSwapHandItemsEvent, *>, MutableSet<ListenerComponent<PlayerSwapHandItemsEvent, *>>>(getListeners(swapItemListeners, newCustomItem))
-			newCustomItem.customComponents.filterIsInstanceTo<ListenerComponent<BlockPreDispenseEvent, *>, MutableSet<ListenerComponent<BlockPreDispenseEvent, *>>>(getListeners(dispenseListeners, newCustomItem))
-			newCustomItem.customComponents.filterIsInstanceTo<ListenerComponent<EntityShootBowEvent, *>, MutableSet<ListenerComponent<EntityShootBowEvent, *>>>(getListeners(entityShootBowListeners, newCustomItem))
+			newCustomItem.customComponents.filterIsInstance<ListenerComponent<PlayerInteractEvent, *>>()
+				.filterTo(getListeners(interactListeners, newCustomItem)) { it.eventType == PlayerInteractEvent::class }
+			newCustomItem.customComponents.filterIsInstance<ListenerComponent<PlayerSwapHandItemsEvent, *>>()
+				.filterTo(getListeners(swapItemListeners, newCustomItem)) { it.eventType == PlayerSwapHandItemsEvent::class }
+			newCustomItem.customComponents.filterIsInstance<ListenerComponent<BlockPreDispenseEvent, *>>()
+				.filterTo(getListeners(dispenseListeners, newCustomItem)) { it.eventType == BlockPreDispenseEvent::class }
+			newCustomItem.customComponents.filterIsInstance<ListenerComponent<EntityShootBowEvent, *>>()
+				.filterTo(getListeners(entityShootBowListeners, newCustomItem)) { it.eventType == EntityShootBowEvent::class }
 		}
 	}
 
