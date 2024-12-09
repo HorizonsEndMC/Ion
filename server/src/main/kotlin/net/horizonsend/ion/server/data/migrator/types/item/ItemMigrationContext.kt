@@ -10,11 +10,13 @@ class ItemMigrationContext(
 	private var item: ItemStack
 ) {
 	fun migrate(migrator: CustomItemStackMigrator) {
+		if (!migrator.shouldMigrate(item)) return
 		val result = migrator.migrate(item)
 
 		if (result !is MigratorResult.Replacement<*>) return
 		result as MigratorResult.Replacement<ItemStack>
 
+		// In case the context is re-used in a loop
 		item = result.new
 		sourceInventory.setItem(itemIndex, result.new)
 	}
