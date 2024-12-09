@@ -23,6 +23,7 @@ class DataVersion private constructor(
 		for ((index, item) in inventory.contents.withIndex()) {
 			if (item == null) continue
 			val customItemIdentifier = item.persistentDataContainer.get(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING) ?: continue
+
 			migrateItem(inventory, index, item, customItemIdentifier)
 		}
 	}
