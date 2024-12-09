@@ -8,9 +8,11 @@ import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.ItemStack
+import kotlin.reflect.KClass
 
 class ListenerComponent<E: Event, T: NewCustomItem>(
 	val customItem: T,
+	val eventType: KClass<out E>,
 	private val eventReceiver: (E, T, ItemStack) -> Unit
 ) : CustomItemComponent {
 	fun handleEvent(event: E, itemStack: ItemStack) = eventReceiver.invoke(event, customItem, itemStack)
@@ -19,24 +21,24 @@ class ListenerComponent<E: Event, T: NewCustomItem>(
 	override fun getAttributes(baseItem: ItemStack): Iterable<CustomItemAttribute> = listOf()
 
 	companion object {
-		fun <T: NewCustomItem> interactListener(
+		inline fun <reified T: NewCustomItem> interactListener(
 			customItem: T,
-			handleEvent: (PlayerInteractEvent, T, ItemStack) -> Unit
-		): ListenerComponent<PlayerInteractEvent, T> = ListenerComponent(customItem, handleEvent)
+			noinline handleEvent: (PlayerInteractEvent, T, ItemStack) -> Unit
+		): ListenerComponent<PlayerInteractEvent, T> = ListenerComponent(customItem, PlayerInteractEvent::class, handleEvent)
 
-		fun <T: NewCustomItem> playerSwapHandsListener(
+		inline fun <reified T: NewCustomItem> playerSwapHandsListener(
 			customItem: T,
-			handleEvent: (PlayerSwapHandItemsEvent, T, ItemStack) -> Unit
-		): ListenerComponent<PlayerSwapHandItemsEvent, T> = ListenerComponent(customItem, handleEvent)
+			noinline handleEvent: (PlayerSwapHandItemsEvent, T, ItemStack) -> Unit
+		): ListenerComponent<PlayerSwapHandItemsEvent, T> = ListenerComponent(customItem, PlayerSwapHandItemsEvent::class, handleEvent)
 
-		fun <T: NewCustomItem> dispenseListener(
+		inline fun <reified T: NewCustomItem> dispenseListener(
 			customItem: T,
-			handleEvent: (BlockPreDispenseEvent, T, ItemStack) -> Unit
-		): ListenerComponent<BlockPreDispenseEvent, T> = ListenerComponent(customItem, handleEvent)
+			noinline handleEvent: (BlockPreDispenseEvent, T, ItemStack) -> Unit
+		): ListenerComponent<BlockPreDispenseEvent, T> = ListenerComponent(customItem, BlockPreDispenseEvent::class, handleEvent)
 
-		fun <T: NewCustomItem> entityShootBowListener(
+		inline fun <reified T: NewCustomItem> entityShootBowListener(
 			customItem: T,
-			handleEvent: (EntityShootBowEvent, T, ItemStack) -> Unit
-		): ListenerComponent<EntityShootBowEvent, T> = ListenerComponent(customItem, handleEvent)
+			noinline handleEvent: (EntityShootBowEvent, T, ItemStack) -> Unit
+		): ListenerComponent<EntityShootBowEvent, T> = ListenerComponent(customItem, EntityShootBowEvent::class, handleEvent)
 	}
 }
