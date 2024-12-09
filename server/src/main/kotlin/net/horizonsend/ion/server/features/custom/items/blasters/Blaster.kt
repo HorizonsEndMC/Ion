@@ -4,194 +4,73 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.common.utils.text.ITALIC
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Balancing
-import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.objects.AmmunitionHoldingItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.components.AmmunitionComponent
+import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponent
+import net.horizonsend.ion.server.features.custom.items.components.ListenerComponent
+import net.horizonsend.ion.server.features.custom.items.components.MagazineTypeComponent
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
-import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source.PLAYER
 import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.Component.translatable
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.AQUA
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.Color
-import org.bukkit.Color.RED
 import org.bukkit.Color.fromRGB
-import org.bukkit.Material
-import org.bukkit.Material.matchMaterial
-import org.bukkit.Particle
 import org.bukkit.Particle.DUST
-import org.bukkit.SoundCategory.PLAYERS
+import org.bukkit.Particle.DustOptions
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 
 open class Blaster<T : Balancing>(
 	identifier: String,
-
-	override val material: Material,
-	override val customModelData: Int,
-	override val displayName: Component,
-	val magazineType: Magazine,
-	val particleSize: Float,
-	val soundRange: Double,
-	val soundFire: String,
-	val soundWhizz: String,
-	val soundShell: String,
-	val soundReloadStart: String,
-	val soundReloadFinish: String,
-	val explosiveShot: Boolean,
-
+	displayName: Component,
+	itemFactory: ItemFactory,
 	private val balancingSupplier: Supplier<T>
-) : CustomItem(identifier), AmmunitionHoldingItem {
+) : NewCustomItem(
+	identifier,
+	displayName,
+	itemFactory,
+) {
 	val balancing get() = balancingSupplier.get()
 
-	override fun constructItemStack(): ItemStack {
-		val base = getFullItem()
+	val ammoComponent = AmmunitionComponent(balancingSupplier)
+	val magazineComponent = MagazineTypeComponent(balancingSupplier) { CustomItemRegistry.getByIdentifier(balancing.magazineIdentifier)!! }
 
-		// Should always have lore
-		val lore = base.itemMeta.lore()?.toTypedArray() ?: arrayOf()
-
-		val refillTypeComponent = if (getConsumesAmmo()) text()
-				.decoration(ITALIC, false)
-				.append(text("Refill: ", GRAY))
-				.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
-				.build()
-		else empty()
-
-		val magazineTypeComponent = if (getConsumesAmmo()) text()
-				.decoration(TextDecoration.ITALIC, false)
-				.append(text("Magazine: ", GRAY))
-				.append(magazineType.displayName).color(AQUA)
-				.build()
-		else empty()
-
-		return base.updateMeta {
-			it.lore(mutableListOf(
-				*lore,
-				refillTypeComponent,
-				magazineTypeComponent
-			))
-		}
+	override fun decorateItemStack(base: ItemStack) {
+		ammoComponent.setAmmo(base, this, balancing.capacity)
 	}
 
-	override fun handleSwapHands(livingEntity: LivingEntity, itemStack: ItemStack) {
-		if (livingEntity !is Player) return // Player Only
-		if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
+	override val customComponents: List<CustomItemComponent> = listOf(
+		ammoComponent,
+		magazineComponent,
+		ListenerComponent.interactListener(this) { event, _, item -> fire(event.player, item) },
+		ListenerComponent.playerSwapHandsListener(this) { event, _, item -> reload(event.player, item) }
+	)
 
-		val originalAmmo = getAmmunition(itemStack)
+	open fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
+		if (shooter is Player) {
+			if (shooter.hasCooldown(blasterItem.type)) return // Cooldown
 
-		var ammo = originalAmmo
-
-		if (ammo == ((itemStack.customItem as? Blaster<*>)?.getMaximumAmmunition() ?: return)) return
-
-		if (balancing.consumesAmmo) {
-			for (magazineItem in livingEntity.inventory) {
-				if (magazineItem == null) continue // check not null
-				val magazineCustomItem: CustomItem = magazineItem.customItem ?: continue // To get magazine properties
-				if (ammo >= balancing.capacity) continue // Check if blaster magazine is full
-				if (magazineCustomItem.identifier != magazineType.identifier) continue // Only correct magazine
-
-				val magazineAmmo = (magazineCustomItem as AmmunitionHoldingItem).getAmmunition(magazineItem)
-				val amountToTake = (balancing.capacity - ammo).coerceAtMost(magazineAmmo)
-				magazineCustomItem.setAmmunition(magazineItem, livingEntity.inventory, magazineAmmo - amountToTake)
-
-				ammo += amountToTake
-			}
-		}
-
-		if (livingEntity.world.hasFlag(WorldFlag.ARENA) || !balancing.consumesAmmo) {
-			ammo = balancing.capacity
-		}
-
-		if (ammo - originalAmmo == 0) {
-			livingEntity.playSound(
-				sound(
-					key("minecraft:item.bundle.drop_contents"),
-					PLAYER,
-					5f,
-					2.00f
-				)
-			)
-			livingEntity.alert("Out of ammo!")
-			return
-		}
-
-		livingEntity.setCooldown(itemStack.type, this.balancing.reload)
-
-		setAmmunition(itemStack, livingEntity.inventory, ammo)
-
-		// Finish reload
-		Tasks.syncDelay(this.balancing.reload.toLong()) {
-			livingEntity.location.world.playSound(
-				livingEntity.location,
-				soundReloadFinish,
-				PLAYERS,
-				1.0f,
-				1.0f
-			)
-		}
-
-		livingEntity.sendActionBar(text("Ammo: $ammo / ${balancing.capacity}", NamedTextColor.RED))
-
-		// Start reload
-		livingEntity.location.world.playSound(
-			livingEntity.location,
-			soundReloadStart,
-			PLAYERS,
-			1.0f,
-			1.0f
-		)
-	}
-
-	override fun getMaximumAmmunition(): Int = balancing.capacity
-
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
-		fireWeapon(livingEntity, itemStack)
-	}
-	override fun getTypeRefill(): String = magazineType.getTypeRefill()
-	override fun getAmmoPerRefill(): Int = balancing.ammoPerRefill
-	override fun getConsumesAmmo(): Boolean = balancing.consumesAmmo
-
-	override fun setAmmunition(itemStack: ItemStack, inventory: Inventory, ammunition: Int) {
-		super.setAmmunition(itemStack, inventory, ammunition)
-
-		if (getAmmunition(itemStack) == 0) {
-			(inventory.holder as? Player)?.playSound(sound(key("minecraft:block.iron_door.open"), PLAYER, 5f, 2.00f))
-		}
-
-		(inventory.holder as? Audience)?.sendActionBar(
-			text("Ammo: ${ammunition.coerceIn(0, balancing.capacity)} / ${balancing.capacity}", NamedTextColor.RED)
-		)
-	}
-
-	private fun fireWeapon(livingEntity: LivingEntity, itemStack: ItemStack) {
-		if (livingEntity is Player) {
-			if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
-			if (!checkAndDecrementAmmo(itemStack, livingEntity)) {
-				handleSwapHands(livingEntity, itemStack) // Force a reload
+			if (!checkAndDecrementAmmo(blasterItem, shooter)) {
+				reload(shooter, blasterItem) // Force a reload
 				return // No Ammo
 			}
 		}
 
-		val soundOrigin = livingEntity.location
+		val soundOrigin = shooter.location
 
 		// Shell sound
 		/*
@@ -214,12 +93,12 @@ open class Blaster<T : Balancing>(
 		// Shoot sound
 		soundOrigin.world.players.forEach {
 
-			var distanceFactor = soundRange
+			var distanceFactor = balancing.soundRange
 			var volumeFactor = 1.0
 			var pitchFactor = 1.0
 
 			// No sounds in space (somewhat)
-			if (livingEntity.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
+			if (shooter.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 				distanceFactor *= 0.5
 				volumeFactor *= 0.25
 				pitchFactor *= 0.5
@@ -234,28 +113,20 @@ open class Blaster<T : Balancing>(
 				pitchFactor *= (-1.0 / (3.0 * distanceFactor)) * it.location.distance(soundOrigin) + 1.165
 			}
 
-			if (it.location.distance(soundOrigin) < distanceFactor * 2)
-				soundOrigin.world.playSound(
-					it.location,
-					soundFire,
-					PLAYERS,
-					volumeFactor.toFloat(),
-					pitchFactor.toFloat()
+			if (it.location.distance(soundOrigin) < distanceFactor * 2) {
+				val modified = balancing.soundFire.copy(
+					volume = volumeFactor.toFloat(),
+					pitch = pitchFactor.toFloat()
 				)
+
+				soundOrigin.world.playSound(modified.sound, soundOrigin.x, shooter.y, soundOrigin.z)
+			}
 		}
 
-		fireProjectiles(livingEntity)
+		fireProjectiles(shooter)
 	}
 
-	private fun getParticleType(entity: LivingEntity): Particle = DUST // Default
-
-	private fun getParticleColor(entity: LivingEntity): Color {
-		if (entity !is Player) return RED // Not Player
-		SLPlayer[entity.uniqueId]?.nation?.let { return fromRGB(NationCache[it].color) } // Nation
-		return RED // Not Player
-	}
-
-	protected open fun fireProjectiles(livingEntity: LivingEntity) {
+	open fun fireProjectiles(livingEntity: LivingEntity) {
 		val location = livingEntity.eyeLocation.clone()
 
 		location.y -= 0.125
@@ -270,38 +141,90 @@ open class Blaster<T : Balancing>(
 
 		location.add(location.direction.clone().multiply(0.125))
 
-//		RayTracedParticleProjectile(
-//			location,
-//			livingEntity,
-//			balancing,
-//			DUST,
-//			explosiveShot,
-//			DustOptions(
-//				getParticleColor(livingEntity),
-//				particleSize
-//			),
-//			soundWhizz,
-//		).fire()
+		RayTracedParticleProjectile(
+			location,
+			livingEntity,
+			balancing,
+			DUST,
+			balancing.explosiveShot,
+			DustOptions(
+				getParticleColor(livingEntity),
+				balancing.particleSize
+			),
+			balancing.soundWhizz,
+		).fire()
 	}
 
-	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: InventoryHolder): Boolean {
-		val ammo = getAmmunition(itemStack)
+	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: LivingEntity): Boolean {
+		val ammo = ammoComponent.getAmmo(itemStack)
 		if (ammo == 0) {
-			(livingEntity as? Player)?.playSound(
-				sound(
-					key("horizonsend:blaster.dry_shoot"),
-					PLAYER,
-					1.0f,
-					1.0f
-				)
-			)
+			livingEntity.playSound(sound(key("horizonsend:blaster.dry_shoot"), PLAYER, 1.0f, 1.0f))
 			return false
 		}
 
-		setAmmunition(itemStack, livingEntity.inventory, ammo - 1)
+		ammoComponent.setAmmo(itemStack, this, ammo - 1)
 
 		(livingEntity as? Player)?.setCooldown(itemStack.type, (balancing.timeBetweenShots - 1).coerceAtLeast(0))
 
 		return true
+	}
+
+	fun reload(livingEntity: LivingEntity, blasterItem: ItemStack) {
+		if (livingEntity !is Player) return // Player Only
+		if (livingEntity.hasCooldown(blasterItem.type)) return // Cooldown
+
+		val originalAmmo = ammoComponent.getAmmo(blasterItem)
+
+		var ammo = originalAmmo
+		if (ammo == balancing.capacity) return
+
+		if (balancing.consumesAmmo) {
+			for (magazineItem in livingEntity.inventory.filterNotNull()) {
+				if (ammo >= balancing.capacity) break // Check if blaster magazine is full
+
+				val magazineCustomItem = magazineItem.newCustomItem ?: continue // To get magazine properties
+				if (magazineCustomItem !is Magazine) continue // Just to smart cast
+
+				if (magazineCustomItem.identifier != balancing.magazineIdentifier) continue // Only correct magazine
+
+				val magazineAmmo = magazineCustomItem.ammoComponent.getAmmo(magazineItem)
+				val amountToTake = (balancing.capacity - ammo).coerceAtMost(magazineAmmo)
+
+				magazineCustomItem.ammoComponent.setAmmo(magazineItem, magazineCustomItem, magazineAmmo - amountToTake)
+
+				ammo += amountToTake
+			}
+		}
+
+		if (livingEntity.world.hasFlag(WorldFlag.ARENA) || !balancing.consumesAmmo) {
+			ammo = balancing.capacity
+		}
+
+		if (ammo - originalAmmo == 0) {
+			livingEntity.playSound(sound(key("minecraft:item.bundle.drop_contents"), PLAYER, 5f, 2.00f))
+			livingEntity.alert("Out of ammo!")
+			return
+		}
+
+		livingEntity.setCooldown(blasterItem.type, this.balancing.reload)
+
+		ammoComponent.setAmmo(blasterItem, this, ammo)
+
+		livingEntity.sendActionBar(template(text("Ammo: {0} / {1}", RED), ammo.coerceIn(0, balancing.capacity), balancing.capacity))
+		if (ammo <= 0) livingEntity.playSound(sound(key("minecraft:block.iron_door.open"), PLAYER, 5f, 2.00f))
+
+		// Start reload
+		livingEntity.world.playSound(balancing.soundReloadStart.sound, livingEntity)
+
+		// Finish reload
+		Tasks.syncDelay(this.balancing.reload.toLong()) {
+			livingEntity.world.playSound(balancing.soundReloadFinish.sound, livingEntity)
+		}
+	}
+
+	private fun getParticleColor(entity: LivingEntity): Color {
+		if (entity !is Player) return Color.RED // Not Player
+		SLPlayer[entity.uniqueId]?.nation?.let { return fromRGB(NationCache[it].color) } // Nation
+		return Color.RED // Not Player
 	}
 }
