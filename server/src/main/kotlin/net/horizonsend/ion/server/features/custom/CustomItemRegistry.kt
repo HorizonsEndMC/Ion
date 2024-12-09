@@ -5,8 +5,8 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.custom.NewCustomItemListeners.sortCustomItemListeners
-import net.horizonsend.ion.server.features.custom.items.blasters.NewBlaster
-import net.horizonsend.ion.server.features.custom.items.blasters.NewMagazine
+import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
+import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.withModel
@@ -30,32 +30,32 @@ object CustomItemRegistry : IonServerComponent() {
 	val ALL get() = customItems.values
 
 	// Guns Start
-	val STANDARD_MAGAZINE = register(NewMagazine(
+	val STANDARD_MAGAZINE = register(Magazine(
 		identifier = "STANDARD_MAGAZINE",
 		displayName = text("Standard Magazine").decoration(ITALIC, false),
 		itemFactory = ItemFactory.builder(unStackableCustomItem).setCustomModel("standard_magazine").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::standardMagazine
 	))
-	val SPECIAL_MAGAZINE = register(NewMagazine(
+	val SPECIAL_MAGAZINE = register(Magazine(
 		identifier = "SPECIAL_MAGAZINE",
 		displayName = text("Special Magazine").decoration(ITALIC, false),
 		itemFactory = ItemFactory.builder(unStackableCustomItem).setCustomModel("special_magazine").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::specialMagazine
 	))
 
-	val BLASTER_PISTOL = register(NewBlaster(
+	val BLASTER_PISTOL = register(Blaster(
 		identifier = "BLASTER_PISTOL",
 		displayName = text("Blaster Pistol", RED, BOLD).itemName,
 		itemFactory = ItemFactory.builder().setMaterial(DIAMOND_HOE).setCustomModel("pistol").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::pistol
 	))
-	val BLASTER_RIFLE = register(NewBlaster(
+	val BLASTER_RIFLE = register(Blaster(
 		identifier = "BLASTER_RIFLE",
 		displayName = text("Blaster Rifle", RED, BOLD).itemName,
 		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("rifle").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::rifle
 	))
-	val SUBMACHINE_BLASTER = register(object : NewBlaster<Singleshot>(
+	val SUBMACHINE_BLASTER = register(object : Blaster<Singleshot>(
 		identifier = "SUBMACHINE_BLASTER",
 		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("submachine_blaster").build(),
 		displayName = text("Submachine Blaster", RED, BOLD).decoration(ITALIC, false),
@@ -72,7 +72,7 @@ object CustomItemRegistry : IonServerComponent() {
 			}
 		}
 	})
-	val BLASTER_SHOTGUN = register(object : NewBlaster<Multishot>(
+	val BLASTER_SHOTGUN = register(object : Blaster<Multishot>(
 		identifier = "BLASTER_SHOTGUN",
 		displayName = text("Blaster Shotgun", RED, BOLD).decoration(ITALIC, false),
 		itemFactory = ItemFactory.builder().setMaterial(GOLDEN_HOE).setCustomModel("shotgun").build(),
@@ -82,13 +82,13 @@ object CustomItemRegistry : IonServerComponent() {
 			for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
 		}
 	})
-	val BLASTER_SNIPER = register(NewBlaster(
+	val BLASTER_SNIPER = register(Blaster(
 		identifier = "BLASTER_SNIPER",
 		displayName = text("Blaster Sniper", RED, BOLD).decoration(ITALIC, false),
 		itemFactory = ItemFactory.builder().setMaterial(GOLDEN_HOE).setCustomModel("sniper").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::sniper
 	))
-	val BLASTER_CANNON = register(NewBlaster(
+	val BLASTER_CANNON = register(Blaster(
 		identifier = "BLASTER_CANNON",
 		displayName = text("Blaster Cannon", RED, BOLD).decoration(ITALIC, false),
 		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("cannon").build(),
