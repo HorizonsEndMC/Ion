@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.ammo
 
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.objects.AmmunitionHoldingItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
+import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
+import net.horizonsend.ion.server.features.custom.items.components.AmmunitionComponent
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
@@ -9,7 +10,6 @@ import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.Material
-import org.bukkit.Material.matchMaterial
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
@@ -130,7 +130,7 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 	) {
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
-		val fuelCustomItem = fuel?.customItem
+		val fuelCustomItem = fuel?.newCustomItem
 
 		if (PowerMachines.getPower(sign) == 0 ||
 			smelting == null ||
@@ -141,8 +141,11 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 			return
 		}
 
+		val ammoComponent = fuelCustomItem.customComponents.filterIsInstance<AmmunitionComponent>().firstOrNull() ?: return
+		val ammoRefillAttribute = fuelCustomItem.getAttributes(fuel).filterIsInstance<AmmunitionRefillType>().firstOrNull() ?: return
+
 		// deposit blaster/magazine into output if full
-		if ((fuelCustomItem as AmmunitionHoldingItem).getAmmunition(fuel) == fuelCustomItem.getMaximumAmmunition()) {
+		if (ammoComponent.getAmmo(fuel) == ammoComponent.balancingSupplier.get().capacity) {
 			val result = furnace.inventory.result
 			if (result != null && result.type != Material.AIR) return
 			furnace.inventory.result = event.fuel
@@ -155,7 +158,7 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 		val state = sign.block.getRelative(direction, 7).getState(false)
 			as? InventoryHolder ?: return
 		val inventory = state.inventory
-		val typeRefill = matchMaterial(fuelCustomItem.getTypeRefill()) ?: return
+		val typeRefill = ammoRefillAttribute.type
 		if (!inventory.containsAtLeast(ItemStack(typeRefill), 1)) return
 
 		event.isBurning = false
@@ -164,10 +167,10 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 		event.isCancelled = false
 
 		val ammoToSet = min(
-			fuelCustomItem.getMaximumAmmunition() - fuelCustomItem.getAmmunition(fuel),
-			fuelCustomItem.getAmmoPerRefill()
+			ammoComponent.balancingSupplier.get().capacity - ammoComponent.getAmmo(fuel),
+			ammoComponent.balancingSupplier.get().ammoPerRefill
 		)
-		fuelCustomItem.setAmmunition(fuel, furnace.inventory, fuelCustomItem.getAmmunition(fuel) + ammoToSet)
+		ammoComponent.setAmmo(fuel, fuelCustomItem, ammoComponent.getAmmo(fuel) + ammoToSet)
 		inventory.removeItemAnySlot(ItemStack(typeRefill))
 		PowerMachines.removePower(sign, 250)
 	}
