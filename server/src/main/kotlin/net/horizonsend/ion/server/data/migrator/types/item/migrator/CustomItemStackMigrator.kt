@@ -7,9 +7,10 @@ import org.bukkit.inventory.ItemStack
 
 abstract class CustomItemStackMigrator(
 	private val predicate: ItemMigratorPredicate,
-	val customItem: NewCustomItem,
 ) : DataMigrator<ItemStack, NewCustomItem>() {
 	fun shouldMigrate(itemStack: ItemStack) = predicate.shouldMigrate(itemStack)
+
+	abstract fun registerTo(map: MutableMap<String, CustomItemStackMigrator>)
 }
 
 
