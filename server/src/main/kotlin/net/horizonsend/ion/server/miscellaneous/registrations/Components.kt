@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateRestrictions
@@ -110,6 +111,7 @@ val components: List<IonComponent> = listOf(
 	NPCTraits,
 	CombatNPCs,
 
+	CustomItemRegistry,
 	DataMigrators,
 	CustomRecipes,
 	Crafting,
