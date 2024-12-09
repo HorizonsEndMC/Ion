@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.data.migrator
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.data.migrator.types.item.migrator.IdentifierUpdate
+import net.horizonsend.ion.server.data.migrator.types.item.migrator.AspectMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.migrator.LegacyNameFixer
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Chunk
@@ -40,15 +41,48 @@ object DataMigrators : IonServerComponent() {
 				"LOADED_SHELL", "UNCHARGED_SHELL", "CHARGED_SHELL", "ARSENAL_MISSILE", "PUMPKIN_GRENADE", "UNLOADED_ARSENAL_MISSILE", "ACTIVATED_ARSENAL_MISSILE",
 				"GAS_CANISTER_EMPTY",
 			))
-			.addMigrator(IdentifierUpdate("PISTOL", "BLASTER_PISTOL"))
-			.addMigrator(IdentifierUpdate("RIFLE", "BLASTER_RIFLE"))
-			.addMigrator(IdentifierUpdate("SHOTGUN", "BLASTER_SHOTGUN"))
-			.addMigrator(IdentifierUpdate("SNIPER", "BLASTER_SNIPER"))
-			.addMigrator(IdentifierUpdate("CANNON", "BLASTER_CANNON"))
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.BLASTER_RIFLE)
+				.addAdditionalIdentifier("RIFLE")
+				.setModel("item/weapon/blaster/rifle")
+				.pullLore(CustomItemRegistry.BLASTER_RIFLE)
+				.changeIdentifier("RIFLE", "BLASTER_RIFLE")
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.BLASTER_PISTOL)
+				.addAdditionalIdentifier("PISTOL")
+				.setModel("item/weapon/blaster/rifle")
+				.pullLore(CustomItemRegistry.BLASTER_PISTOL)
+				.changeIdentifier("PISTOL", "BLASTER_PISTOL")
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.BLASTER_SHOTGUN)
+				.addAdditionalIdentifier("SHOTGUN")
+				.setModel("item/weapon/blaster/rifle")
+				.pullLore(CustomItemRegistry.BLASTER_SHOTGUN)
+				.changeIdentifier("SHOTGUN", "BLASTER_SHOTGUN")
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.BLASTER_SNIPER)
+				.addAdditionalIdentifier("SNIPER")
+				.setModel("item/weapon/blaster/rifle")
+				.pullLore(CustomItemRegistry.BLASTER_SNIPER)
+				.changeIdentifier("SNIPER", "BLASTER_SNIPER")
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.BLASTER_CANNON)
+				.addAdditionalIdentifier("CANNON")
+				.setModel("item/weapon/blaster/rifle")
+				.pullLore(CustomItemRegistry.BLASTER_CANNON)
+				.changeIdentifier("CANNON", "BLASTER_CANNON")
+				.build()
+			)
 			.build()
 		)
-
-
 	}
 
 	private fun registerDataVersion(dataVersion: DataVersion) {
@@ -76,16 +110,17 @@ object DataMigrators : IonServerComponent() {
 		val playerVersion = player.persistentDataContainer.getOrDefault(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER, 0)
 		if (playerVersion == lastDataVersion) return
 
-		migrateInventory(player.inventory, getVersions(playerVersion))
+		log.info("Migrating ${player.name}'s inventory from $playerVersion to $lastDataVersion")
+		migrateInventory(player.inventory, getVersions(playerVersion).apply { log.info("Applying $size versions") })
 	}
 
 	private fun getVersions(dataVersion: Int): List<DataVersion> {
-		return dataVersions.subList(dataVersion + 1, lastDataVersion + 1 /* Exclusive */)
+		return dataVersions.subList(dataVersion + 1 /* Inclusive */, lastDataVersion + 1 /* Exclusive */)
 	}
 
 	private fun migrateInventory(inventory: Inventory, versions: List<DataVersion>) {
 		for (dataVersion in versions) {
-			dataVersion.migrateInventory(inventory, dataVersion.versionNumber)
+			dataVersion.migrateInventory(inventory)
 		}
 	}
 
