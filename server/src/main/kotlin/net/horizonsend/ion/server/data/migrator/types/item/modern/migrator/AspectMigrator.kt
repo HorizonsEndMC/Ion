@@ -1,15 +1,15 @@
-package net.horizonsend.ion.server.data.migrator.types.item.migrator
+package net.horizonsend.ion.server.data.migrator.types.item.modern.migrator
 
 import io.papermc.paper.datacomponent.DataComponentType.Valued
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
-import net.horizonsend.ion.server.data.migrator.types.item.aspect.ChangeIdentifierMigrator
-import net.horizonsend.ion.server.data.migrator.types.item.aspect.ChangeTypeMigrator
-import net.horizonsend.ion.server.data.migrator.types.item.aspect.CustomNameMigrator
-import net.horizonsend.ion.server.data.migrator.types.item.aspect.ItemAspectMigrator
-import net.horizonsend.ion.server.data.migrator.types.item.aspect.ItemComponentMigrator
-import net.horizonsend.ion.server.data.migrator.types.item.aspect.PullLoreMigrator
-import net.horizonsend.ion.server.data.migrator.types.item.aspect.SetLoreMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ChangeIdentifierMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ChangeTypeMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.CustomNameMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ItemAspectMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ItemComponentMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.PullLoreMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.SetLoreMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.predicate.ItemMigratorPredicate
 import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.HORIZONSEND_NAMESPACE

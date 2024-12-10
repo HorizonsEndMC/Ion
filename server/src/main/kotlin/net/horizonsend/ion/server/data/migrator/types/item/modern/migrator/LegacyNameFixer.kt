@@ -1,8 +1,8 @@
-package net.horizonsend.ion.server.data.migrator.types.item.migrator
+package net.horizonsend.ion.server.data.migrator.types.item.modern.migrator
 
 import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
-import net.horizonsend.ion.server.data.migrator.types.item.aspect.PullNameMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.PullNameMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.predicate.ItemMigratorPredicate
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem

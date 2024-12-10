@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.data.migrator.types.item.migrator
+package net.horizonsend.ion.server.data.migrator.types.item.modern.migrator
 
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.predicate.CustomItemPredicate
