@@ -118,5 +118,8 @@ class ItemFactory private constructor(
 			.setMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
 			.setMaxStackSize(1)
 			.build()
+
+		fun stackableCustomItem(maxStackSize: Int = 64, model: String) = builder(stackableCustomItem).setMaxStackSize(maxStackSize).setCustomModel(model).build()
+		fun unStackableCustomItem(model: String) = builder(stackableCustomItem).setCustomModel(model).build()
 	}
 }
