@@ -8,8 +8,14 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_PIS
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_RIFLE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_SHOTGUN
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_SNIPER
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CIRCUITRY
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.GUN_BARREL
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.PISTOL_RECEIVER
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RIFLE_RECEIVER
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SHOTGUN_RECEIVER
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SMB_RECEIVER
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SNIPER_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SUBMACHINE_BLASTER
@@ -21,7 +27,6 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_SMELT
 import net.horizonsend.ion.server.features.custom.items.CustomItems.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.BATTLECRUISER_REACTOR_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CIRCUIT_BOARD
@@ -43,7 +48,6 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItems.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.NETHERITE_CASING
-import net.horizonsend.ion.server.features.custom.items.CustomItems.PISTOL_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CAPACITY_25
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CAPACITY_50
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CHAINSAW_ADVANCED
@@ -73,12 +77,8 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTIVE_PLA
 import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTOR_CONTROL
 import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTOR_FRAME
 import net.horizonsend.ion.server.features.custom.items.CustomItems.REINFORCED_FRAME
-import net.horizonsend.ion.server.features.custom.items.CustomItems.RIFLE_RECEIVER
-import net.horizonsend.ion.server.features.custom.items.CustomItems.SHOTGUN_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SILK_TOUCH_MOD
-import net.horizonsend.ion.server.features.custom.items.CustomItems.SMB_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SMOKE_GRENADE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.SNIPER_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_ASSEMBLY
 import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_CHASSIS
