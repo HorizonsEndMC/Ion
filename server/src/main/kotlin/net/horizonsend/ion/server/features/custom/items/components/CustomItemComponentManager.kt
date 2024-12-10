@@ -7,6 +7,8 @@ class CustomItemComponentManager {
 		type.storageType.storeData(components, type, data)
 	}
 
+	fun hasComponent(type: CustomComponentType<*, *>): Boolean = components.containsKey(type)
+
 	fun <T : CustomItemComponent> getComponent(type: CustomComponentType<T, ComponentTypeData.OnlyOne<T>>): T {
 		val stored = components[type] ?: throw NullPointerException("Trying to access unregistered custom component")
 		return type.castData(stored).entry

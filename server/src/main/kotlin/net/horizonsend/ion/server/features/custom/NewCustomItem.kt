@@ -32,6 +32,8 @@ open class NewCustomItem(
 		return customComponents.getComponents(type)
 	}
 
+	fun hasComponent(type: CustomComponentType<*, *>): Boolean = customComponents.hasComponent(type)
+
 	protected val baseItemFactory = ItemFactory.builder(baseItemFactory)
 		.setNameSupplier { displayName.itemName }
 		.addPDCEntry(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
