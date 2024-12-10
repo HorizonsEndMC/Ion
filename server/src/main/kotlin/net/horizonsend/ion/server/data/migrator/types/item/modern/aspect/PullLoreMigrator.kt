@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.data.migrator.types.item.aspect
+package net.horizonsend.ion.server.data.migrator.types.item.modern.aspect
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore

@@ -1,12 +1,16 @@
 package net.horizonsend.ion.server.data.migrator
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.data.migrator.types.item.migrator.AspectMigrator
-import net.horizonsend.ion.server.data.migrator.types.item.migrator.LegacyNameFixer
+import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
+import net.horizonsend.ion.server.data.migrator.types.item.legacy.LegacyCustomItemMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.AspectMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.LegacyNameFixer
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Chunk
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -25,11 +29,47 @@ object DataMigrators : IonServerComponent() {
 	private val lastDataVersion get() = dataVersions.lastIndex
 
 	private fun registerDataVersions() {
-		registerDataVersion(DataVersion.builder(0).build()) // To align to index
+		registerDataVersion(DataVersion.builder(0).build()) // Base server version
 
 		registerDataVersion(DataVersion
 			.builder(1)
-			.addMigrator(LegacyNameFixer(
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 1 && it.newCustomItem == null },
+				converter = { MigratorResult.Replacement(CustomItemRegistry.BLASTER_PISTOL.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 2 && it.newCustomItem == null },
+				converter = { MigratorResult.Replacement(CustomItemRegistry.BLASTER_RIFLE.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 3 && it.newCustomItem == null },
+				converter = { MigratorResult.Replacement(CustomItemRegistry.BLASTER_SNIPER.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 4 && it.newCustomItem == null },
+				converter = { MigratorResult.Replacement(CustomItemRegistry.BLASTER_CANNON.constructItemStack()) }
+			))
+			/* TODO Drill
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.DIAMOND_PICKAXE
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 1
+						&& it.newCustomItem == null
+				},
+				converter = {
+
+					MigratorResult.Mutation()
+				}
+			))
+			*/
+			.build()
+		)
+
+		registerDataVersion(DataVersion
+			.builder(2)
+			.addMigrator(
+				LegacyNameFixer(
 				"DETONATOR", "SMOKE_GRENADE", "PUMPKIN_GRENADE", "GUN_BARREL", "CIRCUITRY", "PISTOL_RECEIVER", "RIFLE_RECEIVER",
 				"SMB_RECEIVER", "SNIPER_RECEIVER", "SHOTGUN_RECEIVER", "CANNON_RECEIVER", "ALUMINUM_INGOT", "ALUMINUM_BLOCK", "RAW_ALUMINUM_BLOCK",
 				"CHETHERITE", "CHETHERITE_BLOCK", "TITANIUM_INGOT", "TITANIUM_BLOCK", "RAW_TITANIUM_BLOCK", "URANIUM", "URANIUM_BLOCK",
@@ -40,8 +80,10 @@ object DataMigrators : IonServerComponent() {
 				"REINFORCED_FRAME", "REACTOR_FRAME", "PROGRESS_HOLDER", "BATTLECRUISER_REACTOR_CORE", "BARGE_REACTOR_CORE", "CRUISER_REACTOR_CORE", "UNLOADED_SHELL",
 				"LOADED_SHELL", "UNCHARGED_SHELL", "CHARGED_SHELL", "ARSENAL_MISSILE", "PUMPKIN_GRENADE", "UNLOADED_ARSENAL_MISSILE", "ACTIVATED_ARSENAL_MISSILE",
 				"GAS_CANISTER_EMPTY",
-			))
-			.addMigrator(AspectMigrator
+			)
+			)
+			.addMigrator(
+				AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_RIFLE)
 				.addAdditionalIdentifier("RIFLE")
 				.setModel("weapon/blaster/rifle")
@@ -49,7 +91,8 @@ object DataMigrators : IonServerComponent() {
 				.changeIdentifier("RIFLE", "BLASTER_RIFLE")
 				.build()
 			)
-			.addMigrator(AspectMigrator
+			.addMigrator(
+				AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_PISTOL)
 				.addAdditionalIdentifier("PISTOL")
 				.setModel("weapon/blaster/pistol")
@@ -57,7 +100,8 @@ object DataMigrators : IonServerComponent() {
 				.changeIdentifier("PISTOL", "BLASTER_PISTOL")
 				.build()
 			)
-			.addMigrator(AspectMigrator
+			.addMigrator(
+				AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_SHOTGUN)
 				.addAdditionalIdentifier("SHOTGUN")
 				.setModel("weapon/blaster/shotgun")
@@ -65,7 +109,8 @@ object DataMigrators : IonServerComponent() {
 				.changeIdentifier("SHOTGUN", "BLASTER_SHOTGUN")
 				.build()
 			)
-			.addMigrator(AspectMigrator
+			.addMigrator(
+				AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_SNIPER)
 				.addAdditionalIdentifier("SNIPER")
 				.setModel("weapon/blaster/sniper")
@@ -73,7 +118,8 @@ object DataMigrators : IonServerComponent() {
 				.changeIdentifier("SNIPER", "BLASTER_SNIPER")
 				.build()
 			)
-			.addMigrator(AspectMigrator
+			.addMigrator(
+				AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_CANNON)
 				.addAdditionalIdentifier("CANNON")
 				.setModel("weapon/blaster/cannon")
