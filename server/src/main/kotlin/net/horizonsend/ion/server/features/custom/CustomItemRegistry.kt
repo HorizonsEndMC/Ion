@@ -33,13 +33,13 @@ object CustomItemRegistry : IonServerComponent() {
 	val STANDARD_MAGAZINE = register(Magazine(
 		identifier = "STANDARD_MAGAZINE",
 		displayName = text("Standard Magazine").decoration(ITALIC, false),
-		itemFactory = ItemFactory.builder(unStackableCustomItem).setCustomModel("standard_magazine").build(),
+		itemFactory = ItemFactory.builder(unStackableCustomItem).setCustomModel("weapon/blaster/standard_magazine").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::standardMagazine
 	))
 	val SPECIAL_MAGAZINE = register(Magazine(
 		identifier = "SPECIAL_MAGAZINE",
 		displayName = text("Special Magazine").decoration(ITALIC, false),
-		itemFactory = ItemFactory.builder(unStackableCustomItem).setCustomModel("special_magazine").build(),
+		itemFactory = ItemFactory.builder(unStackableCustomItem).setCustomModel("weapon/blaster/special_magazine").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::specialMagazine
 	))
 
