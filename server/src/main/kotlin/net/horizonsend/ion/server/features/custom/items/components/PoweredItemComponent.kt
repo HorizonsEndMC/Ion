@@ -16,6 +16,7 @@ import org.bukkit.entity.Damageable
 import org.bukkit.inventory.ItemStack
 
 class PoweredItemComponent(private val baseMaxPower: Int) : CustomItemComponent, LoreManager {
+
 	override fun decorateBase(baseItem: ItemStack) {
 		StoredValues.POWER.setAmount(baseItem, baseMaxPower)
 	}

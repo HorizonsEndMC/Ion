@@ -11,7 +11,8 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class MagazineTypeComponent<T : Balancing>(val balancing: Supplier<T>, val type: Supplier<NewCustomItem>) : CustomItemComponent, LoreManager {
+class MagazineTypeComponent<T : Balancing>(val balancing: Supplier<T>, private val magazineType: Supplier<NewCustomItem>) : CustomItemComponent, LoreManager {
+
 	override fun decorateBase(baseItem: ItemStack) {}
 
 	override fun getAttributes(baseItem: ItemStack): Iterable<CustomItemAttribute> {
@@ -19,7 +20,7 @@ class MagazineTypeComponent<T : Balancing>(val balancing: Supplier<T>, val type:
 	}
 
 	override fun getLines(customItem: NewCustomItem, itemStack: ItemStack): List<Component> {
-		return listOf(ofChildren(text("Magazine: ", GRAY), type.get().displayName).itemLore)
+		return listOf(ofChildren(text("Magazine: ", GRAY), magazineType.get().displayName).itemLore)
 	}
 
 	override fun shouldIncludeSeparator(): Boolean = false
