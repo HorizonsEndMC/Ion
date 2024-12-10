@@ -3,7 +3,8 @@ package net.horizonsend.ion.server.features.custom.items.blasters
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.AmmoStorage
 import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.components.AmmunitionComponent
-import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponent
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentType
+import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
@@ -16,10 +17,11 @@ class Magazine(identifier: String, displayName: Component, itemFactory: ItemFact
 ) {
 	val balancing get() = balancingSupplier.get()
 
-	val ammoComponent = AmmunitionComponent(balancingSupplier)
-	override val customComponents: List<CustomItemComponent> = listOf(ammoComponent)
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+		addComponent(CustomComponentType.AMMUNITION, AmmunitionComponent(balancingSupplier))
+	}
 
 	override fun decorateItemStack(base: ItemStack) {
-		ammoComponent.setAmmo(base, this, balancing.capacity)
+		customComponents.getComponent(CustomComponentType.AMMUNITION).setAmmo(base, this, balancing.capacity)
 	}
 }

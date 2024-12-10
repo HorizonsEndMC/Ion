@@ -31,14 +31,12 @@ object NewCustomItemListeners : SLEventListener() {
 
 	fun sortCustomItemListeners() {
 		for (newCustomItem in CustomItemRegistry.ALL) {
-			newCustomItem.customComponents.filterIsInstance<ListenerComponent<PlayerInteractEvent, *>>()
-				.filterTo(getListeners(interactListeners, newCustomItem)) { it.eventType == PlayerInteractEvent::class }
-			newCustomItem.customComponents.filterIsInstance<ListenerComponent<PlayerSwapHandItemsEvent, *>>()
-				.filterTo(getListeners(swapItemListeners, newCustomItem)) { it.eventType == PlayerSwapHandItemsEvent::class }
-			newCustomItem.customComponents.filterIsInstance<ListenerComponent<BlockPreDispenseEvent, *>>()
-				.filterTo(getListeners(dispenseListeners, newCustomItem)) { it.eventType == BlockPreDispenseEvent::class }
-			newCustomItem.customComponents.filterIsInstance<ListenerComponent<EntityShootBowEvent, *>>()
-				.filterTo(getListeners(entityShootBowListeners, newCustomItem)) { it.eventType == EntityShootBowEvent::class }
+			val components = newCustomItem.allComponents()
+
+			components.filterIsInstance<ListenerComponent<PlayerInteractEvent, *>>().filterTo(getListeners(interactListeners, newCustomItem)) { it.eventType == PlayerInteractEvent::class }
+			components.filterIsInstance<ListenerComponent<PlayerSwapHandItemsEvent, *>>().filterTo(getListeners(swapItemListeners, newCustomItem)) { it.eventType == PlayerSwapHandItemsEvent::class }
+			components.filterIsInstance<ListenerComponent<BlockPreDispenseEvent, *>>().filterTo(getListeners(dispenseListeners, newCustomItem)) { it.eventType == BlockPreDispenseEvent::class }
+			components.filterIsInstance<ListenerComponent<EntityShootBowEvent, *>>().filterTo(getListeners(entityShootBowListeners, newCustomItem)) { it.eventType == EntityShootBowEvent::class }
 		}
 	}
 
@@ -56,7 +54,7 @@ object NewCustomItemListeners : SLEventListener() {
 		val item = event.item ?: return
 		val customItem = item.newCustomItem ?: return
 
-		val listeners = getListeners(interactListeners, customItem)
+		val listeners = getListeners(interactListeners, customItem).filter { it.preCheck(event, item) }
 
 		if (listeners.isNotEmpty()) {
 			event.isCancelled = true
