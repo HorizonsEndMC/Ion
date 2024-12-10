@@ -61,13 +61,6 @@ object CustomItems {
 	val ALL get() = customItems.values
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
-	val PISTOL_RECEIVER = registerSimpleUnstackable("PISTOL_RECEIVER", 502, text("Pistol Receiver"))
-	val RIFLE_RECEIVER = registerSimpleUnstackable("RIFLE_RECEIVER", 503, text("Rifle Receiver"))
-	val SMB_RECEIVER = registerSimpleUnstackable("SMB_RECEIVER", 504, text("SMB Receiver"))
-	val SNIPER_RECEIVER = registerSimpleUnstackable("SNIPER_RECEIVER", 505, text("Sniper Receiver"))
-	val SHOTGUN_RECEIVER = registerSimpleUnstackable("SHOTGUN_RECEIVER", 506, text("Shotgun Receiver"))
-	val CANNON_RECEIVER = registerSimpleUnstackable("CANNON_RECEIVER", 507, text("Cannon Receiver"))
-	// Gun Parts End
 	// Minerals start
 	val ALUMINUM_INGOT = registerSimpleStackable(identifier = "ALUMINUM_INGOT", customModelData = 1, displayName = text("Aluminum Ingot").decoration(ITALIC, false))
 	val RAW_ALUMINUM : MineralItem = register(object : MineralItem(
