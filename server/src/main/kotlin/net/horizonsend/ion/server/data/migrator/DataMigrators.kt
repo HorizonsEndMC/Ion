@@ -44,7 +44,7 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_RIFLE)
 				.addAdditionalIdentifier("RIFLE")
-				.setModel("rifle")
+				.setModel("weapon/blaster/rifle")
 				.pullLore(CustomItemRegistry.BLASTER_RIFLE)
 				.changeIdentifier("RIFLE", "BLASTER_RIFLE")
 				.build()
@@ -52,7 +52,7 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_PISTOL)
 				.addAdditionalIdentifier("PISTOL")
-				.setModel("pistol")
+				.setModel("weapon/blaster/pistol")
 				.pullLore(CustomItemRegistry.BLASTER_PISTOL)
 				.changeIdentifier("PISTOL", "BLASTER_PISTOL")
 				.build()
@@ -60,7 +60,7 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_SHOTGUN)
 				.addAdditionalIdentifier("SHOTGUN")
-				.setModel("shotgun")
+				.setModel("weapon/blaster/shotgun")
 				.pullLore(CustomItemRegistry.BLASTER_SHOTGUN)
 				.changeIdentifier("SHOTGUN", "BLASTER_SHOTGUN")
 				.build()
@@ -68,7 +68,7 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_SNIPER)
 				.addAdditionalIdentifier("SNIPER")
-				.setModel("sniper")
+				.setModel("weapon/blaster/sniper")
 				.pullLore(CustomItemRegistry.BLASTER_SNIPER)
 				.changeIdentifier("SNIPER", "BLASTER_SNIPER")
 				.build()
@@ -76,7 +76,7 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_CANNON)
 				.addAdditionalIdentifier("CANNON")
-				.setModel("cannon")
+				.setModel("weapon/blaster/cannon")
 				.pullLore(CustomItemRegistry.BLASTER_CANNON)
 				.changeIdentifier("CANNON", "BLASTER_CANNON")
 				.build()
