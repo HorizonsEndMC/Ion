@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration.BOLD
@@ -94,8 +95,17 @@ object CustomItemRegistry : IonServerComponent() {
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::cannon
 	))
 
-	val GUN_BARREL = register(NewCustomItem("GUN_BARREL", text("Gun Barrel"), unStackableCustomItem("industry/gun_barrel")))
-	val CIRCUITRY = register(NewCustomItem("CIRCUITRY", text("Circuitry"), unStackableCustomItem("industry/circuitry")))
+	val GUN_BARREL = register("GUN_BARREL", text("Gun Barrel"), unStackableCustomItem("industry/gun_barrel"))
+	val CIRCUITRY = register("CIRCUITRY", text("Circuitry"), unStackableCustomItem("industry/circuitry"))
+
+	val PISTOL_RECEIVER = register("PISTOL_RECEIVER", text("Pistol Receiver"), unStackableCustomItem("industry/pistol_receiver"))
+	val RIFLE_RECEIVER = register("RIFLE_RECEIVER", text("Rifle Receiver"), unStackableCustomItem("industry/rifle_receiver"))
+	val SMB_RECEIVER = register("SMB_RECEIVER", text("SMB Receiver"), unStackableCustomItem("industry/smb_receiver"))
+	val SNIPER_RECEIVER = register("SNIPER_RECEIVER", text("Sniper Receiver"), unStackableCustomItem("industry/sniper_receiver"))
+	val SHOTGUN_RECEIVER = register("SHOTGUN_RECEIVER", text("Shotgun Receiver"), unStackableCustomItem("industry/shotgun_receiver"))
+	val CANNON_RECEIVER = register("CANNON_RECEIVER", text("Cannon Receiver"), unStackableCustomItem("industry/cannon_receiver"))
+
+
 
 	init {
 		sortCustomItemListeners()
@@ -104,6 +114,10 @@ object CustomItemRegistry : IonServerComponent() {
 	fun <T : NewCustomItem> register(item: T): T {
 		customItems[item.identifier] = item
 		return item
+	}
+
+	fun register(identifier: String, displayName: Component, factory: ItemFactory): NewCustomItem {
+		return register(NewCustomItem(identifier, displayName, factory))
 	}
 
 	val ItemStack.newCustomItem: NewCustomItem? get() {
