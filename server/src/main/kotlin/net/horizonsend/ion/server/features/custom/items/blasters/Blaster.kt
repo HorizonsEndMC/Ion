@@ -10,8 +10,10 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.components.AmmunitionComponent
-import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponent
-import net.horizonsend.ion.server.features.custom.items.components.ListenerComponent
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentType
+import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.components.ListenerComponent.Companion.playerSwapHandsListener
+import net.horizonsend.ion.server.features.custom.items.components.ListenerComponent.Companion.rightClickListener
 import net.horizonsend.ion.server.features.custom.items.components.MagazineTypeComponent
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -53,21 +55,19 @@ open class Blaster<T : Balancing>(
 		ammoComponent.setAmmo(base, this, balancing.capacity)
 	}
 
-	override val customComponents: List<CustomItemComponent> = listOf(
-		ammoComponent,
-		magazineComponent,
-		ListenerComponent.interactListener(this) { event, _, item -> fire(event.player, item) },
-		ListenerComponent.playerSwapHandsListener(this) { event, _, item -> reload(event.player, item) }
-	)
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+		addComponent(CustomComponentType.AMMUNITION, ammoComponent)
+		addComponent(CustomComponentType.MAGAZINE_TYPE, magazineComponent)
+
+		addComponent(CustomComponentType.LISTENER_PLAYER_INTERACT, rightClickListener(this@Blaster) { event, _, item -> fire(event.player, item) })
+		addComponent(CustomComponentType.LISTENER_PLAYER_SWAP_HANDS, playerSwapHandsListener(this@Blaster) { event, _, item -> reload(event.player, item) })
+	}
 
 	open fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
 		if (shooter is Player) {
 			if (shooter.hasCooldown(blasterItem.type)) return // Cooldown
 
-			if (!checkAndDecrementAmmo(blasterItem, shooter)) {
-				reload(shooter, blasterItem) // Force a reload
-				return // No Ammo
-			}
+			if (!checkAndDecrementAmmo(blasterItem, shooter)) return reload(shooter, blasterItem)
 		}
 
 		val soundOrigin = shooter.location
@@ -91,8 +91,7 @@ open class Blaster<T : Balancing>(
 		*/
 
 		// Shoot sound
-		soundOrigin.world.players.forEach {
-
+		soundOrigin.world.players.forEach { player ->
 			var distanceFactor = balancing.soundRange
 			var volumeFactor = 1.0
 			var pitchFactor = 1.0
@@ -106,20 +105,18 @@ open class Blaster<T : Balancing>(
 
 			// Sound is unmodified if players within 0.5*range distance of shooter
 			// Modify sound until fully inaudible at 2.0*range distance of shooter
-			if (it.location.distance(soundOrigin) >= distanceFactor * 0.5 &&
-				it.location.distance(soundOrigin) < distanceFactor * 2
-			) {
-				volumeFactor *= (-1.0 / (2.0 * distanceFactor)) * it.location.distance(soundOrigin) + 1.25
-				pitchFactor *= (-1.0 / (3.0 * distanceFactor)) * it.location.distance(soundOrigin) + 1.165
+			if (player.location.distance(soundOrigin) >= distanceFactor * 0.5 && player.location.distance(soundOrigin) < distanceFactor * 2) {
+				volumeFactor *= (-1.0 / (2.0 * distanceFactor)) * player.location.distance(soundOrigin) + 1.25
+				pitchFactor *= (-1.0 / (3.0 * distanceFactor)) * player.location.distance(soundOrigin) + 1.165
 			}
 
-			if (it.location.distance(soundOrigin) < distanceFactor * 2) {
+			if (player.location.distance(soundOrigin) < distanceFactor * 2) {
 				val modified = balancing.soundFire.copy(
 					volume = volumeFactor.toFloat(),
 					pitch = pitchFactor.toFloat()
 				)
 
-				soundOrigin.world.playSound(modified.sound, soundOrigin.x, shooter.y, soundOrigin.z)
+				player.playSound(modified.sound, soundOrigin.x, shooter.y, soundOrigin.z)
 			}
 		}
 
@@ -155,6 +152,9 @@ open class Blaster<T : Balancing>(
 		).fire()
 	}
 
+	/**
+	 * Returns whether the reload was successful
+	 **/
 	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: LivingEntity): Boolean {
 		val ammo = ammoComponent.getAmmo(itemStack)
 		if (ammo == 0) {
@@ -187,10 +187,10 @@ open class Blaster<T : Balancing>(
 
 				if (magazineCustomItem.identifier != balancing.magazineIdentifier) continue // Only correct magazine
 
-				val magazineAmmo = magazineCustomItem.ammoComponent.getAmmo(magazineItem)
+				val magazineAmmo = magazineCustomItem.getComponent(CustomComponentType.AMMUNITION).getAmmo(magazineItem)
 				val amountToTake = (balancing.capacity - ammo).coerceAtMost(magazineAmmo)
 
-				magazineCustomItem.ammoComponent.setAmmo(magazineItem, magazineCustomItem, magazineAmmo - amountToTake)
+				magazineCustomItem.getComponent(CustomComponentType.AMMUNITION).setAmmo(magazineItem, magazineCustomItem, magazineAmmo - amountToTake)
 
 				ammo += amountToTake
 			}

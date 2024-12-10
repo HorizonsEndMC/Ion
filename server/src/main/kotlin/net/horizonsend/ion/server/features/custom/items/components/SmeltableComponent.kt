@@ -6,7 +6,8 @@ import net.horizonsend.ion.server.features.custom.items.attribute.SmeltingResult
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class SmeltableComponenta(itemResult: Supplier<ItemStack>) : CustomItemComponent {
+class SmeltableComponent(itemResult: Supplier<ItemStack>) : CustomItemComponent {
+
 	constructor(customItemResult: NewCustomItem) : this(Supplier { customItemResult.constructItemStack() })
 
 	private val attribute = SmeltingResultAttribute(itemResult)
