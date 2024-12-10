@@ -4,9 +4,9 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentType
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
@@ -45,8 +45,8 @@ object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
 	override val priority: Int = 1
 
 	override fun modifyDrop(itemStack: ItemStack): Boolean {
-		val customItem = itemStack.customItem
-		if (customItem is Smeltable) return false
+		val customItem = itemStack.newCustomItem
+		if (customItem?.hasComponent(CustomComponentType.SMELTABLE) == true) return false
 
 		// Replace with modified version
 		smeltedItemCache[itemStack].getOrNull()?.let {
