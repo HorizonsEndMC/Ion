@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem
-import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.withModel
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
@@ -33,13 +32,13 @@ object CustomItemRegistry : IonServerComponent() {
 	val STANDARD_MAGAZINE = register(Magazine(
 		identifier = "STANDARD_MAGAZINE",
 		displayName = text("Standard Magazine").decoration(ITALIC, false),
-		itemFactory = ItemFactory.builder(unStackableCustomItem).setCustomModel("weapon/blaster/standard_magazine").build(),
+		itemFactory = unStackableCustomItem("weapon/blaster/standard_magazine"),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::standardMagazine
 	))
 	val SPECIAL_MAGAZINE = register(Magazine(
 		identifier = "SPECIAL_MAGAZINE",
 		displayName = text("Special Magazine").decoration(ITALIC, false),
-		itemFactory = ItemFactory.builder(unStackableCustomItem).setCustomModel("weapon/blaster/special_magazine").build(),
+		itemFactory = unStackableCustomItem("weapon/blaster/special_magazine"),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::specialMagazine
 	))
 
@@ -95,8 +94,8 @@ object CustomItemRegistry : IonServerComponent() {
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::cannon
 	))
 
-	val GUN_BARREL = register(NewCustomItem("GUN_BARREL", text("Gun Barrel"), unStackableCustomItem.withModel("industry/gun_barrel")))
-	val CIRCUITRY = register(NewCustomItem("CIRCUITRY", text("Circuitry"), unStackableCustomItem.withModel("industry/circuitry")))
+	val GUN_BARREL = register(NewCustomItem("GUN_BARREL", text("Gun Barrel"), unStackableCustomItem("industry/gun_barrel")))
+	val CIRCUITRY = register(NewCustomItem("CIRCUITRY", text("Circuitry"), unStackableCustomItem("industry/circuitry")))
 
 	init {
 		sortCustomItemListeners()
