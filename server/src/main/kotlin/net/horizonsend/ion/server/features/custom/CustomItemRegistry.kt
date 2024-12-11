@@ -5,12 +5,20 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.custom.NewCustomItemListeners.sortCustomItemListeners
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentType
+import net.horizonsend.ion.server.features.custom.items.components.SmeltableComponent
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.stackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem
+import net.horizonsend.ion.server.features.custom.items.util.withComponent
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -19,10 +27,15 @@ import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material.DIAMOND_HOE
 import org.bukkit.Material.GOLDEN_HOE
+import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_HOE
+import org.bukkit.Material.IRON_ORE
+import org.bukkit.Material.RAW_IRON
+import org.bukkit.Material.RAW_IRON_BLOCK
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
+import java.util.function.Supplier
 import kotlin.math.roundToInt
 
 object CustomItemRegistry : IonServerComponent() {
@@ -104,6 +117,35 @@ object CustomItemRegistry : IonServerComponent() {
 	val SNIPER_RECEIVER = register("SNIPER_RECEIVER", text("Sniper Receiver"), unStackableCustomItem("industry/sniper_receiver"))
 	val SHOTGUN_RECEIVER = register("SHOTGUN_RECEIVER", text("Shotgun Receiver"), unStackableCustomItem("industry/shotgun_receiver"))
 	val CANNON_RECEIVER = register("CANNON_RECEIVER", text("Cannon Receiver"), unStackableCustomItem("industry/cannon_receiver"))
+
+	// Minerals
+	private fun registerRawOre(identifier: String, name: String, smeltingResult: Supplier<NewCustomItem>) = register(identifier, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(RAW_IRON, model = "mineral/raw_$name")).withComponent(CustomComponentType.SMELTABLE, SmeltableComponent(smeltingResult.map { it.constructItemStack() }))
+	private fun registerOreIngot(identifier: String, name: String) = register(identifier, text("${name.replaceFirstChar { it.uppercase() }} Ingot"), stackableCustomItem(RAW_IRON, model = "mineral/$name"))
+	private fun registerOreBlock(identifier: String, name: String, block: Supplier<CustomBlock>, smeltingResult: Supplier<NewCustomItem>) = register(CustomBlockItem(identifier, IRON_ORE, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block)).withComponent(CustomComponentType.SMELTABLE, SmeltableComponent(smeltingResult.map { it.constructItemStack() }))
+	private fun registerIngotBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = register(CustomBlockItem(identifier, IRON_BLOCK, "mineral/${name}_block", text("${name.replaceFirstChar { it.uppercase() }} Block"), block))
+	private fun registerRawBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = register(CustomBlockItem(identifier, RAW_IRON_BLOCK, "mineral/raw_${name}_block", text("Raw ${name.replaceFirstChar { it.uppercase() }} Block"), block))
+
+	val ALUMINUM_INGOT = registerOreIngot("ALUMINUM_INGOT", "aluminum")
+	val RAW_ALUMINUM = registerRawOre("RAW_ALUMINUM", "aluminum", smeltingResult = ::ALUMINUM_INGOT)
+	val ALUMINUM_ORE = registerOreBlock("ALUMINUM_ORE", "aluminum", block = CustomBlocks::ALUMINUM_ORE, smeltingResult = ::ALUMINUM_INGOT)
+	val ALUMINUM_BLOCK = registerIngotBlock("ALUMINUM_BLOCK", "aluminum", block = CustomBlocks::ALUMINUM_BLOCK)
+	val RAW_ALUMINUM_BLOCK = registerRawBlock("RAW_ALUMINUM_BLOCK", "aluminum", block = CustomBlocks::RAW_ALUMINUM_BLOCK)
+
+	val CHETHERITE = registerOreIngot("CHETHERITE", "chetherite")
+	val CHETHERITE_ORE = registerOreBlock("CHETHERITE_ORE", "chetherite", block = CustomBlocks::CHETHERITE_ORE, smeltingResult = ::CHETHERITE)
+	val CHETHERITE_BLOCK = registerIngotBlock("CHETHERITE_BLOCK", "chetherite", block = CustomBlocks::CHETHERITE_BLOCK)
+
+	val TITANIUM_INGOT = registerOreIngot("TITANIUM_INGOT", "titanium")
+	val RAW_TITANIUM = registerRawOre("RAW_TITANIUM", "titanium", smeltingResult = ::TITANIUM_INGOT)
+	val TITANIUM_ORE = registerOreBlock("TITANIUM_ORE", "titanium", block = CustomBlocks::TITANIUM_ORE, smeltingResult = ::TITANIUM_INGOT)
+	val TITANIUM_BLOCK = registerIngotBlock("TITANIUM_BLOCK", "titanium", block = CustomBlocks::TITANIUM_BLOCK)
+	val RAW_TITANIUM_BLOCK = registerRawBlock("RAW_TITANIUM_BLOCK", "titanium", block = CustomBlocks::RAW_TITANIUM_BLOCK)
+
+	val URANIUM = registerOreIngot(identifier = "URANIUM", name = "uranium")
+	val RAW_URANIUM = registerRawOre(identifier = "RAW_URANIUM", name = "uranium", smeltingResult = CustomItemRegistry::URANIUM)
+	val URANIUM_ORE = registerOreBlock(identifier = "URANIUM_ORE", name = "uranium", block = CustomBlocks::URANIUM_ORE, smeltingResult = ::URANIUM)
+	val URANIUM_BLOCK = registerIngotBlock(identifier = "URANIUM_BLOCK", name = "uranium", block = CustomBlocks::URANIUM_BLOCK)
+	val RAW_URANIUM_BLOCK = registerRawBlock(identifier = "RAW_URANIUM_BLOCK", name = "uranium", block = CustomBlocks::RAW_URANIUM_BLOCK)
 
 
 

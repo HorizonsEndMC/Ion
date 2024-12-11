@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.listener.misc
 
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.SmeltingResultAttribute
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
@@ -60,10 +60,10 @@ object FurnaceListener : SLEventListener() {
 		// Legacy custom item smelting
 		if (LegacyCustomItems[source] is LegacyBlockItem && customItem == null) {
 			event.result = when (source.itemMeta.customModelData) {
-				1 -> CustomItems.ALUMINUM_INGOT.constructItemStack()
-				2 -> CustomItems.CHETHERITE.constructItemStack()
-				3 -> CustomItems.TITANIUM_INGOT.constructItemStack()
-				4 -> CustomItems.URANIUM.constructItemStack()
+				1 -> CustomItemRegistry.ALUMINUM_INGOT.constructItemStack()
+				2 -> CustomItemRegistry.CHETHERITE.constructItemStack()
+				3 -> CustomItemRegistry.TITANIUM_INGOT.constructItemStack()
+				4 -> CustomItemRegistry.URANIUM.constructItemStack()
 				else -> ItemStack(Material.AIR)
 			}
 			return

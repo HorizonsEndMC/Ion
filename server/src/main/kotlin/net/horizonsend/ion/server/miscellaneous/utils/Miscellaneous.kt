@@ -40,6 +40,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.scheduler.BukkitRunnable
 import java.time.Duration
+import java.util.function.Supplier
 import kotlin.random.Random
 import kotlin.reflect.jvm.isAccessible
 
@@ -197,3 +198,5 @@ fun getRandomDuration(minimum: Duration, maximum: Duration): Duration {
 	val diff = maximum.toMillis() - minimum.toMillis()
 	return Duration.ofMillis(minimum.toMillis() + Random.nextLong(0, diff))
 }
+
+fun <T, Z> Supplier<T>.map(map: (T) -> Z): Supplier<Z> = Supplier { map(get()) }
