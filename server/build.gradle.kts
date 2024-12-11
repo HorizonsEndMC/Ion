@@ -52,7 +52,7 @@ dependencies {
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("net.wesjd:anvilgui:1.9.2-SNAPSHOT")
 	implementation("io.github.skytasul:guardianbeam:2.3.6")
-	implementation("xyz.xenondevs.invui:invui:1.39")
+	implementation("xyz.xenondevs.invui:invui:1.43")
 	implementation("club.minnced:discord-webhooks:0.8.4")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-extra-kotlin:2.1.4")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.1.4")
