@@ -119,7 +119,7 @@ class ItemFactory private constructor(
 			.setMaxStackSize(1)
 			.build()
 
-		fun stackableCustomItem(maxStackSize: Int = 64, model: String) = builder(stackableCustomItem).setMaxStackSize(maxStackSize).setCustomModel(model).build()
+		fun stackableCustomItem(material: Material = Material.WARPED_FUNGUS_ON_A_STICK, maxStackSize: Int = 64, model: String) = builder(stackableCustomItem).setMaterial(material).setMaxStackSize(maxStackSize).setCustomModel(model).build()
 		fun unStackableCustomItem(model: String) = builder(stackableCustomItem).setCustomModel(model).build()
 	}
 }
