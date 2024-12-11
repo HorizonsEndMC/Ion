@@ -20,7 +20,7 @@ open class NewCustomItem(
 	val displayName: Component,
 	baseItemFactory: ItemFactory,
 ) {
-	protected open val customComponents: CustomItemComponentManager = CustomItemComponentManager()
+	open val customComponents: CustomItemComponentManager = CustomItemComponentManager()
 
 	fun allComponents() = customComponents.getAll()
 
@@ -43,6 +43,14 @@ open class NewCustomItem(
 		.build()
 
 	fun constructItemStack(): ItemStack = baseItemFactory.construct()
+
+	fun constructItemStack(quantity: Int): ItemStack {
+		val constructed = baseItemFactory.construct()
+		val maxSize = constructed.getData(DataComponentTypes.MAX_STACK_SIZE) ?:
+			constructed.type.asItemType()?.getDefaultData(DataComponentTypes.MAX_STACK_SIZE) ?: 1
+
+		return constructed.asQuantity(quantity.coerceIn(1..maxSize))
+	}
 
 	protected open fun decorateItemStack(base: ItemStack) {}
 
