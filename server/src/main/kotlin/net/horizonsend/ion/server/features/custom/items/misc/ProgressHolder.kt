@@ -1,43 +1,44 @@
 package net.horizonsend.ion.server.features.custom.items.misc
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.text.DecimalFormat
 
-object ProgressHolder : CustomItem("PROGRESS_HOLDER") {
-	override fun constructItemStack(): ItemStack {
-		return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-			it.displayName(text("Empty Progress Holder"))
-			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
-		}
-	}
-
+object ProgressHolder : NewCustomItem(
+	"PROGRESS_HOLDER",
+	text("Empty Progress Holder"),
+	ItemFactory.unStackableCustomItem
+) {
 	private val percentFormat = DecimalFormat("##.##%")
 
-	fun create(result: CustomItem): ItemStack {
+	fun create(result: NewCustomItem): ItemStack {
 		val example = result.constructItemStack()
+		val base = ItemStack(example.type)
 
-		return ItemStack(example.type).updateMeta {
-			it.displayName(ofChildren(text("Assembling ", GRAY, TextDecoration.ITALIC), example.displayName()))
-			it.lore(listOf(ofChildren(
-				text("Progress: ", GRAY, TextDecoration.ITALIC),
-				text(percentFormat.format(0.0), HE_LIGHT_GRAY, TextDecoration.ITALIC)
-			)))
+		base.setData(DataComponentTypes.CUSTOM_NAME, ofChildren(text("Assembling ", GRAY, TextDecoration.ITALIC), example.displayName()))
+		base.setData(DataComponentTypes.LORE, ItemLore.lore(listOf(
+			text("Progress: ", GRAY, TextDecoration.ITALIC),
+			text(percentFormat.format(0.0), HE_LIGHT_GRAY, TextDecoration.ITALIC)
+		)))
+		example.getData(DataComponentTypes.ITEM_MODEL)?.let { base.setData(DataComponentTypes.ITEM_MODEL, it) }
+
+		return base.updateMeta {
 			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
 			it.persistentDataContainer.set(NamespacedKeys.PROGRESS, PersistentDataType.DOUBLE, 0.0)
 			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM_RESULT, PersistentDataType.STRING, result.identifier)
-			it.setCustomModelData(example.itemMeta.customModelData)
 		}
 	}
 
@@ -51,9 +52,9 @@ object ProgressHolder : CustomItem("PROGRESS_HOLDER") {
 	/**
 	 * Get the custom item result of this progress item
 	 **/
-	fun getResult(itemStack: ItemStack): CustomItem? {
+	fun getResult(itemStack: ItemStack): NewCustomItem? {
 		val identifier = itemStack.itemMeta.persistentDataContainer.get(NamespacedKeys.CUSTOM_ITEM_RESULT, PersistentDataType.STRING) ?: return null
-		return CustomItems.getByIdentifier(identifier)
+		return CustomItemRegistry.getByIdentifier(identifier)
 	}
 
 	/**
@@ -62,7 +63,7 @@ object ProgressHolder : CustomItem("PROGRESS_HOLDER") {
 	 * @return whether the item was completed
 	 **/
 	fun setProgress(itemStack: ItemStack, progress: Double): Boolean {
-		if (itemStack.customItem !is ProgressHolder) return false
+		if (itemStack.newCustomItem !is ProgressHolder) return false
 
 		if (progress >= 1.0) return run {
 			complete(itemStack)

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.ArsenalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -77,7 +77,7 @@ class ArsenalRocketStarshipWeaponSubsystem(
 		projectile.fire()
 	}
 
-	override fun getRequiredAmmo(): ItemStack = CustomItems.ARSENAL_MISSILE.constructItemStack()
+	override fun getRequiredAmmo(): ItemStack = CustomItemRegistry.ARSENAL_MISSILE.constructItemStack()
 
 	override fun getName(): Component {
 		return Component.text("Arsenal Rocket")
