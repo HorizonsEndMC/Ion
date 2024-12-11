@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.crafting.result
 
-import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.MultiblockRecipe
@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 /**
  * This item will convert into the result custom item after the amount of ticks provided (Assuming no lag and a 200 tick interval on the furnace)
  **/
-class ProgressItemResult<R: CustomItem>(val result: R, time: Long, private val onComplete: ActionResult? = null) : ActionResult {
+class ProgressItemResult<R: NewCustomItem>(val result: R, time: Long, private val onComplete: ActionResult? = null) : ActionResult {
 	// 200 is the standard furnace tick interval
 	private val increment = 200.0 / time.toDouble()
 
