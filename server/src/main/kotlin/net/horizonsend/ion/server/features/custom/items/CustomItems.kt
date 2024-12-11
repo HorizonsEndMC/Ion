@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
-import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.powered.CratePlacer
@@ -56,58 +55,11 @@ object CustomItems {
 	val ALL get() = customItems.values
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
-	// Minerals start
-	// Minerals end
-	// Industry start
-	val NETHERITE_CASING = registerCustomBlockItem(identifier = "NETHERITE_CASING", baseBlock = IRON_BLOCK, customModelData = 1400, displayName = text("Netherite Casing").decoration(ITALIC, false)) { CustomBlocks.NETHERITE_CASING }
-	val ENRICHED_URANIUM = registerSimpleStackable(identifier = "ENRICHED_URANIUM", customModelData = 1000, displayName = text("Enriched Uranium"))
-	val ENRICHED_URANIUM_BLOCK = registerCustomBlockItem(identifier = "ENRICHED_URANIUM_BLOCK", baseBlock = IRON_BLOCK, customModelData = 1000, displayName = text("Enriched Uranium Block")) { CustomBlocks.ENRICHED_URANIUM_BLOCK }
-	val URANIUM_CORE = registerSimpleUnstackable(identifier = "URANIUM_CORE", customModelData = 2000, displayName = text("Uranium Core"))
-	val URANIUM_ROD = registerSimpleUnstackable(identifier = "URANIUM_ROD", customModelData = 2001, displayName = text("Uranium Rod"))
-	val FUEL_ROD_CORE = registerSimpleUnstackable(identifier = "FUEL_ROD_CORE", customModelData = 2002, displayName = text("Fuel Rod Core"))
-	val FUEL_CELL = registerSimpleUnstackable(identifier = "FUEL_CELL", customModelData = 2003, displayName = text("Fuel Cell"))
-	val FUEL_CONTROL = registerSimpleUnstackable(identifier = "FUEL_CONTROL", customModelData = 2004, displayName = text("Fuel Control").decoration(BOLD, true))
-	// Reactive line
-	val REACTIVE_COMPONENT = registerSimpleUnstackable(identifier = "REACTIVE_COMPONENT", customModelData = 2005, displayName = text("Reactive Component"))
-	val REACTIVE_HOUSING = registerSimpleUnstackable(identifier = "REACTIVE_HOUSING", customModelData = 2006, displayName = text("Reactive Housing"))
-	val REACTIVE_PLATING = registerSimpleUnstackable(identifier = "REACTIVE_PLATING", customModelData = 2007, displayName = text("Reactive Plating"))
-	val REACTIVE_CHASSIS = registerSimpleUnstackable(identifier = "REACTIVE_CHASSIS", customModelData = 2008, displayName = text("Reactive Chassis"))
-	val REACTIVE_MEMBRANE = registerSimpleUnstackable(identifier = "REACTIVE_MEMBRANE", customModelData = 2009, displayName = text("Reactive Membrane"))
-	val REACTIVE_ASSEMBLY = registerSimpleUnstackable(identifier = "REACTIVE_ASSEMBLY", customModelData = 2010, displayName = text("Reactive Assembly"))
-	val FABRICATED_ASSEMBLY = registerSimpleUnstackable(identifier = "FABRICATED_ASSEMBLY", customModelData = 2011, displayName = text("Fabricated Assembly"))
-	// Circuitry line
-	val CIRCUIT_BOARD = registerSimpleUnstackable(identifier = "CIRCUIT_BOARD", customModelData = 2012, displayName = text("Circuit Board"))
-	val MOTHERBOARD = registerSimpleUnstackable(identifier = "MOTHERBOARD", customModelData = 2013, displayName = text("Motherboard"))
-	val REACTOR_CONTROL = registerSimpleUnstackable(identifier = "REACTOR_CONTROL", customModelData = 2014, displayName = text("Reactor Control").decoration(BOLD, true))
-	// Superconductor line
-	val SUPERCONDUCTOR = registerSimpleUnstackable(identifier = "SUPERCONDUCTOR", customModelData = 2015, displayName = text("Superconductor"))
-	val SUPERCONDUCTOR_BLOCK = registerCustomBlockItem(identifier = "SUPERCONDUCTOR_BLOCK", baseBlock = IRON_BLOCK, customModelData = 1002, displayName = text("Superconductor Block")) { CustomBlocks.SUPERCONDUCTOR_BLOCK }
-	val SUPERCONDUCTOR_CORE = registerSimpleUnstackable(identifier = "SUPERCONDUCTOR_CORE", customModelData = 2016, displayName = text("Superconductor Core", BOLD))
-	// Steel line
-	val STEEL_INGOT = registerSimpleStackable(identifier = "STEEL_INGOT", customModelData = 1001, displayName = text("Steel Ingot"))
-	val STEEL_BLOCK = registerCustomBlockItem(identifier = "STEEL_BLOCK", baseBlock = IRON_BLOCK, customModelData = 1001, displayName = text("Steel Block")) { CustomBlocks.STEEL_BLOCK }
-	val STEEL_PLATE = registerSimpleUnstackable(identifier = "STEEL_PLATE", customModelData = 2017, displayName = text("Steel Plate"))
-	val STEEL_CHASSIS = registerSimpleUnstackable(identifier = "STEEL_CHASSIS", customModelData = 2018, displayName = text("Steel Chassis"))
-	val STEEL_MODULE = registerSimpleUnstackable(identifier = "STEEL_MODULE", customModelData = 2019, displayName = text("Steel Module"))
-	val STEEL_ASSEMBLY = registerSimpleUnstackable(identifier = "STEEL_ASSEMBLY", customModelData = 2020, displayName = text("Steel Assembly"))
-	val REINFORCED_FRAME = registerSimpleUnstackable(identifier = "REINFORCED_FRAME", customModelData = 2021, displayName = text("Reinforced Frame"))
-	val REACTOR_FRAME = registerSimpleUnstackable(identifier = "REACTOR_FRAME", customModelData = 2022, displayName = text("Reactor Frame").decoration(BOLD, true))
-	val PROGRESS_HOLDER = register(ProgressHolder)
-	// Industry End
 	// Starship Components Start
 	val BATTLECRUISER_REACTOR_CORE = registerCustomBlockItem(identifier = "BATTLECRUISER_REACTOR_CORE", baseBlock = IRON_BLOCK, customModelData = 2000, displayName = text("Battlecruiser Reactor Core", BOLD)) { CustomBlocks.BATTLECRUISER_REACTOR_CORE }
 	val BARGE_REACTOR_CORE = registerCustomBlockItem(identifier = "BARGE_REACTOR_CORE", baseBlock = IRON_BLOCK, customModelData = 2002, displayName = text("Barge Reactor Core", BOLD)) { CustomBlocks.BARGE_REACTOR_CORE }
 	val CRUISER_REACTOR_CORE = registerCustomBlockItem(identifier = "CRUISER_REACTOR_CORE", baseBlock = IRON_BLOCK, customModelData = 2001, displayName = text("Cruiser Reactor Core", BOLD)) { CustomBlocks.CRUISER_REACTOR_CORE }
 	// Starship Components End
-	// Ship Ammunition Start
-	val UNLOADED_SHELL = registerSimpleUnstackable(identifier = "UNLOADED_SHELL", customModelData = 702, displayName = text("Unloaded Shell"))
-	val LOADED_SHELL = registerSimpleStackable(identifier = "LOADED_SHELL", customModelData = 2001, displayName = text("Loaded Shell"))
-	val UNCHARGED_SHELL = registerSimpleUnstackable(identifier = "UNCHARGED_SHELL", customModelData = 703, displayName = text("Uncharged Shell"))
-	val CHARGED_SHELL = registerSimpleStackable(identifier = "CHARGED_SHELL", customModelData = 2002, displayName = text("Charged Shell"))
-	val ARSENAL_MISSILE = registerSimpleStackable(identifier = "ARSENAL_MISSILE", customModelData = 2000, displayName = text("Arsenal Missile"))
-	val UNLOADED_ARSENAL_MISSILE = registerSimpleUnstackable(identifier = "UNLOADED_ARSENAL_MISSILE", customModelData = 701, displayName = text("Unloaded Arsenal Missile"))
-	val ACTIVATED_ARSENAL_MISSILE = registerSimpleUnstackable(identifier = "ACTIVATED_ARSENAL_MISSILE", customModelData = 700, displayName = text("Activated Arsenal Missile", RED))
-	// Ship Ammunition End
 	// Gas Canisters Start
 	val GAS_CANISTER_EMPTY = registerSimpleUnstackable("GAS_CANISTER_EMPTY", 1000, text("Empty Gas Canister"))
 	val GAS_CANISTER_HYDROGEN = register(GasCanister("GAS_CANISTER_HYDROGEN", 1001, canisterName(text("Hydrogen", RED)),"HYDROGEN"))

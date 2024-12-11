@@ -14,7 +14,16 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CANNON_RECE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CHETHERITE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CIRCUITRY
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CIRCUIT_BOARD
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ENRICHED_URANIUM
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ENRICHED_URANIUM_BLOCK
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FABRICATED_ASSEMBLY
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FUEL_CELL
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FUEL_CONTROL
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FUEL_ROD_CORE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.GUN_BARREL
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.MOTHERBOARD
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.PISTOL_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RAW_ALUMINUM
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RAW_ALUMINUM_BLOCK
@@ -22,42 +31,58 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RAW_TITANIU
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RAW_TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RAW_URANIUM
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RAW_URANIUM_BLOCK
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.REACTIVE_ASSEMBLY
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.REACTIVE_CHASSIS
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.REACTIVE_COMPONENT
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.REACTIVE_HOUSING
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.REACTIVE_MEMBRANE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.REACTIVE_PLATING
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.REACTOR_CONTROL
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.REACTOR_FRAME
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.REINFORCED_FRAME
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RIFLE_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SHOTGUN_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SMB_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SNIPER_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.STANDARD_MAGAZINE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.STEEL_ASSEMBLY
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.STEEL_BLOCK
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.STEEL_CHASSIS
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.STEEL_INGOT
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.STEEL_MODULE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.STEEL_PLATE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SUBMACHINE_BLASTER
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SUPERCONDUCTOR
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SUPERCONDUCTOR_BLOCK
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SUPERCONDUCTOR_CORE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.TITANIUM_INGOT
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.UNCHARGED_SHELL
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.UNLOADED_ARSENAL_MISSILE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.UNLOADED_SHELL
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.URANIUM
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.URANIUM_BLOCK
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.URANIUM_CORE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.URANIUM_ROD
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_COMPOST
 import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_SMELT
 import net.horizonsend.ion.server.features.custom.items.CustomItems.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.BATTLECRUISER_REACTOR_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.CIRCUIT_BOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.DETONATOR
-import net.horizonsend.ion.server.features.custom.items.CustomItems.ENRICHED_URANIUM
-import net.horizonsend.ion.server.features.custom.items.CustomItems.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItems.EXTENDED_BAR
-import net.horizonsend.ion.server.features.custom.items.CustomItems.FABRICATED_ASSEMBLY
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FERTILIZER_DISPENSER
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FORTUNE_1
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FORTUNE_2
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FORTUNE_3
-import net.horizonsend.ion.server.features.custom.items.CustomItems.FUEL_CELL
-import net.horizonsend.ion.server.features.custom.items.CustomItems.FUEL_CONTROL
-import net.horizonsend.ion.server.features.custom.items.CustomItems.FUEL_ROD_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_OXYGEN
-import net.horizonsend.ion.server.features.custom.items.CustomItems.MOTHERBOARD
-import net.horizonsend.ion.server.features.custom.items.CustomItems.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CAPACITY_25
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CAPACITY_50
 import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CHAINSAW_ADVANCED
@@ -72,31 +97,8 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_EN
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RANGE_1
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RANGE_2
 import net.horizonsend.ion.server.features.custom.items.CustomItems.RANGE_3
-import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTIVE_ASSEMBLY
-import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTIVE_CHASSIS
-import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTIVE_COMPONENT
-import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTIVE_HOUSING
-import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTIVE_MEMBRANE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTIVE_PLATING
-import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTOR_CONTROL
-import net.horizonsend.ion.server.features.custom.items.CustomItems.REACTOR_FRAME
-import net.horizonsend.ion.server.features.custom.items.CustomItems.REINFORCED_FRAME
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SILK_TOUCH_MOD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SMOKE_GRENADE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_ASSEMBLY
-import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_CHASSIS
-import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_INGOT
-import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_MODULE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.STEEL_PLATE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.SUPERCONDUCTOR
-import net.horizonsend.ion.server.features.custom.items.CustomItems.SUPERCONDUCTOR_BLOCK
-import net.horizonsend.ion.server.features.custom.items.CustomItems.SUPERCONDUCTOR_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.UNCHARGED_SHELL
-import net.horizonsend.ion.server.features.custom.items.CustomItems.UNLOADED_ARSENAL_MISSILE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.UNLOADED_SHELL
-import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.URANIUM_ROD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.VEIN_MINER_25
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
@@ -694,70 +696,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('c', COAL)
 		}
 
-		// Aluminum Block Crafting
-		itemStackShapelessRecipe("aluminumBlock", ALUMINUM_BLOCK.constructItemStack()) {
-			addIngredient(ALUMINUM_INGOT.constructItemStack().asQuantity(9))
-		}
-
-		// Raw Aluminum Block Crafting
-		itemStackShapelessRecipe("rawAluminumBlock", RAW_ALUMINUM_BLOCK.constructItemStack()) {
-			addIngredient(RAW_ALUMINUM.constructItemStack().asQuantity(9))
-		}
-
-		// Aluminum Crafting
-		itemStackShapelessRecipe("aluminum", ALUMINUM_INGOT.constructItemStack().asQuantity(9)) {
-			addIngredient(ALUMINUM_BLOCK.constructItemStack())
-		}
-
-		// Raw Aluminum Crafting
-		itemStackShapelessRecipe("rawAluminum", RAW_ALUMINUM.constructItemStack().asQuantity(9)) {
-			addIngredient(RAW_ALUMINUM_BLOCK.constructItemStack())
-		}
-
-		// Chetherite Block Crafting
-		itemStackShapelessRecipe("chetheriteBlock", CHETHERITE_BLOCK.constructItemStack()) {
-			addIngredient(CHETHERITE.constructItemStack().asQuantity(9))
-		}
-
-		// Chetherite Crafting
-		itemStackShapelessRecipe("chetherite", CHETHERITE.constructItemStack().asQuantity(9)) {
-			addIngredient(CHETHERITE_BLOCK.constructItemStack())
-		}
-
-		// Titanium Block Crafting
-		itemStackShapelessRecipe("titaniumBlock", TITANIUM_BLOCK.constructItemStack()) {
-			addIngredient(TITANIUM_INGOT.constructItemStack().asQuantity(9))
-		}
-
-		// Raw Titanium Block Crafting
-		itemStackShapelessRecipe("rawTitaniumBlock", RAW_TITANIUM_BLOCK.constructItemStack()) {
-			addIngredient(RAW_TITANIUM.constructItemStack().asQuantity(9))
-		}
-
-		// Titanium Crafting
-		itemStackShapelessRecipe("titanium", TITANIUM_INGOT.constructItemStack().asQuantity(9)) {
-			addIngredient(TITANIUM_BLOCK.constructItemStack())
-		}
-
-		// Raw Titanium Crafting
-		itemStackShapelessRecipe("rawTitanium", RAW_TITANIUM.constructItemStack().asQuantity(9)) {
-			addIngredient(RAW_TITANIUM_BLOCK.constructItemStack())
-		}
-
-		// Uranium Block Crafting
-		itemStackShapelessRecipe("uraniumBlock", URANIUM_BLOCK.constructItemStack()) {
-			addIngredient(URANIUM.constructItemStack().asQuantity(9))
-		}
-
-		// Raw Uranium Block Crafting
-		itemStackShapelessRecipe("rawUraniumBlock", RAW_URANIUM_BLOCK.constructItemStack()) {
-			addIngredient(RAW_URANIUM.constructItemStack().asQuantity(9))
-		}
-
-		// Uranium Crafting
-		itemStackShapelessRecipe("uranium", URANIUM.constructItemStack().asQuantity(9)) {
-			addIngredient(URANIUM_BLOCK.constructItemStack())
-		}
+		materialBlockRecipes(ALUMINUM_BLOCK, ALUMINUM_INGOT)
+		materialBlockRecipes(RAW_ALUMINUM_BLOCK, RAW_ALUMINUM)
+		materialBlockRecipes(CHETHERITE_BLOCK, CHETHERITE)
+		materialBlockRecipes(TITANIUM_BLOCK, TITANIUM_INGOT)
+		materialBlockRecipes(RAW_TITANIUM_BLOCK, RAW_TITANIUM)
+		materialBlockRecipes(URANIUM_BLOCK, URANIUM)
+		materialBlockRecipes(RAW_URANIUM_BLOCK, RAW_URANIUM)
 
 		//Steel Plate Crafting
 		itemStackShapelessRecipe("steelPlate", STEEL_PLATE.constructItemStack()) {
@@ -779,19 +724,7 @@ object Crafting : IonServerComponent() {
 			addIngredient(REINFORCED_FRAME.constructItemStack().asQuantity(4))
 		}
 
-		// Enriched Uranium Crafting
-		itemStackShapelessRecipe("enrichedUranium", ENRICHED_URANIUM.constructItemStack().asQuantity(9)) {
-			addIngredient(ENRICHED_URANIUM_BLOCK.constructItemStack())
-		}
-		// Enriched Uranium Block Crafting
-		itemStackShapelessRecipe("enrichedUraniumBlock", ENRICHED_URANIUM_BLOCK.constructItemStack()) {
-			addIngredient(ENRICHED_URANIUM.constructItemStack().asQuantity(9))
-		}
-
-		// Raw Uranium Crafting
-		itemStackShapelessRecipe("rawUranium", RAW_URANIUM.constructItemStack().asQuantity(9)) {
-			addIngredient(RAW_URANIUM_BLOCK.constructItemStack())
-		}
+		materialBlockRecipes(ENRICHED_URANIUM_BLOCK, ENRICHED_URANIUM)
 
 		//Uranium Core Crafting
 		itemStackShapelessRecipe("uraniumCore", URANIUM_CORE.constructItemStack()) {
@@ -1072,5 +1005,15 @@ object Crafting : IonServerComponent() {
 		val recipe = ShapelessRecipe(NamespacedKey(IonServer, name), result)
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
+	}
+
+	fun materialBlockRecipes(blockItem: CustomBlockItem, ingotItem: NewCustomItem) {
+		itemStackShapelessRecipe(blockItem.identifier.lowercase(), blockItem.constructItemStack()) {
+			addIngredient(ingotItem.constructItemStack(9))
+		}
+
+		itemStackShapelessRecipe(ingotItem.identifier.lowercase(), ingotItem.constructItemStack(9)) {
+			addIngredient(blockItem.constructItemStack())
+		}
 	}
 }
