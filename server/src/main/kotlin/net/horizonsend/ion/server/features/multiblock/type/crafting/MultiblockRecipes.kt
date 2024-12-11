@@ -40,7 +40,7 @@ object MultiblockRecipes : IonServerComponent() {
 	val URANIUM_ENRICHMENT = registerRecipe(
 		ProcessingMultiblockRecipe(
 		multiblock = CentrifugeMultiblock,
-		smelting = ConsumedItemIngredient(CustomItems.URANIUM, 1),
+		smelting = ConsumedItemIngredient(CustomItemRegistry.URANIUM, 1),
 		result = MultiRecipeResult(
 			ItemResult(CustomItems.ENRICHED_URANIUM),
 			SoundResult("horizonsend:industry.centrifuge", SoundCategory.BLOCKS, 1.0f, 1.0f)

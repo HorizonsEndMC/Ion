@@ -8,8 +8,6 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.items.minerals.MineralItem
-import net.horizonsend.ion.server.features.custom.items.minerals.Smeltable
 import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
@@ -44,9 +42,6 @@ import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_INGOT
-import org.bukkit.Material.IRON_ORE
-import org.bukkit.Material.RAW_IRON
-import org.bukkit.Material.RAW_IRON_BLOCK
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
@@ -62,77 +57,6 @@ object CustomItems {
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
 	// Minerals start
-	val ALUMINUM_INGOT = registerSimpleStackable(identifier = "ALUMINUM_INGOT", customModelData = 1, displayName = text("Aluminum Ingot").decoration(ITALIC, false))
-	val RAW_ALUMINUM : MineralItem = register(object : MineralItem(
-		identifier = "RAW_ALUMINUM",
-		material = RAW_IRON,
-		customModelData = 1,
-		displayName = text("Raw Aluminum").decoration(ITALIC, false)
-	), Smeltable {
-		override val smeltingResult: Supplier<ItemStack> = Supplier { ALUMINUM_INGOT.constructItemStack() }
-	})
-	val ALUMINUM_ORE : CustomBlockItem = register(object : CustomBlockItem(
-		identifier = "ALUMINUM_ORE",
-		material = IRON_ORE,
-		customModelData = 1,
-		displayName = text("Aluminum Ore").decoration(ITALIC, false),
-		customBlockSupplier = { CustomBlocks.ALUMINUM_ORE }
-	), Smeltable {
-		override val smeltingResult: Supplier<ItemStack> = Supplier { ALUMINUM_INGOT.constructItemStack() }
-	})
-	val ALUMINUM_BLOCK = registerCustomBlockItem(identifier = "ALUMINUM_BLOCK", baseBlock = IRON_BLOCK, customModelData = 1, displayName = text("Aluminum Block")) { CustomBlocks.ALUMINUM_BLOCK }
-	val RAW_ALUMINUM_BLOCK = registerCustomBlockItem(identifier = "RAW_ALUMINUM_BLOCK", baseBlock = RAW_IRON_BLOCK, customModelData = 1, displayName = text("Raw Aluminum Block").decoration(ITALIC, false)) { CustomBlocks.RAW_ALUMINUM_BLOCK }
-	val CHETHERITE = registerSimpleStackable(identifier = "CHETHERITE", customModelData = 2, displayName = text("Chetherite"))
-	val CHETHERITE_ORE : CustomBlockItem = register(object : CustomBlockItem(
-		identifier = "CHETHERITE_ORE",
-		material = IRON_ORE,
-		customModelData = 2,
-		displayName = text("Chetherite Ore").decoration(ITALIC, false),
-		customBlockSupplier = { CustomBlocks.CHETHERITE_ORE }
-	), Smeltable {
-		override val smeltingResult: Supplier<ItemStack> = Supplier { CHETHERITE.constructItemStack() }
-	})
-	val CHETHERITE_BLOCK = registerCustomBlockItem(identifier = "CHETHERITE_BLOCK", baseBlock = IRON_BLOCK, customModelData = 2, displayName = text("Chetherite Block").decoration(ITALIC, false)) { CustomBlocks.CHETHERITE_BLOCK }
-	val TITANIUM_INGOT = registerSimpleStackable(identifier = "TITANIUM_INGOT", customModelData = 3, displayName = text("Titanium Ingot"))
-	val RAW_TITANIUM : MineralItem = register(object : MineralItem(
-		identifier = "RAW_TITANIUM",
-		material = RAW_IRON,
-		customModelData = 3,
-		displayName = text("Raw Titanium").decoration(ITALIC, false)
-	), Smeltable {
-		override val smeltingResult: Supplier<ItemStack> = Supplier { TITANIUM_INGOT.constructItemStack() }
-	})
-	val TITANIUM_ORE : CustomBlockItem = register(object : CustomBlockItem(
-		identifier = "TITANIUM_ORE",
-		material = IRON_ORE,
-		customModelData = 3,
-		displayName = text("Titanium Ore").decoration(ITALIC, false),
-		customBlockSupplier = { CustomBlocks.TITANIUM_ORE }
-	), Smeltable {
-		override val smeltingResult: Supplier<ItemStack> = Supplier { TITANIUM_INGOT.constructItemStack() }
-	})
-	val TITANIUM_BLOCK = registerCustomBlockItem(identifier = "TITANIUM_BLOCK", baseBlock = IRON_BLOCK, customModelData = 3, displayName = text("Titanium Block")) { CustomBlocks.TITANIUM_BLOCK }
-	val RAW_TITANIUM_BLOCK = registerCustomBlockItem(identifier = "RAW_TITANIUM_BLOCK", baseBlock = RAW_IRON_BLOCK, customModelData = 3, displayName = text("Raw Titanium Block").decoration(ITALIC, false)) { CustomBlocks.RAW_TITANIUM_BLOCK }
-	val URANIUM = registerSimpleStackable(identifier = "URANIUM", customModelData = 4, displayName = text("Uranium").decoration(ITALIC, false))
-	val RAW_URANIUM : MineralItem = register(object : MineralItem(
-		identifier = "RAW_URANIUM",
-		material = RAW_IRON,
-		customModelData = 4,
-		displayName = text("Raw Uranium").decoration(ITALIC, false)
-	), Smeltable {
-		override val smeltingResult: Supplier<ItemStack> = Supplier { URANIUM.constructItemStack() }
-	})
-	val URANIUM_ORE : CustomBlockItem = register(object : CustomBlockItem(
-		identifier = "URANIUM_ORE",
-		material = IRON_ORE,
-		customModelData = 4,
-		displayName = text("Uranium Ore").decoration(ITALIC, false),
-		customBlockSupplier = { CustomBlocks.URANIUM_ORE }
-	), Smeltable {
-		override val smeltingResult: Supplier<ItemStack> = Supplier { URANIUM.constructItemStack() }
-	})
-	val URANIUM_BLOCK = registerCustomBlockItem(identifier = "URANIUM_BLOCK", baseBlock = IRON_BLOCK, customModelData = 4, displayName = text("Uranium Block").decoration(ITALIC, false)) { CustomBlocks.URANIUM_BLOCK }
-	val RAW_URANIUM_BLOCK = registerCustomBlockItem(identifier = "RAW_URANIUM_BLOCK", baseBlock = RAW_IRON_BLOCK, customModelData = 4, displayName = text("Raw Uranium Block").decoration(ITALIC, false)) { CustomBlocks.RAW_URANIUM_BLOCK }
 	// Minerals end
 	// Industry start
 	val NETHERITE_CASING = registerCustomBlockItem(identifier = "NETHERITE_CASING", baseBlock = IRON_BLOCK, customModelData = 1400, displayName = text("Netherite Casing").decoration(ITALIC, false)) { CustomBlocks.NETHERITE_CASING }
@@ -315,13 +239,13 @@ object CustomItems {
 		}
 	})
 
-	private fun registerCustomBlockItem(identifier: String, baseBlock: Material, customModelData: Int, displayName: Component, customBlock: Supplier<CustomBlock>): CustomItem {
+	private fun registerCustomBlockItem(identifier: String, baseBlock: Material, customModelData: Int, displayName: Component, customBlock: Supplier<CustomBlock>): CustomBlockItem {
 		val formattedDisplayName = text()
 			.decoration(ITALIC, false)
 			.append(displayName)
 			.build()
 
-		return register(CustomBlockItem(identifier, baseBlock, customModelData, formattedDisplayName, customBlock))
+		return CustomBlockItem(identifier, baseBlock, "", formattedDisplayName, customBlock)
 	}
 
 	private fun <T : CustomItem> register(customItem: T): T {

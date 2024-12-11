@@ -1,13 +1,14 @@
 package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem as LegacyCustomItem
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CHETHERITE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.TITANIUM_INGOT
+import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.ALUMINUM_INGOT
-import net.horizonsend.ion.server.features.custom.items.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_EMPTY
-import net.horizonsend.ion.server.features.custom.items.CustomItems.TITANIUM_INGOT
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem as LegacyCustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_BLUE
@@ -145,6 +146,10 @@ object CustomRecipes : IonServerComponent() {
 	}
 
 	private fun customItemChoice(customItem: CustomItem): RecipeChoice {
+		return RecipeChoice.ExactChoice(customItem.constructItemStack())
+	}
+
+	private fun customItemChoice(customItem: NewCustomItem): RecipeChoice {
 		return RecipeChoice.ExactChoice(customItem.constructItemStack())
 	}
 

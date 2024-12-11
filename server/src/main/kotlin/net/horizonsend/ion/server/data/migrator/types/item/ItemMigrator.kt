@@ -6,5 +6,4 @@ import org.bukkit.inventory.ItemStack
 
 abstract class ItemMigrator<W : Any>(protected val predicate: ItemMigratorPredicate) : DataMigrator<ItemStack, W>() {
 	fun shouldMigrate(itemStack: ItemStack) = predicate.shouldMigrate(itemStack)
-
 }

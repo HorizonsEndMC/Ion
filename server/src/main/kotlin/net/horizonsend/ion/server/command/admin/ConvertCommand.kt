@@ -19,35 +19,6 @@ import org.bukkit.inventory.ItemStack
 @Suppress("Unused")
 @CommandPermission("ion.convert")
 object ConvertCommand : SLCommand() { // I imagine we'll need more than blasters in the future
-	@Subcommand("blaster")
-	fun onConvertBlaster(sender: Player) { // Easier than trying to figure out what the old type is.
-		val heldItem = sender.inventory.itemInMainHand
-
-		if (heldItem.type != Material.BOW ||
-			!heldItem.itemMeta.hasCustomModelData() ||
-			heldItem.itemMeta.customModelData == 0
-		) {
-			sender.userError("Not a valid custom item!")
-			return
-		}
-
-		val newVersion = when (heldItem.itemMeta.customModelData) {
-			1 -> CustomItemRegistry.BLASTER_PISTOL
-			2 -> CustomItemRegistry.BLASTER_RIFLE
-			3 -> CustomItemRegistry.BLASTER_SNIPER
-			4 -> CustomItemRegistry.BLASTER_CANNON
-			else -> {
-				sender.information("Sorry, but there is no current equivalent for the cannon, one will come soon")
-				return
-			}
-		}.constructItemStack()
-
-		newVersion.amount = 1
-
-		sender.inventory.setItemInMainHand(newVersion)
-		sender.updateInventory()
-	}
-
 	@Subcommand("detonator")
 	fun onConvertDetonator(sender: Player) {
 		val heldItem = sender.inventory.itemInMainHand
@@ -140,28 +111,28 @@ object ConvertCommand : SLCommand() { // I imagine we'll need more than blasters
 
 		val newVersion = when (item.type) {
 			Material.IRON_INGOT -> when (item.itemMeta.customModelData) {
-				1 -> CustomItems.ALUMINUM_INGOT
-				2 -> CustomItems.CHETHERITE
-				3 -> CustomItems.TITANIUM_INGOT
-				4 -> CustomItems.URANIUM
+				1 -> CustomItemRegistry.ALUMINUM_INGOT
+				2 -> CustomItemRegistry.CHETHERITE
+				3 -> CustomItemRegistry.TITANIUM_INGOT
+				4 -> CustomItemRegistry.URANIUM
 				else -> {
 					return null
 				}
 			}
 			Material.IRON_ORE -> when (item.itemMeta.customModelData) {
-				1 -> CustomItems.ALUMINUM_ORE
-				2 -> CustomItems.CHETHERITE_ORE
-				3 -> CustomItems.TITANIUM_ORE
-				4 -> CustomItems.URANIUM_ORE
+				1 -> CustomItemRegistry.ALUMINUM_ORE
+				2 -> CustomItemRegistry.CHETHERITE_ORE
+				3 -> CustomItemRegistry.TITANIUM_ORE
+				4 -> CustomItemRegistry.URANIUM_ORE
 				else -> {
 					return null
 				}
 			}
 			Material.IRON_BLOCK -> when (item.itemMeta.customModelData) {
-				1 -> CustomItems.ALUMINUM_BLOCK
-				2 -> CustomItems.CHETHERITE_BLOCK
-				3 -> CustomItems.TITANIUM_BLOCK
-				4 -> CustomItems.URANIUM_BLOCK
+				1 -> CustomItemRegistry.ALUMINUM_BLOCK
+				2 -> CustomItemRegistry.CHETHERITE_BLOCK
+				3 -> CustomItemRegistry.TITANIUM_BLOCK
+				4 -> CustomItemRegistry.URANIUM_BLOCK
 				else -> {
 					return null
 				}
