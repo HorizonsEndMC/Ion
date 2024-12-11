@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.text.SPACE_RED_NEBULA_CHARACTER
 import net.horizonsend.ion.common.utils.text.SPACE_SCREEN_CHARACTER
 import net.horizonsend.ion.common.utils.text.colors.Colors
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
@@ -33,6 +34,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -610,11 +612,7 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		val hyperlink = ofChildren(
 			Component.text("Click to open ", TextColor.color(Colors.INFORMATION)),
 			Component.text("[", TextColor.color(Colors.INFORMATION)),
-			Component.text("$name Dynmap", NamedTextColor.AQUA)
-				.decorate(TextDecoration.UNDERLINED)
-				.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL,
-					"https://$serverName.horizonsend.net/?worldname=$spaceWorld&x=$x&z=$z",
-					)),
+			formatLink("$name Dynmap", "https://$serverName.horizonsend.net/?worldname=${spaceWorld.name}&x=$x&z=$z"),
 			Component.text("]", TextColor.color(Colors.INFORMATION)),
 		)
 		player.sendMessage(hyperlink)
