@@ -63,7 +63,7 @@ open class NewCustomItem(
 
 	protected open fun decorateItemStack(base: ItemStack) {}
 
-	fun assembleLore(itemStack: ItemStack): List<Component> {
+	open fun assembleLore(itemStack: ItemStack): List<Component> {
 		val managersSorted = customComponents.getAll().filterIsInstance<LoreManager>().sortedByDescending { it.priority }
 		val iterator = managersSorted.iterator()
 
