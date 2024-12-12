@@ -1,11 +1,12 @@
 package net.horizonsend.ion.server.features.custom.items.mods.drops
 
 import net.horizonsend.ion.common.utils.text.BOLD
+import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerConsumption
+import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
-import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
-import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
@@ -25,13 +26,12 @@ class FortuneModifier(
 	private val level: Int,
 	color: String,
 	override val modItem: Supplier<ModificationItem?>
-) : ItemModification, DropSource, PowerUsageIncrease {
+) : ItemModification, DropSource {
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "FORTUNE_$level"
-	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
+	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class)
 	override val shouldDropXP: Boolean = true
-	override val usageMultiplier: Double = 0.25 + level
 
 	override val displayName: Component = text("Fortune $level", TextColor.fromHexString(color)!!, BOLD).decoration(TextDecoration.ITALIC, false)
 
@@ -48,4 +48,6 @@ class FortuneModifier(
 	}
 
 	override val usedTool: ItemStack = fortunePick
+
+	override fun getAttributes(): List<CustomItemAttribute> = listOf(AdditionalPowerConsumption(0.25 + level))
 }

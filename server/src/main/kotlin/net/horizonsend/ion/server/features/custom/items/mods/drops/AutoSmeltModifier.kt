@@ -4,13 +4,14 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.components.CustomComponentType
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerConsumption
+import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
-import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
-import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
@@ -29,24 +30,22 @@ import java.util.function.Supplier
 import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
-object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
+object AutoSmeltModifier : ItemModification, DropModifier {
 	override val displayName: Component = "<gradient:red:yellow>Auto Smelt".miniMessage().decoration(TextDecoration.ITALIC, false)
 	override val identifier: String = "AUTO_SMELT"
 
 	override val crouchingDisables: Boolean = false
 
-	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
+	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(AutoSmeltModifier::class)
 
-	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.AUTO_SMELT }
-
-	override val usageMultiplier: Double = 2.0
+	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItemRegistry.AUTO_SMELT }
 
 	override val priority: Int = 1
 
 	override fun modifyDrop(itemStack: ItemStack): Boolean {
 		val customItem = itemStack.newCustomItem
-		if (customItem?.hasComponent(CustomComponentType.SMELTABLE) == true) return false
+		if (customItem?.hasComponent(CustomComponentTypes.SMELTABLE) == true) return false
 
 		// Replace with modified version
 		smeltedItemCache[itemStack].getOrNull()?.let {
@@ -71,4 +70,6 @@ object AutoSmeltModifier : ItemModification, DropModifier, PowerUsageIncrease {
 			itemStack.copyWithCount(baseDrop.amount).asBukkitCopy()
 		}
 	})
+
+	override fun getAttributes(): List<CustomItemAttribute> = listOf(AdditionalPowerConsumption(2.0))
 }

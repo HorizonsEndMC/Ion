@@ -1,25 +1,20 @@
 package net.horizonsend.ion.server.features.custom.items.powered
 
 import net.horizonsend.ion.common.extensions.alertAction
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.components.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.mods.drops.DropSource
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
-import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
-import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
-import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
-import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.BaseFireBlock
@@ -35,84 +30,52 @@ import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.craftbukkit.block.CraftBlock
 import org.bukkit.craftbukkit.inventory.CraftItemStack
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 import kotlin.math.roundToInt
 
-class PowerDrill(
-	identifier: String,
-	override val displayName: Component,
-	override val modLimit: Int,
-	override val basePowerCapacity: Int,
-	override val customModelData: Int
-) : CustomItem(identifier), ModdedPowerItem, CustomModeledItem {
-	override val basePowerUsage: Int = 10
-	override val displayDurability: Boolean = true
-
-	override val material: Material = Material.DIAMOND_PICKAXE
-
-	override fun getLoreManagers(): List<LoreCustomItem.CustomItemLoreManager> {
-		return listOf(
-			PoweredItem.PowerLoreManager,
-			ModdedCustomItem.ModLoreManager,
-		)
+class PowerDrill(identifier: String, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(identifier, displayName, modLimit, basePowerCapacity, model) {
+	override val customComponents: CustomItemComponentManager = super.customComponents.apply {
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PowerDrill) { event, _, item ->
+			handleClick(event.player, item, event)
+		})
 	}
 
-	override fun constructItemStack(): ItemStack {
-		val base = getModeledItem()
-
-		base.updateMeta {
-			it.displayName(displayName)
-			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
-			it.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
-		}
-
-		setPower(base, getPowerCapacity(base))
-		setMods(base, arrayOf())
-
-		rebuildLore(base, asTask = false)
-
-		return base
-	}
-
-	override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
+	private fun handleClick(player: Player, itemStack: ItemStack, event: PlayerInteractEvent) {
 		if (event.player.gameMode != GameMode.SURVIVAL) return
-
-		if (livingEntity !is Player) return
 
 		val origin = event.clickedBlock ?: return
 
 		val blockList = mutableListOf(origin)
 
-		val mods = getMods(itemStack)
+		val modManger = getComponent(CustomComponentTypes.MODDED_ITEM)
+		val powerManager = getComponent(CustomComponentTypes.POWERED_ITEM)
+		val mods = modManger.getMods(itemStack)
 
-		mods.filterNot { it.crouchingDisables && livingEntity.isSneaking }
+		mods.filterNot { it.crouchingDisables && player.isSneaking }
 			.filterIsInstance<BlockListModifier>()
 			.sortedBy { it.priority }
 			.forEach {
 				it.modifyBlockList(event.blockFace, origin, blockList)
 			}
 
-		var availablePower = getPower(itemStack)
-		val powerUse = getPowerUse(itemStack)
+		var availablePower = powerManager.getPower(itemStack)
+		val powerUse = powerManager.getPowerUse(itemStack, this)
 		var broken = 0
 
 		val drops = mutableMapOf<Long, Collection<ItemStack>>()
 
 		for (block in blockList) {
 			if (availablePower < powerUse) {
-				livingEntity.alertAction("Out of power!")
+				player.alertAction("Out of power!")
 				break
 			}
 
 			val usage = PowerHoe.UsageReference()
 
-			if (tryBreakBlock(livingEntity, block, mods, drops, usage)) {
+			if (tryBreakBlock(player, block, mods, drops, usage)) {
 				availablePower -= (powerUse * usage.multiplier).roundToInt()
 				broken++
 			}
@@ -120,20 +83,16 @@ class PowerDrill(
 
 		if (broken <= 0) return
 
-		livingEntity.world.playSound(livingEntity.location, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.1f, 1.5f)
+		player.world.playSound(player.location, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.1f, 1.5f)
 
-		setPower(itemStack, availablePower)
+		powerManager.setPower(this, itemStack, availablePower)
 
 		for ((key, items) in drops) {
-			val location = BlockPos.of(key).toLocation(livingEntity.world)
-			items.forEach { livingEntity.world.dropItemNaturally(location, it) }
+			val location = BlockPos.of(key).toLocation(player.world)
+			items.forEach { player.world.dropItemNaturally(location, it) }
 		}
 
 		return
-	}
-
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
-		if (livingEntity is Player && livingEntity.isSneaking) openMenu(livingEntity, itemStack)
 	}
 
 	companion object {

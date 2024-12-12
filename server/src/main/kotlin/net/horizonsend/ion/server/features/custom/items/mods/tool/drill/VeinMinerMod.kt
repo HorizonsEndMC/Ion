@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.mods.tool.drill
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.general.AOEDMod
@@ -92,4 +93,6 @@ class VeinMinerMod(
 
 		list.addAll(visited.values)
 	}
+
+	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 }

@@ -3,12 +3,13 @@ package net.horizonsend.ion.server.features.custom.items.mods.drops
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerConsumption
+import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
-import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
-import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -22,15 +23,14 @@ import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 
-object SilkTouchSource : ItemModification, DropSource, PowerUsageIncrease {
+object SilkTouchSource : ItemModification, DropSource {
 	override val crouchingDisables: Boolean = false
 	override val displayName: Component = ofChildren(text("Silk Touch ", HE_LIGHT_BLUE, BOLD).decoration(TextDecoration.ITALIC, false))
 	override val identifier: String = "SILK_TOUCH"
-	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class)
+	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class)
 	override val shouldDropXP: Boolean = false
-	override val usageMultiplier: Double = 1.25
-	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.SILK_TOUCH_MOD }
+	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItemRegistry.SILK_TOUCH_MOD }
 
 	override fun getDrop(block: Block): Collection<ItemStack> {
 		return block.getDrops(silkPick)
@@ -45,4 +45,6 @@ object SilkTouchSource : ItemModification, DropSource, PowerUsageIncrease {
 	}
 
 	override val usedTool: ItemStack = silkPick
+
+	override fun getAttributes(): List<CustomItemAttribute> = listOf(AdditionalPowerConsumption(1.25))
 }
