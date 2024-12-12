@@ -197,7 +197,7 @@ object CustomItems {
 			.append(displayName)
 			.build()
 
-		return CustomBlockItem(identifier, baseBlock, "", formattedDisplayName, customBlock)
+		return CustomBlockItem(identifier, baseBlock, "null", formattedDisplayName, customBlock)
 	}
 
 	private fun <T : CustomItem> register(customItem: T): T {
