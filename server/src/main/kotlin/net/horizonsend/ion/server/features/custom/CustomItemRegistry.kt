@@ -190,9 +190,10 @@ object CustomItemRegistry : IonServerComponent() {
 	val LOADED_SHELL = stackable(identifier = "LOADED_SHELL", model = "industry/loaded_shell", displayName = text("Loaded Shell"))
 	val UNCHARGED_SHELL = unStackable(identifier = "UNCHARGED_SHELL", model= "industry/uncharged_shell", displayName = text("Uncharged Shell"))
 	val CHARGED_SHELL = stackable(identifier = "CHARGED_SHELL", model = "industry/charged_shell", displayName = text("Charged Shell"))
-	val ARSENAL_MISSILE = stackable(identifier = "ARSENAL_MISSILE", model = "industry/arsenal_missile", displayName = text("Arsenal Missile"))
-	val UNLOADED_ARSENAL_MISSILE = unStackable(identifier = "UNLOADED_ARSENAL_MISSILE", model= "industry/unloaded_arsenal_missile", displayName = text("Unloaded Arsenal Missile"))
-	val ACTIVATED_ARSENAL_MISSILE = unStackable(identifier = "ACTIVATED_ARSENAL_MISSILE", model= "industry/activated_arsenal_missile", displayName = text("Activated Arsenal Missile", RED))
+
+	val ARSENAL_MISSILE = stackable(identifier = "ARSENAL_MISSILE", model = "projectile/arsenal_missile", displayName = text("Arsenal Missile"))
+	val UNLOADED_ARSENAL_MISSILE = unStackable(identifier = "UNLOADED_ARSENAL_MISSILE", model= "projectile/unloaded_arsenal_missile", displayName = text("Unloaded Arsenal Missile"))
+	val ACTIVATED_ARSENAL_MISSILE = unStackable(identifier = "ACTIVATED_ARSENAL_MISSILE", model= "projectile/activated_arsenal_missile", displayName = text("Activated Arsenal Missile", RED))
 
 	val PROGRESS_HOLDER = register(ProgressHolder)
 
