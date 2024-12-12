@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.machine
 
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.NewCustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-private fun customItem(customItem: NewCustomItem): ItemStack = customItem.constructItemStack()
+private fun customItem(customItem: CustomItem): ItemStack = customItem.constructItemStack()
 private fun itemStack(material: Material): ItemStack = ItemStack(material, 1)
 
 enum class GeneratorFuel(private val item: ItemStack, val cooldown: Int, val power: Int) {

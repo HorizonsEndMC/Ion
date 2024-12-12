@@ -1,12 +1,10 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.server.features.custom.CustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_DRILL_BASIC
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.NewCustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.miscellaneous.utils.getMatchingMaterials
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
@@ -200,16 +198,10 @@ object CustomBlocks {
 	))
 
     private fun customItemDrop(identifier: String, amount: Int = 1): Supplier<Collection<ItemStack>> {
-        val customItem = CustomItems.getByIdentifier(identifier)?.constructItemStack() ?: return Supplier { listOf() }
+        val customItem = CustomItemRegistry.getByIdentifier(identifier)?.constructItemStack() ?: return Supplier { listOf() }
         customItem.amount = amount
 
         return Supplier { listOf(customItem) }
-    }
-
-    fun customItemDrop(customItem: Supplier<CustomItem>, amount: Int = 1): Supplier<Collection<ItemStack>> {
-        val itemStack = customItem.get().constructItemStack().asQuantity(amount)
-
-        return Supplier { listOf(itemStack) }
     }
 
     fun <T : CustomBlock> register(customBlock: T): T {
@@ -263,10 +255,6 @@ data class BlockLoot(
 
 		fun customItem(customItem: CustomItem): (ItemStack) -> Boolean {
 			return { it.customItem == customItem }
-		}
-
-		fun customItem(customItem: NewCustomItem): (ItemStack) -> Boolean {
-			return { it.newCustomItem == customItem }
 		}
 	}
 

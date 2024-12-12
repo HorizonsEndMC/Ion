@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerStorage
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
@@ -29,7 +29,7 @@ class PowerCapacityIncrease(
 ) : ItemModification {
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "POWER_CAPACITY_$increaseAmount"
-	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerHoe::class, PowerChainsaw::class)
+	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class, PowerHoe::class, PowerChainsaw::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 
 	override val displayName: Component = ofChildren(
@@ -40,7 +40,7 @@ class PowerCapacityIncrease(
 	).decoration(TextDecoration.ITALIC, false)
 
 	override fun onAdd(itemStack: ItemStack) {
-		val customItem = itemStack.newCustomItem ?: return
+		val customItem = itemStack.customItem ?: return
 		if (!customItem.hasComponent(CustomComponentTypes.POWERED_ITEM)) return
 		val powerManager = customItem.getComponent(CustomComponentTypes.POWERED_ITEM)
 
@@ -49,7 +49,7 @@ class PowerCapacityIncrease(
 	}
 
 	override fun onRemove(itemStack: ItemStack) {
-		val customItem = itemStack.newCustomItem ?: return
+		val customItem = itemStack.customItem ?: return
 		if (!customItem.hasComponent(CustomComponentTypes.POWERED_ITEM)) return
 		val powerManager = customItem.getComponent(CustomComponentTypes.POWERED_ITEM)
 

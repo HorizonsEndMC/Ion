@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.crafting.result
 
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.multiblock.type.crafting.recipe.MultiblockRecipe
 import org.bukkit.block.Sign
 import org.bukkit.inventory.CraftingInventory
@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
 open class ItemResult(val result: ItemStack, private val count: Int = 1) : MultiblockRecipeResult {
-	constructor(item: NewCustomItem, count: Int = 1) : this(item.constructItemStack(), count)
+	constructor(item: CustomItem, count: Int = 1) : this(item.constructItemStack(), count)
 
 	override fun canFit(recipe: MultiblockRecipe<*>, craftingInventory: Inventory, sign: Sign): Boolean {
 		if (((craftingInventory as? CraftingInventory)?.result?.amount ?: 0) >= result.maxStackSize) return false

@@ -7,7 +7,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
@@ -41,7 +41,7 @@ object RecipeCommand : BaseCommand(), Listener {
 		sender: Player,
 		customItem: String
 	) {
-		val itemStack = CustomItems.getByIdentifier(customItem) ?: return
+		val itemStack = CustomItemRegistry.getByIdentifier(customItem) ?: return
 		val recipe = Bukkit.getRecipe(NamespacedKey(IonServer, itemStack.identifier.lowercase()))
 
 		if (recipe is ShapedRecipe) {

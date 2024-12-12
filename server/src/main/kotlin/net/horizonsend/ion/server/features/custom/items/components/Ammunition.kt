@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.components
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.AmmoStorageBalancing
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.objects.StoredValues.AMMO
@@ -20,11 +20,11 @@ import java.util.function.Supplier
 
 class Ammunition(val balancingSupplier: Supplier<out AmmoStorageBalancing>) : CustomItemComponent, LoreManager {
 
-	override fun decorateBase(baseItem: ItemStack, customItem: NewCustomItem) {
+	override fun decorateBase(baseItem: ItemStack, customItem: CustomItem) {
 		AMMO.setAmount(baseItem, balancingSupplier.get().capacity)
 	}
 
-	fun setAmmo(itemStack: ItemStack, customItem: NewCustomItem, amount: Int) {
+	fun setAmmo(itemStack: ItemStack, customItem: CustomItem, amount: Int) {
 		val corrected = amount.coerceAtMost(balancingSupplier.get().capacity)
 
 		AMMO.setAmount(itemStack, corrected)
@@ -40,7 +40,7 @@ class Ammunition(val balancingSupplier: Supplier<out AmmoStorageBalancing>) : Cu
 	override val priority: Int = 200
 	override fun shouldIncludeSeparator(): Boolean = false
 
-	override fun getLines(customItem: NewCustomItem, itemStack: ItemStack): List<Component> {
+	override fun getLines(customItem: CustomItem, itemStack: ItemStack): List<Component> {
 		val balancing = balancingSupplier.get()
 		val lines = listOf(
 			AMMO.formatLore(getAmmo(itemStack), balancingSupplier.get().capacity).itemLore,

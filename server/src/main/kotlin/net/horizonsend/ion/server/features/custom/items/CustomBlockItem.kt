@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items
 
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.kyori.adventure.text.Component
@@ -15,7 +15,7 @@ open class CustomBlockItem(
 	displayName: Component,
 
 	private val customBlockSupplier: Supplier<CustomBlock>
-) : NewCustomItem(
+) : CustomItem(
 	identifier,
 	displayName,
 	ItemFactory

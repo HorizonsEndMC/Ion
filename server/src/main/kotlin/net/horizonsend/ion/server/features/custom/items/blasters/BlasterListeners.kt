@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.custom.items.blasters
 
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -28,7 +28,7 @@ class BlasterListeners : SLEventListener() {
 	fun onDeath(event: PlayerDeathEvent) {
 		val victim = event.player
 		val killer = event.entity.killer ?: return
-		val customItem = killer.inventory.itemInMainHand.newCustomItem ?: return
+		val customItem = killer.inventory.itemInMainHand.customItem ?: return
 
 		if (customItem !is Blaster<*>) return
 
@@ -61,7 +61,7 @@ class BlasterListeners : SLEventListener() {
 	@EventHandler
 	fun onPlayerItemHoldEvent(event: PlayerItemHeldEvent) {
 		val itemStack = event.player.inventory.getItem(event.newSlot) ?: return
-		val customItem = itemStack.newCustomItem as? Blaster<*> ?: return
+		val customItem = itemStack.customItem as? Blaster<*> ?: return
 
 		// adding a potion effect because it takes ages for that attack cooldown to come up
 		event.player.addPotionEffect(PotionEffect(PotionEffectType.HASTE, 20, 5, false, false, false))
@@ -81,7 +81,7 @@ class BlasterListeners : SLEventListener() {
 	fun onLeftClick(event: PlayerInteractEvent) {
 		if (event.item == null) return
 
-		val customItem = event.item?.newCustomItem ?: return
+		val customItem = event.item?.customItem ?: return
 		when (event.action) {
 			Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
 				if (customItem is Blaster<*>) event.isCancelled = true
@@ -95,18 +95,18 @@ class BlasterListeners : SLEventListener() {
 	fun onPrepareItemCraftEvent(event: PrepareItemCraftEvent) {
 		if (!event.isRepair) return // Will always be a combination of 2 items.
 
-		val craftedItems = event.inventory.matrix.filter { it?.newCustomItem is Magazine }.filterNotNull()
+		val craftedItems = event.inventory.matrix.filter { it?.customItem is Magazine }.filterNotNull()
 
 		// Only magazines of the same type accepted
 		if (craftedItems.isEmpty() ||
-			craftedItems.first().newCustomItem?.identifier != craftedItems.last().newCustomItem?.identifier) {
+			craftedItems.first().customItem?.identifier != craftedItems.last().customItem?.identifier) {
 			event.inventory.result = null
 			return
 		}
 
-		val resultItem = craftedItems.first().newCustomItem as Magazine
+		val resultItem = craftedItems.first().customItem as Magazine
 		val totalAmmo = craftedItems.sumOf { resultItem.getComponent(CustomComponentTypes.AMMUNITION).getAmmo(it) }.coerceIn(0..resultItem.balancing.capacity)
-		val resultItemStack = CustomItems.getByIdentifier(resultItem.identifier)!!.constructItemStack()
+		val resultItemStack = CustomItemRegistry.getByIdentifier(resultItem.identifier)!!.constructItemStack()
 		resultItem.getComponent(CustomComponentTypes.AMMUNITION).setAmmo(resultItemStack, resultItem, totalAmmo)
 
 		event.inventory.result = resultItemStack

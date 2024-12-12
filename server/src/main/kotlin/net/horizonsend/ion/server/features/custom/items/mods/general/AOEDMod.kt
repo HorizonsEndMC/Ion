@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
@@ -20,9 +20,9 @@ import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 class AOEDMod(
-	val radius: Int,
-	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerHoe::class),
-	override val modItem: Supplier<ModificationItem?>,
+    val radius: Int,
+    override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class, PowerHoe::class),
+    override val modItem: Supplier<ModificationItem?>,
 ) : ItemModification, BlockListModifier {
 	override val identifier: String = "AOE_$radius"
 

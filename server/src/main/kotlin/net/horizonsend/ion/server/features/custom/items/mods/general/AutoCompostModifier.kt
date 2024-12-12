@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
@@ -23,7 +23,7 @@ import kotlin.reflect.KClass
 object AutoCompostModifier : ItemModification, DropModifier {
 	override val identifier: String = "AUTO_COMPOST"
 	override val displayName: Component = text("Auto Composter", HEColorScheme.HE_LIGHT_GRAY)
-	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
+	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItemRegistry.AUTO_COMPOST }
 

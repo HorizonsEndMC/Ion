@@ -1,8 +1,7 @@
 package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.SmeltingResultAttribute
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
@@ -55,7 +54,7 @@ object FurnaceListener : SLEventListener() {
 	@EventHandler
 	fun onFurnaceSmeltCustomOre(event: FurnaceSmeltEvent) {
 		val source: ItemStack = event.source
-		val customItem = source.newCustomItem
+		val customItem = source.customItem
 
 		// Legacy custom item smelting
 		if (LegacyCustomItems[source] is LegacyBlockItem && customItem == null) {

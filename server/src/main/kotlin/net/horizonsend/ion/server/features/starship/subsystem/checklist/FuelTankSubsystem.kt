@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.checklist
 
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.GAS_CANISTER_HYDROGEN
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
@@ -29,7 +29,7 @@ class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTa
 		if (inventory.isEmpty) return 0
 
 		val fuelCanisters = inventory.filter { item: ItemStack? ->
-			item?.newCustomItem == GAS_CANISTER_HYDROGEN
+			item?.customItem == GAS_CANISTER_HYDROGEN
 		}
 
 		if (fuelCanisters.isEmpty()) return 0

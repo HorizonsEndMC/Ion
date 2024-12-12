@@ -15,7 +15,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-open class NewCustomItem(
+open class CustomItem(
 	val identifier: String,
 	val displayName: Component,
 	baseItemFactory: ItemFactory,
@@ -43,7 +43,7 @@ open class NewCustomItem(
 	 **/
 	fun hasComponent(type: CustomComponentTypes<*, *>): Boolean = customComponents.hasComponent(type)
 
-	protected val baseItemFactory = ItemFactory.builder(baseItemFactory)
+	protected open val baseItemFactory = ItemFactory.builder(baseItemFactory)
 		.setNameSupplier { displayName.itemName }
 		.addPDCEntry(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
 		.addModifier { base -> customComponents.getAll().forEach { it.decorateBase(base, this) } }

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items
 
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes.Companion.GAS_STORAGE
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.components.GasStorage
@@ -19,7 +19,7 @@ class GasCanister(
 	val model: String,
 	displayName: Component,
 	private val gasSupplier: Supplier<Gas>
-) : NewCustomItem(
+) : CustomItem(
 	identifier,
 	displayName,
 	ItemFactory.unStackableCustomItem(model)

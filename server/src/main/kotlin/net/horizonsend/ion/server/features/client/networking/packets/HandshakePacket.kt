@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.client.networking.packets
 import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.client.networking.IonPacketHandler
 import net.horizonsend.ion.server.features.client.networking.Packets
-import net.horizonsend.ion.server.features.custom.items.CustomItems as LegacyCustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.network.FriendlyByteBuf
@@ -24,7 +24,7 @@ object HandshakePacket : IonPacketHandler() {
 	}
 
 	override fun s2c(buf: FriendlyByteBuf, player: Player, vararg arguments: Any) {
-		val items = (CustomItems.all().map { it.itemStack(1) } + LegacyCustomItems.ALL.map { it.constructItemStack() })
+		val items = (CustomItems.all().map { it.itemStack(1) } + CustomItemRegistry.ALL.map { it.constructItemStack() })
 				.map { CraftItemStack.asNMSCopy(it) }
 
 		buf.writeInt(items.size)
