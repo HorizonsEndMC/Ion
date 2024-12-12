@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.PullNameMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.predicate.ItemMigratorPredicate
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.inventory.ItemStack
 

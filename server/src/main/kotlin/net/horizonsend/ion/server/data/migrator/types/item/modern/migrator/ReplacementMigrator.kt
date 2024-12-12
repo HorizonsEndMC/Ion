@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.data.migrator.types.item.modern.migrator
 import net.horizonsend.ion.server.data.migrator.types.item.ItemMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.predicate.CustomItemsPredicate
-import net.horizonsend.ion.server.features.custom.CustomItem
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import org.bukkit.inventory.ItemStack
 
 class ReplacementMigrator(vararg items: CustomItem) : ItemMigrator<CustomItem>(CustomItemsPredicate(*Array(items.size) { items[it].identifier })) {
