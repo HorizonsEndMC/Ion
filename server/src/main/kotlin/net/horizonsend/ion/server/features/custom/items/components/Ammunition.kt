@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.objects.StoredValues.AMMO
-import net.horizonsend.ion.server.features.custom.items.powered.CratePlacer.updateDurability
+import net.horizonsend.ion.server.features.custom.items.util.updateDurability
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -18,9 +18,9 @@ import org.bukkit.Material.matchMaterial
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class AmmunitionComponent(val balancingSupplier: Supplier<out AmmoStorageBalancing>) : CustomItemComponent, LoreManager {
+class Ammunition(val balancingSupplier: Supplier<out AmmoStorageBalancing>) : CustomItemComponent, LoreManager {
 
-	override fun decorateBase(baseItem: ItemStack) {
+	override fun decorateBase(baseItem: ItemStack, customItem: NewCustomItem) {
 		AMMO.setAmount(baseItem, balancingSupplier.get().capacity)
 	}
 

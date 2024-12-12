@@ -1,20 +1,20 @@
 package net.horizonsend.ion.server.features.custom.items.components
 
 class CustomItemComponentManager {
-	private val components = mutableMapOf<CustomComponentType<out CustomItemComponent, out ComponentTypeData<*>>, ComponentTypeData<*>>()
+	private val components = mutableMapOf<CustomComponentTypes<out CustomItemComponent, out ComponentTypeData<*>>, ComponentTypeData<*>>()
 
-	fun <T : CustomItemComponent, Z : ComponentTypeData<T>> addComponent(type: CustomComponentType<T, Z>, data: T) {
+	fun <T : CustomItemComponent, Z : ComponentTypeData<T>> addComponent(type: CustomComponentTypes<T, Z>, data: T) {
 		type.storageType.storeData(components, type, data)
 	}
 
-	fun hasComponent(type: CustomComponentType<*, *>): Boolean = components.containsKey(type)
+	fun hasComponent(type: CustomComponentTypes<*, *>): Boolean = components.containsKey(type)
 
-	fun <T : CustomItemComponent> getComponent(type: CustomComponentType<T, ComponentTypeData.OnlyOne<T>>): T {
+	fun <T : CustomItemComponent> getComponent(type: CustomComponentTypes<T, ComponentTypeData.OnlyOne<T>>): T {
 		val stored = components[type] ?: throw NullPointerException("Trying to access unregistered custom component")
 		return type.castData(stored).entry
 	}
 
-	fun <T : CustomItemComponent> getComponents(type: CustomComponentType<T, ComponentTypeData.AllowMultiple<T>>): List<T> {
+	fun <T : CustomItemComponent> getComponents(type: CustomComponentTypes<T, ComponentTypeData.AllowMultiple<T>>): List<T> {
 		val stored = components[type] ?: throw NullPointerException("Trying to access unregistered custom component")
 		return type.castData(stored).entries
 	}
@@ -36,8 +36,8 @@ class CustomItemComponentManager {
 	enum class ComponentType {
 		ONLY_ONE {
 			override fun <T : CustomItemComponent, Z : ComponentTypeData<T>> storeData(
-				store: MutableMap<CustomComponentType<out CustomItemComponent, out ComponentTypeData<*>>, ComponentTypeData<*>>,
-				type: CustomComponentType<T, Z>,
+				store: MutableMap<CustomComponentTypes<out CustomItemComponent, out ComponentTypeData<*>>, ComponentTypeData<*>>,
+				type: CustomComponentTypes<T, Z>,
 				data: T
 			) {
 				store[type] = ComponentTypeData.OnlyOne(data)
@@ -45,8 +45,8 @@ class CustomItemComponentManager {
 		},
 		ALLOW_MULTIPLE {
 			override fun <T : CustomItemComponent, Z : ComponentTypeData<T>> storeData(
-				store: MutableMap<CustomComponentType<out CustomItemComponent, out ComponentTypeData<*>>, ComponentTypeData<out CustomItemComponent>>,
-				type: CustomComponentType<T, Z>,
+				store: MutableMap<CustomComponentTypes<out CustomItemComponent, out ComponentTypeData<*>>, ComponentTypeData<out CustomItemComponent>>,
+				type: CustomComponentTypes<T, Z>,
 				data: T
 			) {
 				@Suppress("UNCHECKED_CAST")
@@ -55,8 +55,8 @@ class CustomItemComponentManager {
 		};
 
 		abstract fun <T : CustomItemComponent, Z : ComponentTypeData<T>> storeData(
-			store: MutableMap<CustomComponentType<out CustomItemComponent, out ComponentTypeData<*>>, ComponentTypeData<*>>,
-			type: CustomComponentType<T, Z>,
+			store: MutableMap<CustomComponentTypes<out CustomItemComponent, out ComponentTypeData<*>>, ComponentTypeData<*>>,
+			type: CustomComponentTypes<T, Z>,
 			data: T
 		)
 	}

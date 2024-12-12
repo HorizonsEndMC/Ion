@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.custom
 
 import io.papermc.paper.event.block.BlockPreDispenseEvent
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.items.components.ListenerComponent
+import net.horizonsend.ion.server.features.custom.items.components.Listener
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Material
 import org.bukkit.event.Event
@@ -17,15 +17,15 @@ import org.bukkit.inventory.meta.Damageable
 
 object NewCustomItemListeners : SLEventListener() {
 	// Presorted to avoid a bunch of filtering for every event at runtime
-	private val interactListeners: MutableMap<NewCustomItem, MutableSet<ListenerComponent<PlayerInteractEvent, *>>> = mutableMapOf()
-	private val swapItemListeners: MutableMap<NewCustomItem, MutableSet<ListenerComponent<PlayerSwapHandItemsEvent, *>>> = mutableMapOf()
-	private val dispenseListeners: MutableMap<NewCustomItem, MutableSet<ListenerComponent<BlockPreDispenseEvent, *>>> = mutableMapOf()
-	private val entityShootBowListeners: MutableMap<NewCustomItem, MutableSet<ListenerComponent<EntityShootBowEvent, *>>> = mutableMapOf()
+	private val interactListeners: MutableMap<NewCustomItem, MutableSet<Listener<PlayerInteractEvent, *>>> = mutableMapOf()
+	private val swapItemListeners: MutableMap<NewCustomItem, MutableSet<Listener<PlayerSwapHandItemsEvent, *>>> = mutableMapOf()
+	private val dispenseListeners: MutableMap<NewCustomItem, MutableSet<Listener<BlockPreDispenseEvent, *>>> = mutableMapOf()
+	private val entityShootBowListeners: MutableMap<NewCustomItem, MutableSet<Listener<EntityShootBowEvent, *>>> = mutableMapOf()
 
 	private fun <E: Event, T: NewCustomItem> getListeners(
-		collection: MutableMap<NewCustomItem, MutableSet<ListenerComponent<E, *>>>,
+		collection: MutableMap<NewCustomItem, MutableSet<Listener<E, *>>>,
 		item: T
-	): MutableSet<ListenerComponent<E, *>> {
+	): MutableSet<Listener<E, *>> {
 		return collection.getOrPut(item) { mutableSetOf() }
 	}
 
@@ -33,10 +33,10 @@ object NewCustomItemListeners : SLEventListener() {
 		for (newCustomItem in CustomItemRegistry.ALL) {
 			val components = newCustomItem.allComponents()
 
-			components.filterIsInstance<ListenerComponent<PlayerInteractEvent, *>>().filterTo(getListeners(interactListeners, newCustomItem)) { it.eventType == PlayerInteractEvent::class }
-			components.filterIsInstance<ListenerComponent<PlayerSwapHandItemsEvent, *>>().filterTo(getListeners(swapItemListeners, newCustomItem)) { it.eventType == PlayerSwapHandItemsEvent::class }
-			components.filterIsInstance<ListenerComponent<BlockPreDispenseEvent, *>>().filterTo(getListeners(dispenseListeners, newCustomItem)) { it.eventType == BlockPreDispenseEvent::class }
-			components.filterIsInstance<ListenerComponent<EntityShootBowEvent, *>>().filterTo(getListeners(entityShootBowListeners, newCustomItem)) { it.eventType == EntityShootBowEvent::class }
+			components.filterIsInstance<Listener<PlayerInteractEvent, *>>().filterTo(getListeners(interactListeners, newCustomItem)) { it.eventType == PlayerInteractEvent::class }
+			components.filterIsInstance<Listener<PlayerSwapHandItemsEvent, *>>().filterTo(getListeners(swapItemListeners, newCustomItem)) { it.eventType == PlayerSwapHandItemsEvent::class }
+			components.filterIsInstance<Listener<BlockPreDispenseEvent, *>>().filterTo(getListeners(dispenseListeners, newCustomItem)) { it.eventType == BlockPreDispenseEvent::class }
+			components.filterIsInstance<Listener<EntityShootBowEvent, *>>().filterTo(getListeners(entityShootBowListeners, newCustomItem)) { it.eventType == EntityShootBowEvent::class }
 		}
 	}
 
