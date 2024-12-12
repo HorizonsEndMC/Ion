@@ -4,9 +4,9 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -17,14 +17,14 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.text.DecimalFormat
 
-object ProgressHolder : NewCustomItem(
+object ProgressHolder : CustomItem(
 	"PROGRESS_HOLDER",
 	text("Empty Progress Holder"),
 	ItemFactory.unStackableCustomItem
 ) {
 	private val percentFormat = DecimalFormat("##.##%")
 
-	fun create(result: NewCustomItem): ItemStack {
+	fun create(result: CustomItem): ItemStack {
 		val example = result.constructItemStack()
 		val base = ItemStack(example.type)
 
@@ -52,7 +52,7 @@ object ProgressHolder : NewCustomItem(
 	/**
 	 * Get the custom item result of this progress item
 	 **/
-	fun getResult(itemStack: ItemStack): NewCustomItem? {
+	fun getResult(itemStack: ItemStack): CustomItem? {
 		val identifier = itemStack.itemMeta.persistentDataContainer.get(NamespacedKeys.CUSTOM_ITEM_RESULT, PersistentDataType.STRING) ?: return null
 		return CustomItemRegistry.getByIdentifier(identifier)
 	}
@@ -63,7 +63,7 @@ object ProgressHolder : NewCustomItem(
 	 * @return whether the item was completed
 	 **/
 	fun setProgress(itemStack: ItemStack, progress: Double): Boolean {
-		if (itemStack.newCustomItem !is ProgressHolder) return false
+		if (itemStack.customItem !is ProgressHolder) return false
 
 		if (progress >= 1.0) return run {
 			complete(itemStack)

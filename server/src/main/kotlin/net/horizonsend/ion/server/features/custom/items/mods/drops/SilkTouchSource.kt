@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.custom.items.mods.drops
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerConsumption
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
@@ -27,7 +27,7 @@ object SilkTouchSource : ItemModification, DropSource {
 	override val crouchingDisables: Boolean = false
 	override val displayName: Component = ofChildren(text("Silk Touch ", HE_LIGHT_BLUE, BOLD).decoration(TextDecoration.ITALIC, false))
 	override val identifier: String = "SILK_TOUCH"
-	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class)
+	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class)
 	override val shouldDropXP: Boolean = false
 	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItemRegistry.SILK_TOUCH_MOD }

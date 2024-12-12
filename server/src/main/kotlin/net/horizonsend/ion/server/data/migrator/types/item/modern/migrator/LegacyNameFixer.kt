@@ -4,8 +4,7 @@ import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.PullNameMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.predicate.ItemMigratorPredicate
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.inventory.ItemStack
 
@@ -23,7 +22,7 @@ class LegacyNameFixer(private vararg val itemIdentifiers: String) : CustomItemSt
 	}
 
 	override fun performMigration(subject: ItemStack): MigratorResult<ItemStack> {
-		val customItem = subject.newCustomItem ?: return MigratorResult.Mutation()
+		val customItem = subject.customItem ?: return MigratorResult.Mutation()
 		PullNameMigrator(customItem).migrate(subject)
 		return MigratorResult.Mutation()
 	}

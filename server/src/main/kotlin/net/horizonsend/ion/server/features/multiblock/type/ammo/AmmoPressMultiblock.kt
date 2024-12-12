@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.ammo
 
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.machine.PowerMachines
@@ -130,7 +130,7 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 	) {
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
-		val fuelCustomItem = fuel?.newCustomItem
+		val fuelCustomItem = fuel?.customItem
 
 		if (PowerMachines.getPower(sign) == 0 ||
 			smelting == null ||

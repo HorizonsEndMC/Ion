@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ItemCom
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.PullLoreMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.SetLoreMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.predicate.ItemMigratorPredicate
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.HORIZONSEND_NAMESPACE
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
@@ -19,10 +19,10 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 class AspectMigrator private constructor(
-	val customItem: NewCustomItem,
-	predicate: ItemMigratorPredicate,
-	private val aspects: Set<ItemAspectMigrator>,
-	private val additionalIdentifiers: Set<String> = setOf()
+    val customItem: CustomItem,
+    predicate: ItemMigratorPredicate,
+    private val aspects: Set<ItemAspectMigrator>,
+    private val additionalIdentifiers: Set<String> = setOf()
 ) : CustomItemStackMigrator(predicate) {
 	override fun registerTo(map: MutableMap<String, CustomItemStackMigrator>) {
 		map[customItem.identifier] = this
@@ -47,7 +47,7 @@ class AspectMigrator private constructor(
 		return if (replaced) MigratorResult.Replacement(item) else MigratorResult.Mutation()
 	}
 
-	class Builder(private val customItem: NewCustomItem) {
+	class Builder(private val customItem: CustomItem) {
 		private val aspects: MutableSet<ItemAspectMigrator> = mutableSetOf()
 		private val additionalIdentifiers: MutableSet<String> = mutableSetOf()
 
@@ -83,7 +83,7 @@ class AspectMigrator private constructor(
 			return this
 		}
 
-		fun pullLore(from: NewCustomItem): Builder {
+		fun pullLore(from: CustomItem): Builder {
 			aspects.add(PullLoreMigrator(from))
 			return this
 		}
@@ -93,7 +93,7 @@ class AspectMigrator private constructor(
 			return this
 		}
 
-		fun pullName(from: NewCustomItem): Builder {
+		fun pullName(from: CustomItem): Builder {
 			aspects.add(PullLoreMigrator(from))
 			return this
 		}
@@ -106,7 +106,7 @@ class AspectMigrator private constructor(
 	}
 
 	companion object {
-		fun builder(customItem: NewCustomItem): Builder {
+		fun builder(customItem: CustomItem): Builder {
 			return Builder(customItem)
 		}
 	}

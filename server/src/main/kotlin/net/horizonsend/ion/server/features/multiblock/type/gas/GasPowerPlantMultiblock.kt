@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.gas
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses.EMPTY_CANISTER
 import net.horizonsend.ion.server.features.gas.type.GasFuel

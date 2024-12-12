@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.data.migrator.types.item.legacy.LegacyCustomIt
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.AspectMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.LegacyNameFixer
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Chunk
@@ -34,19 +34,19 @@ object DataMigrators : IonServerComponent() {
 		registerDataVersion(DataVersion
 			.builder(1)
 			.addMigrator(LegacyCustomItemMigrator(
-				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 1 && it.newCustomItem == null },
+				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 1 && it.customItem == null },
 				converter = { MigratorResult.Replacement(CustomItemRegistry.BLASTER_PISTOL.constructItemStack()) }
 			))
 			.addMigrator(LegacyCustomItemMigrator(
-				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 2 && it.newCustomItem == null },
+				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 2 && it.customItem == null },
 				converter = { MigratorResult.Replacement(CustomItemRegistry.BLASTER_RIFLE.constructItemStack()) }
 			))
 			.addMigrator(LegacyCustomItemMigrator(
-				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 3 && it.newCustomItem == null },
+				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 3 && it.customItem == null },
 				converter = { MigratorResult.Replacement(CustomItemRegistry.BLASTER_SNIPER.constructItemStack()) }
 			))
 			.addMigrator(LegacyCustomItemMigrator(
-				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 4 && it.newCustomItem == null },
+				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 4 && it.customItem == null },
 				converter = { MigratorResult.Replacement(CustomItemRegistry.BLASTER_CANNON.constructItemStack()) }
 			))
 			/* TODO Drill
@@ -55,7 +55,7 @@ object DataMigrators : IonServerComponent() {
 					it.type == Material.DIAMOND_PICKAXE
 						&& it.itemMeta.hasCustomModelData()
 						&& it.itemMeta.customModelData == 1
-						&& it.newCustomItem == null
+						&& it.customItem == null
 				},
 				converter = {
 
