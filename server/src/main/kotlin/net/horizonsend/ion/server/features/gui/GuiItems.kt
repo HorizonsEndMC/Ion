@@ -125,6 +125,10 @@ object GuiItems {
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) { callback() }
     }
+
+    fun closeMenuItem(player: Player) = CustomControlItem("Close Menu", GuiItem.CANCEL) {
+            _: ClickType, _: Player, _: InventoryClickEvent -> player.closeInventory()
+    }
 }
 
 enum class GuiItem(val customModelData: Int) {
