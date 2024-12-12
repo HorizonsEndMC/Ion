@@ -64,8 +64,8 @@ object NavigationGuiCommon {
                 val newGui = ItemMenu(Component.text("Search result: $input"), player, searchResults.map { obj ->
                     // converts the list of matching objects to the corresponding GUI item
                     when (obj) {
-                        is CachedPlanet -> createPlanetCustomControlItem(obj, player, world, gui)
-                        is CachedStar -> createStarCustomControlItem(obj, player, world, gui)
+                        is CachedPlanet -> createPlanetCustomControlItem(obj, player, world, gui) { backButtonHandler.invoke() }
+                        is CachedStar -> createStarCustomControlItem(obj, player, world, gui) { backButtonHandler.invoke() }
                         is ServerConfiguration.HyperspaceBeacon -> createBeaconCustomControlItem(obj, player, world, gui)
                         is Bookmark -> createBookmarkCustomControlItem(obj, player, world, gui)
                         else -> GuiItems.EmptyItem()
@@ -213,12 +213,7 @@ object NavigationGuiCommon {
             }
         }
 
-    fun createBeaconCustomControlItem(
-        beacon: ServerConfiguration.HyperspaceBeacon,
-        player: Player,
-        world: World,
-        gui: Gui
-    ) =
+    fun createBeaconCustomControlItem(beacon: ServerConfiguration.HyperspaceBeacon, player: Player, world: World, gui: Gui) =
         GuiItems.CustomControlItem(
             beacon.name, GuiItem.BEACON, navigationInstructionComponents(
                 beacon,
@@ -254,7 +249,7 @@ object NavigationGuiCommon {
             }
         }
 
-    fun createPlanetCustomControlItem(planet: CachedPlanet, player: Player, world: World, gui: Gui) =
+    fun createPlanetCustomControlItem(planet: CachedPlanet, player: Player, world: World, gui: Gui, backButtonHandler: () -> Unit) =
         GuiItems.CustomControlItem(
             planet.name, getPlanetItems(planet.name),
             navigationInstructionComponents(
@@ -272,7 +267,7 @@ object NavigationGuiCommon {
                 ClickType.LEFT -> if (planet.spaceWorldName == player.world.name) jumpAction(player, planet.name)
                 ClickType.RIGHT -> waypointAction(player, planet.name, gui)
                 ClickType.SHIFT_LEFT -> {
-                    // TODO: Add planet info window opener here
+                    NavigationInfoGui(player, planet.name, getPlanetItems(planet.name)) { backButtonHandler.invoke() }.openMainWindow()
                 }
 
                 ClickType.SHIFT_RIGHT -> {
@@ -284,7 +279,7 @@ object NavigationGuiCommon {
             }
         }
 
-    fun createStarCustomControlItem(star: CachedStar, player: Player, world: World, gui: Gui) =
+    fun createStarCustomControlItem(star: CachedStar, player: Player, world: World, gui: Gui, backButtonHandler: () -> Unit) =
         GuiItems.CustomControlItem(
             star.name, getPlanetItems(star.name),
             navigationInstructionComponents(
@@ -307,7 +302,7 @@ object NavigationGuiCommon {
 
                 ClickType.RIGHT -> waypointAction(player, star.spaceWorldName, star.location.x, star.location.z, gui)
                 ClickType.SHIFT_LEFT -> {
-                    // TODO: Add star info window opener here
+                    NavigationInfoGui(player, star.name, getPlanetItems(star.name)) { backButtonHandler.invoke() }.openMainWindow()
                 }
 
                 ClickType.SHIFT_RIGHT -> {
