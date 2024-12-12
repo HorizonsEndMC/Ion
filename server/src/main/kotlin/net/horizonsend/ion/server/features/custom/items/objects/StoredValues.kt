@@ -37,6 +37,15 @@ enum class StoredValues(
 			text(" / ", GRAY),
 			text(maxAmount, YELLOW)
 		).itemLore
+	},
+
+	GAS(NamespacedKeys.GAS) {
+		override fun formatLore(amount: Int, maxAmount: Int): Component = ofChildren(
+			text("Gas: ", GRAY),
+			text(amount, AQUA),
+			text(" / ", GRAY),
+			text(maxAmount, AQUA)
+		).itemLore
 	}
 
 	;

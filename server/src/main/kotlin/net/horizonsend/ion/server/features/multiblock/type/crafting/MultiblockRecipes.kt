@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.multiblock.type.crafting
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
@@ -64,7 +63,7 @@ object MultiblockRecipes : IonServerComponent() {
 		FurnaceMultiblockRecipe(
 		multiblock = GasFurnaceMultiblock,
 		smelting = ConsumedItemIngredient(ItemStack(Material.IRON_INGOT), 1),
-		fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 5),
+		fuel = GasCanisterIngredient(CustomItemRegistry.GAS_CANISTER_OXYGEN, 5),
 		resources = listOf(power(100)),
 		result = ItemResult(CustomItemRegistry.STEEL_INGOT)
 	)
@@ -210,7 +209,7 @@ object MultiblockRecipes : IonServerComponent() {
 				FurnaceMultiblockRecipe(
 					multiblock = GasFurnaceMultiblock,
 					smelting = ConsumedItemIngredient(ItemStack(inputMat), 1),
-					fuel = GasCanisterIngredient(CustomItems.GAS_CANISTER_OXYGEN, 50),
+					fuel = GasCanisterIngredient(CustomItemRegistry.GAS_CANISTER_OXYGEN, 50),
 					resources = listOf(power(100)),
 					result = ItemResult(ItemStack(resultMat))
 				)

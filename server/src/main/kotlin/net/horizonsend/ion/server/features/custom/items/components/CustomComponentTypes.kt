@@ -38,6 +38,11 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		/**
 		 * Allows an item to store items
 		 **/
+		val GAS_STORAGE = newComponentType<GasStorage, OnlyOne<GasStorage>>(ComponentType.ONLY_ONE)
+
+		/**
+		 * Allows an item to store items
+		 **/
 		val MODDED_ITEM = newComponentType<ModManager, OnlyOne<ModManager>>(ComponentType.ONLY_ONE)
 
 		/**

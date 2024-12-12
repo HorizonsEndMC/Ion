@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.custom.NewCustomItemListeners.sortCus
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
+import net.horizonsend.ion.server.features.custom.items.GasCanister
 import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
@@ -28,6 +29,7 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.stackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.withComponent
+import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -35,6 +37,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -221,6 +224,17 @@ object CustomItemRegistry : IonServerComponent() {
 	// Starship Components End
 
 	// Gas canisters start
+	private fun canisterName(gasName: Component): Component = ofChildren(gasName, text(" Gas Canister", GRAY)).itemName
+
+	val GAS_CANISTER_EMPTY = unStackable("GAS_CANISTER_EMPTY", model = "gas/gas_canister_empty", displayName = text("Empty Gas Canister"))
+	val GAS_CANISTER_HYDROGEN = register(GasCanister("GAS_CANISTER_HYDROGEN", "gas/gas_canister_hydrogen", canisterName(text("Hydrogen", RED)), Gasses::HYDROGEN))
+	val GAS_CANISTER_NITROGEN = register(GasCanister("GAS_CANISTER_NITROGEN", "gas/gas_canister_nitrogen", canisterName(text("Nitrogen", RED)), Gasses::NITROGEN))
+	val GAS_CANISTER_METHANE = register(GasCanister("GAS_CANISTER_METHANE", "gas/gas_canister_methane", canisterName(text("Methane", RED)), Gasses::METHANE))
+	val GAS_CANISTER_OXYGEN = register(GasCanister("GAS_CANISTER_OXYGEN", "gas/gas_canister_oxygen", canisterName(text("Oxygen", YELLOW)), Gasses::OXYGEN))
+	val GAS_CANISTER_CHLORINE = register(GasCanister("GAS_CANISTER_CHLORINE", "gas/gas_canister_chlorine", canisterName(text("Chlorine", YELLOW)), Gasses::CHLORINE))
+	val GAS_CANISTER_FLUORINE = register(GasCanister("GAS_CANISTER_FLUORINE", "gas/gas_canister_fluorine", canisterName(text("Fluorine", YELLOW)), Gasses::FLUORINE))
+	val GAS_CANISTER_HELIUM = register(GasCanister("GAS_CANISTER_HELIUM", "gas/gas_canister_helium", canisterName(text("Helium", BLUE)), Gasses::HELIUM))
+	val GAS_CANISTER_CARBON_DIOXIDE = register(GasCanister("GAS_CANISTER_CARBON_DIOXIDE", "gas/gas_canister_carbon_dioxide", canisterName(text("Carbon Dioxide", BLUE)), Gasses::CARBON_DIOXIDE))
 
 	// Gas canisters end
 

@@ -14,14 +14,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.Material.IRON_INGOT
@@ -38,22 +36,8 @@ object CustomItems {
 	val ALL get() = customItems.values
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
-	// Gas Canisters Start
-	val GAS_CANISTER_EMPTY = registerSimpleUnstackable("GAS_CANISTER_EMPTY", 1000, text("Empty Gas Canister"))
-	val GAS_CANISTER_HYDROGEN = register(GasCanister("GAS_CANISTER_HYDROGEN", 1001, canisterName(text("Hydrogen", RED)),"HYDROGEN"))
-	val GAS_CANISTER_NITROGEN = register(GasCanister("GAS_CANISTER_NITROGEN", 1002, canisterName(text("Nitrogen", RED)), "NITROGEN"))
-	val GAS_CANISTER_METHANE = register(GasCanister("GAS_CANISTER_METHANE", 1003, canisterName(text("Methane", RED)), "METHANE"))
-	val GAS_CANISTER_OXYGEN = register( GasCanister("GAS_CANISTER_OXYGEN", 1010, canisterName(text("Oxygen", YELLOW)), "OXYGEN"))
-	val GAS_CANISTER_CHLORINE = register(GasCanister("GAS_CANISTER_CHLORINE", 1011, canisterName(text("Chlorine", YELLOW)), "CHLORINE"))
-	val GAS_CANISTER_FLUORINE = register(GasCanister("GAS_CANISTER_FLUORINE", 1012, canisterName(text("Fluorine", YELLOW)), "FLUORINE"))
-	val GAS_CANISTER_HELIUM = register(GasCanister("GAS_CANISTER_HELIUM", 1020, canisterName(text("Helium", BLUE)), "HELIUM"))
-	val GAS_CANISTER_CARBON_DIOXIDE = register(GasCanister("GAS_CANISTER_CARBON_DIOXIDE", 1021, canisterName(text("Carbon Dioxide", BLUE)), "CARBON_DIOXIDE"))
 
-	private fun canisterName(gasName: Component): Component = text()
-		.decoration(ITALIC, false)
-		.append(gasName)
-		.append(text(" Gas Canister", GRAY))
-		.build()
+
 
 	// Gas Canisters End
 

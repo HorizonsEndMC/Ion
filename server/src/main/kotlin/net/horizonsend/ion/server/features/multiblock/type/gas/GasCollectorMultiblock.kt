@@ -2,8 +2,9 @@ package net.horizonsend.ion.server.features.multiblock.type.gas
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
@@ -113,10 +114,10 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		val hopper = hopperBlock.getState(false) as Hopper
 
 		val canisterItem = furnace.inventory.fuel ?: return false
-		val customItem = canisterItem.customItem ?: return false
+		val customItem = canisterItem.newCustomItem ?: return false
 
 		return when (customItem) {
-			CustomItems.GAS_CANISTER_EMPTY -> fillEmptyCanister(furnace, gas, amount)
+			CustomItemRegistry.GAS_CANISTER_EMPTY -> fillEmptyCanister(furnace, gas, amount)
 
 			is GasCanister -> fillGasCanister(canisterItem, furnace, hopper, amount) // Don't even bother with the gas
 
@@ -134,7 +135,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	}
 
 	private fun fillGasCanister(canisterItem: ItemStack, furnace: Furnace, hopper: Hopper, amount: Int): Boolean {
-		val type = canisterItem.customItem ?: return false
+		val type = canisterItem.newCustomItem ?: return false
 		if (type !is GasCanister) return  false
 
 		val currentFill = type.getFill(canisterItem)

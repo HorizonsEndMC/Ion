@@ -33,6 +33,9 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FORTUNE_3
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FUEL_CELL
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FUEL_CONTROL
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FUEL_ROD_CORE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.GAS_CANISTER_EMPTY
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.GAS_CANISTER_HYDROGEN
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.GUN_BARREL
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.NETHERITE_CASING
@@ -96,9 +99,6 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.VEIN_MINER_
 import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems.DETONATOR
-import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_EMPTY
-import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_HYDROGEN
-import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SMOKE_GRENADE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM

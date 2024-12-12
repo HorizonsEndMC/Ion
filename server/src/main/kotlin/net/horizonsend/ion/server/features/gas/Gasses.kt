@@ -2,7 +2,8 @@ package net.horizonsend.ion.server.features.gas
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_EMPTY
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.GAS_CANISTER_EMPTY
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.features.custom.items.GasCanister
 import net.horizonsend.ion.server.features.gas.type.Gas
@@ -108,18 +109,18 @@ object Gasses : IonServerComponent(false) {
 		return itemStack?.customItem?.identifier == GAS_CANISTER_EMPTY.identifier
 	}
 
-	fun isCanister(itemStack: ItemStack?): Boolean = isEmptyCanister(itemStack) || itemStack?.customItem is GasCanister
+	fun isCanister(itemStack: ItemStack?): Boolean = isEmptyCanister(itemStack) || itemStack?.newCustomItem is GasCanister
 
 	operator fun get(identifier: String): Gas = gasses[identifier] ?: throw NoSuchElementException()
 
 	operator fun get(itemStack: ItemStack?): Gas? {
 		if (itemStack == null) return null
 
-		val customItem = itemStack.customItem ?: return  null
+		val customItem = itemStack.newCustomItem ?: return  null
 
 		if (customItem !is GasCanister) return null
 
-		return gasses[customItem.gasIdentifier]!!
+		return customItem.gas
 	}
 
 	fun all() = gasses
