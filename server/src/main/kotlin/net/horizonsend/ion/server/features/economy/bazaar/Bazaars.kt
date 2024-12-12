@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.economy.bazaar
 
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.mongodb.client.FindIterable
 import net.horizonsend.ion.common.database.Oid
@@ -18,7 +17,7 @@ import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.economy.BazaarCommand
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
@@ -26,6 +25,7 @@ import net.horizonsend.ion.server.features.gui.custom.bazaar.BazaarPurchaseMenuG
 import net.horizonsend.ion.server.features.nations.gui.anvilInput
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -51,7 +51,7 @@ object Bazaars : IonServerComponent() {
 	val strings = mutableListOf<String>().apply {
 		addAll(Material.entries.filter { it.isItem && !it.isLegacy }.map { it.name })
 		addAll(LegacyCustomItems.all().map { it.id })
-		addAll(CustomItems.identifiers)
+		addAll(CustomItemRegistry.identifiers)
 	}
 
     fun onClickBazaarNPC(player: Player, city: TradeCityData) {

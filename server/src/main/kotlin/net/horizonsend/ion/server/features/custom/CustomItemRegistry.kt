@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.text
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.custom.NewCustomItemListeners.sortCustomItemListeners
@@ -25,6 +26,11 @@ import net.horizonsend.ion.server.features.custom.items.powered.CratePlacer
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
+import net.horizonsend.ion.server.features.custom.items.throwables.ThrowableCustomItem
+import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
+import net.horizonsend.ion.server.features.custom.items.throwables.ThrownPumpkinGrenade
+import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownDetonator
+import net.horizonsend.ion.server.features.custom.items.throwables.thrown.ThrownSmokeGrenade
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.stackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem
@@ -38,9 +44,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
@@ -53,8 +61,11 @@ import org.bukkit.Material.GOLDEN_HOE
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_HOE
 import org.bukkit.Material.IRON_ORE
+import org.bukkit.Material.PUMPKIN
 import org.bukkit.Material.RAW_IRON
 import org.bukkit.Material.RAW_IRON_BLOCK
+import org.bukkit.entity.Entity
+import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
@@ -62,8 +73,53 @@ import java.util.function.Supplier
 import kotlin.math.roundToInt
 
 object CustomItemRegistry : IonServerComponent() {
-	private val customItems = mutableMapOf<String, NewCustomItem>()
+	private val customItems = mutableMapOf<String, CustomItem>()
 	val ALL get() = customItems.values
+
+	// Throwables start
+	private fun registerThrowable(
+		identifier: String,
+		customModel: String,
+		displayName: Component,
+		balancing: Supplier<PVPBalancingConfiguration.Throwables.ThrowableBalancing>,
+		thrown: (Item, Int, Entity?) -> ThrownCustomItem
+	) = register(object : ThrowableCustomItem(identifier = identifier, customModel = customModel, displayName = displayName, balancingSupplier = balancing) {
+		override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem = thrown.invoke(item, maxTicks, damageSource)
+	})
+
+	val DETONATOR = registerThrowable(
+		"DETONATOR",
+		"throwables/detonator",
+		ofChildren(text("Thermal ", RED), text("Detonator", GRAY)).itemName,
+		ConfigurationFiles.pvpBalancing().throwables::detonator
+	) { item, maxTicks, source -> ThrownDetonator(item, maxTicks, source, ConfigurationFiles.pvpBalancing().throwables::detonator) }
+	val SMOKE_GRENADE = registerThrowable(
+		"SMOKE_GRENADE",
+		"throwables/detonator",
+		ofChildren(text("Smoke ", DARK_GREEN), text("Grenade", GRAY)).itemName,
+		ConfigurationFiles.pvpBalancing().throwables::smokeGrenade
+	) { item, maxTicks, source -> ThrownSmokeGrenade(item, maxTicks, source) }
+
+	val PUMPKIN_GRENADE = register(object : ThrowableCustomItem(
+		"PUMPKIN_GRENADE",
+		"",
+		ofChildren(text("Pumpkin ", GOLD), text("Grenade", GREEN)).itemName,
+		ConfigurationFiles.pvpBalancing().throwables::detonator
+	) {
+		override val baseItemFactory: ItemFactory = ItemFactory.builder(ItemFactory.builder().setMaterial(PUMPKIN).build())
+			.setNameSupplier { displayName.itemName }
+			.addPDCEntry(CUSTOM_ITEM, STRING, identifier)
+			.addModifier { base -> customComponents.getAll().forEach { it.decorateBase(base, this) } }
+			.addModifier { base -> decorateItemStack(base) }
+			.setLoreSupplier { base -> assembleLore(base) }
+			.build()
+
+		override fun assembleLore(itemStack: ItemStack): List<Component> {
+			return mutableListOf(text("Spooky", LIGHT_PURPLE))
+		}
+		override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem = ThrownPumpkinGrenade(item, maxTicks, damageSource, ConfigurationFiles.pvpBalancing().throwables::detonator)
+	})
+	// Throwables end
 
 	// Guns Start
 	val STANDARD_MAGAZINE = register(Magazine(
@@ -142,9 +198,9 @@ object CustomItemRegistry : IonServerComponent() {
 	val CANNON_RECEIVER = register("CANNON_RECEIVER", text("Cannon Receiver"), unStackableCustomItem("industry/cannon_receiver"))
 
 	// Minerals start
-	private fun registerRawOre(identifier: String, name: String, smeltingResult: Supplier<NewCustomItem>) = register(identifier, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(RAW_IRON, model = "mineral/raw_$name")).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
+	private fun registerRawOre(identifier: String, name: String, smeltingResult: Supplier<CustomItem>) = register(identifier, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(RAW_IRON, model = "mineral/raw_$name")).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
 	private fun registerOreIngot(identifier: String, name: String) = register(identifier, text("${name.replaceFirstChar { it.uppercase() }} Ingot"), stackableCustomItem(RAW_IRON, model = "mineral/$name"))
-	private fun registerOreBlock(identifier: String, name: String, block: Supplier<CustomBlock>, smeltingResult: Supplier<NewCustomItem>) = customBlockItem(identifier, IRON_ORE, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
+	private fun registerOreBlock(identifier: String, name: String, block: Supplier<CustomBlock>, smeltingResult: Supplier<CustomItem>) = customBlockItem(identifier, IRON_ORE, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
 	private fun registerIngotBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, IRON_BLOCK, "mineral/${name}_block", text("${name.replaceFirstChar { it.uppercase() }} Block"), block)
 	private fun registerRawBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, RAW_IRON_BLOCK, "mineral/raw_${name}_block", text("Raw ${name.replaceFirstChar { it.uppercase() }} Block"), block)
 
@@ -369,31 +425,31 @@ object CustomItemRegistry : IonServerComponent() {
 		sortCustomItemListeners()
 	}
 
-	private fun <T : NewCustomItem> register(item: T): T {
+	private fun <T : CustomItem> register(item: T): T {
 		customItems[item.identifier] = item
 		return item
 	}
 
-	private fun register(identifier: String, displayName: Component, factory: ItemFactory): NewCustomItem {
-		return register(NewCustomItem(identifier, displayName, factory))
+	private fun register(identifier: String, displayName: Component, factory: ItemFactory): CustomItem {
+		return register(CustomItem(identifier, displayName, factory))
 	}
 
-	private fun stackable(identifier: String, displayName: Component, model: String): NewCustomItem {
-		return register(NewCustomItem(identifier, displayName, stackableCustomItem(model = model)))
+	private fun stackable(identifier: String, displayName: Component, model: String): CustomItem {
+		return register(CustomItem(identifier, displayName, stackableCustomItem(model = model)))
 	}
 
-	private fun unStackable(identifier: String, displayName: Component, model: String): NewCustomItem {
-		return register(NewCustomItem(identifier, displayName, unStackableCustomItem(model = model)))
+	private fun unStackable(identifier: String, displayName: Component, model: String): CustomItem {
+		return register(CustomItem(identifier, displayName, unStackableCustomItem(model = model)))
 	}
 
 	private fun customBlockItem(identifier: String, material: Material = IRON_BLOCK, model: String, displayName: Component, customBlock: Supplier<CustomBlock>) =
 		register(CustomBlockItem(identifier, material, model, displayName, customBlock))
 
-	val ItemStack.newCustomItem: NewCustomItem? get() {
+	val ItemStack.customItem: CustomItem? get() {
 		return customItems[persistentDataContainer.get(CUSTOM_ITEM, STRING) ?: return null]
 	}
 
 	val identifiers = customItems.keys
 
-	fun getByIdentifier(identifier: String): NewCustomItem? = customItems[identifier]
+	fun getByIdentifier(identifier: String): CustomItem? = customItems[identifier]
 }

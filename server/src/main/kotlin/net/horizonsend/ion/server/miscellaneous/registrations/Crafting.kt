@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 //import net.horizonsend.ion.server.features.custom.items.CustomItems.CRUDE_FUEL
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ALUMINUM_INGOT
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.AUTO_COMPOST
@@ -22,6 +23,7 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CIRCUITRY
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CIRCUIT_BOARD
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CRATE_PLACER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CRUISER_REACTOR_CORE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.DETONATOR
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.EXTENDED_BAR
@@ -73,6 +75,7 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RIFLE_RECEI
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SHOTGUN_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SILK_TOUCH_MOD
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SMB_RECEIVER
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SMOKE_GRENADE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SNIPER_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.STANDARD_MAGAZINE
@@ -96,10 +99,7 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.URANIUM_BLO
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.URANIUM_CORE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.URANIUM_ROD
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.VEIN_MINER_25
-import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.DETONATOR
-import net.horizonsend.ion.server.features.custom.items.CustomItems.SMOKE_GRENADE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
@@ -1007,7 +1007,7 @@ object Crafting : IonServerComponent() {
 		Bukkit.addRecipe(recipe)
 	}
 
-	fun materialBlockRecipes(blockItem: CustomBlockItem, ingotItem: NewCustomItem) {
+	fun materialBlockRecipes(blockItem: CustomBlockItem, ingotItem: CustomItem) {
 		itemStackShapelessRecipe(blockItem.identifier.lowercase(), blockItem.constructItemStack()) {
 			addIngredient(ingotItem.constructItemStack(9))
 		}

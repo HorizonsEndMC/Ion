@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_D
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
@@ -26,7 +26,7 @@ class ModManager(val maxMods: Int) : CustomItemComponent, LoreManager {
 	override fun shouldIncludeSeparator(): Boolean = true
 	override val priority: Int = 50
 
-	override fun getLines(customItem: NewCustomItem, itemStack: ItemStack): List<Component> {
+	override fun getLines(customItem: CustomItem, itemStack: ItemStack): List<Component> {
 		val list = mutableListOf(ofChildren(modPrefix, text(maxMods, HE_LIGHT_GRAY), text("):", HE_MEDIUM_GRAY)).itemLore)
 
 		val mods = getMods(itemStack)
@@ -35,7 +35,7 @@ class ModManager(val maxMods: Int) : CustomItemComponent, LoreManager {
 		return list
 	}
 
-	override fun decorateBase(baseItem: ItemStack, customItem: NewCustomItem) {
+	override fun decorateBase(baseItem: ItemStack, customItem: CustomItem) {
 		setMods(baseItem, customItem, arrayOf())
 	}
 
@@ -46,7 +46,7 @@ class ModManager(val maxMods: Int) : CustomItemComponent, LoreManager {
 
 	fun getMods(item: ItemStack): Array<ItemModification> = item.itemMeta.persistentDataContainer.getOrDefault(TOOL_MODIFICATIONS, ModManager, arrayOf())
 
-	fun setMods(item: ItemStack, customItem: NewCustomItem, mods: Array<ItemModification>) {
+	fun setMods(item: ItemStack, customItem: CustomItem, mods: Array<ItemModification>) {
 		item.updateMeta {
 			it.persistentDataContainer.set(TOOL_MODIFICATIONS, ModList, mods)
 		}
@@ -54,7 +54,7 @@ class ModManager(val maxMods: Int) : CustomItemComponent, LoreManager {
 		customItem.refreshLore(item)
 	}
 
-	fun addMod(item: ItemStack, customItem: NewCustomItem, mod: ItemModification): Boolean {
+	fun addMod(item: ItemStack, customItem: CustomItem, mod: ItemModification): Boolean {
 		val mods = getMods(item)
 		if (mods.contains(mod)) return false
 
@@ -65,7 +65,7 @@ class ModManager(val maxMods: Int) : CustomItemComponent, LoreManager {
 		return true
 	}
 
-	fun removeMod(item: ItemStack, customItem: NewCustomItem, mod: ItemModification): Boolean {
+	fun removeMod(item: ItemStack, customItem: CustomItem, mod: ItemModification): Boolean {
 		val mods = getMods(item)
 		if (!mods.contains(mod)) return false
 
@@ -76,7 +76,7 @@ class ModManager(val maxMods: Int) : CustomItemComponent, LoreManager {
 		return true
 	}
 
-	fun openMenu(player: Player, customItem: NewCustomItem, item: ItemStack) {
+	fun openMenu(player: Player, customItem: CustomItem, item: ItemStack) {
 		ToolModMenu.create(player, item, customItem, this).open()
 	}
 

@@ -7,9 +7,9 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.DETONATOR
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_DRILL_BASIC
-import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.gear.getPower
 import org.bukkit.Material
@@ -33,7 +33,7 @@ object ConvertCommand : SLCommand() { // I imagine we'll need more than blasters
 		}
 
 		val newVersion = when (heldItem.itemMeta.customModelData) {
-			1 -> CustomItems.DETONATOR
+			1 -> DETONATOR
 			else -> {
 				sender.information("Wtf do you have")
 				return

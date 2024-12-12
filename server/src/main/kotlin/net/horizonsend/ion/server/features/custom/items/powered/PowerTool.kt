@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.powered
 
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.components.Listener.Companion.rightClickListener
@@ -12,7 +12,7 @@ import org.bukkit.Material
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
-abstract class PowerTool(identifier: String, displayName: Component, private val modLimit: Int, private val basePowerCapacity: Int, val model: String) : NewCustomItem(
+abstract class PowerTool(identifier: String, displayName: Component, private val modLimit: Int, private val basePowerCapacity: Int, val model: String) : CustomItem(
 	identifier,
 	displayName,
 	ItemFactory

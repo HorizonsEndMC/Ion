@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.command
 
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
 import co.aikar.commands.PaperCommandManager
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
@@ -34,7 +35,7 @@ object GlobalCompletions {
 
 	fun stringToItem(string: String): ItemStack? {
 		// if a custom item is found, use that
-		net.horizonsend.ion.server.features.custom.items.CustomItems.getByIdentifier(string)?.let { return it.constructItemStack() }
+		CustomItemRegistry.getByIdentifier(string)?.let { return it.constructItemStack() }
 		LegacyCustomItems[string]?.let { return it.itemStack(1) }
 
 		val material: Material = try { Material.valueOf(string) } catch (e: Throwable) { return null }

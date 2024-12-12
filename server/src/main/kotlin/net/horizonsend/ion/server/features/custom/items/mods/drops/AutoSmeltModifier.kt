@@ -4,9 +4,9 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerConsumption
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
@@ -36,7 +36,7 @@ object AutoSmeltModifier : ItemModification, DropModifier {
 
 	override val crouchingDisables: Boolean = false
 
-	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
+	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(AutoSmeltModifier::class)
 
 	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItemRegistry.AUTO_SMELT }
@@ -44,7 +44,7 @@ object AutoSmeltModifier : ItemModification, DropModifier {
 	override val priority: Int = 1
 
 	override fun modifyDrop(itemStack: ItemStack): Boolean {
-		val customItem = itemStack.newCustomItem
+		val customItem = itemStack.customItem
 		if (customItem?.hasComponent(CustomComponentTypes.SMELTABLE) == true) return false
 
 		// Replace with modified version

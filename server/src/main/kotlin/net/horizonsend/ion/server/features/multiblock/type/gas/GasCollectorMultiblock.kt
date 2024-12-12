@@ -3,8 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.gas
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
@@ -114,7 +113,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		val hopper = hopperBlock.getState(false) as Hopper
 
 		val canisterItem = furnace.inventory.fuel ?: return false
-		val customItem = canisterItem.newCustomItem ?: return false
+		val customItem = canisterItem.customItem ?: return false
 
 		return when (customItem) {
 			CustomItemRegistry.GAS_CANISTER_EMPTY -> fillEmptyCanister(furnace, gas, amount)
@@ -126,7 +125,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	}
 
 	private fun fillEmptyCanister(furnace: Furnace, gas: Gas, amount: Int): Boolean {
-		val newType = CustomItems.getByIdentifier(gas.containerIdentifier) as? GasCanister ?: return false
+		val newType = CustomItemRegistry.getByIdentifier(gas.containerIdentifier) as? GasCanister ?: return false
 		val newCanister = newType.createWithFill(amount)
 
 		furnace.inventory.fuel = newCanister
@@ -135,7 +134,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	}
 
 	private fun fillGasCanister(canisterItem: ItemStack, furnace: Furnace, hopper: Hopper, amount: Int): Boolean {
-		val type = canisterItem.newCustomItem ?: return false
+		val type = canisterItem.customItem ?: return false
 		if (type !is GasCanister) return  false
 
 		val currentFill = type.getFill(canisterItem)

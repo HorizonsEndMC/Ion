@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.mods.drops
 
 import net.horizonsend.ion.common.utils.text.BOLD
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerConsumption
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
@@ -29,7 +29,7 @@ class FortuneModifier(
 ) : ItemModification, DropSource {
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "FORTUNE_$level"
-	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
+	override val applicableTo: Array<KClass<out CustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(FortuneModifier::class, SilkTouchSource::class)
 	override val shouldDropXP: Boolean = true
 
