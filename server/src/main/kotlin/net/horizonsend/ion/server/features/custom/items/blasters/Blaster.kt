@@ -6,9 +6,9 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Balancing
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.components.Ammunition
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
@@ -41,7 +41,7 @@ open class Blaster<T : Balancing>(
 	displayName: Component,
 	itemFactory: ItemFactory,
 	private val balancingSupplier: Supplier<T>
-) : NewCustomItem(
+) : CustomItem(
 	identifier,
 	displayName,
 	itemFactory,
@@ -182,7 +182,7 @@ open class Blaster<T : Balancing>(
 			for (magazineItem in livingEntity.inventory.filterNotNull()) {
 				if (ammo >= balancing.capacity) break // Check if blaster magazine is full
 
-				val magazineCustomItem = magazineItem.newCustomItem ?: continue // To get magazine properties
+				val magazineCustomItem = magazineItem.customItem ?: continue // To get magazine properties
 				if (magazineCustomItem !is Magazine) continue // Just to smart cast
 
 				if (magazineCustomItem.identifier != balancing.magazineIdentifier) continue // Only correct magazine

@@ -27,7 +27,7 @@ import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.PUMPKIN_GRENADE
 import net.horizonsend.ion.server.features.world.WorldSettings.DroppedItem
 import org.bukkit.Material
 
@@ -1065,7 +1065,7 @@ object AITemplateRegistry {
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.55))
 		.addRewardProvider(CreditRewardProviderConfiguration(3500.0))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, VariableIntegerAmount(3, 5), 0.25f))))
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItems.PUMPKIN_GRENADE.identifier, VariableIntegerAmount(0, 3), 1.05f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(PUMPKIN_GRENADE.identifier, VariableIntegerAmount(0, 3), 1.05f))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 0.5f, amount = StaticIntegerAmount(1)))))
 		.build()
 	)
@@ -1080,7 +1080,7 @@ object AITemplateRegistry {
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.35))
 		.addRewardProvider(CreditRewardProviderConfiguration(1500.0))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, VariableIntegerAmount(3, 5), 0.25f))))
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItems.PUMPKIN_GRENADE.identifier, VariableIntegerAmount(0, 3), 1.0f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(PUMPKIN_GRENADE.identifier, VariableIntegerAmount(0, 3), 1.0f))))
 		.build()
 	)
 

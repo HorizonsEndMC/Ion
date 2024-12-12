@@ -4,7 +4,7 @@ import fr.skytasul.guardianbeam.Laser
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.components.Listener.Companion.leftClickListener
@@ -40,7 +40,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
 
-object CratePlacer : NewCustomItem(
+object CratePlacer : CustomItem(
 	"CRATE_PLACER",
 	ofChildren(text("Crate ", GOLD), text("Placer", GRAY)).itemName,
 	ItemFactory

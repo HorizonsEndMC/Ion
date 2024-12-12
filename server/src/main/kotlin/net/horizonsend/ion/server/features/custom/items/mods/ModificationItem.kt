@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.custom.items.mods
 
 import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
@@ -18,7 +18,7 @@ class ModificationItem(
 	displayName: Component,
 	vararg description: Component,
 	private val modSupplier: Supplier<ItemModification>,
-) : NewCustomItem(
+) : CustomItem(
 	identifier,
 	displayName,
 	ItemFactory

@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.custom.items.mods
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.components.ModManager
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -28,7 +28,7 @@ import kotlin.math.ceil
 class ToolModMenu(
 	private val viewer: Player,
 	private val itemStack: ItemStack,
-	private val customItem: NewCustomItem,
+	private val customItem: CustomItem,
 	private val modManager: ModManager
 ) : InventoryHolder {
 	private val inventorySize = (ceil((modManager.getMods(itemStack).size + 1).toDouble() / 9.0) * 9).toInt()
@@ -75,7 +75,7 @@ class ToolModMenu(
 			.filter { it.modItem.get() == null }
 
 		val mods = contents
-			.mapNotNull { it?.newCustomItem }
+			.mapNotNull { it?.customItem }
 			.filterIsInstance<ModificationItem>()
 			.mapTo(mutableSetOf()) { it.modification }
 			.plus(nonItemMods)
@@ -192,7 +192,7 @@ class ToolModMenu(
 	}
 
 	private fun canAdd(itemStack: ItemStack, player: Player): Boolean {
-		val customItem = itemStack.newCustomItem
+		val customItem = itemStack.customItem
 		if (customItem !is ModificationItem) {
 			return false
 		}
@@ -229,7 +229,7 @@ class ToolModMenu(
 	companion object : SLEventListener() {
 		private val inventories = mutableMapOf<UUID, ToolModMenu>()
 
-		fun create(viewer: Player, itemStack: ItemStack, customItem: NewCustomItem, manager: ModManager): ToolModMenu {
+		fun create(viewer: Player, itemStack: ItemStack, customItem: CustomItem, manager: ModManager): ToolModMenu {
 			val holder = ToolModMenu(viewer, itemStack, customItem, manager)
 			inventories[viewer.uniqueId] = holder
 

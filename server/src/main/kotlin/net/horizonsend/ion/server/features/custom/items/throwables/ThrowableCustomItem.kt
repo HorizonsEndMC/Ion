@@ -1,48 +1,49 @@
 package net.horizonsend.ion.server.features.custom.items.throwables
 
-import org.bukkit.block.Dispenser as DispenserState
-import org.bukkit.block.data.type.Dispenser as DispenserData
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Throwables.ThrowableBalancing
-import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.features.custom.CustomItem
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.components.Listener
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.block.Dispenser as DispenserState
+import org.bukkit.block.data.type.Dispenser as DispenserData
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 
 abstract class ThrowableCustomItem(
 	identifier: String,
 
-	private val customModelData: Int,
-	val displayName: Component,
+	customModel: String,
+	displayName: Component,
 
 	private val balancingSupplier: Supplier<ThrowableBalancing>
-) : CustomItem(identifier) {
+) : CustomItem(
+	identifier,
+	displayName,
+	ItemFactory.unStackableCustomItem(customModel)
+) {
 	val balancing get() = balancingSupplier.get()
 	val material = Material.WARPED_FUNGUS_ON_A_STICK
 
-	override fun constructItemStack(): ItemStack {
-		return ItemStack(material).updateMeta {
-			it.setCustomModelData(customModelData)
-			it.displayName(displayName)
-			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
-		}.apply { amount = 1 }
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, Listener.rightClickListener(this@ThrowableCustomItem) { event, _, itemStack ->
+			throwItem(itemStack, event.player)
+		})
+		addComponent(CustomComponentTypes.LISTENER_DISPENSE, Listener.dispenseListener(this@ThrowableCustomItem) { event, _, item ->
+			handleDispense(event.block.state as DispenserState, event.slot)
+		})
 	}
 
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
-		throwItem(itemStack, livingEntity)
-	}
-
-	open fun throwItem(item: ItemStack, thrower: LivingEntity, maxTicks: Int = balancing.maxTicks) {
+	protected open fun throwItem(item: ItemStack, thrower: LivingEntity, maxTicks: Int = balancing.maxTicks) {
 		val newItemStack = constructItemStack()
 		newItemStack.amount = 1
 
@@ -62,7 +63,7 @@ abstract class ThrowableCustomItem(
 		)
 	}
 
-	override fun handleDispense(dispenser: DispenserState, slot: Int) {
+	private fun handleDispense(dispenser: DispenserState, slot: Int) {
 		val facing = (dispenser.blockData as DispenserData).facing
 		val origin = dispenser.location.toCenterLocation().add(facing.direction)
 		val droppedItem = dispenser.world.dropItem(origin, constructItemStack())
@@ -80,7 +81,7 @@ abstract class ThrowableCustomItem(
 		dispenser.inventory.setItem(slot, null)
 	}
 
-	open fun throwItem(
+	protected open fun throwItem(
 		item: ItemStack,
 		itemEntity: Item,
 		direction: Vector,

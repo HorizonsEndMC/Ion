@@ -8,8 +8,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes.Companion.MODDED_ITEM
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes.Companion.POWERED_ITEM
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
@@ -45,7 +44,7 @@ object ItemDebugCommand : SLCommand() {
 	@Subcommand("getmods")
 	fun getMods(sender: Player) {
 		val item = sender.inventory.itemInMainHand
-		val customItem = item.newCustomItem ?: fail { "Not a valid custom item!" }
+		val customItem = item.customItem ?: fail { "Not a valid custom item!" }
 		failIf(!customItem.hasComponent(MODDED_ITEM)) { "${item.customItem?.identifier} is not moddable" }
 		val modManger = customItem.getComponent(MODDED_ITEM)
 
@@ -55,7 +54,7 @@ object ItemDebugCommand : SLCommand() {
 	@Subcommand("addmod")
 	fun addMod(sender: Player, mod: ItemModification) {
 		val item = sender.inventory.itemInMainHand
-		val customItem = item.newCustomItem ?: fail { "Not a valid custom item!" }
+		val customItem = item.customItem ?: fail { "Not a valid custom item!" }
 		failIf(!customItem.hasComponent(MODDED_ITEM)) { "${item.customItem?.identifier} is not moddable" }
 		val modManger = customItem.getComponent(MODDED_ITEM)
 
@@ -67,7 +66,7 @@ object ItemDebugCommand : SLCommand() {
 	@Subcommand("removemod")
 	fun removeMod(sender: Player, mod: ItemModification) {
 		val item = sender.inventory.itemInMainHand
-		val customItem = item.newCustomItem ?: fail { "Not a valid custom item!" }
+		val customItem = item.customItem ?: fail { "Not a valid custom item!" }
 		failIf(!customItem.hasComponent(MODDED_ITEM)) { "${item.customItem?.identifier} is not moddable" }
 		val modManger = customItem.getComponent(MODDED_ITEM)
 
@@ -79,7 +78,7 @@ object ItemDebugCommand : SLCommand() {
 	@Subcommand("set power")
 	fun onSetPower(sender: Player, amount: Int) {
 		val item = sender.inventory.itemInMainHand
-		val customItem = item.newCustomItem ?: fail { "Not a valid custom item!" }
+		val customItem = item.customItem ?: fail { "Not a valid custom item!" }
 		failIf(!customItem.hasComponent(POWERED_ITEM)) { "${item.customItem?.identifier} is not powered" }
 		val custom = customItem.getComponent(POWERED_ITEM)
 

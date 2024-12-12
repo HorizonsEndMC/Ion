@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.industry
 
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
@@ -78,7 +78,7 @@ object GasFurnaceMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
 		handleRecipe(this, event, furnace, sign)
 
-		if (furnace.inventory.fuel?.newCustomItem != CustomItemRegistry.GAS_CANISTER_EMPTY) return
+		if (furnace.inventory.fuel?.customItem != CustomItemRegistry.GAS_CANISTER_EMPTY) return
 
 		val inventoryHolder = furnace.block.getRelative(sign.getFacing().oppositeFace, 3).state as InventoryHolder
 

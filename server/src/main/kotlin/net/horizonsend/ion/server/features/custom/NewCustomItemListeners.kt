@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom
 
 import io.papermc.paper.event.block.BlockPreDispenseEvent
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.components.Listener
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Material
@@ -17,14 +17,14 @@ import org.bukkit.inventory.meta.Damageable
 
 object NewCustomItemListeners : SLEventListener() {
 	// Presorted to avoid a bunch of filtering for every event at runtime
-	private val interactListeners: MutableMap<NewCustomItem, MutableSet<Listener<PlayerInteractEvent, *>>> = mutableMapOf()
-	private val swapItemListeners: MutableMap<NewCustomItem, MutableSet<Listener<PlayerSwapHandItemsEvent, *>>> = mutableMapOf()
-	private val dispenseListeners: MutableMap<NewCustomItem, MutableSet<Listener<BlockPreDispenseEvent, *>>> = mutableMapOf()
-	private val entityShootBowListeners: MutableMap<NewCustomItem, MutableSet<Listener<EntityShootBowEvent, *>>> = mutableMapOf()
+	private val interactListeners: MutableMap<CustomItem, MutableSet<Listener<PlayerInteractEvent, *>>> = mutableMapOf()
+	private val swapItemListeners: MutableMap<CustomItem, MutableSet<Listener<PlayerSwapHandItemsEvent, *>>> = mutableMapOf()
+	private val dispenseListeners: MutableMap<CustomItem, MutableSet<Listener<BlockPreDispenseEvent, *>>> = mutableMapOf()
+	private val entityShootBowListeners: MutableMap<CustomItem, MutableSet<Listener<EntityShootBowEvent, *>>> = mutableMapOf()
 
-	private fun <E: Event, T: NewCustomItem> getListeners(
-		collection: MutableMap<NewCustomItem, MutableSet<Listener<E, *>>>,
-		item: T
+	private fun <E: Event, T: CustomItem> getListeners(
+        collection: MutableMap<CustomItem, MutableSet<Listener<E, *>>>,
+        item: T
 	): MutableSet<Listener<E, *>> {
 		return collection.getOrPut(item) { mutableSetOf() }
 	}
@@ -43,7 +43,7 @@ object NewCustomItemListeners : SLEventListener() {
 	// For durability manipulation
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onPlayerItemDamageEvent(event: PlayerItemDamageEvent) {
-		if (event.item.newCustomItem == null) return
+		if (event.item.customItem == null) return
 		if (event.item.itemMeta !is Damageable) return
 		event.isCancelled = true
 	}
@@ -52,7 +52,7 @@ object NewCustomItemListeners : SLEventListener() {
 	fun playerInteractListener(event: PlayerInteractEvent) {
 		if (event.hand != EquipmentSlot.HAND) return
 		val item = event.item ?: return
-		val customItem = item.newCustomItem ?: return
+		val customItem = item.customItem ?: return
 
 		val listeners = getListeners(interactListeners, customItem).filter { it.preCheck(event, item) }
 
@@ -65,7 +65,7 @@ object NewCustomItemListeners : SLEventListener() {
 	@EventHandler
 	fun onEntityShootBow(event: EntityShootBowEvent) {
 		val offhand = event.entity.equipment?.itemInMainHand ?: return
-		val customItem = offhand.newCustomItem ?: return
+		val customItem = offhand.customItem ?: return
 
 		val listeners = getListeners(entityShootBowListeners, customItem)
 
@@ -79,7 +79,7 @@ object NewCustomItemListeners : SLEventListener() {
 	fun onPlayerSwapItem(event: PlayerSwapHandItemsEvent) {
 		// We have to get it from the inventory and not the event, otherwise things break
 		val itemStack = event.player.inventory.itemInMainHand
-		val customItem = itemStack.newCustomItem ?: return
+		val customItem = itemStack.customItem ?: return
 
 		val listeners = getListeners(swapItemListeners, customItem)
 
@@ -93,7 +93,7 @@ object NewCustomItemListeners : SLEventListener() {
 	fun onItemDispensed(event: BlockPreDispenseEvent) {
 		// Retain the dispenser/ dropper parity
 		if (event.block.type != Material.DISPENSER) return
-		val customItem = event.itemStack.newCustomItem ?: return
+		val customItem = event.itemStack.customItem ?: return
 
 		val listeners = getListeners(dispenseListeners, customItem)
 

@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.components
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerStorage
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncrease
@@ -16,15 +16,15 @@ import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
 
 class Power(private val basePowerCapacity: Int, private val basePowerUsage: Int, val displayDurability: Boolean) : CustomItemComponent, LoreManager {
-	override fun decorateBase(baseItem: ItemStack, customItem: NewCustomItem) {
+	override fun decorateBase(baseItem: ItemStack, customItem: CustomItem) {
 		setPower(customItem, baseItem, basePowerCapacity)
 	}
 
-	fun getMaxPower(customItem: NewCustomItem, itemStack: ItemStack): Int {
+	fun getMaxPower(customItem: CustomItem, itemStack: ItemStack): Int {
 		return basePowerCapacity + customItem.getAttributes(itemStack).filterIsInstance<AdditionalPowerStorage>().sumOf { it.amount }
 	}
 
-	fun setPower(customItem: NewCustomItem, itemStack: ItemStack, amount: Int) {
+	fun setPower(customItem: CustomItem, itemStack: ItemStack, amount: Int) {
 		val capacity = getMaxPower(customItem, itemStack)
 		val corrected = amount.coerceAtMost(capacity)
 
@@ -41,12 +41,12 @@ class Power(private val basePowerCapacity: Int, private val basePowerUsage: Int,
 		return StoredValues.POWER.getAmount(itemStack)
 	}
 
-	fun removePower(itemStack: ItemStack, customItem: NewCustomItem, amount: Int) {
+	fun removePower(itemStack: ItemStack, customItem: CustomItem, amount: Int) {
 		val power = getPower(itemStack)
 		setPower(customItem, itemStack, power - amount)
 	}
 
-	fun addPower(itemStack: ItemStack, customItem: NewCustomItem, amount: Int) {
+	fun addPower(itemStack: ItemStack, customItem: CustomItem, amount: Int) {
 		val power = getPower(itemStack)
 		setPower(customItem, itemStack, power + amount)
 	}
@@ -54,7 +54,7 @@ class Power(private val basePowerCapacity: Int, private val basePowerUsage: Int,
 	override val priority: Int = 100
 	override fun shouldIncludeSeparator(): Boolean = true
 
-	override fun getLines(customItem: NewCustomItem, itemStack: ItemStack): List<Component> {
+	override fun getLines(customItem: CustomItem, itemStack: ItemStack): List<Component> {
 		val power = getPower(itemStack)
 
 		return listOf(ofChildren(
@@ -67,7 +67,7 @@ class Power(private val basePowerCapacity: Int, private val basePowerUsage: Int,
 
 	override fun getAttributes(baseItem: ItemStack): Iterable<CustomItemAttribute> = mutableListOf()
 
-	fun getPowerUse(itemStack: ItemStack, customItem: NewCustomItem): Int {
+	fun getPowerUse(itemStack: ItemStack, customItem: CustomItem): Int {
 		var usage = basePowerUsage.toDouble()
 		val attributes = customItem.getAttributes(itemStack).filterIsInstance<PowerUsageIncrease>()
 
