@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.misc
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.PERSONAL_TRANSPORTER
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
@@ -64,12 +64,12 @@ object PersonalTransporterManager : SLEventListener() {
     }
 
     fun checkItemFromPlayer(target: Player): Boolean {
-        return target.inventory.contains(CustomItems.PERSONAL_TRANSPORTER.constructItemStack())
+        return target.inventory.contains(PERSONAL_TRANSPORTER.constructItemStack())
     }
 
     fun removeItemFromPlayer(target: Player) {
         if (checkItemFromPlayer(target)) {
-            target.inventory.removeItemAnySlot(CustomItems.PERSONAL_TRANSPORTER.constructItemStack())
+            target.inventory.removeItemAnySlot(PERSONAL_TRANSPORTER.constructItemStack())
         }
     }
 
