@@ -5,6 +5,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BARGE_REACTOR_CORE
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_CANNON
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_PISTOL
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_RIFLE
@@ -15,6 +17,7 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CHETHERITE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CIRCUITRY
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CIRCUIT_BOARD
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FABRICATED_ASSEMBLY
@@ -71,9 +74,6 @@ import net.horizonsend.ion.server.features.custom.items.CustomItems
 import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_COMPOST
 import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_SMELT
-import net.horizonsend.ion.server.features.custom.items.CustomItems.BARGE_REACTOR_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.BATTLECRUISER_REACTOR_CORE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItems.DETONATOR
 import net.horizonsend.ion.server.features.custom.items.CustomItems.EXTENDED_BAR
 import net.horizonsend.ion.server.features.custom.items.CustomItems.FERTILIZER_DISPENSER
