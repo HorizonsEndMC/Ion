@@ -75,7 +75,7 @@ open class NewCustomItem(
 			newLore.addAll(manager.getLines(this, itemStack))
 
 			if (manager.shouldIncludeSeparator() && iterator.hasNext()) {
-				newLore += Component.newline()
+				newLore += Component.empty()
 			}
 		}
 
