@@ -94,12 +94,12 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	private fun createGui(): Gui {
 
 		val star = Space.getStars().firstOrNull { star -> star.spaceWorld == world }
-		val starItem = if (star != null) NavigationGuiCommon.createStarCustomControlItem(star, player, world, gui) else null
+		val starItem = if (star != null) NavigationGuiCommon.createStarCustomControlItem(star, player, world, gui) { NavigationSystemMapGui(player, world).openMainWindow() } else null
 
 		planetItems.addAll(Space.getPlanets()
 			.filter { planet -> planet.spaceWorld == world }
 			.sortedBy { planet -> planet.orbitDistance }
-			.map { planet -> NavigationGuiCommon.createPlanetCustomControlItem(planet, player, world, gui) }
+			.map { planet -> NavigationGuiCommon.createPlanetCustomControlItem(planet, player, world, gui) { NavigationSystemMapGui(player, world).openMainWindow() } }
 		)
 		planetsInWorld = planetItems.size
 
