@@ -6,8 +6,8 @@ import net.horizonsend.ion.common.database.schema.space.Planet.Companion.setX
 import net.horizonsend.ion.common.database.schema.space.Planet.Companion.setZ
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.i
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CHANDRA
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getSphereBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.nms
@@ -76,8 +76,8 @@ class CachedPlanet(
 	var orbitDistance: Int = orbitDistance; private set
 	var orbitProgress: Double = orbitProgress; private set
 
-	val planetIcon: CustomItem = CustomItems["planet_icon_${name.lowercase(Locale.getDefault()).replace(" ", "")}"]
-		?: CustomItems.BATTERY_LARGE // TODO: When porting over planet icons, change the legacy uranium icon too
+	//TODO move to world config
+	val planetIcon = CustomItemRegistry.getByIdentifier(name.uppercase(Locale.getDefault()).replace(" ", "")) ?: CHANDRA
 
 	init {
 		require(size > 0 && size <= 1)
