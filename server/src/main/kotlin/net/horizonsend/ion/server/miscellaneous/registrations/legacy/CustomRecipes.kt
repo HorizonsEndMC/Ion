@@ -2,11 +2,11 @@ package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.custom.CustomItem
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ALUMINUM_INGOT
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CHETHERITE
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.GAS_CANISTER_EMPTY
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.TITANIUM_INGOT
+import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_EMPTY
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_INGOT
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem as LegacyCustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM

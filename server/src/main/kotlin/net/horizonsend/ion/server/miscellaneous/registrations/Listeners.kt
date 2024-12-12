@@ -3,11 +3,10 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.horizonsend.ion.server.features.custom.ItemConverters
-import net.horizonsend.ion.server.features.custom.NewCustomItemListeners
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
-import net.horizonsend.ion.server.features.custom.items.blasters.BlasterListeners
-import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporterManager
-import net.horizonsend.ion.server.features.custom.items.mods.ToolModMenu
+import net.horizonsend.ion.server.features.custom.items.NewCustomItemListeners
+import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporterManager
+import net.horizonsend.ion.server.features.custom.items.type.blaster.BlasterListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractTractorBeam
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
@@ -80,7 +79,7 @@ val listeners: List<Listener> = listOf(
 	BiomeFixer9001(),
 	AbstractTractorBeam.Companion,
 	PlayerDeathListener,
-	ToolModMenu,
+	net.horizonsend.ion.server.features.custom.items.type.tool.mods.ToolModMenu,
 	RecipeModifications,
 	PersonalTransporterManager,
 
