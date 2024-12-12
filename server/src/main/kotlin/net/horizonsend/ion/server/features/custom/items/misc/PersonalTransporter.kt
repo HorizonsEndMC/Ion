@@ -1,39 +1,38 @@
 package net.horizonsend.ion.server.features.custom.items.misc
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.components.Listener
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.gui.custom.item.PersonalTransporterGui
 import net.horizonsend.ion.server.features.progression.Levels
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType.STRING
 
-object PersonalTransporter : CustomItem("PERSONAL_TRANSPORTER") {
-    override fun constructItemStack(): ItemStack {
-        return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-            it.setCustomModelData(1103)
-            it.displayName(text("Personal Transporter", GOLD).itemName)
-            it.lore(listOf(
-                text("Select a player to request to teleport to them. One-time use", GRAY)
-            ))
-            it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
-        }.apply { amount = 1 }
-    }
+object PersonalTransporter : NewCustomItem(
+	"PERSONAL_TRANSPORTER",
+	text("Personal Transporter", GOLD).itemName,
+	ItemFactory.unStackableCustomItem("throwables/personal_transporter")
+) {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, Listener.rightClickListener(this@PersonalTransporter) { event, _, _ ->
+			onRightClick(event.player)
+		})
+	}
 
-    override fun handleSecondaryInteract(
-        livingEntity: LivingEntity,
-        itemStack: ItemStack,
-        event: PlayerInteractEvent?
-    ) {
+	override fun assembleLore(itemStack: ItemStack): List<Component> {
+		return listOf(text("Select a player to request to teleport to them. One-time use", GRAY))
+	}
+
+    private fun onRightClick(livingEntity: LivingEntity) {
         if (livingEntity is Player) {
             openTeleportMenu(livingEntity)
         }

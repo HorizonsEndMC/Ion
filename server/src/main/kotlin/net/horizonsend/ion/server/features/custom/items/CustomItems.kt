@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
-import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownCustomItem
 import net.horizonsend.ion.server.features.custom.items.throwables.ThrownPumpkinGrenade
@@ -73,7 +72,6 @@ object CustomItems {
 	})
 	// Throwables end
 	// Tools begin
-	val PERSONAL_TRANSPORTER = register(PersonalTransporter)
 
 // Tools end
 

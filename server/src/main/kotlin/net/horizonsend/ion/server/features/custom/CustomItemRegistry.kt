@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.components.Smeltable
+import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
@@ -219,6 +220,10 @@ object CustomItemRegistry : IonServerComponent() {
 	val CRUISER_REACTOR_CORE = customBlockItem(identifier = "CRUISER_REACTOR_CORE", model = "starship/cruiser_reactor_core", displayName = text("Cruiser Reactor Core", BOLD), customBlock = CustomBlocks::CRUISER_REACTOR_CORE)
 	// Starship Components End
 
+	// Gas canisters start
+
+	// Gas canisters end
+
 	// Tools start
 	private fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
 		text("$tierName ", tierColor),
@@ -312,6 +317,8 @@ object CustomItemRegistry : IonServerComponent() {
 	val RANGE_3: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_RANGE_3", "tool/modification/drill_aoe_3", text("Range Addon +3").itemName, text("Expands the working area by 3 blocks", GRAY).itemName) { ItemModRegistry.AOE_3 })
 	val EXTENDED_BAR: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_EXTENDED_BAR", "tool/modification/extended_bar", text("Extended Chainsaw Bar").itemName, text("Allows a chainsaw to cut down larger trees", GRAY).itemName) { ItemModRegistry.EXTENDED_BAR })
 	val FERTILIZER_DISPENSER: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FERTILIZER_DISPENSER", "tool/modification/fertilizer_dispenser", text("Fertilizer Sprayer").itemName, text("Applies bonemeal to crops in the effected area, if available in the user's inventory", GRAY).itemName) { ItemModRegistry.FERTILIZER_DISPENSER })
+
+	val PERSONAL_TRANSPORTER = register(PersonalTransporter)
 	// Tools end
 
 	// Planets start
@@ -343,7 +350,6 @@ object CustomItemRegistry : IonServerComponent() {
 	// UI
 	val PLANET_SELECTOR = unStackable(identifier = "PLANET_SELECTOR", displayName = text("PLANET_SELECTOR"), model = "planet/planet_selector")
 
-	// Legacy planet icons=
 
 	init {
 		sortCustomItemListeners()
