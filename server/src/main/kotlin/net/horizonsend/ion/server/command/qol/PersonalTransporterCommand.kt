@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporterManager
+import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporterManager
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
