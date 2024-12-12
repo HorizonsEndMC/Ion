@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient
 
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
-import net.horizonsend.ion.server.features.custom.items.GasCanister
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import org.bukkit.block.Sign
 import org.bukkit.inventory.ItemStack

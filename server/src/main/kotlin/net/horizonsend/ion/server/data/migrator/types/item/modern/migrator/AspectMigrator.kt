@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ItemCom
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.PullLoreMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.SetLoreMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.predicate.ItemMigratorPredicate
-import net.horizonsend.ion.server.features.custom.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.HORIZONSEND_NAMESPACE
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
@@ -19,10 +19,10 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 class AspectMigrator private constructor(
-    val customItem: CustomItem,
-    predicate: ItemMigratorPredicate,
-    private val aspects: Set<ItemAspectMigrator>,
-    private val additionalIdentifiers: Set<String> = setOf()
+	val customItem: CustomItem,
+	predicate: ItemMigratorPredicate,
+	private val aspects: Set<ItemAspectMigrator>,
+	private val additionalIdentifiers: Set<String> = setOf()
 ) : CustomItemStackMigrator(predicate) {
 	override fun registerTo(map: MutableMap<String, CustomItemStackMigrator>) {
 		map[customItem.identifier] = this

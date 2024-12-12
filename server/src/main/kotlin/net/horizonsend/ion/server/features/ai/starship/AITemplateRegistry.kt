@@ -26,8 +26,8 @@ import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.PUMPKIN_GRENADE
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PUMPKIN_GRENADE
 import net.horizonsend.ion.server.features.world.WorldSettings.DroppedItem
 import org.bukkit.Material
 

@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.PERSONAL_TRANSPORTER
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PERSONAL_TRANSPORTER
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks

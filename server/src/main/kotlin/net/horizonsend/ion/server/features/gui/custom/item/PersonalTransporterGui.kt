@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.gui.custom.item
 
-import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporterManager
+import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporterManager
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText

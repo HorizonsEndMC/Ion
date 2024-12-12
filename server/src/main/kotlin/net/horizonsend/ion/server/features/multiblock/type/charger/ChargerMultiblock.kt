@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.type.charger
 
-import net.horizonsend.ion.server.features.custom.CustomItem
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
-import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
-import net.horizonsend.ion.server.features.custom.items.components.PowerStorage
+import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.gear.addPower
 import net.horizonsend.ion.server.features.gear.getMaxPower
 import net.horizonsend.ion.server.features.gear.getPower

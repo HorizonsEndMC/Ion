@@ -5,8 +5,8 @@ import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.legacy.LegacyCustomItemMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.AspectMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.LegacyNameFixer
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Chunk

@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.space.encounters
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
