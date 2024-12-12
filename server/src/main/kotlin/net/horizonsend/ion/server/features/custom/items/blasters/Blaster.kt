@@ -9,12 +9,12 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Energy
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.custom.NewCustomItem
-import net.horizonsend.ion.server.features.custom.items.components.AmmunitionComponent
-import net.horizonsend.ion.server.features.custom.items.components.CustomComponentType
+import net.horizonsend.ion.server.features.custom.items.components.Ammunition
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
-import net.horizonsend.ion.server.features.custom.items.components.ListenerComponent.Companion.playerSwapHandsListener
-import net.horizonsend.ion.server.features.custom.items.components.ListenerComponent.Companion.rightClickListener
-import net.horizonsend.ion.server.features.custom.items.components.MagazineTypeComponent
+import net.horizonsend.ion.server.features.custom.items.components.Listener.Companion.playerSwapHandsListener
+import net.horizonsend.ion.server.features.custom.items.components.Listener.Companion.rightClickListener
+import net.horizonsend.ion.server.features.custom.items.components.MagazineType
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -48,19 +48,19 @@ open class Blaster<T : Balancing>(
 ) {
 	val balancing get() = balancingSupplier.get()
 
-	val ammoComponent = AmmunitionComponent(balancingSupplier)
-	val magazineComponent = MagazineTypeComponent(balancingSupplier) { CustomItemRegistry.getByIdentifier(balancing.magazineIdentifier)!! }
+	val ammoComponent = Ammunition(balancingSupplier)
+	val magazineComponent = MagazineType(balancingSupplier) { CustomItemRegistry.getByIdentifier(balancing.magazineIdentifier)!! }
 
 	override fun decorateItemStack(base: ItemStack) {
 		ammoComponent.setAmmo(base, this, balancing.capacity)
 	}
 
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
-		addComponent(CustomComponentType.AMMUNITION, ammoComponent)
-		addComponent(CustomComponentType.MAGAZINE_TYPE, magazineComponent)
+		addComponent(CustomComponentTypes.AMMUNITION, ammoComponent)
+		addComponent(CustomComponentTypes.MAGAZINE_TYPE, magazineComponent)
 
-		addComponent(CustomComponentType.LISTENER_PLAYER_INTERACT, rightClickListener(this@Blaster) { event, _, item -> fire(event.player, item) })
-		addComponent(CustomComponentType.LISTENER_PLAYER_SWAP_HANDS, playerSwapHandsListener(this@Blaster) { event, _, item -> reload(event.player, item) })
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@Blaster) { event, _, item -> fire(event.player, item) })
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_SWAP_HANDS, playerSwapHandsListener(this@Blaster) { event, _, item -> reload(event.player, item) })
 	}
 
 	open fun fire(shooter: LivingEntity, blasterItem: ItemStack) {
@@ -187,10 +187,10 @@ open class Blaster<T : Balancing>(
 
 				if (magazineCustomItem.identifier != balancing.magazineIdentifier) continue // Only correct magazine
 
-				val magazineAmmo = magazineCustomItem.getComponent(CustomComponentType.AMMUNITION).getAmmo(magazineItem)
+				val magazineAmmo = magazineCustomItem.getComponent(CustomComponentTypes.AMMUNITION).getAmmo(magazineItem)
 				val amountToTake = (balancing.capacity - ammo).coerceAtMost(magazineAmmo)
 
-				magazineCustomItem.getComponent(CustomComponentType.AMMUNITION).setAmmo(magazineItem, magazineCustomItem, magazineAmmo - amountToTake)
+				magazineCustomItem.getComponent(CustomComponentTypes.AMMUNITION).setAmmo(magazineItem, magazineCustomItem, magazineAmmo - amountToTake)
 
 				ammo += amountToTake
 			}

@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.custom
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
-import net.horizonsend.ion.server.features.custom.items.components.CustomComponentType
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponent
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager.ComponentTypeData
@@ -24,20 +24,29 @@ open class NewCustomItem(
 
 	fun allComponents() = customComponents.getAll()
 
-	fun <T : CustomItemComponent> getComponent(type: CustomComponentType<T, ComponentTypeData.OnlyOne<T>>): T {
+	/**
+	 * Gets the component of the specified type. Throws exception if not present. Use #hasComponent to check beforehand
+	 **/
+	fun <T : CustomItemComponent> getComponent(type: CustomComponentTypes<T, ComponentTypeData.OnlyOne<T>>): T {
 		return customComponents.getComponent(type)
 	}
 
-	fun <T : CustomItemComponent> getComponents(type: CustomComponentType<T, ComponentTypeData.AllowMultiple<T>>): List<T> {
+	/**
+	 * Gets the components of the specified type. Throws exception if not present. Use #hasComponent to check beforehand
+	 **/
+	fun <T : CustomItemComponent> getComponents(type: CustomComponentTypes<T, ComponentTypeData.AllowMultiple<T>>): List<T> {
 		return customComponents.getComponents(type)
 	}
 
-	fun hasComponent(type: CustomComponentType<*, *>): Boolean = customComponents.hasComponent(type)
+	/**
+	 * Returns whether this item has the specified component
+	 **/
+	fun hasComponent(type: CustomComponentTypes<*, *>): Boolean = customComponents.hasComponent(type)
 
 	protected val baseItemFactory = ItemFactory.builder(baseItemFactory)
 		.setNameSupplier { displayName.itemName }
 		.addPDCEntry(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
-		.addModifier { base -> customComponents.getAll().forEach { it.decorateBase(base) } }
+		.addModifier { base -> customComponents.getAll().forEach { it.decorateBase(base, this) } }
 		.addModifier { base -> decorateItemStack(base) }
 		.setLoreSupplier { base -> assembleLore(base) }
 		.build()

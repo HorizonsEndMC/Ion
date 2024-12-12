@@ -8,12 +8,14 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes.Companion.MODDED_ITEM
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes.Companion.POWERED_ITEM
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
-import net.horizonsend.ion.server.features.custom.items.powered.PoweredItem
 import net.horizonsend.ion.server.features.gui.GuiItems
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -43,17 +45,21 @@ object ItemDebugCommand : SLCommand() {
 	@Subcommand("getmods")
 	fun getMods(sender: Player) {
 		val item = sender.inventory.itemInMainHand
-		val custom = item.customItem as? ModdedCustomItem ?: fail { "${item.customItem?.identifier} is not moddable" }
+		val customItem = item.newCustomItem ?: fail { "Not a valid custom item!" }
+		failIf(!customItem.hasComponent(MODDED_ITEM)) { "${item.customItem?.identifier} is not moddable" }
+		val modManger = customItem.getComponent(MODDED_ITEM)
 
-		sender.information("MODS: " + custom.getMods(item).joinToString { it.identifier })
+		sender.information("MODS: " + modManger.getMods(item).joinToString { it.identifier })
 	}
 
 	@Subcommand("addmod")
 	fun addMod(sender: Player, mod: ItemModification) {
 		val item = sender.inventory.itemInMainHand
-		val custom = item.customItem as? ModdedCustomItem ?: fail { "${item.customItem?.identifier} is not moddable" }
+		val customItem = item.newCustomItem ?: fail { "Not a valid custom item!" }
+		failIf(!customItem.hasComponent(MODDED_ITEM)) { "${item.customItem?.identifier} is not moddable" }
+		val modManger = customItem.getComponent(MODDED_ITEM)
 
-		custom.addMod(item, mod)
+		modManger.addMod(item, customItem, mod)
 
 		sender.information("Added ${mod.identifier}")
 	}
@@ -61,9 +67,11 @@ object ItemDebugCommand : SLCommand() {
 	@Subcommand("removemod")
 	fun removeMod(sender: Player, mod: ItemModification) {
 		val item = sender.inventory.itemInMainHand
-		val custom = item.customItem as? ModdedCustomItem ?: fail { "${item.customItem?.identifier} is not moddable" }
+		val customItem = item.newCustomItem ?: fail { "Not a valid custom item!" }
+		failIf(!customItem.hasComponent(MODDED_ITEM)) { "${item.customItem?.identifier} is not moddable" }
+		val modManger = customItem.getComponent(MODDED_ITEM)
 
-		custom.removeMod(item, mod)
+		modManger.removeMod(item, customItem, mod)
 
 		sender.information("Removed ${mod.identifier}")
 	}
@@ -71,16 +79,18 @@ object ItemDebugCommand : SLCommand() {
 	@Subcommand("set power")
 	fun onSetPower(sender: Player, amount: Int) {
 		val item = sender.inventory.itemInMainHand
-		val custom = item.customItem as? PoweredItem ?: fail { "${item.customItem?.identifier} is not powered" }
+		val customItem = item.newCustomItem ?: fail { "Not a valid custom item!" }
+		failIf(!customItem.hasComponent(POWERED_ITEM)) { "${item.customItem?.identifier} is not powered" }
+		val custom = customItem.getComponent(POWERED_ITEM)
 
-		custom.setPower(item, amount)
+		custom.setPower(customItem, item, amount)
 
 		sender.information("Removed power to $amount")
 	}
 
 	@Subcommand("test all")
 	fun onTestAll(sender: Player) {
-		val allItems = CustomItemRegistry.ALL.map { item -> object : GuiItems.AbstractButtonItem(item.displayName, item.constructItemStack()) {
+		val allItems = CustomItemRegistry.ALL.map { item -> object : GuiItems.AbstractButtonItem(item.displayName.itemName, item.constructItemStack()) {
 			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 				player.inventory.addItem(item.constructItemStack())
 			}

@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.ammo
 
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
-import net.horizonsend.ion.server.features.custom.items.components.CustomComponentType
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
@@ -141,7 +141,7 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 			return
 		}
 
-		val ammoComponent = fuelCustomItem.getComponent(CustomComponentType.AMMUNITION)
+		val ammoComponent = fuelCustomItem.getComponent(CustomComponentTypes.AMMUNITION)
 		val ammoRefillAttribute = fuelCustomItem.getAttributes(fuel).filterIsInstance<AmmunitionRefillType>().firstOrNull() ?: return
 
 		// deposit blaster/magazine into output if full

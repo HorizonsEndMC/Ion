@@ -5,6 +5,9 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.AUTO_COMPOST
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.AUTO_REPLANT
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.AUTO_SMELT
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.BLASTER_CANNON
@@ -17,10 +20,16 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CHETHERITE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CIRCUITRY
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CIRCUIT_BOARD
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CRATE_PLACER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.ENRICHED_URANIUM_BLOCK
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.EXTENDED_BAR
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FABRICATED_ASSEMBLY
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FERTILIZER_DISPENSER
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FORTUNE_1
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FORTUNE_2
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FORTUNE_3
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FUEL_CELL
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FUEL_CONTROL
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.FUEL_ROD_CORE
@@ -28,6 +37,20 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.GUN_BARREL
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.PISTOL_RECEIVER
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_CAPACITY_25
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_CAPACITY_50
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_CHAINSAW_ADVANCED
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_CHAINSAW_BASIC
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_CHAINSAW_ENHANCED
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_DRILL_ADVANCED
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_DRILL_BASIC
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_DRILL_ENHANCED
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_HOE_ADVANCED
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_HOE_BASIC
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.POWER_HOE_ENHANCED
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RANGE_1
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RANGE_2
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RANGE_3
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RAW_ALUMINUM
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RAW_ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RAW_TITANIUM
@@ -45,6 +68,7 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.REACTOR_FRA
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.REINFORCED_FRAME
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.RIFLE_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SHOTGUN_RECEIVER
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SILK_TOUCH_MOD
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SMB_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SNIPER_RECEIVER
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.SPECIAL_MAGAZINE
@@ -68,38 +92,14 @@ import net.horizonsend.ion.server.features.custom.CustomItemRegistry.URANIUM
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.URANIUM_CORE
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.URANIUM_ROD
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.VEIN_MINER_25
 import net.horizonsend.ion.server.features.custom.NewCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_COMPOST
-import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_REPLANT
-import net.horizonsend.ion.server.features.custom.items.CustomItems.AUTO_SMELT
 import net.horizonsend.ion.server.features.custom.items.CustomItems.DETONATOR
-import net.horizonsend.ion.server.features.custom.items.CustomItems.EXTENDED_BAR
-import net.horizonsend.ion.server.features.custom.items.CustomItems.FERTILIZER_DISPENSER
-import net.horizonsend.ion.server.features.custom.items.CustomItems.FORTUNE_1
-import net.horizonsend.ion.server.features.custom.items.CustomItems.FORTUNE_2
-import net.horizonsend.ion.server.features.custom.items.CustomItems.FORTUNE_3
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItems.GAS_CANISTER_OXYGEN
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CAPACITY_25
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CAPACITY_50
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CHAINSAW_ADVANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CHAINSAW_BASIC
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_CHAINSAW_ENHANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_ADVANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_BASIC
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_DRILL_ENHANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_ADVANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_BASIC
-import net.horizonsend.ion.server.features.custom.items.CustomItems.POWER_HOE_ENHANCED
-import net.horizonsend.ion.server.features.custom.items.CustomItems.RANGE_1
-import net.horizonsend.ion.server.features.custom.items.CustomItems.RANGE_2
-import net.horizonsend.ion.server.features.custom.items.CustomItems.RANGE_3
-import net.horizonsend.ion.server.features.custom.items.CustomItems.SILK_TOUCH_MOD
 import net.horizonsend.ion.server.features.custom.items.CustomItems.SMOKE_GRENADE
-import net.horizonsend.ion.server.features.custom.items.CustomItems.VEIN_MINER_25
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
@@ -607,7 +607,7 @@ object Crafting : IonServerComponent() {
 
 		}
 
-		itemStackShapeRecipe("crate_placer", CustomItems.CRATE_PLACER.constructItemStack()) {
+		itemStackShapeRecipe("crate_placer", CRATE_PLACER.constructItemStack()) {
 			shape(" s ", " cd", "t  ")
 
 			setIngredient('s', ExactChoice(STEEL_INGOT.constructItemStack()))

@@ -4,20 +4,20 @@ import fr.skytasul.guardianbeam.Laser
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
-import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
-import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.components.Listener.Companion.leftClickListener
+import net.horizonsend.ion.server.features.custom.items.components.Power
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager.getShipmentItemId
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
-import net.kyori.adventure.text.Component
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.StringTag
@@ -36,52 +36,38 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
-import org.bukkit.persistence.PersistentDataType.STRING
 
-object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem {
-	val displayName: Component = ofChildren(text("Crate ", GOLD), text("Placer", GRAY)).decoration(ITALIC, false)
-
-	override val material: Material = Material.DIAMOND_PICKAXE
-	override val customModelData: Int = 10
-
-	override val displayDurability: Boolean = true
-
-	override fun getPowerCapacity(itemStack: ItemStack): Int = 50_000
-	override fun getPowerUse(itemStack: ItemStack): Int = 10
-
-	override fun getLoreManagers(): List<LoreCustomItem.CustomItemLoreManager> {
-		return listOf(PoweredItem.PowerLoreManager)
+object CratePlacer : NewCustomItem(
+	"CRATE_PLACER",
+	ofChildren(text("Crate ", GOLD), text("Placer", GRAY)).itemName,
+	ItemFactory
+		.builder()
+		.setMaterial(Material.DIAMOND_PICKAXE)
+		.setCustomModel("tool/crate_placer")
+		.build()
+) {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+		addComponent(CustomComponentTypes.POWERED_ITEM, Power(50_000, 10, true))
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@CratePlacer) { event, _, item ->
+			tryPlaceCrate(event.player, item)
+		})
 	}
 
-	override fun constructItemStack(): ItemStack {
-		val base = getModeledItem()
+	private const val RANGE = 16
 
-		setPower(base, getPowerCapacity(base))
+	private fun tryPlaceCrate(player: Player, itemStack: ItemStack) {
+		if (player.hasCooldown(itemStack.type)) return // Cooldown
+		val powerManager = getComponent(CustomComponentTypes.POWERED_ITEM)
+		if (powerManager.getPower(itemStack) < powerManager.getPowerUse(itemStack, this)) return
 
-		return base.updateMeta {
-			it.displayName(displayName)
-			it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
-			it.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
-		}
-	}
-
-	val range = 16
-
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
-		if (livingEntity !is Player) return
-		if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
-		if (getPower(itemStack) < getPowerUse(itemStack)) return
-
-		fireLaser(livingEntity)
-		val lookingAt = livingEntity.getTargetBlockExact(range) ?: return
+		fireLaser(player)
+		val lookingAt = player.getTargetBlockExact(RANGE) ?: return
 
 		nearTargets(lookingAt).forEach { pair ->
-			placeCrate(livingEntity, itemStack, pair.first, pair.second, pair.third)
+			placeCrate(player, itemStack, pair.first, pair.second, pair.third)
 		}
 	}
 
@@ -157,7 +143,8 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 			if (event.callEvent()) {
 				player.inventory.removeItem(item.asOne())
 
-				removePower(itemStack, getPowerUse(itemStack))
+				val powerManager = getComponent(CustomComponentTypes.POWERED_ITEM)
+				powerManager.removePower(itemStack, this, powerManager.getPowerUse(itemStack, this))
 
 				target.world.playSound(
 					target.location,
@@ -191,13 +178,13 @@ object CratePlacer : CustomItem("CRATE_PLACER"), PoweredItem, CustomModeledItem 
 		val raytrace = livingEntity.world.rayTrace(
 			livingEntity.eyeLocation,
 			start.direction.clone(),
-			range.toDouble(),
+			RANGE.toDouble(),
 			FluidCollisionMode.NEVER,
 			true,
 			0.1,
 		) { false }
 
-		val end: Location = raytrace?.hitPosition?.toLocation(livingEntity.world) ?: livingEntity.eyeLocation.clone().add(start.direction.clone().multiply(range))
+		val end: Location = raytrace?.hitPosition?.toLocation(livingEntity.world) ?: livingEntity.eyeLocation.clone().add(start.direction.clone().multiply(RANGE))
 
 		Laser.GuardianLaser(end, start, 5, -1).durationInTicks().start(IonServer)
 

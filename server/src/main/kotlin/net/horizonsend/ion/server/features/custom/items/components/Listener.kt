@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
-class ListenerComponent<E: Event, T: NewCustomItem>(
+class Listener<E: Event, T: NewCustomItem>(
 	val customItem: T,
 	val eventType: KClass<out E>,
 	private val preCheck: (E, T, ItemStack) -> Boolean = { _, _, _ -> true },
@@ -21,7 +21,7 @@ class ListenerComponent<E: Event, T: NewCustomItem>(
 	fun handleEvent(event: E, itemStack: ItemStack) = eventReceiver.invoke(event, customItem, itemStack)
 	fun preCheck(event: E, itemStack: ItemStack) = preCheck.invoke(event, customItem, itemStack)
 
-	override fun decorateBase(baseItem: ItemStack) {}
+	override fun decorateBase(baseItem: ItemStack, customItem: NewCustomItem) {}
 	override fun getAttributes(baseItem: ItemStack): Iterable<CustomItemAttribute> = listOf()
 
 	companion object {
@@ -31,7 +31,7 @@ class ListenerComponent<E: Event, T: NewCustomItem>(
 		inline fun <reified T: NewCustomItem> interactListener(
 			customItem: T,
 			noinline handleEvent: (PlayerInteractEvent, T, ItemStack) -> Unit
-		): ListenerComponent<PlayerInteractEvent, T> = ListenerComponent(customItem, PlayerInteractEvent::class, eventReceiver = handleEvent)
+		): Listener<PlayerInteractEvent, T> = Listener(customItem, PlayerInteractEvent::class, eventReceiver = handleEvent)
 
 		/**
 		 * Interact listener filtered for right clicks
@@ -39,7 +39,7 @@ class ListenerComponent<E: Event, T: NewCustomItem>(
 		inline fun <reified T: NewCustomItem> rightClickListener(
 			customItem: T,
 			noinline handleEvent: (PlayerInteractEvent, T, ItemStack) -> Unit
-		): ListenerComponent<PlayerInteractEvent, T> = ListenerComponent(
+		): Listener<PlayerInteractEvent, T> = Listener(
 			customItem,
 			PlayerInteractEvent::class,
 			preCheck = { event, _, _ -> event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK },
@@ -52,7 +52,7 @@ class ListenerComponent<E: Event, T: NewCustomItem>(
 		inline fun <reified T: NewCustomItem> leftClickListener(
 			customItem: T,
 			noinline handleEvent: (PlayerInteractEvent, T, ItemStack) -> Unit
-		): ListenerComponent<PlayerInteractEvent, T> = ListenerComponent(
+		): Listener<PlayerInteractEvent, T> = Listener(
 			customItem,
 			PlayerInteractEvent::class,
 			preCheck = { event, _, _ -> event.action == Action.LEFT_CLICK_AIR || event.action == Action.LEFT_CLICK_BLOCK },
@@ -62,16 +62,16 @@ class ListenerComponent<E: Event, T: NewCustomItem>(
 		inline fun <reified T: NewCustomItem> playerSwapHandsListener(
 			customItem: T,
 			noinline handleEvent: (PlayerSwapHandItemsEvent, T, ItemStack) -> Unit
-		): ListenerComponent<PlayerSwapHandItemsEvent, T> = ListenerComponent(customItem, PlayerSwapHandItemsEvent::class, eventReceiver = handleEvent)
+		): Listener<PlayerSwapHandItemsEvent, T> = Listener(customItem, PlayerSwapHandItemsEvent::class, eventReceiver = handleEvent)
 
 		inline fun <reified T: NewCustomItem> dispenseListener(
 			customItem: T,
 			noinline handleEvent: (BlockPreDispenseEvent, T, ItemStack) -> Unit
-		): ListenerComponent<BlockPreDispenseEvent, T> = ListenerComponent(customItem, BlockPreDispenseEvent::class, eventReceiver = handleEvent)
+		): Listener<BlockPreDispenseEvent, T> = Listener(customItem, BlockPreDispenseEvent::class, eventReceiver = handleEvent)
 
 		inline fun <reified T: NewCustomItem> entityShootBowListener(
 			customItem: T,
 			noinline handleEvent: (EntityShootBowEvent, T, ItemStack) -> Unit
-		): ListenerComponent<EntityShootBowEvent, T> = ListenerComponent(customItem, EntityShootBowEvent::class,eventReceiver =  handleEvent)
+		): Listener<EntityShootBowEvent, T> = Listener(customItem, EntityShootBowEvent::class,eventReceiver =  handleEvent)
 	}
 }

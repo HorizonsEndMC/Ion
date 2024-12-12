@@ -11,9 +11,9 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class MagazineTypeComponent<T : Balancing>(val balancing: Supplier<T>, private val magazineType: Supplier<NewCustomItem>) : CustomItemComponent, LoreManager {
+class MagazineType<T : Balancing>(val balancing: Supplier<T>, private val magazineType: Supplier<NewCustomItem>) : CustomItemComponent, LoreManager {
 
-	override fun decorateBase(baseItem: ItemStack) {}
+	override fun decorateBase(baseItem: ItemStack, customItem: NewCustomItem) {}
 
 	override fun getAttributes(baseItem: ItemStack): Iterable<CustomItemAttribute> {
 		return listOf()

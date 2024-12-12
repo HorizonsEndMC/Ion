@@ -2,11 +2,12 @@ package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.drops.DropModifier
-import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
@@ -22,9 +23,9 @@ import kotlin.reflect.KClass
 object AutoCompostModifier : ItemModification, DropModifier {
 	override val identifier: String = "AUTO_COMPOST"
 	override val displayName: Component = text("Auto Composter", HEColorScheme.HE_LIGHT_GRAY)
-	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
+	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerChainsaw::class, PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
-	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.AUTO_COMPOST }
+	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItemRegistry.AUTO_COMPOST }
 
 	override val crouchingDisables: Boolean = false
 
@@ -43,4 +44,6 @@ object AutoCompostModifier : ItemModification, DropModifier {
 
 		return true
 	}
+
+	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 }
