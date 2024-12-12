@@ -3,11 +3,9 @@ package net.horizonsend.ion.server.features.custom.items
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.text
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
@@ -36,10 +34,8 @@ import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.fromHexString
-import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
-import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.entity.Entity
@@ -55,11 +51,6 @@ object CustomItems {
 	val ALL get() = customItems.values
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
-	// Starship Components Start
-	val BATTLECRUISER_REACTOR_CORE = registerCustomBlockItem(identifier = "BATTLECRUISER_REACTOR_CORE", baseBlock = IRON_BLOCK, customModelData = 2000, displayName = text("Battlecruiser Reactor Core", BOLD)) { CustomBlocks.BATTLECRUISER_REACTOR_CORE }
-	val BARGE_REACTOR_CORE = registerCustomBlockItem(identifier = "BARGE_REACTOR_CORE", baseBlock = IRON_BLOCK, customModelData = 2002, displayName = text("Barge Reactor Core", BOLD)) { CustomBlocks.BARGE_REACTOR_CORE }
-	val CRUISER_REACTOR_CORE = registerCustomBlockItem(identifier = "CRUISER_REACTOR_CORE", baseBlock = IRON_BLOCK, customModelData = 2001, displayName = text("Cruiser Reactor Core", BOLD)) { CustomBlocks.CRUISER_REACTOR_CORE }
-	// Starship Components End
 	// Gas Canisters Start
 	val GAS_CANISTER_EMPTY = registerSimpleUnstackable("GAS_CANISTER_EMPTY", 1000, text("Empty Gas Canister"))
 	val GAS_CANISTER_HYDROGEN = register(GasCanister("GAS_CANISTER_HYDROGEN", 1001, canisterName(text("Hydrogen", RED)),"HYDROGEN"))
@@ -93,35 +84,6 @@ object CustomItems {
 		override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem = ThrownPumpkinGrenade(item, maxTicks, damageSource, ConfigurationFiles.pvpBalancing().throwables::detonator)
 	})
 	// Throwables end
-	// Planets start
-	val AERACH = registerSimpleUnstackable("AERACH", 5000, text("Aerach"))
-	val ARET = registerSimpleUnstackable("ARET", 5001, text("Aret"))
-	val CHANDRA = registerSimpleUnstackable("CHANDRA", 5002, text("Chandra"))
-	val CHIMGARA = registerSimpleUnstackable("CHIMGARA", 5003, text("Chimgara"))
-	val DAMKOTH = registerSimpleUnstackable("DAMKOTH", 5004, text("Damkoth"))
-	val DISTERRA = registerSimpleUnstackable("DISTERRA", 5005, text("Disterra"))
-	val EDEN = registerSimpleUnstackable("EDEN", 5006, text("Eden"))
-	val GAHARA = registerSimpleUnstackable("GAHARA", 5007, text("Gahara"))
-	val HERDOLI = registerSimpleUnstackable("HERDOLI", 5008, text("Herdoli"))
-	val ILIUS = registerSimpleUnstackable("ILIUS", 5009, text("Ilius"))
-	val ISIK = registerSimpleUnstackable("ISIK", 5010, text("Isik"))
-	val KOVFEFE = registerSimpleUnstackable("KOVFEFE", 5011, text("Kovfefe"))
-	val KRIO = registerSimpleUnstackable("KRIO", 5012, text("Krio"))
-	val LIODA = registerSimpleUnstackable("LIODA", 5013, text("Lioda"))
-	val LUXITERNA = registerSimpleUnstackable("LUXITERNA", 5014, text("Luxiterna"))
-	val QATRA = registerSimpleUnstackable("QATRA", 5015, text("Qatra"))
-	val RUBACIEA = registerSimpleUnstackable("RUBACIEA", 5016, text("Rubaciea"))
-	val TURMS = registerSimpleUnstackable("TURMS", 5017, text("Turms"))
-	val VASK = registerSimpleUnstackable("VASK", 5018, text("Vask"))
-	// Stars
-	val ASTERI = registerSimpleUnstackable("ASTERI", 5100, text("Asteri"))
-	val HORIZON = registerSimpleUnstackable("HORIZON", 5101, text("Horizon"))
-	val ILIOS = registerSimpleUnstackable("ILIOS", 5102, text("Ilios"))
-	val REGULUS = registerSimpleUnstackable("REGULUS", 5103, text("Regulus"))
-	val SIRIUS = registerSimpleUnstackable("SIRIUS", 5104, text("Sirius"))
-	// UI
-	val PLANET_SELECTOR = registerSimpleUnstackable("PLANET_SELECTOR", 5900, text("PLANET_SELECTOR"))
-	// Planets end
 	// Tools begin
 	val PERSONAL_TRANSPORTER = register(PersonalTransporter)
 

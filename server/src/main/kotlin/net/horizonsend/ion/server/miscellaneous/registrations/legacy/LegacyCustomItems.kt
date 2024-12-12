@@ -25,9 +25,7 @@ import org.bukkit.Material.LEATHER_HELMET
 import org.bukkit.Material.LEATHER_LEGGINGS
 import org.bukkit.Material.SHIELD
 import org.bukkit.Material.SNOWBALL
-import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.inventory.ItemStack
-import java.util.Locale
 
 open class CustomItem(
 	val id: String,
@@ -249,33 +247,6 @@ object CustomItems {
 	val MINERAL_URANIUM = registerMineral(type = "uranium", typeName = "Uranium", model = 4)
 	 */
 	//endregion Minerals
-
-	//region Planet Icons
-	private fun registerPlanetIcon(name: String, model: Int): CustomItem = makeItem(
-		id = "planet_icon_${name.lowercase(Locale.getDefault()).replace(" ", "")}",
-		name = name,
-		mat = WARPED_FUNGUS_ON_A_STICK,
-		model = model
-	)
-
-	val PLANET_ICON_AERACH = registerPlanetIcon("Aerach", 201)
-	val PLANET_ICON_ARET = registerPlanetIcon("Aret", 202)
-	val PLANET_ICON_CHANDRA = registerPlanetIcon("Chandra", 203)
-	val PLANET_ICON_CHIMGARA = registerPlanetIcon("Chimgara", 204)
-	val PLANET_ICON_DAMKOTH = registerPlanetIcon("Damkoth", 205)
-	val PLANET_ICON_GAHARA = registerPlanetIcon("Gahara", 206)
-	val PLANET_ICON_HERDOLI = registerPlanetIcon("Herdoli", 207)
-	val PLANET_ICON_ILIUS = registerPlanetIcon("Ilius", 208)
-	val PLANET_ICON_ISIK = registerPlanetIcon("Isik", 209)
-	val PLANET_ICON_KOVFEFE = registerPlanetIcon("Kovfefe", 210)
-	val PLANET_ICON_KRIO = registerPlanetIcon("Krio", 211)
-	val PLANET_ICON_LIODA = registerPlanetIcon("Lioda", 212)
-	val PLANET_ICON_LUXITERNA = registerPlanetIcon("Luxiterna", 213)
-	val PLANET_ICON_QATRA = registerPlanetIcon("Qatra", 214)
-	val PLANET_ICON_RUBACIEA = registerPlanetIcon("Rubaciea", 215)
-	val PLANET_ICON_TURMS = registerPlanetIcon("Turms", 216)
-	val PLANET_ICON_VASK = registerPlanetIcon("Vask", 217)
-	//endregion
 
 	//region Rockets
 	val ROCKET_BASE = makeItem("rocket_base", "Rocket Base", Material.STICK, 1)

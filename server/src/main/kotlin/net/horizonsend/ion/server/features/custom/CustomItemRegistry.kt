@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom
 
+import net.horizonsend.ion.common.utils.text.text
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
@@ -197,7 +198,42 @@ object CustomItemRegistry : IonServerComponent() {
 
 	val PROGRESS_HOLDER = register(ProgressHolder)
 
+	// Starship Components Start
+	val BATTLECRUISER_REACTOR_CORE = customBlockItem(identifier = "BATTLECRUISER_REACTOR_CORE", model = "starship/battlecruiser_reactor_core", displayName = text("Battlecruiser Reactor Core", BOLD), customBlock = CustomBlocks::BATTLECRUISER_REACTOR_CORE)
+	val BARGE_REACTOR_CORE = customBlockItem(identifier = "BARGE_REACTOR_CORE", model = "starship/barge_reactor_core", displayName = text("Barge Reactor Core", BOLD), customBlock = CustomBlocks::BARGE_REACTOR_CORE)
+	val CRUISER_REACTOR_CORE = customBlockItem(identifier = "CRUISER_REACTOR_CORE", model = "starship/cruiser_reactor_core", displayName = text("Cruiser Reactor Core", BOLD), customBlock = CustomBlocks::CRUISER_REACTOR_CORE)
+	// Starship Components End
 
+	// Planets start
+	val AERACH = unStackable(identifier = "AERACH", displayName = text("Aerach"), model = "planet/aerach")
+	val ARET = unStackable(identifier = "ARET", displayName = text("Aret"), model = "planet/aret")
+	val CHANDRA = unStackable(identifier = "CHANDRA", displayName = text("Chandra"), model = "planet/chandra")
+	val CHIMGARA = unStackable(identifier = "CHIMGARA", displayName = text("Chimgara"), model = "planet/chimgara")
+	val DAMKOTH = unStackable(identifier = "DAMKOTH", displayName = text("Damkoth"), model = "planet/damkoth")
+	val DISTERRA = unStackable(identifier = "DISTERRA", displayName = text("Disterra"), model = "planet/disterra")
+	val EDEN = unStackable(identifier = "EDEN", displayName = text("Eden"), model = "planet/eden")
+	val GAHARA = unStackable(identifier = "GAHARA", displayName = text("Gahara"), model = "planet/gahara")
+	val HERDOLI = unStackable(identifier = "HERDOLI", displayName = text("Herdoli"), model = "planet/herdoli")
+	val ILIUS = unStackable(identifier = "ILIUS", displayName = text("Ilius"), model = "planet/ilius")
+	val ISIK = unStackable(identifier = "ISIK", displayName = text("Isik"), model = "planet/isik")
+	val KOVFEFE = unStackable(identifier = "KOVFEFE", displayName = text("Kovfefe"), model = "planet/kovfefe")
+	val KRIO = unStackable(identifier = "KRIO", displayName = text("Krio"), model = "planet/krio")
+	val LIODA = unStackable(identifier = "LIODA", displayName = text("Lioda"), model = "planet/lioda")
+	val LUXITERNA = unStackable(identifier = "LUXITERNA", displayName = text("Luxiterna"), model = "planet/luxiterna")
+	val QATRA = unStackable(identifier = "QATRA", displayName = text("Qatra"), model = "planet/qatra")
+	val RUBACIEA = unStackable(identifier = "RUBACIEA", displayName = text("Rubaciea"), model = "planet/rubaciea")
+	val TURMS = unStackable(identifier = "TURMS", displayName = text("Turms"), model = "planet/turms")
+	val VASK = unStackable(identifier = "VASK", displayName = text("Vask"), model = "planet/vask")
+	// Stars
+	val ASTERI = unStackable(identifier = "ASTERI", displayName = text("Asteri"), model = "planet/asteri")
+	val HORIZON = unStackable(identifier = "HORIZON", displayName = text("Horizon"), model = "planet/horizon")
+	val ILIOS = unStackable(identifier = "ILIOS", displayName = text("Ilios"), model = "planet/ilios")
+	val REGULUS = unStackable(identifier = "REGULUS", displayName = text("Regulus"), model = "planet/regulus")
+	val SIRIUS = unStackable(identifier = "SIRIUS", displayName = text("Sirius"), model = "planet/sirius")
+	// UI
+	val PLANET_SELECTOR = unStackable(identifier = "PLANET_SELECTOR", displayName = text("PLANET_SELECTOR"), model = "planet/planet_selector")
+
+	// Legacy planet icons=
 
 	init {
 		sortCustomItemListeners()
