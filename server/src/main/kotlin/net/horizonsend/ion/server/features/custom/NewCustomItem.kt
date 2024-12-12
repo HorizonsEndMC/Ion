@@ -42,7 +42,7 @@ open class NewCustomItem(
 		.setLoreSupplier { base -> assembleLore(base) }
 		.build()
 
-	fun constructItemStack(): ItemStack = baseItemFactory.construct()
+	fun constructItemStack(): ItemStack = try { baseItemFactory.construct() } catch (e: Throwable) { throw Throwable("Error when constructing custom item $identifier", e) }
 
 	fun constructItemStack(quantity: Int): ItemStack {
 		val constructed = baseItemFactory.construct()
