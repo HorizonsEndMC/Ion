@@ -21,29 +21,29 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		}
 
 		/**
-		 * Allows an item to store ammunition.
-		 **/
-		val AMMUNITION = newComponentType<Ammunition, OnlyOne<Ammunition>>(ComponentType.ONLY_ONE)
-
-		/**
 		 * Specifies a magazine type for reloading
 		 **/
 		val MAGAZINE_TYPE = newComponentType<MagazineType<*>, OnlyOne<MagazineType<*>>>(ComponentType.ONLY_ONE)
 
 		/**
-		 * Allows an item to store items
+		 * Allows an item to store ammunition.
 		 **/
-		val POWERED_ITEM = newComponentType<Power, OnlyOne<Power>>(ComponentType.ONLY_ONE)
+		val AMMUNITION_STORAGE = newComponentType<AmmunitionStorage, OnlyOne<AmmunitionStorage>>(ComponentType.ONLY_ONE)
 
 		/**
-		 * Allows an item to store items
+		 * Allows an item to store power
+		 **/
+		val POWER_STORAGE = newComponentType<PowerStorage, OnlyOne<PowerStorage>>(ComponentType.ONLY_ONE)
+
+		/**
+		 * Allows an item to store gas
 		 **/
 		val GAS_STORAGE = newComponentType<GasStorage, OnlyOne<GasStorage>>(ComponentType.ONLY_ONE)
 
 		/**
-		 * Allows an item to store items
+		 * Allows an item to have / store item modifications
 		 **/
-		val MODDED_ITEM = newComponentType<ModManager, OnlyOne<ModManager>>(ComponentType.ONLY_ONE)
+		val MOD_MANAGER = newComponentType<ModManager, OnlyOne<ModManager>>(ComponentType.ONLY_ONE)
 
 		/**
 		 * Specifiies a result from smelting this item

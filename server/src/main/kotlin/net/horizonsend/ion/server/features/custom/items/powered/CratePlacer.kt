@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.components.Listener.Companion.leftClickListener
-import net.horizonsend.ion.server.features.custom.items.components.Power
+import net.horizonsend.ion.server.features.custom.items.components.PowerStorage
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager.getShipmentItemId
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -50,7 +50,7 @@ object CratePlacer : CustomItem(
 		.build()
 ) {
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
-		addComponent(CustomComponentTypes.POWERED_ITEM, Power(50_000, 10, true))
+		addComponent(CustomComponentTypes.POWER_STORAGE, PowerStorage(50_000, 10, true))
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@CratePlacer) { event, _, item ->
 			tryPlaceCrate(event.player, item)
 		})
@@ -60,7 +60,7 @@ object CratePlacer : CustomItem(
 
 	private fun tryPlaceCrate(player: Player, itemStack: ItemStack) {
 		if (player.hasCooldown(itemStack.type)) return // Cooldown
-		val powerManager = getComponent(CustomComponentTypes.POWERED_ITEM)
+		val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)
 		if (powerManager.getPower(itemStack) < powerManager.getPowerUse(itemStack, this)) return
 
 		fireLaser(player)
@@ -143,7 +143,7 @@ object CratePlacer : CustomItem(
 			if (event.callEvent()) {
 				player.inventory.removeItem(item.asOne())
 
-				val powerManager = getComponent(CustomComponentTypes.POWERED_ITEM)
+				val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)
 				powerManager.removePower(itemStack, this, powerManager.getPowerUse(itemStack, this))
 
 				target.world.playSound(
