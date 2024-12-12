@@ -50,8 +50,8 @@ class PowerDrill(identifier: String, displayName: Component, modLimit: Int, base
 
 		val blockList = mutableListOf(origin)
 
-		val modManger = getComponent(CustomComponentTypes.MODDED_ITEM)
-		val powerManager = getComponent(CustomComponentTypes.POWERED_ITEM)
+		val modManger = getComponent(CustomComponentTypes.MOD_MANAGER)
+		val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)
 		val mods = modManger.getMods(itemStack)
 
 		mods.filterNot { it.crouchingDisables && player.isSneaking }

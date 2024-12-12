@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Energy
 import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
-import net.horizonsend.ion.server.features.custom.items.components.Ammunition
+import net.horizonsend.ion.server.features.custom.items.components.AmmunitionStorage
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.components.Listener.Companion.playerSwapHandsListener
@@ -48,7 +48,7 @@ open class Blaster<T : Balancing>(
 ) {
 	val balancing get() = balancingSupplier.get()
 
-	val ammoComponent = Ammunition(balancingSupplier)
+	val ammoComponent = AmmunitionStorage(balancingSupplier)
 	val magazineComponent = MagazineType(balancingSupplier) { CustomItemRegistry.getByIdentifier(balancing.magazineIdentifier)!! }
 
 	override fun decorateItemStack(base: ItemStack) {
@@ -56,7 +56,7 @@ open class Blaster<T : Balancing>(
 	}
 
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
-		addComponent(CustomComponentTypes.AMMUNITION, ammoComponent)
+		addComponent(CustomComponentTypes.AMMUNITION_STORAGE, ammoComponent)
 		addComponent(CustomComponentTypes.MAGAZINE_TYPE, magazineComponent)
 
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@Blaster) { event, _, item -> fire(event.player, item) })
@@ -187,10 +187,10 @@ open class Blaster<T : Balancing>(
 
 				if (magazineCustomItem.identifier != balancing.magazineIdentifier) continue // Only correct magazine
 
-				val magazineAmmo = magazineCustomItem.getComponent(CustomComponentTypes.AMMUNITION).getAmmo(magazineItem)
+				val magazineAmmo = magazineCustomItem.getComponent(CustomComponentTypes.AMMUNITION_STORAGE).getAmmo(magazineItem)
 				val amountToTake = (balancing.capacity - ammo).coerceAtMost(magazineAmmo)
 
-				magazineCustomItem.getComponent(CustomComponentTypes.AMMUNITION).setAmmo(magazineItem, magazineCustomItem, magazineAmmo - amountToTake)
+				magazineCustomItem.getComponent(CustomComponentTypes.AMMUNITION_STORAGE).setAmmo(magazineItem, magazineCustomItem, magazineAmmo - amountToTake)
 
 				ammo += amountToTake
 			}

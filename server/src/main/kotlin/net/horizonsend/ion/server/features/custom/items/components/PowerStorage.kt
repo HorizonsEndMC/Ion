@@ -15,7 +15,7 @@ import org.bukkit.entity.Damageable
 import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
 
-class Power(private val basePowerCapacity: Int, private val basePowerUsage: Int, val displayDurability: Boolean) : CustomItemComponent, LoreManager {
+class PowerStorage(private val basePowerCapacity: Int, private val basePowerUsage: Int, val displayDurability: Boolean) : CustomItemComponent, LoreManager {
 	override fun decorateBase(baseItem: ItemStack, customItem: CustomItem) {
 		setPower(customItem, baseItem, basePowerCapacity)
 	}
@@ -71,7 +71,7 @@ class Power(private val basePowerCapacity: Int, private val basePowerUsage: Int,
 		var usage = basePowerUsage.toDouble()
 		val attributes = customItem.getAttributes(itemStack).filterIsInstance<PowerUsageIncrease>()
 
-		if (customItem.hasComponent(CustomComponentTypes.MODDED_ITEM)) {
+		if (customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) {
 			for (increase in attributes) {
 				usage *= increase.usageMultiplier
 			}

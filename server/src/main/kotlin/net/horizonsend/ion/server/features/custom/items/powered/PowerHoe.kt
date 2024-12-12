@@ -50,7 +50,7 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 	private fun handleRightClick(player: Player, itemStack: ItemStack, event: PlayerInteractEvent) {
 		val block = event.clickedBlock ?: return
 
-		val modManager = getComponent(CustomComponentTypes.MODDED_ITEM)
+		val modManager = getComponent(CustomComponentTypes.MOD_MANAGER)
 		val mods = modManager.getMods(itemStack)
 
 		// If targeting a crop, harvest it
@@ -64,7 +64,7 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 		if (livingEntity !is Player) return
 		val block = event.clickedBlock ?: return
 
-		val modManager = getComponent(CustomComponentTypes.MODDED_ITEM)
+		val modManager = getComponent(CustomComponentTypes.MOD_MANAGER)
 		val mods = modManager.getMods(itemStack)
 
 		tryHarvest(livingEntity, mods, itemStack, block)
@@ -85,7 +85,7 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 	private fun tryHarvest(player: Player, mods: Array<ItemModification>, itemStack: ItemStack, origin: Block) {
 		val blockList = compileBlockList(player, origin, itemStack)
 
-		val powerManager = getComponent(CustomComponentTypes.POWERED_ITEM)
+		val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)
 		var availablePower = powerManager.getPower(itemStack)
 		val powerUse = powerManager.getPowerUse(itemStack, this)
 		var broken = 0
@@ -172,7 +172,7 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 
 	private fun tryTill(player: Player, itemStack: ItemStack, origin: Block) {
 		val blockList = compileBlockList(player, origin, itemStack)
-		val powerManager = getComponent(CustomComponentTypes.POWERED_ITEM)
+		val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)
 
 		var availablePower = powerManager.getPower(itemStack)
 		val powerUse = powerManager.getPowerUse(itemStack, this)
@@ -223,7 +223,7 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 
 	private fun compileBlockList(player: Player, origin: Block, itemStack: ItemStack) : List<Block> {
 		val blockList = mutableListOf(origin)
-		val modManager = getComponent(CustomComponentTypes.MODDED_ITEM)
+		val modManager = getComponent(CustomComponentTypes.MOD_MANAGER)
 
 		val mods = modManager.getMods(itemStack)
 

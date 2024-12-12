@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.charger
 import net.horizonsend.ion.server.features.custom.CustomItem
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
-import net.horizonsend.ion.server.features.custom.items.components.Power
+import net.horizonsend.ion.server.features.custom.items.components.PowerStorage
 import net.horizonsend.ion.server.features.gear.addPower
 import net.horizonsend.ion.server.features.gear.getMaxPower
 import net.horizonsend.ion.server.features.gear.getPower
@@ -86,7 +86,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStor
 		}
 
 		val custom = item.customItem ?: return
-		if (custom.hasComponent(CustomComponentTypes.POWERED_ITEM)) handleModern(item, custom, custom.getComponent(CustomComponentTypes.POWERED_ITEM), event, furnace, inventory, sign, power)
+		if (custom.hasComponent(CustomComponentTypes.POWER_STORAGE)) handleModern(item, custom, custom.getComponent(CustomComponentTypes.POWER_STORAGE), event, furnace, inventory, sign, power)
 	}
 
 	fun handleLegacy(
@@ -119,7 +119,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStor
 	fun handleModern(
 		item: ItemStack,
 		customItem: CustomItem,
-		powerManager: Power,
+		powerManager: PowerStorage,
 		event: FurnaceBurnEvent,
 		furnace: Furnace,
 		inventory: FurnaceInventory,

@@ -75,7 +75,7 @@ object ConvertCommand : SLCommand() { // I imagine we'll need more than blasters
 		val oldPower = getPower(heldItem)
 
 		val newDrill = POWER_DRILL_BASIC.constructItemStack()
-		POWER_DRILL_BASIC.getComponent(CustomComponentTypes.POWERED_ITEM).setPower(POWER_DRILL_BASIC, newDrill, oldPower)
+		POWER_DRILL_BASIC.getComponent(CustomComponentTypes.POWER_STORAGE).setPower(POWER_DRILL_BASIC, newDrill, oldPower)
 
 		return newDrill
 	}

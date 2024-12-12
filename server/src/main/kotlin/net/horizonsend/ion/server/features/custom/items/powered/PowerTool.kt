@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.custom.items.components.CustomCompone
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.components.Listener.Companion.rightClickListener
 import net.horizonsend.ion.server.features.custom.items.components.ModManager
-import net.horizonsend.ion.server.features.custom.items.components.Power
+import net.horizonsend.ion.server.features.custom.items.components.PowerStorage
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -22,9 +22,9 @@ abstract class PowerTool(identifier: String, displayName: Component, private val
 		.build()
 ) {
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
-		addComponent(CustomComponentTypes.MODDED_ITEM, ModManager(modLimit))
+		addComponent(CustomComponentTypes.MOD_MANAGER, ModManager(modLimit))
 
-		addComponent(CustomComponentTypes.POWERED_ITEM, Power(basePowerCapacity, 10, true))
+		addComponent(CustomComponentTypes.POWER_STORAGE, PowerStorage(basePowerCapacity, 10, true))
 
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@PowerTool) { event, _, item ->
 			tryOpenMenu(event, item)
@@ -33,7 +33,7 @@ abstract class PowerTool(identifier: String, displayName: Component, private val
 
 	open fun tryOpenMenu(event: PlayerInteractEvent, itemStack: ItemStack) {
 		if (!event.player.isSneaking) return
-		val modManger = getComponent(CustomComponentTypes.MODDED_ITEM)
+		val modManger = getComponent(CustomComponentTypes.MOD_MANAGER)
 		modManger.openMenu(event.player, this, itemStack)
 	}
 }

@@ -41,8 +41,8 @@ class PowerCapacityIncrease(
 
 	override fun onAdd(itemStack: ItemStack) {
 		val customItem = itemStack.customItem ?: return
-		if (!customItem.hasComponent(CustomComponentTypes.POWERED_ITEM)) return
-		val powerManager = customItem.getComponent(CustomComponentTypes.POWERED_ITEM)
+		if (!customItem.hasComponent(CustomComponentTypes.POWER_STORAGE)) return
+		val powerManager = customItem.getComponent(CustomComponentTypes.POWER_STORAGE)
 
 		customItem.refreshLore(itemStack)
 		updateDurability(itemStack, powerManager.getPower(itemStack), powerManager.getMaxPower(customItem, itemStack))
@@ -50,8 +50,8 @@ class PowerCapacityIncrease(
 
 	override fun onRemove(itemStack: ItemStack) {
 		val customItem = itemStack.customItem ?: return
-		if (!customItem.hasComponent(CustomComponentTypes.POWERED_ITEM)) return
-		val powerManager = customItem.getComponent(CustomComponentTypes.POWERED_ITEM)
+		if (!customItem.hasComponent(CustomComponentTypes.POWER_STORAGE)) return
+		val powerManager = customItem.getComponent(CustomComponentTypes.POWER_STORAGE)
 
 		powerManager.setPower(customItem, itemStack, minOf(powerManager.getPower(itemStack), powerManager.getMaxPower(customItem, itemStack)))
 	}
