@@ -1,14 +1,17 @@
 package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerStorage
+import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
-import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
-import net.horizonsend.ion.server.features.custom.items.powered.PoweredItem
+import net.horizonsend.ion.server.features.custom.items.util.updateDurability
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -21,12 +24,12 @@ import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 class PowerCapacityIncrease(
-	val increaseAmount: Int,
+	private val increaseAmount: Int,
 	override val modItem: Supplier<ModificationItem?>
 ) : ItemModification {
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "POWER_CAPACITY_$increaseAmount"
-	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerHoe::class, PowerChainsaw::class)
+	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerHoe::class, PowerChainsaw::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 
 	override val displayName: Component = ofChildren(
@@ -37,15 +40,23 @@ class PowerCapacityIncrease(
 	).decoration(TextDecoration.ITALIC, false)
 
 	override fun onAdd(itemStack: ItemStack) {
-		val customItem = itemStack.customItem as? PoweredItem ?: return
+		val customItem = itemStack.newCustomItem ?: return
+		if (!customItem.hasComponent(CustomComponentTypes.POWERED_ITEM)) return
+		val powerManager = customItem.getComponent(CustomComponentTypes.POWERED_ITEM)
 
-		customItem.rebuildLore(itemStack, false)
-		customItem.updateDurability(itemStack, customItem.getPower(itemStack), customItem.getPowerCapacity(itemStack))
+		customItem.refreshLore(itemStack)
+		updateDurability(itemStack, powerManager.getPower(itemStack), powerManager.getMaxPower(customItem, itemStack))
 	}
 
 	override fun onRemove(itemStack: ItemStack) {
-		val customItem = itemStack.customItem as? PoweredItem ?: return
+		val customItem = itemStack.newCustomItem ?: return
+		if (!customItem.hasComponent(CustomComponentTypes.POWERED_ITEM)) return
+		val powerManager = customItem.getComponent(CustomComponentTypes.POWERED_ITEM)
 
-		customItem.setPower(itemStack, minOf(customItem.getPower(itemStack), customItem.getPowerCapacity(itemStack)))
+		powerManager.setPower(customItem, itemStack, minOf(powerManager.getPower(itemStack), powerManager.getMaxPower(customItem, itemStack)))
+	}
+
+	override fun getAttributes(): List<CustomItemAttribute> {
+		return listOf(AdditionalPowerStorage(increaseAmount))
 	}
 }

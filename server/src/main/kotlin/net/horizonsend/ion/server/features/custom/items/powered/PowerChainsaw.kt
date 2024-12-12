@@ -3,91 +3,55 @@ package net.horizonsend.ion.server.features.custom.items.powered
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
-import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.components.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.general.AutoReplantModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.chainsaw.ExtendedBar
-import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
-import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
-import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isFence
 import net.horizonsend.ion.server.miscellaneous.utils.isLeaves
 import net.horizonsend.ion.server.miscellaneous.utils.isLog
 import net.horizonsend.ion.server.miscellaneous.utils.isWood
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.minecraft.core.BlockPos
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType.STRING
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.ArrayDeque
 import kotlin.math.roundToInt
 
 class PowerChainsaw(
 	identifier: String,
-	override val displayName: Component,
-	override val modLimit: Int,
-	override val basePowerCapacity: Int,
-	override val customModelData: Int,
-	val initialBlocksBroken: Int,
-) : CustomItem(identifier), ModdedPowerItem, CustomModeledItem {
-	override val basePowerUsage: Int = 10
-	override val displayDurability: Boolean = true
-
-	override val material: Material = Material.DIAMOND_PICKAXE
-
-	override fun getLoreManagers(): List<LoreCustomItem.CustomItemLoreManager> {
-		return listOf(
-			PoweredItem.PowerLoreManager,
-			ModdedCustomItem.ModLoreManager,
-		)
+	displayName: Component,
+	modLimit: Int,
+	basePowerCapacity: Int,
+	model: String,
+	val initialBlocksBroken: Int
+) : PowerTool(identifier, displayName, modLimit, basePowerCapacity, model) {
+	override val customComponents: CustomItemComponentManager = super.customComponents.apply {
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PowerChainsaw) { event, _, item ->
+			handleClick(event.player, item, event)
+		})
 	}
 
-	override fun constructItemStack(): ItemStack {
-		val base = getModeledItem()
-
-		base.updateMeta {
-			it.displayName(displayName)
-			it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
-			it.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
-		}
-
-		setPower(base, getPowerCapacity(base))
-		setMods(base, arrayOf())
-
-		rebuildLore(base, asTask = false)
-
-		return base
-	}
-
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
-		if (livingEntity is Player && livingEntity.isSneaking) openMenu(livingEntity, itemStack)
-	}
-
-	override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
+	private fun handleClick(player: Player, itemStack: ItemStack, event: PlayerInteractEvent) {
 		if (event.player.gameMode != GameMode.SURVIVAL) return
-
-		if (livingEntity !is Player) return
-
 		val origin = event.clickedBlock ?: return
 
-		val mods = getMods(itemStack)
+		val mods = getComponent(CustomComponentTypes.MODDED_ITEM).getMods(itemStack)
 
 		val maxDepth = if (mods.contains(ExtendedBar)) initialBlocksBroken + 100 else initialBlocksBroken
 
 		PowerChainsawMineTask(
-			player = livingEntity,
+			player = player,
 			chainsawItem = itemStack,
 			chainsaw = this,
 			mods = mods,
@@ -141,8 +105,10 @@ class PowerChainsaw(
 
 			visited[key] = block
 
-			val powerUse = chainsaw.getPowerUse(chainsawItem)
-			if (powerUse > chainsaw.getPower(chainsawItem)) {
+			val powerManager = chainsaw.getComponent(CustomComponentTypes.POWERED_ITEM)
+			val powerUse = powerManager.getPowerUse(chainsawItem, chainsaw)
+
+			if (powerUse > powerManager.getPower(chainsawItem)) {
 				player.userError("Out of power!")
 				cancel()
 				return
@@ -161,7 +127,7 @@ class PowerChainsaw(
 			val usage = PowerHoe.UsageReference()
 
 			if (PowerDrill.tryBreakBlock(player, block, mods, drops, usage)) {
-				chainsaw.removePower(chainsawItem, (powerUse * usage.multiplier).roundToInt())
+				powerManager.removePower(chainsawItem, chainsaw, (powerUse * usage.multiplier).roundToInt())
 			}
 
 			for ((dropLocation, items) in drops) {

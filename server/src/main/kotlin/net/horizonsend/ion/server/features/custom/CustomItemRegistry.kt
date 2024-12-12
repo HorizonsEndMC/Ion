@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.custom
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.text
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
@@ -11,21 +14,33 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.blasters.Blaster
 import net.horizonsend.ion.server.features.custom.items.blasters.Magazine
-import net.horizonsend.ion.server.features.custom.items.components.CustomComponentType
-import net.horizonsend.ion.server.features.custom.items.components.SmeltableComponent
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.components.Smeltable
 import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
+import net.horizonsend.ion.server.features.custom.items.mods.ItemModRegistry
+import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
+import net.horizonsend.ion.server.features.custom.items.powered.CratePlacer
+import net.horizonsend.ion.server.features.custom.items.powered.PowerChainsaw
+import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
+import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.stackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.withComponent
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextColor.fromHexString
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
@@ -123,9 +138,9 @@ object CustomItemRegistry : IonServerComponent() {
 	val CANNON_RECEIVER = register("CANNON_RECEIVER", text("Cannon Receiver"), unStackableCustomItem("industry/cannon_receiver"))
 
 	// Minerals start
-	private fun registerRawOre(identifier: String, name: String, smeltingResult: Supplier<NewCustomItem>) = register(identifier, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(RAW_IRON, model = "mineral/raw_$name")).withComponent(CustomComponentType.SMELTABLE, SmeltableComponent(smeltingResult.map { it.constructItemStack() }))
+	private fun registerRawOre(identifier: String, name: String, smeltingResult: Supplier<NewCustomItem>) = register(identifier, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(RAW_IRON, model = "mineral/raw_$name")).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
 	private fun registerOreIngot(identifier: String, name: String) = register(identifier, text("${name.replaceFirstChar { it.uppercase() }} Ingot"), stackableCustomItem(RAW_IRON, model = "mineral/$name"))
-	private fun registerOreBlock(identifier: String, name: String, block: Supplier<CustomBlock>, smeltingResult: Supplier<NewCustomItem>) = customBlockItem(identifier, IRON_ORE, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block).withComponent(CustomComponentType.SMELTABLE, SmeltableComponent(smeltingResult.map { it.constructItemStack() }))
+	private fun registerOreBlock(identifier: String, name: String, block: Supplier<CustomBlock>, smeltingResult: Supplier<NewCustomItem>) = customBlockItem(identifier, IRON_ORE, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
 	private fun registerIngotBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, IRON_BLOCK, "mineral/${name}_block", text("${name.replaceFirstChar { it.uppercase() }} Block"), block)
 	private fun registerRawBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, RAW_IRON_BLOCK, "mineral/raw_${name}_block", text("Raw ${name.replaceFirstChar { it.uppercase() }} Block"), block)
 
@@ -203,6 +218,101 @@ object CustomItemRegistry : IonServerComponent() {
 	val BARGE_REACTOR_CORE = customBlockItem(identifier = "BARGE_REACTOR_CORE", model = "starship/barge_reactor_core", displayName = text("Barge Reactor Core", BOLD), customBlock = CustomBlocks::BARGE_REACTOR_CORE)
 	val CRUISER_REACTOR_CORE = customBlockItem(identifier = "CRUISER_REACTOR_CORE", model = "starship/cruiser_reactor_core", displayName = text("Cruiser Reactor Core", BOLD), customBlock = CustomBlocks::CRUISER_REACTOR_CORE)
 	// Starship Components End
+
+	// Tools start
+	private fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
+		text("$tierName ", tierColor),
+		text("Power ", GOLD),
+		text(toolName, GRAY)
+	).itemName
+
+	val POWER_DRILL_BASIC = register(PowerDrill(
+		identifier = "POWER_DRILL_BASIC",
+		displayName = formatToolName("Basic", HE_LIGHT_ORANGE, "Drill"),
+		modLimit = 2,
+		basePowerCapacity = 50_000,
+		model = "tool/power_drill_basic"
+	))
+	val POWER_DRILL_ENHANCED = register(PowerDrill(
+		identifier = "POWER_DRILL_ENHANCED",
+		displayName = formatToolName("Enhanced", fromHexString("#00FFA1")!!, "Drill"),
+		modLimit = 4,
+		basePowerCapacity = 75_000,
+		model = "tool/power_drill_enhanced"
+	))
+	val POWER_DRILL_ADVANCED = register(PowerDrill(
+		identifier = "POWER_DRILL_ADVANCED",
+		displayName = formatToolName("Advanced", fromHexString("#B12BC9")!!, "Drill"),
+		modLimit = 6,
+		basePowerCapacity = 100_000,
+		model = "tool/power_drill_advanced"
+	))
+
+	val POWER_CHAINSAW_BASIC = register(PowerChainsaw(
+		identifier = "POWER_CHAINSAW_BASIC",
+		displayName = formatToolName("Basic", HE_LIGHT_ORANGE, "Chainsaw"),
+		modLimit = 2,
+		basePowerCapacity = 50_000,
+		model = "tool/power_chainsaw_basic",
+		initialBlocksBroken = 50
+	))
+	val POWER_CHAINSAW_ENHANCED = register(PowerChainsaw(
+		identifier = "POWER_CHAINSAW_ENHANCED",
+		displayName = formatToolName("Enhanced", fromHexString("#00FFA1")!!, "Chainsaw"),
+		modLimit = 4,
+		basePowerCapacity = 75_000,
+		model = "tool/power_chainsaw_enhanced",
+		initialBlocksBroken = 100
+	))
+	val POWER_CHAINSAW_ADVANCED = register(PowerChainsaw(
+		identifier = "POWER_CHAINSAW_ADVANCED",
+		displayName = formatToolName("Advanced", fromHexString("#B12BC9")!!, "Chainsaw"),
+		modLimit = 6,
+		basePowerCapacity = 100_000,
+		model = "tool/power_chainsaw_advanced",
+		initialBlocksBroken = 150
+	))
+
+	val POWER_HOE_BASIC = register(PowerHoe(
+		identifier = "POWER_HOE_BASIC",
+		displayName = formatToolName("Basic", HE_LIGHT_ORANGE, "Hoe"),
+		modLimit = 2,
+		basePowerCapacity = 50_000,
+		model = "tool/power_hoe_basic"
+	))
+	val POWER_HOE_ENHANCED = register(PowerHoe(
+		identifier = "POWER_HOE_ENHANCED",
+		displayName = formatToolName("Enhanced", fromHexString("#00FFA1")!!, "Hoe"),
+		modLimit = 4,
+		basePowerCapacity = 75_000,
+		model = "tool/power_hoe_enhanced"
+	))
+	val POWER_HOE_ADVANCED = register(PowerHoe(
+		identifier = "POWER_HOE_ADVANCED",
+		displayName = formatToolName("Advanced", fromHexString("#B12BC9")!!, "Hoe"),
+		modLimit = 6,
+		basePowerCapacity = 100_000,
+		model = "tool/power_hoe_advanced"
+	))
+
+	val CRATE_PLACER = register(CratePlacer)
+
+	val RANGE_1: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_RANGE_1", "tool/modification/drill_aoe_1", text("Range Addon +1").itemName, text("Expands the working area by 1 block", GRAY).itemName) { ItemModRegistry.AOE_1 })
+	val RANGE_2: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_RANGE_2", "tool/modification/drill_aoe_2", text("Range Addon +2").itemName, text("Expands the working area by 2 blocks", GRAY).itemName) { ItemModRegistry.AOE_2 })
+	val VEIN_MINER_25: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_VEIN_MINER_25", "tool/modification/drill_vein_miner_25", text("Vein Miner").itemName, text("Allows a drill to mine veins of connected blocks, up to 25.", GRAY).itemName) { ItemModRegistry.VEIN_MINER_25 })
+	val SILK_TOUCH_MOD: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_SILK_TOUCH_MOD", "tool/modification/silk_touch", text("Silk Touch Modifier").itemName, text("Applies silk touch to drops", GRAY).itemName, text("Incurs a power usage penalty", RED).itemName) { ItemModRegistry.SILK_TOUCH })
+	val AUTO_SMELT: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_AUTO_SMELT", "tool/modification/auto_smelt", text("Auto Smelt Modifier").itemName, text("Sears the drops before they hit the ground", GRAY).itemName, text("Incurs a power usage penalty", RED).itemName) { ItemModRegistry.AUTO_SMELT })
+	val FORTUNE_1: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FORTUNE_1", "tool/modification/fortune_1", text("Fortune 1 Modifier").itemName, text("Applies fortune 1 touch to drops", GRAY).itemName, text("Incurs a power usage penalty", RED).itemName) { ItemModRegistry.FORTUNE_1 })
+	val FORTUNE_2: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FORTUNE_2", "tool/modification/fortune_2", text("Fortune 2 Modifier").itemName, text("Applies fortune 2 touch to drops", GRAY).itemName, text("Incurs a power usage penalty", RED).itemName) { ItemModRegistry.FORTUNE_2 })
+	val FORTUNE_3: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FORTUNE_3", "tool/modification/fortune_3", text("Fortune 3 Modifier").itemName, text("Applies fortune 3 touch to drops", GRAY).itemName, text("Incurs a power usage penalty", RED).itemName) { ItemModRegistry.FORTUNE_3 })
+	val POWER_CAPACITY_25: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_POWER_CAPACITY_25", "tool/modification/power_capacity_25", text("Small Auxiliary battery").itemName, ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), PowerMachines.prefixComponent, text(25000, GREEN)).itemName) { ItemModRegistry.POWER_CAPACITY_25 })
+	val POWER_CAPACITY_50: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_POWER_CAPACITY_50", "tool/modification/power_capacity_50", text("Medium Auxiliary battery").itemName, ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), PowerMachines.prefixComponent, text(50000, GREEN)).itemName) { ItemModRegistry.POWER_CAPACITY_50 })
+	val AUTO_REPLANT: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_AUTO_REPLANT", "tool/modification/auto_replant", text("Auto Replant Modifier").itemName, text("Automatically plants back harvested crops and cut trees", GRAY).itemName,) { ItemModRegistry.AUTO_REPLANT })
+	val AUTO_COMPOST: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_AUTO_COMPOST", "tool/modification/auto_compost", text("Auto Compost Modifier").itemName, text("Sends applicable drops through a composter, turning them into bonemeal.", GRAY).itemName,) { ItemModRegistry.AUTO_COMPOST })
+	val RANGE_3: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_RANGE_3", "tool/modification/drill_aoe_3", text("Range Addon +3").itemName, text("Expands the working area by 3 blocks", GRAY).itemName) { ItemModRegistry.AOE_3 })
+	val EXTENDED_BAR: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_EXTENDED_BAR", "tool/modification/extended_bar", text("Extended Chainsaw Bar").itemName, text("Allows a chainsaw to cut down larger trees", GRAY).itemName) { ItemModRegistry.EXTENDED_BAR })
+	val FERTILIZER_DISPENSER: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FERTILIZER_DISPENSER", "tool/modification/fertilizer_dispenser", text("Fertilizer Sprayer").itemName, text("Applies bonemeal to crops in the effected area, if available in the user's inventory", GRAY).itemName) { ItemModRegistry.FERTILIZER_DISPENSER })
+	// Tools end
 
 	// Planets start
 	val AERACH = unStackable(identifier = "AERACH", displayName = text("Aerach"), model = "planet/aerach")

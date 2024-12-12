@@ -3,8 +3,9 @@ package net.horizonsend.ion.server.features.custom.items.mods
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.components.ModManager
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Material.AIR
@@ -27,9 +28,10 @@ import kotlin.math.ceil
 class ToolModMenu(
 	private val viewer: Player,
 	private val itemStack: ItemStack,
-	private val customItem: ModdedCustomItem
+	private val customItem: NewCustomItem,
+	private val modManager: ModManager
 ) : InventoryHolder {
-	private val inventorySize = (ceil((customItem.getMods(itemStack).size + 1).toDouble() / 9.0) * 9).toInt()
+	private val inventorySize = (ceil((modManager.getMods(itemStack).size + 1).toDouble() / 9.0) * 9).toInt()
 	private val internalInventory = IonServer.server.createInventory(this, inventorySize)
 
 	override fun getInventory(): Inventory = internalInventory
@@ -50,7 +52,7 @@ class ToolModMenu(
 	}
 
 	private fun populateMods() {
-		val mods = customItem.getMods(itemStack)
+		val mods = modManager.getMods(itemStack)
 
 		var index = 0
 		for (mod in mods) {
@@ -66,14 +68,14 @@ class ToolModMenu(
 	}
 
 	private fun rebuildFromContents(contents: Collection<ItemStack?>) {
-		val existingMods = customItem.getMods(itemStack).toMutableList()
+		val existingMods = modManager.getMods(itemStack).toMutableList()
 
-		val nonItemMods = customItem
+		val nonItemMods = modManager
 			.getMods(itemStack)
 			.filter { it.modItem.get() == null }
 
 		val mods = contents
-			.mapNotNull { it?.customItem }
+			.mapNotNull { it?.newCustomItem }
 			.filterIsInstance<ModificationItem>()
 			.mapTo(mutableSetOf()) { it.modification }
 			.plus(nonItemMods)
@@ -87,7 +89,7 @@ class ToolModMenu(
 		// Remove all the mods that still are present
 		existingMods.removeAll(mods.toSet())
 
-		customItem.setMods(itemStack, mods)
+		modManager.setMods(itemStack, customItem, mods)
 
 		// Handle the removal / addition of mods
 		existingMods.forEach { it.onRemove(itemStack) }
@@ -190,7 +192,7 @@ class ToolModMenu(
 	}
 
 	private fun canAdd(itemStack: ItemStack, player: Player): Boolean {
-		val customItem = itemStack.customItem
+		val customItem = itemStack.newCustomItem
 		if (customItem !is ModificationItem) {
 			return false
 		}
@@ -202,12 +204,12 @@ class ToolModMenu(
 			return false
 		}
 
-		if (this.customItem.getMods(this.itemStack).size >= this.customItem.modLimit) {
+		if (this.modManager.getMods(this.itemStack).size >= this.modManager.maxMods) {
 			player.userError("Mod limit reached!")
 			return false
 		}
 
-		return this.customItem.getMods(this.itemStack).none { existingMod ->
+		return this.modManager.getMods(this.itemStack).none { existingMod ->
 			val incompatible = existingMod.incompatibleWithMods.contains(mod::class)
 
 			if (incompatible) {
@@ -227,8 +229,8 @@ class ToolModMenu(
 	companion object : SLEventListener() {
 		private val inventories = mutableMapOf<UUID, ToolModMenu>()
 
-		fun create(viewer: Player, itemStack: ItemStack, customItem: ModdedCustomItem): ToolModMenu {
-			val holder = ToolModMenu(viewer, itemStack, customItem)
+		fun create(viewer: Player, itemStack: ItemStack, customItem: NewCustomItem, manager: ModManager): ToolModMenu {
+			val holder = ToolModMenu(viewer, itemStack, customItem, manager)
 			inventories[viewer.uniqueId] = holder
 
 			return holder

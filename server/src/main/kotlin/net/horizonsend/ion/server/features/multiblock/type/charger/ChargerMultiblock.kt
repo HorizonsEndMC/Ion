@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.type.charger
 
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.powered.PoweredItem
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.components.Power
 import net.horizonsend.ion.server.features.gear.addPower
 import net.horizonsend.ion.server.features.gear.getMaxPower
 import net.horizonsend.ion.server.features.gear.getPower
@@ -83,11 +85,8 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStor
 			handleLegacy(item, event, furnace, inventory, sign, power)
 		}
 
-		val custom = item.customItem
-
-		if (custom is PoweredItem) {
-			handleModern(item, custom, event, furnace, inventory, sign, power)
-		}
+		val custom = item.newCustomItem ?: return
+		if (custom.hasComponent(CustomComponentTypes.POWERED_ITEM)) handleModern(item, custom, custom.getComponent(CustomComponentTypes.POWERED_ITEM), event, furnace, inventory, sign, power)
 	}
 
 	fun handleLegacy(
@@ -119,14 +118,15 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStor
 
 	fun handleModern(
 		item: ItemStack,
-		customItem: PoweredItem,
+		customItem: NewCustomItem,
+		powerManager: Power,
 		event: FurnaceBurnEvent,
 		furnace: Furnace,
 		inventory: FurnaceInventory,
 		sign: Sign,
 		power: Int
 	) {
-		if (customItem.getPowerCapacity(item) == customItem.getPower(item)) {
+		if (powerManager.getMaxPower(customItem, item) == powerManager.getPower(item)) {
 			val result = inventory.result
 			if (result != null && result.type != Material.AIR) return
 			inventory.result = event.fuel
@@ -139,7 +139,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStor
 
 		if (item.amount * multiplier > power) return
 
-		customItem.addPower(item, multiplier)
+		powerManager.addPower(item, customItem, multiplier)
 
 		PowerMachines.setPower(sign, power - multiplier * item.amount)
 

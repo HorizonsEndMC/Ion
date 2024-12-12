@@ -1,10 +1,11 @@
 package net.horizonsend.ion.server.features.custom.items.mods.tool.hoe
 
 import net.horizonsend.ion.common.utils.text.ITALIC
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
-import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -21,10 +22,10 @@ object FertilizerDispenser : ItemModification {
 	override val identifier: String = "FERTILIZER_DISPENSER"
 	override val displayName: Component = text("Fertilizer Sprayer", DARK_GREEN).decoration(ITALIC, false)
 
-	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerHoe::class)
+	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerHoe::class)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 
-	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItems.FERTILIZER_DISPENSER }
+	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItemRegistry.FERTILIZER_DISPENSER }
 
 	override val crouchingDisables: Boolean = true
 
@@ -39,4 +40,6 @@ object FertilizerDispenser : ItemModification {
 
 		return result
 	}
+
+	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 }

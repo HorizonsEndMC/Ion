@@ -2,11 +2,12 @@ package net.horizonsend.ion.server.features.custom.items.mods.general
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.custom.NewCustomItem
+import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.mods.tool.BlockListModifier
 import net.horizonsend.ion.server.features.custom.items.mods.tool.drill.VeinMinerMod
-import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
 import net.horizonsend.ion.server.features.custom.items.powered.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.powered.PowerHoe
 import net.kyori.adventure.text.Component
@@ -20,7 +21,7 @@ import kotlin.reflect.KClass
 
 class AOEDMod(
 	val radius: Int,
-	override val applicableTo: Array<KClass<out ModdedCustomItem>> = arrayOf(PowerDrill::class, PowerHoe::class),
+	override val applicableTo: Array<KClass<out NewCustomItem>> = arrayOf(PowerDrill::class, PowerHoe::class),
 	override val modItem: Supplier<ModificationItem?>,
 ) : ItemModification, BlockListModifier {
 	override val identifier: String = "AOE_$radius"
@@ -78,4 +79,6 @@ class AOEDMod(
 		BlockFace.DOWN -> BlockFace.SOUTH
 		else -> error("Unsupported direction $this")
 	}
+
+	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 }

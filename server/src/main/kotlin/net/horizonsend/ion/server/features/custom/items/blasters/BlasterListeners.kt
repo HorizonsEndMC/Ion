@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.custom.CustomItemRegistry.newCustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.components.CustomComponentType
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -105,9 +105,9 @@ class BlasterListeners : SLEventListener() {
 		}
 
 		val resultItem = craftedItems.first().newCustomItem as Magazine
-		val totalAmmo = craftedItems.sumOf { resultItem.getComponent(CustomComponentType.AMMUNITION).getAmmo(it) }.coerceIn(0..resultItem.balancing.capacity)
+		val totalAmmo = craftedItems.sumOf { resultItem.getComponent(CustomComponentTypes.AMMUNITION).getAmmo(it) }.coerceIn(0..resultItem.balancing.capacity)
 		val resultItemStack = CustomItems.getByIdentifier(resultItem.identifier)!!.constructItemStack()
-		resultItem.getComponent(CustomComponentType.AMMUNITION).setAmmo(resultItemStack, resultItem, totalAmmo)
+		resultItem.getComponent(CustomComponentTypes.AMMUNITION).setAmmo(resultItemStack, resultItem, totalAmmo)
 
 		event.inventory.result = resultItemStack
 	}

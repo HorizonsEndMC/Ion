@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.custom.items.blasters
 
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.AmmoStorage
 import net.horizonsend.ion.server.features.custom.NewCustomItem
-import net.horizonsend.ion.server.features.custom.items.components.AmmunitionComponent
-import net.horizonsend.ion.server.features.custom.items.components.CustomComponentType
+import net.horizonsend.ion.server.features.custom.items.components.Ammunition
+import net.horizonsend.ion.server.features.custom.items.components.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.components.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.kyori.adventure.text.Component
@@ -18,10 +18,10 @@ class Magazine(identifier: String, displayName: Component, itemFactory: ItemFact
 	val balancing get() = balancingSupplier.get()
 
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
-		addComponent(CustomComponentType.AMMUNITION, AmmunitionComponent(balancingSupplier))
+		addComponent(CustomComponentTypes.AMMUNITION, Ammunition(balancingSupplier))
 	}
 
 	override fun decorateItemStack(base: ItemStack) {
-		customComponents.getComponent(CustomComponentType.AMMUNITION).setAmmo(base, this, balancing.capacity)
+		customComponents.getComponent(CustomComponentTypes.AMMUNITION).setAmmo(base, this, balancing.capacity)
 	}
 }
