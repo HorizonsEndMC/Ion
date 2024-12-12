@@ -197,6 +197,8 @@ object CustomItemRegistry : IonServerComponent() {
 
 	val PROGRESS_HOLDER = register(ProgressHolder)
 
+
+
 	init {
 		sortCustomItemListeners()
 	}
