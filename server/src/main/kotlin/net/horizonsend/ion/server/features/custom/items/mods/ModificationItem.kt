@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
+import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
 class ModificationItem(
@@ -23,24 +24,25 @@ class ModificationItem(
 	ItemFactory
 		.builder(ItemFactory.unStackableCustomItem)
 		.setCustomModel(model)
-		.setLoreSupplier {
-			val applicableTo = CustomItemRegistry.ALL
-				.filter { customItem ->
-					modSupplier.get().applicableTo.contains(customItem::class)
-				}
-				.map { customItem -> customItem.displayName }
-				.toTypedArray()
-
-			mutableListOf(
-				*description,
-				empty(),
-				text("Applicable to:", HE_MEDIUM_GRAY).decoration(ITALIC, false),
-				*applicableTo
-			)
-		}
 		.build()
 ) {
 	private val descriptionLines = arrayOf(*description)
+
+	override fun assembleLore(itemStack: ItemStack): List<Component> {
+		val applicableTo = CustomItemRegistry.ALL
+			.filter { customItem ->
+				modSupplier.get().applicableTo.contains(customItem::class)
+			}
+			.map { customItem -> customItem.displayName }
+			.toTypedArray()
+
+		return mutableListOf(
+			*descriptionLines,
+			empty(),
+			text("Applicable to:", HE_MEDIUM_GRAY).decoration(ITALIC, false),
+			*applicableTo
+		)
+	}
 
 	/** The tool modification this item represents */
 	val modification get() = modSupplier.get()
