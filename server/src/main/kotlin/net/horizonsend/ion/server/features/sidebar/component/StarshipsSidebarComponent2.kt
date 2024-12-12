@@ -20,7 +20,7 @@ class StarshipsSidebarComponent2(starship: ActiveControlledStarship, player: Pla
     private val pmThruster = starship.reactor.powerDistributor.thrusterPortion
     private val acceleration = starship.cruiseData.getRealAccel(pmThruster).roundToHundredth()
     private val isDirectControlEnabled = starship.isDirectControlEnabled
-    private val isCruising = StarshipCruising.isCruising(starship)
+    private val isCruising = StarshipCruising.isCruisingAndAccelerating(starship)
     private val isStopped = starship.cruiseData.velocity.lengthSquared() == 0.0
     private val isBlocked = starship.lastBlockedTime > (System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(StarshipCruising.SECONDS_PER_CRUISE.toLong()))
     private val compassComponent = StarshipsSidebar.compassComponent(starship, player)

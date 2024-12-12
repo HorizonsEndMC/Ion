@@ -38,7 +38,7 @@ import java.util.UUID
 
 object CombatTimer : IonServerComponent() {
 
-	private val PVP_TIMER_MINS = Duration.ofMinutes(10)
+	private val PVP_TIMER_MINS = Duration.ofMinutes(5)
 	private val NPC_TIMER_MINS = Duration.ofMinutes(2).plusSeconds(30)
 	private const val SVP_ENTER_COMBAT_DIST = 500.0
 	private const val MAINTAIN_COMBAT_DIST = 1000.0

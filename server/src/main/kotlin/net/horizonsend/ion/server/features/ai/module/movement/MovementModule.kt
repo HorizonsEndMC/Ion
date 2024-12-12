@@ -143,7 +143,7 @@ abstract class MovementModule(
 	fun stopCruising(immediate: Boolean = false) {
 		val starship = controller.starship
 
-		val isCruising = StarshipCruising.isCruising(starship)
+		val isCruising = StarshipCruising.isCruisingAndAccelerating(starship)
 
 		if (isCruising) if (immediate) StarshipCruising.forceStopCruising(starship) else StarshipCruising.stopCruising(controller, starship)
 	}

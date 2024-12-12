@@ -542,7 +542,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val ship = getStarshipPiloting(sender)
 		val controller = ActiveStarships.findByPilot(sender)?.controller ?: return
 
-		if (!StarshipCruising.isCruising(ship)) {
+		if (!StarshipCruising.isCruisingAndAccelerating(ship)) {
 			val dir = sender.location.direction.setY(0).normalize()
 
 			StarshipCruising.startCruising(controller, ship, dir)

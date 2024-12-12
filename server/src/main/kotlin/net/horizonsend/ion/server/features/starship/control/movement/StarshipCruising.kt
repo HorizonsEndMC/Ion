@@ -195,7 +195,7 @@ object StarshipCruising : IonServerComponent() {
 		maxSpeed /= 2
 		maxSpeed = (maxSpeed * starship.balancing.cruiseSpeedMultiplier).toInt()
 
-		val wasCruising = isCruising(starship)
+		val wasCruising = isCruisingAndAccelerating(starship)
 
 		starship.cruiseData.accel = accel
 		starship.cruiseData.targetSpeed = maxSpeed
@@ -253,7 +253,7 @@ object StarshipCruising : IonServerComponent() {
 				}
 			}
 		} else {
-			if (!isCruising(starship)) {
+			if (!isCruisingAndAccelerating(starship)) {
 				starship.informationAction("Cruise started, dir<dark_gray>: $info")
 			} else {
 				starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
@@ -293,7 +293,7 @@ object StarshipCruising : IonServerComponent() {
 			return
 		}
 
-		if (!isCruising(starship)) {
+		if (!isCruisingAndAccelerating(starship)) {
 			if (starship.cruiseData.velocity.lengthSquared() != 0.0) {
 				controller.userErrorAction("Starship is decelerating")
 			} else {
@@ -334,6 +334,9 @@ object StarshipCruising : IonServerComponent() {
 		starship.cruiseData = CruiseData(starship)
 	}
 
+	// If the starship is actively accelerating while in the cruise state
+	fun isCruisingAndAccelerating(starship: ActiveControlledStarship) = starship.cruiseData.targetDir != null
+	// If the starship is moving due to cruising at all, even if not accelerating
 	fun isCruising(starship: ActiveControlledStarship) = starship.cruiseData.velocity.lengthSquared() != 0.0
 
 	enum class Diagonal {
