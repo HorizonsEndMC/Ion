@@ -105,9 +105,9 @@ class BlasterListeners : SLEventListener() {
 		}
 
 		val resultItem = craftedItems.first().customItem as Magazine
-		val totalAmmo = craftedItems.sumOf { resultItem.getComponent(CustomComponentTypes.AMMUNITION).getAmmo(it) }.coerceIn(0..resultItem.balancing.capacity)
+		val totalAmmo = craftedItems.sumOf { resultItem.getComponent(CustomComponentTypes.AMMUNITION_STORAGE).getAmmo(it) }.coerceIn(0..resultItem.balancing.capacity)
 		val resultItemStack = CustomItemRegistry.getByIdentifier(resultItem.identifier)!!.constructItemStack()
-		resultItem.getComponent(CustomComponentTypes.AMMUNITION).setAmmo(resultItemStack, resultItem, totalAmmo)
+		resultItem.getComponent(CustomComponentTypes.AMMUNITION_STORAGE).setAmmo(resultItemStack, resultItem, totalAmmo)
 
 		event.inventory.result = resultItemStack
 	}

@@ -18,7 +18,7 @@ import org.bukkit.Material.matchMaterial
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class Ammunition(val balancingSupplier: Supplier<out AmmoStorageBalancing>) : CustomItemComponent, LoreManager {
+class AmmunitionStorage(val balancingSupplier: Supplier<out AmmoStorageBalancing>) : CustomItemComponent, LoreManager {
 
 	override fun decorateBase(baseItem: ItemStack, customItem: CustomItem) {
 		AMMO.setAmount(baseItem, balancingSupplier.get().capacity)
