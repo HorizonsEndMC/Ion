@@ -26,6 +26,7 @@ import org.bukkit.event.Listener
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
+import xyz.xenondevs.invui.InvUI
 import kotlin.system.measureTimeMillis
 
 object IonServer : JavaPlugin() {
@@ -54,6 +55,7 @@ object IonServer : JavaPlugin() {
 
 	private fun internalEnable() {
 		CommonConfig.init(configurationFolder) // DB Configs
+		InvUI.getInstance().setPlugin(IonServer)
 
 		prefixProvider = { // Audience extensions
 			when (it) {
