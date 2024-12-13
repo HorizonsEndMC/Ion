@@ -17,7 +17,7 @@ class Magazine(identifier: String, displayName: Component, itemFactory: ItemFact
 ) {
 	val balancing get() = balancingSupplier.get()
 
-	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.AMMUNITION_STORAGE, AmmunitionStorage(balancingSupplier))
 	}
 

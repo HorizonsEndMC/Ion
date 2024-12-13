@@ -10,6 +10,9 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.util.serialization.SerializationManager
+import net.horizonsend.ion.server.features.custom.items.util.serialization.token.ItemModificationToken
+import net.horizonsend.ion.server.features.custom.items.util.serialization.token.ListToken
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.TOOL_MODIFICATIONS
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -100,5 +103,14 @@ class ModManager(val maxMods: Int) : CustomItemComponent, LoreManager {
 				ItemModRegistry[stringArray[it]]!!
 			}
 		}
+	}
+
+	override fun registerSerializers(serializationManager: SerializationManager) {
+		serializationManager.addSerializedData(
+			"mods",
+			ListToken(ItemModificationToken()),
+			{ customItem, itemStack -> customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(itemStack).toList() },
+			{ customItem: CustomItem, itemStack: ItemStack, data: List<ItemModification> -> customItem.getComponent(CustomComponentTypes.MOD_MANAGER).setMods(itemStack, customItem, data.toTypedArray()) }
+		)
 	}
 }

@@ -34,7 +34,7 @@ abstract class ThrowableCustomItem(
 	val balancing get() = balancingSupplier.get()
 	val material = Material.WARPED_FUNGUS_ON_A_STICK
 
-	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, Listener.rightClickListener(this@ThrowableCustomItem) { event, _, itemStack ->
 			throwItem(itemStack, event.player)
 		})

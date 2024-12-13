@@ -27,7 +27,7 @@ class GasCanister(
 	val gas get() = gasSupplier.get()
 	val maximumFill = gas.configuration.maxStored
 
-	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(GAS_STORAGE, GasStorage(maximumFill, true, gasSupplier))
 	}
 
