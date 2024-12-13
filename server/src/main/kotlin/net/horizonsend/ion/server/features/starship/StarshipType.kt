@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
-import net.horizonsend.ion.server.features.starship.StarshipType.AI_CORVETTE_LOGISTIC
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -294,7 +293,7 @@ enum class StarshipType(
 		minLevel = 70,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
-		menuItemRaw = { CustomItems.STEEL_PLATE.constructItemStack() },
+		menuItemRaw = { CustomItemRegistry.STEEL_PLATE.constructItemStack() },
 		menuSubclasses = { listOf(AI_CRUISER) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#FFD700",
@@ -334,7 +333,7 @@ enum class StarshipType(
 		minLevel = 80,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.0,
-		menuItemRaw = { CustomItems.STEEL_BLOCK.constructItemStack() },
+		menuItemRaw = { CustomItemRegistry.STEEL_BLOCK.constructItemStack() },
 		menuSubclasses = { listOf(AI_BATTLECRUISER) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#0c5ce8",
@@ -373,7 +372,7 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.015,
 		crateLimitMultiplier = 0.5,
-		menuItemRaw = { CustomItems.STEEL_MODULE.constructItemStack() },
+		menuItemRaw = { CustomItemRegistry.STEEL_MODULE.constructItemStack() },
 		menuSubclasses = { listOf(AI_BATTLESHIP) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#0c1cff",
@@ -404,7 +403,7 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.015,
 		crateLimitMultiplier = 0.5,
-		menuItemRaw = { CustomItems.STEEL_ASSEMBLY.constructItemStack() },
+		menuItemRaw = { CustomItemRegistry.STEEL_ASSEMBLY.constructItemStack() },
 		menuSubclasses = { listOf(AI_DREADNOUGHT) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#320385",
@@ -436,12 +435,12 @@ enum class StarshipType(
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		concretePercent = 0.0,
-		menuItemRaw = { CustomItems.GAS_CANISTER_EMPTY.constructItemStack() },
+		menuItemRaw = { CustomItemRegistry.GAS_CANISTER_EMPTY.constructItemStack() },
 		typeCategory = TypeCategory.SPECIALTY,
 		color = "#ff8000",
 		overridePermission = "ion.ships.override.1",
 		dynmapIcon = "starfighter",
-		balancingSupplier = IonServer.starshipBalancing::starfighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::starfighter
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
@@ -718,8 +717,8 @@ enum class StarshipType(
 
 	fun canUse(player: Player): Boolean =
 		player.hasPermission("starships.anyship") ||
-		player.hasPermission(overridePermission) ||
-		Levels[player] >= minLevel
+			player.hasPermission(overridePermission) ||
+			Levels[player] >= minLevel
 
 	fun canPilotIn(world: IonWorld): Boolean {
 		val flags = world.configuration.flags

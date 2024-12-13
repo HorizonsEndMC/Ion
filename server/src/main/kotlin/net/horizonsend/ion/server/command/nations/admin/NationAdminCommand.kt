@@ -28,7 +28,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
@@ -334,7 +334,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	fun onSiegeStart(sender: CommandSender, siege: SolarSiege) {
 		Notify.chatAndGlobal(template(Component.text("{0} has begun.", HEColorScheme.HE_MEDIUM_GRAY), siege.formatName()))
 		Discord.sendEmbed(
-			IonServer.discordSettings.eventsChannel, Embed(
+			ConfigurationFiles.discordSettings().eventsChannel, Embed(
 				title = "Siege Start",
 				description = "${siege.formatName().plainText()} has begun. It will end <t:${TimeUnit.MILLISECONDS.toSeconds(siege.getSiegeEnd())}:R>."
 			)

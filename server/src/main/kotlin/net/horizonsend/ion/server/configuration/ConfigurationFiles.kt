@@ -30,6 +30,8 @@ object ConfigurationFiles {
 
 	val discordSettings = defineConfigurationFile<DiscordConfiguration>(configurationFolder, "discord")
 
+	val nationConfiguration = defineConfigurationFile<NationsConfiguration>(configurationFolder, "nation")
+
 	private inline fun <reified T: Any> defineConfigurationFile(directory: File, fileName: String): ConfigurationFile<T> {
 		val new = ConfigurationFile(T::class, directory, fileName)
 		return new

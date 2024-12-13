@@ -368,9 +368,9 @@ object BazaarCommand : SLCommand() {
 				val territory: RegionTerritory = Regions[territoryId]
 
 				// attempt to get the planet icon, just use a detonator if unavailable
-				val item = Space.getPlanet(territory.world)?.planetIcon ?: CustomItemRegistry.CHANDRA
+				val item = Space.getPlanet(territory.world)?.planetIcon?.itemStack(1) ?: CustomItemRegistry.CHANDRA.constructItemStack()
 
-				return@map guiButton(item.constructItemStack()) {
+				return@map guiButton(item) {
 					val clicker: Player = playerClicker
 					val remote: Boolean = Regions.findFirstOf<RegionTerritory>(clicker.location)?.id != territoryId
 					Bazaars.openMainMenu(territoryId, clicker, remote)
