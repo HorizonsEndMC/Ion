@@ -21,7 +21,7 @@ abstract class PowerTool(identifier: String, displayName: Component, private val
 		.setCustomModel(model)
 		.build()
 ) {
-	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.MOD_MANAGER, ModManager(modLimit))
 
 		addComponent(CustomComponentTypes.POWER_STORAGE, PowerStorage(basePowerCapacity, 10, true))

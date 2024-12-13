@@ -129,7 +129,7 @@ object ItemDebugCommand : SLCommand() {
 		val item = sender.inventory.itemInMainHand
 		val customItem = item.customItem ?: fail { "Not a valid custom item!" }
 
-		sender.information(customItem.serializationManager.serialize(customItem, item))
+		sender.information(customItem.serialize(item))
 	}
 
 	@Subcommand("test deserialization")
@@ -140,6 +140,6 @@ object ItemDebugCommand : SLCommand() {
 		val data = "[${value.substringAfter('[')}"
 		val customItem = CustomItemRegistry.getByIdentifier(value.substringBefore('[')) ?: fail { "Not valid custom item: ${value.substringBefore('[')}" }
 
-		sender.inventory.addItem(customItem.serializationManager.deserialize(customItem, data))
+		sender.inventory.addItem(customItem.deserialize(data))
 	}
 }

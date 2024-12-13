@@ -49,7 +49,7 @@ object CratePlacer : CustomItem(
 		.setCustomModel("tool/crate_placer")
 		.build()
 ) {
-	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.POWER_STORAGE, PowerStorage(50_000, 10, true))
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@CratePlacer) { event, _, item ->
 			tryPlaceCrate(event.player, item)

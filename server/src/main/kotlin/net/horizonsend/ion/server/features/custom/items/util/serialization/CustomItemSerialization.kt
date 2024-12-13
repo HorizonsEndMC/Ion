@@ -17,7 +17,7 @@ object CustomItemSerialization : IonServerComponent() {
 			return listOf("[")
 		}
 
-		return customItem.serializationManager.parameterKeys().toList()
+		return customItem.getParamaterKeys().toList()
 	}
 
 	/**

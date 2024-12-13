@@ -55,7 +55,7 @@ open class Blaster<T : Balancing>(
 		ammoComponent.setAmmo(base, this, balancing.capacity)
 	}
 
-	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.AMMUNITION_STORAGE, ammoComponent)
 		addComponent(CustomComponentTypes.MAGAZINE_TYPE, magazineComponent)
 

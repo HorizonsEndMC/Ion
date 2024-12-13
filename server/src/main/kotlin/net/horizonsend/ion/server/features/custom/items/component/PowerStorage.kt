@@ -6,6 +6,8 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerStorage
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.util.StoredValues
+import net.horizonsend.ion.server.features.custom.items.util.serialization.SerializationManager
+import net.horizonsend.ion.server.features.custom.items.util.serialization.token.IntegerToken
 import net.horizonsend.ion.server.features.custom.items.util.updateDurability
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.kyori.adventure.text.Component
@@ -81,5 +83,14 @@ class PowerStorage(private val basePowerCapacity: Int, private val basePowerUsag
 
 	companion object {
 		val powerPrefix = text("Power: ", HEColorScheme.HE_MEDIUM_GRAY)
+	}
+
+	override fun registerSerializers(serializationManager: SerializationManager) {
+		serializationManager.addSerializedData(
+			"power",
+			IntegerToken,
+			{ customItem, itemStack -> customItem.getComponent(CustomComponentTypes.POWER_STORAGE).getPower(itemStack) },
+			{ customItem: CustomItem, itemStack: ItemStack, data: Int -> customItem.getComponent(CustomComponentTypes.POWER_STORAGE).setPower(customItem, itemStack, data) }
+		)
 	}
 }
