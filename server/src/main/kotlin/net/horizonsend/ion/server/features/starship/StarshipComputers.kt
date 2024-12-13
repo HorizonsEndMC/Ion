@@ -332,8 +332,8 @@ object StarshipComputers : IonServerComponent() {
 			Tasks.async {
 				val serialized = MiniMessage.miniMessage().deserialize(input)
 
-				if ((serialized as TextComponent).content().length >= 16) {
-					player.userError("Ship names must be less than 16 characters!")
+				if ((serialized as TextComponent).content().length >= 32) {
+					player.userError("Ship names must be less than 32 characters!")
 					return@async
 				}
 
