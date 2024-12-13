@@ -36,7 +36,6 @@ class AspectMigrator private constructor(
 
 		while (iterator.hasNext()) {
 			val migrator = iterator.next()
-			println("Performing ${migrator::class.java} to ${subject.type}")
 			val result = migrator.migrate(item)
 
 			if (result !is MigratorResult.Replacement) continue

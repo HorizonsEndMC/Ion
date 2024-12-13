@@ -481,5 +481,5 @@ object CustomItemRegistry : IonServerComponent() {
 
 	val identifiers = customItems.keys
 
-	fun getByIdentifier(identifier: String): CustomItem? = customItems[identifier]
+	fun getByIdentifier(identifier: String): CustomItem? = customItems[identifier.uppercase()]
 }
