@@ -12,7 +12,9 @@ import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCooldown
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -278,6 +280,14 @@ object StarshipControl : IonServerComponent() {
 
 		// Don't allow battlecruisers to enter planets
 		if (starship.type == BATTLECRUISER) return false
+
+		// Don't allow players that have recently entered planets to re-enter again
+		val controller = starship.controller
+		if (controller is PlayerController) {
+			if (PlanetTeleportCooldown.cannotEnterPlanets(controller.player)) return false
+			// Restrict planet entry if combat tagged
+			PlanetTeleportCooldown.addEnterPlanetRestriction(controller.player)
+		}
 
 		val border = planet.planetWorld?.worldBorder
 			?.takeIf { it.size < 60_000_000 } // don't use if it's the default, giant border
