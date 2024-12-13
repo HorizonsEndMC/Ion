@@ -295,7 +295,10 @@ object StarshipControl : IonServerComponent() {
 		val centerX = border?.center?.x ?: halfLength
 		val centerZ = border?.center?.z ?: halfLength
 
-		val distance = (halfLength - 250) * max(0.15, newCenter.y / starship.world.maxHeight)
+		//val distance = (halfLength - 250) * max(0.15, newCenter.y / starship.world.maxHeight)
+		// removed the y-height factor in determining the entering planet range. this should now result in
+		// planet enter positions being situated in a circle with a radius of 25% of the world border length.
+		val distance = (halfLength - 250) * 0.5
 		val offset = newCenter.toVector()
 			.subtract(planet.location.toVector())
 			.normalize().multiply(distance)

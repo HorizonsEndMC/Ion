@@ -79,6 +79,7 @@ import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeacons
+import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCooldown
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.TransportConfig
@@ -211,4 +212,5 @@ val components: List<IonComponent> = listOf(
 	ContactsJammingSidebar,
 	CombatTimer,
 	Halloweeeeeen,
+	PlanetTeleportCooldown,
 )
