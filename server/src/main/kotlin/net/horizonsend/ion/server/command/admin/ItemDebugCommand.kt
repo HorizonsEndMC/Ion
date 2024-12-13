@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.command.admin
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomComponen
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.util.serialization.CustomItemSerialization
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import org.bukkit.Material
@@ -39,6 +41,11 @@ object ItemDebugCommand : SLCommand() {
 		}
 
 		manager.commandCompletions.setDefaultCompletion("tool_mods", ItemModification::class.java)
+
+		manager.commandCompletions.registerAsyncCompletion("newCustomItem") { context ->
+			val results = CustomItemSerialization.getCompletions(context.input)
+			results
+		}
 	}
 
 	@Subcommand("getmods")
@@ -115,5 +122,24 @@ object ItemDebugCommand : SLCommand() {
 			.setTitle("Custom Items Debug")
 			.build(sender)
 			.open()
+	}
+
+	@Subcommand("test serialization")
+	fun serializationTest(sender: Player) {
+		val item = sender.inventory.itemInMainHand
+		val customItem = item.customItem ?: fail { "Not a valid custom item!" }
+
+		sender.information(customItem.serializationManager.serialize(customItem, item))
+	}
+
+	@Subcommand("test deserialization")
+	@CommandCompletion("@newCustomItem @nothing")
+	fun deserializationTest(sender: Player, value: String) {
+		sender.information(CustomItemSerialization.getCompletions(value)?.joinToString { it } ?: "null")
+
+		val data = "[${value.substringAfter('[')}"
+		val customItem = CustomItemRegistry.getByIdentifier(value.substringBefore('[')) ?: fail { "Not valid custom item: ${value.substringBefore('[')}" }
+
+		sender.inventory.addItem(customItem.serializationManager.deserialize(customItem, data))
 	}
 }

@@ -3,12 +3,17 @@ package net.horizonsend.ion.server.features.custom.items.type.tool
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropSource
+import net.horizonsend.ion.server.features.custom.items.util.serialization.SerializationManager
+import net.horizonsend.ion.server.features.custom.items.util.serialization.token.IntegerToken
+import net.horizonsend.ion.server.features.custom.items.util.serialization.token.ItemModificationToken
+import net.horizonsend.ion.server.features.custom.items.util.serialization.token.ListToken
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -35,6 +40,21 @@ import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
 
 class PowerDrill(identifier: String, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(identifier, displayName, modLimit, basePowerCapacity, model) {
+	override val serializationManager: SerializationManager = SerializationManager().apply {
+		addSerializedData(
+			"power",
+			IntegerToken,
+			{ customItem, itemStack -> customItem.getComponent(CustomComponentTypes.POWER_STORAGE).getPower(itemStack) },
+			{ customItem: CustomItem, itemStack: ItemStack, data: Int -> customItem.getComponent(CustomComponentTypes.POWER_STORAGE).setPower(customItem, itemStack, data) }
+		)
+		addSerializedData(
+			"mods",
+			ListToken(ItemModificationToken()),
+			{ customItem, itemStack -> customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(itemStack).toList() },
+			{ customItem: CustomItem, itemStack: ItemStack, data: List<ItemModification> -> customItem.getComponent(CustomComponentTypes.MOD_MANAGER).setMods(itemStack, customItem, data.toTypedArray()) }
+		)
+	}
+
 	override val customComponents: CustomItemComponentManager = super.customComponents.apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PowerDrill) { event, _, item ->
 			handleClick(event.player, item, event)

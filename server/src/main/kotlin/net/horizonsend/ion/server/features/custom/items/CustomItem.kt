@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomItemComp
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager.ComponentTypeData
 import net.horizonsend.ion.server.features.custom.items.component.LoreManager
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
+import net.horizonsend.ion.server.features.custom.items.util.serialization.SerializationManager
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
@@ -20,6 +21,7 @@ open class CustomItem(
 	val displayName: Component,
 	baseItemFactory: ItemFactory,
 ) {
+	open val serializationManager: SerializationManager = SerializationManager()
 	open val customComponents: CustomItemComponentManager = CustomItemComponentManager()
 
 	fun allComponents() = customComponents.getAll()
