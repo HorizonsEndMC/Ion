@@ -24,6 +24,7 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import kotlin.math.sqrt
 
 object Interdiction : IonServerComponent() {
 	override fun onEnable() {
@@ -70,7 +71,7 @@ object Interdiction : IonServerComponent() {
 		when (starship.isInterdicting) {
 			true -> for (player in starship.world.getNearbyPlayers(
 				starship.centerOfMass.toLocation(starship.world),
-				starship.balancing.interdictionRange.toDouble()
+				starshipInterdictionRangeEquation(starship)
 			)) {
 				player.playSound(
 					Sound.sound(
@@ -84,7 +85,7 @@ object Interdiction : IonServerComponent() {
 
 			false -> for (player in starship.world.getNearbyPlayers(
 				starship.centerOfMass.toLocation(starship.world),
-				starship.balancing.interdictionRange.toDouble()
+				starshipInterdictionRangeEquation(starship)
 			)) {
 				player.playSound(
 					Sound.sound(
@@ -142,7 +143,7 @@ object Interdiction : IonServerComponent() {
 			val controlLoc = cruisingShip.playerPilot?.location ?: starship.centerOfMass.toLocation(starship.world)
 
 			if (controlLoc.world != sign.world) continue
-			if (controlLoc.distance(sign.location) > starship.balancing.interdictionRange) {
+			if (controlLoc.distance(sign.location) > starshipInterdictionRangeEquation(starship)) {
 				continue
 			}
 
@@ -161,4 +162,6 @@ object Interdiction : IonServerComponent() {
 	fun findGravityWell(starship: ActiveStarship): GravityWellSubsystem? = starship.gravityWells.asSequence()
 		.filter { it.isIntact() }
 		.lastOrNull()
+
+	fun starshipInterdictionRangeEquation(starship: Starship) = 3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())
 }
