@@ -13,7 +13,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.formatNationName
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges.config
@@ -121,7 +121,7 @@ class SolarSiege(
 		val defenderName = NationCache[defender].name
 
 		Discord.sendEmbed(
-			IonServer.discordSettings.eventsChannel,
+			ConfigurationFiles.discordSettings().eventsChannel,
 			Embed(
 				title = "Siege Success",
 				description = "$attackerName's siege of $defenderName's Solar Siege Zone in ${region.world} has succeeded.",
@@ -151,7 +151,7 @@ class SolarSiege(
 		val defenderName = NationCache[defender].name
 
 		Discord.sendEmbed(
-			IonServer.discordSettings.eventsChannel,
+			ConfigurationFiles.discordSettings().eventsChannel,
 			Embed(
 				title = "Siege Failure",
 				description = "$attackerName's siege of $defenderName's Solar Siege Zone in ${region.world} has failed.",
@@ -169,7 +169,7 @@ class SolarSiege(
 
 			Notify.chatAndGlobal(template(text("{0} has begun.", HE_MEDIUM_GRAY), formatName()))
 			Discord.sendEmbed(
-				IonServer.discordSettings.eventsChannel, Embed(
+				ConfigurationFiles.discordSettings().eventsChannel, Embed(
 				title = "Siege Start",
 				description = "${formatName().plainText()} has begun. It will end <t:${TimeUnit.MILLISECONDS.toSeconds(getSiegeEnd())}:R>."
 			))
