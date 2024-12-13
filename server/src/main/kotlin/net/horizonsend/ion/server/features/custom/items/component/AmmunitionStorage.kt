@@ -6,6 +6,8 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.util.StoredValues.AMMO
+import net.horizonsend.ion.server.features.custom.items.util.serialization.SerializationManager
+import net.horizonsend.ion.server.features.custom.items.util.serialization.token.IntegerToken
 import net.horizonsend.ion.server.features.custom.items.util.updateDurability
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.kyori.adventure.text.Component
@@ -54,5 +56,14 @@ class AmmunitionStorage(val balancingSupplier: Supplier<out AmmoStorageBalancing
 		val balancing = balancingSupplier.get()
 		return listOf(AmmunitionRefillType(Material.valueOf(balancing.refillType))) //TODO enum usage of material
 
+	}
+
+	override fun registerSerializers(serializationManager: SerializationManager) {
+		serializationManager.addSerializedData(
+			"ammo",
+			IntegerToken,
+			{ customItem, itemStack -> customItem.getComponent(CustomComponentTypes.AMMUNITION_STORAGE).getAmmo(itemStack) },
+			{ customItem: CustomItem, itemStack: ItemStack, data: Int -> customItem.getComponent(CustomComponentTypes.AMMUNITION_STORAGE).setAmmo(itemStack, customItem, data) }
+		)
 	}
 }
