@@ -326,6 +326,14 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			return false
 		}
 
+		// Don't allow players that have recently exited planets to re-exit again
+		val controller = starship.controller
+		if (controller is PlayerController) {
+			if (PlanetTeleportCooldown.cannotExitPlanets(controller.player)) return false
+			// Restrict planet exit if combat tagged
+			PlanetTeleportCooldown.addExitPlanetRestriction(controller.player)
+		}
+
 		val blockCountSquareRoot = sqrt(starship.initialBlockCount.toDouble())
 		val distance: Double = 15 + (planet.atmosphereRadius + blockCountSquareRoot) * 1.5
 
