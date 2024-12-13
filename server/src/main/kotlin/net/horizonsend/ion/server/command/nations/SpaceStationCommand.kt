@@ -50,6 +50,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
+import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -311,10 +312,9 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.MANAGE_STATION)
 		val stationName = station.name
 
-		val location = sender.location
-		val world = location.world
-		val x = location.blockX
-		val z = location.blockZ
+		val world = Bukkit.getWorld(station.world) ?: fail { "Could not find station world; please contact staff" }
+		val x = station.x
+		val z = station.z
 		checkDimensions(world, x, z, newRadius, station)
 
 		val realCost = calculateCost(station.radius, newRadius)
