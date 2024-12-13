@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -85,7 +86,7 @@ object CombatTimer : IonServerComponent() {
 
 					if (pilotedStarship.isInterdicting) {
 						// Interdicting ships will place combat tags on other player starships that are within the well range, are less than neutral, and not in a protected city
-						toPlayersInRadius(starshipCom, pilotedStarship.interdictionRange.toDouble()) { otherPlayer ->
+						toPlayersInRadius(starshipCom, Interdiction.starshipInterdictionRangeEquation(pilotedStarship)) { otherPlayer ->
 							val otherStarship = PilotedStarships[otherPlayer]
 							if (otherStarship != null &&
 								!ProtectionListener.isProtectedCity(otherStarship.centerOfMass.toLocation(otherPlayer.world))) {
