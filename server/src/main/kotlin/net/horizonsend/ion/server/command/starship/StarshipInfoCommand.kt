@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.command.starship
 
 import co.aikar.commands.annotation.CommandAlias
+import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -121,6 +122,7 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		sender.sendRichMessage("   <gray>Hull Integrity: <white>${ship.hullIntegrity.times(100).roundToInt()}%")
 		sender.sendRichMessage("   <gray>Center of Mass: <white>${ship.centerOfMass}")
+		sender.sendRichMessage("   <gray>Interdiction Range: <white>${Interdiction.starshipInterdictionRangeEquation(ship).toInt()}")
 
 //		val worth = blocks.values
 //			.sumOf { StarshipFactories.getPrice(it.blockData) ?: 0.0 }

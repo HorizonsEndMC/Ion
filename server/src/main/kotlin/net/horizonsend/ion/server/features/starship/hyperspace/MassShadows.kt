@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.hyperspace
 
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -55,7 +56,7 @@ object MassShadows {
 			val otherZ = otherShip.centerOfMass.z
 			var dist = distanceSquared(x, 128.0, z, otherX.toDouble(), otherY.toDouble(), otherZ.toDouble())
 
-			if (dist > otherShip.interdictionRange.squared()) continue
+			if (dist > Interdiction.starshipInterdictionRangeEquation(otherShip).squared()) continue
 
 			dist = sqrt(dist)
 
@@ -70,7 +71,7 @@ object MassShadows {
 					.build(),
 				otherX,
 				otherZ,
-				otherShip.interdictionRange,
+				Interdiction.starshipInterdictionRangeEquation(otherShip).toInt(),
 				dist.toInt()
 			)
 		}
