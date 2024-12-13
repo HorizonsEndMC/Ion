@@ -17,8 +17,8 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServer.nationsConfiguration
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 object SolarSieges : IonServerComponent(true) {
-	val config get() = nationsConfiguration.solarSiegeConfiguration
+	val config get() = ConfigurationFiles.nationConfiguration().solarSiegeConfiguration
 
 	@Synchronized
 	private fun locked(block: () -> Unit) = block()
@@ -176,7 +176,7 @@ object SolarSieges : IonServerComponent(true) {
 			region.name
 		))
 
-		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, Embed(
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().eventsChannel, Embed(
 			title = "Siege Declaration",
 			description = "$attackerName of ${formatNationName(attackerNation).plainText()} has declared a siege of ${formatNationName(defender).plainText()}'s Solar Siege Zone in " +
 				"${region.world}. The siege will start <t:${TimeUnit.MILLISECONDS.toSeconds(siege.getActivePeriodStart())}:R>."

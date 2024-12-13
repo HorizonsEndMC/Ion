@@ -111,8 +111,8 @@ object ItemDebugCommand : SLCommand() {
 			)
 			.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 			.addIngredient('#', ItemProvider { ItemStack(Material.BLACK_STAINED_GLASS) })
-			.addIngredient('<', GuiItems.LeftItem())
-			.addIngredient('>', GuiItems.RightItem())
+			.addIngredient('<', GuiItems.PageLeftItem())
+			.addIngredient('>', GuiItems.PageRightItem())
 			.setContent(allItems)
 			.build()
 
