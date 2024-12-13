@@ -4,6 +4,7 @@ import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.common.extensions.alertSubtitle
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.StarshipWeapons
@@ -11,8 +12,10 @@ import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.mininglasers.MiningLaserMultiblock
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -225,6 +228,13 @@ class MiningLaserSubsystem(
 
 		if (power == 0) {
 			starship.alertSubtitle("Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} ran out of power and was disabled!")
+
+			setFiring(false)
+			return
+		}
+
+		if (controller is PlayerController && CombatTimer.isPvpCombatTagged(controller.player)) {
+			starship.userError("Cannot enable Mining Lasers while in combat")
 
 			setFiring(false)
 			return

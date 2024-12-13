@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.powered
 
 import net.horizonsend.ion.common.extensions.alertAction
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.features.custom.items.mods.tool.PowerUsageIncr
 import net.horizonsend.ion.server.features.custom.items.objects.CustomModeledItem
 import net.horizonsend.ion.server.features.custom.items.objects.LoreCustomItem
 import net.horizonsend.ion.server.features.custom.items.objects.ModdedCustomItem
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
@@ -101,6 +103,11 @@ class PowerDrill(
 		var broken = 0
 
 		val drops = mutableMapOf<Long, Collection<ItemStack>>()
+
+		if (CombatTimer.isPvpCombatTagged(livingEntity)) {
+			livingEntity.userError("Cannot use Power Drills while in combat")
+			return
+		}
 
 		for (block in blockList) {
 			if (availablePower < powerUse) {
