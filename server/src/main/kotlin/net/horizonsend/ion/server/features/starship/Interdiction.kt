@@ -163,5 +163,12 @@ object Interdiction : IonServerComponent() {
 		.filter { it.isIntact() }
 		.lastOrNull()
 
-	fun starshipInterdictionRangeEquation(starship: Starship) = 3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())
+	fun starshipInterdictionRangeEquation(starship: Starship): Double {
+		if (starship.type == StarshipType.SPEEDER ||
+			starship.type == StarshipType.STARFIGHTER ||
+			starship.type == StarshipType.SHUTTLE ||
+			starship.type == StarshipType.PLATFORM) return 10.0
+		return if (starship.type.isWarship) 3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())
+		else (3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())) / 2
+	}
 }
