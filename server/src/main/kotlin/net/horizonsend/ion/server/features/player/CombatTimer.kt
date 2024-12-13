@@ -362,6 +362,8 @@ object CombatTimer : IonServerComponent() {
 					newline(),
 					text("- Combat NPCs created when you log off will last for the duration of your combat tag", HE_LIGHT_BLUE),
 					newline(),
+					text("- Cannot use Power Drill, Drill, Mining Laser, Decomposer, or Ship Factory", HE_LIGHT_BLUE),
+					newline(),
 					text("- Remaining within ${MAINTAIN_COMBAT_DIST.toInt()} blocks of unfriendly and enemy starships will refresh your combat tag", HE_LIGHT_BLUE),
 					)),
 			newline(),
