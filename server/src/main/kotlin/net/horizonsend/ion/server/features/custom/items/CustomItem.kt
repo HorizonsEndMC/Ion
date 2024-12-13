@@ -21,8 +21,8 @@ open class CustomItem(
 	val displayName: Component,
 	baseItemFactory: ItemFactory,
 ) {
-	open val serializationManager: SerializationManager = SerializationManager()
-	open val customComponents: CustomItemComponentManager = CustomItemComponentManager()
+	protected val serializationManager: SerializationManager = SerializationManager()
+	open val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager)
 
 	fun allComponents() = customComponents.getAll()
 
@@ -89,4 +89,9 @@ open class CustomItem(
 	}
 
 	fun getAttributes(itemStack: ItemStack): List<CustomItemAttribute> = customComponents.getAll().flatMap { it.getAttributes(itemStack) }
+
+	fun serialize(itemStack: ItemStack) = serializationManager.serialize(this, itemStack)
+	fun deserialize(data: String) = serializationManager.deserialize(this, data)
+
+	fun getParamaterKeys() = serializationManager.parameterKeys()
 }

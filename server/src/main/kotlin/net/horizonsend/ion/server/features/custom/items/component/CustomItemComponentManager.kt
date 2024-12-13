@@ -1,10 +1,13 @@
 package net.horizonsend.ion.server.features.custom.items.component
 
-class CustomItemComponentManager {
+import net.horizonsend.ion.server.features.custom.items.util.serialization.SerializationManager
+
+class CustomItemComponentManager(val serializationManager: SerializationManager) {
 	private val components = mutableMapOf<CustomComponentTypes<out CustomItemComponent, out ComponentTypeData<*>>, ComponentTypeData<*>>()
 
 	fun <T : CustomItemComponent, Z : ComponentTypeData<T>> addComponent(type: CustomComponentTypes<T, Z>, data: T) {
 		type.storageType.storeData(components, type, data)
+		data.registerSerializers(serializationManager)
 	}
 
 	fun hasComponent(type: CustomComponentTypes<*, *>): Boolean = components.containsKey(type)

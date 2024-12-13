@@ -22,7 +22,7 @@ object PersonalTransporter : CustomItem(
 	text("Personal Transporter", GOLD).itemName,
 	ItemFactory.unStackableCustomItem("throwables/personal_transporter")
 ) {
-	override val customComponents: CustomItemComponentManager = CustomItemComponentManager().apply {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, Listener.rightClickListener(this@PersonalTransporter) { event, _, _ ->
 			onRightClick(event.player)
 		})
