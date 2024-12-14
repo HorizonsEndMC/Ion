@@ -15,12 +15,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import xyz.xenondevs.invui.item.ItemProvider
 
 open class CustomItem(
 	val identifier: String,
 	val displayName: Component,
 	baseItemFactory: ItemFactory,
-) {
+) : ItemProvider {
 	protected val serializationManager: SerializationManager = SerializationManager()
 	open val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager)
 
@@ -54,6 +55,10 @@ open class CustomItem(
 		.build()
 
 	fun constructItemStack(): ItemStack = try { baseItemFactory.construct() } catch (e: Throwable) { throw Throwable("Error when constructing custom item $identifier", e) }
+
+	override fun get(localization: String?): ItemStack {
+		return constructItemStack()
+	}
 
 	fun constructItemStack(quantity: Int): ItemStack {
 		val constructed = baseItemFactory.construct()

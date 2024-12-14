@@ -108,7 +108,7 @@ object GuiItems {
     }
 }
 
-enum class GuiItem(val modelKey: Key) {
+enum class GuiItem(val modelKey: Key) : ItemProvider {
     EMPTY(NamespacedKeys.packKey("ui/empty")),
     UP(NamespacedKeys.packKey("ui/up")),
     RIGHT(NamespacedKeys.packKey("ui/right")),
@@ -144,6 +144,10 @@ enum class GuiItem(val modelKey: Key) {
 	fun makeItem(name: Component): ItemStack = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK)
 		.applyGuiModel(this)
 		.setDisplayNameAndGet(name)
+
+	override fun get(p0: String?): ItemStack {
+		return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(this)
+	}
 
 	companion object {
 		fun ItemStack.applyGuiModel(model: GuiItem): ItemStack {
