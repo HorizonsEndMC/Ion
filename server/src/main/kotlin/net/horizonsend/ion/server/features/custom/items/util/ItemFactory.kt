@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.util
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.HORIZONSEND_NAMESPACE
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -88,7 +88,7 @@ class ItemFactory private constructor(
 		}
 
 		fun <T : Any> addPDCEntry(key: NamespacedKey, type: PersistentDataType<*, T>, value: T): Builder {
-			return addModifier { item -> item.updateMeta { it.persistentDataContainer.set(key, type, value) } }
+			return addModifier { item -> item.updatePersistentDataContainer { set(key, type, value) } }
 		}
 
 		fun build(): ItemFactory {

@@ -12,7 +12,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
@@ -25,7 +25,7 @@ import java.util.Optional
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-fun GuiItem.name(text: String?): GuiItem = apply { if (text != null) item.setDisplayNameAndGet(text) }
+fun GuiItem.name(text: String?): GuiItem = apply { if (text != null) item.applyDisplayName(text) }
 
 fun GuiItem.lore(text: String): GuiItem {
 	val meta = item.itemMeta
@@ -76,7 +76,7 @@ private val skinCache: LoadingCache<UUID, Optional<Skins.SkinData>> = CacheBuild
 fun skullItem(uuid: UUID, playerName: String) = skullItem(uuid, playerName, text(playerName))
 
 fun skullItem(uuid: UUID, playerName: String, itemName: Component): ItemStack =
-	item(Material.PLAYER_HEAD).setDisplayNameAndGet(itemName).also { item ->
+	item(Material.PLAYER_HEAD).applyDisplayName(itemName).also { item ->
 		val meta = item.itemMeta as SkullMeta
 
 		skinCache[uuid].ifPresent { skin ->
@@ -89,7 +89,7 @@ fun skullItem(uuid: UUID, playerName: String, itemName: Component): ItemStack =
 	}.ensureServerConversions()
 
 fun skullItem(itemName: String, uuid: UUID, skinData: String): ItemStack =
-	item(Material.PLAYER_HEAD).setDisplayNameAndGet(itemName).also { item ->
+	item(Material.PLAYER_HEAD).applyDisplayName(itemName).also { item ->
 		val meta = item.itemMeta as SkullMeta
 
 		meta.playerProfile = CraftPlayerProfile(uuid, itemName).apply {
