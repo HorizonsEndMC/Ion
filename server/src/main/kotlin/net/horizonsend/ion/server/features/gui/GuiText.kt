@@ -71,9 +71,10 @@ class GuiText(
         alignment: TextAlignment = TextAlignment.LEFT,
         horizontalShift: Int = 0,
         verticalShift: Int = 0
-    ) {
+    ): GuiText {
         add(GuiComponent(component, line, alignment, horizontalShift, verticalShift))
-    }
+    	return this
+	}
 
     /**
      * Adds a default GuiBackground to the GuiText

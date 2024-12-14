@@ -8,7 +8,7 @@ import net.kyori.adventure.text.Component
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftContainer
+import org.bukkit.craftbukkit.inventory.CraftContainer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.ClickType
