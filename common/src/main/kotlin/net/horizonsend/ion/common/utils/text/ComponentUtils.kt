@@ -49,7 +49,8 @@ fun ofChildren(vararg children: ComponentLike) = Component.textOfChildren(*child
 /** Analogue of Any#toString */
 @JvmOverloads
 fun Any.toComponent(vararg decorations: TextDecoration, color: TextColor = WHITE): Component = text(toString(), color, *decorations)
-fun Any.toComponent(color: TextColor = WHITE): Component = text(toString(), color)
+fun Any.toComponent(color: TextColor): Component = text(toString(), color)
+fun Any.toComponent(): Component = text(toString())
 
 /**
  * Formats the number into credit format, so it is rounded to the nearest hundredth,
