@@ -10,8 +10,8 @@ import net.horizonsend.ion.server.features.gui.GuiItems.createButton
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
-import net.horizonsend.ion.server.miscellaneous.utils.applyLore
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -86,7 +86,7 @@ class TextInputMenu(
 	}
 
 	private val backButton = createButton(
-		ItemStack(Material.BARRIER).applyDisplayName(text("Go Back", WHITE))
+		ItemStack(Material.BARRIER).updateDisplayName(text("Go Back", WHITE))
 	) { _, player, _ ->
 		player.closeInventory()
 		backButtonHandler?.invoke(player)
@@ -94,12 +94,12 @@ class TextInputMenu(
 
 	private val confirmButton = object : AbstractItem() {
 		private fun getSuccessState(result: ValidatorResult.Success): ItemStack {
-			val base = GuiItem.CHECKMARK.makeItem().applyDisplayName(text("Confirm", GREEN))
+			val base = GuiItem.CHECKMARK.makeItem().updateDisplayName(text("Confirm", GREEN))
 
 			if (result is ValidatorResult.ResultsResult) {
 				val more = result.results.size > 5
 
-				return base.applyLore(result.results.take(5).plus(
+				return base.updateLore(result.results.take(5).plus(
 					if (more) {
 						template(text("{0} more results", WHITE), bracketed(text(result.results.size, AQUA)))
 					} else empty()
@@ -110,8 +110,8 @@ class TextInputMenu(
 		}
 
 		private fun getFailureState(result: ValidatorResult.FailureResult) = ItemStack(Material.BARRIER)
-			.applyDisplayName(text("Invalid Input!", RED))
-			.applyLore(listOf(result.message))
+			.updateDisplayName(text("Invalid Input!", RED))
+			.updateLore(listOf(result.message))
 
 		override fun getItemProvider(): ItemProvider {
 			val result = inputValidator.isValid(currentInput)

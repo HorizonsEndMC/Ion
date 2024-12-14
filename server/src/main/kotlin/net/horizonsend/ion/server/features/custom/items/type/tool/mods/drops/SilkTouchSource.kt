@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
-import net.horizonsend.ion.server.miscellaneous.utils.applyData
+import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration
@@ -43,7 +43,7 @@ object SilkTouchSource : ItemModification, DropSource {
 	}
 
 	private val silkPick = ItemStack(Material.DIAMOND_PICKAXE)
-		.applyData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.SILK_TOUCH to 1), true))
+		.updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.SILK_TOUCH to 1), true))
 
 	override val usedTool: ItemStack = silkPick
 

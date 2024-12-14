@@ -4,9 +4,9 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.gui.custom.starship.StarshipComputerMenu
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
-import net.horizonsend.ion.server.miscellaneous.utils.applyLore
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
@@ -24,8 +24,8 @@ import xyz.xenondevs.invui.window.Window
 class ChangeTypeButton(val main: StarshipComputerMenu) : AbstractItem() {
 	private val provider = ItemProvider {
 		ItemStack(Material.GHAST_TEAR)
-			.applyDisplayName(text("Change Ship Class").itemName)
-			.applyLore(listOf(
+			.updateDisplayName(text("Change Ship Class").itemName)
+			.updateLore(listOf(
 				ofChildren(text("Current type: ", GRAY), main.data.starshipType.actualType.displayNameComponent).itemName,
 				Component.empty(),
 				text("Different starship types", GRAY).itemName,

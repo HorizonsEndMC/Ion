@@ -5,9 +5,9 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
-import net.horizonsend.ion.server.miscellaneous.utils.applyLore
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -30,8 +30,8 @@ class SelectTypeButton(val parent: ChangeTypeButton, val type: StarshipType) : A
 
 	private val provider = ItemProvider {
 		ItemStack(type.menuItemRaw.get())
-			.applyDisplayName(type.displayNameComponent.itemName)
-			.applyLore(listOf(
+			.updateDisplayName(type.displayNameComponent.itemName)
+			.updateLore(listOf(
 				ofChildren(text("Minimum Block Count: ", GRAY), text(type.minSize, AQUA)).itemName,
 				ofChildren(text("Maximum Block Count: ", GRAY), text(type.maxSize, AQUA)).itemName,
 				empty(),
@@ -57,7 +57,7 @@ class SelectTypeButton(val parent: ChangeTypeButton, val type: StarshipType) : A
 
 	fun openSubclassMenu(player: Player) {
 		val returnToPilotMenu = GuiItems.createButton(
-			ItemStack(BARRIER).applyDisplayName(text("Go back to class selection menu", WHITE).itemName)
+			ItemStack(BARRIER).updateDisplayName(text("Go back to class selection menu", WHITE).itemName)
 		) { _, _, _ ->
 			player.closeInventory()
 			parent.openClassMenu(player)

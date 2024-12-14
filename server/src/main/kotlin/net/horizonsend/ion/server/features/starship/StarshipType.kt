@@ -11,8 +11,8 @@ import net.horizonsend.ion.server.features.starship.StarshipType.entries
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
-import net.horizonsend.ion.server.miscellaneous.utils.applyLore
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.newline
@@ -707,8 +707,8 @@ enum class StarshipType(
 	val displayNameComponent: Component get() = text(displayName, TextColor.fromHexString(color))
 
 	val menuItem: ItemStack get() = menuItemRaw.get()
-		.applyDisplayName(displayNameComponent)
-		.applyLore(listOf(
+		.updateDisplayName(displayNameComponent)
+		.updateLore(listOf(
 			ofChildren(text("Minimum Block Count: ", HE_MEDIUM_GRAY), text(minSize, AQUA), newline()),
 			ofChildren(text("Maximum Block Count: ", HE_MEDIUM_GRAY), text(maxSize, AQUA), newline()),
 			empty(),

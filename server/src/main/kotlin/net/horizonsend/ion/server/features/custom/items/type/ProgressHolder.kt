@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.applyLore
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
@@ -72,7 +72,7 @@ object ProgressHolder : CustomItem(
 		}
 
 		itemStack
-			.applyLore(listOf(ofChildren(
+			.updateLore(listOf(ofChildren(
 				text("Progress: ", GRAY, TextDecoration.ITALIC),
 				text(percentFormat.format(progress), HE_LIGHT_GRAY, TextDecoration.ITALIC)
 			)))

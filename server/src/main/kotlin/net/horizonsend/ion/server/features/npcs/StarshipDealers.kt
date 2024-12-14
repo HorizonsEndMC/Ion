@@ -18,11 +18,11 @@ import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
-import net.horizonsend.ion.server.miscellaneous.utils.applyLore
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Location
@@ -57,8 +57,8 @@ object StarshipDealers : IonServerComponent(true) {
 		MenuHelper.apply {
 			val ships: List<GuiItem> = schematicMap.map { (ship, schematic) ->
 				val item = ItemStack(ship.guiMaterial)
-					.applyDisplayName(miniMessage().deserialize(ship.displayName))
-					.applyLore(ship.lore.map {  loreLine ->
+					.updateDisplayName(miniMessage().deserialize(ship.displayName))
+					.updateLore(ship.lore.map { loreLine ->
 						miniMessage().deserialize(loreLine)
 					})
 

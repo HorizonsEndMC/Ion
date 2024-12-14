@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
@@ -140,7 +140,7 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
 
     inner class ReturnToSidebarButton : GuiItems.AbstractButtonItem(
         text("Return to Sidebar Settings").decoration(ITALIC, false),
-        GuiItem.DOWN.makeItem().applyDisplayName(text("Return to Sidebar Settings"))
+        GuiItem.DOWN.makeItem().updateDisplayName(text("Return to Sidebar Settings"))
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarGui(player).openMainWindow()

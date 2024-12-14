@@ -6,9 +6,9 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Unbreakable
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.features.gear.ITEM_POWER_PREFIX
-import net.horizonsend.ion.server.miscellaneous.utils.applyData
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.set
+import net.horizonsend.ion.server.miscellaneous.utils.updateData
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.BLUE
@@ -42,10 +42,10 @@ open class CustomItem(
 
 	open fun itemStack(amount: Int): ItemStack {
 		val base = ItemStack(material, amount)
-		base.applyData(DataComponentTypes.UNBREAKABLE, Unbreakable.unbreakable(false))
+		base.updateData(DataComponentTypes.UNBREAKABLE, Unbreakable.unbreakable(false))
 		base.updateMeta { it.setCustomModelData(model) }
 
-		if (useMiniMessage) base.applyDisplayName(miniMessage.deserialize(displayNameRaw)) else base.applyDisplayName(displayName)
+		if (useMiniMessage) base.updateDisplayName(miniMessage.deserialize(displayNameRaw)) else base.updateDisplayName(displayName)
 
 		return base
 	}
