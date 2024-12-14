@@ -12,7 +12,8 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.get
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.setModel
 import net.horizonsend.ion.server.miscellaneous.utils.vaultEconomy
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -54,10 +55,10 @@ class Achievements(val player: Player) : AbstractBackgroundPagedGui {
 
 		for (achievement in Achievement.entries) {
 			// some achievements use a normal block instead of an achievement icon
-			val itemStack = if (achievement.icon != null) ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-					it.setCustomModelData(achievement.icon)
-					it.displayName(Component.empty())
-				}
+			val itemStack = if (achievement.icon != null) ItemStack(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setModel(achievement.icon)
+				.setDisplayNameAndGet(Component.empty())
+
 			else ItemStack(when (achievement) {
 				Achievement.DETECT_MULTIBLOCK -> Material.NOTE_BLOCK
 				Achievement.DETECT_SHIP -> Material.JUKEBOX
