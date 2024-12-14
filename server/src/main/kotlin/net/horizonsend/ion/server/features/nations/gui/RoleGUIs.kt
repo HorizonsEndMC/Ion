@@ -48,7 +48,7 @@ private fun InventoryClickEvent.createRoleMenu(commandName: String) {
 
 	playerClicker.anvilInputText(
 		prompt = text("Enter role name"),
-		description = text("3-20 characters, Must be alphanumeric"),
+		description = text("3-20 characters; alphanumeric"),
 		inputValidator = InputValidator { input: String ->
 			when {
 				!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
@@ -79,8 +79,6 @@ private fun InventoryClickEvent.createRoleMenu(commandName: String) {
 					if (int !in 0..1000) ValidatorResult.FailureResult(text("Must be from 0 to 1000")) else ValidatorResult.SuccessResult
 				}
 			) { result ->
-				color = ChatColor.valueOf(result)
-
 				playerClicker.performCommand("$commandName create $name ${color.name} $result")
 				Tasks.syncDelay(20) { playerClicker.performCommand("$commandName edit $name") }
 			}
@@ -106,7 +104,7 @@ fun editRoleGUI(
 			addItem(guiButton(Material.NAME_TAG) {
 				playerClicker.anvilInputText(
 					prompt = text("Enter role name"),
-					description = text("Must be from 3 to 20 characters"),
+					description = text("3-20 characters; alphanumeric"),
 					inputValidator = InputValidator { input: String ->
 						when {
 							!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
@@ -156,11 +154,9 @@ fun editRoleGUI(
 			}.name("Weight: $roleWeight"))
 
 			// Permissions Button
-			addItem(
-				guiButton(Material.KNOWLEDGE_BOOK) {
-					playerClicker.performCommand("$commandName permission gui $roleName")
-				}.name("Permissions")
-			)
+			addItem(guiButton(Material.KNOWLEDGE_BOOK) {
+				playerClicker.performCommand("$commandName permission gui $roleName")
+			}.name("Permissions"))
 		}
 	)
 

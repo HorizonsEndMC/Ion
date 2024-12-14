@@ -116,9 +116,8 @@ class TextInputMenu(
 
 			return ItemProvider {
 				when (result) {
-					is ValidatorResult.ResultsResult -> getSuccessState(result)
+					is ValidatorResult.Success -> getSuccessState(result)
 					is ValidatorResult.FailureResult -> getFailureState(result)
-					else -> TODO("Not implemented")
 				}
 			}
 		}
