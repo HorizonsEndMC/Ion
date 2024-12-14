@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -56,7 +56,5 @@ enum class StoredValues(
 		return itemStack.itemMeta.persistentDataContainer.getOrDefault(key, PersistentDataType.INTEGER, 0)
 	}
 
-	fun setAmount(itemStack: ItemStack, amount: Int) = itemStack.updateMeta {
-		it.persistentDataContainer.set(key, PersistentDataType.INTEGER, amount)
-	}
+	fun setAmount(itemStack: ItemStack, amount: Int) = itemStack.updatePersistentDataContainer { set(key, PersistentDataType.INTEGER, amount) }
 }

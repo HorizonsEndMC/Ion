@@ -7,8 +7,8 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.applyLore
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
@@ -67,8 +67,8 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 
 	override fun getItemProvider(): ItemProvider = ItemProvider {
 		ItemStack(Material.NAME_TAG)
-			.setDisplayNameAndGet(text("Change Ship Name", WHITE).itemName)
-			.setLoreAndGet(listOf(ofChildren(text("Current Name: ", GRAY), PilotedStarships.getDisplayName(main.data)).itemName))
+			.applyDisplayName(text("Change Ship Name", WHITE).itemName)
+			.applyLore(listOf(ofChildren(text("Current Name: ", GRAY), PilotedStarships.getDisplayName(main.data)).itemName))
 	}
 
 	override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
@@ -101,8 +101,8 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 		val name = data.name
 
 		ItemStack(PAPER)
-			.setDisplayNameAndGet((name?.toComponent() ?: empty()).itemName)
-			.setLoreAndGet(listOf(ofChildren(text("Formatted: ", GRAY), starshipNameSerializer.deserialize(name ?: "")).itemName))
+			.applyDisplayName((name?.toComponent() ?: empty()).itemName)
+			.applyLore(listOf(ofChildren(text("Formatted: ", GRAY), starshipNameSerializer.deserialize(name ?: "")).itemName))
 	}
 
 	class RenameConfirmationButton(val parent: RenameButton) : AbstractItem() {
@@ -114,8 +114,8 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 			}
 
 			ItemStack(EMERALD_BLOCK)
-				.setDisplayNameAndGet(text("Confirm New Name:", GREEN).itemName)
-				.setLoreAndGet(listOf(serialized.itemName))
+				.applyDisplayName(text("Confirm New Name:", GREEN).itemName)
+				.applyLore(listOf(serialized.itemName))
 		}
 
 		override fun getItemProvider(): ItemProvider = provider

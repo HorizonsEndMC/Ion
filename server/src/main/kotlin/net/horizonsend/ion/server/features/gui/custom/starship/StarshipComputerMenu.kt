@@ -27,8 +27,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipDetectedEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.applyLore
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
@@ -90,8 +90,8 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 
 		val provider = ItemProvider {
 			ItemStack(Material.CLOCK)
-				.setDisplayNameAndGet(text("Re-Detect Ship").itemName)
-				.setLoreAndGet(lore)
+				.applyDisplayName(text("Re-Detect Ship").itemName)
+				.applyLore(lore)
 		}
 
 		override fun getItemProvider(): ItemProvider = provider
@@ -118,8 +118,8 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 	private val toggleLockButton = object : AbstractItem() {
 		override fun getItemProvider(): ItemProvider = ItemProvider {
 			ItemStack(Material.IRON_DOOR)
-				.setDisplayNameAndGet(text("Toggle Ship Lock", if (data.isLockEnabled) GREEN else RED).itemName)
-				.setLoreAndGet(listOf(
+				.applyDisplayName(text("Toggle Ship Lock", if (data.isLockEnabled) GREEN else RED).itemName)
+				.applyLore(listOf(
 					ofChildren(text("Status: ", GRAY), if (data.isLockEnabled) text("ENABLED", GREEN) else text("DISABLED", RED)).itemName,
 					empty(),
 					text("Ship locks protect your ship", GRAY).itemName,
@@ -149,8 +149,8 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 
 	private val takeOwnershipButton = createButton(
 		ItemStack(Material.RECOVERY_COMPASS)
-			.setDisplayNameAndGet(text("Take ownership").itemName)
-			.setLoreAndGet(listOf<Component>(
+			.applyDisplayName(text("Take ownership").itemName)
+			.applyLore(listOf<Component>(
 				template(text("Current owner: {0}.", GRAY), SLPlayer.getName(data.captain)).itemName,
 				text("Use this button to take", GRAY).itemName,
 				text("ownership of this starship.", GRAY).itemName
@@ -163,7 +163,7 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 	private val renameButton = RenameButton(this)
 
 	val mainMenuButton = createButton(
-		ItemStack(Material.BARRIER).setDisplayNameAndGet(text("Go back to main menu", WHITE).itemName)
+		ItemStack(Material.BARRIER).applyDisplayName(text("Go back to main menu", WHITE).itemName)
 	) { _, player, _ ->
 		player.closeInventory()
 		open()
