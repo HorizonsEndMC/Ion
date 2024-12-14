@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.gui
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
@@ -143,7 +143,7 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
 
 	fun makeItem(): ItemStack = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(this)
 
-	fun makeItem(name: Component): ItemStack = makeItem().applyDisplayName(name)
+	fun makeItem(name: Component): ItemStack = makeItem().updateDisplayName(name)
 
 	override fun get(p0: String?): ItemStack {
 		return makeItem()

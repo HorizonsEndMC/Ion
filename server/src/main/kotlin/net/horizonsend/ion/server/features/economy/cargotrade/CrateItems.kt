@@ -4,7 +4,7 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -17,7 +17,7 @@ object CrateItems {
 	// this is terribly formatted but i just wanted to use brackets that way *so bad* :3
 	operator fun get(crate: CargoCrate): ItemStack = crateItemTemplates[
 		crate._id, {
-			ItemStack(Material.valueOf(crate.color.shulkerMaterial), 1).applyDisplayName("${crate.color.legacyChatColor}${crate.name}${ChatColor.RESET} Cargo Crate").ensureServerConversions()
+			ItemStack(Material.valueOf(crate.color.shulkerMaterial), 1).updateDisplayName("${crate.color.legacyChatColor}${crate.name}${ChatColor.RESET} Cargo Crate").ensureServerConversions()
 		}
 	]
 }
