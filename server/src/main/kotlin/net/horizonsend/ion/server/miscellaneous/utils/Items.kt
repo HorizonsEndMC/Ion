@@ -1,8 +1,11 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import io.papermc.paper.datacomponent.DataComponentType
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -17,6 +20,11 @@ fun isEmpty(itemStack: ItemStack?): Boolean = itemStack == null || itemStack.typ
 fun ItemStack.updateMeta(block: (ItemMeta) -> Unit): ItemStack = apply {
 	itemMeta = requireNotNull(itemMeta) { "No item meta for $type!" }.apply(block)
 }
+
+fun <T : Any> ItemStack.applyData(type: DataComponentType.Valued<T>, data: T): ItemStack = apply { setData(type, data) }
+
+fun ItemStack.setModel(model: Key) = applyData(DataComponentTypes.ITEM_MODEL, model)
+fun ItemStack.setModel(model: String) = applyData(DataComponentTypes.ITEM_MODEL, NamespacedKeys.packKey(model))
 
 @Deprecated("use components", ReplaceWith("setDisplayNameAndGet(component)"))
 fun ItemStack.setDisplayNameAndGet(name: String): ItemStack = setDisplayNameAndGet(LegacyComponentSerializer.legacyAmpersand().deserialize(name))
@@ -35,15 +43,3 @@ val ItemStack.displayNameString get() = displayNameComponent.plainText()
 fun ItemStack.setLoreAndGetString(lines: List<String>): ItemStack = apply { this.lore = lines }
 
 fun ItemStack.setLoreAndGet(lines: List<Component>): ItemStack = apply { this.lore(lines) }
-
-val leftArrow
-	get() = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-		it.displayName(Component.empty())
-		it.setCustomModelData(105)
-	}
-
-val rightArrow
-	get() = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-		it.displayName(Component.empty())
-		it.setCustomModelData(103)
-	}
