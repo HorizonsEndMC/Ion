@@ -36,7 +36,7 @@ class TextInputMenu(
 	val player: Player,
 	val title: Component,
 	val description: Component,
-	val backButtonHandler: (Player) -> Unit,
+	val backButtonHandler: ((Player) -> Unit)?,
 	val inputValidator: InputValidator,
 	val successfulInputHandler: Consumer<String>
 ) {
@@ -48,8 +48,11 @@ class TextInputMenu(
 		gui.setStructure(". v x")
 
 		gui.addIngredient('.', blankItem)
-			.addIngredient('v', backButton)
 			.addIngredient('x', confirmButton)
+
+		if (backButtonHandler != null) {
+			gui.addIngredient('v', backButton)
+		}
 
 		return gui.build()
 	}
@@ -87,7 +90,7 @@ class TextInputMenu(
 		ItemStack(Material.BARRIER).setDisplayNameAndGet(text("Go Back", WHITE).itemName)
 	) { _, player, _ ->
 		player.closeInventory()
-		backButtonHandler.invoke(player)
+		backButtonHandler?.invoke(player)
 	}
 
 	private val confirmButton = object : AbstractItem() {
@@ -124,6 +127,25 @@ class TextInputMenu(
 			val result = inputValidator.isValid(currentInput)
 			if (!result.success) return notifyWindows()
 			successfulInputHandler.accept(currentInput)
+		}
+	}
+
+	companion object {
+		fun Player.anvilInputText(
+			prompt: Component,
+			description: Component = empty(),
+			backButtonHandler: ((Player) -> Unit)? = null,
+			inputValidator: InputValidator,
+			handler: Consumer<String>
+		) {
+			TextInputMenu(
+				player = this,
+				title = prompt,
+				description = description,
+				backButtonHandler = backButtonHandler,
+				inputValidator = inputValidator,
+				successfulInputHandler = handler
+			).open()
 		}
 	}
 }

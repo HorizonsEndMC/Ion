@@ -18,7 +18,9 @@ import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.features.nations.gui.anvilInput
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -45,6 +47,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGetString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.yellow
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
@@ -71,7 +74,6 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -176,25 +178,25 @@ object ShipmentManager : IonServerComponent() {
 	}
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
-		player.anvilInput("Select amount of crates:".toComponent()) { _: Player, answer ->
-			val digit = answer.filter { it.isDigit() }
-			val amount = digit.toIntOrNull() ?: return@anvilInput "Amount must be an integer"
+		val playerMaxShipSize = StarshipType.entries.filter { it.typeCategory != TypeCategory.WAR_SHIP && it.canUse(player) && it != PLATFORM }
+			.sortedByDescending { it.maxSize }[0].maxSize
 
-			val playerMaxShipSize =
-				StarshipType.values().filter { it.typeCategory != TypeCategory.WAR_SHIP && it.canUse(player) && it != PLATFORM }
-					.sortedByDescending { it.maxSize }[0].maxSize
+		val min = balancing.generator.minShipmentSize
+		val max = min(balancing.generator.maxShipmentSize, (min(0.015 * playerMaxShipSize, sqrt(playerMaxShipSize.toDouble()))).toInt())
 
-			val min = balancing.generator.minShipmentSize
-			val max = min(
-				balancing.generator.maxShipmentSize,
-				(min(0.015 * playerMaxShipSize, sqrt(playerMaxShipSize.toDouble()))).toInt()
-			)
-			if (amount !in min..max) {
-				return@anvilInput "Amount must be between $min and $max"
-			}
+		player.anvilInputText(
+			prompt = "Select amount of crates:".toComponent(),
+			inputValidator = InputValidator { result ->
+				val amount = result.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(Component.text("Amount must be an integer"))
+				if (amount !in min..max) return@InputValidator ValidatorResult.FailureResult(Component.text("Amount must be between $min and $max"))
+
+				ValidatorResult.SuccessResult
+			},
+		) { answer ->
+			val amount = answer.toIntOrNull() ?: return@anvilInputText
 
 			giveShipment(player, shipment, amount)
-			return@anvilInput null
+			return@anvilInputText
 		}
 	}
 

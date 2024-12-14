@@ -43,6 +43,7 @@ dependencies {
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 	compileOnly("com.discordsrv:discordsrv:1.28.1")
 	compileOnly("net.luckperms:api:5.4")
+	compileOnly("xyz.xenondevs.invui:invui:1.43") // Downloaded via paper library manager for remapping
 
 	// Included Dependencies
 	implementation("com.manya:persistent-data-types:1.0.25")
@@ -50,9 +51,7 @@ dependencies {
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.18")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
-	implementation("net.wesjd:anvilgui:1.9.2-SNAPSHOT")
 	implementation("io.github.skytasul:guardianbeam:2.3.6")
-	compileOnly("xyz.xenondevs.invui:invui:1.43")
 	implementation("club.minnced:discord-webhooks:0.8.4")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-extra-kotlin:2.1.4")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.1.4")
