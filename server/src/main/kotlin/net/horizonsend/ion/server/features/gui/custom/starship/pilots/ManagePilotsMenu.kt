@@ -11,8 +11,8 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.custom.starship.StarshipComputerMenu
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.applyLore
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
@@ -33,7 +33,7 @@ import java.util.function.Supplier
 
 class ManagePilotsMenu(val main: StarshipComputerMenu) : AbstractItem() {
 	override fun getItemProvider(): ItemProvider = ItemProvider {
-		ItemStack(PLAYER_HEAD).setDisplayNameAndGet(text("Add / Remove pilots", WHITE).decoration(ITALIC, false))
+		ItemStack(PLAYER_HEAD).applyDisplayName(text("Add / Remove pilots", WHITE).decoration(ITALIC, false))
 	}
 
 	override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
@@ -53,7 +53,7 @@ class ManagePilotsMenu(val main: StarshipComputerMenu) : AbstractItem() {
 				val name = SLPlayer.getName(id) ?: "null"
 
 				skullItem(id.uuid, name, text(name).decoration(ITALIC, false))
-					.setLoreAndGet(listOf(text("Left click to remove.", NamedTextColor.GRAY).decoration(ITALIC, false)))
+					.applyLore(listOf(text("Left click to remove.", NamedTextColor.GRAY).decoration(ITALIC, false)))
 			}
 		}
 	) {

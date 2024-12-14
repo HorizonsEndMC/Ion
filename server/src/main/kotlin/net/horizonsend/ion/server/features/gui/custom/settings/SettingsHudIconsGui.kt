@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.commands.HudCommand
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.kyori.adventure.text.Component
@@ -12,11 +11,9 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
@@ -129,7 +126,7 @@ class SettingsHudIconsGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class SelectorButton : GuiItems.AbstractButtonItem(
         text("Toggle Planet Selector").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.COMPASS_NEEDLE)
+        GuiItem.COMPASS_NEEDLE.makeItem()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             HudCommand.onToggleHudSelector(player, null)
@@ -140,7 +137,7 @@ class SettingsHudIconsGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class PlanetsButton : GuiItems.AbstractButtonItem(
         text("Toggle Planet Visibility").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.PLANET)
+        GuiItem.PLANET.makeItem()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             HudCommand.onToggleHudPlanets(player, null)
@@ -151,7 +148,7 @@ class SettingsHudIconsGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class StarsButton : GuiItems.AbstractButtonItem(
         text("Toggle Star Visibility").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STAR)
+        GuiItem.STAR.makeItem()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             HudCommand.onToggleHudStars(player, null)
@@ -162,7 +159,7 @@ class SettingsHudIconsGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class BeaconsButton : GuiItems.AbstractButtonItem(
         text("Toggle Beacon Visibility").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.BEACON)
+        GuiItem.BEACON.makeItem()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             HudCommand.onToggleHudBeacons(player, null)
@@ -173,7 +170,7 @@ class SettingsHudIconsGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class StationsButton : GuiItems.AbstractButtonItem(
         text("Toggle Station Visibility").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
+        GuiItem.STATION.makeItem()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             HudCommand.onToggleHudStations(player, null)
@@ -184,7 +181,7 @@ class SettingsHudIconsGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class BookmarksButton : GuiItems.AbstractButtonItem(
         text("Toggle Bookmark Visibility").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.BOOKMARK)
+        GuiItem.BOOKMARK.makeItem()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             HudCommand.onToggleHudBookmarks(player, null)

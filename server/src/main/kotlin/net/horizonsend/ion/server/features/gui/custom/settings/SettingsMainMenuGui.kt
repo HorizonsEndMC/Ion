@@ -2,18 +2,16 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
@@ -107,7 +105,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class ControlSettingsButton : GuiItems.AbstractButtonItem(
         text("Control Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
+        GuiItem.LIST.makeItem()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsControlGui(player).openMainWindow()
@@ -116,7 +114,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class SidebarSettingsButton : GuiItems.AbstractButtonItem(
         text("Sidebar Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
+        GuiItem.LIST.makeItem()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarGui(player).openMainWindow()
@@ -125,7 +123,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class HudSettingsButton : GuiItems.AbstractButtonItem(
         text("HUD Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
+        GuiItem.LIST.makeItem()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsHudGui(player).openMainWindow()
@@ -134,7 +132,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class SoundSettingsButton : GuiItems.AbstractButtonItem(
         text("Sound Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
+        GuiItem.LIST.makeItem()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSoundGui(player).openMainWindow()
@@ -143,7 +141,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class OtherSettingsButton : GuiItems.AbstractButtonItem(
         text("Other Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
+        GuiItem.LIST.makeItem()
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsOtherGui(player).openMainWindow()
@@ -152,9 +150,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     inner class ReturnToMainMenuButton : GuiItems.AbstractButtonItem(
         text("Return to Main Menu Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.DOWN).updateMeta {
-            it.displayName(text("Return to Main Menu Settings").decoration(ITALIC, false))
-        }
+        GuiItem.DOWN.makeItem().applyDisplayName(text("Return to Main Menu Settings").itemName)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             openMainWindow()

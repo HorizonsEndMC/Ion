@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
@@ -23,7 +22,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Color
-import org.bukkit.Material
 import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -478,22 +476,22 @@ object HudIcons : IonServerComponent() {
         }
 
         else if (name.contains(BEACON_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.BEACON)
+            return GuiItem.BEACON.get()
         }
 
         else if (name.contains(STATION_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
+            return GuiItem.STATION.get()
         }
 
         else if (name.contains(SIEGE_STATION_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
+            return GuiItem.STATION.get()
         }
 
         else if (name.contains(BOOKMARK_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.BOOKMARK)
+            return GuiItem.BOOKMARK.get()
         }
 
-        else return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GENERIC_STARSHIP)
+        else return GuiItem.GENERIC_STARSHIP.get()
     }
 
     /**

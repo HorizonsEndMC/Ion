@@ -9,7 +9,8 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.applyLore
+import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration
@@ -35,10 +36,10 @@ object ProgressHolder : CustomItem(
 		)))
 		example.getData(DataComponentTypes.ITEM_MODEL)?.let { base.setData(DataComponentTypes.ITEM_MODEL, it) }
 
-		return base.updateMeta {
-			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
-			it.persistentDataContainer.set(NamespacedKeys.PROGRESS, PersistentDataType.DOUBLE, 0.0)
-			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM_RESULT, PersistentDataType.STRING, result.identifier)
+		return base.updatePersistentDataContainer {
+			set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
+			set(NamespacedKeys.PROGRESS, PersistentDataType.DOUBLE, 0.0)
+			set(NamespacedKeys.CUSTOM_ITEM_RESULT, PersistentDataType.STRING, result.identifier)
 		}
 	}
 
@@ -70,13 +71,14 @@ object ProgressHolder : CustomItem(
 			true
 		}
 
-		itemStack.updateMeta {
-			it.lore(listOf(ofChildren(
+		itemStack
+			.applyLore(listOf(ofChildren(
 				text("Progress: ", GRAY, TextDecoration.ITALIC),
 				text(percentFormat.format(progress), HE_LIGHT_GRAY, TextDecoration.ITALIC)
 			)))
-			it.persistentDataContainer.set(NamespacedKeys.PROGRESS, PersistentDataType.DOUBLE, progress)
-		}
+			.updatePersistentDataContainer {
+				set(NamespacedKeys.PROGRESS, PersistentDataType.DOUBLE, progress)
+			}
 
 		return false
 	}

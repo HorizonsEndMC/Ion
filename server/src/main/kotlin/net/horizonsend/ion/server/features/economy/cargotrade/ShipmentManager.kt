@@ -37,13 +37,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.action
+import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.aqua
 import net.horizonsend.ion.server.miscellaneous.utils.bold
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import net.horizonsend.ion.server.miscellaneous.utils.red
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGetString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.yellow
@@ -590,7 +590,7 @@ object ShipmentManager : IonServerComponent() {
 		val inventory = (blockState as InventoryHolder).inventory
 
 		val baseItem = ItemStack(Material.PAPER, 1)
-			.setDisplayNameAndGet(CargoCrates[shipment.crate].name)
+			.applyDisplayName(CargoCrates[shipment.crate].name)
 			.setLoreAndGetString(lore)
 
 		val containerItem = withShipmentItemId(baseItem, shipmentId.toString())

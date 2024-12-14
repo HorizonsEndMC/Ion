@@ -7,11 +7,12 @@ import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
+import net.horizonsend.ion.server.features.starship.StarshipType.entries
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.applyLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.newline
@@ -706,8 +707,8 @@ enum class StarshipType(
 	val displayNameComponent: Component get() = text(displayName, TextColor.fromHexString(color))
 
 	val menuItem: ItemStack get() = menuItemRaw.get()
-		.setDisplayNameAndGet(displayNameComponent)
-		.setLoreAndGet(listOf(
+		.applyDisplayName(displayNameComponent)
+		.applyLore(listOf(
 			ofChildren(text("Minimum Block Count: ", HE_MEDIUM_GRAY), text(minSize, AQUA), newline()),
 			ofChildren(text("Maximum Block Count: ", HE_MEDIUM_GRAY), text(maxSize, AQUA), newline()),
 			empty(),

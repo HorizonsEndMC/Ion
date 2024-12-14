@@ -19,13 +19,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.actionAndMsg
+import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isInRange
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGetString
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -38,7 +38,6 @@ import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.time.Instant
 import java.util.UUID
-import kotlin.collections.set
 
 object Shuttles : IonServerComponent() {
 	const val TICKET_COST = 20
@@ -172,7 +171,7 @@ object Shuttles : IonServerComponent() {
 	private val TICKET_DISPLAY_NAME = "&bShuttle &eTicket".colorize()
 
 	fun createTicket() = ItemStack(Material.PAPER, 1)
-		.setDisplayNameAndGet(TICKET_DISPLAY_NAME)
+		.applyDisplayName(TICKET_DISPLAY_NAME)
 		.setLoreAndGetString(listOf("&5Ticket ID&b: &d${UUID.randomUUID()}".colorize()))
 
 	fun isTicket(item: ItemStack): Boolean = item.itemMeta?.displayName == TICKET_DISPLAY_NAME

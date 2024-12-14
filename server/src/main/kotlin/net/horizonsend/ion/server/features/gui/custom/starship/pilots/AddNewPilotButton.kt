@@ -9,7 +9,7 @@ import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -36,7 +36,7 @@ class AddNewPilotButton(val pilotMenu: ManagePilotsMenu) : AbstractItem() {
 	private val nameConfirmButton = NameConfirmButton(this)
 
 	override fun getItemProvider(): ItemProvider = ItemProvider {
-		ItemStack(Material.BEACON).setDisplayNameAndGet(text("Add Pilot").itemName)
+		ItemStack(Material.BEACON).applyDisplayName(text("Add Pilot").itemName)
 	}
 
 	override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
@@ -44,12 +44,12 @@ class AddNewPilotButton(val pilotMenu: ManagePilotsMenu) : AbstractItem() {
 	}
 
 	private val returnToPilotMenu = GuiItems.createButton(
-		ItemStack(BARRIER).setDisplayNameAndGet(text("Go back to pilot menu", WHITE).itemName)
+		ItemStack(BARRIER).applyDisplayName(text("Go back to pilot menu", WHITE).itemName)
 	) { _, player, _ ->
 		pilotMenu.openAddPilotMenu(player, pilotMenu.main.data as PlayerStarshipData)
 	}
 
-	private val namePreset = SimpleItem(ItemStack(PAPER).setDisplayNameAndGet(empty()))
+	private val namePreset = SimpleItem(ItemStack(PAPER).applyDisplayName(empty()))
 
 	fun open(player: Player) {
 		val gui = Gui.normal()
@@ -72,10 +72,10 @@ class AddNewPilotButton(val pilotMenu: ManagePilotsMenu) : AbstractItem() {
 
 	private class NameConfirmButton(val addPilot: AddNewPilotButton) : AbstractItem() {
 		val playerNotFoundItem = ItemStack(Material.SKELETON_SKULL)
-			.setDisplayNameAndGet(text("Player not found!", NamedTextColor.RED, BOLD).itemName)
+			.applyDisplayName(text("Player not found!", NamedTextColor.RED, BOLD).itemName)
 
 		val loadingItem = ItemStack(Material.PLAYER_HEAD)
-			.setDisplayNameAndGet(text("Loading...", NamedTextColor.GRAY).itemName)
+			.applyDisplayName(text("Loading...", NamedTextColor.GRAY).itemName)
 
 		var currentProvider: ItemProvider = ItemProvider { loadingItem }
 		var id: SLPlayerId? = null

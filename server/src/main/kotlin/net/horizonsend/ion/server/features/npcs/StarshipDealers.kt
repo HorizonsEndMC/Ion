@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.nations.gui.item
 import net.horizonsend.ion.server.features.npcs.traits.ShipDealerTrait
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.progression.Levels
@@ -19,10 +18,11 @@ import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.applyLore
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Location
@@ -56,17 +56,11 @@ object StarshipDealers : IonServerComponent(true) {
 
 		MenuHelper.apply {
 			val ships: List<GuiItem> = schematicMap.map { (ship, schematic) ->
-				val item: ItemStack = item(ship.guiMaterial)
-
-				item.updateMeta {
-					it.displayName(miniMessage().deserialize(ship.displayName))
-
-					it.lore(
-						ship.lore.map {  loreLine ->
-							miniMessage().deserialize(loreLine)
-						}
-					)
-				}
+				val item = ItemStack(ship.guiMaterial)
+					.applyDisplayName(miniMessage().deserialize(ship.displayName))
+					.applyLore(ship.lore.map {  loreLine ->
+						miniMessage().deserialize(loreLine)
+					})
 
 				val button = guiButton(item) {
 					loadShip(player, ship, schematic)

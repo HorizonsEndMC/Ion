@@ -2,11 +2,14 @@ package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.Table
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.Unbreakable
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.features.gear.ITEM_POWER_PREFIX
+import net.horizonsend.ion.server.miscellaneous.utils.applyData
+import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.set
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
-import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.BLUE
 import org.bukkit.ChatColor.DARK_AQUA
@@ -37,15 +40,15 @@ open class CustomItem(
 ) {
 	val displayName = "${ChatColor.RESET}$displayNameRaw"
 
-	open fun itemStack(amount: Int): ItemStack = ItemStack(material, amount)
-		.updateMeta {
-			if (useMiniMessage) {
-				it.displayName(miniMessage.deserialize(displayNameRaw).decoration(TextDecoration.ITALIC, false))
-			} else it.setDisplayName(displayName)
+	open fun itemStack(amount: Int): ItemStack {
+		val base = ItemStack(material, amount)
+		base.applyData(DataComponentTypes.UNBREAKABLE, Unbreakable.unbreakable(false))
+		base.updateMeta { it.setCustomModelData(model) }
 
-			it.isUnbreakable = unbreakable
-			it.setCustomModelData(model)
-		}
+		if (useMiniMessage) base.applyDisplayName(miniMessage.deserialize(displayNameRaw)) else base.applyDisplayName(displayName)
+
+		return base
+	}
 
 	fun singleItem() = itemStack(1)
 

@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.custom.items.util.serialization.token
 import net.horizonsend.ion.server.features.custom.items.util.serialization.token.ListToken
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.TOOL_MODIFICATIONS
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
@@ -49,9 +49,7 @@ class ModManager(val maxMods: Int) : CustomItemComponent, LoreManager {
 	fun getMods(item: ItemStack): Array<ItemModification> = item.itemMeta.persistentDataContainer.getOrDefault(TOOL_MODIFICATIONS, ModManager, arrayOf())
 
 	fun setMods(item: ItemStack, customItem: CustomItem, mods: Array<ItemModification>) {
-		item.updateMeta {
-			it.persistentDataContainer.set(TOOL_MODIFICATIONS, ModList, mods)
-		}
+		item.updatePersistentDataContainer { set(TOOL_MODIFICATIONS, ModList, mods) }
 
 		customItem.refreshLore(item)
 	}

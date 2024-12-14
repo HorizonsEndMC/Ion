@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemEnchantments
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -10,7 +12,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.applyData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
@@ -43,9 +45,8 @@ class FortuneModifier(
 		return block.drops.getDrops(fortunePick, false)
 	}
 
-	private val fortunePick = ItemStack(Material.DIAMOND_PICKAXE).updateMeta {
-		it.addEnchant(Enchantment.FORTUNE, level, true)
-	}
+	private val fortunePick = ItemStack(Material.DIAMOND_PICKAXE)
+		.applyData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.FORTUNE to level), true))
 
 	override val usedTool: ItemStack = fortunePick
 
