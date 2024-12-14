@@ -186,6 +186,7 @@ object ShipmentManager : IonServerComponent() {
 
 		player.anvilInputText(
 			prompt = "Select amount of crates:".toComponent(),
+			description = "Between $min and $max".toComponent(),
 			inputValidator = InputValidator { result ->
 				val amount = result.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(Component.text("Amount must be an integer"))
 				if (amount !in min..max) return@InputValidator ValidatorResult.FailureResult(Component.text("Amount must be between $min and $max"))
