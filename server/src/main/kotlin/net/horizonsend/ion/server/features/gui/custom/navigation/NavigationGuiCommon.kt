@@ -175,7 +175,7 @@ object NavigationGuiCommon {
         list.add(Component.text(repeatString("=", 30)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY))
         if (world == player.world) list.add(initiateJumpComponent())
         list.add(setWaypointComponent())
-        if (obj is CachedPlanet) {
+        if (obj is CachedPlanet || obj is CachedStar) {
             list.add(displayInfoComponent())
         } else if (obj is ServerConfiguration.HyperspaceBeacon) {
             list.add(nextSystemComponent())
@@ -267,7 +267,7 @@ object NavigationGuiCommon {
                 ClickType.LEFT -> if (planet.spaceWorldName == player.world.name) jumpAction(player, planet.name)
                 ClickType.RIGHT -> waypointAction(player, planet.name, gui)
                 ClickType.SHIFT_LEFT -> {
-                    NavigationInfoGui(player, planet.name, getPlanetItems(planet.name)) { backButtonHandler.invoke() }.openMainWindow()
+                    NavigationInfoGui(player, planet.name, getPlanetItems(planet.name), oreComponent2(planet)) { backButtonHandler.invoke() }.openMainWindow()
                 }
 
                 ClickType.SHIFT_RIGHT -> {
@@ -323,19 +323,41 @@ object NavigationGuiCommon {
     ).decoration(TextDecoration.ITALIC, false)
 
     private fun oreComponent(planet: CachedPlanet): Component {
-        val planetWorld = planet.planetWorld
-        if (planetWorld != null) {
-            val ores = PlanetOreSettings[planetWorld]?.ores
-            if (ores != null) {
-                val oreComponents = ores.map { ore -> ofChildren(
-                    Component.text("${ore.ore.name.replace('_', ' ').lowercase().replaceFirstChar(Char::titlecase)}: ", NamedTextColor.GOLD).decoration(
-                        TextDecoration.ITALIC, false),
-                    Component.text(repeatString("★", ore.stars), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false),
-                    Component.text(" | ", NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false)
-                ) }
-                return Component.textOfChildren(*oreComponents.toTypedArray())
-            }
+        val planetWorld = planet.planetWorld ?: return Component.empty()
+        val ores = PlanetOreSettings[planetWorld]?.ores
+
+        if (ores != null) {
+            val oreComponents = ores.map { ore -> ofChildren(
+                Component.text("${ore.ore.name.replace('_', ' ').lowercase().replaceFirstChar(Char::titlecase)}: ", NamedTextColor.GOLD).decoration(
+                    TextDecoration.ITALIC, false),
+                Component.text(repeatString("★", ore.stars), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false),
+                Component.text(" | ", NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false)
+            ) }
+            return Component.textOfChildren(*oreComponents.toTypedArray())
         }
+
+        return Component.empty()
+    }
+
+    private fun oreComponent2(planet: CachedPlanet): Component {
+        val planetWorld = planet.planetWorld ?: return Component.empty()
+        val ores = PlanetOreSettings[planetWorld]?.ores
+
+        if (ores != null) {
+            val oreComponents = ores.map { ore -> ofChildren(
+                Component.text("${ore.ore.name.replace('_', ' ').lowercase().replaceFirstChar(Char::titlecase)}: ", NamedTextColor.DARK_AQUA).decoration(
+                    TextDecoration.ITALIC, false),
+                when (ore.stars) {
+                    1 -> Component.text("Low", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false)
+                    2 -> Component.text("Med", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false)
+                    3 -> Component.text("High", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false)
+                    else -> Component.text("Unknown", NamedTextColor.DARK_RED).decoration(TextDecoration.ITALIC, false)
+                },
+                Component.text(" | ", NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false)
+            ) }
+            return Component.textOfChildren(*oreComponents.toTypedArray())
+        }
+
         return Component.empty()
     }
 
