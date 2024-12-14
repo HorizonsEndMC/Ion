@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -54,8 +55,7 @@ class SettingsSidebarContactsMaxNameLengthGui(val player: Player) {
 
     private inner class SetContactsMaxNameLengthButton : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui?): ItemProvider {
-            val builder = ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-                it.setCustomModelData(GuiItem.RIGHT.customModelData)
+            val builder = ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.RIGHT).updateMeta {
                 it.displayName(text("Set Contacts Max Name Length").decoration(ITALIC, false))
             })
             return builder
@@ -74,8 +74,7 @@ class SettingsSidebarContactsMaxNameLengthGui(val player: Player) {
 
     private inner class RenameItem : AbstractItem() {
         override fun getItemProvider(): ItemProvider {
-            return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-                it.setCustomModelData(GuiItem.LIST.customModelData)
+            return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST).updateMeta {
                 it.displayName(text("Enter Range (1-${MainSidebar.MAX_NAME_LENGTH})").decoration(ITALIC, false))
             })
         }

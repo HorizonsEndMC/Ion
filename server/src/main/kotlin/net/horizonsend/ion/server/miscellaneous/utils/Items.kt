@@ -1,9 +1,11 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.plainText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
@@ -11,16 +13,20 @@ import org.bukkit.inventory.meta.ItemMeta
 /** Since empty items can either be null or air, extra work is needed to see if it's empty */
 fun isEmpty(itemStack: ItemStack?): Boolean = itemStack == null || itemStack.type == Material.AIR
 
+@Deprecated("Use Paper's ItemComponent API or helper functions")
 fun ItemStack.updateMeta(block: (ItemMeta) -> Unit): ItemStack = apply {
 	itemMeta = requireNotNull(itemMeta) { "No item meta for $type!" }.apply(block)
 }
 
 @Deprecated("use components", ReplaceWith("setDisplayNameAndGet(component)"))
-fun ItemStack.setDisplayNameAndGet(name: String): ItemStack = updateMeta { it.setDisplayName(name) }
+fun ItemStack.setDisplayNameAndGet(name: String): ItemStack = setDisplayNameAndGet(LegacyComponentSerializer.legacyAmpersand().deserialize(name))
 
-fun ItemStack.setDisplayNameSimple(name: String): ItemStack = updateMeta { it.displayName(text(name).decoration(BOLD, false)) }
+fun ItemStack.setDisplayNameSimple(name: String): ItemStack = setDisplayNameAndGet(text(name).decoration(BOLD, false))
 
-fun ItemStack.setDisplayNameAndGet(name: Component): ItemStack = updateMeta { it.displayName(name) }
+fun ItemStack.setDisplayNameAndGet(name: Component): ItemStack {
+	setData(DataComponentTypes.CUSTOM_NAME, name)
+	return this
+}
 
 val ItemStack.displayNameComponent: Component get() = if (hasItemMeta() && itemMeta.hasDisplayName()) { itemMeta.displayName() ?: displayName().hoverEvent(null) } else displayName().hoverEvent(null)
 val ItemStack.displayNameString get() = displayNameComponent.plainText()
