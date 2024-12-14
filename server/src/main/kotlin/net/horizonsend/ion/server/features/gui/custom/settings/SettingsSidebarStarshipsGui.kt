@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.sidebar.command.SidebarStarshipsCommand
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -123,7 +123,7 @@ class SettingsSidebarStarshipsGui(val player: Player) : AbstractBackgroundPagedG
 
     private inner class EnableButton : GuiItems.AbstractButtonItem(
         text("Enable Starship Info").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val starshipsEnabled = PlayerCache[player.uniqueId].starshipsEnabled
@@ -137,7 +137,7 @@ class SettingsSidebarStarshipsGui(val player: Player) : AbstractBackgroundPagedG
 
     private inner class ShowAdvancedButton : GuiItems.AbstractButtonItem(
         text("Display Advanced Info").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarStarshipsCommand.onToggleAdvancedStarshipInfo(player, null)
@@ -148,7 +148,7 @@ class SettingsSidebarStarshipsGui(val player: Player) : AbstractBackgroundPagedG
 
     private inner class CompassRotationButton : GuiItems.AbstractButtonItem(
         text("Rotating Compass").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.COMPASS_NEEDLE)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarStarshipsCommand.onToggleRotateCompass(player, null)

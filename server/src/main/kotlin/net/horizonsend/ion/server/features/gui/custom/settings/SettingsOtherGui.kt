@@ -8,10 +8,10 @@ import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -137,7 +137,7 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class ShowItemSearchItems : GuiItems.AbstractButtonItem(
         text("Show /itemsearch Items").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.COMPASS_NEEDLE)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val itemSearch = PlayerCache[player.uniqueId].showItemSearchItem
@@ -149,7 +149,7 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class EnableCombatTimerAlert : GuiItems.AbstractButtonItem(
         text("Enable Combat Timer Alerts").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val enableCombatTimerAlerts = PlayerCache[player.uniqueId].enableCombatTimerAlerts
@@ -161,7 +161,7 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class EnableProtectionMessages : GuiItems.AbstractButtonItem(
         text("Enable Protection Messages").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             EnableProtectionMessagesCommand.defaultCase(player)
@@ -172,7 +172,7 @@ class SettingsOtherGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class AllowSitting : GuiItems.AbstractButtonItem(
         text("Allow Sitting on Stairs / Slabs").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {

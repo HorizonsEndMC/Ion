@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.IonServer
+import net.kyori.adventure.key.Key
 import org.bukkit.NamespacedKey
 
 object NamespacedKeys {
@@ -80,4 +81,6 @@ object NamespacedKeys {
 
 	// Used for datapacks and resource packs
 	const val HORIZONSEND_NAMESPACE = "horizonsend"
+
+	fun packKey(key: String) = Key.key(HORIZONSEND_NAMESPACE, key)
 }

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -106,7 +107,7 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
     }
     private inner class CombatTimerSettingsButton : GuiItems.AbstractButtonItem(
         text("Combat Timer Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.COMPASS_NEEDLE.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.COMPASS_NEEDLE)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarCombatTimerGui(player).openMainWindow()
@@ -115,7 +116,7 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class StarshipsSettingsButton : GuiItems.AbstractButtonItem(
         text("Starships Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GENERIC_STARSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarStarshipsGui(player).openMainWindow()
@@ -124,7 +125,7 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class ContactsSettingsButton : GuiItems.AbstractButtonItem(
         text("Contacts Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarContactsGui(player).openMainWindow()
@@ -133,7 +134,7 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class RouteSettingsButton : GuiItems.AbstractButtonItem(
         text("Route Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.ROUTE_SEGMENT.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.ROUTE_SEGMENT)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarRouteGui(player).openMainWindow()
@@ -142,8 +143,7 @@ class SettingsSidebarGui(val player: Player) : AbstractBackgroundPagedGui {
 
     inner class ReturnToSidebarButton : GuiItems.AbstractButtonItem(
         text("Return to Sidebar Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-            it.setCustomModelData(GuiItem.DOWN.customModelData)
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.DOWN).updateMeta {
             it.displayName(text("Return to Sidebar Settings").decoration(ITALIC, false))
         }
     ) {
