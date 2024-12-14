@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems.blankItem
 import net.horizonsend.ion.server.features.gui.GuiItems.createButton
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -94,9 +95,8 @@ class TextInputMenu(
 	}
 
 	private val confirmButton = object : AbstractItem() {
-		private fun getSuccessState(result: ValidatorResult.Success) = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+		private fun getSuccessState(result: ValidatorResult.Success) = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.CHECKMARK).updateMeta {
 			it.displayName(text("Confirm", GREEN).itemName)
-			it.setCustomModelData(GuiItem.CHECKMARK.customModelData)
 
 			if (result is ValidatorResult.ResultsResult) {
 				val more = result.results.size > 5

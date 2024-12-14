@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -129,7 +129,7 @@ class SettingsSoundGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class EnableButton: GuiItems.AbstractButtonItem(
         text("Enable Additional Sounds").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.SOUND.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.SOUND)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val enableAdditionalSounds = PlayerCache[player.uniqueId].enableAdditionalSounds
@@ -141,7 +141,7 @@ class SettingsSoundGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class CruiseIndicatorSoundButton: GuiItems.AbstractButtonItem(
         text("Cruise Indicator Sound").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.SOUND.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.SOUND)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SoundSettingsCommand.onChangeCruiseIndicatorSound(player)
@@ -152,7 +152,7 @@ class SettingsSoundGui(val player: Player) : AbstractBackgroundPagedGui {
 
 	private inner class HitmarkerOnHullSoundButton: GuiItems.AbstractButtonItem(
 		text("Hitmarker On Hull").decoration(ITALIC, false),
-		ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.SOUND.customModelData) }
+		ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.SOUND)
 	) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SoundSettingsCommand.onChangeCruiseIndicatorSound(player)

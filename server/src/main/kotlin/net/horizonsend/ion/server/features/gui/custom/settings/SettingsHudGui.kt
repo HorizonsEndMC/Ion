@@ -2,8 +2,10 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -104,7 +106,7 @@ class SettingsHudGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class IconSettingsButton : GuiItems.AbstractButtonItem(
         text("HUD Icon Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.PLANET)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsHudIconsGui(player).openMainWindow()
@@ -113,9 +115,8 @@ class SettingsHudGui(val player: Player) : AbstractBackgroundPagedGui {
 
     inner class ReturnToHudButton : GuiItems.AbstractButtonItem(
         text("Return to HUD Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-            it.setCustomModelData(GuiItem.DOWN.customModelData)
-            it.displayName(text("Return to HUD Settings").decoration(ITALIC, false))
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.DOWN).updateMeta {
+            it.displayName(text("Return to HUD Settings").itemName)
         }
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {

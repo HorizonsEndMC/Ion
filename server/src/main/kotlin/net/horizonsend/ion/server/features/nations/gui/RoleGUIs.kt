@@ -63,7 +63,7 @@ private fun InventoryClickEvent.createRoleMenu(commandName: String) {
 			prompt = "Enter <rainbow>Color".miniMessage(),
 			inputValidator = InputValidator { input: String ->
 				runCatching { ChatColor.valueOf(input) }.onFailure {
-					ValidatorResult.FailureResult(text("Must be one of ${ChatColor.values().joinToString { it.name }}"))
+					return@InputValidator ValidatorResult.FailureResult(text("Must be one of ${ChatColor.values().joinToString { it.name }}"))
 				}
 
 				ValidatorResult.SuccessResult
@@ -124,7 +124,7 @@ fun editRoleGUI(
 					prompt = "Enter <rainbow>Color".miniMessage(),
 					inputValidator = InputValidator { input: String ->
 						runCatching { ChatColor.valueOf(input) }.onFailure {
-							ValidatorResult.FailureResult(text("Must be one of ${ChatColor.values().joinToString { it.name }}"))
+							return@InputValidator ValidatorResult.FailureResult(text("Must be one of ${ChatColor.values().joinToString { it.name }}"))
 						}
 
 						ValidatorResult.SuccessResult

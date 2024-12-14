@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
@@ -187,7 +188,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class EnableButton : GuiItems.AbstractButtonItem(
         text("Enable Contacts Info").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val contactsEnabled = PlayerCache[player.uniqueId].contactsEnabled
@@ -201,7 +202,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class ContactsDistanceButton : GuiItems.AbstractButtonItem(
         text("Change Contacts Range").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.ROUTE_SEGMENT.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.ROUTE_SEGMENT)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarContactsRangeGui(player).openMainWindow()
@@ -210,7 +211,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class ContactsMaxNameLengthButton : GuiItems.AbstractButtonItem(
         text("Change Max Name Length").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarContactsMaxNameLengthGui(player).openMainWindow()
@@ -219,7 +220,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class ContactsSortOrderButton : GuiItems.AbstractButtonItem(
         text("Change Sort Order").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onChangeContactsSortOrder(player)
@@ -230,7 +231,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class ContactsColoringButton : GuiItems.AbstractButtonItem(
         text("Change Coloring").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onChangeContactsColoring(player)
@@ -241,7 +242,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class StarshipsButton : GuiItems.AbstractButtonItem(
         text("Enable Starships").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GUNSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleStarship(player, null)
@@ -252,7 +253,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class LastStarshipsButton : GuiItems.AbstractButtonItem(
         text("Enable Last Starship").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GENERIC_STARSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GENERIC_STARSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleLastStarship(player, null)
@@ -263,7 +264,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class PlanetsButton : GuiItems.AbstractButtonItem(
         text("Enable Planets").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.PLANET.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.PLANET)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onTogglePlanets(player, null)
@@ -274,7 +275,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class StarsButton : GuiItems.AbstractButtonItem(
         text("Enable Stars").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STAR.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STAR)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleStars(player, null)
@@ -285,7 +286,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class BeaconsButton : GuiItems.AbstractButtonItem(
         text("Enable Beacons").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BEACON.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.BEACON)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleBeacons(player, null)
@@ -296,7 +297,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class StationsButton : GuiItems.AbstractButtonItem(
         text("Enable Stations").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleStations(player, null)
@@ -307,7 +308,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class BookmarksButton : GuiItems.AbstractButtonItem(
         text("Enable Bookmarks").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BOOKMARK.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.BOOKMARK)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleBookmarks(player, null)
@@ -318,7 +319,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationAiButton : GuiItems.AbstractButtonItem(
         text("Enable AI Starships").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GUNSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleAi(player, null)
@@ -329,7 +330,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationNoneButton : GuiItems.AbstractButtonItem(
         text("Enable No Relation Starships").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GUNSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNone(player, null)
@@ -340,7 +341,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationEnemyButton : GuiItems.AbstractButtonItem(
         text("Enable Enemy Starships").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GUNSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleEnemy(player, null)
@@ -351,7 +352,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationUnfriendlyButton : GuiItems.AbstractButtonItem(
         text("Enable Unfriendly Starships").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GUNSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleUnfriendly(player, null)
@@ -362,7 +363,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationNeutralButton : GuiItems.AbstractButtonItem(
         text("Enable Neutral Starships").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GUNSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNeutral(player, null)
@@ -373,7 +374,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationFriendlyButton : GuiItems.AbstractButtonItem(
         text("Enable Friendly Starships").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GUNSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleFriendly(player, null)
@@ -384,7 +385,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationAllyButton : GuiItems.AbstractButtonItem(
         text("Enable Ally Starships").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GUNSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleAlly(player, null)
@@ -395,7 +396,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationNationButton : GuiItems.AbstractButtonItem(
         text("Enable Nation Starships").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GUNSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNation(player, null)
@@ -406,7 +407,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationAiStationButton : GuiItems.AbstractButtonItem(
         text("Enable AI Stations").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleAiStation(player, null)
@@ -417,7 +418,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationNoneStationButton : GuiItems.AbstractButtonItem(
         text("Enable No Relation Stations").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNoneStation(player, null)
@@ -428,7 +429,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationEnemyStationButton : GuiItems.AbstractButtonItem(
         text("Enable Enemy Stations").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleEnemyStation(player, null)
@@ -439,7 +440,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationUnfriendlyStationButton : GuiItems.AbstractButtonItem(
         text("Enable Unfriendly Stations").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleUnfriendlyStation(player, null)
@@ -450,7 +451,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationNeutralStationButton : GuiItems.AbstractButtonItem(
         text("Enable Neutral Stations").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNeutralStation(player, null)
@@ -461,7 +462,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationFriendlyStationButton : GuiItems.AbstractButtonItem(
         text("Enable Friendly Stations").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleFriendlyStation(player, null)
@@ -472,7 +473,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationAllyStationButton : GuiItems.AbstractButtonItem(
         text("Enable Ally Stations").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleAllyStation(player, null)
@@ -483,7 +484,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
 
     private inner class RelationNationStationButton : GuiItems.AbstractButtonItem(
         text("Enable Nation Stations").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarContactsCommand.onToggleNationStation(player, null)
@@ -498,8 +499,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
         }
 
         override fun getItemProvider(gui: Gui): ItemProvider {
-            val builder = ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-                it.setCustomModelData(GuiItem.DOWN.customModelData)
+            val builder = ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.DOWN).updateMeta {
                 it.displayName(text("Return to Sidebar Contacts Settings").decoration(ITALIC, false))
             })
             return builder

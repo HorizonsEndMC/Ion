@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.ControlSettingsCommand
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -127,7 +127,7 @@ class SettingsControlGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class DcOverrideButton : GuiItems.AbstractButtonItem(
         text("DC Overrides Cruise").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GUNSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val alternateDcCruise = PlayerCache[player.uniqueId].useAlternateDCCruise
@@ -139,7 +139,7 @@ class SettingsControlGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class DcSpeedModifierButton : GuiItems.AbstractButtonItem(
         text("DC Speed Modifier").decoration(TextDecoration.ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GUNSHIP.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GUNSHIP)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             ControlSettingsCommand.onChangeDcModifier(player)
