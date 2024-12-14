@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -106,7 +107,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class ControlSettingsButton : GuiItems.AbstractButtonItem(
         text("Control Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsControlGui(player).openMainWindow()
@@ -115,7 +116,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class SidebarSettingsButton : GuiItems.AbstractButtonItem(
         text("Sidebar Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSidebarGui(player).openMainWindow()
@@ -124,7 +125,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class HudSettingsButton : GuiItems.AbstractButtonItem(
         text("HUD Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsHudGui(player).openMainWindow()
@@ -133,7 +134,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class SoundSettingsButton : GuiItems.AbstractButtonItem(
         text("Sound Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsSoundGui(player).openMainWindow()
@@ -142,7 +143,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class OtherSettingsButton : GuiItems.AbstractButtonItem(
         text("Other Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SettingsOtherGui(player).openMainWindow()
@@ -151,8 +152,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     inner class ReturnToMainMenuButton : GuiItems.AbstractButtonItem(
         text("Return to Main Menu Settings").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-            it.setCustomModelData(GuiItem.DOWN.customModelData)
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.DOWN).updateMeta {
             it.displayName(text("Return to Main Menu Settings").decoration(ITALIC, false))
         }
     ) {

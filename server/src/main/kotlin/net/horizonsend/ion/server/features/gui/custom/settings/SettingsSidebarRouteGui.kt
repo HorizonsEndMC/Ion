@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.sidebar.command.SidebarWaypointsCommand
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -121,7 +121,7 @@ class SettingsSidebarRouteGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class EnableButton : GuiItems.AbstractButtonItem(
         text("Enable Route Info").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.LIST.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.LIST)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             val routeEnabled = PlayerCache[player.uniqueId].waypointsEnabled
@@ -135,7 +135,7 @@ class SettingsSidebarRouteGui(val player: Player) : AbstractBackgroundPagedGui {
 
     private inner class ExpandedWaypointsButton: GuiItems.AbstractButtonItem(
         text("Route Segments Enabled").decoration(ITALIC, false),
-        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.ROUTE_SEGMENT.customModelData) }
+        ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.ROUTE_SEGMENT)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             SidebarWaypointsCommand.onToggleCompactWaypoints(player, null)

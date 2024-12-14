@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItem.Companion.applyGuiModel
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
@@ -18,7 +19,6 @@ import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -478,22 +478,22 @@ object HudIcons : IonServerComponent() {
         }
 
         else if (name.contains(BEACON_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BEACON.customModelData) }
+            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.BEACON)
         }
 
         else if (name.contains(STATION_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
         }
 
         else if (name.contains(SIEGE_STATION_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.STATION)
         }
 
         else if (name.contains(BOOKMARK_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BOOKMARK.customModelData) }
+            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.BOOKMARK)
         }
 
-        else return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GENERIC_STARSHIP.customModelData) }
+        else return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).applyGuiModel(GuiItem.GENERIC_STARSHIP)
     }
 
     /**
