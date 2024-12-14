@@ -22,7 +22,9 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.gui.custom.bazaar.BazaarPurchaseMenuGui
-import net.horizonsend.ion.server.features.nations.gui.anvilInput
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
@@ -70,7 +72,13 @@ object Bazaars : IonServerComponent() {
 
 			val searchButton = guiButton(Material.NAME_TAG) {
 				Tasks.sync {
-					player.anvilInput("Enter Item Name".toComponent()) { _, input ->
+					player.anvilInputText(
+						"Enter Item Name".toComponent(),
+						backButtonHandler = { player ->
+							Tasks.sync { openMainMenu(territoryId, player, remote) }
+						},
+						inputValidator = InputValidator { ValidatorResult.SuccessResult }
+					) { result ->
 						val searchBackButton = guiButton(Material.IRON_DOOR) {
 							Tasks.sync {
 								openMainMenu(territoryId, player, remote)
@@ -78,10 +86,10 @@ object Bazaars : IonServerComponent() {
 						}.setName(text("Go Back to City"))
 
 						Tasks.async {
-							val items: List<GuiItem> = getGuiItems(territoryId, remote, search(territoryId, input))
+							val items: List<GuiItem> = getGuiItems(territoryId, remote, search(territoryId, result))
 
 							Tasks.sync {
-								player.openPaginatedMenu("Search Query : $input", items, listOf(searchBackButton))
+								player.openPaginatedMenu("Search Query : $result", items, listOf(searchBackButton))
 							}
 						}
 
