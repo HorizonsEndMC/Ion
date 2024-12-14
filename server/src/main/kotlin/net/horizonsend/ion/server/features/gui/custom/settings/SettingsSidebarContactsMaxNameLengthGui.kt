@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -51,7 +51,7 @@ class SettingsSidebarContactsMaxNameLengthGui(val player: Player) {
 
     private inner class SetContactsMaxNameLengthButton : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui?): ItemProvider {
-            val builder = ItemBuilder(GuiItem.RIGHT.makeItem().applyDisplayName(text("Set Contacts Max Name Length")))
+            val builder = ItemBuilder(GuiItem.RIGHT.makeItem().updateDisplayName(text("Set Contacts Max Name Length")))
             return builder
         }
 
@@ -68,7 +68,7 @@ class SettingsSidebarContactsMaxNameLengthGui(val player: Player) {
 
     private inner class RenameItem : AbstractItem() {
         override fun getItemProvider(): ItemProvider {
-            return ItemBuilder(GuiItem.LIST.makeItem().applyDisplayName(text("Enter Range (1-${MainSidebar.MAX_NAME_LENGTH})")))
+            return ItemBuilder(GuiItem.LIST.makeItem().updateDisplayName(text("Enter Range (1-${MainSidebar.MAX_NAME_LENGTH})")))
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {}

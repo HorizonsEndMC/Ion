@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -496,7 +496,7 @@ class SettingsSidebarContactsGui(val player: Player) : AbstractBackgroundPagedGu
         }
 
         override fun getItemProvider(gui: Gui): ItemProvider {
-            val builder = ItemBuilder(GuiItem.DOWN.makeItem().applyDisplayName(text("Return to Sidebar Contacts Settings")))
+            val builder = ItemBuilder(GuiItem.DOWN.makeItem().updateDisplayName(text("Return to Sidebar Contacts Settings")))
             return builder
         }
     }

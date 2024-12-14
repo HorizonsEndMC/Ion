@@ -105,7 +105,7 @@ import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.applyData
+import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Material.AMETHYST_SHARD
@@ -852,7 +852,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('g', RAW_GOLD)
 			setIngredient('b', TITANIUM_BLOCK.constructItemStack())
 			setIngredient('t', TITANIUM_INGOT.constructItemStack())
-			setIngredient('s', ItemStack(ENCHANTED_BOOK).applyData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.SILK_TOUCH to 1), true)))
+			setIngredient('s', ItemStack(ENCHANTED_BOOK).updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.SILK_TOUCH to 1), true)))
 			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
 		}
 
