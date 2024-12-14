@@ -4,8 +4,8 @@ import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
@@ -150,7 +150,7 @@ class SettingsMainMenuGui(val player: Player) : AbstractBackgroundPagedGui {
 
     inner class ReturnToMainMenuButton : GuiItems.AbstractButtonItem(
         text("Return to Main Menu Settings").decoration(ITALIC, false),
-        GuiItem.DOWN.makeItem().applyDisplayName(text("Return to Main Menu Settings").itemName)
+        GuiItem.DOWN.makeItem().updateDisplayName(text("Return to Main Menu Settings").itemName)
     ) {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
             openMainWindow()

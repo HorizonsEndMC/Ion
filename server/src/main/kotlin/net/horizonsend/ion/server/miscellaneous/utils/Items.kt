@@ -27,17 +27,17 @@ fun ItemStack.updateMeta(block: (ItemMeta) -> Unit): ItemStack = apply {
 @Suppress("DEPRECATION")
 fun ItemStack.updatePersistentDataContainer(edit: PersistentDataContainer.() -> Unit) = updateMeta { meta -> edit.invoke(meta.persistentDataContainer) }
 
-fun <T : Any> ItemStack.applyData(type: DataComponentType.Valued<T>, data: T): ItemStack = apply { setData(type, data) }
+fun <T : Any> ItemStack.updateData(type: DataComponentType.Valued<T>, data: T): ItemStack = apply { setData(type, data) }
 
-fun ItemStack.setModel(model: Key) = applyData(DataComponentTypes.ITEM_MODEL, model)
-fun ItemStack.setModel(model: String) = applyData(DataComponentTypes.ITEM_MODEL, NamespacedKeys.packKey(model))
+fun ItemStack.setModel(model: Key) = updateData(DataComponentTypes.ITEM_MODEL, model)
+fun ItemStack.setModel(model: String) = updateData(DataComponentTypes.ITEM_MODEL, NamespacedKeys.packKey(model))
 
 @Deprecated("use components", ReplaceWith("setDisplayNameAndGet(component)"))
-fun ItemStack.applyDisplayName(name: String): ItemStack = applyDisplayName(LegacyComponentSerializer.legacyAmpersand().deserialize(name))
+fun ItemStack.updateDisplayName(name: String): ItemStack = updateDisplayName(LegacyComponentSerializer.legacyAmpersand().deserialize(name))
 
-fun ItemStack.setDisplayNameSimple(name: String): ItemStack = applyDisplayName(text(name).decoration(BOLD, false))
+fun ItemStack.setDisplayNameSimple(name: String): ItemStack = updateDisplayName(text(name).decoration(BOLD, false))
 
-fun ItemStack.applyDisplayName(name: Component): ItemStack {
+fun ItemStack.updateDisplayName(name: Component): ItemStack {
 	setData(DataComponentTypes.CUSTOM_NAME, name.itemName)
 	return this
 }
@@ -45,7 +45,7 @@ fun ItemStack.applyDisplayName(name: Component): ItemStack {
 @Deprecated("use components")
 fun ItemStack.setLoreAndGetString(lines: List<String>): ItemStack = apply { this.lore = lines }
 
-fun ItemStack.applyLore(lines: List<Component>): ItemStack = apply { this.lore(lines.map { it.itemLore }) }
+fun ItemStack.updateLore(lines: List<Component>): ItemStack = apply { this.lore(lines.map { it.itemLore }) }
 
 val ItemStack.displayNameComponent: Component get() = if (hasItemMeta() && itemMeta.hasDisplayName()) { itemMeta.displayName() ?: displayName().hoverEvent(null) } else displayName().hoverEvent(null)
 val ItemStack.displayNameString get() = displayNameComponent.plainText()

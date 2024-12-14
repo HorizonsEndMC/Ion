@@ -7,10 +7,10 @@ import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.priceMult
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
-import net.horizonsend.ion.server.miscellaneous.utils.applyLore
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -80,7 +80,7 @@ class BazaarPurchaseMenuGui(
     private inner class BazaarGuiItem(val itemStack: ItemStack) : AbstractItem() {
         override fun getItemProvider(): ItemProvider {
             // make this item's name empty so that it does not populate anvil name field
-            return ItemBuilder(itemStack.applyDisplayName(empty()))
+            return ItemBuilder(itemStack.updateDisplayName(empty()))
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {}
@@ -89,7 +89,7 @@ class BazaarPurchaseMenuGui(
     // Back button
     private inner class ReturnToItemMenuButton : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui?): ItemProvider {
-            return ItemBuilder(ItemStack(Material.IRON_DOOR).applyDisplayName(text("Go Back").itemName))
+            return ItemBuilder(ItemStack(Material.IRON_DOOR).updateDisplayName(text("Go Back").itemName))
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
@@ -104,14 +104,14 @@ class BazaarPurchaseMenuGui(
         override fun getItemProvider(gui: Gui?): ItemProvider {
             if (currentAmount <= 0) {
                 // Invalid number
-                return ItemBuilder(ItemStack(Material.BARRIER).applyDisplayName(text("Buy at least one item").itemName))
+                return ItemBuilder(ItemStack(Material.BARRIER).updateDisplayName(text("Buy at least one item").itemName))
             } else {
 				// Confirm purchase
 				val priceMult = priceMult(remote)
 				val name = GlobalCompletions.fromItemString(bazaarItem.itemString).displayNameString
 
                 return ItemBuilder(ItemStack(Material.HOPPER)
-					.applyLore(listOf(
+					.updateLore(listOf(
 						// Buy item + amt
 						text("Buy $currentAmount of $name for ${(bazaarItem.price * currentAmount * priceMult).roundToHundredth()}"),
 
@@ -128,7 +128,7 @@ class BazaarPurchaseMenuGui(
 							text("(Price multiplied x $priceMult due to browsing remotely)")
 						} else empty()
 					))
-					.applyDisplayName(text("Purchase", NamedTextColor.GREEN).itemName)
+					.updateDisplayName(text("Purchase", NamedTextColor.GREEN).itemName)
 				)
             }
         }

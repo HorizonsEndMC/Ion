@@ -33,9 +33,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.action
-import net.horizonsend.ion.server.miscellaneous.utils.applyDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.msg
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Color
 import org.bukkit.Material
@@ -360,7 +360,7 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 					else -> item(Material.COBWEB)
 				}
 
-				item.applyDisplayName(zone.name)
+				item.updateDisplayName(zone.name)
 
 				item.lore = listOf(
 					"&7Owner:&d ${if (owner == null) "None" else getPlayerName(owner)}",
