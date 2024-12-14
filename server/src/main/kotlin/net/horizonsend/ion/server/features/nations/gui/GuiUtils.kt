@@ -11,15 +11,10 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson
-import net.md_5.bungee.api.ChatColor.RED
-import net.wesjd.anvilgui.AnvilGUI
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -108,55 +103,6 @@ fun gui(rows: Int, title: String) = ChestGui(rows, color(title))
 
 fun ChestGui.withPane(pane: Pane): ChestGui {
 	addPane(pane); return this
-}
-
-typealias AnvilInputAction = (Player, String) -> String?
-
-class AnvilInput(val question: Component, action: AnvilInputAction) {
-	val action: AnvilInputAction
-
-	init {
-		this.action = { p, r ->
-			val result = action(p, r)
-			if (result != null) {
-				p.sendActionBar(result); p.sendMessage("$RED$result"); result
-			} else {
-				null
-			}
-		}
-	}
-}
-
-fun Player.anvilInput(question: Component, action: AnvilInputAction) = Tasks.sync {
-	AnvilGUI.Builder()
-		.plugin(IonServer)
-		.jsonTitle(gson().serialize(question))
-		.text(".")
-		.onClick { _, snapshot ->
-			val field = snapshot.text
-			val stripped = field.substringAfter('.')
-
-			val response = AnvilGUI.ResponseAction { _, player ->
-				AnvilGUI.ResponseAction.replaceInputText(action(player, stripped) ?: "")
-			}
-
-			mutableListOf(response)
-		}
-		.open(this)
-}
-
-fun Player.inputs(vararg inputs: AnvilInput) {
-	inputs.show(this, 0)
-}
-
-private fun Array<out AnvilInput>.show(player: Player, i: Int) {
-	if (i >= size) return
-	val input = this[i]
-	player.anvilInput(input.question) { p, r ->
-		input.action(p, r) ?: run {
-			this@show.show(p, i + 1); null
-		}
-	}
 }
 
 val InventoryClickEvent.playerClicker: Player get() = whoClicked as Player
