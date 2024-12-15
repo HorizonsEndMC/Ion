@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.listener.misc
 
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.lpHasPermission
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -12,6 +13,8 @@ import net.horizonsend.ion.server.features.player.CombatNPCs
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.CombatTimer.REASON_PVP_GROUND_COMBAT
 import net.horizonsend.ion.server.features.player.CombatTimer.evaluatePvp
+import net.horizonsend.ion.server.features.space.CachedPlanet
+import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -25,6 +28,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
 import net.horizonsend.ion.server.miscellaneous.utils.component4
+import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Location
@@ -155,6 +159,8 @@ object ProtectionListener : SLEventListener() {
 
 		if (isLockedShipDenied(player, location)) return true
 
+		if (isPlanetOrbitDenied(player, location)) return true
+
 		return denied
 	}
 
@@ -196,6 +202,45 @@ object ProtectionListener : SLEventListener() {
 		}
 
 		return denied
+	}
+
+	fun isPlanetOrbitDenied(player: Player, location: Location): Boolean {
+		val (world, x, y, z) = location
+		val padding = 500
+		var inOwnStation = false
+
+		for (planet: CachedPlanet in Space.getPlanets().filter { it.spaceWorld == world }) {
+			val minDistance = planet.orbitDistance - padding
+			val maxDistance = planet.orbitDistance + padding
+			val distance = distance(x.toInt(), y.toInt(), z.toInt(), planet.sun.location.x, y.toInt(), planet.sun.location.z).toInt()
+
+			// Within planet orbit
+			if (distance in minDistance..maxDistance) {
+				// Check if they are in a station
+				for (region in Regions.find(location).sortedByDescending { it.priority }) {
+					// They have build permissions in this region
+					if (region.isCached(player)) {
+						Tasks.async {
+							if (!player.isOnline) {
+								return@async
+							}
+
+							region.cacheAccess(player)
+						}
+
+						inOwnStation = true
+						continue
+					}
+				}
+
+				if (!inOwnStation) {
+					player.userError("You cannot build in the way of ${planet.name}'s orbit")
+					return true
+				}
+			}
+		}
+
+		return false
 	}
 
 	private fun isLockedShipDenied(player: Player, location: Location): Boolean {

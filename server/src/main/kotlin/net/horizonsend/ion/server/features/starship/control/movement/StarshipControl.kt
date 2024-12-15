@@ -12,7 +12,9 @@ import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCooldown
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -279,13 +281,24 @@ object StarshipControl : IonServerComponent() {
 		// Don't allow battlecruisers to enter planets
 		if (starship.type == BATTLECRUISER) return false
 
+		// Don't allow players that have recently entered planets to re-enter again
+		val controller = starship.controller
+		if (controller is PlayerController) {
+			if (PlanetTeleportCooldown.cannotEnterPlanets(controller.player)) return false
+			// Restrict planet entry if combat tagged
+			PlanetTeleportCooldown.addEnterPlanetRestriction(controller.player)
+		}
+
 		val border = planet.planetWorld?.worldBorder
 			?.takeIf { it.size < 60_000_000 } // don't use if it's the default, giant border
 		val halfLength = if (border == null) 2500.0 else border.size / 2.0
 		val centerX = border?.center?.x ?: halfLength
 		val centerZ = border?.center?.z ?: halfLength
 
-		val distance = (halfLength - 250) * max(0.15, newCenter.y / starship.world.maxHeight)
+		//val distance = (halfLength - 250) * max(0.15, newCenter.y / starship.world.maxHeight)
+		// removed the y-height factor in determining the entering planet range. this should now result in
+		// planet enter positions being situated in a circle with a radius of 25% of the world border length.
+		val distance = (halfLength - 250) * 0.5
 		val offset = newCenter.toVector()
 			.subtract(planet.location.toVector())
 			.normalize().multiply(distance)
