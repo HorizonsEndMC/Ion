@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 class ReactorSubsystem(
 	starship: ActiveStarship,
@@ -35,7 +36,8 @@ class ReactorSubsystem(
 		val reactorOutput = this.output
 		val shieldPortion = this.powerDistributor.shieldPortion
 		val shieldEfficiency = starship.shieldEfficiency
-		val shieldPower = reactorOutput * shieldPortion * shieldEfficiency * delta
+		val shieldPower = reactorOutput * shieldPortion * shieldEfficiency * delta *
+				if (starship.initialBlockCount < 1000) 0.0301606 * sqrt(starship.initialBlockCount.toDouble()) else 1.0
 		val totalMissing = starship.shields.sumOf { shield -> shield.maxPower - shield.power }
 
 		if (totalMissing == 0) {
