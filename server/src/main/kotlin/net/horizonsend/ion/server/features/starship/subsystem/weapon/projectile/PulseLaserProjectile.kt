@@ -30,7 +30,7 @@ class PulseLaserProjectile(
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		if (starship.initialBlockCount < 1000) {
-			impactLocation.createExplosion(12.0f)
+			impactLocation.createExplosion(8.0f)
 		}
 	}
 }
