@@ -37,11 +37,11 @@ class ReactorSubsystem(
 		val reactorOutput = this.output
 		val shieldPortion = this.powerDistributor.shieldPortion
 		val shieldEfficiency = starship.shieldEfficiency
-		val shieldPower = reactorOutput * shieldPortion * shieldEfficiency * delta *
+		val shieldPower = reactorOutput * shieldPortion * shieldEfficiency * delta/* *
 				if (starship.initialBlockCount < 1000)
 					// approx. 0.25 shield regen at 150 blocks, 0.62 regen at 500, and 1.0 at 1k+
 					-0.0953256 * cbrt(starship.initialBlockCount.toDouble()) + 0.0617674 * sqrt(starship.initialBlockCount.toDouble())
-				else 1.0
+				else 1.0*/
 		val totalMissing = starship.shields.sumOf { shield -> shield.maxPower - shield.power }
 
 		if (totalMissing == 0) {
