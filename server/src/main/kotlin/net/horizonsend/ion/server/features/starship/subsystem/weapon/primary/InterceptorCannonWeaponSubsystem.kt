@@ -38,4 +38,8 @@ class InterceptorCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, fac
 	override fun getName(): Component {
 		return Component.text("Interceptor Cannon")
 	}
+
+	override fun getMaxPerShot(): Int = 4
+
+	override fun isForwardOnly(): Boolean = balancing.forwardOnly
 }
