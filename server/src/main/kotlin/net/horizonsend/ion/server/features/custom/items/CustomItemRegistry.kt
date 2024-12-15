@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownCu
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.ThrownDetonator
 import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.ThrownSmokeGrenade
+import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
 import net.horizonsend.ion.server.features.custom.items.type.tool.CratePlacer
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
@@ -303,10 +304,13 @@ object CustomItemRegistry : IonServerComponent() {
 	val GAS_CANISTER_FLUORINE = register(GasCanister("GAS_CANISTER_FLUORINE", "gas/gas_canister_fluorine", canisterName(text("Fluorine", YELLOW)), Gasses::FLUORINE))
 	val GAS_CANISTER_HELIUM = register(GasCanister("GAS_CANISTER_HELIUM", "gas/gas_canister_helium", canisterName(text("Helium", BLUE)), Gasses::HELIUM))
 	val GAS_CANISTER_CARBON_DIOXIDE = register(GasCanister("GAS_CANISTER_CARBON_DIOXIDE", "gas/gas_canister_carbon_dioxide", canisterName(text("Carbon Dioxide", BLUE)), Gasses::CARBON_DIOXIDE))
-
 	// Gas canisters end
 
 	// Tools start
+	val BATTERY_S = register(Battery('S', RED, 1000))
+	val BATTERY_M = register(Battery('M', GREEN, 2500))
+	val BATTERY_G = register(Battery('G', GOLD, 7500))
+
 	private fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
 		text("$tierName ", tierColor),
 		text("Power ", GOLD),
