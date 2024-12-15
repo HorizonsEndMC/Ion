@@ -17,8 +17,8 @@ import kotlin.collections.iterator
 
 object PlanetTeleportCooldown : IonServerComponent() {
 
-    private val ENTRY_COOLDOWN = Duration.ofMinutes(5)
-    private val EXIT_COOLDOWN = Duration.ofMinutes(5)
+    private val ENTRY_COOLDOWN = Duration.ofMinutes(2)
+    private val EXIT_COOLDOWN = Duration.ofMinutes(2)
 
     private val entryCooldown = mutableMapOf<UUID, Long>()
     private val exitCooldown = mutableMapOf<UUID, Long>()

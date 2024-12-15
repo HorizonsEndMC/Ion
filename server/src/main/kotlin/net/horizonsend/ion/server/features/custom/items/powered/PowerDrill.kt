@@ -104,11 +104,6 @@ class PowerDrill(
 
 		val drops = mutableMapOf<Long, Collection<ItemStack>>()
 
-		if (CombatTimer.isPvpCombatTagged(livingEntity)) {
-			livingEntity.userError("Cannot use Power Drills while in combat")
-			return
-		}
-
 		for (block in blockList) {
 			if (availablePower < powerUse) {
 				livingEntity.alertAction("Out of power!")
