@@ -370,7 +370,7 @@ class Starship (
 	//endregion
 
 	//region Direct Control
-	val initialDirectControlCooldown get() = 300L + (initialBlockCount / 700) * 30
+	val initialDirectControlCooldown get() = 300L + ((initialBlockCount / 700).coerceAtLeast(1)) * 30
 	var directControlCooldown = initialDirectControlCooldown
 	var directControlSpeedModifier = 1.0
 	var lastDirectControlSpeedSlowed = 0L
