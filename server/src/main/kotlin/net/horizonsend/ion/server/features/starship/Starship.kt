@@ -372,7 +372,7 @@ class Starship (
 
 	// Stored on starship so it can't be reset by switching to dc and back
 	var directControlSpeedModifier = 1.0
-	val initialDirectControlCooldown get() = 300L + (initialBlockCount / 700) * 30
+	val initialDirectControlCooldown get() = 300L + ((initialBlockCount / 700).coerceAtLeast(1)) * 30
 	var directControlCooldown = initialDirectControlCooldown
 	var lastDirectControlSpeedSlowed = 0L
 
