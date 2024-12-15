@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitLocation
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.toChunkLocal
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.Sign
@@ -65,8 +66,12 @@ object CryoPods: SLEventListener() {
 			return
 		}
 
+		val chunk = cryopod.bukkitLocation().chunk
+		val vec = Vec3i(cryopod.x, cryopod.y, cryopod.z).toChunkLocal()
+		val block = chunk.getBlock(vec.x, vec.y, vec.z)
+
 		val signPosition = cryopod.bukkitLocation()
-		val sign = signPosition.block.state as? Sign
+		val sign = block.state as? Sign
 
 		if (sign == null) {
 			player.serverError("Cryopod sign at ${cryopod.x}, ${cryopod.y}, ${cryopod.z} in ${cryopod.worldName} is missing!")
