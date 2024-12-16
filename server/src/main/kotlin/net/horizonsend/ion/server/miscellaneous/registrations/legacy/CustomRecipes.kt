@@ -4,12 +4,11 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTERY_G
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_INGOT
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem as LegacyCustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_BLUE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_GREEN
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_ORANGE
@@ -42,7 +41,6 @@ import org.bukkit.Material.END_STONE
 import org.bukkit.Material.FEATHER
 import org.bukkit.Material.FIREWORK_ROCKET
 import org.bukkit.Material.GLASS_PANE
-import org.bukkit.Material.GLOWSTONE_DUST
 import org.bukkit.Material.PINK_TULIP
 import org.bukkit.Material.PRISMARINE_CRYSTALS
 import org.bukkit.Material.REDSTONE
@@ -59,7 +57,6 @@ import org.bukkit.inventory.ShapelessRecipe
 object CustomRecipes : IonServerComponent() {
 	override fun onEnable() {
 		Tasks.syncDelay(1) {
-			registerBatteryRecipes()
 			registerArmorRecipes()
 			registerModuleRecipes()
 			registerSwordRecipes()
@@ -134,12 +131,6 @@ object CustomRecipes : IonServerComponent() {
 		amount: Int = 1
 	): ShapedRecipe = registerShapedRecipe(item.id, item.itemStack(amount), *shape, ingredients = ingredients)
 
-	private fun createShapelessRecipe(
-		item: LegacyCustomItem,
-		vararg ingredients: RecipeChoice,
-		amount: Int = 1
-	): ShapelessRecipe = registerShapelessRecipe(item.id, item.itemStack(amount), *ingredients)
-
 	private fun legacyCustomItemChoice(customItem: LegacyCustomItem): RecipeChoice {
 		return RecipeChoice.ExactChoice(customItem.singleItem())
 	}
@@ -152,34 +143,10 @@ object CustomRecipes : IonServerComponent() {
 		return RecipeChoice.MaterialChoice(material)
 	}
 
-	private fun registerBatteryRecipes() {
-		createRecipe(
-			CustomItems.BATTERY_SMALL, "aba", "aba", "aba",
-			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM_INGOT),
-				'b' to materialChoice(GLOWSTONE_DUST)
-			)
-		)
-		createRecipe(
-			BATTERY_MEDIUM, "aba", "aba", "aba",
-			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM_INGOT),
-				'b' to materialChoice(REDSTONE)
-			)
-		)
-		createRecipe(
-			BATTERY_LARGE, "aba", "aba", "aba",
-			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM_INGOT),
-				'b' to materialChoice(SEA_LANTERN)
-			)
-		)
-	}
-
 	private fun registerArmorRecipes() {
 		val items = mapOf(
 			'*' to customItemChoice(TITANIUM_INGOT),
-			'b' to legacyCustomItemChoice(BATTERY_LARGE)
+			'b' to customItemChoice(BATTERY_G)
 		)
 
 		createRecipe(POWER_ARMOR_HELMET, "*b*", "* *", ingredients = items)

@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.BLUE
 import org.bukkit.ChatColor.DARK_AQUA
-import org.bukkit.ChatColor.DARK_GRAY
 import org.bukkit.ChatColor.DARK_PURPLE
 import org.bukkit.ChatColor.GOLD
 import org.bukkit.ChatColor.GRAY
@@ -27,7 +26,6 @@ import org.bukkit.Material.LEATHER_CHESTPLATE
 import org.bukkit.Material.LEATHER_HELMET
 import org.bukkit.Material.LEATHER_LEGGINGS
 import org.bukkit.Material.SHIELD
-import org.bukkit.Material.SNOWBALL
 import org.bukkit.inventory.ItemStack
 
 open class CustomItem(
@@ -133,25 +131,6 @@ object CustomItems {
 
 	fun all(): Collection<CustomItem> = idMap.values
 
-	//region Batteries
-	enum class BatteryType(val itemId: String, val maxPower: Int) {
-		SMALL("battery_a", 1000), MEDIUM("battery_m", 2500), LARGE("battery_g", 7500);
-
-		fun getItem(): CustomItem = CustomItems[itemId] ?: error("No custom item for battery type $name!")
-	}
-
-	class BatteryItem(type: BatteryType, typeName: String, model: Int) : PoweredCustomItem(
-		type.itemId, "${BLUE}Size$DARK_GRAY-$typeName$BLUE Battery", SNOWBALL, model, false, type.maxPower
-	)
-
-	private fun registerBattery(type: BatteryType, typeName: String, model: Int): PoweredCustomItem =
-		register(BatteryItem(type, typeName, model))
-
-	val BATTERY_SMALL = registerBattery(type = BatteryType.SMALL, typeName = "${RED}A", model = 7)
-	val BATTERY_MEDIUM = registerBattery(type = BatteryType.MEDIUM, typeName = "${GREEN}M", model = 8)
-	val BATTERY_LARGE = registerBattery(type = BatteryType.LARGE, typeName = "${GOLD}G", model = 9)
-	//endregion
-
 	//region Energy Swords
 	private fun registerEnergySword(color: String, colorName: String, model: Int): EnergySwordItem = register(
 		EnergySwordItem("energy_sword_$color", "$colorName$YELLOW Energy$DARK_AQUA Sword", SHIELD, model)
@@ -207,54 +186,4 @@ object CustomItems {
 	val POWER_MODULE_ENVIRONMENT = registerModule("environment", "Environment", 5)
 	val POWER_MODULE_PRESSURE_FIELD = registerModule("pressure_field", "Pressure Field", 6)
 	//endregion Power Modules
-
-	//region Minerals
-	/*
-	class MineralCustomItem(
-		id: String,
-		displayName: String,
-		material: Material,
-		model: Int,
-		val ore: CustomBlockItem,
-		val fullBlock: CustomBlockItem
-	) : CustomItem(id, displayName, material, model, false)
-
-	private fun registerMineral(type: String, typeName: String, model: Int): MineralCustomItem {
-		return register(
-			MineralCustomItem(
-				id = type,
-				displayName = typeName,
-				material = IRON_INGOT,
-				model = model,
-				ore = makeBlockItem(
-					id = "${type}_ore",
-					displayName = "$typeName OldOreData",
-					material = IRON_ORE,
-					model = model,
-					blockId = "${type}_ore"
-				),
-				fullBlock = makeBlockItem(
-					id = "${type}_block",
-					displayName = "$typeName Block",
-					material = IRON_BLOCK,
-					model = model,
-					blockId = "${type}_block"
-				)
-			)
-		)
-	}
-
-	val MINERAL_ALUMINUM = registerMineral(type = "aluminum", typeName = "Aluminum", model = 1)
-	val MINERAL_CHETHERITE = registerMineral(type = "chetherite", typeName = "Chetherite", model = 2)
-	val MINERAL_TITANIUM = registerMineral(type = "titanium", typeName = "Titanium", model = 3)
-	val MINERAL_URANIUM = registerMineral(type = "uranium", typeName = "Uranium", model = 4)
-	 */
-	//endregion Minerals
-
-	//region Rockets
-	val ROCKET_BASE = makeItem("rocket_base", "Rocket Base", Material.STICK, 1)
-
-	val ROCKET_WARHEAD_ORIOMIUM = makeItem("rocket_warhead_oriomium", "Oriomium Warhead", Material.STICK, 2)
-
-	val ROCKET_ORIOMIUM = makeItem("rocket_oriomium", "Oriomium Rocket", Material.STICK, 3)
 }

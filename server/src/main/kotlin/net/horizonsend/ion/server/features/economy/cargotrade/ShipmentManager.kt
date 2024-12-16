@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
@@ -30,7 +31,6 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.TypeCategory
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
@@ -171,10 +171,10 @@ object ShipmentManager : IonServerComponent() {
 	private fun MenuHelper.getPlanetItem(shipment: UnclaimedShipment): GuiItem {
 		val destinationTerritory: RegionTerritory = Regions[shipment.to.territoryId]
 		val destinationWorld = destinationTerritory.world
-		val planetId = destinationWorld.lowercase(Locale.getDefault()).replace(" ", "")
-		// TODO: When porting over planet icons, change the legacy uranium icon too
-		val planetIcon = CustomItems["planet_icon_$planetId"] ?: CustomItems.BATTERY_LARGE
-		return guiButton(planetIcon.itemStack(1))
+		val planetId = destinationWorld.uppercase(Locale.getDefault()).replace(" ", "")
+
+		val planetIcon = CustomItemRegistry.getByIdentifier(planetId)?.constructItemStack() ?: CustomItemRegistry.BATTERY_G.constructItemStack()
+		return guiButton(planetIcon)
 	}
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
