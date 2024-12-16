@@ -164,9 +164,20 @@ object DBManager : IonComponent() {
 	inline fun <reified T> decode(document: Document): T =
 		decode(document.toBsonDocument(T::class.java, database.codecRegistry))
 
+	inline fun <T : Any> decode(clazz: KClass<T>, document: Document): T =
+		decode(clazz, document.toBsonDocument(clazz.java, database.codecRegistry))
+
 	inline fun <reified T> decode(document: BsonDocument): T {
 		val codecRegistry: CodecRegistry = database.codecRegistry
 		val clazz: Class<T> = T::class.java
+		BsonDocumentReader(document).use { reader ->
+			return codecRegistry.get(clazz).decode(reader, DecoderContext.builder().build())
+		}
+	}
+
+	inline fun <T: Any> decode(clazz: KClass<T>, document: BsonDocument): T {
+		val codecRegistry: CodecRegistry = database.codecRegistry
+		val clazz: Class<T> = clazz.java
 		BsonDocumentReader(document).use { reader ->
 			return codecRegistry.get(clazz).decode(reader, DecoderContext.builder().build())
 		}

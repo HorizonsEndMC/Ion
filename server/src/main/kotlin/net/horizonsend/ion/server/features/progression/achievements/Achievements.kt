@@ -142,7 +142,7 @@ class Achievements(val player: Player) : AbstractBackgroundPagedGui {
 	}
 
 	fun openMainWindow() {
-		currentWindow = open(player).apply { open() }
+		currentWindow = buildWindow(player).apply { open() }
 	}
 }
 
