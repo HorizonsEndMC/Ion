@@ -22,7 +22,7 @@ abstract class SettingsPageGui(
 	override var currentWindow: Window? = null
 	protected abstract val buttonsList: List<SettingsGuiItem>
 
-	private val backButton = GuiItem.DOWN.makeButton(this, "Return to Previous Menu", "") { _, _, _ -> parent?.open() }
+	protected open val backButton: Item = GuiItem.DOWN.makeButton(this, "Return to Previous Menu", "") { _, _, _ -> parent?.open() }
 
 	override fun createGui(): PagedGui<Item> {
 		val gui = PagedGui.items()

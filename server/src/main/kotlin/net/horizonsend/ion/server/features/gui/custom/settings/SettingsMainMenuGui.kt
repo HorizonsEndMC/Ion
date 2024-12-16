@@ -17,6 +17,8 @@ import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.Contact
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
+import xyz.xenondevs.invui.item.Item
+import xyz.xenondevs.invui.item.impl.SimpleItem
 
 class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") {
 	override fun getFirstLine(player: Player): Component {
@@ -30,6 +32,8 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 	override fun makeButton(pageGui: SettingsPageGui): GuiItems.AbstractButtonItem {
 		return GuiItem.LIST.makeButton(this, title, "") { _, _, _ -> open() }
 	}
+
+	override val backButton: Item = SimpleItem(GuiItems.blankItem)
 
     override val buttonsList = listOf<SettingsPageGui>(
 		createSettingsPage(player, "Control Settings",
