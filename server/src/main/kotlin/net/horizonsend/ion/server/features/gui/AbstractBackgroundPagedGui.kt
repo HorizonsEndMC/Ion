@@ -15,7 +15,7 @@ interface AbstractBackgroundPagedGui {
 
     fun createText(player: Player, currentPage: Int): Component = Component.empty()
 
-    fun open(player: Player): Window {
+    fun buildWindow(player: Player): Window {
         val gui = createGui()
 
         val window = Window.single()
@@ -34,4 +34,8 @@ interface AbstractBackgroundPagedGui {
 
         return window
     }
+
+	fun refreshPageText(player: Player, gui: PagedGui<*>) {
+		currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
+	}
 }

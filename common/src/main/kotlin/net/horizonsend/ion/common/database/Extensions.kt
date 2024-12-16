@@ -11,10 +11,6 @@ import com.mongodb.client.model.CollationStrength
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.result.UpdateResult
-import java.util.UUID
-import kotlin.collections.set
-import kotlin.reflect.KProperty
-import kotlin.reflect.full.isSubclassOf
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import org.bson.BsonArray
 import org.bson.BsonDocument
@@ -33,6 +29,10 @@ import org.litote.kmongo.projection
 import org.litote.kmongo.util.KMongoUtil
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 import org.litote.kmongo.withDocumentClass
+import java.util.UUID
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
+import kotlin.reflect.full.isSubclassOf
 
 typealias SLTextStyleDB = String
 typealias StarshipTypeDB = String
@@ -142,6 +142,34 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 		}
 	}
 
+	operator fun <R : Any> get(clazz: KClass<out R>, path: String): R {
+		require(map.contains(path)) { "Property $path not in collection $map" }
+
+		val value: Any? = map[path]
+
+		if (clazz.isInstance(value)) {
+			@Suppress("UNCHECKED_CAST")
+			return value as R
+		}
+
+		if (clazz.isSubclassOf(Id::class) && value != null) {
+			@Suppress("UNCHECKED_CAST")
+			return IdTransformer.wrapId(value) as R
+		}
+
+		try {
+			return when (value) {
+				is Document -> DBManager.decode(clazz, value)
+				else -> Gson().fromJson(value?.json, clazz.java)
+			}
+		} catch (exception: Exception) {
+			throw Exception(
+				"Failed to parse for path $path. \nValue: ${value?.json} \nProjected Results: $map",
+				exception
+			)
+		}
+	}
+
 	inline operator fun <reified R> get(path: String): R {
 		require(map.contains(path)) { "Property $path not in collection $map" }
 
@@ -169,6 +197,8 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 	}
 
 	inline operator fun <reified R> get(property: KProperty<R>): R = get(property.path())
+
+	operator fun <R : Any> get(clazz: KClass<R>, property: KProperty<R>): R = get(clazz, property.path())
 
 	inline fun <reified I, reified R> convertProperty(path: String, convert: (I) -> R): R {
 		require(map.contains(path)) { "Property $path not in collection $map" }
