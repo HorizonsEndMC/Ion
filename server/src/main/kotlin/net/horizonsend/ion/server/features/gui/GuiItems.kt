@@ -1,10 +1,15 @@
 package net.horizonsend.ion.server.features.gui
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import net.horizonsend.ion.common.utils.text.wrap
+import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
@@ -26,6 +31,7 @@ import xyz.xenondevs.invui.item.impl.controlitem.PageItem
 import xyz.xenondevs.invui.item.impl.controlitem.ScrollItem
 import java.util.UUID
 
+@Suppress("UnstableApiUsage")
 object GuiItems {
     class PageLeftItem : PageItem(false) {
         override fun getItemProvider(gui: PagedGui<*>): ItemProvider {
@@ -67,12 +73,7 @@ object GuiItems {
     }
 
     abstract class AbstractButtonItem(val text: Component, val itemStack: ItemStack) : ControlItem<PagedGui<*>>() {
-        override fun getItemProvider(gui: PagedGui<*>): ItemProvider {
-            val builder = ItemBuilder(itemStack.apply {
-				setData(DataComponentTypes.CUSTOM_NAME, text.itemName)
-            })
-            return builder
-        }
+        override fun getItemProvider(gui: PagedGui<*>): ItemProvider = ItemBuilder(itemStack.updateDisplayName(text))
     }
 
     class BlankButton(val item: Item) : ControlItem<Gui>() {
@@ -149,11 +150,21 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
 		return makeItem()
 	}
 
-	companion object {
-		fun ItemStack.applyGuiModel(model: GuiItem): ItemStack {
-			setData(DataComponentTypes.ITEM_MODEL, model.modelKey)
-			return this
+	fun makeButton(settingsPage: SettingsPageGui, name: String, lore: String, handleClick: (Player, PagedGui<*>, SettingsPageGui) -> Unit) : GuiItems.AbstractButtonItem =
+		makeButton(settingsPage, text(name), lore, handleClick)
+
+	fun makeButton(settingsPage: SettingsPageGui, name: Component, lore: String, handleClick: (Player, PagedGui<*>, SettingsPageGui) -> Unit) : GuiItems.AbstractButtonItem {
+		val splitLore = text(lore).itemLore.wrap(150)
+
+		return object : GuiItems.AbstractButtonItem(name, makeItem().updateLore(splitLore)) {
+			override fun handleClick(type: ClickType, player: Player, event: InventoryClickEvent) {
+				handleClick.invoke(player, gui, settingsPage)
+			}
 		}
+	}
+
+	companion object {
+		fun ItemStack.applyGuiModel(model: GuiItem): ItemStack = updateData(DataComponentTypes.ITEM_MODEL, model.modelKey)
 	}
 }
 
