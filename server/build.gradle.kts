@@ -53,10 +53,13 @@ dependencies {
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("io.github.skytasul:guardianbeam:2.3.6")
 	implementation("club.minnced:discord-webhooks:0.8.4")
-	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-extra-kotlin:2.1.4")
-	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.1.4")
-	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-implementation:2.1.4")
-	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-modern:2.1.4")
+
+	val scoreboardLibraryVersion = "2.2.2"
+	implementation("net.megavex:scoreboard-library-extra-kotlin:$scoreboardLibraryVersion")
+	implementation("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
+	implementation("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
+	implementation("net.megavex:scoreboard-library-modern:$scoreboardLibraryVersion:mojmap")
+
     implementation("org.jgrapht:jgrapht-core:1.5.2")
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 	implementation("org.apache.commons:commons-collections4:4.4")
