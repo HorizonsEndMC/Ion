@@ -180,7 +180,7 @@ object CustomItemRegistry : IonServerComponent() {
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::shotgun
 	) {
 		override fun fireProjectiles(livingEntity: LivingEntity) {
-			for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
+			repeat(balancing.shotCount) { super.fireProjectiles(livingEntity) }
 		}
 	})
 	val BLASTER_SNIPER = register(
@@ -307,7 +307,7 @@ object CustomItemRegistry : IonServerComponent() {
 	// Gas canisters end
 
 	// Tools start
-	val BATTERY_S = register(Battery('S', RED, 1000))
+	val BATTERY_A = register(Battery('A', RED, 1000))
 	val BATTERY_M = register(Battery('M', GREEN, 2500))
 	val BATTERY_G = register(Battery('G', GOLD, 7500))
 
@@ -445,13 +445,11 @@ object CustomItemRegistry : IonServerComponent() {
 	val RUBACIEA = unStackable(identifier = "RUBACIEA", displayName = text("Rubaciea"), model = "planet/rubaciea")
 	val TURMS = unStackable(identifier = "TURMS", displayName = text("Turms"), model = "planet/turms")
 	val VASK = unStackable(identifier = "VASK", displayName = text("Vask"), model = "planet/vask")
-	// Stars
 	val ASTERI = unStackable(identifier = "ASTERI", displayName = text("Asteri"), model = "planet/asteri")
 	val HORIZON = unStackable(identifier = "HORIZON", displayName = text("Horizon"), model = "planet/horizon")
 	val ILIOS = unStackable(identifier = "ILIOS", displayName = text("Ilios"), model = "planet/ilios")
 	val REGULUS = unStackable(identifier = "REGULUS", displayName = text("Regulus"), model = "planet/regulus")
 	val SIRIUS = unStackable(identifier = "SIRIUS", displayName = text("Sirius"), model = "planet/sirius")
-	// UI
 	val PLANET_SELECTOR = unStackable(identifier = "PLANET_SELECTOR", displayName = text("PLANET_SELECTOR"), model = "planet/planet_selector")
 
 

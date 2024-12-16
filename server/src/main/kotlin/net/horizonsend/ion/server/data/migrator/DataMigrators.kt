@@ -49,7 +49,6 @@ object DataMigrators : IonServerComponent() {
 				predicate = { it.type == Material.BOW && it.itemMeta.hasCustomModelData() && it.itemMeta.customModelData == 4 && it.customItem == null },
 				converter = { MigratorResult.Replacement(CustomItemRegistry.BLASTER_CANNON.constructItemStack()) }
 			))
-			/* TODO Drill
 			.addMigrator(LegacyCustomItemMigrator(
 				predicate = {
 					it.type == Material.DIAMOND_PICKAXE
@@ -57,12 +56,155 @@ object DataMigrators : IonServerComponent() {
 						&& it.itemMeta.customModelData == 1
 						&& it.customItem == null
 				},
-				converter = {
-
-					MigratorResult.Mutation()
-				}
+				converter = { MigratorResult.Replacement(CustomItemRegistry.POWER_DRILL_BASIC.constructItemStack()) }
 			))
-			*/
+			// Start minerals
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_INGOT
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 1
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ALUMINUM_INGOT.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_ORE
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 1
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ALUMINUM_ORE.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_BLOCK
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 1
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ALUMINUM_BLOCK.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_INGOT
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 2
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.CHETHERITE.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_ORE
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 2
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.CHETHERITE_ORE.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_BLOCK
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 2
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.CHETHERITE_BLOCK.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_INGOT
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 3
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.TITANIUM_INGOT.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_ORE
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 3
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.TITANIUM_ORE.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_BLOCK
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 3
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.TITANIUM_BLOCK.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_INGOT
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 4
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.URANIUM.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_ORE
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 4
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.URANIUM_ORE.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.IRON_BLOCK
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 4
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.URANIUM_BLOCK.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SHEARS
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 1
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.DETONATOR.constructItemStack()) }
+			))
+			// Minerals end
+			// Batteries
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SNOWBALL
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 7
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.BATTERY_A.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SNOWBALL
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 8
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.BATTERY_M.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SNOWBALL
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 9
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.BATTERY_G.constructItemStack()) }
+			))
 			.build()
 		)
 
@@ -127,6 +269,130 @@ object DataMigrators : IonServerComponent() {
 				.changeIdentifier("CANNON", "BLASTER_CANNON")
 				.build()
 			)
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_DRILL_BASIC))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_DRILL_ENHANCED))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_DRILL_ADVANCED))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_CHAINSAW_BASIC))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_CHAINSAW_ENHANCED))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_CHAINSAW_ADVANCED))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_HOE_BASIC))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_HOE_ENHANCED))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_HOE_ADVANCED))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.RANGE_1))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.RANGE_2))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.VEIN_MINER_25))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SILK_TOUCH_MOD))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.AUTO_SMELT))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.FORTUNE_1))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.FORTUNE_2))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.FORTUNE_3))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_CAPACITY_25))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_CAPACITY_50))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.AUTO_REPLANT))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.AUTO_COMPOST))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.RANGE_3))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.EXTENDED_BAR))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.FERTILIZER_DISPENSER))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.PERSONAL_TRANSPORTER))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.AERACH))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ARET))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CHANDRA))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CHIMGARA))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.DAMKOTH))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.DISTERRA))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.EDEN))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAHARA))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.HERDOLI))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ILIUS))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ISIK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.KOVFEFE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.KRIO))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.LIODA))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.LUXITERNA))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.QATRA))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.RUBACIEA))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.TURMS))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.VASK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ASTERI))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.HORIZON))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ILIOS))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REGULUS))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SIRIUS))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.PLANET_SELECTOR))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_EMPTY))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_HYDROGEN))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_NITROGEN))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_METHANE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_OXYGEN))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_CHLORINE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_FLUORINE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_HELIUM))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_CARBON_DIOXIDE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.BATTLECRUISER_REACTOR_CORE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.BARGE_REACTOR_CORE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CRUISER_REACTOR_CORE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ARSENAL_MISSILE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.UNLOADED_ARSENAL_MISSILE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ACTIVATED_ARSENAL_MISSILE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.UNLOADED_SHELL))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.LOADED_SHELL))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.UNCHARGED_SHELL))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CHARGED_SHELL))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.STEEL_INGOT))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.STEEL_BLOCK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.STEEL_PLATE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.STEEL_CHASSIS))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.STEEL_MODULE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.STEEL_ASSEMBLY))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REINFORCED_FRAME))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REACTOR_FRAME))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SUPERCONDUCTOR))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SUPERCONDUCTOR_BLOCK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SUPERCONDUCTOR_CORE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CIRCUIT_BOARD))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.MOTHERBOARD))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REACTOR_CONTROL))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REACTIVE_COMPONENT))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REACTIVE_HOUSING))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REACTIVE_PLATING))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REACTIVE_CHASSIS))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REACTIVE_MEMBRANE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REACTIVE_ASSEMBLY))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.FABRICATED_ASSEMBLY))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.NETHERITE_CASING))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ENRICHED_URANIUM))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ENRICHED_URANIUM_BLOCK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.URANIUM_CORE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.URANIUM_ROD))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.FUEL_ROD_CORE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.FUEL_CELL))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.FUEL_CONTROL))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.URANIUM))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.RAW_URANIUM))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.URANIUM_ORE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.URANIUM_BLOCK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.RAW_URANIUM_BLOCK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.TITANIUM_INGOT))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.RAW_TITANIUM))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.TITANIUM_ORE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.TITANIUM_BLOCK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.RAW_TITANIUM_BLOCK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CHETHERITE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CHETHERITE_ORE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CHETHERITE_BLOCK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ALUMINUM_INGOT))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.RAW_ALUMINUM))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ALUMINUM_ORE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.ALUMINUM_BLOCK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.RAW_ALUMINUM_BLOCK))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.PISTOL_RECEIVER))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.RIFLE_RECEIVER))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SMB_RECEIVER))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SNIPER_RECEIVER))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SHOTGUN_RECEIVER))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CANNON_RECEIVER))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GUN_BARREL))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CIRCUITRY))
 			.build()
 		)
 	}

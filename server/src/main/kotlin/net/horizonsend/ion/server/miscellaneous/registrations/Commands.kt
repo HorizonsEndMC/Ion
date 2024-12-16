@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.admin.BatteryCommand
 import net.horizonsend.ion.server.command.admin.CapturableStationsCommand
-import net.horizonsend.ion.server.command.admin.ConvertCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
@@ -149,7 +148,6 @@ val commands: List<SLCommand> = listOf(
 	SpaceGenCommand,
 	ConfigurationCommands,
 	WorldCommand,
-	ConvertCommand,
 	CustomItemCommand,
 	IonCommand,
 	SearchCommand,

@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
-//import net.horizonsend.ion.server.features.custom.items.CustomItems.CRUDE_FUEL
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemEnchantments
 import net.horizonsend.ion.server.IonServer
@@ -12,6 +11,9 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.AUTO_
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.AUTO_SMELT
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BARGE_REACTOR_CORE
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTERY_A
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTERY_G
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTERY_M
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTLECRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BLASTER_CANNON
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BLASTER_PISTOL
@@ -102,8 +104,6 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANI
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_ROD
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.VEIN_MINER_25
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import org.bukkit.Bukkit
@@ -131,6 +131,7 @@ import org.bukkit.Material.ENCHANTED_BOOK
 import org.bukkit.Material.GILDED_BLACKSTONE
 import org.bukkit.Material.GLASS
 import org.bukkit.Material.GLASS_PANE
+import org.bukkit.Material.GLOWSTONE_DUST
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GOLD_INGOT
 import org.bukkit.Material.GOLD_NUGGET
@@ -508,7 +509,7 @@ object Crafting : IonServerComponent() {
 			shape("i  ", " bt", " ts")
 
 			setIngredient('i', ExactChoice(ItemStack(IRON_INGOT)))
-			setIngredient('b', ExactChoice(BATTERY_MEDIUM.singleItem()))
+			setIngredient('b', ExactChoice(BATTERY_M.constructItemStack()))
 			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('s', STICK)
 
@@ -522,7 +523,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('d', ExactChoice(POWER_DRILL_BASIC.constructItemStack()))
 			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
 			setIngredient('t', ExactChoice(URANIUM_BLOCK.constructItemStack()))
-			setIngredient('s', ExactChoice(BATTERY_LARGE.singleItem()))
+			setIngredient('s', ExactChoice(BATTERY_G.constructItemStack()))
 
 		}
 
@@ -543,7 +544,7 @@ object Crafting : IonServerComponent() {
 			shape("ii ", "idc", " cs")
 
 			setIngredient('i', ExactChoice(ItemStack(IRON_INGOT)))
-			setIngredient('d', ExactChoice(BATTERY_MEDIUM.singleItem()))
+			setIngredient('d', ExactChoice(BATTERY_M.constructItemStack()))
 			setIngredient('c', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('s', STICK)
 
@@ -557,7 +558,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('d', ExactChoice(POWER_CHAINSAW_BASIC.constructItemStack()))
 			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
 			setIngredient('u', ExactChoice(URANIUM_BLOCK.constructItemStack()))
-			setIngredient('s', ExactChoice(BATTERY_LARGE.singleItem()))
+			setIngredient('s', ExactChoice(BATTERY_G.constructItemStack()))
 
 		}
 
@@ -578,7 +579,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("power_hoe_basic", POWER_HOE_BASIC.constructItemStack()) {
 			shape(" ib", " si", "cc ")
 
-			setIngredient('b', ExactChoice(BATTERY_MEDIUM.singleItem()))
+			setIngredient('b', ExactChoice(BATTERY_M.constructItemStack()))
 			setIngredient('i', COPPER_INGOT)
 			setIngredient('c', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('s', STICK)
@@ -593,7 +594,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('i', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
 			setIngredient('c', ExactChoice(CIRCUITRY.constructItemStack()))
 			setIngredient('u', ExactChoice(URANIUM_BLOCK.constructItemStack()))
-			setIngredient('s', ExactChoice(BATTERY_LARGE.singleItem()))
+			setIngredient('s', ExactChoice(BATTERY_G.constructItemStack()))
 
 		}
 
@@ -683,7 +684,7 @@ object Crafting : IonServerComponent() {
 
 		// Detonator Crafting
 		itemStackShapeRecipe("detonator", DETONATOR.constructItemStack()) {
-			shape(" r ", "tut", " t ",)
+			shape(" r ", "tut", " t ")
 
 			setIngredient('r', REDSTONE)
 			setIngredient('t', TITANIUM_INGOT.constructItemStack())
@@ -691,7 +692,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		itemStackShapeRecipe("smokeGrenade", SMOKE_GRENADE.constructItemStack()) {
-			shape(" i ", "tct", " t ",)
+			shape(" i ", "tct", " t ")
 
 			setIngredient('i', IRON_INGOT)
 			setIngredient('t', TITANIUM_INGOT.constructItemStack())
@@ -887,7 +888,7 @@ object Crafting : IonServerComponent() {
 			shape("sbs", "brb", "scs")
 
 			setIngredient('s', STEEL_INGOT.constructItemStack())
-			setIngredient('b', BATTERY_MEDIUM.singleItem())
+			setIngredient('b', BATTERY_M.constructItemStack())
 			setIngredient('r', REDSTONE_BLOCK)
 			setIngredient('c', CIRCUITRY.constructItemStack())
 		}
@@ -896,7 +897,7 @@ object Crafting : IonServerComponent() {
 			shape("sbs", "brb", "scs")
 
 			setIngredient('s', STEEL_PLATE.constructItemStack())
-			setIngredient('b', BATTERY_LARGE.singleItem())
+			setIngredient('b', BATTERY_M.constructItemStack())
 			setIngredient('r', REDSTONE_BLOCK)
 			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
 		}
@@ -978,6 +979,27 @@ object Crafting : IonServerComponent() {
 			setIngredient('i', ExactChoice(ALUMINUM_BLOCK.constructItemStack()))
 			setIngredient('p', OBSERVER)
 			setIngredient('r', ExactChoice(RANGE_1.constructItemStack()))
+		}
+
+		itemStackShapeRecipe("battery_a", BATTERY_A.constructItemStack()) {
+			shape("aba", "aba", "aba")
+
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+			setIngredient('b', GLOWSTONE_DUST)
+		}
+
+		itemStackShapeRecipe("battery_m", BATTERY_M.constructItemStack()) {
+			shape("aba", "aba", "aba")
+
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+			setIngredient('b', REDSTONE)
+		}
+
+		itemStackShapeRecipe("battery_g", BATTERY_G.constructItemStack()) {
+			shape("aba", "aba", "aba")
+
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+			setIngredient('b', SEA_LANTERN)
 		}
 
 		// Tool mods end

@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
-import net.horizonsend.ion.server.features.custom.ItemConverters
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.NewCustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporterManager
@@ -67,7 +66,6 @@ val listeners: List<Listener> = listOf(
 	CancelListeners(),
 	NewCustomItemListeners,
 	CustomBlockListeners,
-	ItemConverters,
 	EdenFixer9000(),
 	GameplayTweaksListeners(),
 	HeadListener(),
