@@ -51,9 +51,7 @@ class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
             }
             gui.addContent(button)
 
-            for (i in 1..8) {
-                gui.addContent(GuiItems.BlankButton(button))
-            }
+            repeat(8) { gui.addContent(GuiItems.BlankButton(button)) }
         }
 
         return gui.build()
@@ -102,6 +100,6 @@ class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
     }
 
     fun openMainWindow() {
-        currentWindow = open(player).apply { open() }
+        currentWindow = buildWindow(player).apply { open() }
     }
 }
