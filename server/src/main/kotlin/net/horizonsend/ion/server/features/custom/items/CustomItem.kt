@@ -99,4 +99,6 @@ open class CustomItem(
 	fun deserialize(data: String) = serializationManager.deserialize(this, data)
 
 	fun getParamaterKeys() = serializationManager.parameterKeys()
+
+	fun getItemFactory() = baseItemFactory
 }

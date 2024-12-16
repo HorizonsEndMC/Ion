@@ -9,9 +9,11 @@ import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.CustomN
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ItemAspectMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ItemComponentMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.PullLoreMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.PullModelMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.SetLoreMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.predicate.ItemMigratorPredicate
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.HORIZONSEND_NAMESPACE
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
@@ -87,6 +89,11 @@ class AspectMigrator private constructor(
 			return this
 		}
 
+		fun pullModel(from: CustomItem): Builder {
+			aspects.add(PullModelMigrator(from))
+			return this
+		}
+
 		fun setCustomName(new: Component): Builder {
 			aspects.add(CustomNameMigrator(new))
 			return this
@@ -107,6 +114,10 @@ class AspectMigrator private constructor(
 	companion object {
 		fun builder(customItem: CustomItem): Builder {
 			return Builder(customItem)
+		}
+
+		fun fixModel(customItem: CustomItem): AspectMigrator {
+			return builder(CustomItemRegistry.POWER_DRILL_BASIC).pullModel(CustomItemRegistry.POWER_DRILL_BASIC).build()
 		}
 	}
 }
