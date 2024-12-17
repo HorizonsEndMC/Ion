@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.ProjectileBalancing
 import net.horizonsend.ion.server.configuration.StarshipSounds
-import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -152,7 +152,7 @@ class RayTracedParticleProjectile(
 			flyingHitEntity.damage(damage, shooter)
 
 			if (flyingHitEntity is Player) {
-				if (!PowerArmorManager.glideDisabledPlayers.containsKey(flyingHitEntity.uniqueId)) {
+				if (!glideDisabledPlayers.containsKey(flyingHitEntity.uniqueId)) {
 					Tasks.syncDelay(60) { // after 3 seconds
 						flyingHitEntity.information("Your rocket boots have rebooted.")
 					}
@@ -169,7 +169,7 @@ class RayTracedParticleProjectile(
 
 				// Ignore nation if in arena
 				if (!isSameNation || flyingHitEntity.world.hasFlag(WorldFlag.ARENA)) {
-					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
+					glideDisabledPlayers[flyingHitEntity.uniqueId] =
 						System.currentTimeMillis() + 3000 // 3 second glide disable
 					flyingHitEntity.alert("Taking fire! Rocket boots powering down!")
 				}

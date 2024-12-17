@@ -4,9 +4,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_INGOT
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTERY_G
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_INGOT
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem as LegacyCustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_BLUE
@@ -16,20 +14,9 @@ import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_PURPLE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_RED
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_YELLOW
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_ARMOR_BOOTS
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_ARMOR_CHESTPLATE
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_ARMOR_HELMET
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_ARMOR_LEGGINGS
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_ENVIRONMENT
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_NIGHT_VISION
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_PRESSURE_FIELD
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_ROCKET_BOOSTING
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_SHOCK_ABSORBING
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_SPEED_BOOSTING
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.Material.CHAINMAIL_HELMET
 import org.bukkit.Material.COAL
 import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.DIAMOND
@@ -38,14 +25,11 @@ import org.bukkit.Material.ENDER_PEARL
 import org.bukkit.Material.END_PORTAL_FRAME
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.END_STONE
-import org.bukkit.Material.FEATHER
-import org.bukkit.Material.FIREWORK_ROCKET
 import org.bukkit.Material.GLASS_PANE
 import org.bukkit.Material.PINK_TULIP
 import org.bukkit.Material.PRISMARINE_CRYSTALS
 import org.bukkit.Material.REDSTONE
 import org.bukkit.Material.SEA_LANTERN
-import org.bukkit.Material.SPIDER_EYE
 import org.bukkit.Material.WARPED_PLANKS
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
@@ -57,8 +41,6 @@ import org.bukkit.inventory.ShapelessRecipe
 object CustomRecipes : IonServerComponent() {
 	override fun onEnable() {
 		Tasks.syncDelay(1) {
-			registerArmorRecipes()
-			registerModuleRecipes()
 			registerSwordRecipes()
 			registerWireRecipe()
 			registerSeaLanternRecipe()
@@ -131,46 +113,12 @@ object CustomRecipes : IonServerComponent() {
 		amount: Int = 1
 	): ShapedRecipe = registerShapedRecipe(item.id, item.itemStack(amount), *shape, ingredients = ingredients)
 
-	private fun legacyCustomItemChoice(customItem: LegacyCustomItem): RecipeChoice {
-		return RecipeChoice.ExactChoice(customItem.singleItem())
-	}
-
 	private fun customItemChoice(customItem: CustomItem): RecipeChoice {
 		return RecipeChoice.ExactChoice(customItem.constructItemStack())
 	}
 
 	private fun materialChoice(material: Material): RecipeChoice {
 		return RecipeChoice.MaterialChoice(material)
-	}
-
-	private fun registerArmorRecipes() {
-		val items = mapOf(
-			'*' to customItemChoice(TITANIUM_INGOT),
-			'b' to customItemChoice(BATTERY_G)
-		)
-
-		createRecipe(POWER_ARMOR_HELMET, "*b*", "* *", ingredients = items)
-		createRecipe(POWER_ARMOR_CHESTPLATE, "* *", "*b*", "***", ingredients = items)
-		createRecipe(POWER_ARMOR_LEGGINGS, "*b*", "* *", "* *", ingredients = items)
-		createRecipe(POWER_ARMOR_BOOTS, "* *", "*b*", ingredients = items)
-	}
-
-	private fun registerModuleRecipes() = mapOf(
-		POWER_MODULE_SHOCK_ABSORBING to customItemChoice(TITANIUM_INGOT),
-		POWER_MODULE_SPEED_BOOSTING to materialChoice(FEATHER),
-		POWER_MODULE_ROCKET_BOOSTING to materialChoice(FIREWORK_ROCKET),
-		POWER_MODULE_NIGHT_VISION to materialChoice(SPIDER_EYE),
-		POWER_MODULE_ENVIRONMENT to materialChoice(CHAINMAIL_HELMET),
-		POWER_MODULE_PRESSURE_FIELD to RecipeChoice.ExactChoice(GAS_CANISTER_EMPTY.constructItemStack())
-	).forEach { (piece, center) ->
-		createRecipe(
-			piece, "aga", "g*g", "aga",
-			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM_INGOT),
-				'g' to materialChoice(GLASS_PANE),
-				'*' to center
-			)
-		)
 	}
 
 	private fun registerSwordRecipes() = mapOf(
