@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.custom.items.type.blaster
+package net.horizonsend.ion.server.features.custom.items.type.weapon.blaster
 
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
