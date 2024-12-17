@@ -19,8 +19,6 @@ import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.type.ProgressHolder
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
-import net.horizonsend.ion.server.features.custom.items.type.blaster.Blaster
-import net.horizonsend.ion.server.features.custom.items.type.blaster.Magazine
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrownPumpkinGrenade
@@ -33,6 +31,8 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
+import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blaster
+import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Magazine
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.stackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem

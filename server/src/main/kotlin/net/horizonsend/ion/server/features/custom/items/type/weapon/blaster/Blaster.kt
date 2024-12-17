@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.custom.items.type.blaster
+package net.horizonsend.ion.server.features.custom.items.type.weapon.blaster
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
