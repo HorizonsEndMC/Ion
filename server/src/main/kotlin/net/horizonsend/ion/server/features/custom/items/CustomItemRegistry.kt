@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
 import net.horizonsend.ion.server.features.custom.items.type.ProgressHolder
+import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.features.custom.items.type.blaster.Blaster
 import net.horizonsend.ion.server.features.custom.items.type.blaster.Magazine
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
@@ -68,6 +69,7 @@ import org.bukkit.Material.RAW_IRON_BLOCK
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
 import java.util.function.Supplier
@@ -91,20 +93,20 @@ object CustomItemRegistry : IonServerComponent() {
 	val DETONATOR = registerThrowable(
 		"DETONATOR",
 		"throwables/detonator",
-		ofChildren(text("Thermal ", RED), text("Detonator", GRAY)).itemName,
+		ofChildren(text("Thermal ", RED), text("Detonator", GRAY)),
 		ConfigurationFiles.pvpBalancing().throwables::detonator
 	) { item, maxTicks, source -> ThrownDetonator(item, maxTicks, source, ConfigurationFiles.pvpBalancing().throwables::detonator) }
 	val SMOKE_GRENADE = registerThrowable(
 		"SMOKE_GRENADE",
 		"throwables/detonator",
-		ofChildren(text("Smoke ", DARK_GREEN), text("Grenade", GRAY)).itemName,
+		ofChildren(text("Smoke ", DARK_GREEN), text("Grenade", GRAY)),
 		ConfigurationFiles.pvpBalancing().throwables::smokeGrenade
 	) { item, maxTicks, source -> ThrownSmokeGrenade(item, maxTicks, source) }
 
 	val PUMPKIN_GRENADE = register(object : ThrowableCustomItem(
 		"PUMPKIN_GRENADE",
 		"",
-		ofChildren(text("Pumpkin ", GOLD), text("Grenade", GREEN)).itemName,
+		ofChildren(text("Pumpkin ", GOLD), text("Grenade", GREEN)),
 		ConfigurationFiles.pvpBalancing().throwables::detonator
 	) {
 		override val baseItemFactory: ItemFactory = ItemFactory.builder(ItemFactory.builder().setMaterial(PUMPKIN).build())
@@ -143,7 +145,7 @@ object CustomItemRegistry : IonServerComponent() {
 	val BLASTER_PISTOL = register(
 		Blaster(
 		identifier = "BLASTER_PISTOL",
-		displayName = text("Blaster Pistol", RED, BOLD).itemName,
+		displayName = text("Blaster Pistol", RED, BOLD),
 		itemFactory = ItemFactory.builder().setMaterial(DIAMOND_HOE).setCustomModel("weapon/blaster/pistol").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::pistol
 	)
@@ -151,7 +153,7 @@ object CustomItemRegistry : IonServerComponent() {
 	val BLASTER_RIFLE = register(
 		Blaster(
 		identifier = "BLASTER_RIFLE",
-		displayName = text("Blaster Rifle", RED, BOLD).itemName,
+		displayName = text("Blaster Rifle", RED, BOLD),
 		itemFactory = ItemFactory.builder().setMaterial(IRON_HOE).setCustomModel("weapon/blaster/rifle").build(),
 		balancingSupplier = ConfigurationFiles.pvpBalancing().energyWeapons::rifle
 	)
@@ -267,7 +269,7 @@ object CustomItemRegistry : IonServerComponent() {
 	val SUPERCONDUCTOR_CORE = unStackable(identifier = "SUPERCONDUCTOR_CORE", model = "industry/superconductor_core", displayName = text("Superconductor Core", YELLOW))
 
 	val STEEL_INGOT = stackable(identifier = "STEEL_INGOT", text("Steel Ingot"), "industry/steel_ingot")
-	val STEEL_BLOCK = unStackable(identifier = "STEEL_BLOCK", model = "industry/steel_block", displayName = text("Steel Block"))
+	val STEEL_BLOCK = register(CustomBlockItem(identifier = "STEEL_BLOCK", material = IRON_BLOCK, customModel = "industry/steel_block", displayName = text("Steel Block"), customBlockSupplier = CustomBlocks::STEEL_BLOCK))
 	val STEEL_PLATE = unStackable(identifier = "STEEL_PLATE", model = "industry/steel_plate", displayName = text("Steel Plate"))
 	val STEEL_CHASSIS = unStackable(identifier = "STEEL_CHASSIS", model = "industry/steel_chassis", displayName = text("Steel Chassis"))
 	val STEEL_MODULE = unStackable(identifier = "STEEL_MODULE", model = "industry/steel_module", displayName = text("Steel Module"))
@@ -293,7 +295,7 @@ object CustomItemRegistry : IonServerComponent() {
 	// Starship Components End
 
 	// Gas canisters start
-	private fun canisterName(gasName: Component): Component = ofChildren(gasName, text(" Gas Canister", GRAY)).itemName
+	private fun canisterName(gasName: Component): Component = ofChildren(gasName, text(" Gas Canister", GRAY))
 
 	val GAS_CANISTER_EMPTY = unStackable("GAS_CANISTER_EMPTY", model = "gas/gas_canister_empty", displayName = text("Empty Gas Canister"))
 	val GAS_CANISTER_HYDROGEN = register(GasCanister("GAS_CANISTER_HYDROGEN", "gas/gas_canister_hydrogen", canisterName(text("Hydrogen", RED)), Gasses::HYDROGEN))
@@ -311,21 +313,21 @@ object CustomItemRegistry : IonServerComponent() {
 	val BATTERY_M = register(Battery('M', GREEN, 2500))
 	val BATTERY_G = register(Battery('G', GOLD, 7500))
 
+	val CRATE_PLACER = register(CratePlacer)
+
 	private fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
 		text("$tierName ", tierColor),
 		text("Power ", GOLD),
 		text(toolName, GRAY)
-	).itemName
+	)
 
-	val POWER_DRILL_BASIC = register(
-		PowerDrill(
+	val POWER_DRILL_BASIC = register(PowerDrill(
 		identifier = "POWER_DRILL_BASIC",
 		displayName = formatToolName("Basic", HE_LIGHT_ORANGE, "Drill"),
 		modLimit = 2,
 		basePowerCapacity = 50_000,
 		model = "tool/power_drill_basic"
-	)
-	)
+	))
 	val POWER_DRILL_ENHANCED = register(
 		PowerDrill(
 		identifier = "POWER_DRILL_ENHANCED",
@@ -333,58 +335,47 @@ object CustomItemRegistry : IonServerComponent() {
 		modLimit = 4,
 		basePowerCapacity = 75_000,
 		model = "tool/power_drill_enhanced"
-	)
-	)
+	))
 	val POWER_DRILL_ADVANCED = register(
-		PowerDrill(
-		identifier = "POWER_DRILL_ADVANCED",
+		PowerDrill(identifier = "POWER_DRILL_ADVANCED",
 		displayName = formatToolName("Advanced", fromHexString("#B12BC9")!!, "Drill"),
 		modLimit = 6,
 		basePowerCapacity = 100_000,
 		model = "tool/power_drill_advanced"
-	)
-	)
+	))
 
-	val POWER_CHAINSAW_BASIC = register(
-		PowerChainsaw(
+	val POWER_CHAINSAW_BASIC = register(PowerChainsaw(
 		identifier = "POWER_CHAINSAW_BASIC",
 		displayName = formatToolName("Basic", HE_LIGHT_ORANGE, "Chainsaw"),
 		modLimit = 2,
 		basePowerCapacity = 50_000,
 		model = "tool/power_chainsaw_basic",
 		initialBlocksBroken = 50
-	)
-	)
-	val POWER_CHAINSAW_ENHANCED = register(
-		PowerChainsaw(
+	))
+	val POWER_CHAINSAW_ENHANCED = register(PowerChainsaw(
 		identifier = "POWER_CHAINSAW_ENHANCED",
 		displayName = formatToolName("Enhanced", fromHexString("#00FFA1")!!, "Chainsaw"),
 		modLimit = 4,
 		basePowerCapacity = 75_000,
 		model = "tool/power_chainsaw_enhanced",
 		initialBlocksBroken = 100
-	)
-	)
-	val POWER_CHAINSAW_ADVANCED = register(
-		PowerChainsaw(
+	))
+	val POWER_CHAINSAW_ADVANCED = register(PowerChainsaw(
 		identifier = "POWER_CHAINSAW_ADVANCED",
 		displayName = formatToolName("Advanced", fromHexString("#B12BC9")!!, "Chainsaw"),
 		modLimit = 6,
 		basePowerCapacity = 100_000,
 		model = "tool/power_chainsaw_advanced",
 		initialBlocksBroken = 150
-	)
-	)
+	))
 
-	val POWER_HOE_BASIC = register(
-		PowerHoe(
+	val POWER_HOE_BASIC = register(PowerHoe(
 		identifier = "POWER_HOE_BASIC",
 		displayName = formatToolName("Basic", HE_LIGHT_ORANGE, "Hoe"),
 		modLimit = 2,
 		basePowerCapacity = 50_000,
 		model = "tool/power_hoe_basic"
-	)
-	)
+	))
 	val POWER_HOE_ENHANCED = register(
 		PowerHoe(
 		identifier = "POWER_HOE_ENHANCED",
@@ -392,8 +383,7 @@ object CustomItemRegistry : IonServerComponent() {
 		modLimit = 4,
 		basePowerCapacity = 75_000,
 		model = "tool/power_hoe_enhanced"
-	)
-	)
+	))
 	val POWER_HOE_ADVANCED = register(
 		PowerHoe(
 		identifier = "POWER_HOE_ADVANCED",
@@ -401,26 +391,165 @@ object CustomItemRegistry : IonServerComponent() {
 		modLimit = 6,
 		basePowerCapacity = 100_000,
 		model = "tool/power_hoe_advanced"
-	)
-	)
+	))
 
-	val CRATE_PLACER = register(CratePlacer)
+	val POWER_ARMOR_HELMET = register(PowerArmorItem(
+		"POWER_ARMOR_HELMET",
+		ofChildren(text("Power ", GOLD), text("Helmet", GRAY)),
+		"power_armor/power_armor_helmet",
+		EquipmentSlot.HEAD
+	))
+	val POWER_ARMOR_CHESTPLATE = register(PowerArmorItem(
+		"POWER_ARMOR_CHESTPLATE",
+		ofChildren(text("Power ", GOLD), text("Chestplate", GRAY)),
+		"power_armor/power_armor_chestplate",
+		EquipmentSlot.CHEST
+	))
+	val POWER_ARMOR_LEGGINGS = register(PowerArmorItem(
+		"POWER_ARMOR_LEGGINGS",
+		ofChildren(text("Power ", GOLD), text("Leggings", GRAY)),
+		"power_armor/power_armor_leggings",
+		EquipmentSlot.LEGS
+	))
+	val POWER_ARMOR_BOOTS = register(PowerArmorItem(
+		"POWER_ARMOR_BOOTS",
+		ofChildren(text("Power ", GOLD), text("Boots", GRAY)),
+		"power_armor/power_armor_boots",
+		EquipmentSlot.FEET
+	))
 
-	val RANGE_1: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_RANGE_1", "tool/modification/drill_aoe_1", text("Range Addon +1").itemName, text("Expands the working area by 1 block", GRAY).itemName) { ItemModRegistry.AOE_1 })
-	val RANGE_2: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_RANGE_2", "tool/modification/drill_aoe_2", text("Range Addon +2").itemName, text("Expands the working area by 2 blocks", GRAY).itemName) { ItemModRegistry.AOE_2 })
-	val VEIN_MINER_25: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_VEIN_MINER_25", "tool/modification/drill_vein_miner_25", text("Vein Miner").itemName, text("Allows a drill to mine veins of connected blocks, up to 25.", GRAY).itemName) { ItemModRegistry.VEIN_MINER_25 })
-	val SILK_TOUCH_MOD: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_SILK_TOUCH_MOD", "tool/modification/silk_touch", text("Silk Touch Modifier").itemName, text("Applies silk touch to drops", GRAY).itemName, text("Incurs a power usage penalty", RED).itemName) { ItemModRegistry.SILK_TOUCH })
-	val AUTO_SMELT: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_AUTO_SMELT", "tool/modification/auto_smelt", text("Auto Smelt Modifier").itemName, text("Sears the drops before they hit the ground", GRAY).itemName, text("Incurs a power usage penalty", RED).itemName) { ItemModRegistry.AUTO_SMELT })
-	val FORTUNE_1: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FORTUNE_1", "tool/modification/fortune_1", text("Fortune 1 Modifier").itemName, text("Applies fortune 1 touch to drops", GRAY).itemName, text("Incurs a power usage penalty", RED).itemName) { ItemModRegistry.FORTUNE_1 })
-	val FORTUNE_2: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FORTUNE_2", "tool/modification/fortune_2", text("Fortune 2 Modifier").itemName, text("Applies fortune 2 touch to drops", GRAY).itemName, text("Incurs a power usage penalty", RED).itemName) { ItemModRegistry.FORTUNE_2 })
-	val FORTUNE_3: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FORTUNE_3", "tool/modification/fortune_3", text("Fortune 3 Modifier").itemName, text("Applies fortune 3 touch to drops", GRAY).itemName, text("Incurs a power usage penalty", RED).itemName) { ItemModRegistry.FORTUNE_3 })
-	val POWER_CAPACITY_25: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_POWER_CAPACITY_25", "tool/modification/power_capacity_25", text("Small Auxiliary battery").itemName, ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), PowerMachines.prefixComponent, text(25000, GREEN)).itemName) { ItemModRegistry.POWER_CAPACITY_25 })
-	val POWER_CAPACITY_50: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_POWER_CAPACITY_50", "tool/modification/power_capacity_50", text("Medium Auxiliary battery").itemName, ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), PowerMachines.prefixComponent, text(50000, GREEN)).itemName) { ItemModRegistry.POWER_CAPACITY_50 })
-	val AUTO_REPLANT: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_AUTO_REPLANT", "tool/modification/auto_replant", text("Auto Replant Modifier").itemName, text("Automatically plants back harvested crops and cut trees", GRAY).itemName,) { ItemModRegistry.AUTO_REPLANT })
-	val AUTO_COMPOST: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_AUTO_COMPOST", "tool/modification/auto_compost", text("Auto Compost Modifier").itemName, text("Sends applicable drops through a composter, turning them into bonemeal.", GRAY).itemName,) { ItemModRegistry.AUTO_COMPOST })
-	val RANGE_3: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_RANGE_3", "tool/modification/drill_aoe_3", text("Range Addon +3").itemName, text("Expands the working area by 3 blocks", GRAY).itemName) { ItemModRegistry.AOE_3 })
-	val EXTENDED_BAR: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_EXTENDED_BAR", "tool/modification/extended_bar", text("Extended Chainsaw Bar").itemName, text("Allows a chainsaw to cut down larger trees", GRAY).itemName) { ItemModRegistry.EXTENDED_BAR })
-	val FERTILIZER_DISPENSER: ModificationItem = register(ModificationItem("TOOL_MODIFICATION_FERTILIZER_DISPENSER", "tool/modification/fertilizer_dispenser", text("Fertilizer Sprayer").itemName, text("Applies bonemeal to crops in the effected area, if available in the user's inventory", GRAY).itemName) { ItemModRegistry.FERTILIZER_DISPENSER })
+	val ARMOR_MODIFICATION_ENVIRONMENT: ModificationItem = register(ModificationItem(
+		"ARMOR_MODIFICATION_ENVRORNMENT",
+		"power_armor/module/environment",
+		ofChildren(Component.text("Enviornment", GRAY), Component.text(" Module", GOLD)),
+		text("Temp description, please fill in with something proper")
+	) { ItemModRegistry.ENVIRONMENT })
+	val ARMOR_MODIFICATION_NIGHT_VISION: ModificationItem = register(ModificationItem(
+		"ARMOR_MODIFICATION_NIGHT_VISION",
+		"power_armor/module/night_vision",
+		ofChildren(Component.text("Night Vision", GRAY), Component.text(" Module", GOLD)),
+		text("Temp description, please fill in with something proper")
+	) { ItemModRegistry.NIGHT_VISION })
+	val ARMOR_MODIFICATION_PRESSURE_FIELD: ModificationItem = register(ModificationItem(
+		"ARMOR_MODIFICATION_PRESSURE_FIELD",
+		"power_armor/module/pressure_field",
+		ofChildren(Component.text("Pressure Field", GRAY), Component.text(" Module", GOLD)),
+		text("Temp description, please fill in with something proper")
+	) { ItemModRegistry.PRESSURE_FIELD })
+	val ARMOR_MODIFICATION_ROCKET_BOOSTING: ModificationItem = register(ModificationItem(
+		"ARMOR_MODIFICATION_ROCKET_BOOSTING",
+		"power_armor/module/rocket_boosting",
+		ofChildren(Component.text("Rocket Boosting", GRAY), Component.text(" Module", GOLD)),
+		text("Temp description, please fill in with something proper")
+	) { ItemModRegistry.ROCKET_BOOSTING })
+	val ARMOR_MODIFICATION_SHOCK_ABSORBING: ModificationItem = register(ModificationItem(
+		"ARMOR_MODIFICATION_SHOCK_ABSORBING",
+		"power_armor/module/shock_absorbing",
+		ofChildren(Component.text("Shock Absorbing", GRAY), Component.text(" Module", GOLD)),
+		text("Temp description, please fill in with something proper")
+	) { ItemModRegistry.SHOCK_ABSORBING })
+	val ARMOR_MODIFICATION_SPEED_BOOSTING: ModificationItem = register(ModificationItem(
+		"ARMOR_MODIFICATION_SPEED_BOOSTING",
+		"power_armor/module/speed_boosting",
+		ofChildren(Component.text("Speed Boosting", GRAY), Component.text(" Module", GOLD)),
+		text("Temp description, please fill in with something proper")
+	) { ItemModRegistry.SPEED_BOOSTING })
+
+	val RANGE_1: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_RANGE_1",
+		"tool/modification/drill_aoe_1",
+		text("Range Addon +1"),
+		text("Expands the working area by 1 block", GRAY)
+	) { ItemModRegistry.AOE_1 })
+	val RANGE_2: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_RANGE_2",
+		"tool/modification/drill_aoe_2",
+		text("Range Addon +2"),
+		text("Expands the working area by 2 blocks", GRAY)
+	) { ItemModRegistry.AOE_2 })
+	val VEIN_MINER_25: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_VEIN_MINER_25",
+		"tool/modification/drill_vein_miner_25",
+		text("Vein Miner"),
+		text("Allows a drill to mine veins of connected blocks, up to 25.", GRAY)
+	) { ItemModRegistry.VEIN_MINER_25 })
+	val SILK_TOUCH_MOD: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_SILK_TOUCH_MOD",
+		"tool/modification/silk_touch",
+		text("Silk Touch Modifier"),
+		text("Applies silk touch to drops", GRAY),
+		text("Incurs a power usage penalty", RED)
+	) { ItemModRegistry.SILK_TOUCH })
+	val AUTO_SMELT: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_AUTO_SMELT",
+		"tool/modification/auto_smelt",
+		text("Auto Smelt Modifier"),
+		text("Sears the drops before they hit the ground", GRAY),
+		text("Incurs a power usage penalty", RED)
+	) { ItemModRegistry.AUTO_SMELT })
+	val FORTUNE_1: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_FORTUNE_1",
+		"tool/modification/fortune_1",
+		text("Fortune 1 Modifier"),
+		text("Applies fortune 1 touch to drops", GRAY),
+		text("Incurs a power usage penalty", RED)
+	) { ItemModRegistry.FORTUNE_1 })
+	val FORTUNE_2: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_FORTUNE_2",
+		"tool/modification/fortune_2",
+		text("Fortune 2 Modifier"),
+		text("Applies fortune 2 touch to drops", GRAY),
+		text("Incurs a power usage penalty", RED)
+	) { ItemModRegistry.FORTUNE_2 })
+	val FORTUNE_3: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_FORTUNE_3",
+		"tool/modification/fortune_3",
+		text("Fortune 3 Modifier"),
+		text("Applies fortune 3 touch to drops", GRAY),
+		text("Incurs a power usage penalty", RED)
+	) { ItemModRegistry.FORTUNE_3 })
+	val POWER_CAPACITY_25: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_POWER_CAPACITY_25",
+		"tool/modification/power_capacity_25",
+		text("Small Auxiliary battery"),
+		ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), PowerMachines.prefixComponent, text(25000, GREEN))
+	) { ItemModRegistry.POWER_CAPACITY_25 })
+	val POWER_CAPACITY_50: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_POWER_CAPACITY_50",
+		"tool/modification/power_capacity_50",
+		text("Medium Auxiliary battery"),
+		ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), PowerMachines.prefixComponent, text(50000, GREEN))
+	) { ItemModRegistry.POWER_CAPACITY_50 })
+	val AUTO_REPLANT: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_AUTO_REPLANT",
+		"tool/modification/auto_replant",
+		text("Auto Replant Modifier"),
+		text("Automatically plants back harvested crops and cut trees", GRAY)
+	) { ItemModRegistry.AUTO_REPLANT })
+	val AUTO_COMPOST: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_AUTO_COMPOST",
+		"tool/modification/auto_compost",
+		text("Auto Compost Modifier"),
+		text("Sends applicable drops through a composter, turning them into bonemeal.", GRAY)
+	) { ItemModRegistry.AUTO_COMPOST })
+	val RANGE_3: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_RANGE_3",
+		"tool/modification/drill_aoe_3",
+		text("Range Addon +3"),
+		text("Expands the working area by 3 blocks", GRAY)
+	) { ItemModRegistry.AOE_3 })
+	val EXTENDED_BAR: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_EXTENDED_BAR",
+		"tool/modification/extended_bar",
+		text("Extended Chainsaw Bar"),
+		text("Allows a chainsaw to cut down larger trees", GRAY)
+	) { ItemModRegistry.EXTENDED_BAR })
+	val FERTILIZER_DISPENSER: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_FERTILIZER_DISPENSER",
+		"tool/modification/fertilizer_dispenser",
+		text("Fertilizer Sprayer"),
+		text("Applies bonemeal to crops in the effected area, if available in the user's inventory", GRAY)
+	) { ItemModRegistry.FERTILIZER_DISPENSER })
 
 	val PERSONAL_TRANSPORTER = register(PersonalTransporter)
 	// Tools end

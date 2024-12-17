@@ -1,13 +1,10 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.SmeltingResultAttribute
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem as LegacyBlockItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.Material
@@ -55,18 +52,6 @@ object FurnaceListener : SLEventListener() {
 	fun onFurnaceSmeltCustomOre(event: FurnaceSmeltEvent) {
 		val source: ItemStack = event.source
 		val customItem = source.customItem
-
-		// Legacy custom item smelting
-		if (LegacyCustomItems[source] is LegacyBlockItem && customItem == null) {
-			event.result = when (source.itemMeta.customModelData) {
-				1 -> CustomItemRegistry.ALUMINUM_INGOT.constructItemStack()
-				2 -> CustomItemRegistry.CHETHERITE.constructItemStack()
-				3 -> CustomItemRegistry.TITANIUM_INGOT.constructItemStack()
-				4 -> CustomItemRegistry.URANIUM.constructItemStack()
-				else -> ItemStack(Material.AIR)
-			}
-			return
-		}
 
 		// If customItem has the Smeltable interface, get the smeltable customItem result
 		if (customItem != null) {

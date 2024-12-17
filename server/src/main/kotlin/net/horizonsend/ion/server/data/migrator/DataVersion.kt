@@ -17,19 +17,32 @@ class DataVersion private constructor(
 	fun migrateItem(inventory: Inventory, index: Int, itemStack: ItemStack, customItemIdentifier: String) {
 		val context = ItemMigrationContext(inventory, index, itemStack)
 
-		legacyItemMigrators.filter { it.shouldMigrate(itemStack) }
-		legacyItemMigrators.forEach { context.migrate(it) }
-
 		val modernMigrator = customItemMigrators[customItemIdentifier] ?: return
 		context.migrate(modernMigrator)
+	}
+
+	fun migrateItem(inventory: Inventory, index: Int, itemStack: ItemStack) {
+		val context = ItemMigrationContext(inventory, index, itemStack)
+
+		println("Trying to migrate ${itemStack.type} in slot $index")
+
+		legacyItemMigrators.filter { it.shouldMigrate(itemStack) }
+		legacyItemMigrators.forEach { context.migrate(it) }
 	}
 
 	fun migrateInventory(inventory: Inventory) {
 		for ((index, item) in inventory.contents.withIndex()) {
 			if (item == null) continue
-			val customItemIdentifier = item.persistentDataContainer.get(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING) ?: continue
 
-			migrateItem(inventory, index, item, customItemIdentifier)
+			val customItemIdentifier = item.persistentDataContainer.get(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING)
+
+			if (customItemIdentifier != null) {
+				migrateItem(inventory, index, item, customItemIdentifier)
+			} else {
+				println(2)
+				migrateItem(inventory, index, item)
+			}
+
 		}
 	}
 

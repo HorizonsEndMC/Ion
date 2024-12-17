@@ -2,31 +2,29 @@ package net.horizonsend.ion.server.listener.gear
 
 import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.gear.getPower
-import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
-import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorModule
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
+import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
 import net.horizonsend.ion.server.features.gear.removePower
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.action
-import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityToggleGlideEvent
-import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.LeatherArmorMeta
 import java.time.Instant
 import java.util.UUID
 
@@ -46,30 +44,30 @@ object PowerArmorListener : SLEventListener() {
 		val slot: PlayerArmorChangeEvent.SlotType = event.slotType
 
 		Tasks.sync {
-			if (!player.isOnline) {
-				return@sync
-			}
-
-			val item: ItemStack = player.inventory.armorContents[3 - slot.ordinal] ?: return@sync
-			val customItem: CustomItems.PowerArmorItem = CustomItems[item] as? CustomItems.PowerArmorItem ?: return@sync
-
-			val meta = item.itemMeta as LeatherArmorMeta
-			if (meta.displayName != customItem.displayName) {
-				return@sync
-			}
-
-			val nation = PlayerCache[player].nationOid?.let(NationCache::get) ?: return@sync
-			val nationColor = nation.color
-
-			if (meta.color.asRGB() == nationColor) {
-				return@sync
-			}
-
-			val bukkitColor: Color = Color.fromRGB(nationColor)
-			meta.setColor(bukkitColor)
-			item.itemMeta = meta
-			player.updateInventory()
-			player action "&7&oPower armor color changed to match nation color (rename it in an anvil to fix this)"
+//			if (!player.isOnline) {
+//				return@sync
+//			}
+//
+//			val item: ItemStack = player.inventory.armorContents[3 - slot.ordinal] ?: return@sync
+//			val customItem: CustomItems.PowerArmorItem = CustomItems[item] as? CustomItems.PowerArmorItem ?: return@sync
+//
+//			val meta = item.itemMeta as LeatherArmorMeta
+//			if (meta.displayName != customItem.displayName) {
+//				return@sync
+//			}
+//
+//			val nation = PlayerCache[player].nationOid?.let(NationCache::get) ?: return@sync
+//			val nationColor = nation.color
+//
+//			if (meta.color.asRGB() == nationColor) {
+//				return@sync
+//			}
+//
+//			val bukkitColor: Color = Color.fromRGB(nationColor)
+//			meta.setColor(bukkitColor)
+//			item.itemMeta = meta
+//			player.updateInventory()
+//			player action "&7&oPower armor color changed to match nation color (rename it in an anvil to fix this)"
 		}
 	}
 
@@ -78,17 +76,17 @@ object PowerArmorListener : SLEventListener() {
 		if (event.entity !is Player) return
 		val player = event.entity as Player
 		var modifier = 0.0
-		val modules = HashMap<PowerArmorModule, ItemStack>()
+		val modules = HashMap<ItemModification, ItemStack>()
 		val cause = event.cause
 
 		for (item in player.inventory.armorContents) {
-			if (!PowerArmorManager.isPowerArmor(item)) {
-				continue
-			}
+			val customItem = item?.customItem ?: continue
+			if (customItem !is PowerArmorItem) continue
+			if (customItem.hasComponent(POWER_STORAGE)) return continue
+			val powerStorage = customItem.getComponent(POWER_STORAGE)
+			val power = powerStorage.getPower(item)
 
-			if (getPower(item!!) < 100) {
-				continue
-			}
+			if (power < 100) continue
 
 			if (item.enchantments.none()) {
 				modifier += 0.5 / 4
@@ -98,15 +96,15 @@ object PowerArmorListener : SLEventListener() {
 				!player.world.hasFlag(WorldFlag.ARENA) &&
 				!ProtectionListener.isProtectedCity(player.location)
 			) {
-				removePower(item, 100)
+				powerStorage.removePower(item, customItem, 100)
 			}
 
-			for (module in PowerArmorManager.getModules(item)) {
+			for (module in customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(item)) {
 				modules[module] = item
 			}
 		}
 
-		for ((module, moduleItem) in modules) {
+		for ((_, moduleItem) in modules) {
 			if (cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
 				modifier = 0.0
 				if (!player.world.hasFlag(WorldFlag.ARENA)) {
@@ -132,58 +130,21 @@ object PowerArmorListener : SLEventListener() {
 	}
 
 	@EventHandler
-	fun onCraft(event: PrepareItemCraftEvent) {
-		var armor: ItemStack? = null
-		var module: ItemStack? = null
-
-		val matrix = event.inventory.matrix
-
-		for (item in matrix) {
-			if (PowerArmorManager.isPowerArmor(item)) {
-				armor = item
-			} else if (PowerArmorManager.isModule(item)) module = item
-		}
-
-		for (item in matrix) {
-			if (item != null && item !== armor && item !== module) {
-				return
-			}
-		}
-
-		if (armor == null || module == null || module.amount > 1) return
-
-		val newArmor = armor.clone()
-		val meta = newArmor.itemMeta
-		val lore = meta.lore ?: return
-
-		if (lore.stream().anyMatch { s -> s.startsWith("Module: ") }) {
-			return
-		}
-
-		val powerArmorModule = PowerArmorModule[module] ?: return
-
-		if (!powerArmorModule.isCompatible(PowerArmorManager.getPowerArmorType(armor))) {
-			return
-		}
-
-		lore.add("Module: " + powerArmorModule.name)
-		meta.lore = lore
-		newArmor.itemMeta = meta
-		event.inventory.result = newArmor
-	}
-
-	@EventHandler
 	fun onToggleRocketBoosters(event: PlayerToggleSneakEvent) {
 		val player = event.player
-		if(ActiveStarships.findByPilot(player) != null && player.inventory.itemInMainHand.type == Material.CLOCK) return
-		for (item in player.inventory.armorContents) {
-			if (!PowerArmorManager.isPowerArmor(item) || getPower(item!!) == 0) continue
-			for (module in PowerArmorManager.getModules(item)) {
-				if (module == PowerArmorModule.ROCKET_BOOSTING) {
-					PowerArmorManager.toggleGliding(player)
-				}
-			}
-		}
+		if (ActiveStarships.findByPilot(player) != null && player.inventory.itemInMainHand.type == Material.CLOCK) return
+
+		val boots = event.player.inventory.boots ?: return
+		val customItem = boots.customItem
+		if (customItem !is PowerArmorItem) return
+
+		val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(boots)
+		if (!mods.contains(ItemModRegistry.ROCKET_BOOSTING)) return
+
+		val power = customItem.getComponent(POWER_STORAGE).getPower(boots)
+		if (power <= 0) return
+
+		setGliding(player, true)
 	}
 
 	@EventHandler
@@ -191,20 +152,27 @@ object PowerArmorListener : SLEventListener() {
 		val player = event.entity as? Player ?: return
 
 		for (item in player.inventory.armorContents) {
-			if (!PowerArmorManager.isPowerArmor(item) || getPower(item!!) == 0) continue
+			val customItem = item?.customItem ?: continue
 
-			for (module in PowerArmorManager.getModules(item))
-				if (module == PowerArmorModule.SHOCK_ABSORBING) {
-					event.isCancelled = true
-					return
-				}
+			if (customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) return continue
+			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(item)
+
+			if (!mods.contains(ItemModRegistry.SHOCK_ABSORBING)) return continue
+
+			if (customItem.hasComponent(POWER_STORAGE)) return continue
+			val power = customItem.getComponent(POWER_STORAGE).getPower(item)
+
+			if (power <= 0) continue
+
+			event.isCancelled = true
+			return
 		}
 	}
 
 	@EventHandler
 	fun onEntityToggleGlideEvent(event: EntityToggleGlideEvent) {
 		val player = event.entity as? Player ?: return
-		if(player.isGliding && player.isSneaking && PowerArmorManager.glideDisabledPlayers[player.uniqueId] == null) {
+		if(player.isGliding && player.isSneaking && glideDisabledPlayers[player.uniqueId] == null) {
 			event.isCancelled = true
 		}
 	}

@@ -6,14 +6,10 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.isBed
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
-import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
@@ -74,16 +70,5 @@ object InteractListener : SLEventListener() {
 				"Beds are disabled on this server! Use a cryopod instead"
 			)
 		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	fun onBlockPlace(event: BlockPlaceEvent) {
-		val player = event.player
-
-		val hand = event.hand
-		val itemStack = player.inventory.getItem(hand).clone()
-		val item: CustomBlockItem = CustomItems[itemStack] as? CustomBlockItem ?: return
-
-		event.block.location.block.setBlockData(item.customBlock.blockData, true)
 	}
 }

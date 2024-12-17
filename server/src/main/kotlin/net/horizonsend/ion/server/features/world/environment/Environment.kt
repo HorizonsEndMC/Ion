@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.world.environment
 
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.gear.getPower
-import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
-import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorModule
 import net.horizonsend.ion.server.features.gear.removePower
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
@@ -35,8 +36,11 @@ enum class Environment {
 
 		private fun checkPressureField(player: Player): Boolean {
 			val helmet = player.inventory.helmet ?: return false
+			val customItem = helmet.customItem ?: return false
 
-			if (!PowerArmorManager.hasModule(helmet, PowerArmorModule.PRESSURE_FIELD)) return false
+			if (customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) return false
+			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(helmet)
+			if (!mods.contains(ItemModRegistry.PRESSURE_FIELD)) return false
 
 			val powerUsage = 10
 

@@ -1,11 +1,14 @@
 package net.horizonsend.ion.server.features.custom.items
 
+import com.destroystokyo.paper.event.server.ServerTickEndEvent
 import io.papermc.paper.event.block.BlockPreDispenseEvent
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.Listener
+import net.horizonsend.ion.server.features.custom.items.component.TickRecievierModule
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityShootBowEvent
@@ -13,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 
 object NewCustomItemListeners : SLEventListener() {
@@ -22,10 +26,12 @@ object NewCustomItemListeners : SLEventListener() {
 	private val dispenseListeners: MutableMap<CustomItem, MutableSet<Listener<BlockPreDispenseEvent, *>>> = mutableMapOf()
 	private val entityShootBowListeners: MutableMap<CustomItem, MutableSet<Listener<EntityShootBowEvent, *>>> = mutableMapOf()
 
-	private fun <E: Event, T: CustomItem> getListeners(
-		collection: MutableMap<CustomItem, MutableSet<Listener<E, *>>>,
+	private val tickRecievers: MutableMap<CustomItem, MutableSet<TickRecievierModule>> = mutableMapOf()
+
+	private fun <T: CustomItem, Z: Any> getEntries(
+		collection: MutableMap<CustomItem, MutableSet<Z>>,
 		item: T
-	): MutableSet<Listener<E, *>> {
+	): MutableSet<Z> {
 		return collection.getOrPut(item) { mutableSetOf() }
 	}
 
@@ -33,10 +39,11 @@ object NewCustomItemListeners : SLEventListener() {
 		for (newCustomItem in CustomItemRegistry.ALL) {
 			val components = newCustomItem.allComponents()
 
-			components.filterIsInstance<Listener<PlayerInteractEvent, *>>().filterTo(getListeners(interactListeners, newCustomItem)) { it.eventType == PlayerInteractEvent::class }
-			components.filterIsInstance<Listener<PlayerSwapHandItemsEvent, *>>().filterTo(getListeners(swapItemListeners, newCustomItem)) { it.eventType == PlayerSwapHandItemsEvent::class }
-			components.filterIsInstance<Listener<BlockPreDispenseEvent, *>>().filterTo(getListeners(dispenseListeners, newCustomItem)) { it.eventType == BlockPreDispenseEvent::class }
-			components.filterIsInstance<Listener<EntityShootBowEvent, *>>().filterTo(getListeners(entityShootBowListeners, newCustomItem)) { it.eventType == EntityShootBowEvent::class }
+			components.filterIsInstance<Listener<PlayerInteractEvent, *>>().filterTo(getEntries(interactListeners, newCustomItem)) { it.eventType == PlayerInteractEvent::class }
+			components.filterIsInstance<Listener<PlayerSwapHandItemsEvent, *>>().filterTo(getEntries(swapItemListeners, newCustomItem)) { it.eventType == PlayerSwapHandItemsEvent::class }
+			components.filterIsInstance<Listener<BlockPreDispenseEvent, *>>().filterTo(getEntries(dispenseListeners, newCustomItem)) { it.eventType == BlockPreDispenseEvent::class }
+			components.filterIsInstance<Listener<EntityShootBowEvent, *>>().filterTo(getEntries(entityShootBowListeners, newCustomItem)) { it.eventType == EntityShootBowEvent::class }
+			getEntries(tickRecievers, newCustomItem).addAll(components.filterIsInstance<TickRecievierModule>())
 		}
 	}
 
@@ -54,7 +61,7 @@ object NewCustomItemListeners : SLEventListener() {
 		val item = event.item ?: return
 		val customItem = item.customItem ?: return
 
-		val listeners = getListeners(interactListeners, customItem).filter { it.preCheck(event, item) }
+		val listeners = getEntries(interactListeners, customItem).filter { it.preCheck(event, item) }
 
 		if (listeners.isNotEmpty()) {
 			event.isCancelled = true
@@ -67,7 +74,7 @@ object NewCustomItemListeners : SLEventListener() {
 		val offhand = event.entity.equipment?.itemInMainHand ?: return
 		val customItem = offhand.customItem ?: return
 
-		val listeners = getListeners(entityShootBowListeners, customItem)
+		val listeners = getEntries(entityShootBowListeners, customItem)
 
 		if (listeners.isNotEmpty()) {
 			event.isCancelled = true
@@ -81,7 +88,7 @@ object NewCustomItemListeners : SLEventListener() {
 		val itemStack = event.player.inventory.itemInMainHand
 		val customItem = itemStack.customItem ?: return
 
-		val listeners = getListeners(swapItemListeners, customItem)
+		val listeners = getEntries(swapItemListeners, customItem)
 
 		if (listeners.isNotEmpty()) {
 			event.isCancelled = true
@@ -95,11 +102,37 @@ object NewCustomItemListeners : SLEventListener() {
 		if (event.block.type != Material.DISPENSER) return
 		val customItem = event.itemStack.customItem ?: return
 
-		val listeners = getListeners(dispenseListeners, customItem)
+		val listeners = getEntries(dispenseListeners, customItem)
 
 		if (listeners.isNotEmpty()) {
 			event.isCancelled = true
 			listeners.forEach { it.handleEvent(event, event.itemStack) }
+		}
+	}
+
+	@EventHandler
+	fun onServerTickEnd(event: ServerTickEndEvent) = Tasks.async {
+		for (player in Bukkit.getOnlinePlayers()) {
+			val inventory = player.inventory
+
+			val tickedGear = mutableListOf<ItemStack?>()
+			tickedGear.addAll(inventory.armorContents)
+			tickedGear.add(inventory.itemInOffHand)
+			tickedGear.add(inventory.itemInMainHand)
+
+			for (item in tickedGear) {
+				if (item == null) continue
+				val customItem = item.customItem
+				if (customItem == null) continue
+
+				val tickListeners = getEntries(tickRecievers, customItem)
+				if (tickListeners.isEmpty()) continue
+
+				for (module in tickListeners) {
+					if (event.tickNumber % module.interval != 0) continue
+					module.handleTick(player, item, customItem)
+				}
+			}
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.util
 
+import io.papermc.paper.datacomponent.DataComponentType
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.HORIZONSEND_NAMESPACE
@@ -84,6 +85,13 @@ class ItemFactory private constructor(
 
 		fun addModifier(modifier: Consumer<ItemStack>): Builder {
 			this.itemModifiers += modifier
+			return this
+		}
+
+		fun <T: Any> addData(type: DataComponentType.Valued<T>, data: T): Builder {
+			this.itemModifiers += Consumer<ItemStack> {
+				it.setData(type, data)
+			}
 			return this
 		}
 
