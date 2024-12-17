@@ -42,8 +42,6 @@ open class CustomItem(
 		return base
 	}
 
-	fun singleItem() = itemStack(1)
-
 	override fun equals(other: Any?): Boolean {
 		return other === this
 	}

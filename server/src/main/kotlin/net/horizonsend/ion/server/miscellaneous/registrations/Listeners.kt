@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.NewCustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporterManager
-import net.horizonsend.ion.server.features.custom.items.type.blaster.BlasterListeners
+import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.BlasterListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractTractorBeam
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
