@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -26,14 +27,14 @@ class ModificationItem(
 		.setCustomModel(model)
 		.build()
 ) {
-	private val descriptionLines = arrayOf(*description)
+	private val descriptionLines = Array(description.size) { description[it].itemLore }
 
 	override fun assembleLore(itemStack: ItemStack): List<Component> {
 		val applicableTo = CustomItemRegistry.ALL
 			.filter { customItem ->
-				modSupplier.get().applicableTo.contains(customItem::class)
+				modSupplier.get().applicationPredicates.any { predicate -> predicate.canApplyTo(customItem) }
 			}
-			.map { customItem -> customItem.displayName }
+			.map { customItem -> customItem.displayName.itemLore }
 			.toTypedArray()
 
 		return mutableListOf(

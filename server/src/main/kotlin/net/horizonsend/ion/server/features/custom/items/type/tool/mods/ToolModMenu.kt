@@ -193,13 +193,13 @@ class ToolModMenu(
 
 	private fun canAdd(itemStack: ItemStack, player: Player): Boolean {
 		val customItem = itemStack.customItem
-		if (customItem !is net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem) {
+		if (customItem !is ModificationItem) {
 			return false
 		}
 
-		val mod: net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification = customItem.modification
+		val mod: ItemModification = customItem.modification
 
-		if (!mod.applicableTo.contains(this.customItem::class)) {
+		if (!mod.applicationPredicates.any { predicate -> predicate.canApplyTo(this.customItem) }) {
 			player.userError("${mod.displayName.plainText()} cannot be used on this tool!")
 			return false
 		}
