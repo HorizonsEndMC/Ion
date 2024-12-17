@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.data.migrator
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.legacy.LegacyCustomItemMigrator
@@ -7,6 +9,10 @@ import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.Aspec
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.LegacyNameFixer
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
+import net.horizonsend.ion.server.features.gear.getPower
+import net.horizonsend.ion.server.features.gear.powerarmor.LegacyPowerArmorModule
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Chunk
@@ -205,13 +211,154 @@ object DataMigrators : IonServerComponent() {
 				},
 				converter = { MigratorResult.Replacement(CustomItemRegistry.BATTERY_G.constructItemStack()) }
 			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.LEATHER_HELMET
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 1
+						&& it.customItem == null
+				},
+				converter = { old ->
+					val oldMods = old.lore
+						?.filter { it.startsWith("Module: ") }
+						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
+						?.toSet()
+						?: setOf()
+
+					val oldPower = getPower(old)
+
+					val new = CustomItemRegistry.POWER_ARMOR_HELMET.constructItemStack()
+					CustomItemRegistry.POWER_ARMOR_HELMET.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_HELMET, oldMods.toTypedArray())
+					CustomItemRegistry.POWER_ARMOR_HELMET.getComponent(POWER_STORAGE).setPower(CustomItemRegistry.POWER_ARMOR_HELMET, new, oldPower)
+					MigratorResult.Replacement(new)
+				}
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.LEATHER_CHESTPLATE
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 1
+						&& it.customItem == null
+				},
+				converter = { old ->
+					val oldMods = old.lore
+						?.filter { it.startsWith("Module: ") }
+						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
+						?.toSet()
+						?: setOf()
+
+					val oldPower = getPower(old)
+
+					val new = CustomItemRegistry.POWER_ARMOR_CHESTPLATE.constructItemStack()
+					CustomItemRegistry.POWER_ARMOR_CHESTPLATE.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_CHESTPLATE, oldMods.toTypedArray())
+					CustomItemRegistry.POWER_ARMOR_CHESTPLATE.getComponent(POWER_STORAGE).setPower(CustomItemRegistry.POWER_ARMOR_CHESTPLATE, new, oldPower)
+					MigratorResult.Replacement(new)
+				}
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.LEATHER_LEGGINGS
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 1
+						&& it.customItem == null
+				},
+				converter = { old ->
+					val oldMods = old.lore
+						?.filter { it.startsWith("Module: ") }
+						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
+						?.toSet()
+						?: setOf()
+
+					val oldPower = getPower(old)
+
+					val new = CustomItemRegistry.POWER_ARMOR_LEGGINGS.constructItemStack()
+					CustomItemRegistry.POWER_ARMOR_LEGGINGS.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_LEGGINGS, oldMods.toTypedArray())
+					CustomItemRegistry.POWER_ARMOR_LEGGINGS.getComponent(POWER_STORAGE).setPower(CustomItemRegistry.POWER_ARMOR_LEGGINGS, new, oldPower)
+					MigratorResult.Replacement(new)
+				}
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.LEATHER_BOOTS
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 1
+						&& it.customItem == null
+				},
+				converter = { old ->
+					val oldMods = old.lore
+						?.filter { it.startsWith("Module: ") }
+						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
+						?.toSet()
+						?: setOf()
+
+					val oldPower = getPower(old)
+
+					val new = CustomItemRegistry.POWER_ARMOR_BOOTS.constructItemStack()
+					CustomItemRegistry.POWER_ARMOR_BOOTS.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_BOOTS, oldMods.toTypedArray())
+					CustomItemRegistry.POWER_ARMOR_BOOTS.getComponent(POWER_STORAGE).setPower(CustomItemRegistry.POWER_ARMOR_BOOTS, new, oldPower)
+					MigratorResult.Replacement(new)
+				}
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					(it.type == Material.FLINT_AND_STEEL)
+						&& (it.itemMeta.hasCustomModelData())
+						&& (it.itemMeta.customModelData == 1)
+						&& (it.customItem == null)
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ARMOR_MODIFICATION_SHOCK_ABSORBING.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.FLINT_AND_STEEL
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 2
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ARMOR_MODIFICATION_SPEED_BOOSTING.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.FLINT_AND_STEEL
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 3
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ARMOR_MODIFICATION_ROCKET_BOOSTING.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.FLINT_AND_STEEL
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 4
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ARMOR_MODIFICATION_NIGHT_VISION.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					(it.type == Material.FLINT_AND_STEEL).apply { println("Condition 1 $this") }
+						&& (it.itemMeta.hasCustomModelData()).apply { println("Condition 2 $this") }
+						&& (it.itemMeta.customModelData == 5).apply { println("Condition 3 $this") }
+						&& (it.customItem == null).apply { println("Condition 4 $this") }
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ARMOR_MODIFICATION_ENVIRONMENT.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.FLINT_AND_STEEL
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 6
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ARMOR_MODIFICATION_PRESSURE_FIELD.constructItemStack()) }
+			))
 			.build()
 		)
 
 		registerDataVersion(DataVersion
 			.builder(2)
-			.addMigrator(
-				LegacyNameFixer(
+			.addMigrator(LegacyNameFixer(
 				"DETONATOR", "SMOKE_GRENADE", "PUMPKIN_GRENADE", "GUN_BARREL", "CIRCUITRY", "PISTOL_RECEIVER", "RIFLE_RECEIVER",
 				"SMB_RECEIVER", "SNIPER_RECEIVER", "SHOTGUN_RECEIVER", "CANNON_RECEIVER", "ALUMINUM_INGOT", "ALUMINUM_BLOCK", "RAW_ALUMINUM_BLOCK",
 				"CHETHERITE", "CHETHERITE_BLOCK", "TITANIUM_INGOT", "TITANIUM_BLOCK", "RAW_TITANIUM_BLOCK", "URANIUM", "URANIUM_BLOCK",
@@ -222,51 +369,50 @@ object DataMigrators : IonServerComponent() {
 				"REINFORCED_FRAME", "REACTOR_FRAME", "PROGRESS_HOLDER", "BATTLECRUISER_REACTOR_CORE", "BARGE_REACTOR_CORE", "CRUISER_REACTOR_CORE", "UNLOADED_SHELL",
 				"LOADED_SHELL", "UNCHARGED_SHELL", "CHARGED_SHELL", "ARSENAL_MISSILE", "PUMPKIN_GRENADE", "UNLOADED_ARSENAL_MISSILE", "ACTIVATED_ARSENAL_MISSILE",
 				"GAS_CANISTER_EMPTY",
-			)
-			)
-			.addMigrator(
-				AspectMigrator
+			))
+			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_RIFLE)
 				.addAdditionalIdentifier("RIFLE")
 				.setModel("weapon/blaster/rifle")
 				.pullLore(CustomItemRegistry.BLASTER_RIFLE)
 				.changeIdentifier("RIFLE", "BLASTER_RIFLE")
+				.setDataComponent(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 				.build()
 			)
-			.addMigrator(
-				AspectMigrator
+			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_PISTOL)
 				.addAdditionalIdentifier("PISTOL")
 				.setModel("weapon/blaster/pistol")
 				.pullLore(CustomItemRegistry.BLASTER_PISTOL)
 				.changeIdentifier("PISTOL", "BLASTER_PISTOL")
+				.setDataComponent(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 				.build()
 			)
-			.addMigrator(
-				AspectMigrator
+			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_SHOTGUN)
 				.addAdditionalIdentifier("SHOTGUN")
 				.setModel("weapon/blaster/shotgun")
 				.pullLore(CustomItemRegistry.BLASTER_SHOTGUN)
 				.changeIdentifier("SHOTGUN", "BLASTER_SHOTGUN")
+				.setDataComponent(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 				.build()
 			)
-			.addMigrator(
-				AspectMigrator
+			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_SNIPER)
 				.addAdditionalIdentifier("SNIPER")
 				.setModel("weapon/blaster/sniper")
 				.pullLore(CustomItemRegistry.BLASTER_SNIPER)
 				.changeIdentifier("SNIPER", "BLASTER_SNIPER")
+				.setDataComponent(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 				.build()
 			)
-			.addMigrator(
-				AspectMigrator
+			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.BLASTER_CANNON)
 				.addAdditionalIdentifier("CANNON")
 				.setModel("weapon/blaster/cannon")
 				.pullLore(CustomItemRegistry.BLASTER_CANNON)
 				.changeIdentifier("CANNON", "BLASTER_CANNON")
+				.setDataComponent(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 				.build()
 			)
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.POWER_DRILL_BASIC))

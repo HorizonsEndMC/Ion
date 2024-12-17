@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.type.blaster
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.alert
@@ -20,6 +22,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source.PLAYER
 import net.kyori.adventure.sound.Sound.sound
@@ -52,6 +55,8 @@ open class Blaster<T : Balancing>(
 	val magazineComponent = MagazineType(balancingSupplier) { CustomItemRegistry.getByIdentifier(balancing.magazineIdentifier)!! }
 
 	override fun decorateItemStack(base: ItemStack) {
+		// Clear base item attributes
+		base.updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 		ammoComponent.setAmmo(base, this, balancing.capacity)
 	}
 

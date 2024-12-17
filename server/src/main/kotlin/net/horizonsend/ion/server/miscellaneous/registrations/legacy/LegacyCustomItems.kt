@@ -15,16 +15,10 @@ import org.bukkit.ChatColor.BLUE
 import org.bukkit.ChatColor.DARK_AQUA
 import org.bukkit.ChatColor.DARK_PURPLE
 import org.bukkit.ChatColor.GOLD
-import org.bukkit.ChatColor.GRAY
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.RED
 import org.bukkit.ChatColor.YELLOW
 import org.bukkit.Material
-import org.bukkit.Material.FLINT_AND_STEEL
-import org.bukkit.Material.LEATHER_BOOTS
-import org.bukkit.Material.LEATHER_CHESTPLATE
-import org.bukkit.Material.LEATHER_HELMET
-import org.bukkit.Material.LEATHER_LEGGINGS
 import org.bukkit.Material.SHIELD
 import org.bukkit.inventory.ItemStack
 
@@ -76,13 +70,6 @@ open class PoweredCustomItem(
 	}
 }
 
-class CustomBlockItem(id: String, displayName: String, material: Material, model: Int, val customBlockId: String) :
-	CustomItem(id, displayName, material, model, false) {
-
-	val customBlock: CustomBlock
-		get() = CustomBlocks[customBlockId] ?: error("Custom block $customBlockId not found for custom item $id")
-}
-
 @Suppress("unused")
 object CustomItems {
 	private val idMap = mutableMapOf<String, CustomItem>()
@@ -93,31 +80,6 @@ object CustomItems {
 		modelMap[item.material, item.model] = item
 		return item
 	}
-
-	private fun makeItem(
-		id: String,
-		name: String,
-		mat: Material,
-		model: Int,
-		unbreakable: Boolean = false
-	): CustomItem = register(CustomItem(id, name, mat, model, unbreakable))
-
-	private fun makePoweredItem(
-		id: String,
-		displayName: String,
-		material: Material,
-		model: Int,
-		maxPower: Int,
-		unbreakable: Boolean = false
-	): PoweredCustomItem = register(PoweredCustomItem(id, displayName, material, model, unbreakable, maxPower))
-
-	private fun makeBlockItem(
-		id: String,
-		displayName: String,
-		material: Material,
-		model: Int,
-		blockId: String
-	): CustomBlockItem = register(CustomBlockItem(id, displayName, material, model, blockId))
 
 	operator fun get(id: String?): CustomItem? = idMap[id]
 
@@ -148,42 +110,4 @@ object CustomItems {
 	val ENERGY_SWORD_PINK = register(EnergySwordItem("energy_sword_pink", "<#FFC0CB>Pink<yellow> Energy<dark_aqua> Sword", SHIELD, 7, useMiniMessage = true))
 	val ENERGY_SWORD_BLACK = register(EnergySwordItem("energy_sword_black", "<black>Black<yellow> Energy<dark_aqua> Sword", SHIELD, 8, useMiniMessage = true))
 	//endregion Energy Swords
-
-	//region Power Armor
-	private fun registerPowerArmor(piece: String, pieceName: String, material: Material): PowerArmorItem = register(
-		PowerArmorItem("power_armor_$piece", "${GOLD}Power$GRAY $pieceName", material, 1, 50000)
-	)
-
-	class PowerArmorItem(
-		id: String,
-		displayName: String,
-		material: Material,
-		model: Int,
-		maxPower: Int
-	) : PoweredCustomItem(id, displayName, material, model, true, maxPower)
-
-	val POWER_ARMOR_HELMET = registerPowerArmor("helmet", "Helmet", LEATHER_HELMET)
-	val POWER_ARMOR_CHESTPLATE = registerPowerArmor("chestplate", "Chestplate", LEATHER_CHESTPLATE)
-	val POWER_ARMOR_LEGGINGS = registerPowerArmor("leggings", "Leggings", LEATHER_LEGGINGS)
-	val POWER_ARMOR_BOOTS = registerPowerArmor("boots", "Boots", LEATHER_BOOTS)
-	//endregion Power Armor
-
-	//region Power Modules
-	private fun registerModule(type: String, typeName: String, model: Int): PowerModuleItem =
-		register(PowerModuleItem("power_module_$type", "$GRAY$typeName$GOLD Module", FLINT_AND_STEEL, model))
-
-	class PowerModuleItem(
-		id: String,
-		displayName: String,
-		material: Material,
-		model: Int
-	) : CustomItem(id, displayName, material, model, true)
-
-	val POWER_MODULE_SHOCK_ABSORBING = registerModule("shock_absorbing", "Shock Absorbing", 1)
-	val POWER_MODULE_SPEED_BOOSTING = registerModule("speed_boosting", "Speed Boosting", 2)
-	val POWER_MODULE_ROCKET_BOOSTING = registerModule("rocket_boosting", "Rocket Boosting", 3)
-	val POWER_MODULE_NIGHT_VISION = registerModule("night_vision", "Night Vision", 4)
-	val POWER_MODULE_ENVIRONMENT = registerModule("environment", "Environment", 5)
-	val POWER_MODULE_PRESSURE_FIELD = registerModule("pressure_field", "Pressure Field", 6)
-	//endregion Power Modules
 }

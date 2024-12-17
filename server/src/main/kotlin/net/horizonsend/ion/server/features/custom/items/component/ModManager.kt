@@ -32,7 +32,7 @@ class ModManager(val maxMods: Int) : CustomItemComponent, LoreManager {
 		val list = mutableListOf(ofChildren(modPrefix, text(maxMods, HE_LIGHT_GRAY), text("):", HE_MEDIUM_GRAY)).itemLore)
 
 		val mods = getMods(itemStack)
-		mods.forEach { list.add(ofChildren(namePrefix, it.displayName)) }
+		mods.forEach { list.add(ofChildren(namePrefix, it.displayName).itemLore) }
 
 		return list
 	}
