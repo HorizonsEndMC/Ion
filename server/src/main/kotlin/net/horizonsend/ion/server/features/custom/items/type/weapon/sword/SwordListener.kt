@@ -1,13 +1,12 @@
-package net.horizonsend.ion.server.features.gear
+package net.horizonsend.ion.server.features.custom.items.type.weapon.sword
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
-import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 
-object Gear : IonServerComponent() {
+object SwordListener : IonServerComponent() {
 	override fun onEnable() {
 		// Energy sword idle sound
 		// Use async task and while loop with thread sleep so when it lags it doesnt sound weird
