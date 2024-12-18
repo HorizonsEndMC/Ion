@@ -2,10 +2,14 @@ package net.horizonsend.ion.server.features.custom.items.component
 
 import io.papermc.paper.event.block.BlockPreDispenseEvent
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
+import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Event
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
+import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.ItemStack
@@ -72,6 +76,45 @@ class Listener<E: Event, T: CustomItem>(
 		inline fun <reified T: CustomItem> entityShootBowListener(
 			customItem: T,
 			noinline handleEvent: (EntityShootBowEvent, T, ItemStack) -> Unit
-		): Listener<EntityShootBowEvent, T> = Listener(customItem, EntityShootBowEvent::class,eventReceiver =  handleEvent)
+		): Listener<EntityShootBowEvent, T> = Listener(customItem, EntityShootBowEvent::class, eventReceiver =  handleEvent)
+
+		inline fun <reified T: CustomItem> prepareCraftListener(
+			customItem: T,
+			noinline handleEvent: (PrepareItemCraftEvent, T, ItemStack) -> Unit
+		): Listener<PrepareItemCraftEvent, T> = Listener(customItem, PrepareItemCraftEvent::class, eventReceiver =  handleEvent)
+
+		inline fun <reified T: CustomItem> damageEntityListener(
+			customItem: T,
+			noinline handleEvent: (EntityDamageByEntityEvent, T, ItemStack) -> Unit
+		): Listener<EntityDamageByEntityEvent, T> = Listener(
+			customItem,
+			EntityDamageByEntityEvent::class,
+			preCheck = { event, customItem, itemStack ->
+				val damager = event.damager as? LivingEntity ?: return@Listener false
+				val itemInHand = damager.equipment?.itemInMainHand ?: return@Listener false
+				itemInHand.customItem == customItem
+			},
+			eventReceiver =  handleEvent
+		)
+
+		inline fun <reified T: CustomItem> damagedHoldingListener(
+			customItem: T,
+			noinline handleEvent: (EntityDamageByEntityEvent, T, ItemStack) -> Unit
+		): Listener<EntityDamageByEntityEvent, T> = Listener(
+			customItem,
+			EntityDamageByEntityEvent::class,
+			preCheck = { event, customItem, itemStack ->
+				val damaged = event.entity as? LivingEntity ?: return@Listener false
+
+				val itemInMainHand = damaged.equipment?.itemInMainHand
+				val mainHandcustomItem = itemInMainHand?.customItem
+
+				val itemInOffHand = damaged.equipment?.itemInOffHand
+				val offHandcustomItem = itemInOffHand?.customItem
+
+				(itemInOffHand != null && offHandcustomItem != null) || (itemInMainHand != null && mainHandcustomItem != null)
+			},
+			eventReceiver =  handleEvent
+		)
 	}
 }
