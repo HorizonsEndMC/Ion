@@ -434,37 +434,37 @@ object CustomItemRegistry : IonServerComponent() {
 		"ARMOR_MODIFICATION_ENVRORNMENT",
 		"power_armor/module/environment",
 		ofChildren(Component.text("Enviornment", GRAY), Component.text(" Module", GOLD)),
-		text("Temp description, please fill in with something proper")
+		text("Allows the user to survive inhospitable planetary enviornments.")
 	) { ItemModRegistry.ENVIRONMENT })
 	val ARMOR_MODIFICATION_NIGHT_VISION: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_NIGHT_VISION",
 		"power_armor/module/night_vision",
 		ofChildren(Component.text("Night Vision", GRAY), Component.text(" Module", GOLD)),
-		text("Temp description, please fill in with something proper")
+		text("Allows the user to see in dark enviornments. ")
 	) { ItemModRegistry.NIGHT_VISION })
 	val ARMOR_MODIFICATION_PRESSURE_FIELD: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_PRESSURE_FIELD",
 		"power_armor/module/pressure_field",
 		ofChildren(Component.text("Pressure Field", GRAY), Component.text(" Module", GOLD)),
-		text("Temp description, please fill in with something proper")
+		text("Allows the user to breathe in space.")
 	) { ItemModRegistry.PRESSURE_FIELD })
 	val ARMOR_MODIFICATION_ROCKET_BOOSTING: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_ROCKET_BOOSTING",
 		"power_armor/module/rocket_boosting",
 		ofChildren(Component.text("Rocket Boosting", GRAY), Component.text(" Module", GOLD)),
-		text("Temp description, please fill in with something proper")
+		text("Allows propelled flight.")
 	) { ItemModRegistry.ROCKET_BOOSTING })
 	val ARMOR_MODIFICATION_SHOCK_ABSORBING: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_SHOCK_ABSORBING",
 		"power_armor/module/shock_absorbing",
 		ofChildren(Component.text("Shock Absorbing", GRAY), Component.text(" Module", GOLD)),
-		text("Temp description, please fill in with something proper")
+		text("Reduces knockback.")
 	) { ItemModRegistry.SHOCK_ABSORBING })
 	val ARMOR_MODIFICATION_SPEED_BOOSTING: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_SPEED_BOOSTING",
 		"power_armor/module/speed_boosting",
 		ofChildren(Component.text("Speed Boosting", GRAY), Component.text(" Module", GOLD)),
-		text("Temp description, please fill in with something proper")
+		text("Boosts the user's running speed.")
 	) { ItemModRegistry.SPEED_BOOSTING })
 
 	val RANGE_1: ModificationItem = register(ModificationItem(
