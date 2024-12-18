@@ -2,33 +2,15 @@ package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_INGOT
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_INGOT
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem as LegacyCustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_BLUE
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_GREEN
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_ORANGE
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_PINK
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_PURPLE
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_RED
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_YELLOW
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.Material.COAL
 import org.bukkit.Material.COPPER_INGOT
-import org.bukkit.Material.DIAMOND
-import org.bukkit.Material.EMERALD
 import org.bukkit.Material.ENDER_PEARL
 import org.bukkit.Material.END_PORTAL_FRAME
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.END_STONE
-import org.bukkit.Material.GLASS_PANE
-import org.bukkit.Material.PINK_TULIP
 import org.bukkit.Material.PRISMARINE_CRYSTALS
-import org.bukkit.Material.REDSTONE
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.WARPED_PLANKS
 import org.bukkit.NamespacedKey
@@ -41,7 +23,6 @@ import org.bukkit.inventory.ShapelessRecipe
 object CustomRecipes : IonServerComponent() {
 	override fun onEnable() {
 		Tasks.syncDelay(1) {
-			registerSwordRecipes()
 			registerWireRecipe()
 			registerSeaLanternRecipe()
 			registerEndPortalFrameRecipe()
@@ -106,39 +87,8 @@ object CustomRecipes : IonServerComponent() {
 		}
 	}
 
-	private fun createRecipe(
-		item: LegacyCustomItem,
-		vararg shape: String,
-		ingredients: Map<Char, RecipeChoice>,
-		amount: Int = 1
-	): ShapedRecipe = registerShapedRecipe(item.id, item.itemStack(amount), *shape, ingredients = ingredients)
-
-	private fun customItemChoice(customItem: CustomItem): RecipeChoice {
-		return RecipeChoice.ExactChoice(customItem.constructItemStack())
-	}
-
 	private fun materialChoice(material: Material): RecipeChoice {
 		return RecipeChoice.MaterialChoice(material)
-	}
-
-	private fun registerSwordRecipes() = mapOf(
-		ENERGY_SWORD_BLUE to materialChoice(DIAMOND),
-		ENERGY_SWORD_RED to materialChoice(REDSTONE),
-		ENERGY_SWORD_YELLOW to materialChoice(COAL),
-		ENERGY_SWORD_GREEN to materialChoice(EMERALD),
-		ENERGY_SWORD_PURPLE to customItemChoice(CHETHERITE),
-		ENERGY_SWORD_ORANGE to materialChoice(COPPER_INGOT),
-		ENERGY_SWORD_PINK to materialChoice(PINK_TULIP)
-	).forEach { (sword, specialItem) ->
-		createRecipe(
-			sword, "aga", "a*a", "ata",
-			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM_INGOT),
-				'g' to materialChoice(GLASS_PANE),
-				'*' to specialItem,
-				't' to customItemChoice(TITANIUM_INGOT)
-			)
-		)
 	}
 
 	private fun registerWireRecipe() {
