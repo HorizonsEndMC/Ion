@@ -12,11 +12,9 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
-import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
-import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.input.DirectControlHandler
 import net.horizonsend.ion.server.features.starship.control.input.DirecterControlHandler
 import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightHandler
@@ -207,7 +205,7 @@ object StarshipDebugCommand : SLCommand() {
 		val controller = ship.controller as? ActivePlayerController ?: fail { "bruh" }
 		type.apply(controller)
 	}
-
+	@Suppress("unused") // entrypoints
 	enum class MovementType {
 		SHIFT_FLIGHT {
 			override fun apply(controller: ActivePlayerController) {

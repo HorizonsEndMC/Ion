@@ -28,17 +28,19 @@ class DirecterControlHandler(controller: PlayerController) : PlayerMovementInput
 		}
 	}
 
-	override fun handleSneak(event: PlayerToggleSneakEvent) {
-		event.isCancelled = true
-		move(Vec3i(0, -1, 0))
-	}
+	override fun handleSneak(event: PlayerToggleSneakEvent) {}
 
 	override fun handleJump(event: PlayerJumpEvent) {
 		event.isCancelled = true
 		move(Vec3i(0, 1, 0))
 	}
 
-	override fun tick() {}
+	override fun tick() {
+		val now = System.currentTimeMillis()
+		if (now - starship.lastManualMove < starship.manualMoveCooldownMillis) return
+
+		if (controller.player.isSneaking) move(Vec3i(0, -1, 0))
+	}
 
 	fun move(deltaV: Vec3i) {
 		val now = System.currentTimeMillis()
