@@ -189,7 +189,7 @@ object DataMigrators : IonServerComponent() {
 						&& it.itemMeta.customModelData == 7
 						&& it.customItem == null
 				},
-				converter = { MigratorResult.Replacement(CustomItemRegistry.BATTERY_A.constructItemStack()) }
+				converter = { MigratorResult.Replacement(CustomItemRegistry.BATTERY_A.constructItemStack(it.amount)) }
 			))
 			.addMigrator(LegacyCustomItemMigrator(
 				predicate = {
@@ -198,7 +198,7 @@ object DataMigrators : IonServerComponent() {
 						&& it.itemMeta.customModelData == 8
 						&& it.customItem == null
 				},
-				converter = { MigratorResult.Replacement(CustomItemRegistry.BATTERY_M.constructItemStack()) }
+				converter = { MigratorResult.Replacement(CustomItemRegistry.BATTERY_M.constructItemStack(it.amount)) }
 			))
 			.addMigrator(LegacyCustomItemMigrator(
 				predicate = {
@@ -207,7 +207,7 @@ object DataMigrators : IonServerComponent() {
 						&& it.itemMeta.customModelData == 9
 						&& it.customItem == null
 				},
-				converter = { MigratorResult.Replacement(CustomItemRegistry.BATTERY_G.constructItemStack()) }
+				converter = { MigratorResult.Replacement(CustomItemRegistry.BATTERY_G.constructItemStack(it.amount)) }
 			))
 			.addMigrator(LegacyCustomItemMigrator(
 				predicate = {
