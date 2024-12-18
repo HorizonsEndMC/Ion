@@ -430,18 +430,18 @@ enum class StarshipType(
 	TANK(
 		displayName = "Tank",
 		icon = SidebarIcon.STARFIGHTER_ICON.text,
-		minSize = 150,
+		minSize = 50,
 		maxSize = 500,
-		minLevel = 1,
+		minLevel = 100,
 		containerPercent = 0.025,
-		crateLimitMultiplier = 0.5,
+		crateLimitMultiplier = 0.0,
 		concretePercent = 0.0,
 		menuItemRaw = { CustomItemRegistry.GAS_CANISTER_EMPTY.constructItemStack() },
 		typeCategory = TypeCategory.SPECIALTY,
 		color = "#ff8000",
-		overridePermission = "ion.ships.override.1",
+		overridePermission = "ion.ships.tank",
 		dynmapIcon = "starfighter",
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::starfighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::tank
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
