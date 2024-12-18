@@ -10,11 +10,9 @@ import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.Legac
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
-import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
-import net.horizonsend.ion.server.features.gear.getPower
-import net.horizonsend.ion.server.features.gear.powerarmor.LegacyPowerArmorModule
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.LegacyPowerArmorModule
 import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -219,17 +217,15 @@ object DataMigrators : IonServerComponent() {
 						&& it.customItem == null
 				},
 				converter = { old ->
+					@Suppress("DEPRECATION")
 					val oldMods = old.lore
 						?.filter { it.startsWith("Module: ") }
 						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
 						?.toSet()
 						?: setOf()
 
-					val oldPower = getPower(old)
-
 					val new = CustomItemRegistry.POWER_ARMOR_HELMET.constructItemStack()
 					CustomItemRegistry.POWER_ARMOR_HELMET.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_HELMET, oldMods.toTypedArray())
-					CustomItemRegistry.POWER_ARMOR_HELMET.getComponent(POWER_STORAGE).setPower(CustomItemRegistry.POWER_ARMOR_HELMET, new, oldPower)
 					MigratorResult.Replacement(new)
 				}
 			))
@@ -241,17 +237,15 @@ object DataMigrators : IonServerComponent() {
 						&& it.customItem == null
 				},
 				converter = { old ->
+					@Suppress("DEPRECATION")
 					val oldMods = old.lore
 						?.filter { it.startsWith("Module: ") }
 						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
 						?.toSet()
 						?: setOf()
 
-					val oldPower = getPower(old)
-
 					val new = CustomItemRegistry.POWER_ARMOR_CHESTPLATE.constructItemStack()
 					CustomItemRegistry.POWER_ARMOR_CHESTPLATE.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_CHESTPLATE, oldMods.toTypedArray())
-					CustomItemRegistry.POWER_ARMOR_CHESTPLATE.getComponent(POWER_STORAGE).setPower(CustomItemRegistry.POWER_ARMOR_CHESTPLATE, new, oldPower)
 					MigratorResult.Replacement(new)
 				}
 			))
@@ -263,17 +257,15 @@ object DataMigrators : IonServerComponent() {
 						&& it.customItem == null
 				},
 				converter = { old ->
+					@Suppress("DEPRECATION")
 					val oldMods = old.lore
 						?.filter { it.startsWith("Module: ") }
 						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
 						?.toSet()
 						?: setOf()
 
-					val oldPower = getPower(old)
-
 					val new = CustomItemRegistry.POWER_ARMOR_LEGGINGS.constructItemStack()
 					CustomItemRegistry.POWER_ARMOR_LEGGINGS.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_LEGGINGS, oldMods.toTypedArray())
-					CustomItemRegistry.POWER_ARMOR_LEGGINGS.getComponent(POWER_STORAGE).setPower(CustomItemRegistry.POWER_ARMOR_LEGGINGS, new, oldPower)
 					MigratorResult.Replacement(new)
 				}
 			))
@@ -285,17 +277,15 @@ object DataMigrators : IonServerComponent() {
 						&& it.customItem == null
 				},
 				converter = { old ->
+					@Suppress("DEPRECATION")
 					val oldMods = old.lore
 						?.filter { it.startsWith("Module: ") }
 						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
 						?.toSet()
 						?: setOf()
 
-					val oldPower = getPower(old)
-
 					val new = CustomItemRegistry.POWER_ARMOR_BOOTS.constructItemStack()
 					CustomItemRegistry.POWER_ARMOR_BOOTS.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_BOOTS, oldMods.toTypedArray())
-					CustomItemRegistry.POWER_ARMOR_BOOTS.getComponent(POWER_STORAGE).setPower(CustomItemRegistry.POWER_ARMOR_BOOTS, new, oldPower)
 					MigratorResult.Replacement(new)
 				}
 			))
