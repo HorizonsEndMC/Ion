@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blaster
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Magazine
+import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.stackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem
@@ -45,8 +46,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.BLACK
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
+import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -417,6 +420,15 @@ object CustomItemRegistry : IonServerComponent() {
 		"power_armor/power_armor_boots",
 		EquipmentSlot.FEET
 	))
+
+	val ENERGY_SWORD_BLUE = register(EnergySword("BLUE", BLUE))
+	val ENERGY_SWORD_RED = register(EnergySword("RED", RED))
+	val ENERGY_SWORD_YELLOW = register(EnergySword("YELLOW", YELLOW))
+	val ENERGY_SWORD_GREEN = register(EnergySword("GREEN", GREEN))
+	val ENERGY_SWORD_PURPLE = register(EnergySword("PURPLE", DARK_PURPLE))
+	val ENERGY_SWORD_ORANGE = register(EnergySword("ORANGE", fromHexString("#FF5F15")!!))
+	val ENERGY_SWORD_PINK = register(EnergySword("PINK", fromHexString("#FFC0CB")!!))
+	val ENERGY_SWORD_BLACK = register(EnergySword("BLACK", BLACK))
 
 	val ARMOR_MODIFICATION_ENVIRONMENT: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_ENVRORNMENT",

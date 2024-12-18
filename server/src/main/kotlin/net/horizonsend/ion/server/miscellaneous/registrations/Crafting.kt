@@ -34,6 +34,13 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CIRCU
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CRATE_PLACER
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.DETONATOR
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_BLUE
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_GREEN
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_ORANGE
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_PINK
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_PURPLE
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_RED
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_YELLOW
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.EXTENDED_BAR
@@ -137,6 +144,7 @@ import org.bukkit.Material.DARK_PRISMARINE
 import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DISPENSER
+import org.bukkit.Material.EMERALD
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.ENCHANTED_BOOK
 import org.bukkit.Material.FEATHER
@@ -751,6 +759,22 @@ object Crafting : IonServerComponent() {
 		registerPowerArmorModule(ARMOR_MODIFICATION_NIGHT_VISION, RecipeChoice.MaterialChoice(SPIDER_EYE))
 		registerPowerArmorModule(ARMOR_MODIFICATION_ENVIRONMENT, RecipeChoice.MaterialChoice(CHAINMAIL_HELMET))
 		registerPowerArmorModule(ARMOR_MODIFICATION_PRESSURE_FIELD, RecipeChoice.ExactChoice(GAS_CANISTER_EMPTY.constructItemStack()))
+
+		fun registerSwordRecipes(sword: CustomItem, choice: RecipeChoice) = shaped(sword.identifier.lowercase(), sword) {
+			shape("aga", "a*a", "ata")
+			setIngredient('a', ALUMINUM_INGOT)
+			setIngredient('g', GLASS_PANE)
+			setIngredient('*', choice)
+			setIngredient('t', TITANIUM_INGOT)
+		}
+
+		registerSwordRecipes(ENERGY_SWORD_BLUE, RecipeChoice.MaterialChoice(DIAMOND))
+		registerSwordRecipes(ENERGY_SWORD_RED, RecipeChoice.MaterialChoice(REDSTONE))
+		registerSwordRecipes(ENERGY_SWORD_YELLOW, RecipeChoice.MaterialChoice(COAL))
+		registerSwordRecipes(ENERGY_SWORD_GREEN, RecipeChoice.MaterialChoice(EMERALD))
+		registerSwordRecipes(ENERGY_SWORD_PURPLE, ExactChoice(CHETHERITE.constructItemStack()))
+		registerSwordRecipes(ENERGY_SWORD_ORANGE, RecipeChoice.MaterialChoice(COPPER_INGOT))
+		registerSwordRecipes(ENERGY_SWORD_PINK, RecipeChoice.MaterialChoice(PINK_TULIP))
 	}
 
 	// Different names due to signature problems from type erasure

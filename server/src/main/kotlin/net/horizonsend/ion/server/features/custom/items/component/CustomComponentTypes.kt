@@ -5,7 +5,9 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomItemComp
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager.ComponentTypeData
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager.ComponentTypeData.AllowMultiple
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager.ComponentTypeData.OnlyOne
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
+import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 
@@ -61,9 +63,24 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		val LISTENER_PLAYER_SWAP_HANDS = newComponentType<Listener<PlayerSwapHandItemsEvent, *>, AllowMultiple<Listener<PlayerSwapHandItemsEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
 
 		/**
-		 * General interact listener
+		 * Called when this item is dispensed
 		 **/
 		val LISTENER_DISPENSE = newComponentType<Listener<BlockPreDispenseEvent, *>, AllowMultiple<Listener<BlockPreDispenseEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
+
+		/**
+		 * Calls when someone attempts to craft this item
+		 **/
+		val LISTENER_PREPARE_CRAFT = newComponentType<Listener<PrepareItemCraftEvent, *>, AllowMultiple<Listener<PrepareItemCraftEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
+
+		/**
+		 * Called when someone is damaged by this item
+		 **/
+		val LISTENER_DAMAGE_ENTITY = newComponentType<Listener<EntityDamageByEntityEvent, *>, AllowMultiple<Listener<EntityDamageByEntityEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
+
+		/**
+		 * Called when someone is damaged while holding this item
+		 **/
+		val LISTENER_DAMAGED_HOLDING = newComponentType<Listener<EntityDamageByEntityEvent, *>, AllowMultiple<Listener<EntityDamageByEntityEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
 
 		/**
 		 * General interact listener

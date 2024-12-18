@@ -9,9 +9,12 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
+import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
@@ -25,6 +28,8 @@ object NewCustomItemListeners : SLEventListener() {
 	private val swapItemListeners: MutableMap<CustomItem, MutableSet<Listener<PlayerSwapHandItemsEvent, *>>> = mutableMapOf()
 	private val dispenseListeners: MutableMap<CustomItem, MutableSet<Listener<BlockPreDispenseEvent, *>>> = mutableMapOf()
 	private val entityShootBowListeners: MutableMap<CustomItem, MutableSet<Listener<EntityShootBowEvent, *>>> = mutableMapOf()
+	private val craftListeners: MutableMap<CustomItem, MutableSet<Listener<PrepareItemCraftEvent, *>>> = mutableMapOf()
+	private val damageEntityListeners: MutableMap<CustomItem, MutableSet<Listener<EntityDamageByEntityEvent, *>>> = mutableMapOf()
 
 	private val tickRecievers: MutableMap<CustomItem, MutableSet<TickRecievierModule>> = mutableMapOf()
 
@@ -43,6 +48,8 @@ object NewCustomItemListeners : SLEventListener() {
 			components.filterIsInstance<Listener<PlayerSwapHandItemsEvent, *>>().filterTo(getEntries(swapItemListeners, newCustomItem)) { it.eventType == PlayerSwapHandItemsEvent::class }
 			components.filterIsInstance<Listener<BlockPreDispenseEvent, *>>().filterTo(getEntries(dispenseListeners, newCustomItem)) { it.eventType == BlockPreDispenseEvent::class }
 			components.filterIsInstance<Listener<EntityShootBowEvent, *>>().filterTo(getEntries(entityShootBowListeners, newCustomItem)) { it.eventType == EntityShootBowEvent::class }
+			components.filterIsInstance<Listener<PrepareItemCraftEvent, *>>().filterTo(getEntries(craftListeners, newCustomItem)) { it.eventType == PrepareItemCraftEvent::class }
+			components.filterIsInstance<Listener<EntityDamageByEntityEvent, *>>().filterTo(getEntries(damageEntityListeners, newCustomItem)) { it.eventType == EntityDamageByEntityEvent::class }
 			getEntries(tickRecievers, newCustomItem).addAll(components.filterIsInstance<TickRecievierModule>())
 		}
 	}
@@ -133,6 +140,49 @@ object NewCustomItemListeners : SLEventListener() {
 					module.handleTick(player, item, customItem)
 				}
 			}
+		}
+	}
+
+	@EventHandler
+	fun onCraftSword(event: PrepareItemCraftEvent) {
+		val item = event.inventory.result ?: return
+		val customItem = item.customItem ?: return
+		for (listener in getEntries(craftListeners, customItem)) {
+			if (!listener.preCheck(event, item)) continue
+			listener.handleEvent(event, item)
+		}
+	}
+
+	@EventHandler
+	fun onEntityDamagedBy(event: EntityDamageByEntityEvent) {
+		val damager = event.damager as? LivingEntity ?: return
+		val itemInHand = damager.equipment?.itemInMainHand ?: return
+		val customItem = itemInHand.customItem ?: return
+
+		for (listener in getEntries(damageEntityListeners, customItem)) {
+			if (!listener.preCheck(event, itemInHand)) continue
+			listener.handleEvent(event, itemInHand)
+		}
+	}
+
+	@EventHandler
+	fun onEntityDamagedHolding(event: EntityDamageByEntityEvent) {
+		val damaged = event.entity as? LivingEntity ?: return
+
+		val itemInMainHand = damaged.equipment?.itemInMainHand
+		val mainHandcustomItem = itemInMainHand?.customItem
+
+		val itemInOffHand = damaged.equipment?.itemInOffHand
+		val offHandcustomItem = itemInOffHand?.customItem
+
+		if (itemInMainHand != null && mainHandcustomItem != null) for (listener in getEntries(damageEntityListeners, mainHandcustomItem)) {
+			if (!listener.preCheck(event, itemInMainHand)) continue
+			listener.handleEvent(event, itemInMainHand)
+		}
+
+		if (itemInOffHand != null && offHandcustomItem != null) for (listener in getEntries(damageEntityListeners, offHandcustomItem)) {
+			if (!listener.preCheck(event, itemInOffHand)) continue
+			listener.handleEvent(event, itemInOffHand)
 		}
 	}
 }

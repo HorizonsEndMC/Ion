@@ -353,6 +353,78 @@ object DataMigrators : IonServerComponent() {
 				},
 				converter = { MigratorResult.Replacement(CustomItemRegistry.ARMOR_MODIFICATION_PRESSURE_FIELD.constructItemStack()) }
 			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SHIELD
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 1
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ENERGY_SWORD_BLUE.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SHIELD
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 2
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ENERGY_SWORD_RED.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SHIELD
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 3
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ENERGY_SWORD_YELLOW.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SHIELD
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 4
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ENERGY_SWORD_GREEN.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SHIELD
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 5
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ENERGY_SWORD_PURPLE.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SHIELD
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 6
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ENERGY_SWORD_ORANGE.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SHIELD
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 7
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ENERGY_SWORD_PINK.constructItemStack()) }
+			))
+			.addMigrator(LegacyCustomItemMigrator(
+				predicate = {
+					it.type == Material.SHIELD
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 8
+						&& it.customItem == null
+				},
+				converter = { MigratorResult.Replacement(CustomItemRegistry.ENERGY_SWORD_BLACK.constructItemStack()) }
+			))
 			.build()
 		)
 
