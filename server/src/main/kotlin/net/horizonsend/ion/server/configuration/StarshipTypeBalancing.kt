@@ -88,8 +88,14 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 1.4,
 		shieldPowerMultiplier = 1.0
 	),
-
 	val starfighter: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 4,
+		maxSneakFlyAccel = 4,
+		interdictionRange = 10,
+		hyperspaceRangeMultiplier = 1.5,
+		shieldPowerMultiplier = 1.0
+	),
+	val tank: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 4,
 		maxSneakFlyAccel = 4,
 		interdictionRange = 10,
