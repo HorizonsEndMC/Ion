@@ -22,10 +22,9 @@ import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.progression.SLXP
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -312,7 +311,7 @@ object CollectionMissions : IonServerComponent() {
 	}
 
 	private fun getMatchingFullStackSlots(itemStack: ItemStack, player: Player, stacks: Int): List<Int> {
-		val customItem: CustomItem? = CustomItems[itemStack]
+		val customItem = itemStack.customItem
 
 		// slots of the full stack items that match the collector mission's item type
 		return player.inventory.contents
@@ -322,7 +321,7 @@ object CollectionMissions : IonServerComponent() {
 				item!!
 				when (customItem) {
 					null -> item.isSimilar(itemStack) && item.amount == item.maxStackSize
-					else -> customItem == CustomItems[item] && item.amount == customItem.material.maxStackSize
+					else -> customItem == item.customItem && item.amount == item.maxStackSize
 				}
 			}
 			// limit to the amount of stacks to avoid taking more stacks than required if they're carrying extra
