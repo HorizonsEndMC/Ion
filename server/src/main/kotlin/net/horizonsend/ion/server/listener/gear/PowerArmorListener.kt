@@ -31,10 +31,7 @@ import java.util.UUID
 private val lastMoved = HashMap<UUID, Long>()
 
 fun hasMovedInLastSecond(player: Player): Boolean {
-	return lastMoved.containsKey(player.uniqueId) && Instant.now().toEpochMilli() - (
-		lastMoved[player.uniqueId]
-			?: 0
-		) < 1000
+	return lastMoved.containsKey(player.uniqueId) && Instant.now().toEpochMilli() - (lastMoved[player.uniqueId] ?: 0) < 1000
 }
 
 object PowerArmorListener : SLEventListener() {
@@ -172,7 +169,7 @@ object PowerArmorListener : SLEventListener() {
 	@EventHandler
 	fun onEntityToggleGlideEvent(event: EntityToggleGlideEvent) {
 		val player = event.entity as? Player ?: return
-		if(player.isGliding && player.isSneaking && glideDisabledPlayers[player.uniqueId] == null) {
+		if (player.isGliding && player.isSneaking && glideDisabledPlayers[player.uniqueId] == null) {
 			event.isCancelled = true
 		}
 	}

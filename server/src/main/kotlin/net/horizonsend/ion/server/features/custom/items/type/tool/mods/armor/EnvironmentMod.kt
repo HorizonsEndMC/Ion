@@ -20,7 +20,7 @@ object EnvironmentMod : ItemModification {
 	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItemRegistry.ARMOR_MODIFICATION_ENVIRONMENT }
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "environment"
-	override val displayName: Component = ofChildren(Component.text("environment", GRAY), Component.text(" Module", GOLD))
+	override val displayName: Component = ofChildren(Component.text("Environment", GRAY), Component.text(" Module", GOLD))
 
 	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(WATER_BREATHING, 20, 1, 1) { _, _, _ -> true })
 }
