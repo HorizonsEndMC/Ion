@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.client.networking.IonPacketHandler
 import net.horizonsend.ion.server.features.client.networking.Packets
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
@@ -24,8 +23,7 @@ object HandshakePacket : IonPacketHandler() {
 	}
 
 	override fun s2c(buf: FriendlyByteBuf, player: Player, vararg arguments: Any) {
-		val items = (CustomItems.all().map { it.itemStack(1) } + CustomItemRegistry.ALL.map { it.constructItemStack() })
-				.map { CraftItemStack.asNMSCopy(it) }
+		val items = CustomItemRegistry.ALL.map { it.constructItemStack() }.map { CraftItemStack.asNMSCopy(it) }
 
 		buf.writeInt(items.size)
 		val regAccess = player.world.minecraft.registryAccess()

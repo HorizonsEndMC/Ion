@@ -7,10 +7,9 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.gear.addPower
-import net.horizonsend.ion.server.features.gear.isPowerable
-import net.horizonsend.ion.server.features.gear.removePower
-import net.horizonsend.ion.server.features.gear.setPower
+import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -18,38 +17,42 @@ import org.bukkit.inventory.ItemStack
 @CommandAlias("battery")
 @CommandPermission("machinery.battery")
 object BatteryCommand : SLCommand() {
-	private fun getPowerableItemInHand(sender: Player): ItemStack {
+	private fun getPowerableItemInHand(sender: Player): Pair<CustomItem, ItemStack> {
 		val item = sender.inventory.itemInMainHand
+		val customItem = item.customItem ?: throw ConditionFailedException("You must be holding a powerable item to do this!")
 
-		if (item == null || !isPowerable(item)) {
+		if (!customItem.hasComponent(CustomComponentTypes.POWER_STORAGE)) {
 			throw ConditionFailedException("You must be holding a powerable item to do this!")
 		}
 
-		return item
+		return customItem to item
 	}
 
 	@Suppress("Unused")
 	@Subcommand("set")
 	@CommandCompletion("0|10|100|1000|10000")
 	fun onSet(sender: Player, amount: Int) {
-		val item = getPowerableItemInHand(sender)
-		setPower(item, amount)
+		val (customItem, item) = getPowerableItemInHand(sender)
+		customItem.getComponent(CustomComponentTypes.POWER_STORAGE).setPower(customItem, item, amount)
+
 		sender.success("Set power of ${item.displayNameString} to $amount")
 	}
 
 	@Suppress("Unused")
 	@Subcommand("add")
 	fun onAdd(sender: Player, amount: Int) {
-		val item = getPowerableItemInHand(sender)
-		addPower(item, amount)
+		val (customItem, item) = getPowerableItemInHand(sender)
+		customItem.getComponent(CustomComponentTypes.POWER_STORAGE).addPower(item, customItem, amount)
+
 		sender.success("Added $amount power to ${item.displayNameString}")
 	}
 
 	@Suppress("Unused")
 	@Subcommand("remove")
 	fun onRemove(sender: Player, amount: Int) {
-		val item = getPowerableItemInHand(sender)
-		removePower(item, amount)
+		val (customItem, item) = getPowerableItemInHand(sender)
+		customItem.getComponent(CustomComponentTypes.POWER_STORAGE).removePower(item, customItem, amount)
+
 		sender.success("Removed $amount power from ${item.displayNameString}")
 	}
 }

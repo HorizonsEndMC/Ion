@@ -3,8 +3,6 @@ package net.horizonsend.ion.server.features.world.environment
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
-import net.horizonsend.ion.server.features.gear.getPower
-import net.horizonsend.ion.server.features.gear.removePower
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.isInside
@@ -44,10 +42,11 @@ enum class Environment {
 
 			val powerUsage = 10
 
-			if (getPower(helmet) < powerUsage) return false
+			val power = customItem.getComponent(CustomComponentTypes.POWER_STORAGE)
+			if (power.getPower(helmet) < powerUsage) return false
 
 			pressureFieldPowerCooldown.tryExec(player) {
-				removePower(helmet, powerUsage)
+				power.removePower(helmet, customItem, powerUsage)
 			}
 
 			return true

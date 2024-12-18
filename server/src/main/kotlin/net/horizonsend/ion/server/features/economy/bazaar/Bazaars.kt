@@ -27,7 +27,6 @@ import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -52,7 +51,6 @@ import kotlin.reflect.KProperty
 object Bazaars : IonServerComponent() {
 	val strings = mutableListOf<String>().apply {
 		addAll(Material.entries.filter { it.isItem && !it.isLegacy }.map { it.name })
-		addAll(LegacyCustomItems.all().map { it.id })
 		addAll(CustomItemRegistry.identifiers)
 	}
 

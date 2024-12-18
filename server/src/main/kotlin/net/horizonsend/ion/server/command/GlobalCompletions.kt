@@ -7,7 +7,6 @@ import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
@@ -24,7 +23,7 @@ object GlobalCompletions {
 	}
 
 	fun toItemString(item: ItemStack): String {
-		return item.customItem?.identifier ?: LegacyCustomItems[item]?.id ?: item.type.toString()
+		return item.customItem?.identifier ?: item.type.toString()
 	}
 
 	val stringItemCache: LoadingCache<String, Optional<ItemStack>> = CacheBuilder.newBuilder().build(
@@ -36,7 +35,6 @@ object GlobalCompletions {
 	fun stringToItem(string: String): ItemStack? {
 		// if a custom item is found, use that
 		CustomItemRegistry.getByIdentifier(string)?.let { return it.constructItemStack() }
-		LegacyCustomItems[string]?.let { return it.itemStack(1) }
 
 		val material: Material = try { Material.valueOf(string) } catch (e: Throwable) { return null }
 
