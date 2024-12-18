@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.minecraft.world.entity.item.ItemEntity
@@ -134,8 +133,7 @@ class CancelListeners : SLEventListener() {
 							it.customItem != null &&
 							// the result exists and is neither a new nor legacy CustomItem
 							event.inventory.result != null &&
-							event.inventory.result!!.customItem == null &&
-							CustomItems[event.inventory.result] == null
+							event.inventory.result!!.customItem == null
 				}) {
 			event.inventory.result = ItemStack(Material.AIR)
 		}

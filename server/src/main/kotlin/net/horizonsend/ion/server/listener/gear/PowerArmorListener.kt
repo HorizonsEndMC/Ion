@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
-import net.horizonsend.ion.server.features.gear.removePower
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -105,7 +104,8 @@ object PowerArmorListener : SLEventListener() {
 			if (cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
 				modifier = 0.0
 				if (!player.world.hasFlag(WorldFlag.ARENA)) {
-					removePower(moduleItem, 10)
+					val customItem = moduleItem.customItem ?: continue
+					customItem.getComponent(POWER_STORAGE).removePower(moduleItem, customItem, 10)
 				}
 			}
 		}
