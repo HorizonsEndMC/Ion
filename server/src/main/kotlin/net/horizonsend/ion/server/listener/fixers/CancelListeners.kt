@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
@@ -177,7 +178,7 @@ class CancelListeners : SLEventListener() {
 
 	@EventHandler
 	fun onPlayerEditSign(event: PlayerOpenSignEvent) {
-		if (event.cause == PlayerOpenSignEvent.Cause.INTERACT) {
+		if (event.cause == PlayerOpenSignEvent.Cause.INTERACT && event.sign.persistentDataContainer.has(NamespacedKeys.MULTIBLOCK)) {
 			event.isCancelled = true
 		}
 	}
