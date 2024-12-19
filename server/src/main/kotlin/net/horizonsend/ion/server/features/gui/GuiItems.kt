@@ -172,6 +172,7 @@ enum class GuiItem(val customModelData: Int) {
     RUBACIEA_2(5216),
     TURMS_2(5217),
     VASK_2(5218),
+    EMPTY_STAR(5219),
     STARFIGHTER(6000),
     GUNSHIP(6001),
     CORVETTE(6002),

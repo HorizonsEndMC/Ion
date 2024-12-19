@@ -58,12 +58,12 @@ class NavigationGalacticMapGui(val player: Player) {
         gui.setItem(3, 0, createSystemCustomControlItem(
             "The Trench",
             Component.text("No Security", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false),
-            GuiItem.HORIZON_2
+            GuiItem.EMPTY_STAR
         ))
         gui.setItem(7, 2, createSystemCustomControlItem(
             "AU-0821",
             Component.text("No Security", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false),
-            GuiItem.HORIZON_2
+            GuiItem.EMPTY_STAR
         ))
 
         gui.setItem(0, MENU_ROW, GuiItems.closeMenuItem(player))
