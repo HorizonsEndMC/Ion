@@ -76,8 +76,8 @@ class Achievements(val player: Player) : AbstractBackgroundPagedGui {
 			"< . . . . . . . >")
 
 		gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
-			.addIngredient('<', GuiItems.LeftItem())
-			.addIngredient('>', GuiItems.RightItem())
+			.addIngredient('<', GuiItems.LeftPageItem())
+			.addIngredient('>', GuiItems.RightPageItem())
 			.setContent(achievementIcons)
 
 		return gui.build()

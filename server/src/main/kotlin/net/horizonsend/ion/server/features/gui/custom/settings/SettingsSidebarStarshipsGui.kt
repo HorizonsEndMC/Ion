@@ -53,15 +53,15 @@ class SettingsSidebarStarshipsGui(val player: Player) : AbstractBackgroundPagedG
         )
 
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-            .addIngredient('<', GuiItems.LeftItem())
-            .addIngredient('>', GuiItems.RightItem())
+            .addIngredient('<', GuiItems.LeftPageItem())
+            .addIngredient('>', GuiItems.RightPageItem())
             .addIngredient('v', SettingsSidebarGui(player).ReturnToSidebarButton())
 
         for (button in buttonsList) {
             gui.addContent(button)
 
             for (i in 1..8) {
-                gui.addContent(GuiItems.BlankItem(button))
+                gui.addContent(GuiItems.BlankButton(button))
             }
         }
 
