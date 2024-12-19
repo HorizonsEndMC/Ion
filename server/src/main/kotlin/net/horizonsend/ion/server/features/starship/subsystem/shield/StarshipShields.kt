@@ -260,10 +260,8 @@ object StarshipShields : IonServerComponent() {
 
 		var damagedPercent = blocks.size.toFloat() / size.toFloat()
 
-		println(starship.playerPilot?.hasProtection())
 
 		if (starship.playerPilot?.hasProtection() == true){
-			println("Fired")
 			if (handleNewProt(starship)){
 				damagedPercent = 0.0f
 			}
