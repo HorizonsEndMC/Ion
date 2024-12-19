@@ -1,15 +1,18 @@
 package net.horizonsend.ion.server.features.transport
 
+import kotlinx.serialization.Serializable
+import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.sharedDataFolder
-import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
 
 lateinit var transportConfig: TransportConfig
 
+@Serializable
 data class TransportConfig(
 	val wires: WiresSection = WiresSection(),
 	val pipes: PipesSection = PipesSection()
 ) {
+	@Serializable
 	data class WiresSection(
 		val powerUpdateRate: Long = 4L,
 		val powerUpdateMaxTime: Long = 2L,
@@ -19,6 +22,7 @@ data class TransportConfig(
 		val maxDistance: Int = 2000
 	)
 
+	@Serializable
 	data class PipesSection(
 		val inventoryCheckInterval: Long = 4L,
 		val inventoryCheckMaxTime: Long = 2L,
@@ -32,7 +36,7 @@ data class TransportConfig(
 		}
 
 		fun reload() {
-			transportConfig = loadConfig(parent = sharedDataFolder, name = "transport-settings")
+			transportConfig = Configuration.load(sharedDataFolder, "transport-settings.json")
 		}
 	}
 }

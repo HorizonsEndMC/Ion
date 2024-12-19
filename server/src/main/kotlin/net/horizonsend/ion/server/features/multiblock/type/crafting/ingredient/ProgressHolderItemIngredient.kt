@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.crafting.ingredient
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.misc.ProgressHolder
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.type.ProgressHolder
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import org.bukkit.block.Sign
 import org.bukkit.inventory.ItemStack

@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.custom.items.CustomItems.CHETHERITE
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -43,7 +43,7 @@ object Interdiction : IonServerComponent() {
 			if (!starship.contains(block.x, block.y, block.z)) {
 				return@listen
 			}
-			if (StarshipCruising.isCruising(starship as ActiveControlledStarship)) {
+			if (StarshipCruising.isCruising(starship)) {
 				return@listen player.userError("Cannot activate while cruising")
 			}
 			when (event.action) {

@@ -108,7 +108,7 @@ object Extractors : IonServerComponent() {
 				Gson().fromJson(ungzip(Files.readAllBytes(file.toPath())), WorldDataStorage::class.java)
 			} catch (e: Exception) {
 				e.printStackTrace()
-				log.error("Failed to load extractors, to be safe, the server will now shutdown to prevent loss of data, please correct the issue if possible.")
+				log.error("Failed to load extractors for ${world.name}, to be safe, the server will now shutdown to prevent loss of data, please correct the issue if possible.")
 				shutdown()
 				return
 			}

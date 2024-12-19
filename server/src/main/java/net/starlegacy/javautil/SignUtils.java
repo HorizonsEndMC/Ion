@@ -1,8 +1,5 @@
 package net.starlegacy.javautil;
 
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag;
-import com.sk89q.worldedit.util.nbt.StringBinaryTag;
-import com.sk89q.worldedit.util.nbt.TagStringIO;
 import net.horizonsend.ion.server.IonServer;
 import net.horizonsend.ion.server.features.machine.PowerMachines;
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys;
@@ -13,11 +10,17 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
-import org.bukkit.craftbukkit.v1_20_R3.persistence.CraftPersistentDataContainer;
-import org.bukkit.craftbukkit.v1_20_R3.persistence.CraftPersistentDataTypeRegistry;
+import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer;
+import org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry;
+import org.enginehub.linbus.format.snbt.impl.LinSnbtWriter;
+import org.enginehub.linbus.tree.LinCompoundTag;
+import org.enginehub.linbus.tree.LinTagType;
 
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SignUtils {
     private static final GsonComponentSerializer gson = GsonComponentSerializer.gson();
@@ -28,7 +31,7 @@ public class SignUtils {
 		return gson.deserialize(jsonLine);
     }
 
-	public static SignData readSignData(CompoundBinaryTag nbt) {
+	public static SignData readSignData(LinCompoundTag nbt) {
 		Component[] lines = readLines(nbt);
 		Map<String, Tag> tags;
 		tags = readPDC(nbt);
@@ -36,52 +39,59 @@ public class SignUtils {
 		return new SignData(lines, tags);
 	}
 
-    public static Component[] readLines(CompoundBinaryTag nbt) {
+    public static Component[] readLines(LinCompoundTag nbt) {
 		Component[] lines = new Component[] { Component.empty(), Component.empty(), Component.empty(), Component.empty() };
 
         if (nbt == null) {
             return lines;
         }
 
-		var keys = nbt.keySet();
+		var keys = nbt.value().keySet();
 
 		// Handle 1.20 format signs
 		if (keys.contains("front_text") && !keys.contains("Text1")) {
-			CompoundBinaryTag textCompound = nbt.getCompound("front_text");
+			LinCompoundTag textCompound = nbt.getTag("front_text", LinTagType.compoundTag());
 
-			var messages = textCompound.getList("messages");
+			var messages = textCompound.getListTag("messages", LinTagType.stringTag()).value();
 
-			return messages.stream().map( (tag)-> convertLine(((StringBinaryTag) tag).value()) ).toArray(Component[]::new);
+			return messages.stream().map( (tag)-> convertLine(tag.value()) ).toArray(Component[]::new);
 		}
 
 		// Handle legacy signs
         for (int i = 0; i < 4; i++) {
-            lines[i] = convertLine(nbt.getString("Text" + (i + 1)));
+            lines[i] = convertLine(nbt.getTag("Text" + (i + 1), LinTagType.stringTag()).value());
         }
 
         return lines;
     }
 
-	public static Map<String, Tag> readPDC(CompoundBinaryTag nbt) {
+	public static Map<String, Tag> readPDC(LinCompoundTag nbt) {
 		if (nbt == null) {
 			return new HashMap<>();
 		}
 
-		if (!nbt.keySet().contains("PublicBukkitValues")) {
+		if (!nbt.value().containsKey("PublicBukkitValues")) {
 			return new HashMap<>();
 		}
 
-		CompoundBinaryTag pdc = nbt.getCompound("PublicBukkitValues");
+		LinCompoundTag pdc = nbt.getTag("PublicBukkitValues", LinTagType.compoundTag());
 		CompoundTag pdcNmsCompound;
 		try {
-			pdcNmsCompound = NbtUtils.snbtToStructure(TagStringIO.get().asString(pdc));
+			LinSnbtWriter writer = new LinSnbtWriter();
+			StringWriter string = new StringWriter();
+			writer.write(string, pdc.linStream());
+
+			pdcNmsCompound = NbtUtils.snbtToStructure(string.getBuffer().toString());
 		} catch (Throwable e) {
 			IonServer.INSTANCE.getSLF4JLogger().error("Exception reading persistent data container: " + e.getMessage());
 			e.printStackTrace();
 			return new HashMap<>();
 		}
 
-		return pdcNmsCompound.tags;
+		Set<String> keys = pdcNmsCompound.getAllKeys();
+
+		//noinspection DataFlowIssue
+		return keys.stream().collect(Collectors.toMap(v -> v, pdcNmsCompound::get));
 	}
 
 	static public class SignData {

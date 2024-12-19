@@ -7,8 +7,8 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.X
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Y
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Z
 import org.bukkit.NamespacedKey
-import org.bukkit.craftbukkit.v1_20_R3.persistence.CraftPersistentDataContainer
-import org.bukkit.craftbukkit.v1_20_R3.persistence.CraftPersistentDataTypeRegistry
+import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer
+import org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType

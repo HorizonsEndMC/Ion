@@ -14,7 +14,6 @@ import org.litote.kmongo.setValue
 @CommandAlias("hud")
 object HudCommand : SLCommand() {
     @Subcommand("planets")
-    @Suppress("unused")
     fun onToggleHudPlanets(
         sender: Player,
         @Optional toggle: Boolean?
@@ -26,7 +25,6 @@ object HudCommand : SLCommand() {
     }
 
     @Subcommand("selector")
-    @Suppress("unused")
     fun onToggleHudSelector(
         sender: Player,
         @Optional toggle: Boolean?
@@ -38,7 +36,6 @@ object HudCommand : SLCommand() {
     }
 
     @Subcommand("stars")
-    @Suppress("unused")
     fun onToggleHudStars(
         sender: Player,
         @Optional toggle: Boolean?
@@ -50,7 +47,6 @@ object HudCommand : SLCommand() {
     }
 
     @Subcommand("beacons")
-    @Suppress("unused")
     fun onToggleHudBeacons(
         sender: Player,
         @Optional toggle: Boolean?
@@ -62,7 +58,6 @@ object HudCommand : SLCommand() {
     }
 
     @Subcommand("stations")
-    @Suppress("unused")
     fun onToggleHudStations(
         sender: Player,
         @Optional toggle: Boolean?
@@ -74,7 +69,6 @@ object HudCommand : SLCommand() {
     }
 
     @Subcommand("bookmarks")
-    @Suppress("unused")
     fun onToggleHudBookmarks(
         sender: Player,
         @Optional toggle: Boolean?

@@ -205,7 +205,7 @@ class MultiblockShape {
 
 			if (!requirementMet && particles) {
 				val location = relative.location.toCenterLocation().add(0.0, 0.4, 0.0)
-				relative.world.spawnParticle(Particle.SPELL_WITCH, location, 1)
+				relative.world.spawnParticle(Particle.WITCH, location, 1)
 			}
 
 			return@all requirementMet

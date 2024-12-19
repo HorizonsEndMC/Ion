@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.world
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
-import net.horizonsend.ion.server.configuration.IntegerAmount
-import net.horizonsend.ion.server.configuration.StaticIntegerAmount
+import net.horizonsend.ion.server.configuration.util.IntegerAmount
+import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
 import net.horizonsend.ion.server.features.gas.type.WorldGasConfiguration
 import net.horizonsend.ion.server.features.world.environment.Environment
 import org.bukkit.entity.EntityType

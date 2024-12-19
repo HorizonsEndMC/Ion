@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.waypoint
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.repeatString
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
@@ -167,7 +167,7 @@ object WaypointManager : IonServerComponent() {
      */
     private fun populateMainGraphVertices() {
         // add all planets as vertices to mainGraph
-        for (planet in Space.getPlanets()) {
+        for (planet in Space.getAllPlanets()) {
             val vertex = WaypointVertex(
                 name = planet.name,
                 icon = SidebarIcon.PLANET_ICON.text.first(),
@@ -177,7 +177,7 @@ object WaypointManager : IonServerComponent() {
         }
 
         // add all beacons as vertices to mainGraph
-        for (beacon in IonServer.configuration.beacons) {
+        for (beacon in ConfigurationFiles.serverConfiguration().beacons) {
             // 2 vertices for each beacon's entry and exit point
             val vertexEntry = WaypointVertex(
                 name = beacon.name.replace(" ", "_"),

@@ -11,10 +11,11 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -47,7 +48,7 @@ import kotlin.math.sqrt
 
 abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: World? = null) {
 	// null if the ship is not a player ship
-	private val playerShip: ActiveControlledStarship? = starship as? ActiveControlledStarship
+	private val playerShip: ActiveControlledStarship? = starship
 
 	abstract fun displaceX(oldX: Int, oldZ: Int): Int
 	abstract fun displaceY(oldY: Int): Int
@@ -66,15 +67,9 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		check(newWorld != world1) { "New world can't be the same as the current world" }
 
-		if (starship.type == StarshipType.BATTLECRUISER && !world2.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
-			throw StarshipMovementException("Battlecruisers cannot support their weight within strong gravity wells!")
+		if (!starship.type.canPilotIn(world2.ion)) {
+			throw StarshipMovementException("Ships of this class can't be piloted in ${world2.name}")
 		}
-
-		if (starship.type == StarshipType.BARGE && !world2.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
-			throw StarshipMovementException("Barges cannot support their weight within strong gravity wells!")
-		}
-
-		//TODO replace this system with something better
 
 		if (!ActiveStarships.isActive(starship)) {
 			starship.serverError("Starship not active, movement cancelled.")
@@ -223,7 +218,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		val boundingBox = rectangle(newMin, newMax)
 
 		for (point in boundingBox) {
-			if (ProtectionListener.isProtectedCity(point) && starship.type.isWarship &&
+			if (ProtectionListener.isProtectedCity(point) && starship.type.typeCategory == TypeCategory.WAR_SHIP &&
 				CombatTimer.isPvpCombatTagged((starship.controller as PlayerController).player)) {
 
 				throw StarshipOutOfBoundsException("The trade city denies your starship entry for your recent acts of aggression!")

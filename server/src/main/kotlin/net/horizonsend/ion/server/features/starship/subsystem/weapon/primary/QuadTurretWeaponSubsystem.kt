@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.QuadTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -28,7 +28,7 @@ class QuadTurretWeaponSubsystem(
 	override val permission: String = "ion.multiblock.quadturret"
 
 	override fun getRequiredAmmo(): ItemStack {
-		return CustomItems.LOADED_SHELL.constructItemStack()
+		return CustomItemRegistry.LOADED_SHELL.constructItemStack()
 	}
 
 	override fun getName(): Component {

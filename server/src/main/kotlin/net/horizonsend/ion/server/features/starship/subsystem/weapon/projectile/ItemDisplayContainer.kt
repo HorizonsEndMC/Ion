@@ -10,11 +10,13 @@ import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Display.ItemDisplay
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.PositionMoveRotation
+import net.minecraft.world.entity.Relative
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.World
-import org.bukkit.craftbukkit.v1_20_R3.CraftServer
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftItemDisplay
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
+import org.bukkit.craftbukkit.CraftServer
+import org.bukkit.craftbukkit.entity.CraftItemDisplay
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
@@ -43,7 +45,9 @@ class ItemDisplayContainer(
 
 			entity.transformationInterpolationDuration = 3
 
-			shownPlayers.map(::getPlayer).forEach { it?.minecraft?.connection?.send(ClientboundTeleportEntityPacket(entity)) }
+			shownPlayers.map(::getPlayer).forEach {
+				it?.minecraft?.connection?.send(ClientboundTeleportEntityPacket.teleport(entity.id, PositionMoveRotation.of(entity), setOf<Relative>(), entity.onGround))
+			}
 		}
 
 	var heading: Vector = initHeading
@@ -76,7 +80,7 @@ class ItemDisplayContainer(
 		IonServer.server as CraftServer,
 		ItemDisplay(EntityType.ITEM_DISPLAY, world.minecraft)
 	).apply {
-		itemStack = this@ItemDisplayContainer.itemStack
+		setItemStack(this@ItemDisplayContainer.itemStack)
 		billboard = org.bukkit.entity.Display.Billboard.FIXED
 		brightness = org.bukkit.entity.Display.Brightness(15, 15)
 		teleportDuration = 0
@@ -100,9 +104,9 @@ class ItemDisplayContainer(
 
 	fun update() {
 		val chunk = entity.level().world.getChunkAtIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
-		val playerChunk = chunk.minecraft.playerChunk ?: return
+		val playerChunk = chunk.minecraft.`moonrise$getChunkAndHolder`().holder ?: return
 
-		val chunkViewers = playerChunk.getPlayers(false).toSet()
+		val chunkViewers = playerChunk.`moonrise$getPlayers`(false).toSet()
 		val newViewers = chunkViewers.filterNot { shownPlayers.contains(it.uuid) }
 		val existingViewers = chunkViewers.filter { shownPlayers.contains(it.uuid) }
 		val lostViewers = shownPlayers.minus(newViewers.mapTo(mutableSetOf()) { it.uuid }).minus(existingViewers.mapTo(mutableSetOf()) { it.uuid })
@@ -123,7 +127,7 @@ class ItemDisplayContainer(
 	}
 
 	private fun update(player: ServerPlayer) {
-		entity.entityData.refresh(player)
+		entity.refreshEntityData(player)
 	}
 
 	private fun broadcast(player: ServerPlayer) {

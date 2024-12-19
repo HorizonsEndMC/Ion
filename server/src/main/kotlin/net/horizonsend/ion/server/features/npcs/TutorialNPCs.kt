@@ -8,9 +8,9 @@ import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.configuration.UUIDSerializer
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.npcs.traits.ShipDealerTrait
 import net.horizonsend.ion.server.features.tutorial.npcs.TutorialNPCType
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
@@ -69,7 +69,7 @@ object TutorialNPCs : IonServerComponent(true) {
 			if (!save) return@callback
 
 			npcMetaData.data[npc.uniqueId] = TutorialNPCs.TutorialNPCData(
-				ServerConfiguration.Pos(location.world.name, location.blockX, location.blockY, location.blockZ),
+				Pos(location.world.name, location.blockX, location.blockY, location.blockZ),
 				type
 			)
 
@@ -105,7 +105,7 @@ object TutorialNPCs : IonServerComponent(true) {
 	fun onClickNPC(event: NPCRightClickEvent) {
 		if (!manager.contains(event.npc)) return
 
-		if (!IonServer.featureFlags.tutorials) {
+		if (!ConfigurationFiles.featureFlags().tutorials) {
 			event.clicker.serverError("Tutorials are not enabled on this server, this NPC was probably placed in error.")
 			return
 		}
@@ -121,8 +121,8 @@ object TutorialNPCs : IonServerComponent(true) {
 	) {
 		@Serializable
 		data class TutorialNPCData(
-			val location: ServerConfiguration.Pos,
-			val type: TutorialNPCType
+            val location: Pos,
+            val type: TutorialNPCType
 		)
 	}
 }
