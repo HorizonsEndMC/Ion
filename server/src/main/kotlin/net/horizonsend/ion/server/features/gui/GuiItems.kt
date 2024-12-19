@@ -199,6 +199,7 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     RUBACIEA_2(NamespacedKeys.packKey("planet/rubaciea_2")),
     TURMS_2(NamespacedKeys.packKey("planet/turms_2")),
     VASK_2(NamespacedKeys.packKey("planet/vask_2")),
+    EMPTY_STAR(5219),
     STARFIGHTER(NamespacedKeys.packKey("ui/starfighter")),
     GUNSHIP(NamespacedKeys.packKey("ui/gunship")),
     CORVETTE(NamespacedKeys.packKey("ui/corvette")),
