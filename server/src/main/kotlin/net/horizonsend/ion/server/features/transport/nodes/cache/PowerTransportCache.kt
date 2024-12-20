@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
@@ -25,7 +25,7 @@ import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.SPONGE
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Observer
-import org.bukkit.craftbukkit.v1_20_R3.block.impl.CraftEndRod
+import org.bukkit.craftbukkit.block.impl.CraftEndRod
 import kotlin.math.roundToInt
 
 class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportCache(holder) {
@@ -60,7 +60,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		if (destinations.isEmpty()) return@submit
 
-		val transferLimit = (IonServer.transportSettings.powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
+		val transferLimit = (transportSettings().powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
 		val transferred = minOf(source.powerStorage.getPower(), transferLimit)
 
 		// Store this just in case
@@ -73,7 +73,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 				location,
 				BlockFace.SELF
 			),
-			destinations.take(IonServer.transportSettings.powerConfiguration.maxExtractorDestinations),
+			destinations.take(transportSettings().powerConfiguration.maxExtractorDestinations),
 			(transferred - missing)
 		)
 
@@ -100,7 +100,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 				location,
 				BlockFace.SELF
 			),
-			destinations.take(IonServer.transportSettings.powerConfiguration.maxSolarDestinations),
+			destinations.take(transportSettings().powerConfiguration.maxSolarDestinations),
 			transportPower
 		)
 	}
