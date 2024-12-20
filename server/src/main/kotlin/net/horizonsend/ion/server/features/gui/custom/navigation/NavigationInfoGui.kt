@@ -37,11 +37,11 @@ class NavigationInfoGui(
             "x v . . o . . . ."
         )
 
-        gui.addIngredient('v', GuiItems.CustomControlItem(Component.text("Return To Galactic Menu"), GuiItem.DOWN) {
+        gui.addIngredient('v', GuiItems.CustomControlItem(Component.text("Return To Galactic Menu").decoration(TextDecoration.ITALIC, false), GuiItem.DOWN) {
             _: ClickType, _: Player, _: InventoryClickEvent -> backButtonHandler.invoke()
         })
             .addIngredient('x', GuiItems.closeMenuItem(player))
-            .addIngredient('o', GuiItems.CustomControlItem(Component.text(name), icon))
+            .addIngredient('o', GuiItems.CustomControlItem(Component.text(name).decoration(TextDecoration.ITALIC, false), icon))
 
         return gui.build()
     }
