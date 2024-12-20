@@ -34,6 +34,7 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.craftbukkit.inventory.CraftItemStack as CBItemStack
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
 

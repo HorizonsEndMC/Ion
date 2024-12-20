@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
-import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
+import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
 import org.bukkit.event.player.PlayerInteractEvent

@@ -7,6 +7,11 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
+import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.PathfindingNodeWrapper
@@ -15,7 +20,6 @@ import net.horizonsend.ion.server.features.transport.util.getHeuristic
 import net.horizonsend.ion.server.features.transport.util.getNeighbors
 import net.horizonsend.ion.server.features.transport.util.getOrCacheNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.X
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Z
@@ -29,28 +33,27 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 import org.bukkit.persistence.PersistentDataType.INTEGER
 import org.bukkit.persistence.PersistentDataType.LONG
 import java.util.PriorityQueue
 
-object MultimeterItem : CustomItem("MULTIMETER") {
-	override fun constructItemStack(): ItemStack {
-		return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-			it.displayName(Component.text("Multimeter", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false))
-			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
-		}
+object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", NamedTextColor.YELLOW), ItemFactory.unStackableCustomItem) {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@MultimeterItem) { event, _, itemStack ->
+			handleSecondaryInteract(event.player, itemStack, event)
+		})
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@MultimeterItem) { event, _, itemStack ->
+			handlePrimaryInteract(event.player, itemStack, event)
+		})
 	}
 
-	override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
+	private fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
 		val targeted = livingEntity.getTargetBlock(null, 10)
 		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
 
@@ -63,7 +66,7 @@ object MultimeterItem : CustomItem("MULTIMETER") {
 		tryCheckResistance(livingEntity, livingEntity.world, itemStack)
 	}
 
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
+	private fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
 		if (livingEntity !is Player) return
 		if (livingEntity.isSneaking) {
 			cycleNetworks(livingEntity, livingEntity.world, itemStack)
