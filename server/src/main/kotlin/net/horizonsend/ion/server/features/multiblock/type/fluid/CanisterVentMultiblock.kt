@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid
 
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.GasCanister
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.globalGassesConfiguration
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
@@ -60,7 +60,7 @@ object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMulti
 		world: World,
 		structureDirection: BlockFace,
 	) : MultiblockEntity(manager, CanisterGasCollectorMultiblock, x, y, z, world, structureDirection), AsyncTickingMultiblockEntity {
-		val configuration get() = IonServer.globalGassesConfiguration
+		val configuration get() = globalGassesConfiguration()
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
 		override fun tickAsync() {
