@@ -16,6 +16,7 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -156,7 +157,7 @@ object GuiItems {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) { callback() }
     }
 
-    fun closeMenuItem(player: Player) = CustomControlItem(text("Close Menu"), GuiItem.CANCEL) {
+    fun closeMenuItem(player: Player) = CustomControlItem(text("Close Menu").decoration(TextDecoration.ITALIC, false), GuiItem.CANCEL) {
             _: ClickType, _: Player, _: InventoryClickEvent -> player.closeInventory()
     }
 }
