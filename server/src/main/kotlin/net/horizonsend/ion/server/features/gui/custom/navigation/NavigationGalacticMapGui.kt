@@ -81,7 +81,7 @@ class NavigationGalacticMapGui(val player: Player) {
     }
 
     private fun createSystemCustomControlItem(worldName: String, status: Component, item: GuiItem) = GuiItems.CustomControlItem(
-        Component.text(worldName),
+        Component.text(worldName).decoration(TextDecoration.ITALIC, false),
         item,
         listOf(
             status,

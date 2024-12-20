@@ -91,20 +91,24 @@ object NavigationGuiCommon {
      * Updates the GUI for route-related components
      */
     fun updateGuiRoute(gui: Gui, player: Player) {
-        gui.setItem(5, MENU_ROW, GuiItems.CustomControlItem(Component.text("Current Route:"), GuiItem.ROUTE_SEGMENT_2, waypointComponents(player)))
+        gui.setItem(5, MENU_ROW, GuiItems.CustomControlItem(Component.text("Current Route:")
+            .decoration(TextDecoration.ITALIC, false), GuiItem.ROUTE_SEGMENT_2, waypointComponents(player)))
 
         if (WaypointManager.getNextWaypoint(player) != null) {
-            gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem(Component.text("Cancel All Route Waypoints"), GuiItem.ROUTE_CANCEL) {
+            gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem(Component.text("Cancel All Route Waypoints")
+                .decoration(TextDecoration.ITALIC, false), GuiItem.ROUTE_CANCEL) {
                     _: ClickType, _: Player, _: InventoryClickEvent ->
                 WaypointCommand.onClearWaypoint(player)
                 updateGuiRoute(gui, player)
             })
-            gui.setItem(7, MENU_ROW, GuiItems.CustomControlItem(Component.text("Undo The Last Waypoint"), GuiItem.ROUTE_UNDO) {
+            gui.setItem(7, MENU_ROW, GuiItems.CustomControlItem(Component.text("Undo The Last Waypoint")
+                .decoration(TextDecoration.ITALIC, false), GuiItem.ROUTE_UNDO) {
                     _: ClickType, _: Player, _: InventoryClickEvent ->
                 WaypointCommand.onUndoWaypoint(player)
                 updateGuiRoute(gui, player)
             })
-            gui.setItem(8, MENU_ROW, GuiItems.CustomControlItem(Component.text("Jump To The Next Waypoint"), GuiItem.ROUTE_JUMP) {
+            gui.setItem(8, MENU_ROW, GuiItems.CustomControlItem(Component.text("Jump To The Next Waypoint")
+                .decoration(TextDecoration.ITALIC, false), GuiItem.ROUTE_JUMP) {
                     _: ClickType, _: Player, _: InventoryClickEvent ->
                 if (ActiveStarships.findByPilot(player) != null) {
                     MiscStarshipCommands.onJump(player, "auto", null)
@@ -115,9 +119,12 @@ object NavigationGuiCommon {
 
             })
         } else {
-            gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem(Component.text("Cancel All Route Waypoints"), GuiItem.ROUTE_CANCEL_GRAY, listOf(needWaypointComponent())))
-            gui.setItem(7, MENU_ROW, GuiItems.CustomControlItem(Component.text("Undo The Last Waypoint"), GuiItem.ROUTE_UNDO_GRAY, listOf(needWaypointComponent())))
-            gui.setItem(8, MENU_ROW, GuiItems.CustomControlItem(Component.text("Jump To The Next Waypoint"), GuiItem.ROUTE_JUMP_GRAY, listOf(needWaypointComponent())))
+            gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem(Component.text("Cancel All Route Waypoints")
+                .decoration(TextDecoration.ITALIC, false), GuiItem.ROUTE_CANCEL_GRAY, listOf(needWaypointComponent())))
+            gui.setItem(7, MENU_ROW, GuiItems.CustomControlItem(Component.text("Undo The Last Waypoint")
+                .decoration(TextDecoration.ITALIC, false), GuiItem.ROUTE_UNDO_GRAY, listOf(needWaypointComponent())))
+            gui.setItem(8, MENU_ROW, GuiItems.CustomControlItem(Component.text("Jump To The Next Waypoint")
+                .decoration(TextDecoration.ITALIC, false), GuiItem.ROUTE_JUMP_GRAY, listOf(needWaypointComponent())))
         }
     }
 
@@ -187,7 +194,7 @@ object NavigationGuiCommon {
 
     fun createBookmarkCustomControlItem(bookmark: Bookmark, player: Player, world: World, gui: Gui) =
         GuiItems.CustomControlItem(
-            Component.text(bookmark.name), GuiItem.BOOKMARK,
+            Component.text(bookmark.name).decoration(TextDecoration.ITALIC, false), GuiItem.BOOKMARK,
             navigationInstructionComponents(
                 bookmark,
                 bookmark.worldName,
@@ -215,7 +222,7 @@ object NavigationGuiCommon {
 
     fun createBeaconCustomControlItem(beacon: ServerConfiguration.HyperspaceBeacon, player: Player, world: World, gui: Gui) =
         GuiItems.CustomControlItem(
-            Component.text(beacon.name), GuiItem.BEACON, navigationInstructionComponents(
+            Component.text(beacon.name).decoration(TextDecoration.ITALIC, false), GuiItem.BEACON, navigationInstructionComponents(
                 beacon,
                 beacon.spaceLocation.world,
                 beacon.spaceLocation.x,
@@ -251,7 +258,7 @@ object NavigationGuiCommon {
 
     fun createPlanetCustomControlItem(planet: CachedPlanet, player: Player, world: World, gui: Gui, backButtonHandler: () -> Unit) =
         GuiItems.CustomControlItem(
-            Component.text(planet.name), getPlanetItems(planet.name),
+            Component.text(planet.name).decoration(TextDecoration.ITALIC, false), getPlanetItems(planet.name),
             navigationInstructionComponents(
                 planet,
                 planet.spaceWorldName,
@@ -281,7 +288,7 @@ object NavigationGuiCommon {
 
     fun createStarCustomControlItem(star: CachedStar, player: Player, world: World, gui: Gui, backButtonHandler: () -> Unit) =
         GuiItems.CustomControlItem(
-            Component.text(star.name), getPlanetItems(star.name),
+            Component.text(star.name).decoration(TextDecoration.ITALIC, false), getPlanetItems(star.name),
             navigationInstructionComponents(
                 star,
                 star.spaceWorldName,
