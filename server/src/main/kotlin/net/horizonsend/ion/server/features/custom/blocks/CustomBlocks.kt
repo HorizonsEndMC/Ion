@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_DRILL_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.miscellaneous.utils.getMatchingMaterials
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
@@ -43,7 +43,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
         	drops = customItemDrop("RAW_ALUMINUM")
 		)
-	) { CustomItems.ALUMINUM_ORE })
+	) { CustomItemRegistry.ALUMINUM_ORE })
 
     val ALUMINUM_BLOCK : CustomBlock = register(CustomBlock(
         identifier = "ALUMINUM_BLOCK",
@@ -52,7 +52,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
         	drops = customItemDrop("ALUMINUM_BLOCK")
 		)
-	) { CustomItems.ALUMINUM_BLOCK })
+	) { CustomItemRegistry.ALUMINUM_BLOCK })
 
     val RAW_ALUMINUM_BLOCK : CustomBlock = register(CustomBlock(
         identifier = "RAW_ALUMINUM_BLOCK",
@@ -61,7 +61,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
         	drops = customItemDrop("RAW_ALUMINUM_BLOCK")
 		)
-	) { CustomItems.RAW_ALUMINUM_BLOCK })
+	) { CustomItemRegistry.RAW_ALUMINUM_BLOCK })
 
     val CHETHERITE_ORE : CustomBlock = register(CustomBlock(
         identifier = "CHETHERITE_ORE",
@@ -70,7 +70,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
         	drops = customItemDrop("CHETHERITE")
 		)
-	) { CustomItems.CHETHERITE_ORE })
+	) { CustomItemRegistry.CHETHERITE_ORE })
 
 	val STEEL_BLOCK : CustomBlock = register(CustomBlock(
 		identifier = "STEEL_BLOCK",
@@ -79,7 +79,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
 			drops = customItemDrop("STEEL_BLOCK")
 		)
-	) { CustomItems.STEEL_BLOCK })
+	) { CustomItemRegistry.STEEL_BLOCK })
 
     val CHETHERITE_BLOCK : CustomBlock = register(CustomBlock(
         identifier = "CHETHERITE_BLOCK",
@@ -88,7 +88,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
         	drops = customItemDrop("CHETHERITE_BLOCK")
 		)
-	) { CustomItems.CHETHERITE_BLOCK })
+	) { CustomItemRegistry.CHETHERITE_BLOCK })
 
     val TITANIUM_ORE : CustomBlock = register(CustomBlock(
         identifier = "TITANIUM_ORE",
@@ -97,7 +97,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
         	drops = customItemDrop("RAW_TITANIUM")
 		)
-	) { CustomItems.TITANIUM_ORE })
+	) { CustomItemRegistry.TITANIUM_ORE })
 
     val TITANIUM_BLOCK : CustomBlock = register(CustomBlock(
         identifier = "TITANIUM_BLOCK",
@@ -106,7 +106,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
         	drops = customItemDrop("TITANIUM_BLOCK")
 		)
-	) { CustomItems.TITANIUM_BLOCK })
+	) { CustomItemRegistry.TITANIUM_BLOCK })
 
     val RAW_TITANIUM_BLOCK : CustomBlock = register(CustomBlock(
         identifier = "RAW_TITANIUM_BLOCK",
@@ -115,7 +115,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
         	drops = customItemDrop("RAW_TITANIUM_BLOCK")
 		)
-	) { CustomItems.RAW_TITANIUM_BLOCK })
+	) { CustomItemRegistry.RAW_TITANIUM_BLOCK })
 
     val URANIUM_ORE : CustomBlock = register(CustomBlock(
         identifier = "URANIUM_ORE",
@@ -124,7 +124,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
         	drops = customItemDrop("RAW_URANIUM")
 		)
-	) { CustomItems.URANIUM_ORE })
+	) { CustomItemRegistry.URANIUM_ORE })
 
     val URANIUM_BLOCK : CustomBlock = register(CustomBlock(
         identifier = "URANIUM_BLOCK",
@@ -133,7 +133,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
         	drops = customItemDrop("URANIUM_BLOCK")
 		)
-	) { CustomItems.URANIUM_BLOCK })
+	) { CustomItemRegistry.URANIUM_BLOCK })
 
 	val ENRICHED_URANIUM_BLOCK : CustomBlock = register(CustomBlock(
 		identifier = "ENRICHED_URANIUM_BLOCK",
@@ -142,7 +142,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
 			drops = customItemDrop("ENRICHED_URANIUM_BLOCK")
 		)
-	) { CustomItems.ENRICHED_URANIUM_BLOCK })
+	) { CustomItemRegistry.ENRICHED_URANIUM_BLOCK })
 
     val NETHERITE_CASING : CustomBlock = register(CustomBlock(
         identifier = "NETHERITE_CASING",
@@ -151,7 +151,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
        	 drops = customItemDrop("NETHERITE_CASING")
 		)
-	) { CustomItems.NETHERITE_CASING })
+	) { CustomItemRegistry.NETHERITE_CASING })
 
     val RAW_URANIUM_BLOCK : CustomBlock = register(CustomBlock(
         identifier = "RAW_URANIUM_BLOCK",
@@ -160,7 +160,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
 			drops = customItemDrop("RAW_URANIUM_BLOCK")
 		)
-	) { CustomItems.RAW_ALUMINUM_BLOCK })
+	) { CustomItemRegistry.RAW_ALUMINUM_BLOCK })
 
 	val SUPERCONDUCTOR_BLOCK : CustomBlock = register(CustomBlock(
 		identifier = "SUPERCONDUCTOR_BLOCK",
@@ -169,7 +169,7 @@ object CustomBlocks {
 			requiredTool = { BlockLoot.Tool.PICKAXE },
 			drops = customItemDrop("SUPERCONDUCTOR_BLOCK")
 		)
-	) { CustomItems.SUPERCONDUCTOR_BLOCK })
+	) { CustomItemRegistry.SUPERCONDUCTOR_BLOCK })
 
 	val BATTLECRUISER_REACTOR_CORE : CustomBlock = register(CustomBlock(
 		identifier = "BATTLECRUISER_REACTOR_CORE",
@@ -178,7 +178,7 @@ object CustomBlocks {
 			requiredTool = null,
 			drops = customItemDrop("BATTLECRUISER_REACTOR_CORE")
 		)
-	) { CustomItems.BATTLECRUISER_REACTOR_CORE })
+	) { CustomItemRegistry.BATTLECRUISER_REACTOR_CORE })
 
     val BARGE_REACTOR_CORE : CustomBlock = register(CustomBlock(
         identifier = "BARGE_REACTOR_CORE",
@@ -187,7 +187,7 @@ object CustomBlocks {
 			requiredTool = null,
 			drops = customItemDrop("BARGE_REACTOR_CORE")
 		)
-	) { CustomItems.BARGE_REACTOR_CORE })
+	) { CustomItemRegistry.BARGE_REACTOR_CORE })
 
 	val CRUISER_REACTOR_CORE : CustomBlock = register(CustomBlock(
         identifier = "CRUISER_REACTOR_CORE",
@@ -196,11 +196,11 @@ object CustomBlocks {
 			requiredTool = null,
 			drops = customItemDrop("CRUISER_REACTOR_CORE")
 		)
-	) { CustomItems.CRUISER_REACTOR_CORE })
+	) { CustomItemRegistry.CRUISER_REACTOR_CORE })
 
 	val MULTIBLOCK_WORKBENCH = register(MultiblockWorkbench)
 
-    private fun customItemDrop(identifier: String, amount: Int = 1): Supplier<Collection<ItemStack>> {
+    fun customItemDrop(identifier: String, amount: Int = 1): Supplier<Collection<ItemStack>> {
         val customItem = CustomItemRegistry.getByIdentifier(identifier)?.constructItemStack() ?: return Supplier { listOf() }
         customItem.amount = amount
 

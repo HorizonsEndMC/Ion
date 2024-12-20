@@ -4,7 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
 import net.horizonsend.ion.server.features.nations.gui.skullItem
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateData

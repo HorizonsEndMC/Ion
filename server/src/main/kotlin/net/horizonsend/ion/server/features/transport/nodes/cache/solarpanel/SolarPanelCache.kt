@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache.solarpanel
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.NodeCacheFactory
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
@@ -56,7 +56,7 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		val data = getBlockDataSafe(world, getX(detectorPosition), getY(detectorPosition), getZ(detectorPosition)) as? DaylightDetector ?: return 0
 		val powerRatio = data.power.toDouble() / data.maximumPower.toDouble()
 
-		val base = IonServer.transportSettings.powerConfiguration.solarPanelTickPower * delta
+		val base = transportSettings().powerConfiguration.solarPanelTickPower * delta
 		return (base * powerRatio * powerMultiplier).roundToInt()
 	}
 

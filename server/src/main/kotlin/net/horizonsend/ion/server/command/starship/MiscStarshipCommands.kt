@@ -66,9 +66,9 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.distance
-import net.horizonsend.ion.server.miscellaneous.utils.normalize
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.normalize
 import net.horizonsend.ion.server.miscellaneous.utils.parseData
 import net.horizonsend.ion.server.miscellaneous.utils.uploadAsync
 import net.kyori.adventure.text.Component
@@ -87,7 +87,6 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2

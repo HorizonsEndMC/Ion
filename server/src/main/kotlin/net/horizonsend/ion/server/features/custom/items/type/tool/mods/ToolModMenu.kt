@@ -171,7 +171,7 @@ class ToolModMenu(
 			val player = event.player
 			val holder = player.openInventory.topInventory.holder
 
-			if (ToolModMenu) {
+			if (holder is ToolModMenu) {
 				// Assume they dropped the item
 
 				if (event.itemDrop.itemStack.itemMeta == holder.itemStack.itemMeta) {

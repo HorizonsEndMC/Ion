@@ -1,12 +1,11 @@
 package net.horizonsend.ion.server.features.multiblock.type.ammo
 
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
-import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
-import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
-import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplay
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.attribute.AmmunitionRefillType
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
@@ -21,7 +20,6 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
-import org.bukkit.Material.matchMaterial
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -190,7 +188,7 @@ abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMul
 
 			// refill item check
 			val inventory = getInventory(0, 0, 6) ?: return
-			val typeRefill = matchMaterial(fuelCustomItem.getTypeRefill()) ?: return
+			val typeRefill = ammoRefillAttribute.type
 			if (!inventory.containsAtLeast(ItemStack(typeRefill), 1)) return
 
 			tickingManager.sleep(200)

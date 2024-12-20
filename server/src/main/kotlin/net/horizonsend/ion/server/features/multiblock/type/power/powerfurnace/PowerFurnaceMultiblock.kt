@@ -21,19 +21,21 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.minecraft.server.MinecraftServer
 import net.minecraft.world.item.crafting.RecipeType
+import net.minecraft.world.item.crafting.SingleRecipeInput
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
-import org.bukkit.craftbukkit.v1_20_R3.block.CraftFurnaceFurnace
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
-import org.bukkit.inventory.ItemStack
+import org.bukkit.craftbukkit.block.CraftFurnaceFurnace
+import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.inventory.ItemStack as BukkitItemStack
 import java.util.Optional
 
 abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMultiblock<PowerFurnaceMultiblock.PowerFurnaceMultiblockEntity> {
@@ -116,8 +118,14 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 				return
 			}
 
+			val smelted = furnace.inventory.smelting
+			if (smelted == null) {
+				sleepWithStatus(text("Sleeping...", BLUE), 250)
+				return
+			}
+
 			if (furnace !is CraftFurnaceFurnace) return
-			val resultOption = smeltingRecipeCache[furnace]
+			val resultOption = smeltingRecipeCache[smelted]
 
 			if (resultOption.isEmpty) {
 				sleepWithStatus(text("Invalid Recipe", RED), 250)
@@ -137,18 +145,19 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 		}
 
 		companion object {
-			val smeltingRecipeCache: LoadingCache<CraftFurnaceFurnace, Optional<ItemStack>> = CacheBuilder.newBuilder().build(
-				CacheLoader.from { furnace ->
-					requireNotNull(furnace)
-					val furnaceTile = furnace.tileEntity
-
+			val smeltingRecipeCache: LoadingCache<BukkitItemStack, Optional<BukkitItemStack>> = CacheBuilder.newBuilder().build(
+				CacheLoader.from { itemStack ->
+					requireNotNull(itemStack)
+					val nms = CraftItemStack.asNMSCopy(itemStack)
 					val level = Bukkit.getWorlds().first().minecraft
+
+					val input = SingleRecipeInput(nms)
 
 					// Get results for the recipe
 					MinecraftServer.getServer().recipeManager
-						.getRecipeFor(RecipeType.SMELTING, furnaceTile, level)
+						.getRecipeFor(RecipeType.SMELTING, input, level)
 						.map {
-							val b = it.value.assemble(furnaceTile, level.registryAccess())
+							val b = it.value.assemble(input, level.registryAccess())
 							CraftItemStack.asBukkitCopy(b)
 						}
 				}

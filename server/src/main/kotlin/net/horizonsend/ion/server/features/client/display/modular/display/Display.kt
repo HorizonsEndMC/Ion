@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.client.display.modular.display
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.moveDisplayEntityPacket
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.miscellaneous.utils.axis
@@ -11,7 +12,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
-import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Display.TextDisplay
 import net.minecraft.world.entity.EntityType
@@ -20,8 +20,8 @@ import org.bukkit.Bukkit.getPlayer
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
-import org.bukkit.craftbukkit.v1_20_R3.CraftServer
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
+import org.bukkit.craftbukkit.CraftServer
+import org.bukkit.craftbukkit.entity.CraftTextDisplay
 import org.bukkit.util.Transformation
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -101,12 +101,6 @@ abstract class Display(
 	fun resetPosition(parent: TextDisplayHandler) {
 		val location = getLocation(parent)
 
-		entity.teleportTo(
-			location.x,
-			location.y,
-			location.z
-		)
-
 		entity.setTransformation(com.mojang.math.Transformation(
 			Vector3f(0f),
 			ClientDisplayEntities.rotateToFaceVector2d(parent.facing.direction.toVector3f()),
@@ -114,7 +108,10 @@ abstract class Display(
 			Quaternionf()
 		))
 
-		shownPlayers.map(::getPlayer).forEach { it?.minecraft?.connection?.send(ClientboundTeleportEntityPacket(entity)) }
+		shownPlayers.map(::getPlayer).forEach { player ->
+			if (player == null) return@forEach
+			moveDisplayEntityPacket(player.minecraft, entity, location.x, location.y, location.z)
+		}
 	}
 
 	/** Registers this display handler */
@@ -149,9 +146,9 @@ abstract class Display(
 		setText(getText())
 
 		val chunk = entity.level().world.getChunkAtIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
-		val playerChunk = chunk.minecraft.playerChunk ?: return
-
-		val viewers = playerChunk.getPlayers(false).toSet()
+		val playerChunk = chunk.minecraft.`moonrise$getChunkAndHolder`().holder.playerProvider ?: return
+		//TODO fix this its bad
+		val viewers = playerChunk.getPlayers(chunk.minecraft.pos, false).toSet()
 		val newPlayers = viewers.filterNot { shownPlayers.contains(it.uuid) }
 		val old = viewers.filter { shownPlayers.contains(it.uuid) }
 
@@ -167,7 +164,7 @@ abstract class Display(
 	}
 
 	private fun update(player: ServerPlayer) {
-		entity.entityData.refresh(player)
+		entity.refreshEntityData(player)
 	}
 
 	private fun broadcast(player: ServerPlayer) {

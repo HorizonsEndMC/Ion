@@ -4,7 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentType
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.key.Key

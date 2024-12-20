@@ -1,9 +1,10 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
+import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu
@@ -17,9 +18,11 @@ import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilbloc
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.text.loreName
+import net.horizonsend.ion.server.miscellaneous.utils.updateData
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -44,9 +47,9 @@ object MultiblockWorkbench : InteractableCustomBlock(
 	blockData = CustomBlocks.mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.EAST)),
 	drops = BlockLoot(
 		requiredTool = null,
-		drops = customItemDrop(CustomItems::MULTIBLOCK_WORKBENCH, 1)
+		drops = customItemDrop("MULTIBLOCK_WORKBENCH", 1)
 	),
-	customBlockItem = { CustomItems.MULTIBLOCK_WORKBENCH }
+	customBlockItem = { CustomItemRegistry.MULTIBLOCK_WORKBENCH }
 ) {
 	private val cooldown = PerPlayerCooldown(5L, TimeUnit.MILLISECONDS)
 
@@ -85,23 +88,18 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		override fun setup(view: InventoryView) {
 			lockedSlots.addAll(BACKGROUND_SLOTS)
 
-			addGuiButton(LEFT_BUTTON_SLOT, ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-				it.setCustomModelData(GuiItem.LEFT.customModelData)
-				it.displayName(text("Previous Multiblock").itemName)
-			}) {
+
+			addGuiButton(LEFT_BUTTON_SLOT, GuiItem.LEFT.makeItem(text("Previous Multiblock"))) {
 				multiblockIndex = (multiblockIndex - 1).coerceAtLeast(0)
 				refreshMultiblock(it.view)
 			}
 
-			addGuiButton(RIGHT_BUTTON_SLOT, ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-				it.setCustomModelData(GuiItem.RIGHT.customModelData)
-				it.displayName(text("Next Multiblock").itemName)
-			}) {
+			addGuiButton(RIGHT_BUTTON_SLOT, GuiItem.RIGHT.makeItem(text("Next Multiblock"))) {
 				multiblockIndex = (multiblockIndex + 1).coerceAtMost(multiblocks.lastIndex)
 				refreshMultiblock(it.view)
 			}
 
-			addGuiButton(SEARCH_BUTTON_SLOT, ItemStack(Material.NAME_TAG).setDisplayNameAndGet(text("Search").itemName)) {
+			addGuiButton(SEARCH_BUTTON_SLOT, ItemStack(Material.NAME_TAG).updateDisplayName(text("Search"))) {
 				openSearchMenu(it.playerClicker)
 			}
 
@@ -158,6 +156,7 @@ object MultiblockWorkbench : InteractableCustomBlock(
 			val item = inventory.contents[CONFIRM_BUTTON_SLOT] ?: return@sync
 			val missing = checkRequirements(getUnlockedItems(), currentMultiblock)
 
+			// TODO rewrite this
 			if (missing.isNotEmpty()) {
 				item.type = Material.BARRIER
 				val missingLore = missing
@@ -175,11 +174,10 @@ object MultiblockWorkbench : InteractableCustomBlock(
 			}
 
 			item.type = Material.WARPED_FUNGUS_ON_A_STICK
-			item.updateMeta {
-				it.lore(listOf())
-				it.displayName(text("Packaged multiblock ready!", GREEN).itemName)
-				it.setCustomModelData(GuiItem.CHECKMARK.customModelData )
-			}
+
+			item.updateLore(listOf())
+			item.updateDisplayName(text("Packaged multiblock ready!", GREEN))
+			item.updateData(DataComponentTypes.ITEM_MODEL, GuiItem.CHECKMARK.modelKey)
 
 			ready = true
 		}
