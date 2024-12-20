@@ -1,10 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.ticked
 
-import com.nijiko.permissions.ModularControl.tickInterval
-
 interface TickedMultiblockEntityParent {
 	val tickingManager: TickingManager
-	
+
 	/**
 	 *
 	 **/
@@ -25,7 +23,7 @@ interface TickedMultiblockEntityParent {
 			}
 
 			currentTick++
-			if (currentTick >= tickInterval) {
+			if (currentTick >= interval) {
 				currentTick = 0
 				return false
 			}

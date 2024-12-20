@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.filters
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.misc.Wrench
 import net.horizonsend.ion.server.features.transport.filters.FilterBlock.Companion.FILTER_STATE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys

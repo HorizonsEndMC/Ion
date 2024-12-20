@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.command.admin
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
@@ -11,14 +12,15 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
+import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.util.serialization.CustomItemSerialization
 import net.horizonsend.ion.server.features.gui.GuiItems
-import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import org.bukkit.command.CommandSender
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import org.bukkit.Material
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -100,7 +102,7 @@ object ItemDebugCommand : SLCommand() {
 	fun onGivePrepackaged(sender: CommandSender, prePackagedType: Multiblock, recipient: Player?) {
 		val destination: Player = recipient ?: (sender as? Player ?: fail { "You must specify a player!" })
 
-		destination.inventory.addItem(PackagedMultiblockItem.constructFor(prePackagedType))
+		destination.inventory.addItem(MultiblockToken.constructFor(prePackagedType))
 		sender.information("Added to inventory")
 	}
 
