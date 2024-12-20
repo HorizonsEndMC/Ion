@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.Controll
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.sortedByValue
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -50,6 +50,8 @@ class AIController private constructor(
 		manualWeaponSets.forEach(::addManualWeaponSet)
 		autoWeaponSets.forEach(::addAutoWeaponSet)
 	}
+
+	var sneakMovements: Int = 0
 
 	/** AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more. */
 	val modules: MutableMap<String, net.horizonsend.ion.server.features.ai.module.AIModule> = mutableMapOf()

@@ -14,8 +14,8 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -64,7 +64,7 @@ object LocatorCommands : SLCommand() {
 			println("Relation: $relation")
 
 			if (relation < NationRelation.Level.ALLY) failIf(
-				distance > IonServer.configuration.getPosMaxRange &&
+				distance > ConfigurationFiles.serverConfiguration().getPosMaxRange &&
 				(gateDistance != null && gateDistance > 2000)
 			) {
 				"You need to be closer to ${target.name} to do that!"
@@ -85,7 +85,7 @@ object LocatorCommands : SLCommand() {
 	@CommandAlias("near")
 	@Suppress("Unused")
 	fun onNear(sender: Player) {
-		val players = sender.location.getNearbyPlayers(IonServer.configuration.nearMaxRange) {
+		val players = sender.location.getNearbyPlayers(ConfigurationFiles.serverConfiguration().nearMaxRange) {
 			it.uniqueId != sender.uniqueId
 		}.toList()
 

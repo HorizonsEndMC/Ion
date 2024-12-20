@@ -5,9 +5,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
-import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
@@ -41,25 +40,8 @@ object RecipeCommand : BaseCommand(), Listener {
 		sender: Player,
 		customItem: String
 	) {
-		val itemStack = CustomItems.getByIdentifier(customItem) ?: return
+		val itemStack = CustomItemRegistry.getByIdentifier(customItem) ?: return
 		val recipe = Bukkit.getRecipe(NamespacedKey(IonServer, itemStack.identifier.lowercase()))
-
-		if (recipe is ShapedRecipe) {
-			shapedRecipe(sender, recipe)
-		} else if (recipe is ShapelessRecipe) {
-			shapelessRecipe(sender, recipe)
-		}
-	}
-
-	@Subcommand("legacy")
-	@CommandPermission("ion.recipe")
-	@CommandCompletion("@customitem")
-	fun onItemCommand(
-		sender: Player,
-		customItem: String
-	) {
-		val itemStack = net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems[customItem] ?: return
-		val recipe = Bukkit.getRecipe(NamespacedKey(IonServer, itemStack.id))
 
 		if (recipe is ShapedRecipe) {
 			shapedRecipe(sender, recipe)

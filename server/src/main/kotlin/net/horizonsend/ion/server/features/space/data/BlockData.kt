@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.space.data
 
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.BLOCK_ENTITY
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.BLOCK_STATE
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.BLOCK_ENTITY
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.BLOCK_STATE
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtUtils
@@ -24,7 +24,7 @@ data class BlockData(val blockState: BlockState, var blockEntityTag: CompoundTag
 		}
 
 		override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): BlockData {
-			val lookup = BuiltInRegistries.BLOCK.asLookup()
+			val lookup = BuiltInRegistries.BLOCK
 			val compoundTag = primitive.get(BLOCK_STATE, CompoundTagType)!!
 			val blockState = NbtUtils.readBlockState(lookup, compoundTag)
 			val blockEntity = primitive.get(BLOCK_ENTITY, CompoundTagType)

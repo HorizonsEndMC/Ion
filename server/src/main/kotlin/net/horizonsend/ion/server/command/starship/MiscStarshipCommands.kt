@@ -30,11 +30,12 @@ import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.NavigationComputerMultiblockBasic
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
@@ -63,7 +64,13 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.A
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.normalize
+import net.horizonsend.ion.server.miscellaneous.utils.parseData
+import net.horizonsend.ion.server.miscellaneous.utils.uploadAsync
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -72,7 +79,6 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.block.Sign
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -81,7 +87,6 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -91,10 +96,10 @@ import kotlin.math.roundToInt
 object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerCompletion("hyperspaceGates") {
-			IonServer.configuration.beacons.map { it.name.replace(" ", "_") }
+			ConfigurationFiles.serverConfiguration().beacons.map { it.name.replace(" ", "_") }
 		}
 		manager.commandCompletions.registerCompletion("hyperspaceGatesInWorld") { e ->
-			IonServer.configuration.beacons
+			ConfigurationFiles.serverConfiguration().beacons
 				.filter { beacon -> beacon.spaceLocation.world == e.player.world.name }
 				.map { it.name.replace(" ", "_") }
 		}
@@ -192,7 +197,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	@Suppress("unused")
 	@CommandAlias("jump")
 	@CommandCompletion("x|z")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
@@ -221,7 +225,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		else -> string.toIntOrNull() ?: fail { "&cInvalid X or Z coordinate! Must be a number." }
 	}
 
-	@Suppress("unused")
 	@CommandAlias("jump")
 	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
@@ -266,7 +269,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				192,
 				it.location.z
 			)
-		} ?: IonServer.configuration.beacons.firstOrNull {
+		} ?: ConfigurationFiles.serverConfiguration().beacons.firstOrNull {
 			it.name.replace(" ", "_") == destination
 		}?.spaceLocation
 		?: BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
@@ -305,7 +308,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		destinationWorld: World,
 		maxRange: Int,
 		sender: Player,
-		tier: Int?,
+		tier: Int?
 	) {
 		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) }
 			?: Hyperspace.findHyperdrive(starship) ?: fail {
@@ -519,7 +522,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		StarshipDestruction.vanish(ship)
 	}
 
-	@Suppress("unused")
 	@CommandAlias("directcontrol|dc|DC")
 	fun onDirectControl(sender: Player) {
 		val starship = getStarshipPiloting(sender)
@@ -533,6 +535,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			)
 			return
 		}
+
 		starship.setDirectControlEnabled(!starship.isDirectControlEnabled)
 	}
 
@@ -687,16 +690,13 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onToggleDrills(sender: Player, enabled: Boolean) {
 		val starship = getStarshipPiloting(sender)
 
-		val signs = starship.drills.mapNotNull {
-			val (x, y, z) = it.pos
+		val entities = starship.multiblockManager.getAllMultiblockEntities().values.filterIsInstance<DrillMultiblock.DrillMultiblockEntity>()
 
-			starship.world.getBlockAt(x, y, z).state as? Sign
-		}
-
-		val user = if (enabled) sender.name else null
-
-		for (sign in signs) {
-			DrillMultiblock.setUser(sign, user)
+		for (entity in entities) {
+			if (enabled) {
+				val sign = entity.getSign() ?: continue
+				entity.enable(sender, sign)
+			} else entity.disable()
 		}
 	}
 

@@ -18,8 +18,8 @@ import net.horizonsend.ion.common.utils.text.colors.TSAII_VERY_DARK_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_BATTLECRUISER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_CORVETTE
@@ -47,7 +47,7 @@ import net.kyori.adventure.text.Component.text
  * @see AITemplateRegistry
  **/
 object StarshipTemplateRegistry : IonServerComponent(true) {
-	private val TEMPLATE_DIRECTORY = IonServer.configurationFolder.resolve("starship_templates").apply { mkdirs() }
+	private val TEMPLATE_DIRECTORY = ConfigurationFiles.configurationFolder.resolve("starship_templates").apply { mkdirs() }
 
 	// START_TEST
 	val TEST_JAMMER = registerTemplate(StarshipTemplate(

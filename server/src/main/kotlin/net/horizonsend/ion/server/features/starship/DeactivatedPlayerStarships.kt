@@ -11,13 +11,14 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
@@ -82,7 +83,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 				_id = id,
 				captain = captain,
 				starshipType = type.name,
-				serverName = IonServer.configuration.serverName,
+				serverName = ConfigurationFiles.serverConfiguration().serverName,
 				levelName = worldName,
 				blockKey = blockKey,
 				name = name,
@@ -109,7 +110,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 			val data = AIStarshipData(
 				id,
 				type.name,
-				IonServer.configuration.serverName,
+				ConfigurationFiles.serverConfiguration().serverName,
 				world.name,
 				blockKey,
 				name = name,
@@ -312,6 +313,9 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 			ActiveStarships.remove(starship)
 
 			starship.subsystems.forEach { it.handleRelease() }
+
+			starship.multiblockManager.release()
+			starship.transportManager.release()
 
 			for ((ship: StarshipData, blocks: Set<Long>) in starship.carriedShips) {
 				if (!blocks.isEmpty()) {

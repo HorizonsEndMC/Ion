@@ -8,13 +8,13 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -146,8 +146,7 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock {
 			player.teleport(
 				location,
 				TeleportCause.PLUGIN,
-				TeleportFlag.Relative.PITCH,
-				TeleportFlag.Relative.YAW,
+				TeleportFlag.Relative.VELOCITY_ROTATION
 			)
 
 			event?.isCancelled = true

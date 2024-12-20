@@ -4,15 +4,16 @@ import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.GlobalCompletions
-import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.priceMult
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -79,7 +80,7 @@ class BazaarPurchaseMenuGui(
     private inner class BazaarGuiItem(val itemStack: ItemStack) : AbstractItem() {
         override fun getItemProvider(): ItemProvider {
             // make this item's name empty so that it does not populate anvil name field
-            return ItemBuilder(itemStack.updateMeta { it.displayName(empty()) })
+            return ItemBuilder(itemStack.updateDisplayName(empty()))
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {}
@@ -88,9 +89,7 @@ class BazaarPurchaseMenuGui(
     // Back button
     private inner class ReturnToItemMenuButton : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui?): ItemProvider {
-            return ItemBuilder(ItemStack(Material.IRON_DOOR).updateMeta {
-                it.displayName(text("Go Back").decoration(ITALIC, false))
-            })
+            return ItemBuilder(ItemStack(Material.IRON_DOOR).updateDisplayName(text("Go Back").itemName))
         }
 
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
@@ -105,37 +104,32 @@ class BazaarPurchaseMenuGui(
         override fun getItemProvider(gui: Gui?): ItemProvider {
             if (currentAmount <= 0) {
                 // Invalid number
-                return ItemBuilder(ItemStack(Material.BARRIER).updateMeta {
-                    it.displayName(text("Buy at least one item").decoration(ITALIC, false))
-                })
+                return ItemBuilder(ItemStack(Material.BARRIER).updateDisplayName(text("Buy at least one item").itemName))
             } else {
-                return ItemBuilder(ItemStack(Material.HOPPER).updateMeta {
-                    // Confirm purchase
-                    val priceMult = Bazaars.priceMult(remote)
-                    val name = GlobalCompletions.fromItemString(bazaarItem.itemString).displayNameString
+				// Confirm purchase
+				val priceMult = priceMult(remote)
+				val name = GlobalCompletions.fromItemString(bazaarItem.itemString).displayNameString
 
-                    it.displayName(text("Purchase", NamedTextColor.GREEN).decoration(ITALIC, false))
+                return ItemBuilder(ItemStack(Material.HOPPER)
+					.updateLore(listOf(
+						// Buy item + amt
+						text("Buy $currentAmount of $name for ${(bazaarItem.price * currentAmount * priceMult).roundToHundredth()}"),
 
-                    it.lore(listOf(
-                        // Buy item + amt
-                        text("Buy $currentAmount of $name for ${(bazaarItem.price * currentAmount * priceMult).roundToHundredth()}",
-                            NamedTextColor.WHITE)
-                            .decoration(ITALIC, false),
+						// Inventory warning
+						if (!LegacyItemUtils.canFit(player.inventory, GlobalCompletions.fromItemString(bazaarItem.itemString), currentAmount)) {
+							ofChildren(
+								text("WARNING: Amount is larger than may fit in your inventory.", NamedTextColor.RED),
+								text("Adding additional items may result in their stacks getting deleted.", NamedTextColor.RED)
+							)
+						} else empty(),
 
-                        // Inventory warning
-                        if (!LegacyItemUtils.canFit(player.inventory, GlobalCompletions.fromItemString(bazaarItem.itemString), currentAmount)) {
-                            ofChildren(
-                                text("WARNING: Amount is larger than may fit in your inventory.", NamedTextColor.RED).decoration(ITALIC, false),
-                                text("Adding additional items may result in their stacks getting deleted.", NamedTextColor.RED).decoration(ITALIC, false)
-                            )
-                        } else empty(),
-
-                        // Remote purchase warning
-                        if (priceMult > 1) {
-                            text("(Price multiplied x $priceMult due to browsing remotely)").decoration(ITALIC, false)
-                        } else empty()
-                    ))
-                })
+						// Remote purchase warning
+						if (priceMult > 1) {
+							text("(Price multiplied x $priceMult due to browsing remotely)")
+						} else empty()
+					))
+					.updateDisplayName(text("Purchase", NamedTextColor.GREEN).itemName)
+				)
             }
         }
 

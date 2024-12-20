@@ -1,14 +1,13 @@
 package net.horizonsend.ion.server.features.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.transport.Extractors
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.EXTRACTOR_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.setNMSBlockData
@@ -108,7 +107,7 @@ class StarshipFactoryPrinter(
 			return false
 		}
 
-		if (availableCredits < ShipFactoryMaterialCosts.getPrice(data) && IonServer.featureFlags.economy) return false
+		if (availableCredits < ShipFactoryMaterialCosts.getPrice(data) && ConfigurationFiles.featureFlags().economy) return false
 
 		decrementAvailable(item, count, amount)
 		incrementUsed(item, amount)
@@ -177,14 +176,14 @@ class StarshipFactoryPrinter(
 	private fun flushBlockQueue() {
 		for ((key, data) in queue) {
 			val price = ShipFactoryMaterialCosts.getPrice(data.createCraftBlockData())
-			if (IonServer.featureFlags.economy) tryCreditCost(price)
+			if (ConfigurationFiles.featureFlags().economy) tryCreditCost(price)
 
 			val blockX = blockKeyX(key)
 			val blockY = blockKeyY(key)
 			val blockZ = blockKeyZ(key)
 
 			world.setNMSBlockData(blockX, blockY, blockZ, data)
-			if (data.bukkitMaterial == Extractors.EXTRACTOR_BLOCK) Extractors.add(world, Vec3i(blockX, blockY, blockZ))
+			if (data.bukkitMaterial == EXTRACTOR_TYPE) NewTransport.addExtractor(world, blockX, blockY, blockZ)
 		}
 	}
 
@@ -196,7 +195,7 @@ class StarshipFactoryPrinter(
 
 			val sign = world.getBlockAtKey(key).state as Sign
 
-			data.applyTo(sign);
+			data.applyTo(sign)
 		}
 	}
 }

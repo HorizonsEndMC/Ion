@@ -27,9 +27,10 @@ import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -39,7 +40,10 @@ import net.horizonsend.ion.server.features.nations.utils.isSemiActive
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -175,10 +179,9 @@ internal object NationCommand : SLCommand() {
 			color = color.asRGB(),
 		)
 
-		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, embed)
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().eventsChannel, embed)
 	}
 
-	@Suppress("unused")
 	@Subcommand("disband")
 	@Description("Disband your nation (this cannot be undone!)")
 	fun onDisband(sender: Player, @Optional name: String?) = asyncCommand(sender) {
@@ -197,7 +200,6 @@ internal object NationCommand : SLCommand() {
 		))
 	}
 
-	@Suppress("unused")
 	@Subcommand("invite")
 	@CommandCompletion("@settlements")
 	@Description("Invite a settlement to your nation")
@@ -242,7 +244,6 @@ internal object NationCommand : SLCommand() {
 		}
 	}
 
-	@Suppress("unused")
 	@Subcommand("invites")
 	fun onInvites(sender: Player, @Optional page: Int?) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
@@ -267,7 +268,6 @@ internal object NationCommand : SLCommand() {
 		))
 	}
 
-	@Suppress("unused")
 	@Subcommand("join")
 	@CommandCompletion("@nations")
 	@Description("Join a nation which you're invited to")
@@ -288,7 +288,6 @@ internal object NationCommand : SLCommand() {
 		Notify.chatAndEvents(nationImportantMessageFormat("Settlement {0} joined the nation {1}", settlementName, nationName))
 	}
 
-	@Suppress("unused")
 	@Subcommand("leave")
 	@Description("Leave the nation you're in")
 	fun onLeave(sender: Player, @Optional nation: String?) = asyncCommand(sender) {
@@ -306,7 +305,6 @@ internal object NationCommand : SLCommand() {
 		Notify.chatAndEvents(nationImportantMessageFormat("Settlement {0} seceded from the nation {1}!", getSettlementName(settlementId), nationName))
 	}
 
-	@Suppress("unused")
 	@Subcommand("kick")
 	@Description("Kick a settlement from your nation")
 	@CommandCompletion("@member_settlements")
@@ -326,7 +324,6 @@ internal object NationCommand : SLCommand() {
 		Notify.chatAndEvents(nationImportantMessageFormat("{0} kicked settlement {1} from the nation {2}!", sender.name, settlementName, getNationName(nationId)))
 	}
 
-	@Suppress("unused")
 	@Subcommand("set name")
 	@Description("Rename your nation")
 	fun onSetName(sender: Player, newName: String, @Optional cost: Int?) = asyncCommand(sender) {
@@ -352,7 +349,6 @@ internal object NationCommand : SLCommand() {
 		Notify.chatAndEvents(nationMessageFormat("{0} renamed their nation {1} to {2}!", sender.name, oldName, newName))
 	}
 
-	@Suppress("unused")
 	@Subcommand("set color")
 	@Description("Change the color your nation")
 	fun onSetColor(sender: Player, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
@@ -365,7 +361,6 @@ internal object NationCommand : SLCommand() {
 		sender.sendMessage(nationMessageFormat("Updated nation color to {0}", text("█████████████", color(red, green, blue))))
 	}
 
-	@Suppress("unused")
 	@Subcommand("set capital")
 	@CommandCompletion("@member_settlements")
 	fun setCapital(sender: Player, newCapital: String) = asyncCommand(sender) {
@@ -384,7 +379,6 @@ internal object NationCommand : SLCommand() {
 		Notify.chatAndEvents(nationImportantMessageFormat("{0} changed the capital of their nation {1} to {2}", sender.name, getNationName(nationId), settlementName))
 	}
 
-	@Suppress("unused")
 	@Subcommand("claim")
 	@Description("Claim a planetary territory (one per planet)")
 	fun onClaim(sender: Player, @Optional cost: Int?) = asyncCommand(sender) {
@@ -424,7 +418,6 @@ internal object NationCommand : SLCommand() {
 		))
 	}
 
-	@Suppress("unused")
 	@Subcommand("unclaim")
 	@Description("Unclaim a planetary territory")
 	@CommandCompletion("@outposts")
@@ -452,7 +445,6 @@ internal object NationCommand : SLCommand() {
 		))
 	}
 
-	@Suppress("unused")
 	@Subcommand("top|list")
 	@Description("View the top nations on Star Legacy")
 	fun onTop(sender: CommandSender, @Optional page: Int?): Unit = asyncCommand(sender) {
@@ -544,7 +536,6 @@ internal object NationCommand : SLCommand() {
 		sender.sendMessage(message.build())
 	}
 
-	@Suppress("unused")
 	@Subcommand("info")
 	@CommandCompletion("@nations")
 	fun onInfo(sender: CommandSender, @Optional nation: String?): Unit = asyncCommand(sender) {
@@ -783,7 +774,6 @@ internal object NationCommand : SLCommand() {
 		sender.sendMessage(message.build())
 	}
 
-	@Suppress("unused")
 	@Subcommand("role")
 	fun onRole(sender: CommandSender): Unit = fail { "Use /nrole, not /n role (remove the space)" }
 }

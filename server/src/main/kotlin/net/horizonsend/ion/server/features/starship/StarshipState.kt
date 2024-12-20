@@ -11,12 +11,12 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
@@ -90,8 +90,8 @@ data class StarshipState(
 			val clipboard = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getReader(stream).use { reader: ClipboardReader ->
 				reader.read()
 			}
-			val min = Vec3i(clipboard.minimumPoint.x, clipboard.minimumPoint.y, clipboard.minimumPoint.z)
-			val max = Vec3i(clipboard.maximumPoint.x, clipboard.maximumPoint.y, clipboard.maximumPoint.z)
+			val min = Vec3i(clipboard.minimumPoint.x(), clipboard.minimumPoint.y(), clipboard.minimumPoint.z())
+			val max = Vec3i(clipboard.maximumPoint.x(), clipboard.maximumPoint.y(), clipboard.maximumPoint.z())
 
 			val blockMap = Long2ObjectOpenHashMap<BlockData>()
 
@@ -100,12 +100,12 @@ data class StarshipState(
 				if (blockData.material.isAir) {
 					continue
 				}
-				val blockKey = blockKey(vec.x, vec.y, vec.z)
+				val blockKey = blockKey(vec.x(), vec.y(), vec.z())
 				blockMap[blockKey] = blockData
 			}
 
 			val chunks = clipboard.region.chunks
-			val coveredChunks = chunks.mapTo(LongOpenHashSet(chunks.size)) { chunkKey(it.x, it.z) }
+			val coveredChunks = chunks.mapTo(LongOpenHashSet(chunks.size)) { chunkKey(it.x(), it.z()) }
 			return StarshipState(coveredChunks, blockMap, min, max)
 		}
 	}

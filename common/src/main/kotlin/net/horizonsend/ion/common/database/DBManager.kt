@@ -6,7 +6,6 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoCursor
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
@@ -29,15 +28,20 @@ import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
+import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
+import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.common.database.schema.space.Moon
 import net.horizonsend.ion.common.database.schema.space.Planet
+import net.horizonsend.ion.common.database.schema.space.RoguePlanet
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.database.schema.starships.AIStarshipData
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import org.bson.BsonDocument
 import org.bson.BsonDocumentReader
 import org.bson.Document
@@ -106,7 +110,9 @@ object DBManager : IonComponent() {
 
 		// nations
 		CapturableStation.init()
+		SolarSiegeZone.init()
 		CapturableStationSiege.init()
+		SolarSiegeData.init()
 		Nation.init()
 		NationRelation.init()
 		NPCTerritoryOwner.init()
@@ -122,6 +128,8 @@ object DBManager : IonComponent() {
 
 		// space
 		Planet.init()
+		RoguePlanet.init()
+		Moon.init()
 		Star.init()
 
 		// economy
@@ -156,9 +164,20 @@ object DBManager : IonComponent() {
 	inline fun <reified T> decode(document: Document): T =
 		decode(document.toBsonDocument(T::class.java, database.codecRegistry))
 
+	inline fun <T : Any> decode(clazz: KClass<T>, document: Document): T =
+		decode(clazz, document.toBsonDocument(clazz.java, database.codecRegistry))
+
 	inline fun <reified T> decode(document: BsonDocument): T {
 		val codecRegistry: CodecRegistry = database.codecRegistry
 		val clazz: Class<T> = T::class.java
+		BsonDocumentReader(document).use { reader ->
+			return codecRegistry.get(clazz).decode(reader, DecoderContext.builder().build())
+		}
+	}
+
+	inline fun <T: Any> decode(clazz: KClass<T>, document: BsonDocument): T {
+		val codecRegistry: CodecRegistry = database.codecRegistry
+		val clazz: Class<T> = clazz.java
 		BsonDocumentReader(document).use { reader ->
 			return codecRegistry.get(clazz).decode(reader, DecoderContext.builder().build())
 		}

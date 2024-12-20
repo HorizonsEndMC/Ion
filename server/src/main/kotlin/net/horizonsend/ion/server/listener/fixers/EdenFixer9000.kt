@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.listener.fixers
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.minecraft.core.BlockPos
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -19,7 +19,7 @@ class EdenFixer9000 : SLEventListener() {
 	fun onChunkLoad(event: ChunkLoadEvent) {
 		if (!event.chunk.world.name.lowercase().contains("eden")) return
 
-		val chunkOreVersion = event.chunk.persistentDataContainer.get(NamespacedKeys.EDEN_FIX, PersistentDataType.BYTE)
+		val chunkOreVersion: Byte? = event.chunk.persistentDataContainer.get(NamespacedKeys.EDEN_FIX, PersistentDataType.BYTE)
 		if (chunkOreVersion == 2.toByte()) return
 
 		val evilBlocks = setOf(Material.SCULK_SENSOR, Material.SCULK_CATALYST, Material.SCULK_SHRIEKER)

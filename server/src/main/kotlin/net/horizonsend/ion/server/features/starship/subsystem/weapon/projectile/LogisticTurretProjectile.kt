@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
@@ -34,7 +34,7 @@ class LogisticTurretProjectile(
     override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
         Location(loc.world, x, y, z).spherePoints(1.0, 10).forEach {
             it.world.spawnParticle(
-                Particle.VILLAGER_HAPPY,
+                Particle.HAPPY_VILLAGER,
                 it.x,
                 it.y,
                 it.z,

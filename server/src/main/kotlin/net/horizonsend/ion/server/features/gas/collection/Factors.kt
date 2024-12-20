@@ -1,14 +1,17 @@
 package net.horizonsend.ion.server.features.gas.collection
 
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.server.configuration.DoubleAmount
-import net.horizonsend.ion.server.configuration.IntegerAmount
+import net.horizonsend.ion.server.configuration.util.DoubleAmount
+import net.horizonsend.ion.server.configuration.util.IntegerAmount
 import org.bukkit.Location
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
 @Serializable
 sealed interface Factor {
+	/**
+	 * A gas collection factor. It returns a value in liters per second.
+	 **/
 	fun getAmount(location: Location): Int
 }
 
@@ -42,11 +45,11 @@ data class ChildWeight(
 
 @Serializable
 data class HeightRamp(
-	override val parent: Factor,
-	val minHeight: IntegerAmount,
-	val maxHeight: IntegerAmount,
-	val minWeight: DoubleAmount,
-	val maxWeight: DoubleAmount
+    override val parent: Factor,
+    val minHeight: IntegerAmount,
+    val maxHeight: IntegerAmount,
+    val minWeight: DoubleAmount,
+    val maxWeight: DoubleAmount
 ) : ChildFactor {
 	override fun modifyFactor(location: Location, previousResult: Int): Int {
 		if (location.y < minHeight.get() || location.y > maxHeight.get()) return previousResult
@@ -60,11 +63,11 @@ data class HeightRamp(
 
 @Serializable
 data class NoiseFactor(
-	override val parent: Factor,
-	val minHeight: IntegerAmount,
-	val maxHeight: IntegerAmount,
-	val noiseMin: DoubleAmount,
-	val noiseMax: DoubleAmount,
+    override val parent: Factor,
+    val minHeight: IntegerAmount,
+    val maxHeight: IntegerAmount,
+    val noiseMin: DoubleAmount,
+    val noiseMax: DoubleAmount,
 ) : ChildFactor {
 	override fun modifyFactor(location: Location, previousResult: Int): Int {
 		if (location.y < minHeight.get() || location.y > maxHeight.get()) return previousResult

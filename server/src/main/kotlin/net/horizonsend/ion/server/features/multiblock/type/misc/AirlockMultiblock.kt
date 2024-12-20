@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.misc
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -38,11 +38,11 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 			}
 
 			y(-1) {
-				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL)
+				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL, alias = "iron bars")
 			}
 
 			y(+0) {
-				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL)
+				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL, alias = "iron bars")
 			}
 		}
 	}
@@ -78,7 +78,7 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 
 		val component = if (enabled) { ON } else { OFF }
 
-		sign.getSide(Side.FRONT).line(1, component)
+		sign.getSide(FRONT).line(1, component)
 		sign.update()
 	}
 }

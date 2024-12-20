@@ -15,7 +15,6 @@ import org.litote.kmongo.setValue
 
 @CommandAlias("sidebar")
 object SidebarWaypointsCommand : SLCommand() {
-    @Suppress("unused")
     @Subcommand("route")
     fun defaultCase(
         sender: Player
@@ -23,7 +22,6 @@ object SidebarWaypointsCommand : SLCommand() {
         sender.userError("Usage: /sidebar route <option> [toggle]")
     }
 
-    @Suppress("unused")
     @Subcommand("route enable")
     fun onEnableWaypoints(
         sender: Player
@@ -33,7 +31,6 @@ object SidebarWaypointsCommand : SLCommand() {
         sender.success("Enabled route on sidebar")
     }
 
-    @Suppress("unused")
     @Subcommand("route disable")
     fun onDisableWaypoints(
         sender: Player
@@ -43,7 +40,6 @@ object SidebarWaypointsCommand : SLCommand() {
         sender.success("Disabled route on sidebar")
     }
 
-    @Suppress("unused")
     @Subcommand("route compactWaypoints")
     @Description("Toggles compact waypoints; intermediate jumps are not displayed during navigation")
     fun onToggleCompactWaypoints(

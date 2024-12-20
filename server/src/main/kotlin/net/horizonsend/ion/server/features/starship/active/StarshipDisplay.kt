@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.registerIcon
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
@@ -195,12 +195,12 @@ object StarshipDisplay : IonServerComponent(true) {
 
 	/** Store the location, icon, and other details of a starship on the map */
 	data class StarshipIcon(
-		val charIdentifier: String,
-		val displayName: String,
-		val icon: MarkerIcon,
-		val world: World,
-		var position: Vec3i,
-		val description: String,
+        val charIdentifier: String,
+        val displayName: String,
+        val icon: MarkerIcon,
+        val world: World,
+        var position: Vec3i,
+        val description: String,
 		val circles: List<CircleInfo>
 	) {
 		fun update(markerSet: MarkerSet) {

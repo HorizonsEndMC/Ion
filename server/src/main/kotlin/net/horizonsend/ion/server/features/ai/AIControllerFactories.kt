@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.ai.module.combat.FrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.MultiTargetFrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.StarfighterCombatModule
 import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
-import net.horizonsend.ion.server.features.ai.module.misc.DirectControlWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.FleeModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.TrackingModule
@@ -23,8 +22,8 @@ import net.horizonsend.ion.server.features.ai.module.targeting.HighestDamagerTar
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceToVector
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import java.util.Optional
 import kotlin.random.Random
@@ -276,7 +275,7 @@ object AIControllerFactories : IonServerComponent() {
 				val endPointZ = Random.nextInt(minZ, maxZ)
 				val endPoint = Vec3i(endPointX, origin.y, endPointZ)
 
-				val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+				val planets = Space.getAllPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
 
 				val minDistance = planets.minOfOrNull {
 					val direction = endPoint.minus(origin)

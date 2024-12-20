@@ -1,15 +1,19 @@
 package net.horizonsend.ion.server.features.multiblock.type.industry
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import org.bukkit.block.Furnace
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import org.bukkit.Material
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
 
-
-object CircuitfabMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+object CircuitfabMultiblock : Multiblock(), EntityMultiblock<CircuitfabMultiblock.CircuitfabMultiblockEntity> {
 	override val name = "circuitfab"
 
 	override val signText = createSignText(
@@ -19,20 +23,18 @@ object CircuitfabMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		line4 = null
 	)
 
-	override val maxPower = 300_000
-
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-2).anyStairs()
 				x(-1).ironBlock()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyGlass()
 				x(+2).anyStairs()
 			}
 			y(+0) {
 				x(-2).anyStairs()
-				x(-1).craftingTable()
+				x(-1).extractor()
 				x(+0).machineFurnace()
 				x(+1).anyGlass()
 				x(+2).anyStairs()
@@ -49,7 +51,7 @@ object CircuitfabMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 			y(+0) {
 				x(-2).ironBlock()
 				x(-1).endRod()
-				x(+0).anvil()
+				x(+0).type(Material.ANVIL)
 				x(+1).endRod()
 				x(+2).ironBlock()
 			}
@@ -72,11 +74,24 @@ object CircuitfabMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		}
 	}
 
-	override fun onFurnaceTick(
-		event: FurnaceBurnEvent,
-		furnace: Furnace,
-		sign: Sign,
-	) {
-		handleRecipe(this, event, furnace, sign)
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): CircuitfabMultiblockEntity {
+		return CircuitfabMultiblockEntity(data, manager, x, y, z, world, structureDirection)
+	}
+
+	class CircuitfabMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace
+	) : SimplePoweredEntity(data, CircuitfabMultiblock, manager, x, y, z, world, structureDirection, 300_000), LegacyMultiblockEntity, PoweredMultiblockEntity {
+		override val multiblock: CircuitfabMultiblock = CircuitfabMultiblock
+		override val  displayHandler = standardPowerDisplay(this)
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
 	}
 }

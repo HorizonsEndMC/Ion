@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
@@ -23,7 +24,7 @@ object AutoRestart : IonServerComponent() {
 			file.delete()
 		}
 
-		Tasks.asyncAtHour(IonServer.configuration.restartHour) {
+		Tasks.asyncAtHour(ConfigurationFiles.serverConfiguration().restartHour) {
 			fun sleep(length: Int, timeUnit: TimeUnit) {
 				Thread.sleep(timeUnit.toMillis(length.toLong()))
 			}

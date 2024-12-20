@@ -18,10 +18,10 @@ import net.horizonsend.ion.server.features.starship.control.controllers.Controll
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.modules.AISinkMessageFactory
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getLocationNear
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
@@ -134,13 +134,13 @@ fun createFromClipboard(
 }
 
 private fun tryPilotWithController(
-	logger: Logger,
-	world: World,
-	origin: Vec3i,
-	type: StarshipType,
-	name: String,
-	createController: (ActiveControlledStarship) -> Controller,
-	callback: (ActiveControlledStarship) -> Unit = {}
+    logger: Logger,
+    world: World,
+    origin: Vec3i,
+    type: StarshipType,
+    name: String,
+    createController: (ActiveControlledStarship) -> Controller,
+    callback: (ActiveControlledStarship) -> Unit = {}
 ) {
 	val (x, y, z) = origin
 	val block = world.getBlockAt(x, y, z)
@@ -169,7 +169,7 @@ private fun tryPilotWithController(
 
 fun isSystemOccupied(world: World): Boolean {
 	// Ensure that it is a system with a star and planets
-	val planets = Space.getPlanets().filter { it.spaceWorld == world }
+	val planets = Space.getAllPlanets().filter { it.spaceWorld == world }
 
 	val players = world.players
 
@@ -195,7 +195,7 @@ fun formatLocationSupplier(world: World, minDistance: Double, maxDistance: Doubl
 
 	val border = world.worldBorder
 
-	val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+	val planets = Space.getAllPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
 
 	// max 10 iterations
 	while (iterations <= 15) {
@@ -233,7 +233,7 @@ fun formatLocationSupplier(centerSupplier: Supplier<Location>, minDistance: Doub
 
 	val border = world.worldBorder
 
-	val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+	val planets = Space.getAllPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
 
 	// max 10 iterations
 	while (iterations <= 15) {

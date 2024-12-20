@@ -16,9 +16,9 @@ import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.miscellaneous.utils.Discord
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component.newline
@@ -88,7 +88,8 @@ internal object NationRelationCommand : SLCommand() {
 			actual.component
 		)
 
-		Discord.sendEmbed(IonServer.discordSettings.globalChannel, Embed(
+		Discord.sendEmbed(
+			ConfigurationFiles.discordSettings().globalChannel, Embed(
 			description = message.plainText(),
 			color = wish.color.value()
 		))

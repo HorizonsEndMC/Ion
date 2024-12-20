@@ -3,11 +3,12 @@ package net.starlegacy.javautil.blockplacement;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.horizonsend.ion.server.IonServer;
-import net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt;
 import net.horizonsend.ion.server.miscellaneous.utils.MiscellaneousKt;
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.CoordinatesKt;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -30,8 +31,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import static net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.chunkKeyX;
-import static net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.chunkKeyZ;
+import static net.horizonsend.ion.server.miscellaneous.utils.coordinates.CoordinatesKt.chunkKeyX;
+import static net.horizonsend.ion.server.miscellaneous.utils.coordinates.CoordinatesKt.chunkKeyZ;
 
 public class BlockPlacementRaw {
 	private final Logger log = IonServer.INSTANCE.getSLF4JLogger();
@@ -205,15 +206,14 @@ public class BlockPlacementRaw {
 //        sendChunkPacket(nmsChunk, bitmask);
 
 		// Send Chunk Packet
-		ChunkHolder playerChunk = nmsChunk.playerChunk;
-		if (playerChunk == null) {
-			return;
+		ChunkHolder playerChunk = nmsChunk.moonrise$getChunkAndHolder().holder();
+		ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.getLightEngine(), null, new BitSet(bitmask), true);
+
+		for (ServerPlayer player : playerChunk.moonrise$getPlayers(false)) {
+			player.connection.send(packet);
 		}
 
-		ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.getLightEngine(), null, new BitSet(bitmask), true);
-		playerChunk.broadcast(packet, false);
-
-		nmsChunk.setUnsaved(true);
+		nmsChunk.markUnsaved();
 
 		if (!wasLoaded) {
 			Bukkit.getServer().getScheduler().runTask(IonServer.INSTANCE, () -> world.unloadChunkRequest(cx, cz));

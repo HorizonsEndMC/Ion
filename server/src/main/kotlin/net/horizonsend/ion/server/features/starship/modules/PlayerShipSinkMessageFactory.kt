@@ -7,6 +7,9 @@ import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.chat.Discord
+import net.horizonsend.ion.server.features.chat.Discord.asDiscord
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -18,8 +21,6 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.ARENA_PREFIX
-import net.horizonsend.ion.server.miscellaneous.utils.Discord
-import net.horizonsend.ion.server.miscellaneous.utils.Discord.asDiscord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
@@ -79,8 +80,8 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 			fields = fields
 		)
 
-		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, embed)
-		Discord.sendEmbed(IonServer.discordSettings.globalChannel, embed)
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().eventsChannel, embed)
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().globalChannel, embed)
 	}
 
 	private fun sendPilotKilledMessage(killer: Damager, sortedByTime: Iterator<MutableMap.MutableEntry<Damager, ShipKillXP.ShipDamageData>>) {
@@ -110,8 +111,8 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 			fields = fields
 		)
 
-		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, embed)
-		Discord.sendEmbed(IonServer.discordSettings.globalChannel, embed)
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().eventsChannel, embed)
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().globalChannel, embed)
 	}
 
 	private fun getAssists(sortedByTime: Iterator<MutableMap.MutableEntry<Damager, ShipKillXP.ShipDamageData>>): Map<Damager, Component> {

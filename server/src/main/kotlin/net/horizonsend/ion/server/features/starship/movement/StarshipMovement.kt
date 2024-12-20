@@ -11,10 +11,11 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -25,17 +26,19 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsys
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rectangle
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.nms
-import net.horizonsend.ion.server.miscellaneous.utils.rectangle
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Animals
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
@@ -47,12 +50,15 @@ import kotlin.math.sqrt
 
 abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: World? = null) {
 	// null if the ship is not a player ship
-	private val playerShip: ActiveControlledStarship? = starship as? ActiveControlledStarship
+	private val playerShip: ActiveControlledStarship? = starship
 
 	abstract fun displaceX(oldX: Int, oldZ: Int): Int
 	abstract fun displaceY(oldY: Int): Int
 	abstract fun displaceZ(oldZ: Int, oldX: Int): Int
 	abstract fun displaceLocation(oldLocation: Location): Location
+	abstract fun displaceFace(face: BlockFace): BlockFace
+	abstract fun displaceVector(vector: Vector): Vector
+	abstract fun displaceKey(key: BlockKey): BlockKey
 	protected abstract fun movePassenger(passenger: Entity)
 	protected abstract fun onComplete()
 	protected abstract fun blockDataTransform(blockData: BlockState): BlockState
@@ -66,15 +72,9 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		check(newWorld != world1) { "New world can't be the same as the current world" }
 
-		if (starship.type == StarshipType.BATTLECRUISER && !world2.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
-			throw StarshipMovementException("Battlecruisers cannot support their weight within strong gravity wells!")
+		if (!starship.type.canPilotIn(world2.ion)) {
+			throw StarshipMovementException("Ships of this class can't be piloted in ${world2.name}")
 		}
-
-		if (starship.type == StarshipType.BARGE && !world2.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
-			throw StarshipMovementException("Barges cannot support their weight within strong gravity wells!")
-		}
-
-		//TODO replace this system with something better
 
 		if (!ActiveStarships.isActive(starship)) {
 			starship.serverError("Starship not active, movement cancelled.")
@@ -141,6 +141,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			starship.calculateMinMax()
 			updateCenter()
 			updateSubsystems(world2)
+			starship.multiblockManager.displace(this)
+			starship.transportManager.displace(this)
 
 			onComplete()
 		}
@@ -223,7 +225,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		val boundingBox = rectangle(newMin, newMax)
 
 		for (point in boundingBox) {
-			if (ProtectionListener.isProtectedCity(point) && starship.type.isWarship &&
+			if (ProtectionListener.isProtectedCity(point) && starship.type.typeCategory == TypeCategory.WAR_SHIP &&
 				CombatTimer.isPvpCombatTagged((starship.controller as PlayerController).player)) {
 
 				throw StarshipOutOfBoundsException("The trade city denies your starship entry for your recent acts of aggression!")

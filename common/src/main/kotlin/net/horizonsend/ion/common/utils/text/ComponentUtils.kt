@@ -22,11 +22,14 @@ import net.kyori.adventure.text.format.Style.style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
 // Serialization
 /** Skip building the serializer */
 val miniMessage = MiniMessage.miniMessage()
+
+val legacyAmpersand = LegacyComponentSerializer.legacyAmpersand()
 
 /** Serializes the component to minimessage format */
 fun miniMessage(component: Component): String = miniMessage.serialize(component)
@@ -49,7 +52,8 @@ fun ofChildren(vararg children: ComponentLike) = Component.textOfChildren(*child
 /** Analogue of Any#toString */
 @JvmOverloads
 fun Any.toComponent(vararg decorations: TextDecoration, color: TextColor = WHITE): Component = text(toString(), color, *decorations)
-fun Any.toComponent(color: TextColor = WHITE): Component = text(toString(), color)
+fun Any.toComponent(color: TextColor): Component = text(toString(), color)
+fun Any.toComponent(): Component = text(toString())
 
 /**
  * Formats the number into credit format, so it is rounded to the nearest hundredth,
@@ -107,7 +111,7 @@ fun Collection<Audience>.sendMessage(message: ComponentLike) = ForwardingAudienc
 //<editor-fold desc="Custom GUI helper functions">/
 
 val SPECIAL_FONT_KEY = Key.key("horizonsend:special")
-private fun yFontKey(y: Int) = Key.key("horizonsend:y$y")
+fun yFontKey(y: Int) = Key.key("horizonsend:y$y")
 
 const val TEXT_HEIGHT = 9
 // DEFAULT_GUI_WIDTH is the width that text will be formatted within. The actual GUI image width will be this plus
@@ -122,7 +126,7 @@ const val SHIFT_LEFT_MIN = 1
 const val SHIFT_LEFT_MAX = 256
 const val SHIFT_RIGHT_MIN = 1
 const val SHIFT_RIGHT_MAX = 256
-const val SHIFT_DOWN_MIN = 1
+const val SHIFT_DOWN_MIN = -17
 const val SHIFT_DOWN_MAX = 110
 
 // Custom characters begin
@@ -138,6 +142,8 @@ const val SHIFT_RIGHT_BEGIN_MIN_1 = 0xE0FF
 const val DEFAULT_BACKGROUND_CHARACTER = '\uF8FF'
 const val CHETHERITE_CHARACTER = '\uF8FE'
 const val SLOT_OVERLAY_CHARACTER = '\uF8FD'
+const val BACKGROUND_EXTENDER = '\uF8FB'
+const val ANVIL_BACKGROUND = '\uF8FA'
 
 // Custom characters end
 

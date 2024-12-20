@@ -9,9 +9,9 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.nations.NationsMap.dynmapLoaded
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
-import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getLocationNear
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
@@ -117,7 +117,7 @@ class LocusScheduler(
 		val world = Bukkit.getWorld(worlds.random())!!
 		val border = world.worldBorder
 
-		val planets = Space.getPlanets()
+		val planets = Space.getAllPlanets()
 			.filter { it.spaceWorld?.uid == world.uid }
 			.plus(Space.getStars().filter { it.spaceWorld?.uid == world.uid })
 

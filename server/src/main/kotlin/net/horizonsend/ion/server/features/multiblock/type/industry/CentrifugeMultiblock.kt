@@ -1,23 +1,34 @@
 package net.horizonsend.ion.server.features.multiblock.type.industry
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import org.bukkit.block.Furnace
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
 
 
-object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
-	override val maxPower: Int = 300_000
+object CentrifugeMultiblock : Multiblock(), EntityMultiblock<CentrifugeMultiblock.CentrifugeMultiblockEntity> {
+	override val name = "centrifuge"
+
+	override val signText = createSignText(
+		line1 = "&6Centrifuge",
+		line2 = null,
+		line3 = null,
+		line4 = null
+	)
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-2).steelBlock()
 				x(-1).anyGlassPane()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyGlassPane()
 				x(+2).steelBlock()
 			}
@@ -32,9 +43,9 @@ object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+1) {
 			y(-1) {
 				x(-2).anyGlassPane()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).endRod()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).anyGlassPane()
 			}
 			y(+0) {
@@ -48,9 +59,9 @@ object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+2) {
 			y(-1) {
 				x(-2).ironBlock()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).ironBlock()
 			}
 			y(+0) {
@@ -64,9 +75,9 @@ object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+3) {
 			y(-1) {
 				x(-2).anyGlassPane()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).endRod()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).anyGlassPane()
 			}
 			y(+0) {
@@ -95,20 +106,25 @@ object CentrifugeMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		}
 	}
 
-	override val name = "centrifuge"
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): CentrifugeMultiblockEntity {
+		return CentrifugeMultiblockEntity(data, manager, x, y, z, world, structureDirection)
+	}
 
-	override val signText = createSignText(
-		line1 = "&6Centrifuge",
-		line2 = null,
-		line3 = null,
-		line4 = null
-	)
+	class CentrifugeMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace
+	) : SimplePoweredEntity(data, CentrifugeMultiblock, manager, x, y, z, world, structureDirection, 300_000), LegacyMultiblockEntity, PoweredMultiblockEntity {
+		override val multiblock: CentrifugeMultiblock = CentrifugeMultiblock
 
-	override fun onFurnaceTick(
-		event: FurnaceBurnEvent,
-		furnace: Furnace,
-		sign: Sign,
-	) {
-		handleRecipe(this, event, furnace, sign)
+		override val displayHandler = standardPowerDisplay(this)
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+		}
 	}
 }

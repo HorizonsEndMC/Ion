@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrack
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLaserProjectile
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
@@ -34,7 +34,6 @@ class HeavyLaserWeaponSubsystem(
 	override val aimDistance: Int = balancing.aimDistance
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-		checkNotNull(target)
 		HeavyLaserProjectile(starship, getName(), loc, dir, shooter, target, aimDistance, sound).fire()
 	}
 

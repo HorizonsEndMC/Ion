@@ -7,6 +7,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.player.CombatTimer
 import org.bukkit.Bukkit
+import org.bukkit.damage.DamageSource
+import org.bukkit.damage.DamageType
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
 
@@ -22,7 +24,13 @@ object SuicideCommand : SLCommand() {
         }
 
         // Force kill if this event is cancelled
-        EntityDamageEvent(sender, EntityDamageEvent.DamageCause.SUICIDE, Double.MAX_VALUE).callEvent()
+        EntityDamageEvent(
+			sender,
+			EntityDamageEvent.DamageCause.SUICIDE,
+			DamageSource.builder(DamageType.GENERIC).withCausingEntity(sender).build(),
+			Double.MAX_VALUE
+		).callEvent()
+
         sender.health = 0.0
 
         // Notify everyone of this player's untimely demise

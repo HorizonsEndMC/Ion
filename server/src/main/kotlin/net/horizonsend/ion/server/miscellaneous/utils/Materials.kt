@@ -1,12 +1,14 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import org.bukkit.Material
+import org.bukkit.block.data.Bisected
+import org.bukkit.Registry
 import java.util.EnumSet
 
 /**
  * This should be used instead of Material.values() to avoid encountering legacy materials
  */
-val MATERIALS = Material.values().filterNot { it.isLegacy }
+val MATERIALS: Registry<Material> = Registry.MATERIAL
 
 fun getMatchingMaterials(filter: (Material) -> Boolean): EnumSet<Material> =
 	MATERIALS.filterTo(EnumSet.noneOf(Material::class.java), filter)
@@ -120,3 +122,60 @@ val COPPER_TYPES = getMatchingMaterials { it.name.contains("COPPER") }
 val Material.isCopper: Boolean get() = COPPER_TYPES.contains(this)
 
 val SAPLING_TYPES = getMatchingMaterials { it.name.endsWith("_SAPLING") }
+val Material.isTankPassable: Boolean get() = TANK_PASSABLE_TYPES.contains(this)
+
+// Bisected is double plants
+val TANK_PASSABLE_TYPES = getMatchingMaterials { it.isAir || it.data == Bisected::class.java }
+
+val COPPER_BLOCK_TYPES = enumSetOf(
+	Material.COPPER_BLOCK,
+	Material.EXPOSED_COPPER,
+	Material.WEATHERED_COPPER,
+	Material.OXIDIZED_COPPER,
+	Material.WAXED_COPPER_BLOCK,
+	Material.WAXED_EXPOSED_COPPER,
+	Material.WAXED_WEATHERED_COPPER,
+	Material.WAXED_OXIDIZED_COPPER
+)
+
+val Material.isCopperBlock get() = COPPER_BLOCK_TYPES.contains(this)
+
+val COPPER_BULB_TYPES = enumSetOf(
+	Material.COPPER_BULB,
+	Material.EXPOSED_COPPER_BULB,
+	Material.WEATHERED_COPPER_BULB,
+	Material.OXIDIZED_COPPER_BULB,
+	Material.WAXED_COPPER_BULB,
+	Material.WAXED_EXPOSED_COPPER_BULB,
+	Material.WAXED_WEATHERED_COPPER_BULB,
+	Material.WAXED_OXIDIZED_COPPER_BULB
+)
+
+val Material.isCopperBulb get() = COPPER_BULB_TYPES.contains(this)
+
+val ALL_CHISELED_COPPER_TYPES = enumSetOf(
+	Material.CHISELED_COPPER,
+	Material.EXPOSED_CHISELED_COPPER,
+	Material.WEATHERED_CHISELED_COPPER,
+	Material.OXIDIZED_CHISELED_COPPER,
+	Material.WAXED_CHISELED_COPPER,
+	Material.WAXED_EXPOSED_CHISELED_COPPER,
+	Material.WAXED_WEATHERED_CHISELED_COPPER,
+	Material.WAXED_OXIDIZED_CHISELED_COPPER
+)
+
+val WAXED_CHISELED_COPPER_TYPES = enumSetOf(
+	Material.WAXED_CHISELED_COPPER,
+	Material.WAXED_EXPOSED_CHISELED_COPPER,
+	Material.WAXED_WEATHERED_CHISELED_COPPER,
+	Material.WAXED_OXIDIZED_CHISELED_COPPER
+)
+
+val UNWAXED_CHISELED_COPPER_TYPES = enumSetOf(
+	Material.CHISELED_COPPER,
+	Material.EXPOSED_CHISELED_COPPER,
+	Material.WEATHERED_CHISELED_COPPER,
+	Material.OXIDIZED_CHISELED_COPPER,
+)
+
+val Material.isChiseledCopper get() = ALL_CHISELED_COPPER_TYPES.contains(this)

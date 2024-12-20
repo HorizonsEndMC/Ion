@@ -71,7 +71,7 @@ class HyperspaceWarmup(
 			return
 		}
 
-		if (!PilotedStarships.isPiloted(ship as ActiveControlledStarship)) {
+		if (!PilotedStarships.isPiloted(ship)) {
 			// Do this separate since the unpiloted controller doesn't pass through information, if it duplicates, oh well
 			(ship.controller as? PlayerController)?.player?.userError("Starship became unpiloted, hyperspace warmup cancelled.")
 

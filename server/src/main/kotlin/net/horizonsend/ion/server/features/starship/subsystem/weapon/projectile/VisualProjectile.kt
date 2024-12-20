@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import net.horizonsend.ion.server.configuration.AntiAirCannonBalancing
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.damager.noOpDamager
-import net.horizonsend.ion.server.miscellaneous.utils.alongVector
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -63,7 +63,7 @@ class VisualProjectile(
 	}
 
 	private fun moveVisually(travel: Double) {
-		val particle = Particle.REDSTONE
+		val particle = Particle.DUST
 		val dustOptions = Particle.DustOptions(color, particleThickness * 4f)
 
 		loc.alongVector(dir, 1 + extraParticles).forEach {

@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.QuadTurretMultiblock
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.QuadTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
@@ -28,7 +28,7 @@ class QuadTurretWeaponSubsystem(
 	override val permission: String = "ion.multiblock.quadturret"
 
 	override fun getRequiredAmmo(): ItemStack {
-		return CustomItems.LOADED_SHELL.constructItemStack()
+		return CustomItemRegistry.LOADED_SHELL.constructItemStack()
 	}
 
 	override fun getName(): Component {

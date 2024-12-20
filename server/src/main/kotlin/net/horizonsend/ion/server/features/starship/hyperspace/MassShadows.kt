@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.World
@@ -21,7 +21,7 @@ object MassShadows {
 		val realWorld = (if (Hyperspace.isHyperspaceWorld(world)) Hyperspace.getRealspaceWorld(world) else world)
 			?: return null
 
-		for (planet in Space.getPlanets()) {
+		for (planet in Space.getAllPlanets()) {
 			if (planet.spaceWorld != realWorld) continue
 
 			val loc = planet.location
