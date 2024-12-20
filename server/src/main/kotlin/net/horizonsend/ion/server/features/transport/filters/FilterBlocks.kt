@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.filters
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.misc.TransportFilterItem
 import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -22,7 +22,7 @@ object FilterBlocks : IonServerComponent() {
 		return filters[identifier]
 	}
 
-	val FLUID_FILTER: FilterBlock<Fluid> = registerFilter("FLUID_FILTER", CacheType.FLUID) { CustomItems.FLUID_FILTER }
+	val FLUID_FILTER: FilterBlock<Fluid> = registerFilter("FLUID_FILTER", CacheType.FLUID) { CustomItemRegistry.FLUID_FILTER }
 
 	private fun <T: Any> registerFilter(identifier: String, cacheType: CacheType, customItemSupplier: Supplier<TransportFilterItem>): FilterBlock<T> {
 		val data = FilterBlock<T>(identifier, cacheType, customItemSupplier)

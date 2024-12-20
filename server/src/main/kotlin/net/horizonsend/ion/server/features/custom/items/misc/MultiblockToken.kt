@@ -4,58 +4,54 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.PrePackaged
 import net.horizonsend.ion.server.features.multiblock.PrePackaged.getTokenData
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.TextDecoration.ITALIC
-import org.bukkit.Material
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 import java.util.Locale
 
-object MultiblockToken : CustomItem("MULTIBLOCK_TOKEN") {
-	override fun constructItemStack(): ItemStack {
-		val base = ItemStack(Material.PAPER).updateMeta {
-			it.persistentDataContainer.set(CUSTOM_ITEM, PersistentDataType.STRING, identifier)
-			it.displayName(text("Pre-Packaged Multiblock").decoration(ITALIC, false))
-		}
-
-		return base
+object MultiblockToken : CustomItem(
+	"MULTIBLOCK_TOKEN",
+	text("Pre-Packaged Multiblock"),
+	ItemFactory.unStackableCustomItem
+) {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@MultiblockToken) { event, _, itemStack ->
+			handleSecondaryInteract(event.player, itemStack, event)
+		})
 	}
 
 	fun constructFor(multiblock: Multiblock): ItemStack {
 		val base = constructItemStack()
-
-		return base.updateMeta {
-			PrePackaged.setTokenData(multiblock, it.persistentDataContainer)
-			it.displayName(ofChildren(multiblock.getDisplayName(), text(" Token")).itemName)
-			it.lore(listOf(
+			.updateDisplayName(ofChildren(multiblock.getDisplayName(), text(" Token")))
+			.updateLore(listOf(
 				text("Multiblock: ${multiblock.name.replaceFirstChar { char -> char.uppercase(Locale.getDefault()) }}", GRAY).itemName,
 				text("Variant: ${multiblock.javaClass.simpleName}", GRAY).itemName
 			))
-		}
+
+		return base.updatePersistentDataContainer { PrePackaged.setTokenData(multiblock, this) }
 	}
 
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
+	private fun handleSecondaryInteract(livingEntity: Player, itemStack: ItemStack, event: PlayerInteractEvent) {
 		if (itemStack.type.isAir) return
 
 		val packagedData = getTokenData(itemStack) ?: run {
 			livingEntity.userError("The packaged multiblock has no data!")
 			return
 		}
-
-		if (livingEntity !is Player) return
-
-		if (event == null) return
 
 		val origin = PrePackaged.getOriginFromPlacement(
 			event.clickedBlock ?: return,

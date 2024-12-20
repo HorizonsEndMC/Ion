@@ -25,6 +25,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 
 abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMultiblock<ChargerMultiblock.ChargerEntity>, FurnaceMultiblock, DisplayNameMultilblock {
@@ -115,15 +116,10 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMul
 			if (availablePower == 0) return
 
 			val item = event.fuel
-			if (isPowerable(item)) {
-				handleLegacy(item, event, furnace, availablePower)
-			}
-
-			val custom = item.customItem
 
 			val custom = item.customItem ?: return
 			if (custom.hasComponent(CustomComponentTypes.POWER_STORAGE))
-				handleModern(item, custom, custom.getComponent(CustomComponentTypes.POWER_STORAGE), event, furnace, inventory, sign, power)
+				handleModern(item, custom, custom.getComponent(CustomComponentTypes.POWER_STORAGE), event, furnace, furnace.inventory, powerStorage.getPower())
 		}
 
 		fun handleModern(
@@ -133,7 +129,6 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMul
 			event: FurnaceBurnEvent,
 			furnace: Furnace,
 			inventory: FurnaceInventory,
-			sign: Sign,
 			power: Int
 		) {
 			if (powerManager.getMaxPower(customItem, item) == powerManager.getPower(item)) {

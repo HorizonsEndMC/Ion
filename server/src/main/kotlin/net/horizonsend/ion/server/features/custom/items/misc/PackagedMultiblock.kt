@@ -5,32 +5,41 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
+import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.PrePackaged
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Material
 import org.bukkit.block.Chest
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
-import org.bukkit.persistence.PersistentDataType.STRING
 import java.util.Locale
 
-object PackagedMultiblock : CustomItem("PACKAGED_MULTIBLOCK") {
-	override fun constructItemStack(): ItemStack {
-		return ItemStack(Material.CHEST).updateMeta {
-			it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
-		}
+object PackagedMultiblock : CustomItem(
+	"PACKAGED_MULTIBLOCK",
+	ofChildren(Component.text("Packaged Null")),
+	ItemFactory.unStackableCustomItem
+) {
+	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@PackagedMultiblock) { event, _, itemStack ->
+			handleSecondaryInteract(event.player, itemStack, event)
+		})
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PackagedMultiblock) { event, _, itemStack ->
+			handlePrimaryInteract(event.player, itemStack, event)
+		})
 	}
 
 	fun createFor(multiblock: Multiblock): ItemStack {
@@ -46,7 +55,7 @@ object PackagedMultiblock : CustomItem("PACKAGED_MULTIBLOCK") {
 		}
 	}
 
-	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent?) {
+	private fun handleSecondaryInteract(livingEntity: Player, itemStack: ItemStack, event: PlayerInteractEvent) {
 		if (itemStack.type.isAir) return
 
 		val packagedData = PrePackaged.getTokenData(itemStack) ?: run {
@@ -55,10 +64,6 @@ object PackagedMultiblock : CustomItem("PACKAGED_MULTIBLOCK") {
 		}
 
 		val inventory = ((itemStack.itemMeta as? BlockStateMeta)?.blockState as? Chest)?.inventory ?: return livingEntity.userError("The packaged multiblock has no data!")
-
-		if (livingEntity !is Player) return
-
-		if (event == null) return
 
 		val direction = livingEntity.facing
 		val origin = PrePackaged.getOriginFromPlacement(
@@ -92,7 +97,7 @@ object PackagedMultiblock : CustomItem("PACKAGED_MULTIBLOCK") {
 		itemStack.amount--
 	}
 
-	override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
+	fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
 		if (livingEntity !is Player) return
 
 		val packagedData = PrePackaged.getTokenData(itemStack) ?: run {

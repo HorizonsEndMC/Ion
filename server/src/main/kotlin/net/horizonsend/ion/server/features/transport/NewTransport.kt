@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.horizonsend.ion.server.features.starship.event.build.StarshipPlaceBlockEvent
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
@@ -34,7 +34,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	override fun onEnable() {
 		executor = Executors.newFixedThreadPool(64, Tasks.namedThreadFactory("wire-transport"))
 
-		val interval: Long = IonServer.transportSettings.extractorConfiguration.extractorTickIntervalMS
+		val interval: Long = ConfigurationFiles.transportSettings().extractorConfiguration.extractorTickIntervalMS
 
 		monitorThread = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) {
 			transportManagers.forEach {

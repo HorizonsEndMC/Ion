@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.custom.items.util.serialization.Seria
 import net.horizonsend.ion.server.features.custom.items.util.serialization.token.IntegerToken
 import net.horizonsend.ion.server.features.custom.items.util.updateDurability
 import net.horizonsend.ion.server.features.gas.type.Gas
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType

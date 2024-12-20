@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModif
 import net.horizonsend.ion.server.features.custom.items.util.serialization.SerializationManager
 import net.horizonsend.ion.server.features.custom.items.util.serialization.token.ItemModificationToken
 import net.horizonsend.ion.server.features.custom.items.util.serialization.token.ListToken
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.TOOL_MODIFICATIONS
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.TOOL_MODIFICATIONS
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component

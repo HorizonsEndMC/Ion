@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.space.body.CachedStar
 import net.horizonsend.ion.server.features.space.body.OrbitingCelestialBody
 import net.horizonsend.ion.server.features.space.body.OrbitingCelestialBody.Companion.calculateOrbitLocation
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text

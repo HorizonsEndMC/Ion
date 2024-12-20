@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.FilterBlocks
@@ -26,7 +26,7 @@ import org.bukkit.Material.WAXED_EXPOSED_CHISELED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
 import org.bukkit.Material.WAXED_WEATHERED_CHISELED_COPPER
 import org.bukkit.block.BlockFace
-import org.bukkit.craftbukkit.v1_20_R3.block.impl.CraftLightningRod
+import org.bukkit.craftbukkit.block.impl.CraftLightningRod
 import kotlin.math.roundToInt
 
 class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCache(holder) {
@@ -63,7 +63,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 
 		if (destinations.isEmpty()) return@submit
 
-		val transferLimit = (IonServer.transportSettings.extractorConfiguration.maxFluidRemovedPerExtractorTick * delta).roundToInt()
+		val transferLimit = (transportSettings().extractorConfiguration.maxFluidRemovedPerExtractorTick * delta).roundToInt()
 		val resources = source.getExtractableResources()
 
 		for ((storage, avail) in resources) {
