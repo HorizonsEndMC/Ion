@@ -8,8 +8,8 @@ import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
@@ -18,11 +18,11 @@ import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputM
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.features.ores.generation.PlanetOreSettings
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
-import net.horizonsend.ion.server.features.space.CachedPlanet
-import net.horizonsend.ion.server.features.space.CachedStar
-import net.horizonsend.ion.server.features.space.CelestialBody
-import net.horizonsend.ion.server.features.space.NamedCelestialBody
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.body.CachedStar
+import net.horizonsend.ion.server.features.space.body.CelestialBody
+import net.horizonsend.ion.server.features.space.body.NamedCelestialBody
+import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
@@ -77,9 +77,9 @@ object NavigationGuiCommon {
     }
 
     private fun getSearchResults(input: String, player: Player): List<Any> {
-        val celestialBodies: List<CelestialBody> = Space.getStars().plus(Space.getPlanets())
+        val celestialBodies: List<CelestialBody> = Space.getStars().plus(Space.getAllPlanets())
             .filter { body -> input.split(' ').all { splitInput -> body.name.contains(splitInput, ignoreCase = true) } }
-        val beacons: List<ServerConfiguration.HyperspaceBeacon> = IonServer.configuration.beacons
+        val beacons: List<ServerConfiguration.HyperspaceBeacon> = ConfigurationFiles.serverConfiguration().beacons
             .filter { beacon -> input.split(' ').all { splitInput -> beacon.name.contains(splitInput, ignoreCase = true) } }
         val bookmarks: List<Bookmark> = BookmarkCommand.getBookmarks(player)
             .filter { bookmark -> input.split(' ').all { splitInput -> bookmark.name.contains(splitInput, ignoreCase = true) } }
@@ -91,20 +91,20 @@ object NavigationGuiCommon {
      * Updates the GUI for route-related components
      */
     fun updateGuiRoute(gui: Gui, player: Player) {
-        gui.setItem(5, MENU_ROW, GuiItems.CustomControlItem("Current Route:", GuiItem.ROUTE_SEGMENT_2, waypointComponents(player)))
+        gui.setItem(5, MENU_ROW, GuiItems.CustomControlItem(Component.text("Current Route:"), GuiItem.ROUTE_SEGMENT_2, waypointComponents(player)))
 
         if (WaypointManager.getNextWaypoint(player) != null) {
-            gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem("Cancel All Route Waypoints", GuiItem.ROUTE_CANCEL) {
+            gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem(Component.text("Cancel All Route Waypoints"), GuiItem.ROUTE_CANCEL) {
                     _: ClickType, _: Player, _: InventoryClickEvent ->
                 WaypointCommand.onClearWaypoint(player)
                 updateGuiRoute(gui, player)
             })
-            gui.setItem(7, MENU_ROW, GuiItems.CustomControlItem("Undo The Last Waypoint", GuiItem.ROUTE_UNDO) {
+            gui.setItem(7, MENU_ROW, GuiItems.CustomControlItem(Component.text("Undo The Last Waypoint"), GuiItem.ROUTE_UNDO) {
                     _: ClickType, _: Player, _: InventoryClickEvent ->
                 WaypointCommand.onUndoWaypoint(player)
                 updateGuiRoute(gui, player)
             })
-            gui.setItem(8, MENU_ROW, GuiItems.CustomControlItem("Jump To The Next Waypoint", GuiItem.ROUTE_JUMP) {
+            gui.setItem(8, MENU_ROW, GuiItems.CustomControlItem(Component.text("Jump To The Next Waypoint"), GuiItem.ROUTE_JUMP) {
                     _: ClickType, _: Player, _: InventoryClickEvent ->
                 if (ActiveStarships.findByPilot(player) != null) {
                     MiscStarshipCommands.onJump(player, "auto", null)
@@ -115,9 +115,9 @@ object NavigationGuiCommon {
 
             })
         } else {
-            gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem("Cancel All Route Waypoints", GuiItem.ROUTE_CANCEL_GRAY, listOf(needWaypointComponent())))
-            gui.setItem(7, MENU_ROW, GuiItems.CustomControlItem("Undo The Last Waypoint", GuiItem.ROUTE_UNDO_GRAY, listOf(needWaypointComponent())))
-            gui.setItem(8, MENU_ROW, GuiItems.CustomControlItem("Jump To The Next Waypoint", GuiItem.ROUTE_JUMP_GRAY, listOf(needWaypointComponent())))
+            gui.setItem(6, MENU_ROW, GuiItems.CustomControlItem(Component.text("Cancel All Route Waypoints"), GuiItem.ROUTE_CANCEL_GRAY, listOf(needWaypointComponent())))
+            gui.setItem(7, MENU_ROW, GuiItems.CustomControlItem(Component.text("Undo The Last Waypoint"), GuiItem.ROUTE_UNDO_GRAY, listOf(needWaypointComponent())))
+            gui.setItem(8, MENU_ROW, GuiItems.CustomControlItem(Component.text("Jump To The Next Waypoint"), GuiItem.ROUTE_JUMP_GRAY, listOf(needWaypointComponent())))
         }
     }
 
@@ -187,7 +187,7 @@ object NavigationGuiCommon {
 
     fun createBookmarkCustomControlItem(bookmark: Bookmark, player: Player, world: World, gui: Gui) =
         GuiItems.CustomControlItem(
-            bookmark.name, GuiItem.BOOKMARK,
+            Component.text(bookmark.name), GuiItem.BOOKMARK,
             navigationInstructionComponents(
                 bookmark,
                 bookmark.worldName,
@@ -215,7 +215,7 @@ object NavigationGuiCommon {
 
     fun createBeaconCustomControlItem(beacon: ServerConfiguration.HyperspaceBeacon, player: Player, world: World, gui: Gui) =
         GuiItems.CustomControlItem(
-            beacon.name, GuiItem.BEACON, navigationInstructionComponents(
+            Component.text(beacon.name), GuiItem.BEACON, navigationInstructionComponents(
                 beacon,
                 beacon.spaceLocation.world,
                 beacon.spaceLocation.x,
@@ -251,7 +251,7 @@ object NavigationGuiCommon {
 
     fun createPlanetCustomControlItem(planet: CachedPlanet, player: Player, world: World, gui: Gui, backButtonHandler: () -> Unit) =
         GuiItems.CustomControlItem(
-            planet.name, getPlanetItems(planet.name),
+            Component.text(planet.name), getPlanetItems(planet.name),
             navigationInstructionComponents(
                 planet,
                 planet.spaceWorldName,
@@ -281,7 +281,7 @@ object NavigationGuiCommon {
 
     fun createStarCustomControlItem(star: CachedStar, player: Player, world: World, gui: Gui, backButtonHandler: () -> Unit) =
         GuiItems.CustomControlItem(
-            star.name, getPlanetItems(star.name),
+            Component.text(star.name), getPlanetItems(star.name),
             navigationInstructionComponents(
                 star,
                 star.spaceWorldName,
@@ -449,7 +449,7 @@ object NavigationGuiCommon {
     }
 
     private fun dynmapLinkAction(name: String, player: Player, spaceWorld: World, x: Int, z: Int) {
-        val serverName = IonServer.configuration.serverName
+        val serverName = ConfigurationFiles.serverConfiguration().beacons
         val hyperlink = ofChildren(
             Component.text("Click to open ", TextColor.color(Colors.INFORMATION)),
             Component.text("[", TextColor.color(Colors.INFORMATION)),
