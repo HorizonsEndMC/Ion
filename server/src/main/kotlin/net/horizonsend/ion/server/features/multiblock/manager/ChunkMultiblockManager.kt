@@ -42,7 +42,7 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 	}
 
 	override fun markChanged() {
-		chunk.inner.minecraft.isUnsaved = true
+		chunk.inner.minecraft.markUnsaved()
 	}
 
 	override fun getNetwork(type: CacheType): TransportCache {

@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.transport.util
 
 import com.fastasyncworldedit.core.history.changeset.AbstractChangeSet
-import com.sk89q.jnbt.CompoundTag
+import com.fastasyncworldedit.core.history.changeset.ChangeExchangeCoordinator
+import com.fastasyncworldedit.core.nbt.FaweCompoundTag
 import com.sk89q.worldedit.bukkit.BukkitAdapter
+import com.sk89q.worldedit.extent.inventory.BlockBag
 import com.sk89q.worldedit.history.change.Change
 import com.sk89q.worldedit.world.World
 import com.sk89q.worldedit.world.biome.BiomeType
@@ -30,6 +32,11 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 		}
 	}
 
+	override fun addTileCreate(tag: FaweCompoundTag?) {}
+	override fun addTileRemove(tag: FaweCompoundTag?) {}
+	override fun addEntityRemove(tag: FaweCompoundTag?) {}
+	override fun addEntityCreate(tag: FaweCompoundTag?) {}
+
 	private fun processMultiblock(x: Int, y: Int, z: Int) {
 		Tasks.sync {
 			val state = bukkitWorld.getBlockState(x, y, z) as? Sign ?: return@sync
@@ -55,11 +62,15 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 		return counter
 	}
 
-	override fun addTileCreate(tag: CompoundTag?) {}
-	override fun addTileRemove(tag: CompoundTag?) {}
-	override fun addEntityRemove(tag: CompoundTag?) {}
-	override fun addEntityCreate(tag: CompoundTag?) {}
 	override fun addBiomeChange(x: Int, y: Int, z: Int, from: BiomeType?, to: BiomeType?) {}
+	override fun getCoordinatedChanges(
+		blockBag: BlockBag?,
+		mode: Int,
+		dir: Boolean,
+	): ChangeExchangeCoordinator? {
+		TODO("Not yet implemented")
+	}
+
 	override fun getIterator(redo: Boolean): MutableIterator<Change> {
 		return Collections.emptyIterator()
 	}

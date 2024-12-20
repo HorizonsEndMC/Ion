@@ -14,6 +14,11 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners.sortCustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.Smeltable
+import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
+import net.horizonsend.ion.server.features.custom.items.misc.MultimeterItem
+import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
+import net.horizonsend.ion.server.features.custom.items.misc.TransportFilterItem
+import net.horizonsend.ion.server.features.custom.items.misc.Wrench
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
@@ -40,7 +45,8 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.
 import net.horizonsend.ion.server.features.custom.items.util.withComponent
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.features.transport.filters.FilterBlocks
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
@@ -312,6 +318,20 @@ object CustomItemRegistry : IonServerComponent() {
 	val BATTERY_G = register(Battery('G', GOLD, 7500))
 
 	val CRATE_PLACER = register(CratePlacer)
+
+	val MULTIMETER = register(MultimeterItem)
+
+	val MULTIBLOCK_TOKEN = register(MultiblockToken)
+	val PACKAGED_MULTIBLOCK = register(PackagedMultiblock)
+	val MULTIBLOCK_WORKBENCH = register(CustomBlockItem(
+		identifier = "MULTIBLOCK_WORKBENCH",
+		displayName = text("Multiblock Workbench").itemName,
+		customModel = "misc/multiblock_workbench"
+	) { CustomBlocks.MULTIBLOCK_WORKBENCH })
+
+	val WRENCH = register(Wrench)
+
+	val FLUID_FILTER: TransportFilterItem = register(TransportFilterItem("FLUID_FILTER", text("Fluid Filter").itemName) { FilterBlocks.FLUID_FILTER })
 
 	private fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
 		text("$tierName ", tierColor),

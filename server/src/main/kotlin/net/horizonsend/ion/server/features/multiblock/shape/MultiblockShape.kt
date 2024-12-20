@@ -4,8 +4,8 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_CASING
-import net.horizonsend.ion.server.features.custom.items.CustomBlockItem
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.EXTRACTOR_TYPE
 import net.horizonsend.ion.server.features.transport.old.Wires
 import net.horizonsend.ion.server.features.transport.old.pipe.Pipes

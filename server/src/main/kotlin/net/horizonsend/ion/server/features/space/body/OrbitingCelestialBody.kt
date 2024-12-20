@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.space.body
 
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.i
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import kotlin.math.cos
 import kotlin.math.sin
 

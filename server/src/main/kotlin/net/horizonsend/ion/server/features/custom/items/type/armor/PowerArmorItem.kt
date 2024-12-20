@@ -20,7 +20,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.Roc
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component

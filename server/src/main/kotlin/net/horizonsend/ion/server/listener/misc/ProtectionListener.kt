@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Location
@@ -201,14 +202,13 @@ object ProtectionListener : SLEventListener() {
 	}
 
 	fun isPlanetOrbitDenied(player: Player, location: Location, silent: Boolean): Boolean {
-		val (world, x, y, z) = location
 		val padding = 500
 		var inOwnStation = false
 
-		for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == world }) {
+		for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == location.world }) {
 			val minDistance = planet.orbitDistance - padding
 			val maxDistance = planet.orbitDistance + padding
-			val distance = distance(x.toInt(), y.toInt(), z.toInt(), planet.sun.location.x, y.toInt(), planet.sun.location.z).toInt()
+			val distance = distance(location.blockX, location.blockY, location.blockZ, planet.sun.location.x, location.blockY, planet.sun.location.z).toInt()
 
 			// Within planet orbit
 			if (distance in minDistance..maxDistance) {

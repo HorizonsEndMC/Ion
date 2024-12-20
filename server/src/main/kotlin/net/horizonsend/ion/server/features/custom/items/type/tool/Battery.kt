@@ -7,9 +7,9 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomItemComp
 import net.horizonsend.ion.server.features.custom.items.component.Listener
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
-import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
@@ -36,20 +36,31 @@ class Battery(type: Char, color: TextColor, maxPower: Int) : CustomItem(
 		val clickedType = clickedBlock.type
 		if (!clickedType.isWallSign) return
 
-		val sign = clickedBlock.getState(false) as? Sign ?: return
-		val multiblock = Multiblocks[sign] as? PowerStoringMultiblock ?: return
+		val sign = event.clickedBlock?.state as? Sign ?: return
+		val multiblock = MultiblockAccess.getFast(sign) ?: return
+		if (multiblock !is EntityMultiblock<*>) return
+
+		val entity = multiblock.getMultiblockEntity(sign) ?: return
+		if (entity !is PoweredMultiblockEntity) return
+
+		handleBatteryInput(entity, event)
+	}
+
+	private fun handleBatteryInput(entity: PoweredMultiblockEntity, event: PlayerInteractEvent) {
+		val item = event.item ?: return
 
 		val power = getComponent(CustomComponentTypes.POWER_STORAGE).getPower(item)
 		var powerToTransfer = power * item.amount
 		if (powerToTransfer == 0) return
 
-		val machinePower = PowerMachines.getPower(sign)
-		val maxMachinePower = multiblock.maxPower
+		val machinePower = entity.powerStorage.getPower()
+		val maxMachinePower = entity.powerStorage.capacity
+
 		if (maxMachinePower - machinePower < powerToTransfer) {
 			powerToTransfer = maxMachinePower - machinePower
 		}
 
 		getComponent(CustomComponentTypes.POWER_STORAGE).setPower(this, item, power - powerToTransfer / item.amount)
-		PowerMachines.addPower(sign, powerToTransfer)
+		entity.powerStorage.addPower(powerToTransfer)
 	}
 }
