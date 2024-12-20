@@ -7,8 +7,8 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.space.body.CelestialBody
 import net.horizonsend.ion.server.features.space.body.EnterableCelestialBody
 import net.horizonsend.ion.server.features.space.body.NamedCelestialBody
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getSphereBlocks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getSphereBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.kyori.adventure.text.Component
 import net.minecraft.world.level.block.Blocks

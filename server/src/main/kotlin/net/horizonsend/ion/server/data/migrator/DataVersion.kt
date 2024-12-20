@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.data.migrator.types.DataMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.ItemMigrationContext
 import net.horizonsend.ion.server.data.migrator.types.item.legacy.LegacyCustomItemMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.CustomItemStackMigrator
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType

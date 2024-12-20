@@ -8,7 +8,7 @@ import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
+import org.bukkit.craftbukkit.entity.CraftTextDisplay
 
 class SimpleFluidDisplay(
 	storage: StorageContainer,

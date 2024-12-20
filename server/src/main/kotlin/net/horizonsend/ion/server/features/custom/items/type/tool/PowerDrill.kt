@@ -9,10 +9,10 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener.Compa
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropSource
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.kyori.adventure.text.Component
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.BaseFireBlock

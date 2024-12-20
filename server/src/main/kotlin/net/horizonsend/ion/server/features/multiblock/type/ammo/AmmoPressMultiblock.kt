@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
-import org.bukkit.Material.matchMaterial
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -190,7 +189,7 @@ abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMul
 
 			// refill item check
 			val inventory = getInventory(0, 0, 6) ?: return
-			val typeRefill = matchMaterial(fuelCustomItem.getTypeRefill()) ?: return
+			val typeRefill = ammoRefillAttribute.type
 			if (!inventory.containsAtLeast(ItemStack(typeRefill), 1)) return
 
 			tickingManager.sleep(200)

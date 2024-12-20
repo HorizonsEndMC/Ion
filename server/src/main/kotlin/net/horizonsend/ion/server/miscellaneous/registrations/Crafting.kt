@@ -125,6 +125,7 @@ import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WOOL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
@@ -142,7 +143,6 @@ import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.CRAFTING_TABLE
-import org.bukkit.Material.CYAN_WOOL
 import org.bukkit.Material.DARK_PRISMARINE
 import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
@@ -611,7 +611,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('z', FUEL_CONTROL.constructItemStack())
 		}
 
-		itemStackShapeRecipe("multiblock_workbench", MULTIBLOCK_WORKBENCH.constructItemStack()) {
+		shaped("multiblock_workbench", MULTIBLOCK_WORKBENCH.constructItemStack()) {
 			shape("i", "c")
 
 			setIngredient('i', IRON_BLOCK)
@@ -619,7 +619,7 @@ object Crafting : IonServerComponent() {
 		}
 
 		// Tool Mods start
-		itemStackShapeRecipe("silk_touch_modifier", SILK_TOUCH_MOD.constructItemStack()) {
+		shaped("silk_touch_modifier", SILK_TOUCH_MOD.constructItemStack()) {
 			shape("gbg", "tst", "ctc")
 
 			setIngredient('g', RAW_GOLD)
@@ -628,6 +628,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('s', ItemStack(ENCHANTED_BOOK).updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.SILK_TOUCH to 1), true)))
 			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
 		}
+
 		shaped("fortune_1_touch_modifier", FORTUNE_1.constructItemStack()) {
 			shape("dgd", "csc", "dgd")
 

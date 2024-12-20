@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.progression.achievements
 
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.kyori.adventure.key.Key
 
 enum class Achievement(

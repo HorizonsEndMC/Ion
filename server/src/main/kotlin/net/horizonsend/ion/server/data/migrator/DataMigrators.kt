@@ -10,9 +10,9 @@ import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.Legac
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
-import net.horizonsend.ion.server.features.transport.pipe.Pipes
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.LegacyPowerArmorModule
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.entity.Player
