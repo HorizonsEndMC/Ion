@@ -12,9 +12,6 @@ import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
