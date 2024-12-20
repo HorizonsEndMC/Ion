@@ -9,7 +9,7 @@ import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftTextDisplay
+import org.bukkit.craftbukkit.entity.CraftTextDisplay
 
 class FlowMeterDisplay(
 	private val meter: PowerNode.PowerFlowMeter,

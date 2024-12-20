@@ -189,7 +189,7 @@ class IonChunk(val inner: Chunk) {
 	}
 
 	/** Mark this chunk as needing to be saved */
-	fun markUnsaved() { inner.minecraft.isUnsaved = true }
+	fun markUnsaved() { inner.minecraft.markUnsaved() }
 
 	fun isInBounds(x: Int, y: Int, z: Int): Boolean {
 		if (!(0..15).contains(x - originX)) return false
