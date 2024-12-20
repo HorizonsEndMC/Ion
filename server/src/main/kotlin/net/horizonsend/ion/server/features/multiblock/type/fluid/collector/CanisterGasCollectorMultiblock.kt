@@ -1,10 +1,11 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.GasCanister
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.globalGassesConfiguration
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
 import net.horizonsend.ion.server.features.gas.type.Gas
@@ -69,7 +70,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 		world: World,
 		structureDirection: BlockFace,
 	) : MultiblockEntity(manager, CanisterGasCollectorMultiblock, x, y, z, world, structureDirection), SyncTickingMultiblockEntity {
-		val configuration get() = IonServer.globalGassesConfiguration
+		val configuration get() = ConfigurationFiles.globalGassesConfiguration()
 		override val tickingManager: TickingManager = TickingManager(20)
 
 		override val inputsData: InputsData = none()
@@ -99,7 +100,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 
 			val random = availableGasses.weightedRandomOrNull { result: CollectedGas.CollectionResult -> result.amount.toDouble() } ?: return
 
-			val delta = IonServer.globalGassesConfiguration.collectorTickInterval / 20L
+			val delta = globalGassesConfiguration().collectorTickInterval / 20L
 			val amount = (random.amount * weight) * (delta)
 
 			Tasks.sync { tryHarvestGas(furnaceInventory, hopperInventory, random.gas, amount.roundToInt()) }
@@ -110,14 +111,14 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 			val customItem = canisterItem.customItem ?: return false
 
 			return when (customItem) {
-				CustomItems.GAS_CANISTER_EMPTY -> fillEmptyCanister(furnaceInventory, gas, amount)
+				CustomItemRegistry.GAS_CANISTER_EMPTY -> fillEmptyCanister(furnaceInventory, gas, amount)
 				is GasCanister -> fillGasCanister(canisterItem, furnaceInventory, hopperInventory, amount) // Don't even bother with the gas
 				else -> false
 			}
 		}
 
 		private fun fillEmptyCanister(furnaceInventory: FurnaceInventory, gas: Gas, amount: Int): Boolean {
-			val newType = CustomItems.getByIdentifier(gas.containerIdentifier) as? GasCanister ?: return false
+			val newType = CustomItemRegistry.getByIdentifier(gas.containerIdentifier) as? GasCanister ?: return false
 			val newCanister = newType.createWithFill(amount)
 
 			furnaceInventory.fuel = newCanister
