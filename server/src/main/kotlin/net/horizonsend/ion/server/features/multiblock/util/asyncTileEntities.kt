@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.util
 
-import net.minecraft.world.level.block.state.BlockState as NMSBlockState
-import org.bukkit.block.BlockState as BukkitBlockState
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -10,17 +8,19 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.state.BlockState as NMSBlockState
 import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
+import org.bukkit.block.BlockState as BukkitBlockState
 import org.bukkit.block.data.BlockData
-import org.bukkit.craftbukkit.v1_20_R3.block.CraftBlock
-import org.bukkit.craftbukkit.v1_20_R3.block.CraftBlockState
-import org.bukkit.craftbukkit.v1_20_R3.block.CraftBlockStates
-import org.bukkit.craftbukkit.v1_20_R3.block.data.CraftBlockData
-import org.bukkit.craftbukkit.v1_20_R3.util.CraftMagicNumbers
+import org.bukkit.craftbukkit.block.CraftBlock
+import org.bukkit.craftbukkit.block.CraftBlockState
+import org.bukkit.craftbukkit.block.CraftBlockStates
+import org.bukkit.craftbukkit.block.data.CraftBlockData
+import org.bukkit.craftbukkit.util.CraftMagicNumbers
 import java.lang.reflect.Method
 
 fun getNMSTileEntity(block: Block, loadChunks: Boolean): BlockEntity? {

@@ -5,8 +5,9 @@ import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporterManager
-import net.horizonsend.ion.server.features.custom.items.mods.ToolModMenu
-import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.BlasterListenersb
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ToolModMenu
+import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.BlasterListeners
+import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractTractorBeam
@@ -41,8 +42,6 @@ import net.horizonsend.ion.server.listener.nations.MovementListener
 import org.bukkit.event.Listener
 
 val listeners: List<Listener> = listOf(
-	IonWorld,
-
 	// StarLegacy
 	JoinLeaveListener,
 	MovementListener,
@@ -79,10 +78,9 @@ val listeners: List<Listener> = listOf(
 	AbstractTractorBeam.Companion,
 	PlayerDeathListener,
 	ToolModMenu,
-	InteractableGUI,
+	InteractableGUI.Companion,
 	RecipeModifications,
 	ActivePlayerController.Companion,
-	TransportManager,
 	PersonalTransporterManager,
 	MultiblockEntities,
 
