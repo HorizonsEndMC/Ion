@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager.extractors
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
@@ -32,7 +32,7 @@ abstract class ExtractorManager {
 
 		private fun getDelta(time: Long): Double {
 			val diff = time - lastTicked
-			return (diff.toDouble() / IonServer.transportSettings.extractorConfiguration.extractorTickIntervalMS.toDouble())
+			return (diff.toDouble() / transportSettings().extractorConfiguration.extractorTickIntervalMS.toDouble())
 		}
 
 		fun markTicked(): Double {
