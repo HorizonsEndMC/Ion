@@ -48,7 +48,7 @@ class ItemMenu(
     }
 
     private val backButton = GuiItems.CustomControlItem(
-        "Back", GuiItem.DOWN, callback = { _: ClickType, player: Player, _: InventoryClickEvent ->
+        Component.text("Back"), GuiItem.DOWN, callback = { _: ClickType, player: Player, _: InventoryClickEvent ->
             player.closeInventory()
             backButtonHandler.invoke(player)
         }

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.gui
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -11,13 +12,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
-import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -39,16 +37,19 @@ import java.util.UUID
 @Suppress("UnstableApiUsage")
 object GuiItems {
     class CustomControlItem(
-        private val name: String,
+        private val name: Component,
         private val customGuiItem: GuiItem,
-        private val lore: List<Component>? = null,
+        private val loreList: List<Component>? = null,
         private val callback: (ClickType, Player, InventoryClickEvent) -> Unit = { _: ClickType, _: Player, _: InventoryClickEvent -> }
     ) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
-            return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-                it.setCustomModelData(customGuiItem.customModelData)
-                it.displayName(text(name).decoration(ITALIC, false))
-                it.lore(lore)
+            return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).apply {
+                setData(DataComponentTypes.ITEM_MODEL, customGuiItem.modelKey)
+                setData(DataComponentTypes.CUSTOM_NAME, name)
+                if (loreList != null)
+                {
+                    setData(DataComponentTypes.LORE, ItemLore.lore(loreList))
+                }
             })
         }
 
@@ -60,12 +61,15 @@ object GuiItems {
 
     class CustomItemControlItem(
         private val customItem: CustomItem,
-        private val lore: List<Component>? = null,
+        private val loreList: List<Component>? = null,
         private val callback: (ClickType, Player, InventoryClickEvent) -> Unit
     ) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
-            return ItemBuilder(customItem.constructItemStack().updateMeta {
-                it.lore(lore)
+            return ItemBuilder(customItem.constructItemStack().apply {
+                if (loreList != null)
+                {
+                    setData(DataComponentTypes.LORE, ItemLore.lore(loreList))
+                }
             })
         }
 
@@ -152,7 +156,7 @@ object GuiItems {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) { callback() }
     }
 
-    fun closeMenuItem(player: Player) = CustomControlItem("Close Menu", GuiItem.CANCEL) {
+    fun closeMenuItem(player: Player) = CustomControlItem(text("Close Menu"), GuiItem.CANCEL) {
             _: ClickType, _: Player, _: InventoryClickEvent -> player.closeInventory()
     }
 }
@@ -172,7 +176,6 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     ROUTE_UNDO_GRAY(NamespacedKeys.packKey("ui/route_undo_gray")),
     ROUTE_JUMP_GRAY(NamespacedKeys.packKey("ui/route_jump_gray")),
     ROUTE_SEGMENT_2(NamespacedKeys.packKey("ui/route_segment_2")),
-    CHECKMARK(NamespacedKeys.packKey("ui/checkmark")),
     MAGNIFYING_GLASS(NamespacedKeys.packKey("ui/magnifying_glass")),
     MAGNIFYING_GLASS_GRAY(NamespacedKeys.packKey("ui/magnifying_glass_gray")),
     ASTERI_2(NamespacedKeys.packKey("planet/asteri_2")),
@@ -199,7 +202,7 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     RUBACIEA_2(NamespacedKeys.packKey("planet/rubaciea_2")),
     TURMS_2(NamespacedKeys.packKey("planet/turms_2")),
     VASK_2(NamespacedKeys.packKey("planet/vask_2")),
-    EMPTY_STAR(5219),
+    EMPTY_STAR(NamespacedKeys.packKey("planet/empty_star")),
     STARFIGHTER(NamespacedKeys.packKey("ui/starfighter")),
     GUNSHIP(NamespacedKeys.packKey("ui/gunship")),
     CORVETTE(NamespacedKeys.packKey("ui/corvette")),

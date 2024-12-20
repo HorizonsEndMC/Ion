@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.gui.custom.navigation
 import net.horizonsend.ion.common.utils.text.SPACE_BLUE_NEBULA_CHARACTER
 import net.horizonsend.ion.common.utils.text.SPACE_RED_NEBULA_CHARACTER
 import net.horizonsend.ion.common.utils.text.SPACE_SCREEN_CHARACTER
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -42,37 +42,37 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 	private val bookmarkItems = mutableListOf<Item>()
 
 	// objects for the left/right buttons
-	private val leftPlanetButton = GuiItems.CustomControlItem("Previous Planet In This System", GuiItem.LEFT) {
+	private val leftPlanetButton = GuiItems.CustomControlItem(Component.text("Previous Planet In This System"), GuiItem.LEFT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		planetListShift--
 		updateGuiShift()
 	}
 
-	private val rightPlanetButton = GuiItems.CustomControlItem("Next Planet In This System", GuiItem.RIGHT) {
+	private val rightPlanetButton = GuiItems.CustomControlItem(Component.text("Next Planet In This System"), GuiItem.RIGHT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		planetListShift++
 		updateGuiShift()
 	}
 
-	private val leftBeaconButton = GuiItems.CustomControlItem("Previous Beacon In This System", GuiItem.LEFT) {
+	private val leftBeaconButton = GuiItems.CustomControlItem(Component.text("Previous Beacon In This System"), GuiItem.LEFT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		beaconListShift--
 		updateGuiShift()
 	}
 
-	private val rightBeaconButton = GuiItems.CustomControlItem("Next Beacon In This System", GuiItem.RIGHT) {
+	private val rightBeaconButton = GuiItems.CustomControlItem(Component.text("Next Beacon In This System"), GuiItem.RIGHT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		beaconListShift++
 		updateGuiShift()
 	}
 
-	private val leftBookmarkButton = GuiItems.CustomControlItem("Previous Bookmark In This System", GuiItem.LEFT) {
+	private val leftBookmarkButton = GuiItems.CustomControlItem(Component.text("Previous Bookmark In This System"), GuiItem.LEFT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		bookmarkListShift--
 		updateGuiShift()
 	}
 
-	private val rightBookmarkButton = GuiItems.CustomControlItem("Next Bookmark In This System", GuiItem.RIGHT) {
+	private val rightBookmarkButton = GuiItems.CustomControlItem(Component.text("Next Bookmark In This System"), GuiItem.RIGHT) {
 		_: ClickType, _: Player, _: InventoryClickEvent ->
 		bookmarkListShift++
 		updateGuiShift()
@@ -96,14 +96,14 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 		val star = Space.getStars().firstOrNull { star -> star.spaceWorld == world }
 		val starItem = if (star != null) NavigationGuiCommon.createStarCustomControlItem(star, player, world, gui) { NavigationSystemMapGui(player, world).openMainWindow() } else null
 
-		planetItems.addAll(Space.getPlanets()
+		planetItems.addAll(Space.getOrbitingPlanets()
 			.filter { planet -> planet.spaceWorld == world }
 			.sortedBy { planet -> planet.orbitDistance }
 			.map { planet -> NavigationGuiCommon.createPlanetCustomControlItem(planet, player, world, gui) { NavigationSystemMapGui(player, world).openMainWindow() } }
 		)
 		planetsInWorld = planetItems.size
 
-		beaconItems.addAll(IonServer.configuration.beacons
+		beaconItems.addAll(ConfigurationFiles.serverConfiguration().beacons
 			.filter { beacon -> beacon.spaceLocation.bukkitWorld() == world }
 			.sortedBy { beacon -> beacon.name }
 			.map { beacon -> NavigationGuiCommon.createBeaconCustomControlItem(beacon, player, world, gui) }
@@ -121,11 +121,11 @@ class NavigationSystemMapGui(val player: Player, val world: World) {
 
 		gui.setItem(0, MENU_ROW, GuiItems.closeMenuItem(player))
 
-		gui.setItem(1, MENU_ROW, GuiItems.CustomControlItem("Return To Galactic Menu", GuiItem.DOWN) {
+		gui.setItem(1, MENU_ROW, GuiItems.CustomControlItem(Component.text("Return To Galactic Menu"), GuiItem.DOWN) {
 			_: ClickType, _: Player, _: InventoryClickEvent -> NavigationGalacticMapGui(player).openMainWindow()
 		})
 
-		gui.setItem(2, MENU_ROW, GuiItems.CustomControlItem("Search For Destination", GuiItem.MAGNIFYING_GLASS) {
+		gui.setItem(2, MENU_ROW, GuiItems.CustomControlItem(Component.text("Search For Destination"), GuiItem.MAGNIFYING_GLASS) {
 			_: ClickType, player: Player, _: InventoryClickEvent ->
 			NavigationGuiCommon.openSearchMenu(player, world, gui) {
 				// create a new instance and do not use this old instance

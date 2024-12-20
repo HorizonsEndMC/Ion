@@ -68,7 +68,7 @@ class NavigationGalacticMapGui(val player: Player) {
 
         gui.setItem(0, MENU_ROW, GuiItems.closeMenuItem(player))
 
-        gui.setItem(2, MENU_ROW, GuiItems.CustomControlItem("Search For Destination", GuiItem.MAGNIFYING_GLASS) {
+        gui.setItem(2, MENU_ROW, GuiItems.CustomControlItem(Component.text("Search For Destination"), GuiItem.MAGNIFYING_GLASS) {
                 _: ClickType, player: Player, _: InventoryClickEvent ->
             NavigationGuiCommon.openSearchMenu(player, player.world, gui) {
                 NavigationGalacticMapGui(player).openMainWindow()
@@ -81,7 +81,7 @@ class NavigationGalacticMapGui(val player: Player) {
     }
 
     private fun createSystemCustomControlItem(worldName: String, status: Component, item: GuiItem) = GuiItems.CustomControlItem(
-        worldName,
+        Component.text(worldName),
         item,
         listOf(
             status,
