@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWe
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -65,6 +66,11 @@ object Interdiction : IonServerComponent() {
 		if (StarshipCruising.isCruising(starship)) {
 			starship.setIsInterdicting(false)
 			starship.userError("Cannot activate gravity well while cruising")
+			return
+		}
+
+		if (!starship.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
+			starship.userError("You cannot use gravity wells within other gravity wells.")
 			return
 		}
 
