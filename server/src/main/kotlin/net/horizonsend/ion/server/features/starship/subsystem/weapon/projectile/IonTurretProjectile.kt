@@ -70,9 +70,9 @@ class IonTurretProjectile(
 		starship.directControlSpeedModifier *= 0.82
 		starship.lastDirectControlSpeedSlowed = System.currentTimeMillis() + Duration.ofSeconds(9).toMillis()
 
-		Tasks.syncDelay(Duration.ofSeconds(5).toSeconds() * 20L) {
+		Tasks.syncDelay(Duration.ofSeconds(9).toSeconds() * 20L) {
 			// reset for individual shots
-			starship.directControlSpeedModifier /= 0.91
+			starship.directControlSpeedModifier /= 0.82
 			if (ActiveStarships.isActive(starship) && starship.lastDirectControlSpeedSlowed - 100 < System.currentTimeMillis()) {
 				// hard reset to normal speed (I feel that weird double-rounding bugs might be possible)
 				starship.directControlSpeedModifier = 1.0
