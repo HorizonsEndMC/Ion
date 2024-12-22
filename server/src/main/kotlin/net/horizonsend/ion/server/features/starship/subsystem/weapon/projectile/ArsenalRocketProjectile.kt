@@ -4,6 +4,7 @@ import com.mojang.math.Transformation
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.getAddEntityPacket
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -205,7 +206,7 @@ class ArsenalRocketProjectile(
 			}
 			displayEntities[playerBukkit] = itemDisplay
 
-			connection.send(itemDisplay.getAddEntityPacket(itemDisplay.`moonrise$getTrackedEntity`().serverEntity))
+			connection.send(getAddEntityPacket(itemDisplay))
 			itemDisplay.refreshEntityData(player.handle)
 		}
 	}
@@ -231,7 +232,7 @@ class ArsenalRocketProjectile(
 		}
 		displayEntities[player] = itemDisplay
 
-		connection.send(itemDisplay.getAddEntityPacket(itemDisplay.`moonrise$getTrackedEntity`().serverEntity))
+		connection.send(getAddEntityPacket(itemDisplay))
 		itemDisplay.refreshEntityData(player.handle)
 		return itemDisplay
 	}
