@@ -39,14 +39,16 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.body.CachedMoon
 import net.horizonsend.ion.server.features.space.body.CachedStar
-import net.horizonsend.ion.server.features.space.body.planet.CachedOrbitingPlanet
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation.Companion.calculateCost
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -107,7 +109,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val y = 128 // we don't care about comparing height here
 
 		// Check conflicts with planet orbits
-		for (planet: CachedPlanet in Space.getPlanets().filter { it.spaceWorld == world }) {
+		for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == world }) {
 			val padding = 500
 			val minDistance = planet.orbitDistance - padding - radius
 			val maxDistance = planet.orbitDistance + padding + radius
