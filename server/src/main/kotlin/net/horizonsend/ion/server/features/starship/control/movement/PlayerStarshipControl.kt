@@ -73,7 +73,7 @@ object PlayerStarshipControl : IonServerComponent() {
 
 		val baseSpeed = StarshipControl.calculateSpeed(newSlot)
 		val cooldown: Long = StarshipControl.calculateCooldown(starship.directControlCooldown, newSlot)
-		val speed = (10.0f * baseSpeed * (1000.0f / cooldown)).roundToInt() / 10.0f
+		val speed = (10.0f * baseSpeed * starship.directControlSpeedModifier * (1000.0f / cooldown)).roundToInt() / 10.0f
 
 		player.sendActionBar(text("Speed: $speed", NamedTextColor.AQUA))
 	}
