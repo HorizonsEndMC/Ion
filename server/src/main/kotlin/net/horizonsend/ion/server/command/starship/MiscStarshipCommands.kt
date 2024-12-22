@@ -41,6 +41,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Interdiction
+import net.horizonsend.ion.server.features.starship.Interdiction.handleGravityWell
 import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
@@ -707,7 +708,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val starship = getStarshipPiloting(sender)
 		Interdiction.findGravityWell(starship) ?: fail { "Intact gravity well not found!" }
 
-		toggleGravityWell(starship)
+		handleGravityWell(starship)
 	}
 
 	@Suppress("unused")

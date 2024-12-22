@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship
 
 import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
@@ -15,6 +16,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSu
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.key.Key
@@ -24,6 +26,8 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import java.time.Duration
+import kotlin.math.cbrt
 import kotlin.math.sqrt
 
 object Interdiction : IonServerComponent() {
@@ -49,7 +53,7 @@ object Interdiction : IonServerComponent() {
 			}
 			when (event.action) {
 				Action.RIGHT_CLICK_BLOCK -> {
-					toggleGravityWell(starship)
+					handleGravityWell(starship)
 				}
 
 				Action.LEFT_CLICK_BLOCK -> {
@@ -61,12 +65,39 @@ object Interdiction : IonServerComponent() {
 		}
 	}
 
-	fun toggleGravityWell(starship: ActiveStarship) {
+	fun handleGravityWell(starship: ActiveStarship) {
 		if (StarshipCruising.isCruising(starship)) {
 			starship.setIsInterdicting(false)
 			starship.userError("Cannot activate gravity well while cruising")
 			return
 		}
+		val well = starship.gravityWells.first
+
+		if (!starship.isInterdicting) {
+			if (well.cooldownTimer - 100 > System.currentTimeMillis()) {
+				val timeRemaining = well.cooldownTimer - System.currentTimeMillis() / 1000.0 / 60.0
+				starship.userError("Gravity Well on Cooldown! Time Remaining: ${"%.1f".format(timeRemaining)} min")
+				return
+			}
+			val cooldown = well.baseCooldown * well.shipSizeModifier / cbrt(starship.initialBlockCount.toDouble())
+			well.cooldownTimer = System.currentTimeMillis() + cooldown.toLong()
+			val duration = well.baseDuration * well.shipSizeModifier / cbrt(starship.initialBlockCount.toDouble())
+			well.activatedTimer = System.currentTimeMillis() + duration.toLong()
+			toggleGravityWell(starship, true)
+			starship.information("Activated Well for ${"%.1f".format(duration/ 1000.0/60.0)} min")
+			Tasks.syncDelay(Duration.ofMillis(duration.toLong()).toSeconds() * 20L) {
+				if (well.activatedTimer - 100 > System.currentTimeMillis() && starship.isInterdicting) {
+					starship.information("Well timer ran out, disabled")
+					toggleGravityWell(starship, false)
+				}
+			}
+		} else {
+			toggleGravityWell(starship, false)
+		}
+	}
+
+	fun toggleGravityWell(starship: ActiveStarship, value : Boolean) {
+
 
 		when (starship.isInterdicting) {
 			true -> for (player in starship.world.getNearbyPlayers(
@@ -97,7 +128,7 @@ object Interdiction : IonServerComponent() {
 				)
 			}
 		}
-		starship.setIsInterdicting(!starship.isInterdicting)
+		starship.setIsInterdicting(value)
 	}
 
 	private fun pulseGravityWell(player: Player, starship: ActiveStarship, sign: Sign) {
