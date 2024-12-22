@@ -47,7 +47,7 @@ class HeavyLaserProjectile(
 		Tasks.syncDelay(Duration.ofSeconds(20).toSeconds() * 20L) {
 			// reset for individual shots
 			starship.directControlSpeedModifier /= 1 - speedPenalty
-			if (ActiveStarships.isActive(starship) && starship.lastDirectControlSpeedSlowed < System.currentTimeMillis()) {
+			if (ActiveStarships.isActive(starship) && starship.lastDirectControlSpeedSlowed - 100< System.currentTimeMillis()) {
 				// hard reset to normal speed (I feel that weird double-rounding bugs might be possible)
 				starship.directControlSpeedModifier = 1.0
 				starship.informationAction("Direct Control speed restored")
