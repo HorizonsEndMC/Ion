@@ -10,6 +10,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
+import net.minecraft.core.BlockPos
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerLevel
@@ -62,7 +64,7 @@ object ClientDisplayEntities : IonServerComponent() {
         val player = bukkitPlayer.minecraft
         val conn = player.connection
 
-        conn.send(entity.getAddEntityPacket(entity.`moonrise$getTrackedEntity`().serverEntity))
+        conn.send(getAddEntityPacket(entity))
         entity.refreshEntityData(player)
     }
 
@@ -75,7 +77,7 @@ object ClientDisplayEntities : IonServerComponent() {
     fun sendEntityPacket(player: ServerPlayer, entity: net.minecraft.world.entity.Entity, duration: Long) {
         val conn = player.connection
 
-        conn.send(entity.getAddEntityPacket(entity.`moonrise$getTrackedEntity`().serverEntity))
+        conn.send(getAddEntityPacket(entity))
 		entity.refreshEntityData(player)
 
         Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(entity.id)) }
@@ -379,4 +381,9 @@ object ClientDisplayEntities : IonServerComponent() {
      * @param viewDistance the distance at which the object is being rendered
      */
     fun viewDistanceFactor(viewDistance: Int) = (0.003125 * viewDistance).toFloat()
+
+
+	fun getAddEntityPacket(entity: net.minecraft.world.entity.Entity): ClientboundAddEntityPacket {
+		return ClientboundAddEntityPacket(entity, 0, BlockPos(entity.blockX, entity.blockY, entity.blockZ))
+	}
 }
