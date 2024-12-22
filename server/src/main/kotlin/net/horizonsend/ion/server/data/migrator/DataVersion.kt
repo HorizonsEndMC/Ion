@@ -24,8 +24,6 @@ class DataVersion private constructor(
 	fun migrateItem(inventory: Inventory, index: Int, itemStack: ItemStack) {
 		val context = ItemMigrationContext(inventory, index, itemStack)
 
-		println("Trying to migrate ${itemStack.type} in slot $index")
-
 		legacyItemMigrators.filter { it.shouldMigrate(itemStack) }
 		legacyItemMigrators.forEach { context.migrate(it) }
 	}
@@ -39,7 +37,6 @@ class DataVersion private constructor(
 			if (customItemIdentifier != null) {
 				migrateItem(inventory, index, item, customItemIdentifier)
 			} else {
-				println(2)
 				migrateItem(inventory, index, item)
 			}
 

@@ -327,10 +327,10 @@ object DataMigrators : IonServerComponent() {
 			))
 			.addMigrator(LegacyCustomItemMigrator(
 				predicate = {
-					(it.type == Material.FLINT_AND_STEEL).apply { println("Condition 1 $this") }
-						&& (it.itemMeta.hasCustomModelData()).apply { println("Condition 2 $this") }
-						&& (it.itemMeta.customModelData == 5).apply { println("Condition 3 $this") }
-						&& (it.customItem == null).apply { println("Condition 4 $this") }
+					it.type == Material.FLINT_AND_STEEL
+						&& it.itemMeta.hasCustomModelData()
+						&& it.itemMeta.customModelData == 5
+						&& it.customItem == null
 				},
 				converter = { MigratorResult.Replacement(CustomItemRegistry.ARMOR_MODIFICATION_ENVIRONMENT.constructItemStack()) }
 			))

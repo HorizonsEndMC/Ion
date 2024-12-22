@@ -61,8 +61,6 @@ object LocatorCommands : SLCommand() {
 			val gates = HyperspaceBeaconManager.beaconWorlds[target.world]
 			val gateDistance = gates?.let { it.minOfOrNull { gate -> gate.spaceLocation.toLocation().distance(target.location) } }
 
-			println("Relation: $relation")
-
 			if (relation < NationRelation.Level.ALLY) failIf(
 				distance > ConfigurationFiles.serverConfiguration().getPosMaxRange &&
 				(gateDistance != null && gateDistance > 2000)

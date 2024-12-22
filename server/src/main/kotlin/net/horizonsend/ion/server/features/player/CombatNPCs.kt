@@ -113,7 +113,6 @@ object CombatNPCs : IonServerComponent(true) {
 		}
 
 		listen<NPCDeathEvent>(EventPriority.LOWEST) { event ->
-			println("NPC DIED")
 			val npc = event.npc
 			val trait = npc.getTraitNullable(CombatNPCTrait::class.java) ?: return@listen
 

@@ -120,8 +120,6 @@ object CratePlacer : CustomItem(
 
 			base.put("Items", items)
 
-//			println(NbtUtils.structureToSnbt(base))
-
 			val blockPos = BlockPos(x, y, z)
 			// Remove old
 			chunk.removeBlockEntity(blockPos)
