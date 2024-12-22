@@ -1065,7 +1065,7 @@ class StarshipWeapons(
 		// Heavy Weapons
 		val heavyLaser: StarshipWeapon = StarshipWeapon(
 				range = 200.0,
-				speed = 50.0,
+				speed = 80.0,
 				areaShieldDamageMultiplier = 2.0,
 				starshipShieldDamageMultiplier = 2.0,
 				particleThickness = 1.0,
