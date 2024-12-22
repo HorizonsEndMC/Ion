@@ -60,15 +60,10 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.fromHexString
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
-import org.bukkit.Material
 import org.bukkit.Material.DIAMOND_HOE
 import org.bukkit.Material.GOLDEN_HOE
-import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_HOE
-import org.bukkit.Material.IRON_ORE
 import org.bukkit.Material.PUMPKIN
-import org.bukkit.Material.RAW_IRON
-import org.bukkit.Material.RAW_IRON_BLOCK
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
@@ -216,11 +211,11 @@ object CustomItemRegistry : IonServerComponent() {
 	val CANNON_RECEIVER = register("CANNON_RECEIVER", text("Cannon Receiver"), unStackableCustomItem("industry/cannon_receiver"))
 
 	// Minerals start
-	private fun registerRawOre(identifier: String, name: String, smeltingResult: Supplier<CustomItem>) = register(identifier, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(RAW_IRON, model = "mineral/raw_$name")).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
-	private fun registerOreIngot(identifier: String, name: String) = register(identifier, text("${name.replaceFirstChar { it.uppercase() }} Ingot"), stackableCustomItem(RAW_IRON, model = "mineral/$name"))
-	private fun registerOreBlock(identifier: String, name: String, block: Supplier<CustomBlock>, smeltingResult: Supplier<CustomItem>) = customBlockItem(identifier, IRON_ORE, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
-	private fun registerIngotBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, IRON_BLOCK, "mineral/${name}_block", text("${name.replaceFirstChar { it.uppercase() }} Block"), block)
-	private fun registerRawBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, RAW_IRON_BLOCK, "mineral/raw_${name}_block", text("Raw ${name.replaceFirstChar { it.uppercase() }} Block"), block)
+	private fun registerRawOre(identifier: String, name: String, smeltingResult: Supplier<CustomItem>) = register(identifier, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(model = "mineral/raw_$name")).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
+	private fun registerOreIngot(identifier: String, name: String) = register(identifier, text("${name.replaceFirstChar { it.uppercase() }} Ingot"), stackableCustomItem(model = "mineral/$name"))
+	private fun registerOreBlock(identifier: String, name: String, block: Supplier<CustomBlock>, smeltingResult: Supplier<CustomItem>) = customBlockItem(identifier, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
+	private fun registerIngotBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, "mineral/${name}_block", text("${name.replaceFirstChar { it.uppercase() }} Block"), block)
+	private fun registerRawBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, "mineral/raw_${name}_block", text("Raw ${name.replaceFirstChar { it.uppercase() }} Block"), block)
 
 	val ALUMINUM_INGOT = registerOreIngot("ALUMINUM_INGOT", "aluminum")
 	val RAW_ALUMINUM = registerRawOre("RAW_ALUMINUM", "aluminum", smeltingResult = CustomItemRegistry::ALUMINUM_INGOT)
@@ -272,7 +267,7 @@ object CustomItemRegistry : IonServerComponent() {
 	val SUPERCONDUCTOR_CORE = unStackable(identifier = "SUPERCONDUCTOR_CORE", model = "industry/superconductor_core", displayName = text("Superconductor Core", YELLOW))
 
 	val STEEL_INGOT = stackable(identifier = "STEEL_INGOT", text("Steel Ingot"), "industry/steel_ingot")
-	val STEEL_BLOCK = register(CustomBlockItem(identifier = "STEEL_BLOCK", material = IRON_BLOCK, customModel = "industry/steel_block", displayName = text("Steel Block"), customBlockSupplier = CustomBlocks::STEEL_BLOCK))
+	val STEEL_BLOCK = register(CustomBlockItem(identifier = "STEEL_BLOCK", customModel = "industry/steel_block", displayName = text("Steel Block"), customBlockSupplier = CustomBlocks::STEEL_BLOCK))
 	val STEEL_PLATE = unStackable(identifier = "STEEL_PLATE", model = "industry/steel_plate", displayName = text("Steel Plate"))
 	val STEEL_CHASSIS = unStackable(identifier = "STEEL_CHASSIS", model = "industry/steel_chassis", displayName = text("Steel Chassis"))
 	val STEEL_MODULE = unStackable(identifier = "STEEL_MODULE", model = "industry/steel_module", displayName = text("Steel Module"))
@@ -615,8 +610,8 @@ object CustomItemRegistry : IonServerComponent() {
 		return register(CustomItem(identifier, displayName, unStackableCustomItem(model = model)))
 	}
 
-	private fun customBlockItem(identifier: String, material: Material = IRON_BLOCK, model: String, displayName: Component, customBlock: Supplier<CustomBlock>) =
-		register(CustomBlockItem(identifier, material, model, displayName, customBlock))
+	private fun customBlockItem(identifier: String, model: String, displayName: Component, customBlock: Supplier<CustomBlock>) =
+		register(CustomBlockItem(identifier, model, displayName, customBlock))
 
 	val ItemStack.customItem: CustomItem? get() {
 		return customItems[persistentDataContainer.get(CUSTOM_ITEM, STRING) ?: return null]
