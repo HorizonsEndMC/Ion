@@ -297,6 +297,7 @@ object StarshipCruising : IonServerComponent() {
 			if (starship.cruiseData.velocity.lengthSquared() != 0.0) {
 				controller.userErrorAction("Starship is decelerating")
 			} else {
+				if (starship.isDirectControlEnabled) return
 				controller.userErrorAction("Starship is not cruising")
 			}
 			return
