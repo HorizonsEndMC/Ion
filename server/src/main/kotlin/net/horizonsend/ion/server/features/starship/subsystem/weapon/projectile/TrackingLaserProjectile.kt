@@ -20,12 +20,13 @@ abstract class TrackingLaserProjectile(
 	private val originalTarget: Vector,
 	private val aimDistance: Int
 ) : LaserProjectile(starship, name, loc, dir, shooter) {
+	val maxTrackingRadius = 0.15
 	private lateinit var getTargetOrigin: () -> Vector
 	private lateinit var targetBase: Vector
 
 	protected abstract val maxDegrees: Double
 
-	private fun calculateTarget() = targetBase.clone().add(getTargetOrigin())
+	private fun calculateTarget() = getTargetOrigin().clone()
 
 	override fun fire() {
 		processTarget()
@@ -34,11 +35,18 @@ abstract class TrackingLaserProjectile(
 	}
 
 	private fun processTarget() {
-		val targetShip = ActiveStarships.findByBlock(originalTarget.toLocation(loc.world))
+		val targetOffset = originalTarget.clone().subtract(loc.toVector())
+		val targetShips = ActiveStarships.getInWorld(loc.world).filter {
+			it.centerOfMass.toCenterVector().distanceSquared(loc.toVector()) <= range*range &&
+				it != shooter.starship
+
+		}
+		val angles = targetShips.map { it.centerOfMass.toCenterVector().subtract(loc.toVector()).angle(targetOffset) }
+		val minAngleIndex = angles.withIndex().minByOrNull { it.value }?.index
+		val targetShip = if (minAngleIndex != null && angles[minAngleIndex] <= maxTrackingRadius) targetShips[minAngleIndex] else null
 		getTargetOrigin = {
 			targetShip?.centerOfMass?.toCenterVector() ?: originalTarget
 		}
-		targetBase = originalTarget.clone().subtract(getTargetOrigin())
 	}
 
 	override fun tick() {
