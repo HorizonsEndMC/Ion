@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Energy
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.items.NewCustomItemListeners.sortCustomItemListeners
+import net.horizonsend.ion.server.features.custom.items.CustomItemListeners.sortCustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.Smeltable
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem

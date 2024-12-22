@@ -22,7 +22,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 
-object NewCustomItemListeners : SLEventListener() {
+object CustomItemListeners : SLEventListener() {
 	// Presorted to avoid a bunch of filtering for every event at runtime
 	private val interactListeners: MutableMap<CustomItem, MutableSet<Listener<PlayerInteractEvent, *>>> = mutableMapOf()
 	private val swapItemListeners: MutableMap<CustomItem, MutableSet<Listener<PlayerSwapHandItemsEvent, *>>> = mutableMapOf()

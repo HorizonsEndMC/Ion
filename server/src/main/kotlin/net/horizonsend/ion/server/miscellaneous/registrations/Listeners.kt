@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
-import net.horizonsend.ion.server.features.custom.items.NewCustomItemListeners
+import net.horizonsend.ion.server.features.custom.items.CustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporterManager
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.BlasterListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
@@ -62,7 +62,7 @@ val listeners: List<Listener> = listOf(
 	// Ion
 	BlasterListeners(),
 	CancelListeners(),
-	NewCustomItemListeners,
+	CustomItemListeners,
 	CustomBlockListeners,
 	EdenFixer9000(),
 	GameplayTweaksListeners(),
