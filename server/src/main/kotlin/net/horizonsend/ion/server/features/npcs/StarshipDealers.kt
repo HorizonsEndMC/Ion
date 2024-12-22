@@ -7,11 +7,10 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.nations.gui.item
 import net.horizonsend.ion.server.features.npcs.traits.ShipDealerTrait
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.progression.Levels
@@ -22,7 +21,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Location
@@ -37,7 +37,7 @@ object StarshipDealers : IonServerComponent(true) {
 	val manager = NPCManager(log, "StarshipDealerNPCs")
 
 	private val lastBuyTimes = mutableMapOf<ServerConfiguration.Ship, MutableMap<UUID, Long>>()
-	val schematicMap = IonServer.configuration.soldShips.associateWith { it.schematic() }
+	val schematicMap = ConfigurationFiles.serverConfiguration().soldShips.associateWith { it.schematic() }
 
 	override fun onEnable() {
 		manager.enableRegistry()
@@ -56,17 +56,11 @@ object StarshipDealers : IonServerComponent(true) {
 
 		MenuHelper.apply {
 			val ships: List<GuiItem> = schematicMap.map { (ship, schematic) ->
-				val item: ItemStack = item(ship.guiMaterial)
-
-				item.updateMeta {
-					it.displayName(miniMessage().deserialize(ship.displayName))
-
-					it.lore(
-						ship.lore.map {  loreLine ->
-							miniMessage().deserialize(loreLine)
-						}
-					)
-				}
+				val item = ItemStack(ship.guiMaterial)
+					.updateDisplayName(miniMessage().deserialize(ship.displayName))
+					.updateLore(ship.lore.map { loreLine ->
+						miniMessage().deserialize(loreLine)
+					})
 
 				val button = guiButton(item) {
 					loadShip(player, ship, schematic)
@@ -143,9 +137,9 @@ object StarshipDealers : IonServerComponent(true) {
 
 		for (i in 0..5000) {
 			val targetVec = Vec3i(target)
-			val dx = targetVec.x - schematic.origin.x
-			val dy = targetVec.y - schematic.origin.y
-			val dz = targetVec.z - schematic.origin.z
+			val dx = targetVec.x - schematic.origin.x()
+			val dy = targetVec.y - schematic.origin.y()
+			val dz = targetVec.z - schematic.origin.z()
 
 			var obstructed = false
 			for (blockVector3 in schematic.region) {
@@ -153,9 +147,9 @@ object StarshipDealers : IonServerComponent(true) {
 					continue
 				}
 
-				val x = blockVector3.x + dx
-				val y = blockVector3.y + dy
-				val z = blockVector3.z + dz
+				val x = blockVector3.x() + dx
+				val y = blockVector3.y() + dy
+				val z = blockVector3.z() + dz
 
 				if (!world.worldBorder.isInside(Location(world, x.toDouble(), y.toDouble(), z.toDouble()))) {
 					obstructed = true

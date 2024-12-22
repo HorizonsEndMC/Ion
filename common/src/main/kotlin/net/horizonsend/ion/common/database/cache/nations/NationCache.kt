@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.string
+import net.kyori.adventure.text.format.TextColor
 import java.util.concurrent.ConcurrentHashMap
 
 object NationCache : ManualCache() {
@@ -20,6 +21,8 @@ object NationCache : ManualCache() {
 		var invites: Set<Oid<Settlement>>
 	) {
 		val leader get() = SettlementCache[capital].leader
+
+		val textColor: TextColor get() = TextColor.color(color)
 	}
 
 	private val NATION_DATA = ConcurrentHashMap<Oid<Nation>, NationData>()

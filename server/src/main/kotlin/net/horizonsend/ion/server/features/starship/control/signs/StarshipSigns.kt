@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.control.signs
 
-import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
 import net.horizonsend.ion.server.features.starship.BoardingRamps
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -139,7 +138,7 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 	open fun onClick(player: Player, sign: Sign, rightClick: Boolean) {}
 
 	protected fun findPlayerStarship(player: Player): ActiveControlledStarship? {
-		val activeStarship = ActiveStarships.findByPassenger(player) as? ActiveControlledStarship
+		val activeStarship = ActiveStarships.findByPassenger(player)
 
 		if (activeStarship == null) {
 			player msg "&cYou can only use this in an active player starship"
@@ -150,7 +149,7 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 	}
 
 	protected fun findPilotedPlayerStarship(player: Player): ActiveControlledStarship? {
-		val starship = ActiveStarships.findByPassenger(player) as? ActiveControlledStarship
+		val starship = ActiveStarships.findByPassenger(player)
 
 		if (starship == null) {
 			player msg "&cYou can only use this in an active player starship"

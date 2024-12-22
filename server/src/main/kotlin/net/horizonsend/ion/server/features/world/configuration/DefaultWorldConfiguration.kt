@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.world.configuration
 
-import net.horizonsend.ion.server.configuration.StaticDoubleAmount
-import net.horizonsend.ion.server.configuration.StaticIntegerAmount
+import net.horizonsend.ion.server.configuration.util.StaticDoubleAmount
+import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gas.collection.ChildWeight
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
@@ -22,6 +22,69 @@ object DefaultWorldConfiguration {
 		return settings
 	}
 
+	val TEST = register("Chandra", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
+		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
+			parent = HeightRamp(
+				parent = StaticBase(amount = StaticIntegerAmount(85)),
+				minHeight = StaticIntegerAmount(100),
+				maxHeight = StaticIntegerAmount(384),
+				minWeight = StaticDoubleAmount(0.0),
+				maxWeight = StaticDoubleAmount(1.0)
+			),
+			weight = StaticDoubleAmount(0.5)
+        )
+		),
+		CollectedGas(Gasses.NITROGEN.identifier,
+			ChildWeight(
+				parent = ChildWeight(
+					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
+				),
+				weight = StaticDoubleAmount(0.5)
+			),
+		),
+		CollectedGas(Gasses.METHANE.identifier, ChildWeight(
+			parent = HeightRamp(
+				parent = StaticBase(amount = StaticIntegerAmount(85)),
+				minHeight = StaticIntegerAmount(0),
+				maxHeight = StaticIntegerAmount(384),
+				minWeight = StaticDoubleAmount(0.5),
+				maxWeight = StaticDoubleAmount(1.0)
+			),
+			weight = StaticDoubleAmount(0.5)
+        )
+		),
+		CollectedGas(Gasses.OXYGEN.identifier,
+			ChildWeight(
+				parent = ChildWeight(
+					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
+				),
+				weight = StaticDoubleAmount(0.5)
+			),
+		),
+		CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
+			parent = HeightRamp(
+				parent = StaticBase(amount = StaticIntegerAmount(85)),
+				minHeight = StaticIntegerAmount(0),
+				maxHeight = StaticIntegerAmount(384),
+				minWeight = StaticDoubleAmount(1.0),
+				maxWeight = StaticDoubleAmount(0.0)
+			),
+			weight = StaticDoubleAmount(0.5)
+        )
+		),
+		CollectedGas(Gasses.FLUORINE.identifier, ChildWeight(
+			parent = HeightRamp(
+				parent = StaticBase(amount = StaticIntegerAmount(85)),
+				minHeight = StaticIntegerAmount(0),
+				maxHeight = StaticIntegerAmount(128),
+				minWeight = StaticDoubleAmount(1.0),
+				maxWeight = StaticDoubleAmount(0.0)
+			),
+			weight = StaticDoubleAmount(0.5)
+        )
+		)
+	))))
+
 	val CHANDRA = register("Chandra", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
 		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
 			parent = HeightRamp(
@@ -31,7 +94,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(0.0),
 				maxWeight = StaticDoubleAmount(1.0)
 			),
-			weight = StaticDoubleAmount(0.9))
+			weight = StaticDoubleAmount(0.9)
+        )
 		),
 	))))
 
@@ -63,7 +127,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(0.0),
 				maxWeight = StaticDoubleAmount(1.0)
 			),
-			weight = StaticDoubleAmount(0.2))
+			weight = StaticDoubleAmount(0.2)
+        )
 		),
 		CollectedGas(Gasses.OXYGEN.identifier,
 			ChildWeight(
@@ -81,7 +146,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(1.0),
 				maxWeight = StaticDoubleAmount(0.0)
 			),
-			weight = StaticDoubleAmount(0.25))
+			weight = StaticDoubleAmount(0.25)
+        )
 		)
 	))))
 
@@ -94,7 +160,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(0.0),
 				maxWeight = StaticDoubleAmount(1.0)
 			),
-			weight = StaticDoubleAmount(0.2))
+			weight = StaticDoubleAmount(0.2)
+        )
 		),
 	))))
 
@@ -107,7 +174,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(0.0),
 				maxWeight = StaticDoubleAmount(1.0)
 			),
-			weight = StaticDoubleAmount(0.6))
+			weight = StaticDoubleAmount(0.6)
+        )
 		),
 		CollectedGas(Gasses.NITROGEN.identifier,
 			ChildWeight(
@@ -136,7 +204,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(0.5),
 				maxWeight = StaticDoubleAmount(1.0)
 			),
-			weight = StaticDoubleAmount(0.25))
+			weight = StaticDoubleAmount(0.25)
+        )
 		),
 		CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
 			parent = HeightRamp(
@@ -146,7 +215,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(1.0),
 				maxWeight = StaticDoubleAmount(0.0)
 			),
-			weight = StaticDoubleAmount(0.5))
+			weight = StaticDoubleAmount(0.5)
+        )
 		),
 	))))
 
@@ -175,7 +245,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(1.0),
 				maxWeight = StaticDoubleAmount(0.0)
 			),
-			weight = StaticDoubleAmount(0.3))
+			weight = StaticDoubleAmount(0.3)
+        )
 		),
 	))))
 
@@ -188,7 +259,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(0.5),
 				maxWeight = StaticDoubleAmount(1.0)
 			),
-			weight = StaticDoubleAmount(0.2))
+			weight = StaticDoubleAmount(0.2)
+        )
 		),
 		CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
 			parent = HeightRamp(
@@ -198,7 +270,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(1.0),
 				maxWeight = StaticDoubleAmount(0.0)
 			),
-			weight = StaticDoubleAmount(0.3))
+			weight = StaticDoubleAmount(0.3)
+        )
 		),
 	))))
 
@@ -287,7 +360,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(0.0),
 				maxWeight = StaticDoubleAmount(1.0)
 			),
-			weight = StaticDoubleAmount(0.3))
+			weight = StaticDoubleAmount(0.3)
+        )
 		),
 		CollectedGas(Gasses.NITROGEN.identifier,
 			ChildWeight(
@@ -316,7 +390,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(0.5),
 				maxWeight = StaticDoubleAmount(1.0)
 			),
-			weight = StaticDoubleAmount(0.35))
+			weight = StaticDoubleAmount(0.35)
+        )
 		),
 		CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
 			parent = HeightRamp(
@@ -326,7 +401,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(1.0),
 				maxWeight = StaticDoubleAmount(0.0)
 			),
-			weight = StaticDoubleAmount(0.2))
+			weight = StaticDoubleAmount(0.2)
+        )
 		),
 		CollectedGas(Gasses.FLUORINE.identifier, ChildWeight(
 			parent = HeightRamp(
@@ -336,7 +412,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(1.0),
 				maxWeight = StaticDoubleAmount(0.0)
 			),
-			weight = StaticDoubleAmount(0.6))
+			weight = StaticDoubleAmount(0.6)
+        )
 		)
 	))))
 
@@ -349,7 +426,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(0.0),
 				maxWeight = StaticDoubleAmount(1.0)
 			),
-			weight = StaticDoubleAmount(0.1))
+			weight = StaticDoubleAmount(0.1)
+        )
 		),
 	))))
 
@@ -381,7 +459,8 @@ object DefaultWorldConfiguration {
 				minWeight = StaticDoubleAmount(0.0),
 				maxWeight = StaticDoubleAmount(1.0)
 			),
-			weight = StaticDoubleAmount(0.4))
+			weight = StaticDoubleAmount(0.4)
+        )
 		),
 	))))
 

@@ -29,9 +29,18 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.factory.PrintItem
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
-import net.horizonsend.ion.server.miscellaneous.*
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.createData
+import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
+import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
 import org.bukkit.Location
@@ -41,7 +50,9 @@ import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.save
-import java.util.*
+import java.util.LinkedList
+import java.util.Locale
+import java.util.UUID
 import kotlin.collections.set
 
 @CommandAlias("blueprint")
@@ -85,7 +96,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val schem = Tasks.getSyncBlocking { StarshipSchematic.createSchematic(starship) }
 		val data = Blueprint.createData(schem)
 
-		pilotLoc = Vec3i(pilotLoc.x - schem.origin.x, pilotLoc.y - schem.origin.y, pilotLoc.z - schem.origin.z)
+		pilotLoc = Vec3i(pilotLoc.x - schem.origin.x(), pilotLoc.y - schem.origin.y(), pilotLoc.z - schem.origin.z())
 
 		if (createNew) {
 			failIf(Blueprint.count(Blueprint::owner eq slPlayerId) > getMaxBlueprints(sender)) {
@@ -254,7 +265,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	fun loadSchematic(location: Location, schematic: Clipboard, pilotLoc: Vec3i, callback: (Vec3i) -> Unit = {}) {
 		val vec: BlockVector3 = getPasteVector(location, pilotLoc)
-		val vec3i = Vec3i(vec.blockX, vec.blockY, vec.blockZ)
+		val vec3i = Vec3i(vec.x(), vec.y(), vec.z())
 
 		placeSchematicEfficiently(schematic, location.world, vec3i, true) {
 			callback(vec3i)

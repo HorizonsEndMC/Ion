@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.player.CombatNPCs
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.CombatTimer.REASON_PVP_GROUND_COMBAT
 import net.horizonsend.ion.server.features.player.CombatTimer.evaluatePvp
-import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -209,7 +208,7 @@ object ProtectionListener : SLEventListener() {
 		val padding = 500
 		var inOwnStation = false
 
-		for (planet: CachedPlanet in Space.getPlanets().filter { it.spaceWorld == world }) {
+		for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == world }) {
 			val minDistance = planet.orbitDistance - padding
 			val maxDistance = planet.orbitDistance + padding
 			val distance = distance(x.toInt(), y.toInt(), z.toInt(), planet.sun.location.x, y.toInt(), planet.sun.location.z).toInt()
@@ -278,7 +277,7 @@ object ProtectionListener : SLEventListener() {
 
 		blocks.forEach { block ->
 			if (Math.random() < 0.25) {
-				val heart = if (Math.random() > 0.5) Particle.HEART else Particle.VILLAGER_ANGRY
+				val heart = if (Math.random() > 0.5) Particle.HEART else Particle.ANGRY_VILLAGER
 				val particleLoc = block.location.add(Math.random(), 1 + Math.random(), Math.random())
 
 				block.world.spawnParticle(heart, particleLoc, 1)

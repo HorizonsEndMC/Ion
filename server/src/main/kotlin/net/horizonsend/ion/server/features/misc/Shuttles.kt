@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.misc.Shuttle
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.nations.gui.openConfirmMenu
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
@@ -24,9 +25,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.isInRange
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
-import net.horizonsend.ion.server.sharedDataFolder
+import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGetString
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -38,7 +38,6 @@ import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.time.Instant
 import java.util.UUID
-import kotlin.collections.set
 
 object Shuttles : IonServerComponent() {
 	const val TICKET_COST = 20
@@ -49,7 +48,7 @@ object Shuttles : IonServerComponent() {
 		.build(
 			CacheLoader.from { name ->
 				requireNotNull(name)
-				requireNotNull(getSchematicFile(name)).exists()
+				getSchematicFile(name).exists()
 				return@from readSchematic(getSchematicFile(name))
 					?: error("Failed to read schematic $name")
 			}
@@ -172,8 +171,8 @@ object Shuttles : IonServerComponent() {
 	private val TICKET_DISPLAY_NAME = "&bShuttle &eTicket".colorize()
 
 	fun createTicket() = ItemStack(Material.PAPER, 1)
-		.setDisplayNameAndGet(TICKET_DISPLAY_NAME)
-		.setLoreAndGet(listOf("&5Ticket ID&b: &d${UUID.randomUUID()}".colorize()))
+		.updateDisplayName(TICKET_DISPLAY_NAME)
+		.setLoreAndGetString(listOf("&5Ticket ID&b: &d${UUID.randomUUID()}".colorize()))
 
 	fun isTicket(item: ItemStack): Boolean = item.itemMeta?.displayName == TICKET_DISPLAY_NAME
 
@@ -226,19 +225,19 @@ object Shuttles : IonServerComponent() {
 			val (x1, y1, z1) = pos1
 			val (x2, y2, z2) = pos2
 
-			val dx1 = x1 - schematic.origin.blockX
-			val dy1 = y1 - schematic.origin.blockY
-			val dz1 = z1 - schematic.origin.blockZ
+			val dx1 = x1 - schematic.origin.x()
+			val dy1 = y1 - schematic.origin.y()
+			val dz1 = z1 - schematic.origin.z()
 
-			val dx2 = x2 - schematic.origin.blockX
-			val dy2 = y2 - schematic.origin.blockY
-			val dz2 = z2 - schematic.origin.blockZ
+			val dx2 = x2 - schematic.origin.x()
+			val dy2 = y2 - schematic.origin.y()
+			val dz2 = z2 - schematic.origin.z()
 
 			val region: Region = schematic.region.clone()
 			region.shift(BlockVector3.at(dx1, dy1, dz1))
 
 			region.chunks.asSequence()
-				.map { world1.getChunkAtIfLoaded(it.blockX, it.blockZ) }
+				.map { world1.getChunkAtIfLoaded(it.x(), it.z()) }
 				.filterNotNull()
 				.map { it.entities }
 				.flatMap { it.asSequence() }

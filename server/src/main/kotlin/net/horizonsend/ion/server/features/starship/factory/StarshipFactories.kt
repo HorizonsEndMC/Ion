@@ -78,13 +78,13 @@ object StarshipFactories : IonServerComponent() {
 		val sideDirection = direction.rightFace
 		val negativeX = if (direction.modX == 0) sideDirection.modX < 0 else direction.modX < 0
 		val negativeZ = if (direction.modZ == 0) sideDirection.modZ < 0 else direction.modZ < 0
-		val x = if (negativeX) schematic.region.minimumPoint.x else schematic.region.maximumPoint.x
-		val y = schematic.region.minimumPoint.y
-		val z = if (negativeZ) schematic.region.minimumPoint.z else schematic.region.maximumPoint.z
+		val x = if (negativeX) schematic.region.minimumPoint.x() else schematic.region.maximumPoint.x()
+		val y = schematic.region.minimumPoint.y()
+		val z = if (negativeZ) schematic.region.minimumPoint.z() else schematic.region.maximumPoint.z()
 
-		val offsetX = (x - schematic.region.center.x * 2).roundToInt()
+		val offsetX = (x - schematic.region.center.x() * 2).roundToInt()
 		val offsetY = (-y.toDouble()).roundToInt()
-		val offsetZ = (z - schematic.region.center.z * 2).roundToInt()
+		val offsetZ = (z - schematic.region.center.z() * 2).roundToInt()
 
 		val blocks = Long2ObjectOpenHashMap<BlockData>()
 		val signs = Long2ObjectOpenHashMap<SignUtils.SignData>()
@@ -100,7 +100,7 @@ object StarshipFactories : IonServerComponent() {
 				continue
 			}
 
-			val key = blockKey(pos.x + offsetX + targetX, pos.y + offsetY + targetY, pos.z + offsetZ + targetZ)
+			val key = blockKey(pos.x() + offsetX + targetX, pos.y() + offsetY + targetY, pos.z() + offsetZ + targetZ)
 
 			blocks[key] = data
 

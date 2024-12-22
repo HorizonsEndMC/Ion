@@ -34,7 +34,7 @@ class LogisticTurretProjectile(
     override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
         Location(loc.world, x, y, z).spherePoints(1.0, 10).forEach {
             it.world.spawnParticle(
-                Particle.VILLAGER_HAPPY,
+                Particle.HAPPY_VILLAGER,
                 it.x,
                 it.y,
                 it.z,

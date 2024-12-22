@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.npcs.NPCManager
 import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.features.npcs.traits.CombatNPCTrait
@@ -48,7 +49,7 @@ object CombatNPCs : IonServerComponent(true) {
 		if (!isCitizensLoaded) return
 
 		// Do not register the listeners if not enabled
-		if (!IonServer.featureFlags.combatNPCs) return
+		if (!ConfigurationFiles.featureFlags().combatNPCs) return
 
 		manager.enableRegistry()
 
@@ -112,7 +113,6 @@ object CombatNPCs : IonServerComponent(true) {
 		}
 
 		listen<NPCDeathEvent>(EventPriority.LOWEST) { event ->
-			println("NPC DIED")
 			val npc = event.npc
 			val trait = npc.getTraitNullable(CombatNPCTrait::class.java) ?: return@listen
 
@@ -142,7 +142,7 @@ object CombatNPCs : IonServerComponent(true) {
 			destroyNPC(npc)
 
 			Tasks.async {
-				SLPlayer.updateById(playerId.slPlayerId, push(SLPlayer::wasKilledOn, IonServer.configuration.serverName))
+				SLPlayer.updateById(playerId.slPlayerId, push(SLPlayer::wasKilledOn, ConfigurationFiles.serverConfiguration().serverName))
 
 				val name: String = SLPlayer.getName(playerId.slPlayerId) ?: "UNKNOWN"
 				Notify.chatAndEvents(miniMessage.deserialize("<red>Combat NPC of $name was slain by ${killer?.name}"))
@@ -155,7 +155,7 @@ object CombatNPCs : IonServerComponent(true) {
 
 		// Handle logins after npc killed
 		listen<PlayerJoinEvent> { event ->
-			if (SLPlayer[event.player].wasKilledOn.contains(IonServer.configuration.serverName)) {
+			if (SLPlayer[event.player].wasKilledOn.contains(ConfigurationFiles.serverConfiguration().serverName)) {
 				event.player.inventory.clear()
 				event.player.health = 0.0
 				event.player.alert("Your NPC was killed while you were offline.")
@@ -167,11 +167,11 @@ object CombatNPCs : IonServerComponent(true) {
 			if (event.player.hasMetadata("NPC")) return@listen
 
 			val data = SLPlayer[event.player]
-			if (data.wasKilledOn.contains(IonServer.configuration.serverName)) {
+			if (data.wasKilledOn.contains(ConfigurationFiles.serverConfiguration().serverName)) {
 				event.drops.clear()
 				event.deathMessage(null)
 
-				SLPlayer.updateById(event.player.slPlayerId, pull(SLPlayer::wasKilledOn, IonServer.configuration.serverName))
+				SLPlayer.updateById(event.player.slPlayerId, pull(SLPlayer::wasKilledOn, ConfigurationFiles.serverConfiguration().serverName))
 				SLPlayer.updateById(data._id, setValue(SLPlayer::wasKilled, false))
 			}
 		}
@@ -191,7 +191,7 @@ object CombatNPCs : IonServerComponent(true) {
 	)
 
 	override fun onDisable() {
-		if (!IonServer.featureFlags.combatNPCs) return // Not enabled
+		if (!ConfigurationFiles.featureFlags().combatNPCs) return // Not enabled
 
 		manager.disableRegistry()
 	}

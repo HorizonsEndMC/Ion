@@ -32,8 +32,7 @@ import org.bukkit.command.CommandSender
 @CommandPermission("ion.admin.world")
 object WorldCommand : SLCommand() {
 	@Subcommand("flag add")
-	@Suppress("unused")
-	fun onAddWorldFlag(sender: CommandSender, world: World, flag: WorldFlag) {
+    fun onAddWorldFlag(sender: CommandSender, world: World, flag: WorldFlag) {
 		val ionWorld = IonWorld[world]
 
 		if (ionWorld.configuration.flags.add(flag)) sender.success("Added flag $flag")
@@ -43,8 +42,7 @@ object WorldCommand : SLCommand() {
 	}
 
 	@Subcommand("flag remove")
-	@Suppress("unused")
-	fun onRemoveWorldFlag(sender: CommandSender, world: World, flag: WorldFlag) {
+    fun onRemoveWorldFlag(sender: CommandSender, world: World, flag: WorldFlag) {
 		val ionWorld = IonWorld[world]
 
 		if (ionWorld.configuration.flags.remove(flag)) sender.success("Removed flag $flag")
@@ -54,8 +52,7 @@ object WorldCommand : SLCommand() {
 	}
 
 	@Subcommand("flag list")
-	@Suppress("unused")
-	fun onListFlags(sender: CommandSender, world: World, @Optional page: Int?) {
+    fun onListFlags(sender: CommandSender, world: World, @Optional page: Int?) {
 		if ((page ?: 1) <= 0) return sender.userError("Page must not be less than or equal to zero!")
 
 		val builder = text()
@@ -84,8 +81,7 @@ object WorldCommand : SLCommand() {
 	}
 
 	@Subcommand("environment add")
-	@Suppress("unused")
-	fun onAddWorldEnvironment(sender: CommandSender, world: World, environment: Environment) {
+    fun onAddWorldEnvironment(sender: CommandSender, world: World, environment: Environment) {
 		val ionWorld = IonWorld[world]
 
 		if (ionWorld.configuration.environments.add(environment)) sender.success("Added flag $environment")
@@ -95,8 +91,7 @@ object WorldCommand : SLCommand() {
 	}
 
 	@Subcommand("environment remove")
-	@Suppress("unused")
-	fun onRemoveWorldEnvironment(sender: CommandSender, world: World, environment: Environment) {
+    fun onRemoveWorldEnvironment(sender: CommandSender, world: World, environment: Environment) {
 		val ionWorld = IonWorld[world]
 
 		if (ionWorld.configuration.environments.remove(environment)) sender.success("Removed flag $environment")
@@ -106,8 +101,7 @@ object WorldCommand : SLCommand() {
 	}
 
 	@Subcommand("environment list")
-	@Suppress("unused")
-	fun onListEnvironments(sender: CommandSender, world: World, @Optional page: Int?) {
+    fun onListEnvironments(sender: CommandSender, world: World, @Optional page: Int?) {
 		if ((page ?: 1) <= 0) return sender.userError("Page must not be less than or equal to zero!")
 
 		val builder = text()
@@ -136,8 +130,7 @@ object WorldCommand : SLCommand() {
 	}
 
 	@Subcommand("apply preset")
-	@Suppress("unused")
-	fun setPreset(sender: CommandSender, world: World, preset: WorldPreset) {
+    fun setPreset(sender: CommandSender, world: World, preset: WorldPreset) {
 		preset.setup(world)
 		sender.success("Applied preset $preset to ${world.name}")
 	}

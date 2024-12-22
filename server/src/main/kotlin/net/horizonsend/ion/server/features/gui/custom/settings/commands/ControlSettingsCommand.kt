@@ -15,7 +15,6 @@ import org.litote.kmongo.setValue
 object ControlSettingsCommand : SLCommand() {
     @CommandAlias("enableAlternateDCCruise")
     @CommandCompletion("true|false")
-    @Suppress("unused")
     fun onUseAlternateDCCruise(sender: Player, @Optional toggle: Boolean?) {
         val useAlternateDcCruise = toggle ?: !PlayerCache[sender].useAlternateDCCruise
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::useAlternateDCCruise, useAlternateDcCruise))
@@ -29,7 +28,6 @@ object ControlSettingsCommand : SLCommand() {
     }
 
     @CommandAlias("dcSpeedModifier")
-    @Suppress("unused")
     fun onChangeDcModifier(sender: Player) {
         val currentSetting = PlayerCache[sender.uniqueId].dcSpeedModifier
 

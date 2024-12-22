@@ -3,13 +3,14 @@ package net.horizonsend.ion.server.features.space.encounters
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -69,24 +70,14 @@ object DefenseBots : Encounter(identifier = "defense_bots") {
 				this.equipment.itemInMainHandDropChance = 0.0f
 				this.equipment.itemInOffHandDropChance = 1.0f
 
-				val weirdPistol = CustomItems.PISTOL.constructItemStack()
+				val weirdPistol = CustomItemRegistry.BLASTER_PISTOL.constructItemStack()
 				weirdPistol.type = Material.BOW
-				weirdPistol.updateMeta {
-					it.displayName(
-						Component.text("Rusty Blaster Pistol").color(TextColor.fromHexString("#802716"))
-							.decoration(TextDecoration.ITALIC, false)
-							.decoration(TextDecoration.BOLD, false)
-					)
-				}
+				weirdPistol
+					.updateDisplayName(Component.text("Rusty Blaster Pistol").color(TextColor.fromHexString("#802716")).decoration(TextDecoration.ITALIC, false).decoration(TextDecoration.BOLD, false))
 
-				val keyCard = ItemStack(Material.PAPER).updateMeta {
-					it.displayName(
-						Component.text("Key Card").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE)
-					)
-					it.lore(
-						listOf(Component.text(keyCode).decoration(TextDecoration.ITALIC, false).color(NamedTextColor.AQUA))
-					)
-				}
+				val keyCard = ItemStack(Material.PAPER)
+					.updateDisplayName(Component.text("Key Card"))
+					.updateLore(listOf(Component.text(keyCode).color(NamedTextColor.AQUA)))
 
 				this.equipment.setItemInOffHand(keyCard)
 				this.equipment.setItemInMainHand(weirdPistol)

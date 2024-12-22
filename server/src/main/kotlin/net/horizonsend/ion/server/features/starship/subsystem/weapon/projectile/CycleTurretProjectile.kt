@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.CycleTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -29,7 +29,7 @@ class CycleTurretProjectile(
 	override val starshipShieldDamageMultiplier: Double,
 	override val areaShieldDamageMultiplier: Double,
 	override val soundName: String,
-	override val balancing: StarshipWeapons.ProjectileBalancing = ship?.balancing?.weapons?.cycleTurret ?: IonServer.starshipBalancing.nonStarshipFired.cycleTurret,
+	override val balancing: StarshipWeapons.ProjectileBalancing = ship?.balancing?.weapons?.cycleTurret ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.cycleTurret,
 	shooter: Damager,
 	private val shotIndex: Int,
 	private val multiblock: CycleTurretMultiblock

@@ -15,8 +15,8 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
@@ -41,7 +41,6 @@ object BookmarkCommand : SLCommand() {
     }
 
     @Subcommand("save")
-    @Suppress("unused")
     @CommandCompletion("name")
     fun onSave(sender: Player, @Optional name: String?) {
         if (!name.isNullOrBlank()) {
@@ -73,7 +72,7 @@ object BookmarkCommand : SLCommand() {
                 return
             }
 
-            Bookmark.create(newName, slPlayerId, loc, IonServer.configuration.serverName ?: "Survival", worldName)
+            Bookmark.create(newName, slPlayerId, loc, ConfigurationFiles.serverConfiguration().serverName ?: "Survival", worldName)
             sender.success("Saved bookmark $newName")
         } else {
             sender.userError("Bookmark with name $newName already exists")
@@ -82,7 +81,6 @@ object BookmarkCommand : SLCommand() {
     }
 
     @Subcommand("delete")
-    @Suppress("unused")
     @CommandCompletion("@bookmarks")
     fun onDelete(sender: Player, name: String) {
         val bookmark = Bookmark.find(and(Bookmark::owner eq sender.slPlayerId, Bookmark::name eq name)).first()
@@ -95,7 +93,6 @@ object BookmarkCommand : SLCommand() {
     }
 
     @Subcommand("list")
-    @Suppress("unused")
     fun onCacheList(sender: Player) {
         val bookmarks: List<Bookmark> = getBookmarks(sender).sortedByDescending { it.name }
 

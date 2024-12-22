@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.gui.custom.item
 
-import net.horizonsend.ion.server.features.custom.items.misc.PersonalTransporterManager
+import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporterManager
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -39,8 +39,8 @@ class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
         )
 
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-            .addIngredient('<', GuiItems.LeftItem())
-            .addIngredient('>', GuiItems.RightItem())
+            .addIngredient('<', GuiItems.PageLeftItem())
+            .addIngredient('>', GuiItems.PageRightItem())
 
         // populate player list cache
         playerList.addAll(Bukkit.getOnlinePlayers())
@@ -51,9 +51,7 @@ class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
             }
             gui.addContent(button)
 
-            for (i in 1..8) {
-                gui.addContent(GuiItems.BlankItem(button))
-            }
+            repeat(8) { gui.addContent(GuiItems.BlankButton(button)) }
         }
 
         return gui.build()
@@ -102,6 +100,6 @@ class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
     }
 
     fun openMainWindow() {
-        currentWindow = open(player).apply { open() }
+        currentWindow = buildWindow(player).apply { open() }
     }
 }

@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
@@ -82,7 +83,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 				_id = id,
 				captain = captain,
 				starshipType = type.name,
-				serverName = IonServer.configuration.serverName,
+				serverName = ConfigurationFiles.serverConfiguration().serverName,
 				levelName = worldName,
 				blockKey = blockKey,
 				name = name,
@@ -109,7 +110,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 			val data = AIStarshipData(
 				id,
 				type.name,
-				IonServer.configuration.serverName,
+				ConfigurationFiles.serverConfiguration().serverName,
 				world.name,
 				blockKey,
 				name = name,

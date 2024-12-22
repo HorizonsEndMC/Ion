@@ -2,18 +2,16 @@ package net.horizonsend.ion.server.features.starship.movement
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.PlayerDeathEvent
-import java.lang.System
 import java.time.Duration
 import java.util.UUID
-import kotlin.collections.iterator
 
 object PlanetTeleportCooldown : IonServerComponent() {
 
@@ -26,7 +24,7 @@ object PlanetTeleportCooldown : IonServerComponent() {
     private var enabled = false
 
     override fun onEnable() {
-        enabled = IonServer.featureFlags.combatTimers
+        enabled = ConfigurationFiles.featureFlags().combatTimers
 
         if (!enabled) return
 

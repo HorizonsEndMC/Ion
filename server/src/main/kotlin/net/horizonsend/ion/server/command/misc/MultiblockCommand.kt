@@ -44,8 +44,7 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("check")
 	@CommandCompletion("@multiblocks")
 	@CommandPermission("ion.multiblock.check")
-	@Suppress("unused")
-	fun onCheck(sender: Player, lastMatch: Multiblock, x: Int, y: Int, z: Int) {
+    fun onCheck(sender: Player, lastMatch: Multiblock, x: Int, y: Int, z: Int) {
 		val sign = sender.world.getBlockAt(x, y, z).state as? Sign
 			?: return sender.userError("Block at $x $y $z isn't a sign!")
 
@@ -79,8 +78,7 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("place")
 	@CommandCompletion("@multiblocks")
 	@CommandPermission("ion.multiblock.place")
-	@Suppress("unused")
-	fun onPlace(sender: Player, multiblock: Multiblock) {
+    fun onPlace(sender: Player, multiblock: Multiblock) {
 		val shape = multiblock.shape.getRequirementMap(sender.facing)
 
 		val origin = Vec3i(sender.location)

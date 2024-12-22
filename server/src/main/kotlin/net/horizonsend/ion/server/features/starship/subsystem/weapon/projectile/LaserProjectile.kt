@@ -21,7 +21,7 @@ abstract class LaserProjectile(
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		// val entity = loc.world.spawnEntity(Location(loc.world, x, y, z), EntityType.BLOCK_DISPLAY) as Display
 
-		val particle = Particle.REDSTONE
+		val particle = Particle.DUST
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 4f)
 		loc.world.spawnParticle(particle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
 	}

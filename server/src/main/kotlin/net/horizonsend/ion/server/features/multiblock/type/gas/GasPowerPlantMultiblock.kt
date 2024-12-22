@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.gas
 
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.GasCanister
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses.EMPTY_CANISTER
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
@@ -202,7 +202,7 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 
 		// Burn fuel and oxidizer at 1:1
 		// Cap consumption at 30 units
-		val consumed = minOf(IonServer.globalGassesConfiguration.powerPlantConsumption, fuelFill, oxidizerFill)
+		val consumed = minOf(ConfigurationFiles.globalGassesConfiguration().powerPlantConsumption, fuelFill, oxidizerFill)
 
 		// God forbid it goes negative
 		if (fuelFill <= 0) {

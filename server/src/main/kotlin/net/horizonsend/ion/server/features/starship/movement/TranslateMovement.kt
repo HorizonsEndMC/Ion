@@ -87,13 +87,12 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			location.world = newWorld
 		}
 
-		@Suppress("UnstableApiUsage")
-		passenger.teleport(
-			location,
-			PlayerTeleportEvent.TeleportCause.PLUGIN,
-			*TeleportFlag.Relative.values(),
-			TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY
-		)
+        passenger.teleport(
+            location,
+            PlayerTeleportEvent.TeleportCause.PLUGIN,
+            *TeleportFlag.Relative.values(),
+            TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY
+        )
 	}
 
 	override fun onComplete() {}

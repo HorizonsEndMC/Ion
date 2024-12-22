@@ -289,7 +289,7 @@ class MiningLaserSubsystem(
 		if (blocksBroken > 0) {
 			PowerMachines.setPower(sign, power - (blockBreakPowerUsage * blocksBroken).toInt(), true)
 
-			laserEnd.world.spawnParticle(Particle.EXPLOSION_HUGE, laserEnd, 1)
+			laserEnd.world.spawnParticle(Particle.EXPLOSION, laserEnd, 1)
 		}  else {
 			starship.sendActionBar(text("Mining laser is trying to break air!", NamedTextColor.RED))
 		}

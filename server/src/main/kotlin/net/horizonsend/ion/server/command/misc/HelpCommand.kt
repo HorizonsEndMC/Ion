@@ -23,12 +23,10 @@ object HelpCommand : SLCommand() {
 	}
 
 	@Subcommand("book")
-	@Suppress("unused")
-	fun onHelpBook(sender: Player, page: HelpPage) {
+    fun onHelpBook(sender: Player, page: HelpPage) {
 		page.book(sender)
 	}
 
-	@Suppress("unused")
 	enum class HelpPage(val title: Component, private vararg val pages: Component) {
 
 		;

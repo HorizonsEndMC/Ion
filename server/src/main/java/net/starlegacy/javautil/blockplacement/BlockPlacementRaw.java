@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.MiscellaneousKt;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -205,15 +206,14 @@ public class BlockPlacementRaw {
 //        sendChunkPacket(nmsChunk, bitmask);
 
 		// Send Chunk Packet
-		ChunkHolder playerChunk = nmsChunk.playerChunk;
-		if (playerChunk == null) {
-			return;
+		ChunkHolder playerChunk = nmsChunk.moonrise$getChunkAndHolder().holder();
+		ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.getLightEngine(), null, new BitSet(bitmask), true);
+
+		for (ServerPlayer player : playerChunk.moonrise$getPlayers(false)) {
+			player.connection.send(packet);
 		}
 
-		ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.getLightEngine(), null, new BitSet(bitmask), true);
-		playerChunk.broadcast(packet, false);
-
-		nmsChunk.setUnsaved(true);
+		nmsChunk.markUnsaved();
 
 		if (!wasLoaded) {
 			Bukkit.getServer().getScheduler().runTask(IonServer.INSTANCE, () -> world.unloadChunkRequest(cx, cz));
