@@ -39,7 +39,8 @@ class HeavyLaserProjectile(
 		var speedPenalty = 0.15
 		if (starship.initialBlockCount >= 1400) return
 		if (starship.initialBlockCount >= 700) speedPenalty = 0.08
-		starship.userErrorAction("Direct Control speed slowed by ${"%.0f".format(speedPenalty*100)}%!")
+		if ((shooter.starship?.initialBlockCount ?: 0) > 4000) speedPenalty *= 0.5
+		starship.userErrorAction("Direct Control speed slowed by ${"%.1f".format(speedPenalty*100)}%!")
 		starship.directControlSpeedModifier *= 1 - speedPenalty
 		starship.lastDirectControlSpeedSlowed = System.currentTimeMillis() + Duration.ofSeconds(7).toMillis()
 
