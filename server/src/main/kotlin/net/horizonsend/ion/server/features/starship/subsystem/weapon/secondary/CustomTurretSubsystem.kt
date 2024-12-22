@@ -65,9 +65,6 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 	}
 
 	override fun handleRelease() {
-		println("Blocks: ${blocks.size}")
-		println("Subsystems: ${captiveSubsystems.size}")
-
 		blocks.forEach { Bukkit.getPlayer("GutinGongoozler")?.highlightBlock(Vec3i(it), 50L) }
 		captiveSubsystems.forEach { Bukkit.getPlayer("GutinGongoozler")?.highlightBlock(it.pos, 150L) }
 	}
