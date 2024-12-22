@@ -67,8 +67,8 @@ class IonTurretProjectile(
 		}
 
 		starship.userErrorAction("Direct Control speed slowed by 9%!")
-		starship.directControlSpeedModifier *= 0.91
-		starship.lastDirectControlSpeedSlowed = System.currentTimeMillis() + Duration.ofSeconds(7).toMillis()
+		starship.directControlSpeedModifier *= 0.82
+		starship.lastDirectControlSpeedSlowed = System.currentTimeMillis() + Duration.ofSeconds(9).toMillis()
 
 		Tasks.syncDelay(Duration.ofSeconds(5).toSeconds() * 20L) {
 			// reset for individual shots
