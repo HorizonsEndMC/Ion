@@ -15,7 +15,6 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextColor
-import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -23,7 +22,7 @@ import org.bukkit.inventory.ItemStack
 class Battery(type: Char, color: TextColor, maxPower: Int) : CustomItem(
 	identifier = "BATTERY_$type",
 	displayName = ofChildren(text("Size", BLUE), text("-", GRAY), text("$type", color), text(" Battery", BLUE)),
-	baseItemFactory = ItemFactory.stackableCustomItem(material = Material.WARPED_FUNGUS_ON_A_STICK, maxStackSize = 16, "battery/battery_${type.toString().lowercase()}")
+	baseItemFactory = ItemFactory.stackableCustomItem(maxStackSize = 16, "battery/battery_${type.toString().lowercase()}")
 ) {
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.POWER_STORAGE, PowerStorage(maxPower, 0, true))

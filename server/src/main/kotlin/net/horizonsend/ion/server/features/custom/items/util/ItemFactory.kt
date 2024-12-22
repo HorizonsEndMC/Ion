@@ -115,8 +115,6 @@ class ItemFactory private constructor(
 		fun builder() = Builder()
 		fun builder(from: ItemFactory) = Builder(from)
 
-		fun ItemFactory.withModel(model: String) = builder(this).setCustomModel(model).build()
-
 		val stackableCustomItem = builder()
 			.setMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
 			.setMaxStackSize(64)
@@ -127,7 +125,7 @@ class ItemFactory private constructor(
 			.setMaxStackSize(1)
 			.build()
 
-		fun stackableCustomItem(material: Material = Material.IRON_INGOT, maxStackSize: Int = 64, model: String) = builder(stackableCustomItem).setMaterial(material).setMaxStackSize(maxStackSize).setCustomModel(model).build()
+		fun stackableCustomItem(maxStackSize: Int = 64, model: String) = builder(stackableCustomItem).setMaxStackSize(maxStackSize).setCustomModel(model).build()
 		fun unStackableCustomItem(model: String) = builder(unStackableCustomItem).setCustomModel(model).build()
 	}
 }
