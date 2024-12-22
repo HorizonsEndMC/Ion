@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWe
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -174,7 +173,7 @@ object Interdiction : IonServerComponent() {
 			starship.type == StarshipType.STARFIGHTER ||
 			starship.type == StarshipType.SHUTTLE ||
 			starship.type == StarshipType.PLATFORM) return 10.0
-		return if (starship.type.isWarship) 3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())
+		return if (starship.type.typeCategory == TypeCategory.WAR_SHIP) 3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())
 		else (3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())) / 2
 	}
 }

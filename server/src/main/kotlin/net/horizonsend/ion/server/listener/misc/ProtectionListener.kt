@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.player.CombatNPCs
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.CombatTimer.REASON_PVP_GROUND_COMBAT
 import net.horizonsend.ion.server.features.player.CombatTimer.evaluatePvp
-import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -212,7 +211,7 @@ object ProtectionListener : SLEventListener() {
 		val padding = 500
 		var inOwnStation = false
 
-		for (planet: CachedPlanet in Space.getPlanets().filter { it.spaceWorld == world }) {
+		for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == world }) {
 			val minDistance = planet.orbitDistance - padding
 			val maxDistance = planet.orbitDistance + padding
 			val distance = distance(x.toInt(), y.toInt(), z.toInt(), planet.sun.location.x, y.toInt(), planet.sun.location.z).toInt()
