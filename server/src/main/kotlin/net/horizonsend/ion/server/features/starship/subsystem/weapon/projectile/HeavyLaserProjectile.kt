@@ -42,12 +42,12 @@ class HeavyLaserProjectile(
 		if ((shooter.starship?.initialBlockCount ?: 0) > 4000) speedPenalty *= 0.5
 		starship.userErrorAction("Direct Control speed slowed by ${"%.1f".format(speedPenalty*100)}%!")
 		starship.directControlSpeedModifier *= 1 - speedPenalty
-		starship.lastDirectControlSpeedSlowed = System.currentTimeMillis() + Duration.ofSeconds(7).toMillis()
+		starship.lastDirectControlSpeedSlowed = System.currentTimeMillis() + Duration.ofSeconds(20).toMillis()
 
 		Tasks.syncDelay(Duration.ofSeconds(20).toSeconds() * 20L) {
 			// reset for individual shots
 			starship.directControlSpeedModifier /= 1 - speedPenalty
-			if (ActiveStarships.isActive(starship) && starship.lastDirectControlSpeedSlowed - 4000 < System.currentTimeMillis()) {
+			if (ActiveStarships.isActive(starship) && starship.lastDirectControlSpeedSlowed < System.currentTimeMillis()) {
 				// hard reset to normal speed (I feel that weird double-rounding bugs might be possible)
 				starship.directControlSpeedModifier = 1.0
 				starship.informationAction("Direct Control speed restored")
