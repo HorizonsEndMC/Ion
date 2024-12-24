@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.miscellaneous.utils.CHISELED_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -56,6 +57,11 @@ object Decomposers : IonServerComponent() {
 			val offset = calculateOffset(origin, width, height, length, right, up, forward)
 
 			if (length == 0 || width == 0 || height == 0) return event.player.userError("Decomposer has zero volume! Make sure the chiseled blocks extend to the right of the multiblock.")
+
+			if (CombatTimer.isPvpCombatTagged(event.player)) {
+				event.player.userError("Cannot enable decomposers while in combat")
+				return
+			}
 
 //			if (offset > width) return event.player.userError("Decomposer empty!")
 

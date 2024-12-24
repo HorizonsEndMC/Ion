@@ -315,8 +315,16 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		if (starship.isTeleporting) return false
 
 		val planet: CachedPlanet = Space.getPlanet(world) ?: return false
-		val pilot: Player = starship.playerPilot ?: return false
-		val direction: Vector = pilot.location.direction
+
+		val border = planet.planetWorld?.worldBorder
+			?.takeIf { it.size < 60_000_000 } // don't use if it's the default, giant border
+		val halfLength = if (border == null) 2500.0 else border.size / 2.0
+		val centerX = border?.center?.x ?: halfLength
+		val centerZ = border?.center?.z ?: halfLength
+
+		val shipCenter = starship.centerOfMass.toVector().setY(0)
+
+		val direction: Vector = shipCenter.clone().subtract(Vector(centerX, 0.0, centerZ))
 		direction.setY(0)
 		direction.normalize()
 
@@ -324,6 +332,14 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		if (spaceWorld == null) {
 			starship.serverError("World ${planet.spaceWorldName} not found")
 			return false
+		}
+
+		// Don't allow players that have recently exited planets to re-exit again
+		val controller = starship.controller
+		if (controller is PlayerController) {
+			if (PlanetTeleportCooldown.cannotExitPlanets(controller.player)) return false
+			// Restrict planet exit if combat tagged
+			PlanetTeleportCooldown.addExitPlanetRestriction(controller.player)
 		}
 
 		val blockCountSquareRoot = sqrt(starship.initialBlockCount.toDouble())

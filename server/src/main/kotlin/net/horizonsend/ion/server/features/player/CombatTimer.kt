@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -85,7 +86,7 @@ object CombatTimer : IonServerComponent() {
 
 					if (pilotedStarship.isInterdicting) {
 						// Interdicting ships will place combat tags on other player starships that are within the well range, are less than neutral, and not in a protected city
-						toPlayersInRadius(starshipCom, pilotedStarship.interdictionRange.toDouble()) { otherPlayer ->
+						toPlayersInRadius(starshipCom, Interdiction.starshipInterdictionRangeEquation(pilotedStarship)) { otherPlayer ->
 							val otherStarship = PilotedStarships[otherPlayer]
 							if (otherStarship != null &&
 								!ProtectionListener.isProtectedCity(otherStarship.centerOfMass.toLocation(otherPlayer.world))) {
@@ -361,6 +362,8 @@ object CombatTimer : IonServerComponent() {
 					text("- You or your Combat NPC can be killed within safe zones", HE_LIGHT_BLUE),
 					newline(),
 					text("- Combat NPCs created when you log off will last for the duration of your combat tag", HE_LIGHT_BLUE),
+					newline(),
+					text("- Cannot use Power Drill, Drill, Mining Laser, Decomposer, or Ship Factory", HE_LIGHT_BLUE),
 					newline(),
 					text("- Remaining within ${MAINTAIN_COMBAT_DIST.toInt()} blocks of unfriendly and enemy starships will refresh your combat tag", HE_LIGHT_BLUE),
 					)),

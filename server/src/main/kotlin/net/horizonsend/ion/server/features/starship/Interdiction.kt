@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWe
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -24,6 +25,7 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import kotlin.math.sqrt
 
 object Interdiction : IonServerComponent() {
 	override fun onEnable() {
@@ -67,10 +69,15 @@ object Interdiction : IonServerComponent() {
 			return
 		}
 
+		if (!starship.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
+			starship.userError("You cannot use gravity wells within other gravity wells.")
+			return
+		}
+
 		when (starship.isInterdicting) {
 			true -> for (player in starship.world.getNearbyPlayers(
 				starship.centerOfMass.toLocation(starship.world),
-				starship.balancing.interdictionRange.toDouble()
+				starshipInterdictionRangeEquation(starship)
 			)) {
 				player.playSound(
 					Sound.sound(
@@ -84,7 +91,7 @@ object Interdiction : IonServerComponent() {
 
 			false -> for (player in starship.world.getNearbyPlayers(
 				starship.centerOfMass.toLocation(starship.world),
-				starship.balancing.interdictionRange.toDouble()
+				starshipInterdictionRangeEquation(starship)
 			)) {
 				player.playSound(
 					Sound.sound(
@@ -142,7 +149,7 @@ object Interdiction : IonServerComponent() {
 			val controlLoc = cruisingShip.playerPilot?.location ?: starship.centerOfMass.toLocation(starship.world)
 
 			if (controlLoc.world != sign.world) continue
-			if (controlLoc.distance(sign.location) > starship.balancing.interdictionRange) {
+			if (controlLoc.distance(sign.location) > starshipInterdictionRangeEquation(starship)) {
 				continue
 			}
 
@@ -161,4 +168,13 @@ object Interdiction : IonServerComponent() {
 	fun findGravityWell(starship: ActiveStarship): GravityWellSubsystem? = starship.gravityWells.asSequence()
 		.filter { it.isIntact() }
 		.lastOrNull()
+
+	fun starshipInterdictionRangeEquation(starship: Starship): Double {
+		if (starship.type == StarshipType.SPEEDER ||
+			starship.type == StarshipType.STARFIGHTER ||
+			starship.type == StarshipType.SHUTTLE ||
+			starship.type == StarshipType.PLATFORM) return 10.0
+		return if (starship.type.isWarship) 3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())
+		else (3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())) / 2
+	}
 }

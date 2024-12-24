@@ -41,7 +41,7 @@ enum class SidebarIcon(val text: String) {
     COMPASS_NEEDLE_ICON("\uE045"),
     BOOKMARK_ICON("\uE046"),
     SIEGE_STATION_ICON("\uE047"),
-    AI_STARFIGHTER_ICON("\uE000"),
+    AI_STARFIGHTER_ICON("\uE050"),
     AI_GUNSHIP_ICON("\uE051"),
     AI_CORVETTE_ICON("\uE052"),
     AI_FRIGATE_ICON("\uE053"),
