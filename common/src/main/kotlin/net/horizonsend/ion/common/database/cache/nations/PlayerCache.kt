@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.containsUpdated
 import net.horizonsend.ion.common.database.double
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
+import net.horizonsend.ion.common.database.long
 import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
@@ -100,7 +101,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 		var hasNewPlayerProtection: Boolean = true,
-		var ignoresNewPlayerProtectionExpiry: Boolean = false,
+		var newPlayerProtectionResetOn: Long = 0L,
 	)
 
 	val PLAYER_DATA: MutableMap<UUID, PlayerData> = ConcurrentHashMap()
@@ -632,11 +633,11 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
-			change[SLPlayer::ignoresNewPlayerProtectionExpiry]?.let {
+			change[SLPlayer::newPlayerProtectionResetOn]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
 
-					data.ignoresNewPlayerProtectionExpiry = it.boolean()
+					data.newPlayerProtectionResetOn = it.long()
 				}
 			}
 		}
@@ -743,7 +744,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			enableCombatTimerAlerts = data.enableCombatTimerAlerts,
 			hitmarkerOnHull = data.hitmarkerOnHull,
 			hasNewPlayerProtection = data.hasNewPlayerProtection,
-			ignoresNewPlayerProtectionExpiry = data.ignoresNewPlayerProtectionExpiry,
+			newPlayerProtectionResetOn = data.newPlayerProtectionResetOn,
 		)
 	}
 

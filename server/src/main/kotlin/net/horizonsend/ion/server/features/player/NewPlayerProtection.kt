@@ -70,7 +70,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 			}
 		}.thenAccept { t ->
 		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, false))
-		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::ignoresNewPlayerProtectionExpiry, false))
+		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::newPlayerProtectionResetOn, 0L))
 
 		sender.success("Removed new player protection from $target.")}
 	}
@@ -102,7 +102,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 			return
 		}
 		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, true))
-		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::ignoresNewPlayerProtectionExpiry, true))
+		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::newPlayerProtectionResetOn, System.currentTimeMillis()))
 
 		sender.success("Gave new player protection to $target.")
 	}
@@ -152,9 +152,17 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		//if (hasPermission("ion.core.protection.removed")) return false // If protection has been removed by staff.
 		if (!player.hasNewPlayerProtection) return false
 		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If player owns a nation
-		if (player.ignoresNewPlayerProtectionExpiry) return true // Do not perform time check if staff gave them protection
-		return getStatistic(PLAY_ONE_MINUTE) / (Duration.ofHours(1L).toSeconds() * 20).toDouble() <= // convert from ticks to hours played
-				PROTECTION_DURATION_DAYS.toHours().toDouble().pow((100.0 - playerLevel.level) * 0.01) // If playtime is less than 48^((100-x)*0.001) hours
+		return if (player.newPlayerProtectionResetOn == 0L)
+			// convert from ticks to hours played
+			getStatistic(PLAY_ONE_MINUTE) / (Duration.ofHours(1L).toSeconds() * 20).toDouble() <=
+					PROTECTION_DURATION_DAYS.toHours().toDouble().pow((100.0 - playerLevel.level) * 0.01) // If playtime is less than 48^((100-x)*0.01) hours
+		else {
+			val remainingTimeAsDouble = PROTECTION_DURATION_DAYS.toHours().toDouble().pow((100.0 - playerLevel.level) * 0.01)
+			val remainingHours = remainingTimeAsDouble.toLong()
+			val remainingFractional = (Duration.ofHours(1L).toMillis() * (remainingTimeAsDouble - remainingHours)).toLong()
+
+			System.currentTimeMillis() <= player.newPlayerProtectionResetOn + Duration.ofHours(remainingHours).toMillis() + remainingFractional
+		}
 	}
 
 //	fun UUID.hasProtection(): CompletableFuture<Boolean?> {
