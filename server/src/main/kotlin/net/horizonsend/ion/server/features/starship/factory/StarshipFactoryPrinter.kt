@@ -50,7 +50,6 @@ class StarshipFactoryPrinter(
 
 	private fun calculateMaterialCounts() {
 		countMaterials()
-		ignoreOneItemOfEachMaterial()
 	}
 
 	private fun countMaterials() {
@@ -63,14 +62,6 @@ class StarshipFactoryPrinter(
 
 			val oldAmount = availableItems.getOrDefault(printItem, 0)
 			availableItems[printItem] = oldAmount + item.amount
-		}
-	}
-
-	private fun ignoreOneItemOfEachMaterial() {
-		for ((material, count) in availableItems) {
-			if (count > 0) {
-				availableItems[material] = count - 1
-			}
 		}
 	}
 
