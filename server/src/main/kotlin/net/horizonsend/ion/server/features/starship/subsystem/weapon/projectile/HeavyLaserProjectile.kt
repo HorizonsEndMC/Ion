@@ -36,22 +36,37 @@ class HeavyLaserProjectile(
 	override val soundName: String = sound
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		var speedPenalty = 0.15
+		var speedPenalty = SLOW_FACTOR
+		// ships above 1400 not affected
 		if (starship.initialBlockCount >= 1400) return
-		if (starship.initialBlockCount >= 700) speedPenalty = 0.08
+		// ships above 700 half affected
+		if (starship.initialBlockCount >= 700) speedPenalty = SLOW_FACTOR * 0.5
+		// firing ships larger than 4000 have less of a slowing effect
 		if ((shooter.starship?.initialBlockCount ?: 0) > 4000) speedPenalty *= 0.5
-		starship.userErrorAction("Direct Control speed slowed by ${"%.1f".format(speedPenalty*100)}%!")
-		starship.directControlSpeedModifier *= 1 - speedPenalty
-		starship.lastDirectControlSpeedSlowed = System.currentTimeMillis() + Duration.ofSeconds(20).toMillis()
 
-		Tasks.syncDelay(Duration.ofSeconds(20).toSeconds() * 20L) {
+		starship.userErrorAction("Direct Control speed slowed by ${(speedPenalty * 100).toInt()}%!")
+		// starship was not slowed by heavy lasers recently
+		//if (starship.directControlSlowExpiryFromHeavyLasers < System.currentTimeMillis()) {
+			// Only start the timer based on the first hit
+			starship.directControlSlowExpiryFromHeavyLasers = System.currentTimeMillis() + Duration.ofSeconds(SLOW_DURATION_SECONDS).toMillis()
+		//}
+		// Reduce starship speed by the slow factor
+		starship.directControlSpeedModifierFromHeavyLasers *= (1 - speedPenalty)
+
+		Tasks.syncDelay(Duration.ofSeconds(SLOW_DURATION_SECONDS).toSeconds() * 20L) {
 			// reset for individual shots
-			starship.directControlSpeedModifier /= 1 - speedPenalty
-			if (ActiveStarships.isActive(starship) && starship.lastDirectControlSpeedSlowed < System.currentTimeMillis()) {
+			starship.directControlSpeedModifierFromHeavyLasers /= (1 - speedPenalty)
+			if (ActiveStarships.isActive(starship) && starship.directControlSlowExpiryFromHeavyLasers - 100 < System.currentTimeMillis()) {
 				// hard reset to normal speed (I feel that weird double-rounding bugs might be possible)
-				starship.directControlSpeedModifier = 1.0
+				starship.directControlSpeedModifierFromHeavyLasers = 1.0
+				starship.directControlSlowExpiryFromHeavyLasers = 0L
 				starship.informationAction("Direct Control speed restored")
 			}
 		}
+	}
+
+	companion object {
+		private const val SLOW_FACTOR = 0.15
+		private const val SLOW_DURATION_SECONDS = 20L
 	}
 }
