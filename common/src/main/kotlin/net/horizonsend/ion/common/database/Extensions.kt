@@ -218,6 +218,7 @@ fun BsonValue.boolean(): Boolean = asBoolean().value
 fun BsonValue.string(): String = asString().value
 fun BsonValue.binary(): ByteArray = asBinary().data
 fun BsonValue.array(): BsonArray = asArray()
+fun BsonValue.long(): Long = asInt64().longValue()
 fun <T> BsonValue.mappedList(function: (BsonValue) -> T): List<T> = array().map(function)
 fun <T> BsonValue.mappedSet(function: (BsonValue) -> T): Set<T> = array().asSequence().map(function).toSet()
 inline fun <reified T : Enum<T>> BsonValue.enumValue(): T = enumValueOf(string())
