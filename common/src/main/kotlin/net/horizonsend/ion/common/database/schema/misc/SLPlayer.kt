@@ -117,6 +117,7 @@ data class SLPlayer(
 
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	var wasKilledOn: Set<String> = setOf(),
+	var hasNewPlayerProtection: Boolean = true,
 ) : DbObject {
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(
 		SLPlayer::class, setup = {

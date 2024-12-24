@@ -7,31 +7,31 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
-import net.horizonsend.ion.server.features.npcs.registries
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.luckperms.api.node.NodeEqualityPredicate
-import net.luckperms.api.node.types.PermissionNode
-import net.luckperms.api.node.types.SuffixNode
-import net.luckperms.api.util.Tristate
 import org.bukkit.Bukkit
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.litote.kmongo.setValue
+import java.time.Duration
 import kotlin.math.pow
 
 @CommandAlias("removeprotection")
 object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Listener {
+	private val UPDATE_RATE_MINS = Duration.ofMinutes(5L)
+	private val PROTECTION_DURATION_DAYS = Duration.ofDays(2L)
+
+	/* kwazedilla 2024/12/24: rewrite to not depend on luckperms
 	private val lpUserManager = luckPerms.userManager
 
 	private val oldProtectionIndicator = SuffixNode.builder("&6★&r", 0).build()
@@ -40,9 +40,10 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 
 	private val protectionIndicator = SuffixNode.builder("<gold> ★<reset>", 0).build()
 	private val removeProtectionPermission = PermissionNode.builder("ion.core.protection.removed").build()
+	 */
 
 	override fun onEnable(manager: PaperCommandManager) {
-		Tasks.syncRepeat(5 * 20 * 60, 5 * 20 * 60) {
+		Tasks.syncRepeat(UPDATE_RATE_MINS.toSeconds() * 20, UPDATE_RATE_MINS.toSeconds() * 20) {
 			for (player in Bukkit.getOnlinePlayers())
 				player.updateProtection()
 		}
@@ -57,6 +58,8 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	@CommandPermission("ion.core.protection.removeothers")
 	@Subcommand("other")
 	fun onRemoveProtection(sender: Player, target: String) {
+		/*
+
 		val lpUser = lpUserManager.getUser(target)
 
 		if (lpUser == null) {
@@ -72,6 +75,14 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		}
 
 		lpUserManager.saveUser(lpUser)
+		 */
+
+		val targetSlPlayer = SLPlayer[resolveOfflinePlayer(target)] // errors by itself if not found
+		if (targetSlPlayer == null) {
+			sender.userError("Player not found")
+			return
+		}
+		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, false))
 
 		sender.success("Removed new player protection from $target.")
 	}
@@ -79,6 +90,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	@CommandPermission("ion.core.protection.giveothers")
 	@CommandAlias("giveprotection")
 	fun onGiveProtection(sender: Player, target: String) {
+		/*
 		val lpUser = lpUserManager.getUser(target)
 
 		if (lpUser == null) {
@@ -94,13 +106,22 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		}
 
 		lpUserManager.saveUser(lpUser)
+		 */
+
+		val targetSlPlayer = SLPlayer[resolveOfflinePlayer(target)] // errors by itself if not found
+		if (targetSlPlayer == null) {
+			sender.userError("Player not found")
+			return
+		}
+		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, true))
 
 		sender.success("Gave new player protection to $target.")
 	}
 
 	fun Player.updateProtection() {
-		if (!LegacySettings.master) return
+		if (!LegacySettings.master) return // server must be the master server for protection to work (don't want creative affecting protection status)
 
+		/*
 		val lpUser = lpUserManager.getUser(uniqueId)!!
 
 		lpUser.data().run {
@@ -124,6 +145,13 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		}
 
 		lpUserManager.saveUser(lpUser)
+		 */
+
+		if (this.hasProtection()) {
+			SLPlayer.updateById(this.slPlayerId, setValue(SLPlayer::hasNewPlayerProtection, true))
+		} else {
+			SLPlayer.updateById(this.slPlayerId, setValue(SLPlayer::hasNewPlayerProtection, false))
+		}
 	}
 
 	fun Player.hasProtection(): Boolean {
@@ -132,9 +160,11 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		val player = PlayerCache[this]
 		val playerLevel = PlayerXPLevelCache[this]
 
-		if (hasPermission("ion.core.protection.removed")) return false // If protection has been removed by staff.
+		//if (hasPermission("ion.core.protection.removed")) return false // If protection has been removed by staff.
+		if (!player.hasNewPlayerProtection) return false
 		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If owns
-		return getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - playerLevel.level) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
+		return getStatistic(PLAY_ONE_MINUTE) / (Duration.ofHours(1L).toSeconds() * 20).toDouble() <= // convert from ticks to hours played
+				PROTECTION_DURATION_DAYS.toHours().toDouble().pow((100.0 - playerLevel.level) * 0.01) // If playtime is less than 48^((100-x)*0.001) hours
 	}
 
 //	fun UUID.hasProtection(): CompletableFuture<Boolean?> {

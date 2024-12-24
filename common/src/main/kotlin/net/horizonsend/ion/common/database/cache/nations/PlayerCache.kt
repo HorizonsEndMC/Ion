@@ -94,6 +94,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var hitmarkerOnHull: Boolean = true,
 
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
+		var hasNewPlayerProtection: Boolean = true,
 	)
 
 	val PLAYER_DATA: MutableMap<UUID, PlayerData> = ConcurrentHashMap()
@@ -616,6 +617,14 @@ abstract class AbstractPlayerCache : ManualCache() {
 					data.hitmarkerOnHull = hitmarkerOnHull
 				}
 			}
+
+			change[SLPlayer::hasNewPlayerProtection]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					data.hasNewPlayerProtection = it.boolean()
+				}
+			}
 		}
 
 		val mutex = Any()
@@ -719,6 +728,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			soundCruiseIndicator = data.soundCruiseIndicator,
 			enableCombatTimerAlerts = data.enableCombatTimerAlerts,
 			hitmarkerOnHull = data.hitmarkerOnHull,
+			hasNewPlayerProtection = data.hasNewPlayerProtection,
 		)
 	}
 
