@@ -69,9 +69,10 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 				remove(protectionIndicator)
 			}
 		}.thenAccept { t ->
-            SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, false))
-			sender.success("Removed new player protection from $target.")
-		}
+		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, false))
+		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::ignoresNewPlayerProtectionExpiry, false))
+
+		sender.success("Removed new player protection from $target.")}
 	}
 
 	@CommandPermission("ion.core.protection.giveothers")
@@ -101,6 +102,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 			return
 		}
 		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, true))
+		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::ignoresNewPlayerProtectionExpiry, true))
 
 		sender.success("Gave new player protection to $target.")
 	}
@@ -149,7 +151,8 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 
 		//if (hasPermission("ion.core.protection.removed")) return false // If protection has been removed by staff.
 		if (!player.hasNewPlayerProtection) return false
-		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If owns
+		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If player owns a nation
+		if (player.ignoresNewPlayerProtectionExpiry) return true // Do not perform time check if staff gave them protection
 		return getStatistic(PLAY_ONE_MINUTE) / (Duration.ofHours(1L).toSeconds() * 20).toDouble() <= // convert from ticks to hours played
 				PROTECTION_DURATION_DAYS.toHours().toDouble().pow((100.0 - playerLevel.level) * 0.01) // If playtime is less than 48^((100-x)*0.001) hours
 	}
