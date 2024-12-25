@@ -70,7 +70,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 			}
 		}.thenAccept { t ->
 		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, false))
-		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::newPlayerProtectionResetOn, 0L))
+		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::newPlayerProtectionResetOn, 0))
 
 		sender.success("Removed new player protection from $target.")}
 	}
@@ -101,8 +101,12 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 			sender.userError("Player not found")
 			return
 		}
+
+		val targetPlayer = Bukkit.getOfflinePlayer(target) // for getting their statistics; should be safe if an SLPlayer exists
+
 		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, true))
-		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::newPlayerProtectionResetOn, System.currentTimeMillis()))
+		// Record the player's current play time
+		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::newPlayerProtectionResetOn, targetPlayer.getStatistic(PLAY_ONE_MINUTE)))
 
 		sender.success("Gave new player protection to $target.")
 	}
@@ -140,6 +144,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 			SLPlayer.updateById(this.slPlayerId, setValue(SLPlayer::hasNewPlayerProtection, true))
 		} else {
 			SLPlayer.updateById(this.slPlayerId, setValue(SLPlayer::hasNewPlayerProtection, false))
+			SLPlayer.updateById(this.slPlayerId, setValue(SLPlayer::newPlayerProtectionResetOn, 0))
 		}
 	}
 
@@ -152,17 +157,12 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		//if (hasPermission("ion.core.protection.removed")) return false // If protection has been removed by staff.
 		if (!player.hasNewPlayerProtection) return false
 		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If player owns a nation
-		return if (player.newPlayerProtectionResetOn == 0L)
-			// convert from ticks to hours played
-			getStatistic(PLAY_ONE_MINUTE) / (Duration.ofHours(1L).toSeconds() * 20).toDouble() <=
-					PROTECTION_DURATION_DAYS.toHours().toDouble().pow((100.0 - playerLevel.level) * 0.01) // If playtime is less than 48^((100-x)*0.01) hours
-		else {
-			val remainingTimeAsDouble = PROTECTION_DURATION_DAYS.toHours().toDouble().pow((100.0 - playerLevel.level) * 0.01)
-			val remainingHours = remainingTimeAsDouble.toLong()
-			val remainingFractional = (Duration.ofHours(1L).toMillis() * (remainingTimeAsDouble - remainingHours)).toLong()
 
-			System.currentTimeMillis() <= player.newPlayerProtectionResetOn + Duration.ofHours(remainingHours).toMillis() + remainingFractional
-		}
+		// convert from ticks to hours played; if the player's protection was reset, get the elapsed play time since reset
+		return (getStatistic(PLAY_ONE_MINUTE) - player.newPlayerProtectionResetOn) /
+				(Duration.ofHours(1L).toSeconds() * 20).toDouble() <=
+				// If playtime is less than 48^((100-x)*0.01) hours
+				PROTECTION_DURATION_DAYS.toHours().toDouble().pow((100.0 - playerLevel.level) * 0.01)
 	}
 
 //	fun UUID.hasProtection(): CompletableFuture<Boolean?> {
