@@ -21,13 +21,17 @@ object CustomBlockListeners : SLEventListener() {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     @Suppress("Unused")
     fun onCustomBlockPlace(event: BlockPlaceEvent) {
+		println(1)
         val player = event.player
 
         val hand = event.hand
         val itemStack = player.inventory.getItem(hand).clone()
+		println(1.5f)
         val item: CustomBlockItem = itemStack.customItem as? CustomBlockItem ?: return
-        val blockData: BlockData = item.getCustomBlock()?.blockData ?: return
+		println(2)
+        val blockData: BlockData = item.getCustomBlock().blockData
 
+		println(3)
         event.block.location.block.setBlockData(blockData, true)
     }
 
