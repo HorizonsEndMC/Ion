@@ -4,6 +4,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.player.NewPlayerProtection
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.kyori.adventure.text.Component.text
@@ -28,8 +30,9 @@ object CheckProtectionCommand : SLCommand() {
 			val level = SLPlayer[sender].level
 
 			// In hours
-			val playTime = sender.getStatistic(Statistic.PLAY_ONE_MINUTE) / 72000.0
-			val protectionTime = 48.0.pow((100.0 - level) * 0.01)
+			val playTime = (sender.getStatistic(Statistic.PLAY_ONE_MINUTE) - PlayerCache[sender].newPlayerProtectionResetOn) /
+				(Duration.ofHours(1L).toSeconds() * 20).toDouble()
+			val protectionTime = NewPlayerProtection.PROTECTION_DURATION_DAYS.toHours().toDouble().pow((100.0 - sender.level) * 0.01)
 
 			val remainingTime = Duration.ofHours((protectionTime - playTime).toLong())
 

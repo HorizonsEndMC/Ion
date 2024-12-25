@@ -428,12 +428,17 @@ object StarshipShields : IonServerComponent() {
 		}
 	}
 
-	private fun handleNewProt(starship: ActiveStarship) : Boolean{
+	private fun handleNewProt(starship: ActiveStarship): Boolean {
+		// AI ships should not be checked
+		if (starship.controller !is PlayerController) return false
+
 		val player = (starship.controller as PlayerController).player
+		// Always enable PvP in insecure worlds
 		if (player.world.hasFlag(WorldFlag.NOT_SECURE)) return false
+
 		for (damager in starship.damagers.keys) {
 			val otherDamagers = damager.starship?.damagers?.keys ?: continue
-			if (otherDamagers.any { it.starship?.playerPilot == player }) {return false}
+			if (otherDamagers.any { it.starship?.playerPilot == player }) return false
 		}
 		return true
 	}

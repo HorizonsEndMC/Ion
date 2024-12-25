@@ -36,7 +36,7 @@ import kotlin.math.pow
 @CommandAlias("removeprotection")
 object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Listener {
 	private val UPDATE_RATE_MINS = Duration.ofMinutes(5L)
-	private val PROTECTION_DURATION_DAYS = Duration.ofDays(2L)
+	val PROTECTION_DURATION_DAYS: Duration = Duration.ofDays(2L)
 
 	private val lpUserManager = luckPerms.userManager
 
