@@ -67,13 +67,13 @@ object ProtectionListener : SLEventListener() {
 		// Chests, button doors
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 
-		if (shouldNotBeChecked(block)) return
+		if (shouldNotBeChecked(event.player, block)) return
 
 		onBlockEdit(event, block.location, event.player)
 	}
 
 	/** Allows exceptions to the onBlockEdit check **/
-	private fun shouldNotBeChecked(clickedBlock: Block): Boolean {
+	private fun shouldNotBeChecked(player: Player, clickedBlock: Block): Boolean {
 		// It is much easier to decide what should be the exception than to make exceptions
 		// If something ends up getting checked that shouldn't
 		// (e.g. clicking the glass in your cockpit), it could break firing weapons.
@@ -86,6 +86,8 @@ object ProtectionListener : SLEventListener() {
 			zone.interactableBlocks.contains(clickedBlock.blockData.material.name)) {
 			return true
 		}
+
+		if (isPlanetOrbitDenied(player, clickedBlock.location, true)) return true
 
 		// Manually check these
 		if (clickedBlock.blockData is Switch) return false
@@ -159,7 +161,7 @@ object ProtectionListener : SLEventListener() {
 
 		if (isLockedShipDenied(player, location)) return true
 
-		if (isPlanetOrbitDenied(player, location)) return true
+		if (isPlanetOrbitDenied(player, location, false)) return true
 
 		return denied
 	}
@@ -204,7 +206,7 @@ object ProtectionListener : SLEventListener() {
 		return denied
 	}
 
-	fun isPlanetOrbitDenied(player: Player, location: Location): Boolean {
+	fun isPlanetOrbitDenied(player: Player, location: Location, silent: Boolean): Boolean {
 		val (world, x, y, z) = location
 		val padding = 500
 		var inOwnStation = false
@@ -234,7 +236,7 @@ object ProtectionListener : SLEventListener() {
 				}
 
 				if (!inOwnStation) {
-					player.userError("You cannot build in the way of ${planet.name}'s orbit")
+					if (!silent) player.userError("You cannot build in the way of ${planet.name}'s orbit")
 					return true
 				}
 			}
