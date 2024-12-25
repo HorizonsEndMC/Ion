@@ -268,7 +268,7 @@ object SubsystemDetector {
 
 		val facing = (block.blockData as Directional).facing
 
-		starship.subsystems += TurretBaseMultiblock.createSubsystem(starship, Vec3i(block.location), facing)
+		starship.subsystems += TurretBaseMultiblock.createSubsystem(starship, Vec3i(block.x, block.y, block.z), facing)
 	}
 
 	private fun isDuplicate(starship: ActiveControlledStarship, subsystem: StarshipSubsystem): Boolean {

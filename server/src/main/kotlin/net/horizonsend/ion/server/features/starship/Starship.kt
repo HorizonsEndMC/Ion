@@ -98,7 +98,6 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 import kotlin.math.cbrt
 import kotlin.math.ln
 import kotlin.math.max
@@ -330,7 +329,7 @@ class Starship (
 			val result = executeMovement(movement, pilot)
 			future.complete(result)
 			controller.onMove(movement)
-			subsystems.forEach { runCatching { it.onMovement(movement) } }
+			subsystems.forEach { runCatching { it.onMovement(movement, result) } }
 		}
 
 		return future
