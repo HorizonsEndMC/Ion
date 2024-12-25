@@ -2,11 +2,11 @@ import io.papermc.paperweight.util.path
 import java.io.ByteArrayOutputStream
 
 plugins {
-	id("io.papermc.paperweight.userdev") version "1.7.5"
-	id("com.github.johnrengelman.shadow")
-
-	kotlin("plugin.serialization")
 	kotlin("jvm")
+	kotlin("plugin.serialization")
+
+	id("com.github.johnrengelman.shadow")
+	id("io.papermc.paperweight.userdev") version "2.0.0-beta.8"
 }
 
 repositories {

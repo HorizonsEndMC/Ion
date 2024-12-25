@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons
+import net.horizonsend.ion.server.features.client.display.modular.MultiBlockDisplay
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.SwordListener
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
@@ -219,4 +220,5 @@ val components: List<IonComponent> = listOf(
 	CombatTimer,
 	Halloweeeeeen,
 	PlanetTeleportCooldown,
+	MultiBlockDisplay,
 )
