@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.player
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
@@ -13,6 +14,7 @@ import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
@@ -20,6 +22,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.luckperms.api.node.types.SuffixNode
 import org.bukkit.Bukkit
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player
@@ -35,14 +38,16 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	private val UPDATE_RATE_MINS = Duration.ofMinutes(5L)
 	private val PROTECTION_DURATION_DAYS = Duration.ofDays(2L)
 
-	/* kwazedilla 2024/12/24: rewrite to not depend on luckperms
 	private val lpUserManager = luckPerms.userManager
 
+	/* kwazedilla 2024/12/24: rewrite to not depend on luckperms
 	private val oldProtectionIndicator = SuffixNode.builder("&6★&r", 0).build()
 	private val oldAlternateProtectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()
 	private val newerDldAlternateProtectionIndicator = SuffixNode.builder("<gold>★<reset>", 0).build()
+	 */
 
 	private val protectionIndicator = SuffixNode.builder("<gold> ★<reset>", 0).build()
+	/*
 	private val removeProtectionPermission = PermissionNode.builder("ion.core.protection.removed").build()
 	 */
 
@@ -61,6 +66,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 
 	@CommandPermission("ion.core.protection.removeothers")
 	@Subcommand("other")
+	@CommandCompletion("@players")
 	fun onRemoveProtection(sender: Player, target: String) {
 		val id = SLPlayer[target]?._id ?: fail { "Unable to remove new player protection from $target, the player does not exist." }
 		lpUserManager.modifyUser(id.uuid) {
@@ -72,30 +78,22 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, false))
 		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::newPlayerProtectionResetOn, 0))
 
+		// For removing the suffix
+		val lpUser = lpUserManager.getUser(target)!!
+
+		lpUser.data().run {
+			remove(protectionIndicator)
+		}
+
+		lpUserManager.saveUser(lpUser)
+
 		sender.success("Removed new player protection from $target.")}
 	}
 
 	@CommandPermission("ion.core.protection.giveothers")
 	@CommandAlias("giveprotection")
+	@CommandCompletion("@players")
 	fun onGiveProtection(sender: Player, target: String) {
-		/*
-		val lpUser = lpUserManager.getUser(target)
-
-		if (lpUser == null) {
-			sender.userError(
-				"Unable to give new player protection to $target, the player does not exist."
-			)
-			return
-		}
-
-		lpUser.data().run {
-			remove(removeProtectionPermission)
-			add(protectionIndicator)
-		}
-
-		lpUserManager.saveUser(lpUser)
-		 */
-
 		val targetSlPlayer = SLPlayer[resolveOfflinePlayer(target)] // errors by itself if not found
 		if (targetSlPlayer == null) {
 			sender.userError("Player not found")
@@ -107,6 +105,15 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, true))
 		// Record the player's current play time
 		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::newPlayerProtectionResetOn, targetPlayer.getStatistic(PLAY_ONE_MINUTE)))
+
+		// For adding the suffix
+		val lpUser = lpUserManager.getUser(target)!!
+
+		lpUser.data().run {
+			add(protectionIndicator)
+		}
+
+		lpUserManager.saveUser(lpUser)
 
 		sender.success("Gave new player protection to $target.")
 	}
@@ -140,11 +147,21 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		lpUserManager.saveUser(lpUser)
 		 */
 
+		// For adding the suffix
+		val lpUser = lpUserManager.getUser(this.name)!!
+
+		lpUserManager.saveUser(lpUser)
 		if (this.hasProtection()) {
 			SLPlayer.updateById(this.slPlayerId, setValue(SLPlayer::hasNewPlayerProtection, true))
+			lpUser.data().run {
+				add(protectionIndicator)
+			}
 		} else {
 			SLPlayer.updateById(this.slPlayerId, setValue(SLPlayer::hasNewPlayerProtection, false))
 			SLPlayer.updateById(this.slPlayerId, setValue(SLPlayer::newPlayerProtectionResetOn, 0))
+			lpUser.data().run {
+				remove(protectionIndicator)
+			}
 		}
 	}
 
@@ -211,7 +228,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		if (event.entity !is Player || event.damager !is Player) return
 
 		if ((event.entity as Player).hasProtection() && !event.entity.world.hasFlag(WorldFlag.ARENA)) event.damager.alertAction(
-			"The player you are attacking has new player protection!\n" +
+			"The player you are attacking has new player protection!" +
 				"Attacking them for any reason other than self defense is against the rules"
 		)
 	}
