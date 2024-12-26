@@ -24,6 +24,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.persistence.PersistentDataType
 
+@Suppress("UnstableApiUsage")
 object DataMigrators : IonServerComponent() {
 	override fun onEnable() {
 		registerDataVersions()
