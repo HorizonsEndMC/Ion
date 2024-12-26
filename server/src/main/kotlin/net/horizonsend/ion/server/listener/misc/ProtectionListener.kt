@@ -161,7 +161,7 @@ object ProtectionListener : SLEventListener() {
 
 		if (isLockedShipDenied(player, location)) return true
 
-		if (isPlanetOrbitDenied(player, location, false)) return true
+		if (event is BlockPlaceEvent && isPlanetOrbitDenied(player, location, false)) return true
 
 		return denied
 	}
@@ -218,6 +218,12 @@ object ProtectionListener : SLEventListener() {
 
 			// Within planet orbit
 			if (distance in minDistance..maxDistance) {
+
+				if (player.hasPermission("dutymode")) {
+					player.informationAction("Bypassed planet orbit protection in dutymode")
+					return false
+				}
+
 				// Check if they are in a station
 				for (region in Regions.find(location).sortedByDescending { it.priority }) {
 					// They have build permissions in this region
@@ -232,11 +238,6 @@ object ProtectionListener : SLEventListener() {
 
 						inOwnStation = true
 						continue
-					}
-
-					if (player.hasPermission("dutymode")) {
-						player.informationAction("Bypassed planet orbit protection in dutymode")
-						return false
 					}
 				}
 
