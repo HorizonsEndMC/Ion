@@ -18,7 +18,6 @@ enum class TutorialNPCType(val displayName: Component, val billboardText: List<C
 
 	MINIMESSAGE_TEST("<rainbow>|||||||||||||||||||||||||||||".miniMessage()) {
 		override fun onRightClick(event: NPCRightClickEvent) {
-			println("received right click")
 		}
 	}
 
