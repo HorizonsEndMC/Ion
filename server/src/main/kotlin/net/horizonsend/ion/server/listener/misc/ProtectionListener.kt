@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.listener.misc
 
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.lpHasPermission
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -232,6 +233,11 @@ object ProtectionListener : SLEventListener() {
 
 						inOwnStation = true
 						continue
+					}
+
+					if (player.hasPermission("dutymode")) {
+						player.informationAction("Bypassed planet orbit protection in dutymode")
+						return false
 					}
 				}
 
