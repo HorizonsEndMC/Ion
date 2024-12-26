@@ -41,7 +41,7 @@ dependencies {
 	compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT") { exclude("*") }
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-	compileOnly("com.discordsrv:discordsrv:1.28.1")
+	compileOnly("com.discordsrv:discordsrv:1.29.0")
 	compileOnly("net.luckperms:api:5.4")
 	compileOnly("xyz.xenondevs.invui:invui:1.43") // Downloaded via paper library manager for remapping
 
