@@ -39,7 +39,7 @@ dependencies {
 	// Other Plugins
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("*") /* Old Version, takes forever to download */ }
 	compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT") { exclude("*") }
-	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
+	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.9")
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 	compileOnly("com.discordsrv:discordsrv:1.29.0")
 	compileOnly("net.luckperms:api:5.4")
