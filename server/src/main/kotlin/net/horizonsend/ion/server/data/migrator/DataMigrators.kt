@@ -769,6 +769,8 @@ object DataMigrators : IonServerComponent() {
 				migrateInventory(state.inventory, toApply)
 			}
 		}
+
+		chunk.persistentDataContainer.set(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER, lastDataVersion)
 	}
 
 	fun migrate(player: Player) {
@@ -777,6 +779,8 @@ object DataMigrators : IonServerComponent() {
 
 		log.info("Migrating ${player.name}'s inventory from $playerVersion to $lastDataVersion")
 		migrateInventory(player.inventory, getVersions(playerVersion).apply { log.info("Applying $size versions") })
+
+		player.persistentDataContainer.set(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER, lastDataVersion)
 	}
 
 	private fun getVersions(dataVersion: Int): List<DataVersion> {
