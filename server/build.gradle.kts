@@ -39,7 +39,6 @@ dependencies {
 	// Other Plugins
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("*") /* Old Version, takes forever to download */ }
 	compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT") { exclude("*") }
-	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 	compileOnly("com.discordsrv:discordsrv:1.29.0")
 	compileOnly("net.luckperms:api:5.4")
@@ -66,6 +65,7 @@ dependencies {
 
 	implementation(platform("com.intellectualsites.bom:bom-newest:1.51"))
 	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.12.2")
+	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.12.2") { isTransitive = false }
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }
