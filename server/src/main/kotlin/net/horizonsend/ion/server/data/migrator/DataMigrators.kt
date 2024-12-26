@@ -536,9 +536,24 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_FLUORINE))
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_HELIUM))
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.GAS_CANISTER_CARBON_DIOXIDE))
-			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.BATTLECRUISER_REACTOR_CORE))
-			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.BARGE_REACTOR_CORE))
-			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CRUISER_REACTOR_CORE))
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.BATTLECRUISER_REACTOR_CORE)
+				.pullModel(CustomItemRegistry.BATTLECRUISER_REACTOR_CORE)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.BARGE_REACTOR_CORE)
+				.pullModel(CustomItemRegistry.BARGE_REACTOR_CORE)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.CRUISER_REACTOR_CORE)
+				.pullModel(CustomItemRegistry.CRUISER_REACTOR_CORE)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.ARSENAL_MISSILE)
 				.pullModel(CustomItemRegistry.ARSENAL_MISSILE)
@@ -565,7 +580,7 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.STEEL_BLOCK)
 				.pullModel(CustomItemRegistry.STEEL_BLOCK)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.STEEL_PLATE))
@@ -575,7 +590,12 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REINFORCED_FRAME))
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REACTOR_FRAME))
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SUPERCONDUCTOR))
-			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SUPERCONDUCTOR_BLOCK))
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.SUPERCONDUCTOR_BLOCK)
+				.pullModel(CustomItemRegistry.SUPERCONDUCTOR_BLOCK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SUPERCONDUCTOR_CORE))
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CIRCUIT_BOARD))
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.MOTHERBOARD))
@@ -587,7 +607,12 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REACTIVE_MEMBRANE))
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.REACTIVE_ASSEMBLY))
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.FABRICATED_ASSEMBLY))
-			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.NETHERITE_CASING))
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.NETHERITE_CASING)
+				.pullModel(CustomItemRegistry.NETHERITE_CASING)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.ENRICHED_URANIUM)
 				.pullModel(CustomItemRegistry.ENRICHED_URANIUM)
@@ -597,7 +622,7 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.ENRICHED_URANIUM_BLOCK)
 				.pullModel(CustomItemRegistry.ENRICHED_URANIUM_BLOCK)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.URANIUM_CORE))
@@ -620,19 +645,19 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.URANIUM_ORE)
 				.pullModel(CustomItemRegistry.URANIUM_ORE)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.URANIUM_BLOCK)
 				.pullModel(CustomItemRegistry.URANIUM_BLOCK)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.RAW_URANIUM_BLOCK)
 				.pullModel(CustomItemRegistry.RAW_URANIUM_BLOCK)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator
@@ -650,19 +675,19 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.TITANIUM_ORE)
 				.pullModel(CustomItemRegistry.TITANIUM_ORE)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.TITANIUM_BLOCK)
 				.pullModel(CustomItemRegistry.TITANIUM_BLOCK)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.RAW_TITANIUM_BLOCK)
 				.pullModel(CustomItemRegistry.RAW_TITANIUM_BLOCK)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator
@@ -674,13 +699,13 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.CHETHERITE_ORE)
 				.pullModel(CustomItemRegistry.CHETHERITE_ORE)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.CHETHERITE_BLOCK)
 				.pullModel(CustomItemRegistry.CHETHERITE_BLOCK)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator
@@ -698,19 +723,19 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.ALUMINUM_ORE)
 				.pullModel(CustomItemRegistry.ALUMINUM_ORE)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.ALUMINUM_BLOCK)
 				.pullModel(CustomItemRegistry.ALUMINUM_BLOCK)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator
 				.builder(CustomItemRegistry.RAW_ALUMINUM_BLOCK)
 				.pullModel(CustomItemRegistry.RAW_ALUMINUM_BLOCK)
-				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
 				.build()
 			)
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.PISTOL_RECEIVER))

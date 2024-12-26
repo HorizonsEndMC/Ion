@@ -267,7 +267,7 @@ object CustomItemRegistry : IonServerComponent() {
 	val SUPERCONDUCTOR_CORE = unStackable(identifier = "SUPERCONDUCTOR_CORE", model = "industry/superconductor_core", displayName = text("Superconductor Core", YELLOW))
 
 	val STEEL_INGOT = stackable(identifier = "STEEL_INGOT", text("Steel Ingot"), "industry/steel_ingot")
-	val STEEL_BLOCK = register(CustomBlockItem(identifier = "STEEL_BLOCK", customModel = "industry/steel_block", displayName = text("Steel Block"), customBlockSupplier = CustomBlocks::STEEL_BLOCK))
+	val STEEL_BLOCK = customBlockItem(identifier = "STEEL_BLOCK", model = "industry/steel_block", displayName = text("Steel Block"), customBlock = CustomBlocks::STEEL_BLOCK)
 	val STEEL_PLATE = unStackable(identifier = "STEEL_PLATE", model = "industry/steel_plate", displayName = text("Steel Plate"))
 	val STEEL_CHASSIS = unStackable(identifier = "STEEL_CHASSIS", model = "industry/steel_chassis", displayName = text("Steel Chassis"))
 	val STEEL_MODULE = unStackable(identifier = "STEEL_MODULE", model = "industry/steel_module", displayName = text("Steel Module"))
