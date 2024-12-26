@@ -37,7 +37,7 @@ object ForbiddenBlocksCommand : SLCommand() {
 
 		for (blockVector in selection) {
 			if (!mask.test(blockVector)) continue
-			new.add(BlockPos.asLong(blockVector.blockX, blockVector.blockY, blockVector.blockZ))
+			new.add(BlockPos.asLong(blockVector.x(), blockVector.y(), blockVector.z()))
 		}
 
 		blocks.addAll(new)

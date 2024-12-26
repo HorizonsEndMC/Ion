@@ -13,8 +13,8 @@ repositories {
 }
 
 dependencies {
-	compileOnly("net.kyori:adventure-api:4.17.0")
-	compileOnly("net.kyori:adventure-text-logger-slf4j:4.17.0")
+	compileOnly("net.kyori:adventure-api:4.18.0")
+	compileOnly("net.kyori:adventure-text-logger-slf4j:4.18.0")
 	compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
 	compileOnly("net.kyori:adventure-text-serializer-plain:4.17.0")
 	compileOnly("net.kyori:adventure-text-serializer-gson:4.17.0")
@@ -32,7 +32,7 @@ dependencies {
 	api("com.googlecode.cqengine:cqengine:3.6.0")
 
 	api("org.litote.kmongo:kmongo:5.1.0")
-	api("com.fasterxml.jackson.core:jackson-databind:2.18.0")
+	api("com.fasterxml.jackson.core:jackson-databind:2.18.2")
 
 	api("redis.clients:jedis:5.2.0")
 }

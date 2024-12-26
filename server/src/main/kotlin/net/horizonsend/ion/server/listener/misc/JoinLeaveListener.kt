@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.tutorial.tutorials.IntroTutorial
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
@@ -60,7 +60,7 @@ object JoinLeaveListener : SLEventListener() {
 				val message = template(text("Welcome {0} to the server!",  HEColorScheme.HE_LIGHT_ORANGE), name)
 
 				Notify.notifyOnlineAction(message)
-				Discord.sendEmbed(IonServer.discordSettings.globalChannel, Embed(
+				Discord.sendEmbed(ConfigurationFiles.discordSettings().globalChannel, Embed(
 					title = "New player!",
 					description = "Welcome $name to the server!",
 					color = HEColorScheme.HE_LIGHT_ORANGE.value()

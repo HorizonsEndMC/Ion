@@ -9,10 +9,11 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.BountyCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
@@ -133,7 +134,7 @@ object Bounties : IonServerComponent() {
 	fun onShipSink(event: StarshipExplodeEvent) {
 		if (isNotSurvival()) return
 		val victim = (event.starship.controller as? PlayerController)?.player ?: return
-		if (event.starship.type.isWarship) return
+		if (event.starship.type.typeCategory == TypeCategory.WAR_SHIP) return
 
 		val blockCountMultipler = 1.5
 
@@ -219,5 +220,5 @@ object Bounties : IonServerComponent() {
 		}
 	}
 
-	fun isNotSurvival(): Boolean = !IonServer.configuration.serverName.equals("Survival", ignoreCase = true)
+	fun isNotSurvival(): Boolean = !ConfigurationFiles.serverConfiguration().serverName.equals("Survival", ignoreCase = true)
 }

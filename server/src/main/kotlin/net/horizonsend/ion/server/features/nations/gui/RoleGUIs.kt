@@ -4,11 +4,12 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.TextDecoration
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -44,37 +45,45 @@ fun Player.manageRolesGUI(commandName: String, roleItems: List<GuiItem>) {
 private fun InventoryClickEvent.createRoleMenu(commandName: String) {
 	var name = ""
 	var color = ChatColor.BLUE
-	playerClicker.inputs(
-		AnvilInput(text("Name")) { _, r ->
-			when {
-				!r.isAlphanumeric() -> "Must be alphanumeric"
-				r.length !in 3..20 -> "Must be from 3 to 20 characters"
-				else -> {
-					name = r; return@AnvilInput null
-				}
-			}
-		},
-		AnvilInput("<rainbow>Color".miniMessage()) { _, r ->
-			try {
-				color = ChatColor.valueOf(r)
-			} catch (e: Exception) {
-				return@AnvilInput "Must be one of ${ChatColor.values().joinToString { it.name }}"
-			}
-			return@AnvilInput null
-		},
-		AnvilInput("Weight".toComponent(TextDecoration.BOLD)) { p, r ->
-			if ((r.toIntOrNull() ?: return@AnvilInput "Must be a number")
-				!in 0..1000
-			) {
-				return@AnvilInput "Must be from 0 to 1000"
-			}
 
-			// Final
-			p.performCommand("$commandName create $name ${color.name} $r")
-			Tasks.syncDelay(20) { p.performCommand("$commandName edit $name") }
-			return@AnvilInput null
+	playerClicker.anvilInputText(
+		prompt = text("Enter role name"),
+		description = text("3-20 characters; alphanumeric"),
+		inputValidator = InputValidator { input: String ->
+			when {
+				!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
+				input.length !in 3..20 -> ValidatorResult.FailureResult(text("Must be from 3 to 20 characters!"))
+				else -> ValidatorResult.SuccessResult
+			}
 		}
-	)
+	) { result ->
+		name = result
+
+		playerClicker.anvilInputText(
+			prompt = "Enter <rainbow>Color".miniMessage(),
+			inputValidator = InputValidator { input: String ->
+				runCatching { ChatColor.valueOf(input) }.onFailure {
+					return@InputValidator ValidatorResult.FailureResult(text("Must be one of ${ChatColor.values().joinToString { it.name }}"))
+				}
+
+				ValidatorResult.SuccessResult
+			}
+		) { result ->
+			color = ChatColor.valueOf(result)
+
+			playerClicker.anvilInputText(
+				prompt = text("Enter role weight"),
+				description = text("Must be from 0 to 1000"),
+				inputValidator = InputValidator { input: String ->
+					val int = input.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(text("Not a valid number!"))
+					if (int !in 0..1000) ValidatorResult.FailureResult(text("Must be from 0 to 1000")) else ValidatorResult.SuccessResult
+				}
+			) { result ->
+				playerClicker.performCommand("$commandName create $name ${color.name} $result")
+				Tasks.syncDelay(20) { playerClicker.performCommand("$commandName edit $name") }
+			}
+		}
+	}
 }
 
 fun editRoleGUI(
@@ -92,62 +101,62 @@ fun editRoleGUI(
 			addItem(backButton("$commandName manage"))
 
 			// Name Button
-			addItem(
-				guiButton(Material.NAME_TAG) {
-					playerClicker.anvilInput("Name".toComponent()) { p, r ->
+			addItem(guiButton(Material.NAME_TAG) {
+				playerClicker.anvilInputText(
+					prompt = text("Enter role name"),
+					description = text("3-20 characters; alphanumeric"),
+					inputValidator = InputValidator { input: String ->
 						when {
-							!r.isAlphanumeric() -> "Must be alphanumeric"
-							r.length !in 3..20 -> "Must be from 3 to 20 characters"
-							else -> {
-								p.performCommand("$commandName edit name $roleName $r")
-								Tasks.sync { p.performCommand("$commandName edit $r") }; return@anvilInput null
-							}
+							!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
+							input.length !in 3..20 -> ValidatorResult.FailureResult(text("Must be from 3 to 20 characters!"))
+							else -> ValidatorResult.SuccessResult
 						}
 					}
-				}.name("Name: $roleName")
-			)
+				) { result ->
+					playerClicker.performCommand("$commandName edit name $roleName $result")
+					Tasks.sync { playerClicker.performCommand("$commandName edit $result") }
+				}
+			}.name("Name: $roleName"))
 
 			// Color Button
-			addItem(
-				guiButton(Material.INK_SAC) {
-					playerClicker.anvilInput("<rainbow>Color".miniMessage()) { p, r ->
-						try {
-							val color = ChatColor.valueOf(r)
-
-							p.performCommand("$commandName edit color $roleName ${color.name}")
-							Tasks.sync { p.performCommand("$commandName edit $roleName") }
-
-							return@anvilInput null
-						} catch (e: Exception) {
-							return@anvilInput "Must be one of ${ChatColor.values().joinToString { it.name }}"
+			addItem(guiButton(Material.INK_SAC) {
+				playerClicker.anvilInputText(
+					prompt = "Enter <rainbow>Color".miniMessage(),
+					inputValidator = InputValidator { input: String ->
+						runCatching { ChatColor.valueOf(input) }.onFailure {
+							return@InputValidator ValidatorResult.FailureResult(text("Must be one of ${ChatColor.values().joinToString { it.name }}"))
 						}
+
+						ValidatorResult.SuccessResult
 					}
-				}.name("Color: ${roleColor.name}")
-			)
+				) { result ->
+					val color = ChatColor.valueOf(result)
+
+					playerClicker.performCommand("$commandName edit color $roleName ${color.name}")
+					Tasks.sync { playerClicker.performCommand("$commandName edit $roleName") }
+				}
+			}.name("Color: ${roleColor.name}"))
 
 			// Weight Button
-			addItem(
-				guiButton(Material.ANVIL) {
-					playerClicker.anvilInput("Weight".toComponent(TextDecoration.BOLD)) { p, r ->
-						if ((r.toIntOrNull() ?: return@anvilInput "Must be a number")
-							!in 0..1000
-						) {
-							return@anvilInput "Must be from 0 to 1000"
-						} else {
-							p.performCommand("$commandName edit weight $roleName $r")
-
-							Tasks.sync { p.performCommand("$commandName edit $roleName") }; return@anvilInput null
-						}
+			addItem(guiButton(Material.ANVIL) {
+				playerClicker.anvilInputText(
+					prompt = text("Enter role weight"),
+					description = text("Must be from 0 to 1000"),
+					inputValidator = InputValidator { input: String ->
+						val int = input.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(text("Not a valid number!"))
+						if (int !in 0..1000) ValidatorResult.FailureResult(text("Must be from 0 to 1000")) else ValidatorResult.SuccessResult
 					}
-				}.name("Weight: $roleWeight")
-			)
+				) { result ->
+					playerClicker.performCommand("$commandName edit weight $roleName $result")
+
+					Tasks.sync { playerClicker.performCommand("$commandName edit $roleName") }
+				}
+			}.name("Weight: $roleWeight"))
 
 			// Permissions Button
-			addItem(
-				guiButton(Material.KNOWLEDGE_BOOK) {
-					playerClicker.performCommand("$commandName permission gui $roleName")
-				}.name("Permissions")
-			)
+			addItem(guiButton(Material.KNOWLEDGE_BOOK) {
+				playerClicker.performCommand("$commandName permission gui $roleName")
+			}.name("Permissions"))
 		}
 	)
 

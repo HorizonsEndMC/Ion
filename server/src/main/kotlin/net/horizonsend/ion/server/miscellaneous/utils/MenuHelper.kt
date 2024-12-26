@@ -47,7 +47,7 @@ object MenuHelper {
 
 	fun GuiItem.setName(text: String?): GuiItem {
 		if (text != null) {
-			item.setDisplayNameAndGet(text)
+			item.updateDisplayName(text)
 		}
 
 		return this
@@ -55,7 +55,7 @@ object MenuHelper {
 
 	fun GuiItem.setName(text: Component?): GuiItem {
 		if (text != null) {
-			item.setDisplayNameAndGet(text)
+			item.updateDisplayName(text)
 		}
 
 		return this

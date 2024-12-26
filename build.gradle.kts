@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.js.parser.sourcemaps.JsonArray
 import org.jetbrains.kotlin.js.parser.sourcemaps.JsonObject
 import org.jetbrains.kotlin.js.parser.sourcemaps.JsonString
 import org.jetbrains.kotlin.js.parser.sourcemaps.parseJson
-import java.net.URL
+import java.net.URI
 
 plugins {
 	id("com.github.johnrengelman.shadow") version "8.1.1" apply false
@@ -14,8 +14,7 @@ plugins {
 // TODO: Use Json
 // TODO: Don't redownload every time
 fun downloadJenkinsArtifact(domain: String, project: String, filter: String, location: String) {
-	val jarName =
-		URL("https://$domain/job/$project/lastSuccessfulBuild/api/xml?xpath=/freeStyleBuild/artifact/relativePath${if (filter.isNotEmpty()) "[$filter]" else ""}")
+	val jarName = URI("https://$domain/job/$project/lastSuccessfulBuild/api/xml?xpath=/freeStyleBuild/artifact/relativePath${if (filter.isNotEmpty()) "[$filter]" else ""}").toURL()
 			.readText()
 			.substringAfter("<relativePath>$location/")
 			.substringBefore("</relativePath>")
@@ -24,19 +23,19 @@ fun downloadJenkinsArtifact(domain: String, project: String, filter: String, loc
 
 	File("./run/paper/plugins/$jarName")
 		.writeBytes(
-			URL("https://$domain/job/$project/lastSuccessfulBuild/artifact/$location/$jarName")
+			URI("https://$domain/job/$project/lastSuccessfulBuild/artifact/$location/$jarName").toURL()
 				.readBytes()
 		)
 
 	println("Done!")
 }
 
-fun downloadModrinthArtifact(project: String, targetVersion: String = "1.20.4") {
+fun downloadModrinthArtifact(project: String, targetVersion: String = "1.21.4") {
 	val targetLoader = "paper"
 
 	print("Downloading $project... ")
 
-	val versions : JsonArray = parseJson(URL("https://api.modrinth.com/v2/project/$project/version").readText()) as JsonArray
+	val versions : JsonArray = parseJson(URI("https://api.modrinth.com/v2/project/$project/version").toURL().readText()) as JsonArray
 
 	val version = versions.elements.firstOrNull check@{ version ->
 		version as JsonObject
@@ -58,16 +57,15 @@ fun downloadModrinthArtifact(project: String, targetVersion: String = "1.20.4") 
 	val file = ((version.properties["files"] as JsonArray).elements[0] as JsonObject).properties["url"] as JsonString
 	val fileName = file.value.substringAfterLast("/")
 
-	File("./run/paper/plugins/$fileName").writeBytes(URL(file.value).readBytes())
+	File("./run/paper/plugins/$fileName").writeBytes(URI(file.value).toURL().readBytes())
 
 	println("Done!")
 }
 
-tasks.create("downloadTestServerDependencies") {
+tasks.register("downloadTestServerDependencies") {
 	doFirst {
 		downloadJenkinsArtifact("ci.athion.net", "FastAsyncWorldEdit", "contains(.,'Bukkit')", "artifacts")
 		downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'bukkit/')", "bukkit/loader/build/libs")
-		downloadJenkinsArtifact("ci.dmulloy2.net", "ProtocolLib", "", "build/libs")
 		downloadModrinthArtifact("unifiedmetrics", targetVersion = "1.19.4")
 	}
 }

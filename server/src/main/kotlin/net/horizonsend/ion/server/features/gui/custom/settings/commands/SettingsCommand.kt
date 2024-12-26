@@ -14,6 +14,4 @@ object SettingsCommand : SLCommand() {
     fun onSettings(sender: Player) {
         SettingsMainMenuGui(sender).openMainWindow()
     }
-
-
 }

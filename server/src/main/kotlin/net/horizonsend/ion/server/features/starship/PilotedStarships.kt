@@ -42,7 +42,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -423,14 +422,8 @@ object PilotedStarships : IonServerComponent() {
 				return@activateAsync
 			}
 
-			if (activePlayerStarship.type == StarshipType.BATTLECRUISER && (!activePlayerStarship.world.ion.hasFlag(WorldFlag.SPACE_WORLD) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
-				player.userError("Battlecruisers can only be piloted in space!")
-				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
-				return@activateAsync
-			}
-
-			if (activePlayerStarship.type == StarshipType.BARGE && (!activePlayerStarship.world.ion.hasFlag(WorldFlag.SPACE_WORLD) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
-				player.userError("Barges can only be piloted in space!")
+			if (!activePlayerStarship.type.canPilotIn(world.ion)) {
+				player.userError("${activePlayerStarship.type} can't be piloted in this world!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}

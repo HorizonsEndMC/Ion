@@ -4,15 +4,16 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.CHETHERITE_CHARACTER
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.LegacySettings
-import net.horizonsend.ion.server.features.custom.items.CustomItems.CHETHERITE
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.get
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.setModel
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.vaultEconomy
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -54,10 +55,10 @@ class Achievements(val player: Player) : AbstractBackgroundPagedGui {
 
 		for (achievement in Achievement.entries) {
 			// some achievements use a normal block instead of an achievement icon
-			val itemStack = if (achievement.icon != null) ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
-					it.setCustomModelData(achievement.icon)
-					it.displayName(Component.empty())
-				}
+			val itemStack = if (achievement.icon != null) ItemStack(Material.WARPED_FUNGUS_ON_A_STICK)
+				.setModel(achievement.icon)
+				.updateDisplayName(Component.empty())
+
 			else ItemStack(when (achievement) {
 				Achievement.DETECT_MULTIBLOCK -> Material.NOTE_BLOCK
 				Achievement.DETECT_SHIP -> Material.JUKEBOX
@@ -76,8 +77,8 @@ class Achievements(val player: Player) : AbstractBackgroundPagedGui {
 			"< . . . . . . . >")
 
 		gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
-			.addIngredient('<', GuiItems.LeftItem())
-			.addIngredient('>', GuiItems.RightItem())
+			.addIngredient('<', GuiItems.PageLeftItem())
+			.addIngredient('>', GuiItems.PageRightItem())
 			.setContent(achievementIcons)
 
 		return gui.build()
@@ -141,12 +142,12 @@ class Achievements(val player: Player) : AbstractBackgroundPagedGui {
 	}
 
 	fun openMainWindow() {
-		currentWindow = open(player).apply { open() }
+		currentWindow = buildWindow(player).apply { open() }
 	}
 }
 
 fun Player.rewardAchievement(achievement: Achievement, callback: () -> Unit = {}) = Tasks.async {
-	if (!LegacySettings.master) return@async
+	if (!ConfigurationFiles.legacySettings().master) return@async
 
 	val playerData = SLPlayer[this]
 	if (playerData.achievements.map { Achievement.valueOf(it) }.find { it == achievement } != null) return@async

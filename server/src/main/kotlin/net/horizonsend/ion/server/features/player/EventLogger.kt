@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.player
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.ServerConfiguration
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.progression.bounties.Bounties.hasActive
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
@@ -14,7 +14,7 @@ import org.bukkit.event.entity.PlayerDeathEvent
 
 object EventLogger : IonServerComponent() {
 	override fun onEnable() {
-		val url = ServerConfiguration.eventLoggerWebhook ?: return
+		val url = ConfigurationFiles.serverConfiguration().eventLoggerWebhook ?: return
 		val builder = WebhookClientBuilder(url)
 
 		val client: WebhookClient =  try {
@@ -32,7 +32,7 @@ object EventLogger : IonServerComponent() {
 			return
 		}
 
-		val webhook = ServerConfiguration.eventLoggerWebhook ?: return
+		val webhook = ConfigurationFiles.serverConfiguration().eventLoggerWebhook ?: return
 		listen<PlayerDeathEvent> { event ->
 			val player = event.player
 

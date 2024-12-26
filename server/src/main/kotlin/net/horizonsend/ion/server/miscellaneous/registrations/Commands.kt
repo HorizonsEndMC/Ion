@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.command.admin.AdminCommands
 import net.horizonsend.ion.server.command.admin.BatteryCommand
-import net.horizonsend.ion.server.command.admin.ConvertCommand
+import net.horizonsend.ion.server.command.admin.CapturableStationsCommand
 import net.horizonsend.ion.server.command.admin.CustomItemCommand
+import net.horizonsend.ion.server.command.admin.DisplayDebug
 import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.IonCommand
@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.command.misc.IonSitCommand
 import net.horizonsend.ion.server.command.misc.ListCommand
 import net.horizonsend.ion.server.command.misc.LocatorCommands
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
+import net.horizonsend.ion.server.command.misc.NavigationCommand
 import net.horizonsend.ion.server.command.misc.PlayerInfoCommand
 import net.horizonsend.ion.server.command.misc.RegenerateCommand
 import net.horizonsend.ion.server.command.misc.ShipFactoryCommand
@@ -75,6 +76,7 @@ import net.horizonsend.ion.server.command.starship.StarshipsCommand
 import net.horizonsend.ion.server.command.starship.ai.AIDebugCommand
 import net.horizonsend.ion.server.configuration.ConfigurationCommands
 import net.horizonsend.ion.server.features.client.commands.HudCommand
+import net.horizonsend.ion.server.features.gui.custom.settings.commands.ControlSettingsCommand
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SettingsCommand
 import net.horizonsend.ion.server.features.player.NewPlayerProtection
 import net.horizonsend.ion.server.features.progression.achievements.AchievementsCommand
@@ -142,13 +144,12 @@ val commands: List<SLCommand> = listOf(
 	StarshipsCommand,
 	GracePeriod,
 	NewPlayerProtection,
-	AdminCommands,
+	CapturableStationsCommand,
 
 	MultiblockCommand,
 	SpaceGenCommand,
 	ConfigurationCommands,
 	WorldCommand,
-	ConvertCommand,
 	CustomItemCommand,
 	IonCommand,
 	SearchCommand,
@@ -176,6 +177,7 @@ val commands: List<SLCommand> = listOf(
 	BlockCommand,
 	ShipFactoryCommand,
 	SettingsCommand,
+	ControlSettingsCommand,
 	FleetCommand,
 	LocatorCommands,
 	ItemDebugCommand,
@@ -188,5 +190,7 @@ val commands: List<SLCommand> = listOf(
     ForbiddenBlocksCommand,
 	EnableProtectionMessagesCommand,
 	IonSitCommand,
-	SuicideCommand
+	SuicideCommand,
+	NavigationCommand,
+	DisplayDebug
 )

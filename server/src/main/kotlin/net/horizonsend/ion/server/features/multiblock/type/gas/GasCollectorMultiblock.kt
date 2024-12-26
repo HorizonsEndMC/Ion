@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.multiblock.type.gas
 
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.custom.items.CustomItems
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
-import net.horizonsend.ion.server.features.custom.items.GasCanister
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
 import net.horizonsend.ion.server.features.gas.type.Gas
@@ -47,7 +47,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		at(0, 0, 1).hopper()
 	}
 
-	val configuration = IonServer.globalGassesConfiguration
+	val configuration = ConfigurationFiles.globalGassesConfiguration()
 
 	override fun onFurnaceTick(
 		event: FurnaceBurnEvent,
@@ -100,7 +100,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 			result.amount.toDouble()
 		} ?: return
 
-		val delta = IonServer.globalGassesConfiguration.collectorTickInterval / 20L
+		val delta = ConfigurationFiles.globalGassesConfiguration().collectorTickInterval / 20L
 		val amount = (random.amount * weight) * (delta)
 
 		Tasks.sync {
@@ -116,7 +116,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		val customItem = canisterItem.customItem ?: return false
 
 		return when (customItem) {
-			CustomItems.GAS_CANISTER_EMPTY -> fillEmptyCanister(furnace, gas, amount)
+			CustomItemRegistry.GAS_CANISTER_EMPTY -> fillEmptyCanister(furnace, gas, amount)
 
 			is GasCanister -> fillGasCanister(canisterItem, furnace, hopper, amount) // Don't even bother with the gas
 
@@ -125,7 +125,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	}
 
 	private fun fillEmptyCanister(furnace: Furnace, gas: Gas, amount: Int): Boolean {
-		val newType = CustomItems.getByIdentifier(gas.containerIdentifier) as? GasCanister ?: return false
+		val newType = CustomItemRegistry.getByIdentifier(gas.containerIdentifier) as? GasCanister ?: return false
 		val newCanister = newType.createWithFill(amount)
 
 		furnace.inventory.fuel = newCanister

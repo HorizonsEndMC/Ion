@@ -3,13 +3,11 @@ version: "Unspecified"
 api-version: "1.20"
 
 bootstrapper: net.horizonsend.ion.server.miscellaneous.IonBootstrapper
+loader: net.horizonsend.ion.server.miscellaneous.IonPluginLoader
 main: net.horizonsend.ion.server.IonServer
 load: STARTUP
 
 dependencies:
-  - name: ProtocolLib
-    required: true
-
   - name: WorldEdit
     required: true
 
@@ -35,7 +33,6 @@ dependencies:
     required: false
 
 load-after:
-  - name: ProtocolLib
   - name: WorldEdit
   - name: Citizens
   - name: DiscordSRV

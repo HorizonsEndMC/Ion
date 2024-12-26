@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import org.bukkit.event.EventHandler
@@ -12,7 +12,7 @@ object PlayerDeathListener : SLEventListener() {
 	fun onPlayerDeath(event: PlayerDeathEvent) {
 		if (event.isCancelled) return
 
-		if (!IonServer.configuration.crossServerDeathMessages) return
+		if (!ConfigurationFiles.serverConfiguration().crossServerDeathMessages) return
 
 		val message = event.deathMessage()
 		message?.let {

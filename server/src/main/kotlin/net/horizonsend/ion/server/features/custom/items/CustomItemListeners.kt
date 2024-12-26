@@ -1,84 +1,208 @@
 package net.horizonsend.ion.server.features.custom.items
 
+import com.destroystokyo.paper.event.server.ServerTickEndEvent
 import io.papermc.paper.event.block.BlockPreDispenseEvent
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.component.Listener
+import net.horizonsend.ion.server.features.custom.items.component.TickRecievierModule
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.block.Dispenser
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.block.Action
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
+import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 
-class CustomItemListeners : SLEventListener() {
-	@EventHandler(priority = EventPriority.LOWEST)
-	@Suppress("Unused")
-	fun rightClick(event: PlayerInteractEvent) {
-		if (event.item == null) return
+object CustomItemListeners : SLEventListener() {
+	// Presorted to avoid a bunch of filtering for every event at runtime
+	private val interactListeners: MutableMap<CustomItem, MutableSet<Listener<PlayerInteractEvent, *>>> = mutableMapOf()
+	private val swapItemListeners: MutableMap<CustomItem, MutableSet<Listener<PlayerSwapHandItemsEvent, *>>> = mutableMapOf()
+	private val dispenseListeners: MutableMap<CustomItem, MutableSet<Listener<BlockPreDispenseEvent, *>>> = mutableMapOf()
+	private val entityShootBowListeners: MutableMap<CustomItem, MutableSet<Listener<EntityShootBowEvent, *>>> = mutableMapOf()
+	private val craftListeners: MutableMap<CustomItem, MutableSet<Listener<PrepareItemCraftEvent, *>>> = mutableMapOf()
+	private val damageEntityListeners: MutableMap<CustomItem, MutableSet<Listener<EntityDamageByEntityEvent, *>>> = mutableMapOf()
 
-		if (event.hand != EquipmentSlot.HAND) return
+	private val tickRecievers: MutableMap<CustomItem, MutableSet<TickRecievierModule>> = mutableMapOf()
 
-		val customItem = event.item?.customItem ?: return
-		when (event.action) {
-			Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
-				customItem.handleSecondaryInteract(event.player, event.player.inventory.itemInMainHand, event)
-				if (customItem !is CustomBlockItem) {
-					event.isCancelled = true
-				}
-			}
+	private fun <T: CustomItem, Z: Any> getEntries(
+		collection: MutableMap<CustomItem, MutableSet<Z>>,
+		item: T
+	): MutableSet<Z> {
+		return collection.getOrPut(item) { mutableSetOf() }
+	}
 
-			Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
-				customItem.handlePrimaryInteract(event.player, event.player.inventory.itemInMainHand, event)
-				event.isCancelled = true
-			}
+	fun sortCustomItemListeners() {
+		for (newCustomItem in CustomItemRegistry.ALL) {
+			val components = newCustomItem.allComponents()
 
-			else -> return // Unknown Action Enum - We probably don't care, silently fail
+			components.filterIsInstance<Listener<PlayerInteractEvent, *>>().filterTo(getEntries(interactListeners, newCustomItem)) { it.eventType == PlayerInteractEvent::class }
+			components.filterIsInstance<Listener<PlayerSwapHandItemsEvent, *>>().filterTo(getEntries(swapItemListeners, newCustomItem)) { it.eventType == PlayerSwapHandItemsEvent::class }
+			components.filterIsInstance<Listener<BlockPreDispenseEvent, *>>().filterTo(getEntries(dispenseListeners, newCustomItem)) { it.eventType == BlockPreDispenseEvent::class }
+			components.filterIsInstance<Listener<EntityShootBowEvent, *>>().filterTo(getEntries(entityShootBowListeners, newCustomItem)) { it.eventType == EntityShootBowEvent::class }
+			components.filterIsInstance<Listener<PrepareItemCraftEvent, *>>().filterTo(getEntries(craftListeners, newCustomItem)) { it.eventType == PrepareItemCraftEvent::class }
+			components.filterIsInstance<Listener<EntityDamageByEntityEvent, *>>().filterTo(getEntries(damageEntityListeners, newCustomItem)) { it.eventType == EntityDamageByEntityEvent::class }
+			getEntries(tickRecievers, newCustomItem).addAll(components.filterIsInstance<TickRecievierModule>())
 		}
 	}
 
+	// For durability manipulation
 	@EventHandler(priority = EventPriority.LOWEST)
-	@Suppress("Unused")
 	fun onPlayerItemDamageEvent(event: PlayerItemDamageEvent) {
 		if (event.item.customItem == null) return
-		val damageable = event.item.itemMeta as? Damageable ?: return // for potential durability manipulation in the future
+		if (event.item.itemMeta !is Damageable) return
 		event.isCancelled = true
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	fun playerInteractListener(event: PlayerInteractEvent) {
+		if (event.hand != EquipmentSlot.HAND) return
+		val item = event.item ?: return
+		val customItem = item.customItem ?: return
+
+		val listeners = getEntries(interactListeners, customItem).filter { it.preCheck(event, item) }
+
+		if (listeners.isNotEmpty()) {
+			event.isCancelled = true
+			listeners.forEach { it.handleEvent(event, item) }
+		}
 	}
 
 	@EventHandler
-	@Suppress("Unused")
 	fun onEntityShootBow(event: EntityShootBowEvent) {
-		val entity = event.entity as? LivingEntity ?: return
-		val offhand = entity.equipment?.itemInMainHand ?: return
-
+		val offhand = event.entity.equipment?.itemInMainHand ?: return
 		val customItem = offhand.customItem ?: return
 
-		customItem.handleSecondaryInteract(entity, offhand, null)
-		event.isCancelled = true
+		val listeners = getEntries(entityShootBowListeners, customItem)
+
+		if (listeners.isNotEmpty()) {
+			event.isCancelled = true
+			listeners.forEach { it.handleEvent(event, offhand) }
+		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler
 	fun onPlayerSwapItem(event: PlayerSwapHandItemsEvent) {
 		// We have to get it from the inventory and not the event, otherwise things break
 		val itemStack = event.player.inventory.itemInMainHand
 		val customItem = itemStack.customItem ?: return
 
-		event.isCancelled = true
-		customItem.handleSwapHands(event.player, itemStack)
+		val listeners = getEntries(swapItemListeners, customItem)
+
+		if (listeners.isNotEmpty()) {
+			event.isCancelled = true
+			listeners.forEach { it.handleEvent(event, itemStack) }
+		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler
 	fun onItemDispensed(event: BlockPreDispenseEvent) {
 		// Retain the dispenser/ dropper parity
 		if (event.block.type != Material.DISPENSER) return
 		val customItem = event.itemStack.customItem ?: return
 
-		event.isCancelled = true
-		customItem.handleDispense(event.block.state as Dispenser, event.slot)
+		val listeners = getEntries(dispenseListeners, customItem)
+
+		if (listeners.isNotEmpty()) {
+			event.isCancelled = true
+			listeners.forEach { it.handleEvent(event, event.itemStack) }
+		}
+	}
+
+	@EventHandler
+	fun onServerTickEnd(event: ServerTickEndEvent) = Tasks.async {
+		for (player in Bukkit.getOnlinePlayers()) {
+			val inventory = player.inventory
+
+			val tickedGear = mutableListOf<ItemStack?>()
+			tickedGear.addAll(inventory.armorContents)
+			tickedGear.add(inventory.itemInOffHand)
+			tickedGear.add(inventory.itemInMainHand)
+
+			for (item in tickedGear) {
+				if (item == null) continue
+				val customItem = item.customItem
+				if (customItem == null) continue
+
+				val tickListeners = getEntries(tickRecievers, customItem)
+				if (tickListeners.isEmpty()) continue
+
+				for (module in tickListeners) {
+					if (event.tickNumber % module.interval != 0) continue
+					module.handleTick(player, item, customItem)
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	fun onCraftSword(event: PrepareItemCraftEvent) {
+		val item = event.inventory.result ?: return
+		val customItem = item.customItem ?: return
+		for (listener in getEntries(craftListeners, customItem)) {
+			if (!listener.preCheck(event, item)) continue
+			listener.handleEvent(event, item)
+		}
+	}
+
+	@EventHandler
+	fun onEntityDamagedBy(event: EntityDamageByEntityEvent) {
+		val damager = event.damager as? LivingEntity ?: return
+		val itemInHand = damager.equipment?.itemInMainHand ?: return
+		val customItem = itemInHand.customItem ?: return
+
+		for (listener in getEntries(damageEntityListeners, customItem)) {
+			if (!listener.preCheck(event, itemInHand)) continue
+			listener.handleEvent(event, itemInHand)
+		}
+	}
+
+	@EventHandler
+	fun onEntityDamagedHolding(event: EntityDamageByEntityEvent) {
+		val damaged = event.entity as? LivingEntity ?: return
+
+		val itemInMainHand = damaged.equipment?.itemInMainHand
+		val mainHandcustomItem = itemInMainHand?.customItem
+
+		val itemInOffHand = damaged.equipment?.itemInOffHand
+		val offHandcustomItem = itemInOffHand?.customItem
+
+		if (itemInMainHand != null && mainHandcustomItem != null) for (listener in getEntries(damageEntityListeners, mainHandcustomItem)) {
+			if (!listener.preCheck(event, itemInMainHand)) continue
+			listener.handleEvent(event, itemInMainHand)
+		}
+
+		if (itemInOffHand != null && offHandcustomItem != null) for (listener in getEntries(damageEntityListeners, offHandcustomItem)) {
+			if (!listener.preCheck(event, itemInOffHand)) continue
+			listener.handleEvent(event, itemInOffHand)
+		}
+	}
+
+	/*
+	 * Attempt to try to allow custom items to be crafted as if they were materials.
+	 * There is no loose itemstack check, only exact matches for lore, name, data, etc.
+	 *
+	 * Until paper accepts the PR for a predicate item requirement, this should allow matching custom item identifiers to craft together
+	 **/
+	@EventHandler
+	fun onPrepareCraft(event: PrepareItemCraftEvent) {
+		val currentItems = event.inventory.matrix
+		val stockCustomItems = Array(currentItems.size) {
+			val item = currentItems[it]
+			val customItem = item?.customItem
+			if (customItem == null) return@Array ItemStack.empty()
+			customItem.constructItemStack(item.amount)
+		}
+
+		val recipe = Bukkit.getCraftingRecipe(stockCustomItems, Bukkit.getWorlds().first()) ?: return
+		event.inventory.result = recipe.result
 	}
 }

@@ -8,13 +8,15 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -38,7 +40,6 @@ import java.time.Duration
 import java.util.UUID
 
 object CombatTimer : IonServerComponent() {
-
 	private val PVP_TIMER_MINS = Duration.ofMinutes(5)
 	private val NPC_TIMER_MINS = Duration.ofMinutes(2).plusSeconds(30)
 	private const val SVP_ENTER_COMBAT_DIST = 500.0
@@ -55,7 +56,7 @@ object CombatTimer : IonServerComponent() {
 	private val pvpTimer = mutableMapOf<UUID, Long>()
 
 	override fun onEnable() {
-		enabled = IonServer.featureFlags.combatTimers
+		enabled = ConfigurationFiles.featureFlags().combatTimers
 
 		if (!enabled) return
 
@@ -81,7 +82,7 @@ object CombatTimer : IonServerComponent() {
 
 				// Only actively controlled warships can cause proximity triggered combat tags
 				if (pilotedStarship != null && pilotedStarship.controller !is UnpilotedController &&
-					pilotedStarship.type.isWarship) {
+					pilotedStarship.type.typeCategory == TypeCategory.WAR_SHIP) {
 					val starshipCom  = pilotedStarship.centerOfMass.toLocation(player.world)
 
 					if (pilotedStarship.isInterdicting) {
@@ -308,27 +309,25 @@ object CombatTimer : IonServerComponent() {
 	 * Constructor for the alert message received when obtaining an NPC combat tag
 	 */
 	private fun npcTimerAlertComponent(reason: String): Component {
-		return ofChildren(
+		return template(text("""
+			{0}
+			{1}
+			Reason: {2}
+			Expiry: {3}
+			Consequences: {4}
+			{5}
+		""".trimIndent(), HE_MEDIUM_GRAY),
 			lineBreak(45),
-			newline(),
 			text(repeatString(" ", 8) + "YOU ARE NOW IN COMBAT (NPC)", GOLD).decorate(BOLD),
-			newline(),
-			text("Reason: ", HE_MEDIUM_GRAY),
 			text(reason, HE_LIGHT_BLUE),
-			newline(),
-			text("Expiry: ", HE_MEDIUM_GRAY),
 			text("${NPC_TIMER_MINS.toMinutesPart()}m ${NPC_TIMER_MINS.toSecondsPart().toString().padStart(2, '0')}s", GOLD),
-			newline(),
-			text("Consequences: ", HE_MEDIUM_GRAY),
-			text("[Hover]", HE_LIGHT_BLUE)
-				.hoverEvent(ofChildren(
-					text("- You cannot release your ship", HE_LIGHT_BLUE),
-					newline(),
-					text("- You cannot claim territories, create settlements, or create space stations", HE_LIGHT_BLUE),
-					newline(),
-					text("- You cannot kill yourself", HE_LIGHT_BLUE),
-					)),
-			newline(),
+			text("[Hover]", HE_LIGHT_BLUE).hoverEvent(ofChildren(
+				text("- You cannot release your ship", HE_LIGHT_BLUE),
+				newline(),
+				text("- You cannot claim territories, create settlements, or create space stations", HE_LIGHT_BLUE),
+				newline(),
+				text("- You cannot kill yourself", HE_LIGHT_BLUE),
+			)),
 			lineBreak(45),
 		)
 	}

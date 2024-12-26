@@ -16,7 +16,7 @@ abstract class StarshipSubsystem(open val starship: ActiveStarship, var pos: Vec
 
 	open fun handleRelease() {}
 
-	open fun onMovement(movement: StarshipMovement) {}
+	open fun onMovement(movement: StarshipMovement, success: Boolean) {}
 
 	/**
 	 * Executed AFTER jump is completed

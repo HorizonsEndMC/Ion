@@ -12,7 +12,7 @@ import net.minecraft.nbt.LongArrayTag
 import net.minecraft.nbt.LongTag
 import net.minecraft.nbt.ShortTag
 import net.minecraft.nbt.StringTag
-import org.bukkit.craftbukkit.v1_20_R3.persistence.CraftPersistentDataContainer
+import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -24,22 +24,23 @@ object CompoundTagType : PersistentDataType<PersistentDataContainer, CompoundTag
 	override fun toPrimitive(complex: CompoundTag, context: PersistentDataAdapterContext): PersistentDataContainer {
 		val primitive = context.newPersistentDataContainer() as CraftPersistentDataContainer
 
-		for ((name, tag) in complex.tags) {
+		for (key in complex.allKeys) {
+			val tag = complex.get(key)
 			primitive.raw
 
 			when (tag) {
-				is ByteTag -> primitive.raw[name] = tag
-				is ShortTag -> primitive.raw[name] = tag
-				is IntTag -> primitive.raw[name] = tag
-				is LongTag -> primitive.raw[name] = tag
-				is FloatTag -> primitive.raw[name] = tag
-				is DoubleTag -> primitive.raw[name] = tag
-				is ByteArrayTag -> primitive.raw[name] =tag
-				is StringTag -> primitive.raw[name] =tag
-				is CompoundTag -> primitive.raw[name] =tag
-				is IntArrayTag -> primitive.raw[name] =tag
-				is LongArrayTag -> primitive.raw[name] =tag
-				is ListTag -> primitive.raw[name] =tag
+				is ByteTag -> primitive.raw[key] = tag
+				is ShortTag -> primitive.raw[key] = tag
+				is IntTag -> primitive.raw[key] = tag
+				is LongTag -> primitive.raw[key] = tag
+				is FloatTag -> primitive.raw[key] = tag
+				is DoubleTag -> primitive.raw[key] = tag
+				is ByteArrayTag -> primitive.raw[key] =tag
+				is StringTag -> primitive.raw[key] =tag
+				is CompoundTag -> primitive.raw[key] =tag
+				is IntArrayTag -> primitive.raw[key] =tag
+				is LongArrayTag -> primitive.raw[key] =tag
+				is ListTag -> primitive.raw[key] =tag
 				else -> {
 					throw NotImplementedError("Impossible to get data from generic Tag.")
 				}

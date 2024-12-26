@@ -4,7 +4,8 @@ import com.mojang.math.Transformation
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.getAddEntityPacket
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.gayColors
@@ -13,7 +14,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.world.entity.Display.ItemDisplay
 import net.minecraft.world.entity.EntityType
 import org.bukkit.Bukkit
@@ -24,8 +24,8 @@ import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack
+import org.bukkit.craftbukkit.entity.CraftPlayer
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.RayTraceResult
@@ -158,7 +158,7 @@ class ArsenalRocketProjectile(
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		val color: Color = if (starship?.rainbowToggle == true) gayColors.random() else Color.GRAY
-		newLocation.world.spawnParticle(Particle.REDSTONE, newLocation.x, newLocation.y, newLocation.z, 2,0.0,0.0,0.0, 0.0,DustOptions(color, 3f), true)
+		newLocation.world.spawnParticle(Particle.DUST, newLocation.x, newLocation.y, newLocation.z, 2,0.0,0.0,0.0, 0.0,DustOptions(color, 3f), true)
 		newLocation.world.spawnParticle(Particle.SOUL_FIRE_FLAME,newLocation, 3)
 		updateDisplayEntity(newLocation, dir.clone().normalize().multiply(speed))
 	}
@@ -175,7 +175,7 @@ class ArsenalRocketProjectile(
 	}
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
-		newLoc.world.spawnParticle(Particle.EXPLOSION_HUGE, newLoc, 4)
+		newLoc.world.spawnParticle(Particle.EXPLOSION, newLoc, 4)
 		newLoc.world.spawnParticle(Particle.FLAME, newLoc, 10)
 		newLoc.world.spawnParticle(Particle.FLASH, newLoc, 3)
 		for (nearbyPlayer in newLoc.world.getNearbyPlayers(newLoc, 200.0)) {
@@ -189,7 +189,7 @@ class ArsenalRocketProjectile(
 			val player = (playerBukkit as CraftPlayer)
 			val connection = player.handle.connection
 			val itemDisplay = ItemDisplay(EntityType.ITEM_DISPLAY, player.minecraft.level()).apply {
-				this.itemStack = CraftItemStack.asNMSCopy(CustomItems.ACTIVATED_ARSENAL_MISSILE.constructItemStack())
+				this.itemStack = CraftItemStack.asNMSCopy(CustomItemRegistry.ACTIVATED_ARSENAL_MISSILE.constructItemStack())
 				setPos(player.location.toBlockPos().center)
 				val translation = originLocation.toVector().subtract(Vector(this.x, this.y, this.z)).toVector3f()
 				val transformation = Transformation(
@@ -206,8 +206,8 @@ class ArsenalRocketProjectile(
 			}
 			displayEntities[playerBukkit] = itemDisplay
 
-			connection.send(ClientboundAddEntityPacket(itemDisplay))
-			itemDisplay.entityData.refresh(player.handle)
+			connection.send(getAddEntityPacket(itemDisplay))
+			itemDisplay.refreshEntityData(player.handle)
 		}
 	}
 
@@ -215,7 +215,7 @@ class ArsenalRocketProjectile(
 		val nmsPlayer = (player as CraftPlayer)
 		val connection = nmsPlayer.handle.connection
 		val itemDisplay = ItemDisplay(EntityType.ITEM_DISPLAY, nmsPlayer.minecraft.level()).apply {
-			this.itemStack = CraftItemStack.asNMSCopy(CustomItems.ACTIVATED_ARSENAL_MISSILE.constructItemStack())
+			this.itemStack = CraftItemStack.asNMSCopy(CustomItemRegistry.ACTIVATED_ARSENAL_MISSILE.constructItemStack())
 			setPos(nmsPlayer.location.toBlockPos().center)
 			val translation = originLocation.toVector().subtract(Vector(this.x, this.y, this.z)).toVector3f()
 			val transformation = Transformation(
@@ -232,8 +232,8 @@ class ArsenalRocketProjectile(
 		}
 		displayEntities[player] = itemDisplay
 
-		connection.send(ClientboundAddEntityPacket(itemDisplay))
-		itemDisplay.entityData.refresh(player.handle)
+		connection.send(getAddEntityPacket(itemDisplay))
+		itemDisplay.refreshEntityData(player.handle)
 		return itemDisplay
 	}
 }

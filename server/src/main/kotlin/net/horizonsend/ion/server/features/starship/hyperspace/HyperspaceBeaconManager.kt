@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.hyperspace
 
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipExitHyperspaceEvent
@@ -14,7 +14,7 @@ import java.util.UUID
 
 object HyperspaceBeaconManager : SLEventListener() {
 	// Your problem if it throws null pointers
-	val beaconWorlds get() = IonServer.configuration.beacons.groupBy { it.spaceLocation.bukkitWorld() }
+	val beaconWorlds get() = ConfigurationFiles.serverConfiguration().beacons.groupBy { it.spaceLocation.bukkitWorld() }
 
 	// Make it yell at you once every couple seconds not every time your ship moves
 	private val activeRequests: MutableMap<UUID, Long> = mutableMapOf()

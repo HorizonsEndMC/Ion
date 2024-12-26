@@ -22,10 +22,9 @@ import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.miscellaneous.utils.getNBTInt
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.util.*
+import java.util.Locale
 import kotlin.system.measureTimeMillis
 
 @CommandAlias("tradedebug|tdebug|tbug")
@@ -73,19 +72,6 @@ object TradeDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 	fun onCrateGive(sender: Player, crate: CargoCrate, amount: Int) {
 		repeat(amount) { sender.world.dropItemNaturally(sender.eyeLocation, CrateItems[crate]) }
 		sender.sendRichMessage("<green>Gave $amount of ${crate.name}")
-	}
-
-	@Suppress("Unused")
-	@Subcommand("crate shipment")
-	fun onCrateShipment(sender: Player) = asyncCommand(sender) {
-		val item = sender.inventory.itemInMainHand
-
-		CargoCrates[item] ?: throw InvalidCommandArgument("You aren't holding a crate!")
-
-		val shipmentId = item.getNBTInt("shipment_id")
-			?: throw InvalidCommandArgument("That crate isn't part of a shipment!")
-
-		sender.sendRichMessage("<gold>Shipment ID: <yellow>$shipmentId")
 	}
 
 	@Suppress("Unused")

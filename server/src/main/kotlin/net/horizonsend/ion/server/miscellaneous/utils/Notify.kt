@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.utils.discord.Embed
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.utils.Discord.asDiscord
 import net.kyori.adventure.text.Component
@@ -16,7 +16,7 @@ import java.util.UUID
 object Notify : IonComponent() {
 	fun chatAndGlobal(message: Component) {
 		notifyOnlineAction(message)
-		Discord.sendEmbed(IonServer.discordSettings.globalChannel, Embed(description = asDiscord(message), color = message.color()?.value()))
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().globalChannel, Embed(description = asDiscord(message), color = message.color()?.value()))
 	}
 
 	val notifyOnlineAction = { message: Component ->
@@ -25,7 +25,7 @@ object Notify : IonComponent() {
 
 	fun chatAndEvents(message: Component) {
 		chatAndGlobal(message)
-		Discord.sendMessage(IonServer.discordSettings.eventsChannel, message)
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, message)
 	}
 
 	fun playerCrossServer(player: UUID, message: Component) = notifyPlayerAction(player to message)

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.gas.collection
 
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gas.type.Gas
 import org.bukkit.Location
@@ -17,12 +17,12 @@ data class CollectedGas(
 	 * Returns the amount collected
 	 **/
 	fun tryCollect(location: Location): CollectionResult {
-		if (IonServer.globalGassesConfiguration.sandbox) return CollectionResult(gas, 85)
+		if (ConfigurationFiles.globalGassesConfiguration().sandbox) return CollectionResult(gas, 85)
 		return CollectionResult(gas, factorStack.getAmount(location))
 	}
 
 	fun canBeFound(location: Location): Boolean {
-		if (IonServer.globalGassesConfiguration.sandbox) return true
+		if (ConfigurationFiles.globalGassesConfiguration().sandbox) return true
 		return factorStack.getAmount(location) > 0
 	}
 

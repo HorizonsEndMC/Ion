@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -17,7 +17,7 @@ class MiniPhaserProjectile(
 	dir: Vector,
 	shooter: Damager
 ) : ParticleProjectile(starship, name, loc, dir, shooter) {
-	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.miniPhaser ?: IonServer.starshipBalancing.nonStarshipFired.miniPhaser
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.miniPhaser ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.miniPhaser
 	override val range: Double = balancing.range
 	override var speed: Double = balancing.speed
 	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
@@ -32,6 +32,6 @@ class MiniPhaserProjectile(
 		val count = 1
 		val extra = 0.0
 		val data = null
-		loc.world.spawnParticle(Particle.VILLAGER_HAPPY, x, y, z, count, offset, offset, offset, extra, data, force)
+		loc.world.spawnParticle(Particle.HAPPY_VILLAGER, x, y, z, count, offset, offset, offset, extra, data, force)
 	}
 }

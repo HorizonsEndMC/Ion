@@ -3,11 +3,11 @@ package net.horizonsend.ion.server.features.client.display
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.space.Space
@@ -18,12 +18,10 @@ import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Color
-import org.bukkit.Material
 import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -96,7 +94,7 @@ object HudIcons : IonServerComponent() {
         // do not render if the planet is closer than the entity render distance
         if (distance < entityRenderDistance * 2) return null
 
-        entity.itemStack = getItemStack(identifier)
+        entity.setItemStack(getItemStack(identifier))
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
         //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
@@ -211,7 +209,7 @@ object HudIcons : IonServerComponent() {
 
         val entity = ClientDisplayEntityFactory.createItemDisplay(player)
 
-        entity.itemStack = CustomItems.PLANET_SELECTOR.constructItemStack()
+        entity.setItemStack(CustomItemRegistry.PLANET_SELECTOR.constructItemStack())
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
         //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
@@ -435,65 +433,65 @@ object HudIcons : IonServerComponent() {
     private fun getItemStack(name: String): ItemStack {
         if (name.contains(PLANET_PREFIX)) {
             return when (name) {
-                PLANET_PREFIX + "Aerach" -> CustomItems.AERACH
-                PLANET_PREFIX + "Aret" -> CustomItems.ARET
-                PLANET_PREFIX + "Chandra" -> CustomItems.CHANDRA
-                PLANET_PREFIX + "Chimgara" -> CustomItems.CHIMGARA
-                PLANET_PREFIX + "Damkoth" -> CustomItems.DAMKOTH
-                PLANET_PREFIX + "Disterra" -> CustomItems.DISTERRA
-                PLANET_PREFIX + "Eden" -> CustomItems.EDEN
-                PLANET_PREFIX + "Gahara" -> CustomItems.GAHARA
-                PLANET_PREFIX + "Herdoli" -> CustomItems.HERDOLI
-                PLANET_PREFIX + "Ilius" -> CustomItems.ILIUS
-                PLANET_PREFIX + "Isik" -> CustomItems.ISIK
-                PLANET_PREFIX + "Kovfefe" -> CustomItems.KOVFEFE
-                PLANET_PREFIX + "Krio" -> CustomItems.KRIO
-                PLANET_PREFIX + "Lioda" -> CustomItems.LIODA
-                PLANET_PREFIX + "Luxiterna" -> CustomItems.LUXITERNA
-                PLANET_PREFIX + "Qatra" -> CustomItems.QATRA
-                PLANET_PREFIX + "Rubaciea" -> CustomItems.RUBACIEA
-                PLANET_PREFIX + "Turms" -> CustomItems.TURMS
-                PLANET_PREFIX + "Vask" -> CustomItems.VASK
+                PLANET_PREFIX + "Aerach" -> CustomItemRegistry.AERACH
+                PLANET_PREFIX + "Aret" -> CustomItemRegistry.ARET
+                PLANET_PREFIX + "Chandra" -> CustomItemRegistry.CHANDRA
+                PLANET_PREFIX + "Chimgara" -> CustomItemRegistry.CHIMGARA
+                PLANET_PREFIX + "Damkoth" -> CustomItemRegistry.DAMKOTH
+                PLANET_PREFIX + "Disterra" -> CustomItemRegistry.DISTERRA
+                PLANET_PREFIX + "Eden" -> CustomItemRegistry.EDEN
+                PLANET_PREFIX + "Gahara" -> CustomItemRegistry.GAHARA
+                PLANET_PREFIX + "Herdoli" -> CustomItemRegistry.HERDOLI
+                PLANET_PREFIX + "Ilius" -> CustomItemRegistry.ILIUS
+                PLANET_PREFIX + "Isik" -> CustomItemRegistry.ISIK
+                PLANET_PREFIX + "Kovfefe" -> CustomItemRegistry.KOVFEFE
+                PLANET_PREFIX + "Krio" -> CustomItemRegistry.KRIO
+                PLANET_PREFIX + "Lioda" -> CustomItemRegistry.LIODA
+                PLANET_PREFIX + "Luxiterna" -> CustomItemRegistry.LUXITERNA
+                PLANET_PREFIX + "Qatra" -> CustomItemRegistry.QATRA
+                PLANET_PREFIX + "Rubaciea" -> CustomItemRegistry.RUBACIEA
+                PLANET_PREFIX + "Turms" -> CustomItemRegistry.TURMS
+                PLANET_PREFIX + "Vask" -> CustomItemRegistry.VASK
 
-                PLANET_PREFIX + "Asteri" -> CustomItems.ASTERI
-                PLANET_PREFIX + "EdenHack" -> CustomItems.HORIZON
-                PLANET_PREFIX + "Ilios" -> CustomItems.ILIOS
-                PLANET_PREFIX + "Regulus" -> CustomItems.REGULUS
-                PLANET_PREFIX + "Sirius" -> CustomItems.SIRIUS
+                PLANET_PREFIX + "Asteri" -> CustomItemRegistry.ASTERI
+                PLANET_PREFIX + "EdenHack" -> CustomItemRegistry.HORIZON
+                PLANET_PREFIX + "Ilios" -> CustomItemRegistry.ILIOS
+                PLANET_PREFIX + "Regulus" -> CustomItemRegistry.REGULUS
+                PLANET_PREFIX + "Sirius" -> CustomItemRegistry.SIRIUS
 
-                else -> CustomItems.AERACH
+                else -> CustomItemRegistry.AERACH
             }.constructItemStack()
         }
 
         else if (name.contains(STAR_PREFIX)) {
             return when (name) {
-                STAR_PREFIX + "Asteri" -> CustomItems.ASTERI
-                STAR_PREFIX + "Horizon" -> CustomItems.HORIZON
-                STAR_PREFIX + "Ilios" -> CustomItems.ILIOS
-                STAR_PREFIX + "Regulus" -> CustomItems.REGULUS
-                STAR_PREFIX + "Sirius" -> CustomItems.SIRIUS
+                STAR_PREFIX + "Asteri" -> CustomItemRegistry.ASTERI
+                STAR_PREFIX + "Horizon" -> CustomItemRegistry.HORIZON
+                STAR_PREFIX + "Ilios" -> CustomItemRegistry.ILIOS
+                STAR_PREFIX + "Regulus" -> CustomItemRegistry.REGULUS
+                STAR_PREFIX + "Sirius" -> CustomItemRegistry.SIRIUS
 
-                else -> CustomItems.ASTERI
+                else -> CustomItemRegistry.ASTERI
             }.constructItemStack()
         }
 
         else if (name.contains(BEACON_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BEACON.customModelData) }
+            return GuiItem.BEACON.get()
         }
 
         else if (name.contains(STATION_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+            return GuiItem.STATION.get()
         }
 
         else if (name.contains(SIEGE_STATION_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.STATION.customModelData) }
+            return GuiItem.STATION.get()
         }
 
         else if (name.contains(BOOKMARK_PREFIX)) {
-            return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.BOOKMARK.customModelData) }
+            return GuiItem.BOOKMARK.get()
         }
 
-        else return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(GuiItem.GENERIC_STARSHIP.customModelData) }
+        else return GuiItem.GENERIC_STARSHIP.get()
     }
 
     /**
@@ -518,7 +516,7 @@ object HudIcons : IonServerComponent() {
         // Only render planets if the player is in a space world
         if (!player.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) return
 
-        val planetList = Space.getPlanets().filter { it.spaceWorld == player.world }
+        val planetList = Space.getAllPlanets().filter { it.spaceWorld == player.world }
         val playerDisplayEntities = ClientDisplayEntities[player.uniqueId] ?: return
 
         // Reset planet selector information
@@ -575,7 +573,7 @@ object HudIcons : IonServerComponent() {
         }
 
         // Rendering beacon
-        val beaconList = IonServer.configuration.beacons.filter { it.spaceLocation.bukkitWorld() == player.world }
+        val beaconList = ConfigurationFiles.serverConfiguration().beacons.filter { it.spaceLocation.bukkitWorld() == player.world }
         for (beacon in beaconList) {
             val hudName = BEACON_PREFIX + beacon.name
 
@@ -735,7 +733,6 @@ object HudIcons : IonServerComponent() {
      * Event handler that updates HUD planets when a player teleports.
      * @param event PlayerTeleportEvent
      */
-    @Suppress("unused")
     @EventHandler
     private fun onPlayerTeleport(event: PlayerTeleportEvent) {
         Tasks.sync {

@@ -15,10 +15,13 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.features.nations.gui.anvilInput
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -27,7 +30,7 @@ import net.horizonsend.ion.server.features.progression.achievements.rewardAchiev
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
@@ -37,20 +40,23 @@ import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.aqua
 import net.horizonsend.ion.server.miscellaneous.utils.bold
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
-import net.horizonsend.ion.server.miscellaneous.utils.getNBTInt
-import net.horizonsend.ion.server.miscellaneous.utils.getNBTString
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import net.horizonsend.ion.server.miscellaneous.utils.red
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGetString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.utils.withNBTString
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.yellow
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.minecraft.core.component.DataComponentPatch
+import net.minecraft.core.component.DataComponents
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.item.component.CustomData
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.ShulkerBox
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
@@ -68,7 +74,6 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -166,32 +171,33 @@ object ShipmentManager : IonServerComponent() {
 	private fun MenuHelper.getPlanetItem(shipment: UnclaimedShipment): GuiItem {
 		val destinationTerritory: RegionTerritory = Regions[shipment.to.territoryId]
 		val destinationWorld = destinationTerritory.world
-		val planetId = destinationWorld.lowercase(Locale.getDefault()).replace(" ", "")
-		// TODO: When porting over planet icons, change the legacy uranium icon too
-		val planetIcon = CustomItems["planet_icon_$planetId"] ?: CustomItems.BATTERY_LARGE
-		return guiButton(planetIcon.itemStack(1))
+		val planetId = destinationWorld.uppercase(Locale.getDefault()).replace(" ", "")
+
+		val planetIcon = CustomItemRegistry.getByIdentifier(planetId)?.constructItemStack() ?: CustomItemRegistry.BATTERY_G.constructItemStack()
+		return guiButton(planetIcon)
 	}
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
-		player.anvilInput("Select amount of crates:".toComponent()) { _: Player, answer ->
-			val digit = answer.filter { it.isDigit() }
-			val amount = digit.toIntOrNull() ?: return@anvilInput "Amount must be an integer"
+		val playerMaxShipSize = StarshipType.entries.filter { it.typeCategory != TypeCategory.WAR_SHIP && it.canUse(player) && it != PLATFORM }
+			.sortedByDescending { it.maxSize }[0].maxSize
 
-			val playerMaxShipSize =
-				StarshipType.values().filter { !it.isWarship && it.canUse(player) && it != PLATFORM }
-					.sortedByDescending { it.maxSize }[0].maxSize
+		val min = balancing.generator.minShipmentSize
+		val max = min(balancing.generator.maxShipmentSize, (min(0.015 * playerMaxShipSize, sqrt(playerMaxShipSize.toDouble()))).toInt())
 
-			val min = balancing.generator.minShipmentSize
-			val max = min(
-				balancing.generator.maxShipmentSize,
-				(min(0.015 * playerMaxShipSize, sqrt(playerMaxShipSize.toDouble()))).toInt()
-			)
-			if (amount !in min..max) {
-				return@anvilInput "Amount must be between $min and $max"
-			}
+		player.anvilInputText(
+			prompt = "Select amount of crates:".toComponent(),
+			description = "Between $min and $max".toComponent(),
+			inputValidator = InputValidator { result ->
+				val amount = result.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(Component.text("Amount must be an integer"))
+				if (amount !in min..max) return@InputValidator ValidatorResult.FailureResult(Component.text("Amount must be between $min and $max"))
+
+				ValidatorResult.SuccessResult
+			},
+		) { answer ->
+			val amount = answer.toIntOrNull() ?: return@anvilInputText
 
 			giveShipment(player, shipment, amount)
-			return@anvilInput null
+			return@anvilInputText
 		}
 	}
 
@@ -509,11 +515,24 @@ object ShipmentManager : IonServerComponent() {
 	}
 
 	private fun withShipmentItemId(itemStack: ItemStack, shipmentId: String): ItemStack {
-		return itemStack.withNBTString("shipment_oid", shipmentId)
+		val nms = CraftItemStack.asNMSCopy(itemStack)
+
+		val nbt = CompoundTag()
+		nbt.putString("shipment_oid", shipmentId)
+
+		val new = DataComponentPatch.builder()
+			.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt))
+			.build()
+
+		nms.applyComponents(new)
+
+		return CraftItemStack.asBukkitCopy(nms)
 	}
 
 	fun getShipmentItemId(item: ItemStack): String? {
-		return item.getNBTString("shipment_oid") ?: item.getNBTInt("shipment_id")?.toString()
+		val nms = CraftItemStack.asNMSCopy(item)
+		val data = nms.components.get(DataComponents.CUSTOM_DATA) ?: return null
+		return data.copyTag().getString("shipment_id")
 	}
 
 	/**
@@ -571,8 +590,8 @@ object ShipmentManager : IonServerComponent() {
 		val inventory = (blockState as InventoryHolder).inventory
 
 		val baseItem = ItemStack(Material.PAPER, 1)
-			.setDisplayNameAndGet(CargoCrates[shipment.crate].name)
-			.setLoreAndGet(lore)
+			.updateDisplayName(CargoCrates[shipment.crate].name)
+			.setLoreAndGetString(lore)
 
 		val containerItem = withShipmentItemId(baseItem, shipmentId.toString())
 		inventory.addItem(containerItem)

@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
-import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
-import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
 import com.fastasyncworldedit.core.FaweAPI
 import com.sk89q.worldedit.EditSession
 import com.sk89q.worldedit.WorldEdit
@@ -14,20 +12,7 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
-import com.sk89q.worldedit.util.nbt.BinaryTag
-import com.sk89q.worldedit.util.nbt.ByteArrayBinaryTag
-import com.sk89q.worldedit.util.nbt.ByteBinaryTag
-import com.sk89q.worldedit.util.nbt.CompoundBinaryTag
-import com.sk89q.worldedit.util.nbt.DoubleBinaryTag
-import com.sk89q.worldedit.util.nbt.EndBinaryTag
-import com.sk89q.worldedit.util.nbt.FloatBinaryTag
-import com.sk89q.worldedit.util.nbt.IntArrayBinaryTag
-import com.sk89q.worldedit.util.nbt.IntBinaryTag
-import com.sk89q.worldedit.util.nbt.ListBinaryTag
-import com.sk89q.worldedit.util.nbt.LongArrayBinaryTag
-import com.sk89q.worldedit.util.nbt.LongBinaryTag
-import com.sk89q.worldedit.util.nbt.ShortBinaryTag
-import com.sk89q.worldedit.util.nbt.StringBinaryTag
+import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
@@ -43,10 +28,25 @@ import net.minecraft.nbt.LongArrayTag
 import net.minecraft.nbt.LongTag
 import net.minecraft.nbt.ShortTag
 import net.minecraft.nbt.StringTag
+import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
+import org.enginehub.linbus.tree.LinByteArrayTag
+import org.enginehub.linbus.tree.LinByteTag
+import org.enginehub.linbus.tree.LinCompoundTag
+import org.enginehub.linbus.tree.LinDoubleTag
+import org.enginehub.linbus.tree.LinFloatTag
+import org.enginehub.linbus.tree.LinIntArrayTag
+import org.enginehub.linbus.tree.LinIntTag
+import org.enginehub.linbus.tree.LinListTag
+import org.enginehub.linbus.tree.LinLongArrayTag
+import org.enginehub.linbus.tree.LinLongTag
+import org.enginehub.linbus.tree.LinShortTag
+import org.enginehub.linbus.tree.LinStringTag
+import org.enginehub.linbus.tree.LinTag
+import org.enginehub.linbus.tree.LinTagType
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -105,7 +105,7 @@ fun placeSchematicEfficiently(
 			if (blockData.material.isAir) {
 				continue
 			}
-			val blockKey = blockKey(vector.x, vector.y, vector.z)
+			val blockKey = blockKey(vector.x(), vector.y(), vector.z())
 			queue[blockKey] = blockData.nms
 		}
 
@@ -126,23 +126,20 @@ fun WorldEditBlockState.toBukkitBlockData(): BlockData {
 	}
 }
 
-fun CompoundBinaryTag.nms(): net.minecraft.nbt.CompoundTag {
+fun LinCompoundTag.nms(): net.minecraft.nbt.CompoundTag {
 	val base = net.minecraft.nbt.CompoundTag()
 
-
-	for ((key, tag) in this) {
-		val nmsTag = tag.nms()
-
-		base.put(key, nmsTag)
+	for (entry in this.value()) {
+		base.put(entry.key, entry.value.nms())
 	}
 
 	return base
 }
 
-fun ListBinaryTag.nms(): ListTag {
+fun LinListTag<*>.nms(): ListTag {
 	val base = ListTag()
 
-	for (tag in this) {
+	for (tag in this.value()) {
 		val nmsTag = tag.nms()
 
 		base.add(nmsTag)
@@ -151,21 +148,21 @@ fun ListBinaryTag.nms(): ListTag {
 	return base
 }
 
-fun BinaryTag.nms(): net.minecraft.nbt.Tag {
-	return when (this) {
-		is EndBinaryTag -> EndTag.INSTANCE
-		is ByteBinaryTag -> ByteTag.valueOf(this.value())
-		is ShortBinaryTag -> ShortTag.valueOf((this).value())
-		is IntBinaryTag -> IntTag.valueOf((this).value())
-		is LongBinaryTag -> LongTag.valueOf((this).value())
-		is FloatBinaryTag -> FloatTag.valueOf((this).value())
-		is DoubleBinaryTag -> DoubleTag.valueOf((this).value())
-		is ByteArrayBinaryTag -> ByteArrayTag((this).value())
-		is StringBinaryTag -> StringTag.valueOf((this).value())
-		is ListBinaryTag -> this.nms()
-		is CompoundBinaryTag -> this.nms()
-		is IntArrayBinaryTag -> IntArrayTag((this).value())
-		is LongArrayBinaryTag -> LongArrayTag((this).value())
+fun LinTag<*>.nms(): net.minecraft.nbt.Tag {
+	return when (this.type()) {
+		LinTagType.endTag() -> EndTag.INSTANCE
+		LinTagType.byteTag() -> ByteTag.valueOf((this as LinByteTag).value())
+		LinTagType.shortTag() -> ShortTag.valueOf((this as LinShortTag).value())
+		LinTagType.intTag() -> IntTag.valueOf((this as LinIntTag).value())
+		LinTagType.longTag() -> LongTag.valueOf((this as LinLongTag).value())
+		LinTagType.floatTag() -> FloatTag.valueOf((this as LinFloatTag).value())
+		LinTagType.doubleTag() -> DoubleTag.valueOf((this as LinDoubleTag).value())
+		LinTagType.byteArrayTag() -> ByteArrayTag((this as LinByteArrayTag).value())
+		LinTagType.stringTag() -> StringTag.valueOf((this as LinStringTag).value())
+		LinTagType.listTag<LinListTag<*>>() -> this.nms()
+		LinTagType.compoundTag() -> this.nms()
+		LinTagType.intArrayTag() -> IntArrayTag((this as LinIntArrayTag).value())
+		LinTagType.longArrayTag() -> LongArrayTag((this as LinLongArrayTag).value())
 		else -> throw IllegalArgumentException()
 	}
 }

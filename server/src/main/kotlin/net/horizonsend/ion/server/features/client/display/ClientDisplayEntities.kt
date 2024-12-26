@@ -10,12 +10,15 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
+import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.PositionMoveRotation
+import net.minecraft.world.entity.Relative
 import net.minecraft.world.entity.monster.Slime
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -61,8 +64,8 @@ object ClientDisplayEntities : IonServerComponent() {
         val player = bukkitPlayer.minecraft
         val conn = player.connection
 
-        conn.send(ClientboundAddEntityPacket(entity))
-        entity.entityData.refresh(player)
+        conn.send(getAddEntityPacket(entity))
+        entity.refreshEntityData(player)
     }
 
     /**
@@ -74,8 +77,8 @@ object ClientDisplayEntities : IonServerComponent() {
     fun sendEntityPacket(player: ServerPlayer, entity: net.minecraft.world.entity.Entity, duration: Long) {
         val conn = player.connection
 
-        conn.send(ClientboundAddEntityPacket(entity))
-        entity.entityData.refresh(player)
+        conn.send(getAddEntityPacket(entity))
+		entity.refreshEntityData(player)
 
         Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(entity.id)) }
     }
@@ -103,7 +106,7 @@ object ClientDisplayEntities : IonServerComponent() {
 
 		val conn = player.connection
 
-		conn.send(ClientboundTeleportEntityPacket(entity))
+		conn.send(ClientboundTeleportEntityPacket.teleport(entity.id, PositionMoveRotation.of(entity), setOf<Relative>(), entity.onGround))
 	}
 
     /**
@@ -117,7 +120,7 @@ object ClientDisplayEntities : IonServerComponent() {
 
         entity.setTransformation(transformation)
 
-        entity.entityData.refresh(player)
+		entity.refreshEntityData(player)
     }
 
     /**
@@ -131,7 +134,7 @@ object ClientDisplayEntities : IonServerComponent() {
 
         entity.setGlowingTag(glowing)
 
-        entity.entityData.refresh(player)
+		entity.refreshEntityData(player)
     }
 
     /**
@@ -201,8 +204,8 @@ object ClientDisplayEntities : IonServerComponent() {
 		blockData: BlockData,
 		pos: Vector,
 		scale: Float = 1.0f,
-		glow: Boolean = false
-    ): net.minecraft.world.entity.Display.BlockDisplay {
+		glow: Boolean = false,
+	): net.minecraft.world.entity.Display.BlockDisplay {
 
         val block = createBlockDisplay(level)
         val offset = (-scale / 2) + 0.5
@@ -255,9 +258,8 @@ object ClientDisplayEntities : IonServerComponent() {
 		pos: Vector,
 		scale: Float = 0.75f,
 	): net.minecraft.world.entity.Display.ItemDisplay {
-
 		val block = createItemDisplay(player)
-		block.itemStack = item
+		block.setItemStack(item)
 		block.isGlowing = true
 		val dir = player.location.clone().subtract(block.location).toVector()
 		block.location.setDirection(dir)
@@ -273,7 +275,6 @@ object ClientDisplayEntities : IonServerComponent() {
      * Handler that adds a new entry to the DisplayEntityData map when a player joins the server.
      * @param event PlayerJoinEvent
      */
-    @Suppress("unused")
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         map[event.player.uniqueId] = mutableMapOf()
@@ -283,7 +284,6 @@ object ClientDisplayEntities : IonServerComponent() {
      * Handler that removes an entry from the DisplayEntityData map when a player leaves the server.
      * @param event PlayerQuitEvent
      */
-    @Suppress("unused")
     @EventHandler
     fun onPlayerLeave(event: PlayerQuitEvent) {
         if (map[event.player.uniqueId] != null) {
@@ -381,4 +381,9 @@ object ClientDisplayEntities : IonServerComponent() {
      * @param viewDistance the distance at which the object is being rendered
      */
     fun viewDistanceFactor(viewDistance: Int) = (0.003125 * viewDistance).toFloat()
+
+
+	fun getAddEntityPacket(entity: net.minecraft.world.entity.Entity): ClientboundAddEntityPacket {
+		return ClientboundAddEntityPacket(entity, 0, BlockPos(entity.blockX, entity.blockY, entity.blockZ))
+	}
 }

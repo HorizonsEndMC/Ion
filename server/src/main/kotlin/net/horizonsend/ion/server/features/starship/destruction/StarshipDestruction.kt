@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.starship.destruction
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import net.horizonsend.ion.server.miscellaneous.utils.nms
@@ -52,20 +52,20 @@ object StarshipDestruction {
 		if (starship.isExploding) {
 			return
 		}
+
 		if (!StarshipExplodeEvent(starship).callEvent()) {
 			return
 		}
 
 		starship.isExploding = true
 
-		if (starship is ActiveControlledStarship) {
-			DeactivatedPlayerStarships.deactivateAsync(starship) {
-				DeactivatedPlayerStarships.destroyAsync(starship.data) {
-					destroyShip(starship)
-				}
+		val previousController = starship.controller
+
+		DeactivatedPlayerStarships.deactivateAsync(starship) {
+			DeactivatedPlayerStarships.destroyAsync(starship.data) {
+				StarshipSunkEvent(starship, previousController).callEvent()
+				destroyShip(starship)
 			}
-		} else {
-			destroyShip(starship)
 		}
 	}
 

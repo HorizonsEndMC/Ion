@@ -2,52 +2,19 @@ package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.gear.getPower
-import net.horizonsend.ion.server.features.gear.setPower
-import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.isBed
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
-import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
 object InteractListener : SLEventListener() {
 	// Put power into the sign if right clicking with a battery
-	@EventHandler
-	fun onPlayerInteractEventE(event: PlayerInteractEvent) {
-		if (event.action != Action.RIGHT_CLICK_BLOCK) return
-		if (CustomItems[event.item] !is CustomItems.BatteryItem) return
-
-		val sign = event.clickedBlock?.getState(false) as? Sign ?: return
-		val multiblock = Multiblocks[sign] as? PowerStoringMultiblock ?: return
-
-		event.isCancelled = true
-
-		val item = event.item ?: return
-
-		val power = getPower(item)
-		var powerToTransfer = power * item.amount
-		if (powerToTransfer == 0) return
-
-		val machinePower = PowerMachines.getPower(sign)
-		val maxMachinePower = multiblock.maxPower
-		if (maxMachinePower - machinePower < powerToTransfer) {
-			powerToTransfer = maxMachinePower - machinePower
-		}
-
-		setPower(item, power - powerToTransfer / item.amount)
-		PowerMachines.addPower(sign, powerToTransfer)
-	}
 
 	/*
 	// When not in creative mode, make breaking a custom item drop the proper drops
@@ -103,16 +70,5 @@ object InteractListener : SLEventListener() {
 				"Beds are disabled on this server! Use a cryopod instead"
 			)
 		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	fun onBlockPlace(event: BlockPlaceEvent) {
-		val player = event.player
-
-		val hand = event.hand
-		val itemStack = player.inventory.getItem(hand).clone()
-		val item: CustomBlockItem = CustomItems[itemStack] as? CustomBlockItem ?: return
-
-		event.block.location.block.setBlockData(item.customBlock.blockData, true)
 	}
 }

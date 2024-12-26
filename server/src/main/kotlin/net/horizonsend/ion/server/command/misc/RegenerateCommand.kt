@@ -35,8 +35,8 @@ import net.minecraft.nbt.NbtOps
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.PalettedContainer
-import net.minecraft.world.level.chunk.storage.ChunkSerializer
 import net.minecraft.world.level.chunk.storage.RegionFile
+import net.minecraft.world.level.chunk.storage.SerializableChunkData
 import org.bukkit.World
 import org.bukkit.entity.Player
 import java.io.File
@@ -47,10 +47,8 @@ object RegenerateCommand : SLCommand() {
 	// The worlds in this folder are stripped down versions of worlds. Basically just renamed region folders
 	private val cleanWorldsFolder: File = IonServer.dataFolder.resolve("worlds")
 	private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-	private val blockStateCodec = ChunkSerializer.BLOCK_STATE_CODEC
 
 	@Subcommand("terrain")
-	@Suppress("unused")
 	fun onRegenerateTerrain(sender: Player) {
 		val selection = sender.getSelection() ?: return sender.userError("You must make a selection!")
 
@@ -62,47 +60,47 @@ object RegenerateCommand : SLCommand() {
 		val time = System.currentTimeMillis()
 
 		val sections = mutableMapOf<Triple<Int, Int, Int>, CompletableDeferred<Pair<ChunkPos, CompletedSection>>>()
-		val sectionsHeight = IntRange(selection.minimumPoint.y.shr(4), selection.maximumPoint.y.shr(4))
+		val sectionsHeight = IntRange(selection.minimumPoint.y().shr(4), selection.maximumPoint.y().shr(4))
 
 		// Group by string first to avoid getting the region dozens of times
 		val regionsToChunksMap = selection.chunks.groupBy {
-			val regionX = it.x.shr(5)
-			val regionZ = it.z.shr(5)
+			val regionX = it.x().shr(5)
+			val regionZ = it.z().shr(5)
 
 			"r.$regionX.$regionZ.mca"
 		}
 
 		for (chunk in selection.chunkCubes) {
-			sections[Triple(chunk.x, chunk.y, chunk.z)] = CompletableDeferred()
+			sections[Triple(chunk.x(), chunk.y(), chunk.z())] = CompletableDeferred()
 		}
 
 		for ((regionFile, chunks) in regionsToChunksMap) {
 			scope.launch {
 				val region = getRegion(world, regionFile) ?: return@launch sender.serverError(
-					"Region file ${chunks.first().x.shr(5)}, ${chunks.first().z.shr(5)} doesn't exist!"
+					"Region file ${chunks.first().x().shr(5)}, ${chunks.first().z().shr(5)} doesn't exist!"
 				)
 
 				for (chunk in chunks) scope.launch chunk@{
 					fun removeDeferredChunkSections() {
-						val chunkSections = sections.filterKeys { it.first == chunk.x && it.third == chunk.z }
+						val chunkSections = sections.filterKeys { it.first == chunk.x() && it.third == chunk.z() }
 
 						for ((location, _) in chunkSections) {
 							sections.remove(location)
 						}
 					}
 
-					val chunkPos = ChunkPos(chunk.x, chunk.z)
+					val chunkPos = ChunkPos(chunk.x(), chunk.z())
 
 					if (!region.doesChunkExist(chunkPos)) {
 						removeDeferredChunkSections()
-						sender.serverError("Chunk [${chunk.x}, ${chunk.z}] was not in Region file ${chunks.first().x.shr(5)}! Skipping.")
+						sender.serverError("Chunk [${chunk.x()}, ${chunk.z()}] was not in Region file ${chunks.first().x().shr(5)}! Skipping.")
 						return@chunk
 					}
 
 					val chunkData = region.getChunkDataInputStream(chunkPos)?.let { NbtIo.read(it) }
 
 					if (chunkData == null) {
-						sender.serverError("Chunk [${chunk.x}, ${chunk.z}] could not be read from Region file ${chunks.first().x.shr(5)}! Skipping.")
+						sender.serverError("Chunk [${chunk.x()}, ${chunk.z()}] could not be read from Region file ${chunks.first().x().shr(5)}! Skipping.")
 						removeDeferredChunkSections()
 						return@chunk
 					}
@@ -113,7 +111,7 @@ object RegenerateCommand : SLCommand() {
 
 					section@
 					for (sectionY in sectionsHeight) {
-						val sectionPos = Triple(chunk.x, sectionY, chunk.z)
+						val sectionPos = Triple(chunk.x(), sectionY, chunk.z())
 						val storedSection = sectionsList[sectionY.toByte()]
 
 						if (storedSection == null) {
@@ -124,12 +122,12 @@ object RegenerateCommand : SLCommand() {
 
 						val deferred = sections[sectionPos]!! // I hope not
 
-						val dataResult = blockStateCodec.parse(NbtOps.INSTANCE, storedSection.getCompound("block_states"))
+						val dataResult = SerializableChunkData.BLOCK_STATE_CODEC.parse(NbtOps.INSTANCE, storedSection.getCompound("block_states"))
 
-						val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState?>>).getOrThrow(false) {
+						val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState?>>).ifError {
 							sender.serverError("Error reading section blocks: $it")
-							log.warn(it)
-						}
+							log.warn(it.message())
+						}.getOrThrow()
 
 						regenerateSection(sender, sectionY, chunkPos, sectionBlocks, deferred, selection)
 					}
@@ -206,14 +204,14 @@ object RegenerateCommand : SLCommand() {
 		if (!region.exists()) return null
 
 		try {
-			return RegionFile(region.resolve(regionFileName).toPath(), region.toPath(), false)
+			val regionKey = world.minecraft.chunkSource.chunkMap.storageInfo()
+			return RegionFile(regionKey, region.resolve(regionFileName).toPath(), region.toPath(), false)
 		} catch (error: Error) {
 			throw error
 		}
 	}
 
 	@Subcommand("ores")
-	@Suppress("unused")
 	fun onRegenerateOres(sender: Player) {
 		val selection = sender.getSelection() ?: fail { "You must make a selection!" }
 
@@ -224,8 +222,8 @@ object RegenerateCommand : SLCommand() {
 		feedback.information("Regenerating ores")
 		val chunks = region.chunks
 		val deferredChunks = chunks.map { pos ->
-			val x = pos.x
-			val z = pos.z
+			val x = pos.x()
+			val z = pos.z()
 
 			world.getChunkAtAsync(x, z)
 		}
@@ -270,7 +268,6 @@ object RegenerateCommand : SLCommand() {
 	}
 
 	@Subcommand("all")
-	@Suppress("unused")
 	fun onRegenerateAll(sender: Player) {
 		val selection = sender.getSelection() ?: return sender.userError("You must make a selection!")
 
