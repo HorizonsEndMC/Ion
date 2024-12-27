@@ -42,11 +42,12 @@ class Listener<E: Event, T: CustomItem>(
 		 **/
 		inline fun <reified T: CustomItem> rightClickListener(
 			customItem: T,
+			crossinline additionalPreCheck: (PlayerInteractEvent) -> Boolean = { true },
 			noinline handleEvent: (PlayerInteractEvent, T, ItemStack) -> Unit
 		): Listener<PlayerInteractEvent, T> = Listener(
 			customItem,
 			PlayerInteractEvent::class,
-			preCheck = { event, _, _ -> event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK },
+			preCheck = { event, _, _ -> (event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK) && additionalPreCheck.invoke(event) },
 			handleEvent
 		)
 
@@ -55,11 +56,12 @@ class Listener<E: Event, T: CustomItem>(
 		 **/
 		inline fun <reified T: CustomItem> leftClickListener(
 			customItem: T,
+			crossinline additionalPreCheck: (PlayerInteractEvent) -> Boolean = { true },
 			noinline handleEvent: (PlayerInteractEvent, T, ItemStack) -> Unit
 		): Listener<PlayerInteractEvent, T> = Listener(
 			customItem,
 			PlayerInteractEvent::class,
-			preCheck = { event, _, _ -> event.action == Action.LEFT_CLICK_AIR || event.action == Action.LEFT_CLICK_BLOCK },
+			preCheck = { event, _, _ -> (event.action == Action.LEFT_CLICK_AIR || event.action == Action.LEFT_CLICK_BLOCK) && additionalPreCheck.invoke(event) },
 			handleEvent
 		)
 

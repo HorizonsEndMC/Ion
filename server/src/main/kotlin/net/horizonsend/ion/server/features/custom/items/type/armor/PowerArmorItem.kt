@@ -67,8 +67,10 @@ class PowerArmorItem(
 		addComponent(POWER_STORAGE, PowerStorage(50000, 0, true))
 		addComponent(MOD_MANAGER, ModManager(maxMods = 1))
 
-		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@PowerArmorItem) { event, _, item ->
-			if (!event.player.isSneaking) return@rightClickListener
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(
+			this@PowerArmorItem,
+			additionalPreCheck = { it.player.isSneaking }
+		) { event, _, item ->
 			val modManger = getComponent(MOD_MANAGER)
 			modManger.openMenu(event.player, this@PowerArmorItem, item)
 		})
