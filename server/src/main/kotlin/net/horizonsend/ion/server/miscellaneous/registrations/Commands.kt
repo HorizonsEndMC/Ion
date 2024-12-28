@@ -55,7 +55,7 @@ import net.horizonsend.ion.server.command.nations.settlementZones.SettlementZone
 import net.horizonsend.ion.server.command.progression.AdvanceAdminCommand
 import net.horizonsend.ion.server.command.progression.BuyXPCommand
 import net.horizonsend.ion.server.command.progression.XPCommand
-import net.horizonsend.ion.server.command.qol.BlastResistanceCommand
+import net.horizonsend.ion.server.command.qol.BlockStatsCommand
 import net.horizonsend.ion.server.command.qol.CalcExpCommand
 import net.horizonsend.ion.server.command.qol.CheckCryoCommand
 import net.horizonsend.ion.server.command.qol.CheckProtectionCommand
@@ -162,7 +162,7 @@ val commands: List<SLCommand> = listOf(
 	RemoveGhostShipCommand,
 
 	AchievementsCommand,
-	BlastResistanceCommand,
+	BlockStatsCommand,
 	SidebarCommand,
 	SidebarContactsCommand,
 	SidebarWaypointsCommand,

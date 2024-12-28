@@ -144,7 +144,7 @@ object GameplayTweaks : IonServerComponent() {
 
 		val block = CraftMagicNumbers.getBlock(material)
 
-		val field = BlockBehaviour::class.java.getDeclaredField("explosionResistance") // obfuscation for explosionResistance
+		val field = BlockBehaviour::class.java.getDeclaredField("explosionResistance")
 		field.isAccessible = true
 		field.set(block, resistance)
 
@@ -157,10 +157,10 @@ object GameplayTweaks : IonServerComponent() {
 			field.set(baseBlock, resistance)
 		}
 
-		// ignore if overridden
-		if (Mass[material] != material.blastResistance * Mass.BLAST_RESIST_MASS_MULTIPLIER) {
-			return
-		}
+//		// ignore if overridden
+//		if (Mass[material] != material.blastResistance * Mass.BLAST_RESIST_MASS_MULTIPLIER) {
+//			return
+//		}
 
 		Mass[material] = resistance * Mass.BLAST_RESIST_MASS_MULTIPLIER
 	}
