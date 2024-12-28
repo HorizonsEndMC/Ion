@@ -38,7 +38,7 @@ object NationsBalancing : IonServerComponent() {
 
 		@Serializable
 		data class Stations(
-			val radius: Int = 500,
+			val radius: Int = 1000,
 			val siegeMinDuration: Long = 25,
 			val siegeMaxDuration: Long = 60,
 			val siegeCost: Int = 1000,
