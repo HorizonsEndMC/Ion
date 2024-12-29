@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source.PLAYER
 import net.kyori.adventure.sound.Sound.sound
@@ -170,6 +171,7 @@ open class Blaster<T : Balancing>(
 		ammoComponent.setAmmo(itemStack, this, ammo - 1)
 
 		(livingEntity as? Player)?.setCooldown(itemStack.type, (balancing.timeBetweenShots - 1).coerceAtLeast(0))
+		sendActionBarAmmo(livingEntity, ammo - 1)
 
 		return true
 	}
@@ -215,8 +217,8 @@ open class Blaster<T : Balancing>(
 
 		ammoComponent.setAmmo(blasterItem, this, ammo)
 
-		livingEntity.sendActionBar(template(text("Ammo: {0} / {1}", RED), ammo.coerceIn(0, balancing.capacity), balancing.capacity))
 		if (ammo <= 0) livingEntity.playSound(sound(key("minecraft:block.iron_door.open"), PLAYER, 5f, 2.00f))
+		sendActionBarAmmo(livingEntity, ammo)
 
 		// Start reload
 		livingEntity.world.playSound(balancing.soundReloadStart.sound, livingEntity)
@@ -231,5 +233,9 @@ open class Blaster<T : Balancing>(
 		if (entity !is Player) return Color.RED // Not Player
 		SLPlayer[entity.uniqueId]?.nation?.let { return fromRGB(NationCache[it].color) } // Nation
 		return Color.RED // Not Player
+	}
+
+	fun sendActionBarAmmo(audience: Audience, count: Int) {
+		audience.sendActionBar(template(text("Ammo: {0} / {1}", RED), count.coerceIn(0, balancing.capacity), balancing.capacity))
 	}
 }
