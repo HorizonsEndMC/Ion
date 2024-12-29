@@ -22,6 +22,7 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStat
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -61,9 +62,33 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.setValue
+import java.time.Duration
+import java.util.UUID
 
 @CommandAlias("spacestation|nspacestation|nstation|sstation|station|nationspacestation")
 object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
+
+	private val lastStationFormedTimeMs = mutableMapOf<UUID, Long>()
+	private val STATION_FORMATION_COOLDOWN = Duration.ofMinutes(30L)
+
+	/**
+	 * Checks if the player is in station creation cooldown
+	 * @return true if the player has formed a station within STATION_FORMATION_COOLDOWN false otherwise
+	 * @param player the player to check the station creation cooldown
+	 */
+	private fun checkStationCreationCooldown(player: Player): Boolean {
+		val lastTime = lastStationFormedTimeMs[player.uniqueId]
+		return lastTime != null && System.currentTimeMillis() < lastTime + STATION_FORMATION_COOLDOWN.toMillis()
+	}
+
+	/**
+	 * Records the time that a player created a station
+	 * @param player the player to set the station creation cooldown
+	 */
+	private fun setStationCreationCooldown(player: Player) {
+		lastStationFormedTimeMs[player.uniqueId] = System.currentTimeMillis()
+	}
+
 	private fun formatSpaceStationMessage(message: String, vararg params: Any) = template(
 		text(message, GRAY),
 		paramColor = AQUA,
@@ -203,10 +228,17 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("create nation")
     fun createNation(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+		if (checkStationCreationCooldown(sender)) {
+			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() - 
+					lastStationFormedTimeMs[sender.uniqueId]!!).toMinutes()} minutes before you can claim another station")
+			return
+		}
+
 		val nation: Oid<Nation> = requireNationIn(sender)
 		requireNationPermission(sender, nation, SpaceStationCache.SpaceStationPermission.CREATE_STATION.nation)
 
 		create(sender, name, radius, cost, nation, NationSpaceStation.Companion)
+		setStationCreationCooldown(sender)
 
 		Notify.chatAndEvents(formatSpaceStationMessage(
 			"{0} established space station {1}, for their nation, {2}, in {3}",
@@ -219,10 +251,17 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("create settlement")
     fun createSettlement(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+		if (checkStationCreationCooldown(sender)) {
+			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() -
+					lastStationFormedTimeMs[sender.uniqueId]!!).toMinutes()} minutes before you can claim another station")
+			return
+		}
+
 		val nation: Oid<Settlement> = requireSettlementIn(sender)
 		requireSettlementPermission(sender, nation, SpaceStationCache.SpaceStationPermission.CREATE_STATION.settlement)
 
 		create(sender, name, radius, cost, nation, SettlementSpaceStation.Companion)
+		setStationCreationCooldown(sender)
 
 		Notify.chatAndEvents(formatSpaceStationMessage(
 			"{0} established space station {1}, for their settlement, {2}, in {3}",
@@ -235,7 +274,14 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("create personal")
     fun createPersonal(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+		if (checkStationCreationCooldown(sender)) {
+			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() - 
+					lastStationFormedTimeMs[sender.uniqueId]!!).toMinutes()} minutes before you can claim another station")
+			return
+		}
+
 		create(sender, name, radius, cost, sender.slPlayerId, PlayerSpaceStation.Companion)
+		setStationCreationCooldown(sender)
 
 		Notify.chatAndEvents(formatSpaceStationMessage(
 			"{0} established the personal space station {1} in {2}",
