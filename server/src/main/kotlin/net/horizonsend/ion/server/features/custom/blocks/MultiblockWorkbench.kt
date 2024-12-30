@@ -24,7 +24,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
-import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -53,7 +52,8 @@ object MultiblockWorkbench : InteractableCustomBlock(
 ) {
 	private val cooldown = PerPlayerCooldown(5L, TimeUnit.MILLISECONDS)
 
-	val multiblocks = MultiblockRegistration.getAllMultiblocks().toList()
+	// Initalized before multiblocks are registered
+	val multiblocks by lazy { MultiblockRegistration.getAllMultiblocks().toList() }
 	private var multiblockIndex = 0
 	private val currentMultiblock get() = multiblocks[multiblockIndex]
 
@@ -114,6 +114,8 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		}
 
 		private fun setGuiOverlay(view: InventoryView) {
+			println(multiblocks.size)
+
 			val text = GuiText("Multiblock Workbench")
 				.setSlotOverlay(
 					"# # # # # # # # #",
@@ -217,7 +219,7 @@ object MultiblockWorkbench : InteractableCustomBlock(
 			TextInputMenu(
 				player,
 				text("Search by Multiblock Name"),
-				empty(),
+				text("Top result is selected"),
 				backButtonHandler = {
 					this.open()
 					isSearching = false
