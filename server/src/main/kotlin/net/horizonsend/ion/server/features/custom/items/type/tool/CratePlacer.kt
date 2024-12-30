@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomItemComp
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
-import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager.getShipmentItemId
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -20,7 +19,6 @@ import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.ListTag
-import net.minecraft.nbt.StringTag
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -105,15 +103,11 @@ object CratePlacer : CustomItem(
 			boxEntity.customName(item.itemMeta.displayName())
 			boxEntity.update()
 
-			// Add the raw nms tag for shipment id
-			val id = getShipmentItemId(item)
 			val entity = (target.state as CraftShulkerBox).tileEntity
 			val chunk = entity.location.chunk.minecraft
+
 			// Save the full compound tag
 			val base = entity.saveWithFullMetadata(player.world.minecraft.registryAccess())
-
-			//incomplete crates dont have shipment ids
-			if (id != null) base.put("shipment_oid", StringTag.valueOf(id))
 
 			val items = ListTag()
 			items.add(itemNBT)

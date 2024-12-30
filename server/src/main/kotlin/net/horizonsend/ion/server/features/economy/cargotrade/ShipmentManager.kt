@@ -9,8 +9,11 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -31,6 +34,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.TypeCategory
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
@@ -46,26 +50,20 @@ import net.horizonsend.ion.server.miscellaneous.utils.red
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGetString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
-import net.horizonsend.ion.server.miscellaneous.utils.yellow
+import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.minecraft.core.component.DataComponentPatch
-import net.minecraft.core.component.DataComponents
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.item.component.CustomData
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.ShulkerBox
-import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
 import java.time.Instant
@@ -288,7 +286,7 @@ object ShipmentManager : IonServerComponent() {
 			.toSet()
 
 		if (detectedShipments.isEmpty()) {
-			player action yellow("No cargo crates with a mission in your inventory to import!")
+			player.userErrorAction("No cargo crates with a mission in your inventory to import!")
 			return
 		}
 
@@ -317,7 +315,7 @@ object ShipmentManager : IonServerComponent() {
 					val delivery = deliveries[shipmentId] ?: continue
 
 					if (delivery.newDeliveredCrates >= delivery.totalCrates) {
-						player msg "&cCan't sell more crates than total crates!"
+						player.userError("Can't sell more crates than total crates!")
 						break
 					}
 
@@ -401,9 +399,7 @@ object ShipmentManager : IonServerComponent() {
 				val siegeBonusPercent = capturedStationCount * 5
 				val siegeBonus = totalRevenue * siegeBonusPercent / 100
 
-				player.information(
-					"Received $siegeBonusPercent% (C$siegeBonus) bonus from $capturedStationCount captured stations."
-				)
+				player.information("Received $siegeBonusPercent% (C$siegeBonus) bonus from $capturedStationCount captured stations.")
 
 				totalRevenue += siegeBonus
 
@@ -433,9 +429,7 @@ object ShipmentManager : IonServerComponent() {
 				Settlement.deposit(settlementId, tax)
 				Notify.settlementCrossServer(
 					settlementId = settlementId,
-					message = MiniMessage.miniMessage().deserialize(
-						"<gold>Your settlement received <yellow>${tax.toCreditsString()} <gold>from <aqua>$playerName's <gold>completion of a shipment to it."
-					)
+					message = miniMessage.deserialize("<gold>Your settlement received <yellow>${tax.toCreditsString()} <gold>from <aqua>$playerName's <gold>completion of a shipment to it.")
 				)
 			}
 		}
@@ -514,25 +508,12 @@ object ShipmentManager : IonServerComponent() {
 		}
 	}
 
-	private fun withShipmentItemId(itemStack: ItemStack, shipmentId: String): ItemStack {
-		val nms = CraftItemStack.asNMSCopy(itemStack)
-
-		val nbt = CompoundTag()
-		nbt.putString("shipment_oid", shipmentId)
-
-		val new = DataComponentPatch.builder()
-			.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt))
-			.build()
-
-		nms.applyComponents(new)
-
-		return CraftItemStack.asBukkitCopy(nms)
+	private fun withShipmentItemId(itemStack: ItemStack, shipmentId: String): ItemStack = itemStack.updatePersistentDataContainer {
+		set(NamespacedKeys.CARGO_CRATE, PersistentDataType.STRING, shipmentId)
 	}
 
 	fun getShipmentItemId(item: ItemStack): String? {
-		val nms = CraftItemStack.asNMSCopy(item)
-		val data = nms.components.get(DataComponents.CUSTOM_DATA) ?: return null
-		return data.copyTag().getString("shipment_id")
+		return item.persistentDataContainer.get(NamespacedKeys.CARGO_CRATE, PersistentDataType.STRING)
 	}
 
 	/**
@@ -587,14 +568,17 @@ object ShipmentManager : IonServerComponent() {
 
 		val itemMeta = itemStack.itemMeta as BlockStateMeta
 		val blockState = itemMeta.blockState
-		val inventory = (blockState as InventoryHolder).inventory
+		val inventory = (blockState as ShulkerBox).inventory
 
 		val baseItem = ItemStack(Material.PAPER, 1)
 			.updateDisplayName(CargoCrates[shipment.crate].name)
 			.setLoreAndGetString(lore)
+			.updatePersistentDataContainer { set(NamespacedKeys.CARGO_CRATE, PersistentDataType.STRING, shipmentId.toString()) }
 
 		val containerItem = withShipmentItemId(baseItem, shipmentId.toString())
 		inventory.addItem(containerItem)
+
+		blockState.persistentDataContainer.set(NamespacedKeys.CARGO_CRATE, PersistentDataType.STRING, shipmentId.toString())
 
 		itemMeta.blockState = blockState
 		itemStack.itemMeta = itemMeta
