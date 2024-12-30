@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemContainerContents
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.loadFromData
@@ -21,6 +23,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
@@ -85,7 +88,7 @@ object PrePackaged {
 		return obstructed
 	}
 
-	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: Inventory?, entityData: PersistentMultiblockData?) {
+	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: List<ItemStack>?, entityData: PersistentMultiblockData?) {
 		val requirements = multiblock.shape.getRequirementMap(direction)
 		val placements = mutableMapOf<Block, BlockData>()
 
@@ -102,7 +105,6 @@ object PrePackaged {
 
 			if (itemSource != null) {
 				itemSource
-					.filterNotNull()
 					.firstOrNull { requirement.itemRequirement.itemCheck(it) }
 					?.let {
 						usedItem = it.clone()
@@ -125,7 +127,7 @@ object PrePackaged {
 			val placement = if (usedItem == null) {
 				requirement.example.clone()
 			} else {
-				requirement.itemRequirement.toBlock.invoke(usedItem!!)
+				requirement.itemRequirement.toBlock.invoke(usedItem)
 			}
 
 			requirement.executePlacementModifications(placement, direction)
@@ -140,7 +142,7 @@ object PrePackaged {
 		}
 
 		if (multiblock is SignlessStarshipWeaponMultiblock<*>) return
-		val signItem: ItemStack? = itemSource?.contents?.firstOrNull { it?.type?.isSign == true }
+		val signItem: ItemStack? = itemSource?.firstOrNull { it.type.isSign == true }
 
 		// If there is an item source but no sign then there is not one available
 		if (itemSource != null && signItem == null) return
@@ -241,15 +243,11 @@ object PrePackaged {
 
 	fun createPackagedItem(availableItems: List<ItemStack>, multiblock: Multiblock): ItemStack {
 		val base = PackagedMultiblock.createFor(multiblock)
-		return base.updateMeta {
-			it as BlockStateMeta
 
-			@Suppress("UnstableApiUsage")
-			val newState = Material.CHEST.createBlockData().createBlockState() as Chest
-			packageFrom(availableItems, multiblock, newState.inventory)
+		@Suppress("UnstableApiUsage") val newState = Material.CHEST.createBlockData().createBlockState() as Chest
+		packageFrom(availableItems, multiblock, newState.inventory)
 
-			it.blockState = newState
-		}
+		return base.updateData(DataComponentTypes.CONTAINER, ItemContainerContents.containerContents(newState.inventory.contents.toList()))
 	}
 
 	/**
