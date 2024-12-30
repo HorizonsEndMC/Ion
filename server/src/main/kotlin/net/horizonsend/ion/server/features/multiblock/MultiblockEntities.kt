@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock
 
-import org.bukkit.block.Sign as SignState
-import org.bukkit.block.data.type.WallSign as SignData
 import com.destroystokyo.paper.event.server.ServerTickEndEvent
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -20,6 +18,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.World
 import org.bukkit.block.Block
+import org.bukkit.block.Sign as SignState
+import org.bukkit.block.data.type.WallSign as SignData
 import org.bukkit.event.EventHandler
 
 /**
@@ -135,15 +135,16 @@ object MultiblockEntities : SLEventListener() {
 	fun onTickEnd(event: ServerTickEndEvent) {
 		if (event.timeRemaining < 0) return
 
-		val sorted = MultiblockTicking.getAllMultiblockManagers()
-		for (manager in sorted) {
-			if (manager.getSignUnsavedTime() < 5000L) continue
+		MultiblockTicking.iterateManagers { manager ->
+			if (manager.getSignUnsavedTime() < 5000L) return@iterateManagers
 
 			for (keyEntity in manager.getAllMultiblockEntities()) {
 				if (event.timeRemaining < 0) return
 				keyEntity.value.saveToSign()
 			}
+
 			manager.markSignSaved()
 		}
+
 	}
 }
