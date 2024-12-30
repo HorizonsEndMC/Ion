@@ -325,13 +325,13 @@ object CustomItemRegistry : IonServerComponent() {
 	val PACKAGED_MULTIBLOCK = register(PackagedMultiblock)
 	val MULTIBLOCK_WORKBENCH = register(CustomBlockItem(
 		identifier = "MULTIBLOCK_WORKBENCH",
-		displayName = text("Multiblock Workbench").itemName,
-		customModel = "misc/multiblock_workbench"
+		displayName = text("Multiblock Workbench"),
+		customModel = "tool/multiblock_workbench"
 	) { CustomBlocks.MULTIBLOCK_WORKBENCH })
 
 	val WRENCH = register(Wrench)
 
-	val FLUID_FILTER: TransportFilterItem = register(TransportFilterItem("FLUID_FILTER", text("Fluid Filter").itemName) { FilterBlocks.FLUID_FILTER })
+	val FLUID_FILTER: TransportFilterItem = register(TransportFilterItem("FLUID_FILTER", text("Fluid Filter")) { FilterBlocks.FLUID_FILTER })
 
 	private fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
 		text("$tierName ", tierColor),
