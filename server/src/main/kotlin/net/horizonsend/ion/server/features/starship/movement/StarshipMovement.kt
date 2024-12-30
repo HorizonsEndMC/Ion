@@ -82,7 +82,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 
 		if (displaceY(starship.max.y) >= world1.maxHeight) {
-			if (playerShip != null && exitPlanet(world1, playerShip)) {
+			if (playerShip != null && playerShip.type != StarshipType.SPEEDER && exitPlanet(world1, playerShip)) {
 				starship.information("Exiting Planet")
 				return
 			}
