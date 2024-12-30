@@ -49,9 +49,9 @@ object MultiblockTicking : IonServerComponent() {
 		}
 	}
 
-	fun iterateManagers(task: (MultiblockManager) -> Unit) {
+	inline fun iterateManagers(task: (MultiblockManager) -> Unit) {
 		@Suppress("UNCHECKED_CAST")
-		val clone = managers.clone() as ArrayList<MultiblockManager>
+		val clone = getAllMultiblockManagers().clone() as ArrayList<MultiblockManager>
 
 		clone.forEach(task)
 	}
