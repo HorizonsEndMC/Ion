@@ -61,6 +61,7 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		val player = event.player
 		event.isCancelled = true
 
+		// Prevent the double firing of player interact events
 		cooldown.tryExec(player) { openMenu(player, block.location.toCenterLocation()) }
 	}
 
