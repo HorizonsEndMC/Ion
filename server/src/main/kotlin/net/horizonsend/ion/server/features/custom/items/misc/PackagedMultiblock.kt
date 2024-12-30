@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.misc
 
+import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -20,12 +21,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.block.Chest
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.BlockStateMeta
 import java.util.Locale
 
 object PackagedMultiblock : CustomItem(
@@ -63,7 +62,7 @@ object PackagedMultiblock : CustomItem(
 			return
 		}
 
-		val inventory = ((itemStack.itemMeta as? BlockStateMeta)?.blockState as? Chest)?.inventory ?: return livingEntity.userError("The packaged multiblock has no data!")
+		val contents = itemStack.getData(DataComponentTypes.CONTAINER) ?: return livingEntity.userError("The packaged multiblock has no data!")
 
 		val direction = livingEntity.facing
 		val origin = PrePackaged.getOriginFromPlacement(
@@ -82,14 +81,14 @@ object PackagedMultiblock : CustomItem(
 
 		val entityData = itemStack.itemMeta.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData)
 
-		runCatching { PrePackaged.place(livingEntity, origin, livingEntity.facing, packagedData, inventory, entityData) }.onFailure {
+		runCatching { PrePackaged.place(livingEntity, origin, livingEntity.facing, packagedData, contents.contents(), entityData) }.onFailure {
 			livingEntity.information("ERROR: $it")
 			it.printStackTrace()
 		}.onSuccess {
 			// Drop remaining items in packaged multi
 			val dropLocation = origin.getRelative(direction.oppositeFace).location.toCenterLocation()
 
-			for (item in inventory.contents.filterNotNull()) {
+			for (item in contents.contents().filterNotNull()) {
 				livingEntity.world.dropItem(dropLocation, item)
 			}
 		}
