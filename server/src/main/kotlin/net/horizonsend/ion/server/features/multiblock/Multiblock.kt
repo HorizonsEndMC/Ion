@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isValidYLevel
+import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.kyori.adventure.text.Component
@@ -91,7 +91,7 @@ abstract class Multiblock {
 		for (i in 0..3) {
 			val text = signText[i]
 			if (text != null) {
-				sign.line(i, text)
+				sign.front().line(i, text)
 			}
 		}
 
@@ -110,13 +110,9 @@ abstract class Multiblock {
 		)
 	}
 
-	protected open fun onTransformSign(player: Player, sign: Sign) {}
-
-	companion object {
-		fun getOrigin(sign: Sign): Vec3i {
-			val face = sign.getFacing()
-
-			return Vec3i(sign.location).minus(Vec3i(face.modX, 0, face.modZ))
-		}
+	protected fun createSignText(line1: Component?, line2: Component?, line3: Component?, line4: Component?): Array<Component?> {
+		return arrayOf(line1, line2, line3, line4)
 	}
+
+	protected open fun onTransformSign(player: Player, sign: Sign) {}
 }
