@@ -41,6 +41,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERG
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_PURPLE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_RED
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_YELLOW
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENERGY_SWORD_BLACK
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENRICHED_URANIUM
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ENRICHED_URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.EXTENDED_BAR
@@ -205,6 +206,7 @@ import org.bukkit.Material.STRING
 import org.bukkit.Material.TRIPWIRE_HOOK
 import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
+import org.bukkit.Material.WITHER_ROSE
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.FurnaceRecipe
@@ -790,6 +792,7 @@ object Crafting : IonServerComponent() {
 		registerSwordRecipes(ENERGY_SWORD_PURPLE, ExactChoice(CHETHERITE.constructItemStack()))
 		registerSwordRecipes(ENERGY_SWORD_ORANGE, RecipeChoice.MaterialChoice(COPPER_INGOT))
 		registerSwordRecipes(ENERGY_SWORD_PINK, RecipeChoice.MaterialChoice(PINK_TULIP))
+		registerSwordRecipes(ENERGY_SWORD_BLACK, RecipeChoice.MaterialChoice(WITHER_ROSE))
 	}
 
 	// Different names due to signature problems from type erasure
