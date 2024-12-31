@@ -172,7 +172,7 @@ class CachedPlayerSpaceStation(
 	override val ownerName = Bukkit.getPlayer(owner.uuid)?.name ?: SLPlayer.getName(owner) ?: error("No such player $owner")
 	override val ownershipType: String = "Player"
 
-	override val color: Int = Color.WHITE.asRGB()
+	override val color: Int = Color.BLUE.asRGB()
 
 	override fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission) = owner == player
 
