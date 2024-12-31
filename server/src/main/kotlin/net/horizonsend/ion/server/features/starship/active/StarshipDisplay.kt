@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
@@ -73,7 +74,7 @@ object StarshipDisplay : IonServerComponent(true) {
 		if (starship.isInterdicting) {
 			circles.add(CircleInfo(
 				"gravity_well",
-				starship.balancing.interdictionRange,
+				Interdiction.starshipInterdictionRangeEquation(starship).toInt(),
 				Color.fromRGB(128, 128, 128)
 			))
 		}

@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpace
 import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
+import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.LastPilotedStarship
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -422,7 +423,7 @@ object ContactsSidebar {
                             autoTurretTextComponent(currentStarship, starship)
                         } else empty(),
                         if (starship.isInterdicting) {
-                            interdictionTextComponent(interdictionDistance, starship.balancing.interdictionRange, true)
+                            interdictionTextComponent(interdictionDistance, Interdiction.starshipInterdictionRangeEquation(starship).toInt(), true)
                         } else empty(),
                         if (inFleet) {
                             if (fleet != null && otherPlayer != null && fleet.leaderId == otherPlayer.uniqueId) {
