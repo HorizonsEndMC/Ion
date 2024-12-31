@@ -69,6 +69,7 @@ class BlockDisplayWrapper(
 		teleportDuration = 1
 		interpolationDuration = 1
 		viewRange = 1000f
+		brightness = org.bukkit.entity.Display.Brightness(15, 15)
 
 		transformation = Transformation(
 			offset.toVector3f(),
