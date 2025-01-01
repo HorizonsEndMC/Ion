@@ -50,6 +50,7 @@ abstract class CachedSpaceStation<T: SpaceStationInterface<O>, O: DbObject, C: S
 	abstract val ownershipType: String
 
 	abstract val color: Int
+	abstract val borderColor: Int
 
 	abstract fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission): Boolean
 
@@ -117,6 +118,7 @@ class CachedNationSpaceStation(
 	override val ownershipType: String = "Nation"
 
 	override val color: Int get() = NationCache[owner].color
+	override val borderColor: Int get() = color
 
 	override fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission) =
 		NationRole.hasPermission(player, permission.nation)
@@ -147,6 +149,7 @@ class CachedSettlementSpaceStation(
 	override val color: Int = if (SettlementCache[owner].nation != null)
 		NationCache[SettlementCache[owner].nation!!].color
 	else Color.BLUE.asRGB()
+	override val borderColor: Int = Color.BLUE.asRGB()
 
 	override fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission) =
 		SettlementRole.hasPermission(player, permission.settlement)
@@ -178,6 +181,7 @@ class CachedPlayerSpaceStation(
 		NationCache[PlayerCache[owner].nationOid!!].color
 	else if (PlayerCache[owner].settlementOid != null) Color.BLUE.asRGB()
 	else Color.WHITE.asRGB()
+	override val borderColor: Int = Color.WHITE.asRGB()
 
 	override fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission) = owner == player
 

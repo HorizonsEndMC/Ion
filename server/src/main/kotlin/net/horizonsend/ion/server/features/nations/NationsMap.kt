@@ -349,9 +349,10 @@ object NationsMap : IonServerComponent(true) {
 		val marker: CircleMarker = markerSet.findCircleMarker(id)
 
 		val rgb = station.color
+		val borderRgb = station.borderColor
 
 		marker.setFillStyle(0.2, rgb)
-		marker.setLineStyle(5, 0.4, rgb)
+		marker.setLineStyle(5, 0.4, borderRgb)
 
 		marker.description = """
 		<p><h2>${station.name}</h2></p>
