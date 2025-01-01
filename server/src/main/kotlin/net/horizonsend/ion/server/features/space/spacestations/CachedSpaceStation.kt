@@ -144,7 +144,9 @@ class CachedSettlementSpaceStation(
 	override val ownerName: String get() = SettlementCache[owner].name
 	override val ownershipType: String = "Settlement"
 
-	override val color: Int = Color.BLUE.asRGB()
+	override val color: Int = if (SettlementCache[owner].nation != null)
+		NationCache[SettlementCache[owner].nation!!].color
+	else Color.BLUE.asRGB()
 
 	override fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission) =
 		SettlementRole.hasPermission(player, permission.settlement)
@@ -172,7 +174,10 @@ class CachedPlayerSpaceStation(
 	override val ownerName = Bukkit.getPlayer(owner.uuid)?.name ?: SLPlayer.getName(owner) ?: error("No such player $owner")
 	override val ownershipType: String = "Player"
 
-	override val color: Int = Color.BLUE.asRGB()
+	override val color: Int = if (PlayerCache[owner].nationOid != null)
+		NationCache[PlayerCache[owner].nationOid!!].color
+	else if (PlayerCache[owner].settlementOid != null) Color.BLUE.asRGB()
+	else Color.WHITE.asRGB()
 
 	override fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission) = owner == player
 
