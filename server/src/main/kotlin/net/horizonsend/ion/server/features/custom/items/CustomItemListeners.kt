@@ -186,24 +186,24 @@ object CustomItemListeners : SLEventListener() {
 		}
 	}
 
-	/*
-	 * Attempt to try to allow custom items to be crafted as if they were materials.
-	 * There is no loose itemstack check, only exact matches for lore, name, data, etc.
-	 *
-	 * Until paper accepts the PR for a predicate item requirement, this should allow matching custom item identifiers to craft together
-	 **/
-	@EventHandler
-	fun onPrepareCraft(event: PrepareItemCraftEvent) {
-		val currentItems = event.inventory.matrix
-
-		val stockCustomItems = Array(currentItems.size) {
-			val item = currentItems[it]
-			val customItem = item?.customItem
-			if (customItem == null) return@Array ItemStack.empty()
-			customItem.constructItemStack(item.amount)
-		}
-
-		val recipe = runCatching { Bukkit.getCraftingRecipe(stockCustomItems, Bukkit.getWorlds().first()) }.getOrNull() ?: return
-		event.inventory.result = recipe.result
-	}
+//	/*
+//	 * Attempt to try to allow custom items to be crafted as if they were materials.
+//	 * There is no loose itemstack check, only exact matches for lore, name, data, etc.
+//	 *
+//	 * Until paper accepts the PR for a predicate item requirement, this should allow matching custom item identifiers to craft together
+//	 **/
+//	@EventHandler
+//	fun onPrepareCraft(event: PrepareItemCraftEvent) {
+//		val currentItems = event.inventory.matrix
+//
+//		val stockCustomItems = Array(currentItems.size) {
+//			val item = currentItems[it]
+//			val customItem = item?.customItem
+//			if (customItem == null) return@Array ItemStack.empty()
+//			customItem.constructItemStack(item.amount)
+//		}
+//
+//		val recipe = runCatching { Bukkit.getCraftingRecipe(stockCustomItems, Bukkit.getWorlds().first()) }.getOrNull() ?: return
+//		event.inventory.result = recipe.result
+//	}
 }
