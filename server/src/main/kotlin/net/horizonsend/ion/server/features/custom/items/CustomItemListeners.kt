@@ -195,6 +195,7 @@ object CustomItemListeners : SLEventListener() {
 	@EventHandler
 	fun onPrepareCraft(event: PrepareItemCraftEvent) {
 		val currentItems = event.inventory.matrix
+
 		val stockCustomItems = Array(currentItems.size) {
 			val item = currentItems[it]
 			val customItem = item?.customItem
@@ -202,7 +203,7 @@ object CustomItemListeners : SLEventListener() {
 			customItem.constructItemStack(item.amount)
 		}
 
-		val recipe = Bukkit.getCraftingRecipe(stockCustomItems, Bukkit.getWorlds().first()) ?: return
+		val recipe = runCatching { Bukkit.getCraftingRecipe(stockCustomItems, Bukkit.getWorlds().first()) }.getOrNull() ?: return
 		event.inventory.result = recipe.result
 	}
 }
