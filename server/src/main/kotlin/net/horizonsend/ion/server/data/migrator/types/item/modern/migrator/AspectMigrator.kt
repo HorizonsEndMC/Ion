@@ -70,6 +70,9 @@ class AspectMigrator private constructor(
 
 		fun setItemMaterial(newMaterial: Material): Builder {
 			aspects.add(ChangeTypeMigrator(newMaterial))
+			val example = customItem.constructItemStack()
+
+			setDataComponent(DataComponentTypes.MAX_STACK_SIZE, example.maxStackSize)
 			return this
 		}
 
