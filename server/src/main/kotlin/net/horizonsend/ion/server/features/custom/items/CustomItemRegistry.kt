@@ -219,31 +219,31 @@ object CustomItemRegistry : IonServerComponent() {
 
 	val ALUMINUM_INGOT = registerOreIngot("ALUMINUM_INGOT", "aluminum")
 	val RAW_ALUMINUM = registerRawOre("RAW_ALUMINUM", "aluminum", smeltingResult = CustomItemRegistry::ALUMINUM_INGOT)
-	val ALUMINUM_ORE = registerOreBlock("ALUMINUM_ORE", "aluminum", block = CustomBlocks::ALUMINUM_ORE, smeltingResult = CustomItemRegistry::ALUMINUM_INGOT)
-	val ALUMINUM_BLOCK = registerIngotBlock("ALUMINUM_BLOCK", "aluminum", block = CustomBlocks::ALUMINUM_BLOCK)
-	val RAW_ALUMINUM_BLOCK = registerRawBlock("RAW_ALUMINUM_BLOCK", "aluminum", block = CustomBlocks::RAW_ALUMINUM_BLOCK)
+	val ALUMINUM_ORE: CustomBlockItem = registerOreBlock("ALUMINUM_ORE", "aluminum", block = CustomBlocks::ALUMINUM_ORE, smeltingResult = CustomItemRegistry::ALUMINUM_INGOT)
+	val ALUMINUM_BLOCK: CustomBlockItem = registerIngotBlock("ALUMINUM_BLOCK", "aluminum", block = CustomBlocks::ALUMINUM_BLOCK)
+	val RAW_ALUMINUM_BLOCK: CustomBlockItem = registerRawBlock("RAW_ALUMINUM_BLOCK", "aluminum", block = CustomBlocks::RAW_ALUMINUM_BLOCK)
 
 	val CHETHERITE = registerOreIngot("CHETHERITE", "chetherite")
-	val CHETHERITE_ORE = registerOreBlock("CHETHERITE_ORE", "chetherite", block = CustomBlocks::CHETHERITE_ORE, smeltingResult = CustomItemRegistry::CHETHERITE)
-	val CHETHERITE_BLOCK = registerIngotBlock("CHETHERITE_BLOCK", "chetherite", block = CustomBlocks::CHETHERITE_BLOCK)
+	val CHETHERITE_ORE: CustomBlockItem = registerOreBlock("CHETHERITE_ORE", "chetherite", block = CustomBlocks::CHETHERITE_ORE, smeltingResult = CustomItemRegistry::CHETHERITE)
+	val CHETHERITE_BLOCK: CustomBlockItem = registerIngotBlock("CHETHERITE_BLOCK", "chetherite", block = CustomBlocks::CHETHERITE_BLOCK)
 
 	val TITANIUM_INGOT = registerOreIngot("TITANIUM_INGOT", "titanium")
 	val RAW_TITANIUM = registerRawOre("RAW_TITANIUM", "titanium", smeltingResult = CustomItemRegistry::TITANIUM_INGOT)
-	val TITANIUM_ORE = registerOreBlock("TITANIUM_ORE", "titanium", block = CustomBlocks::TITANIUM_ORE, smeltingResult = CustomItemRegistry::TITANIUM_INGOT)
-	val TITANIUM_BLOCK = registerIngotBlock("TITANIUM_BLOCK", "titanium", block = CustomBlocks::TITANIUM_BLOCK)
-	val RAW_TITANIUM_BLOCK = registerRawBlock("RAW_TITANIUM_BLOCK", "titanium", block = CustomBlocks::RAW_TITANIUM_BLOCK)
+	val TITANIUM_ORE: CustomBlockItem = registerOreBlock("TITANIUM_ORE", "titanium", block = CustomBlocks::TITANIUM_ORE, smeltingResult = CustomItemRegistry::TITANIUM_INGOT)
+	val TITANIUM_BLOCK: CustomBlockItem = registerIngotBlock("TITANIUM_BLOCK", "titanium", block = CustomBlocks::TITANIUM_BLOCK)
+	val RAW_TITANIUM_BLOCK: CustomBlockItem = registerRawBlock("RAW_TITANIUM_BLOCK", "titanium", block = CustomBlocks::RAW_TITANIUM_BLOCK)
 
 	val URANIUM = registerOreIngot(identifier = "URANIUM", name = "uranium")
 	val RAW_URANIUM = registerRawOre(identifier = "RAW_URANIUM", name = "uranium", smeltingResult = CustomItemRegistry::URANIUM)
-	val URANIUM_ORE = registerOreBlock(identifier = "URANIUM_ORE", name = "uranium", block = CustomBlocks::URANIUM_ORE, smeltingResult = CustomItemRegistry::URANIUM)
-	val URANIUM_BLOCK = registerIngotBlock(identifier = "URANIUM_BLOCK", name = "uranium", block = CustomBlocks::URANIUM_BLOCK)
-	val RAW_URANIUM_BLOCK = registerRawBlock(identifier = "RAW_URANIUM_BLOCK", name = "uranium", block = CustomBlocks::RAW_URANIUM_BLOCK)
+	val URANIUM_ORE: CustomBlockItem = registerOreBlock(identifier = "URANIUM_ORE", name = "uranium", block = CustomBlocks::URANIUM_ORE, smeltingResult = CustomItemRegistry::URANIUM)
+	val URANIUM_BLOCK: CustomBlockItem = registerIngotBlock(identifier = "URANIUM_BLOCK", name = "uranium", block = CustomBlocks::URANIUM_BLOCK)
+	val RAW_URANIUM_BLOCK: CustomBlockItem = registerRawBlock(identifier = "RAW_URANIUM_BLOCK", name = "uranium", block = CustomBlocks::RAW_URANIUM_BLOCK)
 	// Minerals end
 
 	// Industry start
-	val NETHERITE_CASING = customBlockItem(identifier = "NETHERITE_CASING", model = "industry/netherite_casing", displayName = text("Netherite Casing"), customBlock = CustomBlocks::NETHERITE_CASING)
+	val NETHERITE_CASING: CustomBlockItem = customBlockItem(identifier = "NETHERITE_CASING", model = "industry/netherite_casing", displayName = text("Netherite Casing"), customBlock = CustomBlocks::NETHERITE_CASING)
 	val ENRICHED_URANIUM = stackable(identifier = "ENRICHED_URANIUM", text("Enriched Uranium"), "industry/enriched_uranium")
-	val ENRICHED_URANIUM_BLOCK = customBlockItem(identifier = "ENRICHED_URANIUM_BLOCK", model = "industry/enriched_uranium_block", displayName = text("Enriched Uranium Block"), customBlock = CustomBlocks::ENRICHED_URANIUM_BLOCK)
+	val ENRICHED_URANIUM_BLOCK: CustomBlockItem = customBlockItem(identifier = "ENRICHED_URANIUM_BLOCK", model = "industry/enriched_uranium_block", displayName = text("Enriched Uranium Block"), customBlock = CustomBlocks::ENRICHED_URANIUM_BLOCK)
 	val URANIUM_CORE = unStackable(identifier = "URANIUM_CORE", model = "industry/uranium_core", displayName = text("Uranium Core"))
 	val URANIUM_ROD = unStackable(identifier = "URANIUM_ROD", model = "industry/uranium_rod", displayName = text("Uranium Rod"))
 	val FUEL_ROD_CORE = unStackable(identifier = "FUEL_ROD_CORE", model = "industry/fuel_rod_core", displayName = text("Fuel Rod Core"))
@@ -263,11 +263,11 @@ object CustomItemRegistry : IonServerComponent() {
 	val REACTOR_CONTROL = unStackable(identifier = "REACTOR_CONTROL", model = "industry/reactor_control", displayName = text("Reactor Control", YELLOW))
 
 	val SUPERCONDUCTOR = unStackable(identifier = "SUPERCONDUCTOR", model = "industry/superconductor", displayName = text("Superconductor"))
-	val SUPERCONDUCTOR_BLOCK = customBlockItem(identifier = "SUPERCONDUCTOR_BLOCK", model = "industry/superconductor_block", displayName = text("Superconductor Block"), customBlock = CustomBlocks::SUPERCONDUCTOR_BLOCK)
+	val SUPERCONDUCTOR_BLOCK: CustomBlockItem = customBlockItem(identifier = "SUPERCONDUCTOR_BLOCK", model = "industry/superconductor_block", displayName = text("Superconductor Block"), customBlock = CustomBlocks::SUPERCONDUCTOR_BLOCK)
 	val SUPERCONDUCTOR_CORE = unStackable(identifier = "SUPERCONDUCTOR_CORE", model = "industry/superconductor_core", displayName = text("Superconductor Core", YELLOW))
 
 	val STEEL_INGOT = stackable(identifier = "STEEL_INGOT", text("Steel Ingot"), "industry/steel_ingot")
-	val STEEL_BLOCK = customBlockItem(identifier = "STEEL_BLOCK", model = "industry/steel_block", displayName = text("Steel Block"), customBlock = CustomBlocks::STEEL_BLOCK)
+	val STEEL_BLOCK: CustomBlockItem = customBlockItem(identifier = "STEEL_BLOCK", model = "industry/steel_block", displayName = text("Steel Block"), customBlock = CustomBlocks::STEEL_BLOCK)
 	val STEEL_PLATE = unStackable(identifier = "STEEL_PLATE", model = "industry/steel_plate", displayName = text("Steel Plate"))
 	val STEEL_CHASSIS = unStackable(identifier = "STEEL_CHASSIS", model = "industry/steel_chassis", displayName = text("Steel Chassis"))
 	val STEEL_MODULE = unStackable(identifier = "STEEL_MODULE", model = "industry/steel_module", displayName = text("Steel Module"))
@@ -287,9 +287,9 @@ object CustomItemRegistry : IonServerComponent() {
 	val PROGRESS_HOLDER = register(ProgressHolder)
 
 	// Starship Components Start
-	val BATTLECRUISER_REACTOR_CORE = customBlockItem(identifier = "BATTLECRUISER_REACTOR_CORE", model = "starship/battlecruiser_reactor_core", displayName = text("Battlecruiser Reactor Core", BOLD), customBlock = CustomBlocks::BATTLECRUISER_REACTOR_CORE)
-	val BARGE_REACTOR_CORE = customBlockItem(identifier = "BARGE_REACTOR_CORE", model = "starship/barge_reactor_core", displayName = text("Barge Reactor Core", BOLD), customBlock = CustomBlocks::BARGE_REACTOR_CORE)
-	val CRUISER_REACTOR_CORE = customBlockItem(identifier = "CRUISER_REACTOR_CORE", model = "starship/cruiser_reactor_core", displayName = text("Cruiser Reactor Core", BOLD), customBlock = CustomBlocks::CRUISER_REACTOR_CORE)
+	val BATTLECRUISER_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "BATTLECRUISER_REACTOR_CORE", model = "starship/battlecruiser_reactor_core", displayName = text("Battlecruiser Reactor Core", BOLD), customBlock = CustomBlocks::BATTLECRUISER_REACTOR_CORE)
+	val BARGE_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "BARGE_REACTOR_CORE", model = "starship/barge_reactor_core", displayName = text("Barge Reactor Core", BOLD), customBlock = CustomBlocks::BARGE_REACTOR_CORE)
+	val CRUISER_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "CRUISER_REACTOR_CORE", model = "starship/cruiser_reactor_core", displayName = text("Cruiser Reactor Core", BOLD), customBlock = CustomBlocks::CRUISER_REACTOR_CORE)
 	// Starship Components End
 
 	// Gas canisters start
