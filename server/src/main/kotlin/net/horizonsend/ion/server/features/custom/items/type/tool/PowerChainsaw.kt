@@ -10,12 +10,12 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModif
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.general.AutoReplantModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.chainsaw.ExtendedBar
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isFence
 import net.horizonsend.ion.server.miscellaneous.utils.isLeaves
 import net.horizonsend.ion.server.miscellaneous.utils.isLog
 import net.horizonsend.ion.server.miscellaneous.utils.isWood
-import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.kyori.adventure.text.Component
 import net.minecraft.core.BlockPos
 import org.bukkit.GameMode

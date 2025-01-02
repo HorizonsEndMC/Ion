@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.space.body
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.utils.miscellaneous.d
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getSphereBlocks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getSphereBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState

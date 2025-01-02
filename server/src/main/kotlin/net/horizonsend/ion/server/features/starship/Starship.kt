@@ -20,8 +20,9 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.multiblock.manager.ShipMultiblockManager
 import net.horizonsend.ion.server.features.gui.custom.starship.RenameButton.Companion.starshipNameSerializer
-import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
@@ -61,18 +62,19 @@ import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustDat
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -106,7 +108,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-class Starship (
+class Starship(
 	val data: StarshipData,
 	var blocks: LongOpenHashSet,
 	val mass: Double,
@@ -169,12 +171,20 @@ class Starship (
 	}
 	//endregion
 
+	// Start region transport
+	val transportManager = ShipTransportManager(this)
+
+	val multiblockManager = ShipMultiblockManager(this)
+	// Endregion
+
 	//region Ship Blocks & Hitbox
 	var hullIntegrity = 1.0
+
 	fun updateHullIntegrity() {
 		currentBlockCount = blocks.count {
 			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
 		}
+
 		hullIntegrity = currentBlockCount.toDouble() / initialBlockCount.toDouble()
 	}
 

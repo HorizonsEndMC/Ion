@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.configuration.util
 
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World

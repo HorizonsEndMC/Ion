@@ -5,8 +5,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -66,9 +66,9 @@ abstract class MovementModule(
 	}
 
 	open fun shiftFlyToVec3i(
-		origin: Location,
-		destination: Vec3i?,
-		stopCruising: Boolean = false
+        origin: Location,
+        destination: Vec3i?,
+        stopCruising: Boolean = false
 	) = Tasks.sync {
 		val starship = controller.starship
 		if (stopCruising) StarshipCruising.forceStopCruising(starship)

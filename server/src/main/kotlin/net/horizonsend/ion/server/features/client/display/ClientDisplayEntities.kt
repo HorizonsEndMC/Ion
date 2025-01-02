@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFac
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createItemDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
@@ -62,7 +62,12 @@ object ClientDisplayEntities : IonServerComponent() {
      */
     fun sendEntityPacket(bukkitPlayer: Player, entity: net.minecraft.world.entity.Entity) {
         val player = bukkitPlayer.minecraft
-        val conn = player.connection
+
+		sendEntityPacket(player, entity)
+    }
+
+	fun sendEntityPacket(player: ServerPlayer, entity: net.minecraft.world.entity.Entity) {
+		val conn = player.connection
 
         conn.send(getAddEntityPacket(entity))
         entity.refreshEntityData(player)
