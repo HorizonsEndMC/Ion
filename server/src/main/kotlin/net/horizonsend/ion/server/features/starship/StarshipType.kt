@@ -131,13 +131,13 @@ enum class StarshipType(
 		minLevel = 1,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.IRON_NUGGET,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.GHAST_TEAR) },
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff8000",
 		overridePermission = "ion.ships.override.1",
 		dynmapIcon = "starfighter",
 		concretePercent = 0.15,
-		balancingSupplier = IonServer.starshipBalancing::interceptor
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::interceptor
 	),
 	GUNSHIP(
 		displayName = "Gunship",
