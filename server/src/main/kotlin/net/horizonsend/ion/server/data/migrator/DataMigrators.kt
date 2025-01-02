@@ -18,6 +18,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.inventory.Inventory
@@ -802,5 +803,10 @@ object DataMigrators : IonServerComponent() {
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onChunkLoad(event: ChunkLoadEvent) {
 		migrate(event.chunk)
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	fun onOpenInventory(event: InventoryOpenEvent) {
+		migrateInventory(event.inventory, getVersions(0))
 	}
 }
