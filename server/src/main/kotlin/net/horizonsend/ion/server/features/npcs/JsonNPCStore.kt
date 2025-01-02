@@ -39,6 +39,10 @@ class JsonNPCStore(private val start: Int, val name: String) : NPCDataStore {
 
 	override fun clearData(npc: NPC) = editConfiguration { npcs.removeAll { it.uuid == npc.uniqueId } }
 
+	override fun clearTraitData(p0: Iterable<String?>?) {
+
+	}
+
 	override fun createUniqueNPCId(registry: NPCRegistry): Int {
 		return start + storage.npcs.size
 	}
