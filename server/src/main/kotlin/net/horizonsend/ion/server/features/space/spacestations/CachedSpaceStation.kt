@@ -177,8 +177,7 @@ class CachedPlayerSpaceStation(
 	override val ownerName = Bukkit.getPlayer(owner.uuid)?.name ?: SLPlayer.getName(owner) ?: error("No such player $owner")
 	override val ownershipType: String = "Player"
 
-	override val color: Int = if (PlayerCache[owner].nationOid != null)
-		NationCache[PlayerCache[owner].nationOid!!].color
+	override val color: Int = if (SLPlayer[owner]?.nation != null) NationCache[SLPlayer[owner]?.nation!!].color
 	else if (PlayerCache[owner].settlementOid != null) Color.BLUE.asRGB()
 	else Color.WHITE.asRGB()
 	override val borderColor: Int = Color.WHITE.asRGB()
