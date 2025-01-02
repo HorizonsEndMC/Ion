@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.solarpanel.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
@@ -17,7 +16,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager() {
 
 	override val powerNodeManager = ShipCacheHolder(this) { PowerTransportCache(it) }
 	override val solarPanelManager: ShipCacheHolder<SolarPanelCache> = ShipCacheHolder(this) { SolarPanelCache(it) }
-	override val fluidNodeManager = ShipCacheHolder(this) { FluidTransportCache(it) }
+//	override val fluidNodeManager = ShipCacheHolder(this) { FluidTransportCache(it) }
 
 	init {
 		load()
@@ -26,7 +25,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager() {
 	fun load() {
 		powerNodeManager.capture()
 		solarPanelManager.capture()
-		fluidNodeManager.capture()
+//		fluidNodeManager.capture()
 		extractorManager.loadExtractors()
 		NewTransport.registerTransportManager(this)
 	}
@@ -34,7 +33,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager() {
 	fun release() {
 		powerNodeManager.release()
 		solarPanelManager.release()
-		fluidNodeManager.release()
+//		fluidNodeManager.release()
 		extractorManager.releaseExtractors()
 		NewTransport.removeTransportManager(this)
 	}
@@ -42,7 +41,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager() {
 	fun displace(movement: StarshipMovement) {
 		powerNodeManager.displace(movement)
 		solarPanelManager.displace(movement)
-		fluidNodeManager.displace(movement)
+//		fluidNodeManager.displace(movement)
 		extractorManager.displace(movement)
 	}
 
