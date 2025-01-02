@@ -2,13 +2,16 @@ package net.horizonsend.ion.server.features.custom.items
 
 import com.destroystokyo.paper.event.server.ServerTickEndEvent
 import io.papermc.paper.event.block.BlockPreDispenseEvent
+import net.horizonsend.ion.server.command.misc.DyeCommand
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.Listener
 import net.horizonsend.ion.server.features.custom.items.component.TickRecievierModule
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.minecraft.world.item.DyeItem
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.craftbukkit.util.CraftMagicNumbers
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -206,4 +209,32 @@ object CustomItemListeners : SLEventListener() {
 //		val recipe = runCatching { Bukkit.getCraftingRecipe(stockCustomItems, Bukkit.getWorlds().first()) }.getOrNull() ?: return
 //		event.inventory.result = recipe.result
 //	}
+
+	@EventHandler
+	fun allowArmorDye(event: PrepareItemCraftEvent) {
+		val items = event.inventory.matrix.filterNotNullTo(mutableListOf())
+		val dyes: MutableMap<ItemStack, DyeItem> = mutableMapOf()
+
+		items.forEach {
+			val itemType = CraftMagicNumbers.getItem(it.type) ?: return@forEach
+			if (itemType !is DyeItem) return@forEach
+			dyes[it] = itemType
+		}
+
+		if (dyes.isEmpty()) return
+
+		items.removeAll(dyes.keys)
+
+		val dyeable = items.firstOrNull { stack -> DyeCommand.canHexDye(stack) } ?: return
+
+		items.remove(dyeable)
+
+		// Other items in the grid
+		if (items.isNotEmpty()) return
+
+		// This mutates the item, so use a clone
+		val dyed = DyeCommand.applyDye(dyeable.clone(), dyes.values)
+
+		event.inventory.result = dyed
+	}
 }
