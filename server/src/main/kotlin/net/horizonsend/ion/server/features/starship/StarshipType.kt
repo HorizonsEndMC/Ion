@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
-import net.horizonsend.ion.server.features.starship.StarshipType.entries
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -99,7 +98,7 @@ enum class StarshipType(
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		menuItemRaw = { ItemStack(Material.IRON_NUGGET) },
-		menuSubclasses = { listOf(AI_STARFIGHTER) },
+		menuSubclasses = { listOf(AI_STARFIGHTER, INTERCEPTOR) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff8000",
 		overridePermission = "ion.ships.override.1",
@@ -131,12 +130,13 @@ enum class StarshipType(
 		minLevel = 1,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
+		concretePercent = 0.15,
 		menuItemRaw = { ItemStack(Material.GHAST_TEAR) },
+		displayInMainMenu = false,
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff8000",
 		overridePermission = "ion.ships.override.1",
 		dynmapIcon = "starfighter",
-		concretePercent = 0.15,
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::interceptor
 	),
 	GUNSHIP(
