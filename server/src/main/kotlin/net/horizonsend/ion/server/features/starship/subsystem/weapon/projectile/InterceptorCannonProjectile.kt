@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -16,7 +16,7 @@ class InterceptorCannonProjectile(
 	dir: Vector,
 	shooter: Damager
 ) : LaserProjectile(starship, name, loc, dir, shooter) {
-	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.interceptorCannon ?: IonServer.starshipBalancing.nonStarshipFired.interceptorCannon
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.interceptorCannon ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.interceptorCannon
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed
 	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
