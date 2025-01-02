@@ -69,6 +69,7 @@ object NamespacedKeys {
 	val ORE_REPLACED_INDEXES = key("ore_replaced_indexes")
 	val ORE_REPLACED = key("ore_replaced")
 
+	val PLAYER_DATA_VERSION = key("player_data_version")
 	val DATA_VERSION = key("data_version")
 	val BLOCKS_TRAVELED = key("blocks_traveled")
 	val HYPERSPACE_BLOCKS_TRAVELED = key("hyperspace_blocks_traveled")

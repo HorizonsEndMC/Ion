@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.PullMod
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.SetLoreMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.predicate.ItemMigratorPredicate
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.HORIZONSEND_NAMESPACE
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
@@ -117,7 +116,7 @@ class AspectMigrator private constructor(
 		}
 
 		fun fixModel(customItem: CustomItem): AspectMigrator {
-			return builder(CustomItemRegistry.POWER_DRILL_BASIC).pullModel(CustomItemRegistry.POWER_DRILL_BASIC).build()
+			return builder(customItem).pullModel(customItem).build()
 		}
 	}
 }

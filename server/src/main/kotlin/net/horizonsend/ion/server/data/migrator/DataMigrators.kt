@@ -775,13 +775,13 @@ object DataMigrators : IonServerComponent() {
 	}
 
 	fun migrate(player: Player) {
-		val playerVersion = player.persistentDataContainer.getOrDefault(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER, 0)
+		val playerVersion = player.persistentDataContainer.getOrDefault(NamespacedKeys.PLAYER_DATA_VERSION, PersistentDataType.INTEGER, 0)
 		if (playerVersion == lastDataVersion) return
 
 		log.info("Migrating ${player.name}'s inventory from $playerVersion to $lastDataVersion")
 		migrateInventory(player.inventory, getVersions(playerVersion).apply { log.info("Applying $size versions") })
 
-		player.persistentDataContainer.set(NamespacedKeys.DATA_VERSION, PersistentDataType.INTEGER, lastDataVersion)
+		player.persistentDataContainer.set(NamespacedKeys.PLAYER_DATA_VERSION, PersistentDataType.INTEGER, lastDataVersion)
 	}
 
 	private fun getVersions(dataVersion: Int): List<DataVersion> {
