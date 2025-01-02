@@ -178,8 +178,9 @@ class CachedPlayerSpaceStation(
 	override val ownershipType: String = "Player"
 
 	override val color: Int = if (SLPlayer[owner]?.nation != null) NationCache[SLPlayer[owner]?.nation!!].color
-	else if (PlayerCache[owner].settlementOid != null) Color.BLUE.asRGB()
+	else if (SLPlayer[owner]?.settlement != null) Color.BLUE.asRGB()
 	else Color.WHITE.asRGB()
+
 	override val borderColor: Int = Color.WHITE.asRGB()
 
 	override fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission) = owner == player
