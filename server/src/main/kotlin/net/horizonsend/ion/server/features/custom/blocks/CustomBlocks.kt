@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_DRILL_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.miscellaneous.utils.getMatchingMaterials
+import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
@@ -40,7 +41,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(NORTH, UP)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-        	drops = customItemDrop("RAW_ALUMINUM")
+			drops = customItemDrop(CustomItemRegistry::RAW_ALUMINUM)
 		)
     ))
 
@@ -49,7 +50,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(SOUTH, UP, WEST)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-        	drops = customItemDrop("ALUMINUM_BLOCK")
+			drops = customItemDrop(CustomItemRegistry::ALUMINUM_BLOCK)
 		)
     ))
 
@@ -58,7 +59,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(NORTH)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-        	drops = customItemDrop("RAW_ALUMINUM_BLOCK")
+			drops = customItemDrop(CustomItemRegistry::RAW_ALUMINUM_BLOCK)
 		)
     ))
 
@@ -67,7 +68,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(EAST, NORTH, UP)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-        	drops = customItemDrop("CHETHERITE")
+			drops = customItemDrop(CustomItemRegistry::CHETHERITE)
 		)
     ))
 
@@ -76,7 +77,7 @@ object CustomBlocks {
 		blockData = mushroomBlockData(setOf(SOUTH, UP, DOWN)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-			drops = customItemDrop("STEEL_BLOCK")
+			drops = customItemDrop(CustomItemRegistry::STEEL_BLOCK)
 		)
 	))
 
@@ -85,7 +86,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(SOUTH, UP)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-        	drops = customItemDrop("CHETHERITE_BLOCK")
+			drops = customItemDrop(CustomItemRegistry::CHETHERITE_BLOCK)
 		)
     ))
 
@@ -94,7 +95,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(UP, WEST)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-        	drops = customItemDrop("RAW_TITANIUM")
+			drops = customItemDrop(CustomItemRegistry::RAW_TITANIUM)
 		)
     ))
 
@@ -103,7 +104,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(EAST, SOUTH, UP)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-        	drops = customItemDrop("TITANIUM_BLOCK")
+			drops = customItemDrop(CustomItemRegistry::TITANIUM_BLOCK)
 		)
     ))
 
@@ -112,7 +113,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(EAST)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-        	drops = customItemDrop("RAW_TITANIUM_BLOCK")
+			drops = customItemDrop(CustomItemRegistry::RAW_TITANIUM_BLOCK)
 		)
     ))
 
@@ -121,7 +122,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(UP)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-        	drops = customItemDrop("RAW_URANIUM")
+			drops = customItemDrop(CustomItemRegistry::RAW_URANIUM)
 		)
     ))
 
@@ -130,7 +131,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(EAST, NORTH, SOUTH, WEST)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-        	drops = customItemDrop("URANIUM_BLOCK")
+			drops = customItemDrop(CustomItemRegistry::URANIUM_BLOCK)
 		)
     ))
 
@@ -139,7 +140,7 @@ object CustomBlocks {
 		blockData = mushroomBlockData(setOf(EAST, WEST)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-			drops = customItemDrop("ENRICHED_URANIUM_BLOCK")
+			drops = customItemDrop(CustomItemRegistry::ENRICHED_URANIUM_BLOCK)
 		)
 	))
 
@@ -148,7 +149,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(WEST,NORTH,DOWN,UP)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-       	 drops = customItemDrop("NETHERITE_CASING")
+			drops = customItemDrop(CustomItemRegistry::NETHERITE_CASING)
 		)
     ))
 
@@ -157,7 +158,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(SOUTH)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-			drops = customItemDrop("RAW_URANIUM_BLOCK")
+			drops = customItemDrop(CustomItemRegistry::RAW_URANIUM_BLOCK)
 		)
     ))
 
@@ -166,7 +167,7 @@ object CustomBlocks {
 		blockData = mushroomBlockData(setOf(SOUTH, DOWN)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-			drops = customItemDrop("SUPERCONDUCTOR_BLOCK")
+			drops = customItemDrop(CustomItemRegistry::SUPERCONDUCTOR_BLOCK)
 		)
 	))
 
@@ -175,7 +176,7 @@ object CustomBlocks {
 		blockData = mushroomBlockData(setOf(NORTH, UP, WEST)),
 		drops = BlockLoot(
 			requiredTool = null,
-			drops = customItemDrop("BATTLECRUISER_REACTOR_CORE")
+			drops = customItemDrop(CustomItemRegistry::BATTLECRUISER_REACTOR_CORE)
 		)
 	))
 
@@ -184,7 +185,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(NORTH, EAST, WEST)),
 		drops = BlockLoot(
 			requiredTool = null,
-			drops = customItemDrop("BARGE_REACTOR_CORE")
+			drops = customItemDrop(CustomItemRegistry::BARGE_REACTOR_CORE)
 		)
     ))
 
@@ -193,9 +194,13 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(NORTH, DOWN, WEST)),
 		drops = BlockLoot(
 			requiredTool = null,
-			drops = customItemDrop("CRUISER_REACTOR_CORE")
+			drops = customItemDrop(CustomItemRegistry::CRUISER_REACTOR_CORE)
 		)
 	))
+
+	private fun customItemDrop(customItem: Supplier<CustomItem>, amount: Int = 1): Supplier<Collection<ItemStack>> {
+		return customItem.map { item -> listOf(item.constructItemStack(amount)) }
+	}
 
     private fun customItemDrop(identifier: String, amount: Int = 1): Supplier<Collection<ItemStack>> {
         val customItem = CustomItemRegistry.getByIdentifier(identifier)?.constructItemStack() ?: return Supplier { listOf() }
