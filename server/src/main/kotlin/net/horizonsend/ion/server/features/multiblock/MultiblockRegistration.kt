@@ -31,12 +31,9 @@ import net.horizonsend.ion.server.features.multiblock.type.farming.planter.Plant
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.ElectrolysisMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.PipedGasCollectorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankMedium
-import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.FluidTankSmall
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
@@ -285,9 +282,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(CanisterVentMultiblock)
 		registerMultiblock(GasPowerPlantMultiblock)
 
-		registerMultiblock(ElectrolysisMultiblock)
-		registerMultiblock(FluidTankSmall)
-		registerMultiblock(FluidTankMedium)
+//		registerMultiblock(ElectrolysisMultiblock)
+//		registerMultiblock(FluidTankSmall)
+//		registerMultiblock(FluidTankMedium)
 //		registerMultiblock(FluidTankLarge)
 
 		// Defenses
