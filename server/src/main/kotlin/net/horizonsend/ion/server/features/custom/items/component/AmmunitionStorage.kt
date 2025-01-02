@@ -15,7 +15,6 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.translatable
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import org.bukkit.Material
 import org.bukkit.Material.matchMaterial
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
@@ -54,7 +53,7 @@ class AmmunitionStorage(val balancingSupplier: Supplier<out AmmoStorageBalancing
 
 	override fun getAttributes(baseItem: ItemStack): Iterable<CustomItemAttribute> {
 		val balancing = balancingSupplier.get()
-		return listOf(AmmunitionRefillType(Material.valueOf(balancing.refillType))) //TODO enum usage of material
+		return listOf(AmmunitionRefillType(matchMaterial(balancing.refillType)!!)) //TODO enum usage of material
 
 	}
 
