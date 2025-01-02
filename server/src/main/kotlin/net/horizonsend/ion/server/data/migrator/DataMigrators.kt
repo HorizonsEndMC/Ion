@@ -767,6 +767,8 @@ object DataMigrators : IonServerComponent() {
 				.pullName(CustomItemRegistry.SPECIAL_MAGAZINE)
 				.build()
 			)
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SMOKE_GRENADE))
+			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.DETONATOR))
 			.build()
 		)
 	}
