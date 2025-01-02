@@ -359,6 +359,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.DELETE_STATION)
 
 		station.abandon()
+		lastStationFormedTimeMs[sender.uniqueId] = 0L
 
 		Notify.chatAndEvents(formatSpaceStationMessage(
 			"{0} {1} abandoned space station {2}",
