@@ -751,8 +751,9 @@ object Crafting : IonServerComponent() {
 			shape("aga", "g*g", "aga")
 			setIngredient('a', ALUMINUM_INGOT)
 			setIngredient('g', GLASS_PANE)
-			setIngredient('*', BATTERY_G)
+			setIngredient('*', center)
 		}
+
 		registerPowerArmorModule(ARMOR_MODIFICATION_SHOCK_ABSORBING, ExactChoice(TITANIUM_INGOT.constructItemStack()))
 		registerPowerArmorModule(ARMOR_MODIFICATION_SPEED_BOOSTING, RecipeChoice.MaterialChoice(FEATHER))
 		registerPowerArmorModule(ARMOR_MODIFICATION_ROCKET_BOOSTING, RecipeChoice.MaterialChoice(FIREWORK_ROCKET))
