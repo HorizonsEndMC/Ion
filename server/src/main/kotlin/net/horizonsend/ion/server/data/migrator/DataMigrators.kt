@@ -750,6 +750,25 @@ object DataMigrators : IonServerComponent() {
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.CIRCUITRY))
 			.build()
 		)
+
+		registerDataVersion(DataVersion
+			.builder(3)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.STANDARD_MAGAZINE)
+				.pullModel(CustomItemRegistry.STANDARD_MAGAZINE)
+				.pullLore(CustomItemRegistry.STANDARD_MAGAZINE)
+				.pullName(CustomItemRegistry.STANDARD_MAGAZINE)
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.SPECIAL_MAGAZINE)
+				.pullModel(CustomItemRegistry.SPECIAL_MAGAZINE)
+				.pullLore(CustomItemRegistry.SPECIAL_MAGAZINE)
+				.pullName(CustomItemRegistry.SPECIAL_MAGAZINE)
+				.build()
+			)
+			.build()
+		)
 	}
 
 	private fun registerDataVersion(dataVersion: DataVersion) {
