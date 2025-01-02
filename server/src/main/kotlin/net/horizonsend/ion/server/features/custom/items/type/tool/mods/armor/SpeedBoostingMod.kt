@@ -26,7 +26,7 @@ object SpeedBoostingMod : ItemModification {
 	override val identifier: String = "SPEED_BOOSTING"
 	override val displayName: Component = ofChildren(Component.text("Speed Boosting", GRAY), Component.text(" Module", GOLD))
 
-	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(SPEED, 20, 2, 1) { entity, _, _ ->
+	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(SPEED, 60, 2, 1) { entity, _, _ ->
 		entity is Player
 			&& hasMovedInLastSecond(entity)
 			&& !entity.world.hasFlag(WorldFlag.ARENA)
