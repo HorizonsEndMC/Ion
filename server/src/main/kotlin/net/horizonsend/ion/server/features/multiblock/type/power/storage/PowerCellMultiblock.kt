@@ -26,6 +26,7 @@ object PowerCellMultiblock : Multiblock(), EntityMultiblock<PowerCellMultiblock.
 	)
 
 	override val displayName: Component = Component.text("Power Cell")
+	override val description: Component = Component.text("Stores 50,000 power")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

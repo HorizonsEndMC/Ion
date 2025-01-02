@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportC
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.solarpanel.SolarPanelCache
+import net.horizonsend.ion.server.features.transport.util.CacheType.entries
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.NamespacedKey
@@ -30,11 +31,13 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 	},
 	FLUID(NamespacedKeys.FLUID_TRANSPORT) {
 		override fun get(chunk: IonChunk): FluidTransportCache {
-			return chunk.transportNetwork.fluidNodeManager.cache
+			TODO("Fluid is disabled")
+//			return chunk.transportNetwork.fluidNodeManager.cache
 		}
 
 		override fun get(ship: ActiveStarship): FluidTransportCache {
-			return ship.transportManager.fluidNodeManager.cache
+			TODO("Fluid is disabled")
+//			return ship.transportManager.fluidNodeManager.cache
 		}
 	},
 

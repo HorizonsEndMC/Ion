@@ -29,6 +29,7 @@ import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 
 abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMultiblock<ChargerMultiblock.ChargerEntity>, FurnaceMultiblock, DisplayNameMultilblock {
+	override val description: Component = Component.text("Charges powered items.")
 	protected abstract val tierMaterial: Material
 
 	protected abstract val powerPerSecond: Int

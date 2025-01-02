@@ -12,6 +12,7 @@ import org.bukkit.block.data.Bisected.Half.TOP
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
 
 sealed class NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock(), DisplayNameMultilblock {
+	override val description: Component = Component.text("Allows jumping without a hyperspace gate")
 	override val signText = createSignText(
 		line1 = "&6Advanced",
 		line2 = "&8Navigation",

@@ -49,6 +49,8 @@ import java.util.UUID
 import kotlin.math.max
 
 abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : Multiblock(), EntityMultiblock<DrillMultiblock.DrillMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
+	override val description: Component = text("Drills blocks in a ${javaClass.simpleName.substringBefore("Mirrored").substringAfter("DrillMultiblock").toInt() + 2} block radius")
+
 	abstract val radius: Int
 	abstract val coolDown: Int
 	abstract val mirrored: Boolean
