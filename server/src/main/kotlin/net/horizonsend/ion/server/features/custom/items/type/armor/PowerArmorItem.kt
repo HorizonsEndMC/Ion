@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
@@ -101,6 +102,8 @@ class PowerArmorItem(
 
 	fun tickRocketBoots(entity: LivingEntity, itemStack: ItemStack) {
 		if (entity !is Player) return
+
+		if (ActiveStarships.findByPilot(entity) != null && entity.inventory.itemInMainHand.type == Material.CLOCK) return
 
 		val mods = getComponent(MOD_MANAGER).getMods(itemStack)
 		if (!mods.contains(ItemModRegistry.ROCKET_BOOSTING)) {
