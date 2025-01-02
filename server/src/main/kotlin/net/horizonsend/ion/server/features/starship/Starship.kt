@@ -377,6 +377,7 @@ class Starship (
 	var lastDirectControlSpeedSlowed = 0L
 
 	fun setDirectControlEnabled(enabled: Boolean) {
+		if (controller !is ActivePlayerController) return
 		val controller = controller as ActivePlayerController
 
 		if (enabled) controller.inputHandler = DirectControlHandler(controller) else
