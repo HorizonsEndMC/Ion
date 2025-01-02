@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayCurrentBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -27,6 +28,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Vector
 import org.litote.kmongo.setValue
 
 @CommandAlias("itemsearch")
@@ -34,19 +36,19 @@ import org.litote.kmongo.setValue
 object SearchCommand : SLCommand() {
 	@Default
 	@CommandCompletion("@anyItem")
-	fun default( player: Player, vararg itemStrList: String) {
+	fun default( player: Player, vararg itemStrings: String) {
 		// key: <Block> (for location)
 		// value: <Inventory> (for inventory contents)
 		val containers = mutableMapOf<Block, Inventory>()
 
-		val strList = itemStrList.toList()
+		val stringList = itemStrings.toList()
 
-		if(strList.isEmpty()) {
+		if(stringList.isEmpty()) {
 			val item = player.inventory.itemInMainHand
 			val str = GlobalCompletions.toItemString(item)
 			containers.putAll(findContainers(player.world,player.location,item,str))
 		} else {
-			for(str in strList) {
+			for(str in stringList) {
 				val item = GlobalCompletions.stringToItem(str) ?: continue
 				containers.putAll(findContainers(player.world,player.location,item,str))
 			}
@@ -55,18 +57,18 @@ object SearchCommand : SLCommand() {
 		val inventories = containers.values.toMutableSet()
 
 		Tasks.async {
-			if(itemStrList.isEmpty()) { // player typed "/itemsearch"
+			if (itemStrings.isEmpty()) { // player typed "/itemsearch"
 				if (player.inventory.itemInMainHand.type == Material.AIR) { // empty hand
 					player.userError("Specify which item to search.")
 					return@async
 				} else {
 					val item = player.inventory.itemInMainHand // non-empty hand
-					searchItem(item, player, blocks, inventories, strList)
+					searchItem(item, player, blocks, inventories, stringList)
 				}
 			} else {
-				for (str in strList) { // strList isn't empty
+				for (str in stringList) { // strList isn't empty
 					val item = GlobalCompletions.stringToItem(str) ?: continue
-					searchItem(item, player, blocks, inventories, strList)
+					searchItem(item, player, blocks, inventories, stringList)
 				}
 			}
 
@@ -94,7 +96,7 @@ object SearchCommand : SLCommand() {
 	 */
 	private fun searchItem(item: ItemStack, player: Player, blocks: MutableSet<Block>, inventories: MutableSet<Inventory>, strList: List<String>) {
 		for (block in blocks.withIndex()) {
-			val loc = Location( player.world, block.value.x.toDouble(), block.value.y.toDouble(), block.value.z.toDouble() )
+			val loc = Vector(block.value.x.toDouble() + 0.5, block.value.y.toDouble() + 0.5, block.value.z.toDouble() + 0.5)
 
 			if(!containsItem(inventories.elementAt(block.index), item)) continue //necessary check for multi-item searches to prevent false positives
 
@@ -103,9 +105,9 @@ object SearchCommand : SLCommand() {
 				item.type == Material.AIR || // display if item is air, otherwise it would show up as an invisible item
 				!PlayerCache[player].showItemSearchItem) // toggleable setting
 			{
-				sendEntityPacket(player, displayCurrentBlock(player.world.minecraft, loc.toVector()), 10 * 20) // show block
+				sendEntityPacket(player, displayCurrentBlock(player.world.minecraft, loc), 10 * 20) // show block
 			} else {
-				sendEntityPacket(player, displayItem(player, item, loc.toVector()), 10 * 20) // show item
+				sendEntityPacket(player, displayItem(player, item, loc), 10 * 20) // show item
 			}
 		}
 	}
@@ -144,12 +146,12 @@ object SearchCommand : SLCommand() {
 	 * Determines if 2 items match
 	 */
 	private fun itemsMatch(item1: ItemStack, item2: ItemStack): Boolean {
-		if(item1.type == item2.type) {
-			if( !item1.itemMeta.hasCustomModelData() && !item2.itemMeta.hasCustomModelData() ) return true // if both don't have custom model data, return true
+		if (item1.type == item2.type) {
+			if (!item1.itemMeta.hasCustomModelData() && !item2.itemMeta.hasCustomModelData()) return true // if both don't have custom model data, return true
 
-			if ( (item1.itemMeta.hasCustomModelData() && item2.itemMeta.hasCustomModelData()) &&
-				item1.itemMeta.customModelData == item2.itemMeta.customModelData ) return true //if their custom model data both match, return true
+			return item1.customItem == item2.customItem
 		}
+
 		return false
 	}
 
