@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.Space
@@ -62,6 +63,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	fun execute() {
 		val world1: World = starship.world
 		val world2 = newWorld ?: world1
+		var wouldExceedHeightLimit = false
 
 		val oldLocationSet: LongOpenHashSet = starship.blocks
 
@@ -78,7 +80,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 
 		if (displaceY(starship.min.y) < 0) {
-			throw StarshipOutOfBoundsException("Minimum height limit reached")
+			wouldExceedHeightLimit = true
+			starship.userError("Minimum height limit reached")
 		}
 
 		if (displaceY(starship.max.y) >= world1.maxHeight) {
@@ -87,7 +90,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 				return
 			}
 
-			throw StarshipOutOfBoundsException("Maximum height limit reached")
+			wouldExceedHeightLimit = true
+			starship.userError("Maximum height limit reached")
 		}
 
 		validateWorldBorders(starship.min, starship.max, findPassengers(world1), world2)
@@ -108,7 +112,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			val z0 = blockKeyZ(blockKey)
 
 			val x = displaceX(x0, z0)
-			val y = displaceY(y0)
+			// If the starship's next movement would be outside the world height limit, use the old height y0
+			val y = if (!wouldExceedHeightLimit) displaceY(y0) else y0
 			val z = displaceZ(z0, x0)
 
 			val newBlockKey = blockKey(x, y, z)
