@@ -7,17 +7,14 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.informationAction
-import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
-import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.randomString
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.gui.custom.starship.RenameButton.Companion.starshipNameSerializer
@@ -44,9 +41,7 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipTrans
 import net.horizonsend.ion.server.features.starship.modules.PlayerShipSinkMessageFactory
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
-import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
@@ -94,7 +89,9 @@ import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
 import java.util.LinkedList
+import java.util.Queue
 import java.util.UUID
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -114,6 +111,8 @@ class Starship (
 	private val hitbox: ActiveStarshipHitbox,
 	carriedShips: Map<StarshipData, LongOpenHashSet> // map of carried ship to its blocks
 ) : ForwardingAudience {
+	val mutex = Any()
+
 	// Data Aliases
 	val dataId: Oid<out StarshipData> = data._id
 	val type: StarshipType = data.starshipType.actualType
@@ -129,9 +128,21 @@ class Starship (
 	var pilotDisconnectLocation: Vec3i? = null
 	val carriedShips: MutableMap<StarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
 
+	var isMoving: Boolean = false
+	val translationQueue: Queue<TranslateMovement> = ArrayBlockingQueue(20)
+	val rotationQueue: Queue<RotationMovement> = ArrayBlockingQueue(4)
+
 	var world: World = data.bukkitWorld()
 		set(value) {
 			ActiveStarships.updateWorld(this, field, value)
+
+			if (field != value) {
+				translationQueue.forEach { it.cancelMovement() }
+				translationQueue.clear()
+				rotationQueue.forEach { it.cancelMovement() }
+				rotationQueue.clear()
+			}
+
 			field = value
 		}
 
@@ -250,7 +261,7 @@ class Starship (
 	data class PendingRotation(val clockwise: Boolean)
 
 	val pendingRotations = LinkedBlockingQueue<PendingRotation>()
-	private val rotationTime get() = TimeUnit.MILLISECONDS.toNanos(50L + initialBlockCount / 30L)
+	private val rotationTime get() = TimeUnit.MILLISECONDS.toNanos(250L + initialBlockCount / 40L)
 
 	fun getTargetForward(): BlockFace {
 		val rotation = pendingRotations.peek()
@@ -272,11 +283,19 @@ class Starship (
 		scheduleRotation()
 	}
 
+	private var scheduledRotations: Int = 0
+
 	private fun scheduleRotation() {
+		if (scheduledRotations >= 3) return
+
 		val rotationTimeTicks = TimeUnit.NANOSECONDS.toMillis(rotationTime) / 50L
+
 		Tasks.sync {
 			(controller as? ActivePlayerController)?.player?.setCooldown(StarshipControl.CONTROLLER_TYPE, rotationTimeTicks.toInt())
 		}
+
+		scheduledRotations++
+
 		Tasks.syncDelay(rotationTimeTicks) {
 			if (pendingRotations.none()) {
 				return@syncDelay
@@ -288,7 +307,8 @@ class Starship (
 				scheduleRotation()
 			}
 
-			moveAsync(RotationMovement(this, rotation.clockwise))
+			moveAsync(RotationMovement(this, rotation.clockwise), rotationQueue)
+			scheduledRotations--
 		}
 	}
 	//endregion
@@ -307,7 +327,7 @@ class Starship (
 	 */
 	var velocity: Vector = Vector(0.0, 0.0, 0.0)
 
-	fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean> {
+	fun <T: StarshipMovement> moveAsync(movement: T, queue: Queue<T>): CompletableFuture<Boolean> {
 		if (!ActiveStarships.isActive(this)) {
 			return CompletableFuture.completedFuture(false)
 		}
@@ -324,41 +344,11 @@ class Starship (
 			return CompletableFuture.completedFuture(false)
 		}
 
-		val future = CompletableFuture<Boolean>()
-		Tasks.async {
-			val result = executeMovement(movement, pilot)
-			future.complete(result)
-			controller.onMove(movement)
-			subsystems.forEach { runCatching { it.onMovement(movement, result) } }
+		if (!queue.offer(movement)) {
+			return CompletableFuture.completedFuture(false)
 		}
 
-		return future
-	}
-
-	@Synchronized
-	private fun executeMovement(movement: StarshipMovement, controller: Controller): Boolean {
-		try {
-			movement.execute()
-		} catch (e: StarshipMovementException) {
-			val location = if (e is StarshipBlockedException) e.location else null
-			controller.onBlocked(movement, e, location)
-			controller.sendMessage(e.formatMessage())
-
-			lastBlockedTime = System.currentTimeMillis()
-			return false
-		} catch (e: Throwable) {
-			serverError("There was an unhandled exception during movement! Please forward this to staff")
-			val exceptionMessage = formatException(e)
-
-			sendMessage(exceptionMessage)
-
-			IonServer.slF4JLogger.error(e.message)
-			e.printStackTrace()
-
-			return false
-		}
-
-		return true
+		return movement.future
 	}
 	//endregion
 
