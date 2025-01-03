@@ -209,6 +209,7 @@ object CustomItemListeners : SLEventListener() {
 			val customItem = item?.customItem
 			if (customItem == null) return@Array item ?: ItemStack.empty()
 			val ideal = customItem.constructItemStack(item.amount)
+			if (ideal == item) return@Array item
 			toReplace[item] = ideal
 			ideal
 		}
