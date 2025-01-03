@@ -189,26 +189,38 @@ object CustomItemListeners : SLEventListener() {
 		}
 	}
 
-//	/*
-//	 * Attempt to try to allow custom items to be crafted as if they were materials.
-//	 * There is no loose itemstack check, only exact matches for lore, name, data, etc.
-//	 *
-//	 * Until paper accepts the PR for a predicate item requirement, this should allow matching custom item identifiers to craft together
-//	 **/
-//	@EventHandler
-//	fun onPrepareCraft(event: PrepareItemCraftEvent) {
-//		val currentItems = event.inventory.matrix
-//
-//		val stockCustomItems = Array(currentItems.size) {
-//			val item = currentItems[it]
-//			val customItem = item?.customItem
-//			if (customItem == null) return@Array ItemStack.empty()
-//			customItem.constructItemStack(item.amount)
-//		}
-//
-//		val recipe = runCatching { Bukkit.getCraftingRecipe(stockCustomItems, Bukkit.getWorlds().first()) }.getOrNull() ?: return
-//		event.inventory.result = recipe.result
-//	}
+	/*
+	 * Attempt to try to allow custom items to be crafted as if they were materials.
+	 * There is no loose itemstack check, only exact matches for lore, name, data, etc.
+	 *
+	 * Until paper accepts the PR for a predicate item requirement, this should allow matching custom item identifiers to craft together
+	 **/
+	@EventHandler(priority = EventPriority.LOWEST)
+	fun allowLessIdealMaterials(event: PrepareItemCraftEvent) {
+		// Disallow recusion from setting the items
+		val trace = Thread.currentThread().stackTrace
+		if (trace.any { element -> element.methodName.contains("setMatrix") }) return
+
+		val currentItems = event.inventory.matrix
+		val toReplace = mutableMapOf<ItemStack, ItemStack>()
+
+		val stockCustomItems = Array(currentItems.size) {
+			val item = currentItems[it]
+			val customItem = item?.customItem
+			if (customItem == null) return@Array item ?: ItemStack.empty()
+			val ideal = customItem.constructItemStack(item.amount)
+			toReplace[item] = ideal
+			ideal
+		}
+
+		val recipe = runCatching { Bukkit.getCraftingRecipe(stockCustomItems, Bukkit.getWorlds().first()) }.getOrNull()
+		if (recipe == null) return
+
+		event.inventory.matrix = Array(event.inventory.matrix.size) {
+			val current = event.inventory.matrix[it] ?: return@Array null
+			toReplace[current] ?: current
+		}
+	}
 
 	@EventHandler
 	fun allowArmorDye(event: PrepareItemCraftEvent) {
