@@ -32,6 +32,8 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 	}
 
 	override fun tick() {
+		if (!controller.isSneakFlying()) return
+
 		if (starship.type == StarshipType.PLATFORM) {
 			controller.userErrorAction("This ship type is not capable of moving.")
 			return
@@ -41,8 +43,6 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 			starship.controller.userErrorAction("Cannot move while in hyperspace warmup.")
 			return
 		}
-
-		if (!controller.isSneakFlying()) return
 
 		val now = System.currentTimeMillis()
 		if (now - starship.lastManualMove < starship.manualMoveCooldownMillis) return
