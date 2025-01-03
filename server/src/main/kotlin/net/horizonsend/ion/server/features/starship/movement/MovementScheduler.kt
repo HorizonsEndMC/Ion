@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
@@ -27,7 +28,7 @@ object MovementScheduler : IonServerComponent(false) {
 			}
 		)
 
-		dispatcherThread = Executors.newSingleThreadScheduledExecutor()
+		dispatcherThread = Executors.newSingleThreadScheduledExecutor(Tasks.namedThreadFactory("ion-movement-dispatcher"))
 		dispatcherThread.execute(::handleMovements)
 
 		handlingMovements = true
