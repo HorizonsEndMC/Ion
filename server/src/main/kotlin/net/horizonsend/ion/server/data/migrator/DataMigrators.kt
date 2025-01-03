@@ -228,6 +228,7 @@ object DataMigrators : IonServerComponent() {
 
 					val new = CustomItemRegistry.POWER_ARMOR_HELMET.constructItemStack()
 					CustomItemRegistry.POWER_ARMOR_HELMET.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_HELMET, oldMods.toTypedArray())
+					old.getData(DataComponentTypes.DYED_COLOR)?.let { color -> new.setData(DataComponentTypes.DYED_COLOR, color) }
 					MigratorResult.Replacement(new)
 				}
 			))
@@ -248,6 +249,7 @@ object DataMigrators : IonServerComponent() {
 
 					val new = CustomItemRegistry.POWER_ARMOR_CHESTPLATE.constructItemStack()
 					CustomItemRegistry.POWER_ARMOR_CHESTPLATE.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_CHESTPLATE, oldMods.toTypedArray())
+					old.getData(DataComponentTypes.DYED_COLOR)?.let { color -> new.setData(DataComponentTypes.DYED_COLOR, color) }
 					MigratorResult.Replacement(new)
 				}
 			))
@@ -268,6 +270,7 @@ object DataMigrators : IonServerComponent() {
 
 					val new = CustomItemRegistry.POWER_ARMOR_LEGGINGS.constructItemStack()
 					CustomItemRegistry.POWER_ARMOR_LEGGINGS.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_LEGGINGS, oldMods.toTypedArray())
+					old.getData(DataComponentTypes.DYED_COLOR)?.let { color -> new.setData(DataComponentTypes.DYED_COLOR, color) }
 					MigratorResult.Replacement(new)
 				}
 			))
@@ -288,6 +291,7 @@ object DataMigrators : IonServerComponent() {
 
 					val new = CustomItemRegistry.POWER_ARMOR_BOOTS.constructItemStack()
 					CustomItemRegistry.POWER_ARMOR_BOOTS.getComponent(MOD_MANAGER).setMods(new, CustomItemRegistry.POWER_ARMOR_BOOTS, oldMods.toTypedArray())
+					old.getData(DataComponentTypes.DYED_COLOR)?.let { color -> new.setData(DataComponentTypes.DYED_COLOR, color) }
 					MigratorResult.Replacement(new)
 				}
 			))
