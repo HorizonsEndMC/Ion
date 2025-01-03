@@ -56,7 +56,7 @@ class NavigationGalacticMapGui(val player: Player) {
             GuiItem.HORIZON_2
         ))
         gui.setItem(3, 0, createSystemCustomControlItem(
-            "The Trench",
+            "Trench",
             Component.text("No Security", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false),
             GuiItem.EMPTY_STAR
         ))

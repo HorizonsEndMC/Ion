@@ -80,7 +80,7 @@ class NavigationInfoGui(
         "Ilios" to Component.text("Ilios is a G-type star with four planets.").decoration(TextDecoration.ITALIC, false),
         "Sirius" to Component.text("Sirius is a G-type star with four planets.").decoration(TextDecoration.ITALIC, false),
         "Horizon" to Component.text("Horizon is a large black hole with one planet and a smaller sector.").decoration(TextDecoration.ITALIC, false),
-        "Trench" to Component.text("The Trench is a resource-rich sector filled with asteroids.").decoration(TextDecoration.ITALIC, false),
+        "Trench" to Component.text("Trench is a resource-rich sector filled with asteroids.").decoration(TextDecoration.ITALIC, false),
         "AU-0821" to Component.text("AU-0821 is a sector with many starship wrecks and derelict ruins.").decoration(TextDecoration.ITALIC, false),
         "Chandra" to Component.text("Chandra is a moon-like, cratered planet. Its depressions offer many mineral resources.").decoration(TextDecoration.ITALIC, false),
         "Ilius" to Component.text("Ilius is a temperate planet with many different biomes. Pine forests, snowy mountains, and gravel beaches offer many different places to settle down.").decoration(TextDecoration.ITALIC, false),
