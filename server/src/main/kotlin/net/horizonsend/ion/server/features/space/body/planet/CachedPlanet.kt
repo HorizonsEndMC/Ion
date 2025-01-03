@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.space.body.planet
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.space.ParentPlanet
 import net.horizonsend.ion.common.utils.miscellaneous.d
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.space.body.CelestialBody
 import net.horizonsend.ion.server.features.space.body.EnterableCelestialBody
 import net.horizonsend.ion.server.features.space.body.NamedCelestialBody
@@ -14,9 +14,7 @@ import net.kyori.adventure.text.Component
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.block.data.BlockData
-import org.bukkit.inventory.ItemStack
 import org.bukkit.util.noise.SimplexNoiseGenerator
-import java.util.Locale
 
 abstract class CachedPlanet(
 	open val databaseId: Oid<out ParentPlanet>,
@@ -40,8 +38,7 @@ abstract class CachedPlanet(
 		const val CRUST_RADIUS_MAX = 180
 	}
 
-	val planetIcon: ItemStack = CustomItemRegistry.getByIdentifier(name.uppercase(Locale.getDefault()).replace(" ", ""))?.constructItemStack() ?:
-		CustomItemRegistry.BATTERY_G.constructItemStack()
+	val planetIconFactory = ItemFactory.unStackableCustomItem("planet/${name.lowercase().replace(' ', '_')}_2")
 
 	init {
 		require(size > 0 && size <= 1)
