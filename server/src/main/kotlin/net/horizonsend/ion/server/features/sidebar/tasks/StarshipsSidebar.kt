@@ -13,7 +13,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
@@ -49,9 +48,9 @@ object StarshipsSidebar {
 
     fun blockCountComponent(currentBlockCount: Int, initialBlockCount: Int): Component {
         return ofChildren(
-            Component.text(currentBlockCount, GRAY),
-            Component.text("/", DARK_GRAY),
-            Component.text(initialBlockCount, GRAY)
+            Component.text(currentBlockCount, WHITE),
+            Component.text("/", GRAY),
+            Component.text(initialBlockCount, WHITE)
         )
     }
 
@@ -79,7 +78,7 @@ object StarshipsSidebar {
     fun maxSpeedComponent(currentVelocity: Double, maxVelocity: Int, acceleration: Double): Component {
         return ofChildren(
             Component.text(currentVelocity, AQUA),
-            Component.text("/", DARK_GRAY),
+            Component.text("/", GRAY),
             Component.text(maxVelocity, DARK_AQUA),
             Component.space(),
             Component.text(acceleration, YELLOW)
@@ -224,7 +223,7 @@ object StarshipsSidebar {
     }
 
     private fun compassColor(dir: Vector, targetDir: Vector?, x: Int, z: Int): NamedTextColor {
-        var color = GRAY
+        var color = WHITE
 
         val dirNormalized = if (dir.lengthSquared() > 0) {
             dir.clone().normalize()
