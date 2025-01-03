@@ -64,7 +64,7 @@ dependencies {
 	implementation("org.apache.commons:commons-collections4:4.4")
 
 	implementation(platform("com.intellectualsites.bom:bom-newest:1.51"))
-	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.12.2")
+	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.12.3")
 	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.12.3") { isTransitive = false }
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
