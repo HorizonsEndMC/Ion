@@ -67,7 +67,10 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 			passenger.teleport(
 				newLoc,
 				TeleportCause.PLUGIN,
-				*TeleportFlag.Relative.values(),
+				TeleportFlag.Relative.VELOCITY_X,
+				TeleportFlag.Relative.VELOCITY_Y,
+				TeleportFlag.Relative.VELOCITY_Z,
+				TeleportFlag.Relative.VELOCITY_ROTATION,
 				TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY
 			)
 		} else {
