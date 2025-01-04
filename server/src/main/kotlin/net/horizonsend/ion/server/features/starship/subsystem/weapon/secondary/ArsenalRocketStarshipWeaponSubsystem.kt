@@ -77,9 +77,15 @@ class ArsenalRocketStarshipWeaponSubsystem(
 		projectile.fire()
 	}
 
-	override fun getRequiredAmmo(): ItemStack = CustomItemRegistry.ARSENAL_MISSILE.constructItemStack()
-
 	override fun getName(): Component {
 		return Component.text("Arsenal Rocket")
+	}
+
+	override fun isRequiredAmmo(item: ItemStack): Boolean {
+		return requireCustomItem(item, CustomItemRegistry.ARSENAL_MISSILE, 1)
+	}
+
+	override fun consumeAmmo(itemStack: ItemStack) {
+		consumeItem(itemStack, 1)
 	}
 }

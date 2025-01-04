@@ -34,11 +34,16 @@ class IonTurretWeaponSubsystem(
 	) {
 		multiblock.shoot(starship.world, pos, face, dir, starship, shooter, this, false)
 	}
-	override fun getRequiredAmmo(): ItemStack {
-		return CustomItemRegistry.CHARGED_SHELL.constructItemStack()
-	}
 
 	override fun getName(): Component {
 		return Component.text("Ion Turret")
+	}
+
+	override fun isRequiredAmmo(item: ItemStack): Boolean {
+		return requireCustomItem(item, CustomItemRegistry.CHARGED_SHELL, 1)
+	}
+
+	override fun consumeAmmo(itemStack: ItemStack) {
+		consumeItem(itemStack, 1)
 	}
 }

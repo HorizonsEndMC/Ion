@@ -37,11 +37,15 @@ class HeavyLaserWeaponSubsystem(
 		HeavyLaserProjectile(starship, getName(), loc, dir, shooter, target, aimDistance, sound).fire()
 	}
 
-	override fun getRequiredAmmo(): ItemStack {
-		return ItemStack(Material.REDSTONE, 2)
-	}
-
 	override fun getName(): Component {
 		return Component.text("Heavy Laser")
+	}
+
+	override fun isRequiredAmmo(item: ItemStack): Boolean {
+		return requireMaterial(item, Material.REDSTONE, 2)
+	}
+
+	override fun consumeAmmo(itemStack: ItemStack) {
+		consumeItem(itemStack, 2)
 	}
 }

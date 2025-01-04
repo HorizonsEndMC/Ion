@@ -42,11 +42,15 @@ class SonicMissileWeaponSubsystem(
 		SonicMissileProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 
-	override fun getRequiredAmmo(): ItemStack {
-		return ItemStack(Material.ECHO_SHARD, 2)
-	}
-
 	override fun getName(): Component {
 		return Component.text("Foul Trumpets")
+	}
+
+	override fun isRequiredAmmo(item: ItemStack): Boolean {
+		return requireMaterial(item, Material.ECHO_SHARD, 2)
+	}
+
+	override fun consumeAmmo(itemStack: ItemStack) {
+		consumeItem(itemStack, 2)
 	}
 }
