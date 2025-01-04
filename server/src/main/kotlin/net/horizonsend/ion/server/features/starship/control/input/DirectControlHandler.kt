@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.control.input
 
-import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -193,17 +192,17 @@ class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHa
 				true,
 				PlayerTeleportEvent.TeleportCause.PLUGIN
 			)
-
-			newLoc.pitch = player.location.pitch
-			newLoc.yaw = player.location.yaw
-
-			player.teleport(
-				newLoc,
-				PlayerTeleportEvent.TeleportCause.PLUGIN,
-				*TeleportFlag.Relative.entries.toTypedArray(),
-				TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY,
-				TeleportFlag.EntityState.RETAIN_VEHICLE
-			)
+//
+//			newLoc.pitch = player.location.pitch
+//			newLoc.yaw = player.location.yaw
+//
+//			player.teleport(
+//				newLoc,
+//				PlayerTeleportEvent.TeleportCause.PLUGIN,
+//				*TeleportFlag.Relative.entries.toTypedArray(),
+//				TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY,
+//				TeleportFlag.EntityState.RETAIN_VEHICLE
+//			)
 		}
 
 		var highestFrequency = Collections.frequency(vectors, playerDeltaVector)
