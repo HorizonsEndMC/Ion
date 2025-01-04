@@ -15,7 +15,6 @@ import org.bukkit.event.entity.EntityDamageEvent
 @CommandAlias("suicide")
 object SuicideCommand : SLCommand() {
     @Default
-    @Suppress("unused")
     fun onSuicide(sender: Player) {
         // Prevent combat timer players from wimping out
         if (CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) {
@@ -24,12 +23,13 @@ object SuicideCommand : SLCommand() {
         }
 
         // Force kill if this event is cancelled
+        @Suppress("UnstableApiUsage")
         EntityDamageEvent(
-			sender,
-			EntityDamageEvent.DamageCause.SUICIDE,
-			DamageSource.builder(DamageType.GENERIC).withCausingEntity(sender).build(),
-			Double.MAX_VALUE
-		).callEvent()
+            sender,
+            EntityDamageEvent.DamageCause.SUICIDE,
+            DamageSource.builder(DamageType.GENERIC).withCausingEntity(sender).withDirectEntity(sender).withDamageLocation(sender.location).build(),
+            Double.MAX_VALUE,
+        )
 
         sender.health = 0.0
 
