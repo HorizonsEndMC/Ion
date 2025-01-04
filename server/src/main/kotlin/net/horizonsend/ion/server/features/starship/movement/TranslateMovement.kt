@@ -4,11 +4,14 @@ import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.add
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.minecraft.world.entity.Relative
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Entity
+import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
@@ -87,14 +90,31 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			location.world = newWorld
 		}
 
+		if (passenger is Player) {
+			passenger.minecraft.teleportTo(
+				location.world.minecraft,
+				location.x,
+				location.y,
+				location.z,
+				setOf(
+					Relative.X_ROT,
+					Relative.Y_ROT,
+				),
+				0f,
+				0f,
+				true,
+				PlayerTeleportEvent.TeleportCause.PLUGIN
+			)
+
+			return
+		}
+
         passenger.teleport(
             location,
             PlayerTeleportEvent.TeleportCause.PLUGIN,
-			TeleportFlag.Relative.VELOCITY_X,
-			TeleportFlag.Relative.VELOCITY_Y,
-			TeleportFlag.Relative.VELOCITY_Z,
-			TeleportFlag.Relative.VELOCITY_ROTATION,
-            TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY
+            *TeleportFlag.Relative.entries.toTypedArray(),
+            TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY,
+			TeleportFlag.EntityState.RETAIN_VEHICLE
         )
 	}
 

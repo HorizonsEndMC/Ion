@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 
 abstract class PlayerMovementInputHandler(val controller: PlayerController, val name: String) {
+	val player get() = controller.player
 	val starship = controller.starship
 
 	open fun create() {}
