@@ -14,6 +14,7 @@ import kotlin.reflect.KMutableProperty1
 
 class DBCachedIntCycle(
 	val max: Int,
+	private val startingValue: Int,
 	name: Component,
 	butonDescription: String,
 	icon: GuiItem,
@@ -27,7 +28,7 @@ class DBCachedIntCycle(
 	}
 
 	override fun handleClick(clicker: Player, oldValue: Int, gui: PagedGui<*>, parent: SettingsPageGui, newValueConsumer: Consumer<Int>) {
-		val newSetting = if (oldValue < max) oldValue + 1 else 0
+		val newSetting = if (oldValue < max) oldValue + 1 else startingValue
 
 		newValueConsumer.accept(newSetting)
 	}

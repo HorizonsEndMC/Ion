@@ -38,7 +38,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
     override val buttonsList = listOf<SettingsPageGui>(
 		createSettingsPage(player, "Control Settings",
 			DBCachedBooleanToggle(text("DC Overrides Cruise"), "", GuiItem.GUNSHIP, false, SLPlayer::useAlternateDCCruise, AbstractPlayerCache.PlayerData::useAlternateDCCruise),
-			DBCachedIntCycle(5, text("DC Speed Modifier"), "", GuiItem.GUNSHIP, 1, SLPlayer::dcSpeedModifier, AbstractPlayerCache.PlayerData::dcSpeedModifier)
+			DBCachedIntCycle(5, 1, text("DC Speed Modifier"), "", GuiItem.GUNSHIP, 1, SLPlayer::dcSpeedModifier, AbstractPlayerCache.PlayerData::dcSpeedModifier)
 		),
 		createSettingsPage(player, "Sidebar Settings",
 			createSettingsPage(player, "Combat Timer Settings",
