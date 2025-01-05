@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import org.bukkit.Material
-import org.bukkit.block.data.Bisected
 import org.bukkit.Registry
+import org.bukkit.block.data.Bisected
 import java.util.EnumSet
 
 /**
@@ -34,6 +34,7 @@ val BUTTON_TYPES = getMatchingMaterials { it.name.endsWith("_BUTTON") }
 val Material.isButton: Boolean get() = BUTTON_TYPES.contains(this)
 
 val CANDLE_TYPES = getMatchingMaterials { it.name.endsWith("CANDLE") }
+val Material.isCandle get() = CANDLE_TYPES.contains(this)
 
 val CAKE_TYPES = getMatchingMaterials { it.name.endsWith("CAKE") }
 

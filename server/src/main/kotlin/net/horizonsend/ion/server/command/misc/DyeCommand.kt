@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.custo
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.miscellaneous.utils.enumValueOfOrNull
 import net.horizonsend.ion.server.miscellaneous.utils.isBed
+import net.horizonsend.ion.server.miscellaneous.utils.isCandle
 import net.horizonsend.ion.server.miscellaneous.utils.isCarpet
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isConcretePowder
@@ -65,7 +66,16 @@ object DyeCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	private fun dyeItem(player: Player, item: ItemStack, newDyeColor: DyeColor): Pair<String, String> {
-		if (!(item.type.isConcrete || item.type.isConcretePowder || item.type.isWool || item.type.isGlass || item.type.isGlassPane || item.type.isStainedTerracotta || item.type.isGlazedTerracotta || item.type.isCarpet || item.type.isBed)) {
+		if (!(item.type.isConcrete
+				|| item.type.isConcretePowder
+				|| item.type.isWool
+				|| item.type.isGlass
+				|| item.type.isGlassPane
+				|| item.type.isStainedTerracotta
+				|| item.type.isGlazedTerracotta
+				|| item.type.isCarpet
+				|| item.type.isBed)
+				|| item.type.isCandle) {
 			fail { "This item can not be dyed." }
 		}
 
