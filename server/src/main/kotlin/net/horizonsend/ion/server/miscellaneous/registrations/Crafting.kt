@@ -243,6 +243,7 @@ object Crafting : IonServerComponent() {
 		shapedMaterial("gilded_blackstone", GILDED_BLACKSTONE, "gbg", "bgb", "gbg", 'g' to GOLD_NUGGET, 'b' to BLACKSTONE)
 		shapedMaterial("sniffer_egg", SNIFFER_EGG, "rdr", "ded", "rdr", 'r' to RED_TERRACOTTA, 'd' to DARK_PRISMARINE, 'e' to TURTLE_EGG)
 		shapedMaterial("ochre_froglight", OCHRE_FROGLIGHT, " x ", "xlx", " x ", 'x' to HONEYCOMB, 'l' to SHROOMLIGHT)
+		shapeless("pale_oak", ItemStack(Material.PALE_OAK_SAPLING), Material.OAK_SAPLING, Material.BONE)
 		shapedMaterial("verdant_froglight", VERDANT_FROGLIGHT, " x ", "xlx", " x ", 'x' to SLIME_BALL, 'l' to SHROOMLIGHT)
 		shapedMaterial("pearlescent_froglight", PEARLESCENT_FROGLIGHT, " x ", "xlx", " x ", 'x' to AMETHYST_SHARD, 'l' to SHROOMLIGHT)
 		shaped("spore_blossom", SPORE_BLOSSOM) {
