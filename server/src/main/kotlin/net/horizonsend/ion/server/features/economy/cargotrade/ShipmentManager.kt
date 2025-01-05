@@ -223,7 +223,20 @@ object ShipmentManager : IonServerComponent() {
 				return@async player.serverError("Shipment is not available")
 			}
 
-			val item = makeShipmentAndItem(playerId, shipment, count)
+			val currentTerritory = Regions.findFirstOf<RegionTerritory>(player.location)
+			if (currentTerritory == null) {
+				player.serverError("There was an error creating your shipment, please try again.")
+				return@async
+			}
+
+			val item = runCatching { makeShipmentAndItem(playerId, currentTerritory.id, shipment, count) }
+				.getOrElse { exception ->
+					exception.printStackTrace()
+
+					player.serverError("There was an error creating your shipment, please try again.")
+					return@async
+				}
+
 			Tasks.sync {
 				if (!shipment.isAvailable) { // someone else might've got it in the process
 					return@sync player.serverError("Shipment is not available")
@@ -266,11 +279,14 @@ object ShipmentManager : IonServerComponent() {
 			"or until you pick them up (and drop them again), so move them to your ship!"
 	}
 
-	private fun makeShipmentAndItem(player: SLPlayerId, shipment: UnclaimedShipment, count: Int): ItemStack {
+	private fun makeShipmentAndItem(player: SLPlayerId, city: Oid<Territory>, shipment: UnclaimedShipment, count: Int): ItemStack {
 		val now = Date(System.currentTimeMillis())
 		val expires = Date(now.time + TimeUnit.DAYS.toMillis(shipment.expiryDays.toLong()))
 		val crate = CargoCrates[shipment.crate]
 		val from = shipment.from.territoryId
+
+		if (from != city) throw IllegalStateException("Unclaimed shipment data didn't match city location!")
+
 		val to = shipment.to.territoryId
 		val cost = shipment.crateCost
 		val revenue = shipment.crateRevenue
