@@ -99,6 +99,9 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 				setOf(
 					Relative.X_ROT,
 					Relative.Y_ROT,
+					Relative.DELTA_X,
+					Relative.DELTA_Y,
+					Relative.DELTA_Z
 				),
 				0f,
 				0f,
