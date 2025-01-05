@@ -91,20 +91,17 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 		}
 
 		if (passenger is Player) {
+			val yaw = if (newWorld != null) passenger.yaw else 0f
+			val pitch = if (newWorld != null) passenger.pitch else 0f
+
 			passenger.minecraft.teleportTo(
 				location.world.minecraft,
 				location.x,
 				location.y,
 				location.z,
-				setOf(
-					Relative.X_ROT,
-					Relative.Y_ROT,
-					Relative.DELTA_X,
-					Relative.DELTA_Y,
-					Relative.DELTA_Z
-				),
-				0f,
-				0f,
+				setOf(Relative.X_ROT, Relative.Y_ROT, Relative.DELTA_X, Relative.DELTA_Y, Relative.DELTA_Z),
+				yaw,
+				pitch,
 				true,
 				PlayerTeleportEvent.TeleportCause.PLUGIN
 			)
