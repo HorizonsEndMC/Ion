@@ -371,7 +371,7 @@ class Starship (
 	var directControlCenter: Location? = null
 
 	// Stored on starship so it can't be reset by switching to dc and back
-	val initialDirectControlCooldown get() = 300L + ((initialBlockCount / 700).coerceAtLeast(1)) * 30
+	val initialDirectControlCooldown get() = 300L + ((initialBlockCount / 700)/*.coerceAtLeast(1)*/) * 30
 	var directControlCooldown = initialDirectControlCooldown
 	var directControlSpeedModifierFromIonTurrets = 1.0
 		set(value) {
