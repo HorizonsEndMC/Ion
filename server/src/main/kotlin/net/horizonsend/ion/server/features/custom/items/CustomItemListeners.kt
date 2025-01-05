@@ -5,7 +5,8 @@ import io.papermc.paper.event.block.BlockPreDispenseEvent
 import net.horizonsend.ion.server.command.misc.DyeCommand
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.Listener
-import net.horizonsend.ion.server.features.custom.items.component.TickRecievierModule
+import net.horizonsend.ion.server.features.custom.items.component.TickReceiverModule
+import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.minecraft.world.item.DyeItem
@@ -34,7 +35,7 @@ object CustomItemListeners : SLEventListener() {
 	private val craftListeners: MutableMap<CustomItem, MutableSet<Listener<PrepareItemCraftEvent, *>>> = mutableMapOf()
 	private val damageEntityListeners: MutableMap<CustomItem, MutableSet<Listener<EntityDamageByEntityEvent, *>>> = mutableMapOf()
 
-	private val tickRecievers: MutableMap<CustomItem, MutableSet<TickRecievierModule>> = mutableMapOf()
+	private val tickRecievers: MutableMap<CustomItem, MutableSet<TickReceiverModule>> = mutableMapOf()
 
 	private fun <T: CustomItem, Z: Any> getEntries(
 		collection: MutableMap<CustomItem, MutableSet<Z>>,
@@ -53,7 +54,7 @@ object CustomItemListeners : SLEventListener() {
 			components.filterIsInstance<Listener<EntityShootBowEvent, *>>().filterTo(getEntries(entityShootBowListeners, newCustomItem)) { it.eventType == EntityShootBowEvent::class }
 			components.filterIsInstance<Listener<PrepareItemCraftEvent, *>>().filterTo(getEntries(craftListeners, newCustomItem)) { it.eventType == PrepareItemCraftEvent::class }
 			components.filterIsInstance<Listener<EntityDamageByEntityEvent, *>>().filterTo(getEntries(damageEntityListeners, newCustomItem)) { it.eventType == EntityDamageByEntityEvent::class }
-			getEntries(tickRecievers, newCustomItem).addAll(components.filterIsInstance<TickRecievierModule>())
+			getEntries(tickRecievers, newCustomItem).addAll(components.filterIsInstance<TickReceiverModule>())
 		}
 	}
 
@@ -125,22 +126,26 @@ object CustomItemListeners : SLEventListener() {
 		for (player in Bukkit.getOnlinePlayers()) {
 			val inventory = player.inventory
 
-			val tickedGear = mutableListOf<ItemStack?>()
-			tickedGear.addAll(inventory.armorContents)
-			tickedGear.add(inventory.itemInOffHand)
-			tickedGear.add(inventory.itemInMainHand)
+			val tickedArmorGear = mutableListOf<ItemStack?>()
+			tickedArmorGear.addAll(inventory.armorContents)
 
-			for (item in tickedGear) {
+			// TODO: No handheld ticked gear exists at the moment
+			val tickedHandheldGear = mutableListOf<ItemStack?>()
+			tickedHandheldGear.add(inventory.itemInOffHand)
+			tickedHandheldGear.add(inventory.itemInMainHand)
+
+			// Tick power armor items
+			for (item in tickedArmorGear) {
 				if (item == null) continue
-				val customItem = item.customItem
-				if (customItem == null) continue
+				val customItem = item.customItem ?: continue
+				val powerArmorItem = if (customItem is PowerArmorItem) customItem else continue
 
 				val tickListeners = getEntries(tickRecievers, customItem)
 				if (tickListeners.isEmpty()) continue
 
 				for (module in tickListeners) {
 					if (event.tickNumber % module.interval != 0) continue
-					module.handleTick(player, item, customItem)
+					module.handleTick(player, item, customItem, powerArmorItem.slot)
 				}
 			}
 		}

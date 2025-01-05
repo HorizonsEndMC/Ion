@@ -94,6 +94,6 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		/**
 		 * Recieves ticks, idk what else to say
 		 **/
-		val TICK_RECIEVER = newComponentType<TickRecievierModule, AllowMultiple<TickRecievierModule>>(ComponentType.ALLOW_MULTIPLE)
+		val TICK_RECIEVER = newComponentType<TickReceiverModule, AllowMultiple<TickReceiverModule>>(ComponentType.ALLOW_MULTIPLE)
 	}
 }

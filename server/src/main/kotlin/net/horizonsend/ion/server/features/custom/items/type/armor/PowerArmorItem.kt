@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomItemComp
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
 import net.horizonsend.ion.server.features.custom.items.component.ModManager
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
-import net.horizonsend.ion.server.features.custom.items.component.TickRecievierModule
+import net.horizonsend.ion.server.features.custom.items.component.TickReceiverModule
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
@@ -76,12 +76,12 @@ class PowerArmorItem(
 			modManger.openMenu(event.player, this@PowerArmorItem, item)
 		})
 
-		addComponent(CustomComponentTypes.TICK_RECIEVER, TickRecievierModule(20) { entity, itemStack, _ ->
+		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(20) { entity, itemStack, _, _ ->
 			tickPowerMods(entity, itemStack)
 		})
 
-		addComponent(CustomComponentTypes.TICK_RECIEVER, TickRecievierModule(1) { entity, itemStack, _ ->
-			tickRocketBoots(entity, itemStack)
+		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(1) { entity, itemStack, _, equipmentSlot ->
+			tickRocketBoots(entity, itemStack, equipmentSlot)
 		})
 	}
 
@@ -100,8 +100,9 @@ class PowerArmorItem(
 		}
 	}
 
-	fun tickRocketBoots(entity: LivingEntity, itemStack: ItemStack) {
+	fun tickRocketBoots(entity: LivingEntity, itemStack: ItemStack, equipmentSlot: EquipmentSlot) {
 		if (entity !is Player) return
+		if (equipmentSlot != EquipmentSlot.FEET) return
 
 		if (ActiveStarships.findByPilot(entity) != null && entity.inventory.itemInMainHand.type == Material.CLOCK) return
 
