@@ -77,7 +77,8 @@ class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHa
 
 		val baseSpeed = calculateSpeed(newSlot)
 		val cooldown: Long = calculateCooldown(starship.directControlCooldown, newSlot)
-		val speed = (10.0f * baseSpeed * (1000.0f / cooldown)).roundToInt() / 10.0f
+		val speed = (10.0f * baseSpeed * starship.directControlSpeedModifierFromIonTurrets *
+				starship.directControlSpeedModifierFromHeavyLasers * (1000.0f / cooldown)).roundToInt() / 10.0f
 
 		player.sendActionBar(text("Speed: $speed", NamedTextColor.AQUA))
 	}
