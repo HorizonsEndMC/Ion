@@ -147,8 +147,6 @@ object SearchCommand : SLCommand() {
 	 */
 	private fun itemsMatch(item1: ItemStack, item2: ItemStack): Boolean {
 		if (item1.type == item2.type) {
-			if (!item1.itemMeta.hasCustomModelData() && !item2.itemMeta.hasCustomModelData()) return true // if both don't have custom model data, return true
-
 			return item1.customItem == item2.customItem
 		}
 
