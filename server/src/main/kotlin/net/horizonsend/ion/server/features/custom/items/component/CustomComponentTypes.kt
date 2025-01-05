@@ -11,15 +11,19 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 
-class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> private constructor(val storageType: ComponentType) {
+class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> private constructor(val storageType: ComponentType, val componentName: String) {
 	fun castData(customItemComponent: ComponentTypeData<*>): Z {
 		@Suppress("UNCHECKED_CAST")
 		return customItemComponent as Z
 	}
 
+	override fun toString(): String {
+		return "CustomItemComponentType[$componentName]"
+	}
+
 	companion object {
 		private inline fun <reified T : CustomItemComponent, Z : ComponentTypeData<T>> newComponentType(type: ComponentType): CustomComponentTypes<T, Z> {
-			return CustomComponentTypes(type)
+			return CustomComponentTypes(type, T::class.simpleName ?: "Anonymous")
 		}
 
 		/**

@@ -13,7 +13,7 @@ class CustomItemComponentManager(val serializationManager: SerializationManager)
 	fun hasComponent(type: CustomComponentTypes<*, *>): Boolean = components.containsKey(type)
 
 	fun <T : CustomItemComponent> getComponent(type: CustomComponentTypes<T, ComponentTypeData.OnlyOne<T>>): T {
-		val stored = components[type] ?: throw NullPointerException("Trying to access unregistered custom component")
+		val stored = components[type] ?: throw NullPointerException("Trying to access unregistered custom component: $type")
 		return type.castData(stored).entry
 	}
 
