@@ -133,7 +133,7 @@ object CratePlacer : CustomItem(
 			)
 
 			if (event.callEvent()) {
-				player.inventory.removeItem(item.asOne())
+				player.inventory.removeItemAnySlot(item.asOne())
 
 				val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)
 				powerManager.removePower(itemStack, this, powerManager.getPowerUse(itemStack, this))
