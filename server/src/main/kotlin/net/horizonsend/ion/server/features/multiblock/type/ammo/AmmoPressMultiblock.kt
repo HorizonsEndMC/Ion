@@ -141,6 +141,7 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 			return
 		}
 
+		if (!fuelCustomItem.hasComponent(CustomComponentTypes.AMMUNITION_STORAGE)) return
 		val ammoComponent = fuelCustomItem.getComponent(CustomComponentTypes.AMMUNITION_STORAGE)
 		val ammoRefillAttribute = fuelCustomItem.getAttributes(fuel).filterIsInstance<AmmunitionRefillType>().firstOrNull() ?: return
 

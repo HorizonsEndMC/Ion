@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
@@ -32,7 +33,6 @@ import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
@@ -147,6 +147,7 @@ object ShipmentManager : IonServerComponent() {
 
 	private fun MenuHelper.getCrateItem(shipment: UnclaimedShipment, player: Player): GuiItem {
 		val item = CrateItems[CargoCrates[shipment.crate]]
+
 		return guiButton(item) {
 			whoClicked.closeInventory()
 			openAmountPrompt(player, shipment)
@@ -176,8 +177,9 @@ object ShipmentManager : IonServerComponent() {
 	}
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
-		val playerMaxShipSize = StarshipType.entries.filter { it.typeCategory != TypeCategory.WAR_SHIP && it.canUse(player) && it != PLATFORM }
-			.sortedByDescending { it.maxSize }[0].maxSize
+		val playerMaxShipSize = StarshipType.entries
+			.filter { it.typeCategory == TypeCategory.TRADE_SHIP && it.canUse(player) }
+			.maxOf { it.maxSize }
 
 		val min = balancing.generator.minShipmentSize
 		val max = min(balancing.generator.maxShipmentSize, (min(0.015 * playerMaxShipSize, sqrt(playerMaxShipSize.toDouble()))).toInt())
@@ -203,25 +205,28 @@ object ShipmentManager : IonServerComponent() {
 
 	private fun giveShipment(player: Player, shipment: UnclaimedShipment, count: Int) {
 		val cost = getCost(shipment, count)
+
 		if (!VAULT_ECO.has(player, cost)) {
-			return player msg red("You can't afford that shipment! It costs ${cost.toCreditsString()}")
+			player.userError("You can't afford that shipment! It costs ${cost.toCreditsString()}")
+			return
 		}
+
 		Tasks.async {
 			// database stuff async
 			val playerId = player.slPlayerId
 			if (CargoCrateShipment.hasPurchasedFrom(playerId, shipment.from.territoryId, TIME_LIMIT)) {
-				player msg red("You already bought crates from this territory within the past $TIME_LIMIT hours")
+				player.userError("You already bought crates from this territory within the past $TIME_LIMIT hours")
 				return@async
 			}
 
 			if (!shipment.isAvailable) { // someone else might've got it in the process
-				return@async player msg red("Shipment is not available")
+				return@async player.serverError("Shipment is not available")
 			}
 
 			val item = makeShipmentAndItem(playerId, shipment, count)
 			Tasks.sync {
 				if (!shipment.isAvailable) { // someone else might've got it in the process
-					return@sync player msg red("Shipment is not available")
+					return@sync player.serverError("Shipment is not available")
 				}
 				completePurchase(player, shipment, item, count)
 				player.closeInventory()
@@ -252,9 +257,11 @@ object ShipmentManager : IonServerComponent() {
 		val costString = getCost(shipment, count).toCreditsString()
 		val revenueString = (shipment.crateRevenue * count).toCreditsString()
 		val planetName = Regions.get<RegionTerritory>(shipment.to.territoryId).world
+
 		player msg "&2Accepted a shipment for &a$costString&2 to deliver &a$count Crates&2 " +
 			"to &a${shipment.to.displayName}&2 on &a$planetName&2 " +
 			"in exchange for a total revenue of &a$revenueString"
+
 		player msg "&7&oThe items can only be picked up by you for one hour, " +
 			"or until you pick them up (and drop them again), so move them to your ship!"
 	}
