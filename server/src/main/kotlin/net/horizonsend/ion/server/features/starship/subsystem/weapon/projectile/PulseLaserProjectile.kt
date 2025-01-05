@@ -27,10 +27,4 @@ class PulseLaserProjectile(
 	override val volume: Int = balancing.volume
 	override val pitch: Float = balancing.pitch
 	override val soundName: String = balancing.soundName
-
-	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		if (starship.initialBlockCount < 1000) {
-			impactLocation.createExplosion(4.0f)
-		}
-	}
 }
