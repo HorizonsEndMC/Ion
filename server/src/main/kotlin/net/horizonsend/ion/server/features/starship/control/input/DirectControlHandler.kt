@@ -98,8 +98,7 @@ class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHa
 		val playerDcModifier = PlayerCache[player.uniqueId].dcSpeedModifier
 		val speedFac = if (ping > movementCooldown) max(2, playerDcModifier) else playerDcModifier
 
-		val selectedSpeed = (controller.selectedDirectControlSpeed * starship.directControlSpeedModifierFromIonTurrets *
-				starship.directControlSpeedModifierFromHeavyLasers).toInt().coerceAtLeast(0)
+		val selectedSpeed = controller.selectedDirectControlSpeed
 
 		val cooldown = calculateCooldown(movementCooldown, selectedSpeed) * speedFac
 		val currentTime = System.currentTimeMillis()
@@ -117,7 +116,8 @@ class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHa
 
 		// The starship's direction
 		val direction = starship.getTargetForward()
-		val targetSpeed = calculateSpeed(selectedSpeed)
+		val targetSpeed = (calculateSpeed(selectedSpeed) * starship.directControlSpeedModifierFromIonTurrets *
+				starship.directControlSpeedModifierFromHeavyLasers).toInt()
 
 		// Initialize forward movement
 		dx += (targetSpeed * direction.modX)
