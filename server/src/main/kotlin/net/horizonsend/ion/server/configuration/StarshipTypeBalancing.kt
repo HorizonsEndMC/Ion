@@ -171,7 +171,7 @@ data class StarshipTypeBalancing(
 				angleRadiansVertical = 180.0,
 				forwardOnly = true,
 				convergeDistance = 20.0,
-				extraDistance = 2,
+				extraDistance = 3,
 				fireCooldownMillis = 250,
 				aimDistance = 0,
 				applyCooldownToAll = true
@@ -1032,7 +1032,7 @@ class StarshipWeapons(
 				angleRadiansVertical = 180.0,
 				forwardOnly = true,
 				convergeDistance = 20.0,
-				extraDistance = 2,
+				extraDistance = 3,
 				fireCooldownMillis = 250,
 				aimDistance = 0,
 				applyCooldownToAll = true
