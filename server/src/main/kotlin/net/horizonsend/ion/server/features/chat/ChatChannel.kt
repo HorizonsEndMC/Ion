@@ -275,6 +275,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			val prefix = ofChildren(
 				displayName,
+				text(" "),
 				formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.settlementTag ?: ""))
 			)
 
