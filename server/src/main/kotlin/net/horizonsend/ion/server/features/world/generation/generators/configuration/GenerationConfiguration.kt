@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.world.generation.generators.configur
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.features.world.IonWorld
-import net.horizonsend.ion.server.features.world.generation.IonWorldGenerator
+import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
 
 @Serializable
 sealed interface GenerationConfiguration {
