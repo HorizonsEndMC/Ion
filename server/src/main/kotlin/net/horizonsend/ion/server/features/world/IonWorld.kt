@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawner
-import net.horizonsend.ion.server.features.world.generation.IonWorldGenerator
+import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
