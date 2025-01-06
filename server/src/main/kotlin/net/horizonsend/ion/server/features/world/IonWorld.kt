@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.manager.WorldMultiblockManager
@@ -15,6 +16,7 @@ import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfi
 import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawner
+import net.horizonsend.ion.server.features.world.generation.IonWorldGenerator
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DATA_VERSION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -108,8 +110,11 @@ class IonWorld private constructor(
 	 * @see Environment
 	 * @see WorldSettings
 	 **/
-	val configuration: WorldSettings by lazy {
-		Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name])
+	var configuration: WorldSettings = loadConfiguration()
+
+	fun reloadConfiguration() {
+		configuration = loadConfiguration()
+		enviornmentManager.reloadConfiguration()
 	}
 
 	/** Write the configuration to the disk */
@@ -124,13 +129,14 @@ class IonWorld private constructor(
 	/** Get all players on the inner world */
 	val players: List<Player> get() = world.players
 
+	/** List of blocks that cannot be detected by starships */
 	val detectionForbiddenBlocks = loadForbiddenBlocks()
 
+	/** Contains custom mob spawning behavior */
 	val customMonSpawner = CustomMobSpawner(this, configuration.customMobSpawns)
 
-	//TODO
-	// - Terrain Generator
-	// - Worldborder injection
+	/** Custom terrain generation handling, including space or nebulas */
+	val terrainGenerator: IonWorldGenerator<*>? = configuration.terrainGenerationSettings?.buildGenerator(this)
 
 	companion object : IonServerComponent() {
 		private val WORLD_CONFIGURATION_DIRECTORY = ConfigurationFiles.configurationFolder.resolve("worlds").apply { mkdirs() }
@@ -252,6 +258,16 @@ class IonWorld private constructor(
 
 	fun saveForbiddenBlocks() {
 		world.persistentDataContainer.set(FORBIDDEN_BLOCKS, LONG_ARRAY, detectionForbiddenBlocks.toLongArray())
+	}
+
+	fun loadConfiguration(): WorldSettings {
+		return runCatching {
+			Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name])
+		}.onFailure { exception ->
+			IonServer.slF4JLogger.error("There was an error loading the world configuration for $this. To prevent undefiend behavior the server will now shut down.")
+			exception.printStackTrace()
+			Bukkit.shutdown()
+		}.getOrThrow()
 	}
 
 	fun getAllChunks() = chunks.values

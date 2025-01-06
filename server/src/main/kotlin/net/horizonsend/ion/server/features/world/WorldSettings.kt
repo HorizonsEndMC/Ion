@@ -6,16 +6,18 @@ import net.horizonsend.ion.server.configuration.util.IntegerAmount
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.gas.type.WorldGasConfiguration
-import net.horizonsend.ion.server.features.world.environment.Environment
+import net.horizonsend.ion.server.features.world.environment.configuration.WorldEnvironmentConfiguration
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.GenerationConfiguration
 import org.bukkit.entity.EntityType
 import java.util.function.Supplier
 
 @Serializable
 data class WorldSettings(
 	val flags: MutableSet<WorldFlag> = mutableSetOf(),
-	val environments: MutableSet<Environment> = mutableSetOf(),
+	val environments: WorldEnvironmentConfiguration = WorldEnvironmentConfiguration(),
 	val gasConfiguration: WorldGasConfiguration = WorldGasConfiguration(),
 	val customMobSpawns: List<SpawnedMob> = listOf(),
+	val terrainGenerationSettings: GenerationConfiguration? = null,
 	val aiDifficulty: IntegerAmount = WeightedIntegerAmount(
 		setOf(
 			Pair(0, 0.3),
