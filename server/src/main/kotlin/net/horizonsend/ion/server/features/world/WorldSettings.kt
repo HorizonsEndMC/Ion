@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.configuration.util.IntegerAmount
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
 import net.horizonsend.ion.server.features.gas.type.WorldGasConfiguration
 import net.horizonsend.ion.server.features.world.environment.Environment
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.GenerationConfiguration
 import org.bukkit.entity.EntityType
 import java.util.function.Supplier
 
@@ -15,6 +16,7 @@ data class WorldSettings(
 	val environments: MutableSet<Environment> = mutableSetOf(),
 	val gasConfiguration: WorldGasConfiguration = WorldGasConfiguration(),
 	val customMobSpawns: List<SpawnedMob> = listOf(),
+	val terrainGenerationSettings: GenerationConfiguration? = null
 ) {
 	@Serializable
 	data class SpawnedMob(
