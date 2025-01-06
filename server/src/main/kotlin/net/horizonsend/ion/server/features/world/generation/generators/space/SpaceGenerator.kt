@@ -5,10 +5,11 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.encounters.Encounters
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.generation.IonWorldGenerator
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
-import net.horizonsend.ion.server.features.world.generation.generators.interfaces.WorldGenerator
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.SpaceGenerationConfiguration
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
@@ -17,7 +18,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Chunk
-import org.bukkit.World
 import org.bukkit.persistence.PersistentDataType
 import java.io.File
 import java.util.Optional
@@ -31,12 +31,9 @@ import kotlin.math.sqrt
  * An instance of this class is generated for each world on server startup
  *
  **/
-class SpaceGenerator(
-	val world: World,
-	val configuration: ServerConfiguration.AsteroidConfig,
-) : WorldGenerator {
+class SpaceGenerator(world: IonWorld, configuration: SpaceGenerationConfiguration) : IonWorldGenerator<SpaceGenerationConfiguration>(world, configuration) {
 	private val spaceGenerationVersion: Byte = 0
-	val random = Random(world.seed)
+	val random = Random(seed)
 
 	// ASTEROIDS SECTION
 	val oreMap: Map<String, BlockState> = configuration.blockPalettes.flatMap { it.ores }.associate {
@@ -91,7 +88,7 @@ class SpaceGenerator(
 		densities.add(configuration.baseAsteroidDensity)
 
 		for (feature in configuration.features) {
-			if (feature.origin.world != world.name) continue
+			if (feature.origin.world != world.world.name) continue
 
 			if ((sqrt((x - feature.origin.x).pow(2) + (z - feature.origin.z).pow(2)) - feature.tubeSize).pow(2) + (y - feature.origin.y).pow(
 					2
@@ -104,14 +101,14 @@ class SpaceGenerator(
 		return densities.max()
 	}
 
-	private fun oreWeights(palette: ServerConfiguration.AsteroidConfig.Palette): WeightedRandomList<String> {
+	// Asteroids end
+	private fun oreWeights(palette: SpaceGenerationConfiguration.Palette): WeightedRandomList<String> {
 		val weightedList = WeightedRandomList<String>()
 
 		weightedList.addMany(palette.ores.associate { it.material to it.rolls })
 
 		return weightedList
 	}
-	// Asteroids end
 
 	// Wrecks start
 	val schematicCache: LoadingCache<String, Optional<Clipboard>> = CacheBuilder.newBuilder().build(
@@ -133,8 +130,8 @@ class SpaceGenerator(
 
 		val foundFeatures = mutableListOf<T>()
 
-		val minHeight = world.minHeight
-		val maxHeight = world.maxHeight
+		val minHeight = world.world.minHeight
+		val maxHeight = world.world.maxHeight
 		val middleHeight = maxHeight / 2.0
 
 		for (chunkXOffset in -radius..+radius) {
