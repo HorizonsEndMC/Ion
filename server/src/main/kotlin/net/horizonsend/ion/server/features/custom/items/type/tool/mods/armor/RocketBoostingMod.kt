@@ -24,7 +24,7 @@ object RocketBoostingMod : ItemModification {
 
 	override fun getAttributes(): List<CustomItemAttribute> = listOf()
 
-	private val glidingPlayers = mutableSetOf<UUID>()
+	val glidingPlayers = mutableSetOf<UUID>()
 	val glideDisabledPlayers = mutableMapOf<UUID, Long>() // UUID to end time of glide block
 
 	fun setGliding(player: Player, gliding: Boolean) {

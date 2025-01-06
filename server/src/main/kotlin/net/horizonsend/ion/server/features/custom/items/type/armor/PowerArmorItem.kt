@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.custom.items.component.ModManager
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.custom.items.component.TickReceiverModule
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
@@ -120,7 +121,8 @@ class PowerArmorItem(
 		glideDisabledPlayers[entity.uniqueId]?.let { glideDisabledPlayers.remove(entity.uniqueId) } // remove if not disabled
 
 		@Suppress("DEPRECATION") // Any other method would cause weirdness not allow low flight
-		if (entity.isOnGround || !entity.isSneaking) {
+		// RocketBoostingMod sets glidingPlayers only on the ToggleSneakEvent (in PowerArmorListener)
+		if (entity.isOnGround || !entity.isSneaking || !RocketBoostingMod.glidingPlayers.contains(entity.uniqueId)) {
 			setGliding(entity, false)
 			return
 		}
