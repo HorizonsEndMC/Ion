@@ -26,13 +26,13 @@ class GenerateChunk(
 
 	suspend fun generateChunk(scope: CoroutineScope) {
 		val asteroidSectionsMapped = asteroids.associateWith {
-			it.getCoveredSections(generator.world.minHeight, generator.world.maxHeight)
+			it.getCoveredSections(generator.world.world.minHeight, generator.world.world.maxHeight)
 		}
 
 		val wreckGenerationDataMap = wrecks.associateWith { it.worldGenData(generator) }
 
 		val wreckSectionsMapped = wreckGenerationDataMap
-			.mapValues { (_, data) -> data.region.getCoveredSections(generator.world.minHeight, generator.world.maxHeight) }
+			.mapValues { (_, data) -> data.region.getCoveredSections(generator.world.world.minHeight, generator.world.world.maxHeight) }
 
 		val coveredSections = mutableListOf<IntRange>().apply {
 			addAll(asteroidSectionsMapped.values)

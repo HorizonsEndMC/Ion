@@ -23,7 +23,6 @@ data class ServerConfiguration(
 	val crossServerDeathMessages: Boolean = false,
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
-	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
 	val soldShips: List<SerializableDealerShipInformation> = listOf(),
 	val dutyModeMonitorWebhook: String? = null,
 	val eventLoggerWebhook: String? = null,
