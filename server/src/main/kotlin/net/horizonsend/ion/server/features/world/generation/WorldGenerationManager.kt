@@ -5,47 +5,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.place
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.store
-import net.horizonsend.ion.server.features.world.generation.generators.interfaces.WorldGenerator
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.generation.generators.space.GenerateChunk
-import net.horizonsend.ion.server.features.world.generation.generators.space.SpaceGenerator
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.cbukkit
-import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.ChunkLoadEvent
-import org.bukkit.event.world.WorldInitEvent
 
 object WorldGenerationManager : SLEventListener() {
-	val worldGenerators: MutableMap<World, WorldGenerator?> = mutableMapOf()
-
 	val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-	operator fun get(world: World): WorldGenerator? = worldGenerators[world]
-
 	@EventHandler
-	fun onWorldInit(event: WorldInitEvent) {
-		val serverLevel = event.world
-
-		// TODO
-		ConfigurationFiles.serverConfiguration().spaceGenConfig[event.world.name]?.let { config ->
-			log.info("Creating generator for ${serverLevel.name}")
-			worldGenerators[serverLevel] =
-				SpaceGenerator(
-					serverLevel,
-					config
-				)
+	fun onChunkLoadEvent(event: ChunkLoadEvent) {
+		val generator = event.chunk.world.ion.terrainGenerator ?: return
+		coroutineScope.launch {
+			generator.generateChunk(event.chunk)
 		}
-	}
-
-	@EventHandler
-	fun onChunkLoadEvent(event: ChunkLoadEvent) = coroutineScope.launch {
-		val generator = get(event.world) ?: return@launch//@runBlocking
-
-		generator.generateChunk(event.chunk)
 	}
 
 	@OptIn(ExperimentalCoroutinesApi::class)
