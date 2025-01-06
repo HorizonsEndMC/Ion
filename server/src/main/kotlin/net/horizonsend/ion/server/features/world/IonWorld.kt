@@ -17,7 +17,7 @@ import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.horizonsend.ion.server.features.world.environment.WorldEnvironmentManager
 import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawner
-import net.horizonsend.ion.server.features.world.generation.IonWorldGenerator
+import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DATA_VERSION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck

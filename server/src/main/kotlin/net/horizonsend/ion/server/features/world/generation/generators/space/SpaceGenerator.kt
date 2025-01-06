@@ -7,8 +7,8 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.world.IonWorld
-import net.horizonsend.ion.server.features.world.generation.IonWorldGenerator
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
+import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.SpaceGenerationConfiguration
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
