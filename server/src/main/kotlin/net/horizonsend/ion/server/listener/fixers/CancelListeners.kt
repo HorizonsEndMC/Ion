@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.listener.fixers
 
+import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent
 import io.papermc.paper.event.player.PlayerOpenSignEvent
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
@@ -10,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.minecraft.world.entity.item.ItemEntity
 import org.bukkit.Material
+import org.bukkit.entity.EnderPearl
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockDispenseEvent
@@ -188,5 +190,12 @@ class CancelListeners : SLEventListener() {
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: BlockExplodeEvent) {
 		event.blockList().removeAll { it.customBlock == CustomBlocks.BATTLECRUISER_REACTOR_CORE || it.customBlock == CustomBlocks.CRUISER_REACTOR_CORE}
+	}
+
+	@EventHandler
+	fun onThrowEnderPearl(event: PlayerLaunchProjectileEvent) {
+		if (event.projectile is EnderPearl) {
+			event.isCancelled = true
+		}
 	}
 }
