@@ -1,40 +1,97 @@
 package net.horizonsend.ion.server.features.world.generation.generators
 
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.features.world.IonWorld
-import net.horizonsend.ion.server.features.world.generation.feature.FeaturePlacementContext
-import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
+import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
+import net.horizonsend.ion.server.features.world.generation.feature.AsteroidFeature
+import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeatureConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeatureGeneratorConfiguration
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.minecraft.world.level.ChunkPos
 import org.bukkit.Chunk
+import kotlin.random.Random
 
 class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfiguration) : IonWorldGenerator<FeatureGeneratorConfiguration>(world, configuration) {
-	val features = configuration.features.map(FeatureConfiguration::loadFeature)
+	val features = configuration.features.map(FeatureConfiguration::loadFeature).plus(AsteroidFeature)
 
 	override suspend fun generateChunk(chunk: Chunk) {
+//		if (features.isEmpty()) return
+
 		val nmsChunk = chunk.minecraft
+		val pos = nmsChunk.pos
 
-		val toGenerate = getStructureGenerationData(chunk)
+		// Search #FEATURE_START_SEARCH_RANGE chunks ahead for structure starts
+		getStartSearchChunks(pos).forEach(::buildStructureData)
 
-		val sections = toGenerate
-			.associateWith { (feature, context) -> feature.generateChunk(context) }
-			.entries.sortedBy { it.key.feature.placementConfiguration.placementPriority }
+		// Get data for this chunk
+		val data = getChunkStructureData(pos)
 
-		sections.forEach { t ->  t.value.forEach { section -> section.place(nmsChunk) } }
+		val starts = data.starts
+		val references = data.references
+
+		val referencedStarts = references.flatMap { (_, referenced) ->
+			referenced.flatMap { key -> getChunkStructureData(ChunkPos(key)).starts }
+		}
+
+		val toGenerate = starts.plus(referencedStarts)
+
+		val sectionsB = toGenerate
+			.associateWith { featureStart: FeatureStart ->
+				val deferred = CompletableDeferred<List<CompletedSection>>()
+				WorldGenerationManager.coroutineScope.launch {
+					deferred.complete(featureStart.feature.castAndGenerateChunk(this@FeatureGenerator, pos, featureStart))
+				}
+
+				deferred
+			}
+
+		sectionsB.values.awaitAll()
+		val sections = sectionsB.entries.sortedBy { it.key.feature.placementConfiguration.placementPriority }
+
+		sections.forEach { t ->  t.value.await().forEach { section -> section.place(nmsChunk) } }
+		nmsChunk.`moonrise$getChunkAndHolder`().holder.broadcastChanges(nmsChunk)
 	}
 
-	fun getStructureGenerationData(chunk: Chunk): List<FeatureGenerationData> {
-		val starts = mutableListOf<FeatureGenerationData>()
+	fun buildStructureData(chunk: ChunkPos) {
+		val toGenerate = addStructureStarts(chunk)
+		saveStarts(chunk, toGenerate)
+
+		for (start in toGenerate) {
+			val (chunkMin, chunkmax) = start.feature.getChunkExtents(start)
+
+			for (chunkX in chunkMin.x..chunkMin.x) for (chunkZ in chunkMin.z..chunkmax.z) {
+				addReference(ChunkPos(chunkX, chunkZ), start.feature, chunk)
+			}
+		}
+	}
+
+	fun addStructureStarts(chunk: ChunkPos): MutableList<FeatureStart> {
+		val starts = mutableListOf<FeatureStart>()
+		val chunkRandom = Random(chunk.longKey)
 
 		for (feature in features.filter { feature -> feature.canPlace() }) {
-			val count = feature.placementConfiguration.getCount()
-			repeat(count) {
-				starts.add(FeatureGenerationData(feature, feature.placementConfiguration.generatePlacementContext(this, chunk)))
-			}
+			val featureStarts = feature.buildStartsData(chunk, chunkRandom)
+			starts.addAll(featureStarts)
 		}
 
 		return starts
 	}
 
-	data class FeatureGenerationData(val feature: GeneratedFeature, val placementContext: FeaturePlacementContext)
+	companion object {
+		const val FEATURE_START_SEARCH_RANGE = 10
+
+		fun getStartSearchChunks(chunkPos: ChunkPos): List<ChunkPos> {
+			val chunks = mutableListOf<ChunkPos>()
+
+			for (x in -FEATURE_START_SEARCH_RANGE..FEATURE_START_SEARCH_RANGE) for (z in -FEATURE_START_SEARCH_RANGE..FEATURE_START_SEARCH_RANGE) {
+				chunks.add(ChunkPos(chunkPos.x + x, chunkPos.z + z))
+			}
+
+			return chunks
+		}
+	}
 }
