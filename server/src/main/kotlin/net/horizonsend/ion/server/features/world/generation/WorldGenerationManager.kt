@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.world.generation
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.place
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.store
@@ -14,9 +14,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.cbukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.ChunkLoadEvent
+import java.util.concurrent.Executors
 
 object WorldGenerationManager : SLEventListener() {
-	val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+	val thread = Executors.newCachedThreadPool(Tasks.namedThreadFactory("worldgen")).asCoroutineDispatcher()
+	val coroutineScope = CoroutineScope(thread + SupervisorJob())
 
 	@EventHandler
 	fun onChunkLoadEvent(event: ChunkLoadEvent) {
