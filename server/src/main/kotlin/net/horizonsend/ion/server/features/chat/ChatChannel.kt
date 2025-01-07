@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.features.chat.messages.NationsChatMessage
 import net.horizonsend.ion.server.features.chat.messages.NormalChatMessage
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.SLXP
+import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -35,7 +36,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
@@ -220,7 +220,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 			}
 
 			contentDesignAction(formatChatMessage(
-				ofChildren(text("Content ", GREEN, TextDecoration.BOLD), text("Design", RED, TextDecoration.BOLD)),
+				ofChildren(text("Content ", GREEN, TextDecoration.BOLD), text("Design ", RED, TextDecoration.BOLD)),
 				player,
 				event,
 				messageColor
@@ -261,7 +261,10 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 			val prefix = ofChildren(
 				displayName,
 				space(),
-				if (fleet.leaderId == player.uniqueId) text(SidebarIcon.FLEET_COMMANDER_ICON.text, GOLD, TextDecoration.BOLD) else empty()
+				if (fleet.leaderId == player.uniqueId) ofChildren(
+					text(SidebarIcon.FLEET_COMMANDER_ICON.text, GOLD, TextDecoration.BOLD).font(Sidebar.fontKey),
+					space()
+				) else empty()
 			)
 
 			fleet.sendMessage(formatChatMessage(prefix, player, event, messageColor).buildChatComponent())
@@ -428,7 +431,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		event: AsyncChatEvent,
 		color: TextColor
 	): NormalChatMessage = NormalChatMessage(
-		ionPrefix = ofChildren(bracketed(text(Levels[event.player], AQUA)), space(), formatSpacePrefix(prefix)),
+		ionPrefix = ofChildren(bracketed(text(Levels[event.player], AQUA)), space(), prefix ?: empty()),
 		luckPermsPrefix = player.common().getPrefix(),
 		playerDisplayName = event.player.displayName(),
 		luckPermsSuffix = player.common().getSuffix(),
