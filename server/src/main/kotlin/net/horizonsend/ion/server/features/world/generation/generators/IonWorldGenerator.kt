@@ -3,27 +3,36 @@ package net.horizonsend.ion.server.features.world.generation.generators
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import com.google.common.cache.RemovalCause
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.world.IonWorld
-import net.horizonsend.ion.server.features.world.generation.feature.FeatureFactoryRegistry
 import net.horizonsend.ion.server.features.world.generation.feature.FeatureRegistry
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
-import net.horizonsend.ion.server.features.world.generation.generators.FeatureGenerator.FeatureGenerationData
+import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.GenerationConfiguration
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.NbtIo
+import net.minecraft.nbt.ListTag
+import net.minecraft.util.datafix.DataFixers
 import net.minecraft.world.level.ChunkPos
-import net.minecraft.world.level.chunk.storage.RegionFile
+import net.minecraft.world.level.LevelHeightAccessor
+import net.minecraft.world.level.chunk.storage.ChunkStorage
 import net.minecraft.world.level.chunk.storage.RegionStorageInfo
 import org.bukkit.Chunk
 import org.bukkit.NamespacedKey
 import java.time.Duration
-import kotlin.io.path.Path
 
 abstract class IonWorldGenerator<T: GenerationConfiguration>(val world: IonWorld, val configuration: T) {
-	val generationMetaDataFolder = world.world.worldFolder.resolve("data/ion/generation_metadata").apply { mkdirs() }
+	val generationMetaDataFolder = world.world.worldFolder.resolve("data/ion/generation_metadata/${world.world.name}").apply { mkdirs() }
 	val seed = world.world.seed
+	val heightAccessor: LevelHeightAccessor = LevelHeightAccessor.create(world.world.minHeight, world.world.maxHeight - world.world.minHeight)
+
+	private val chunkStorage = ChunkStorage(
+		RegionStorageInfo(world.world.key.toString(), world.world.minecraft.dimension(), "chunk"),
+		generationMetaDataFolder.toPath(),
+		DataFixers.getDataFixer(),
+		true
+	).`moonrise$getRegionStorage`()
 
 	abstract suspend fun generateChunk(chunk: Chunk)
 
@@ -33,20 +42,15 @@ abstract class IonWorldGenerator<T: GenerationConfiguration>(val world: IonWorld
 	}
 
 	fun getChunkStructureData(chunk: ChunkPos): ChunkStructureData {
-		val regionFile = regionFileCache[chunk]
+		val tag = chunkStorage.read(chunk) ?: return ChunkStructureData()
 
-		val inputStream = regionFile.getChunkDataInputStream(chunk) ?: return ChunkStructureData()
-		val tag = NbtIo.read(inputStream)
-
-		val startsData = tag.getCompound(STATRTS_TAG_NAME) // 10 = compound
-		val starts = startsData.allKeys.map { key ->
-			val namespace = NamespacedKey.fromString(key, IonServer) ?: throw IllegalArgumentException("Improperly formatted namespace key")
-
-			FeatureFactoryRegistry.load(namespace, startsData.getCompound(key))
+		val startsData = tag.getList(STATRTS_TAG_NAME, 10) // 10 = compound
+		val starts = startsData.mapTo(mutableListOf()) { tag ->
+			FeatureStart.load(tag as CompoundTag)
 		}
 
 		val referencesData = tag.getCompound(REFERENCES_TAG_NAME)
-		val references = referencesData.allKeys.associate { key ->
+		val references = referencesData.allKeys.associateTo(mutableMapOf()) { key ->
 			val namespace = NamespacedKey.fromString(key, IonServer) ?: throw IllegalArgumentException("Improperly formatted namespace key")
 			val chunkKeys = referencesData.getLongArray(key)
 
@@ -56,15 +60,51 @@ abstract class IonWorldGenerator<T: GenerationConfiguration>(val world: IonWorld
 		return ChunkStructureData(starts, references)
 	}
 
+	fun saveStarts(chunk: ChunkPos, starts: MutableList<FeatureStart>) {
+		chunkDataCache[chunk].starts = starts
+	}
+
+	fun saveReferences(chunk: ChunkPos, references: MutableMap<GeneratedFeature<*>, LongArray>) {
+		chunkDataCache[chunk].references = references
+	}
+
+	fun addReference(chunk: ChunkPos, feature: GeneratedFeature<*>, holderPos: ChunkPos) {
+		val references = chunkDataCache[chunk].references
+
+		if (references.containsKey(feature)) {
+			references[feature] = references[feature]!!.plus(holderPos.longKey)
+		} else {
+			references[feature] = longArrayOf(holderPos.longKey)
+		}
+	}
+
+	fun saveChunkData(chunkPos: ChunkPos, data: ChunkStructureData) {
+		val chunkData = CompoundTag()
+		data.saveTo(chunkData)
+
+		chunkStorage.write(chunkPos, chunkData)
+	}
+
+	val chunkDataCache: LoadingCache<ChunkPos, ChunkStructureData> = CacheBuilder.newBuilder()
+		.expireAfterAccess(Duration.ofMinutes(1L))
+		.removalListener<ChunkPos, ChunkStructureData> { notification ->
+			if (notification.cause != RemovalCause.EXPIRED) return@removalListener
+			saveChunkData(notification.key!!, notification.value!!)
+		}
+		.build(CacheLoader.from { pos ->
+			getChunkStructureData(pos)
+		})
+
 	data class ChunkStructureData(
-		val starts: List<FeatureGenerationData> = listOf(),
-		val references: Map<GeneratedFeature, LongArray> = mapOf()
+		var starts: MutableList<FeatureStart> = mutableListOf(),
+		var references: MutableMap<GeneratedFeature<*>, LongArray> = mutableMapOf()
 	) {
 		fun saveTo(compound: CompoundTag) {
-			val startsData = CompoundTag()
+			val startsData = ListTag()
 			for (start in starts) {
-				startsData.put(start.feature.key.toString(), start.placementContext.toCompound())
+				startsData.add(start.save())
 			}
+
 			compound.put(STATRTS_TAG_NAME, startsData)
 
 			val referencesData = CompoundTag()
@@ -74,36 +114,4 @@ abstract class IonWorldGenerator<T: GenerationConfiguration>(val world: IonWorld
 			compound.put(REFERENCES_TAG_NAME, referencesData)
 		}
 	}
-
-	@Synchronized
-	fun saveStarts(chunk: ChunkPos, starts: List<FeatureGenerationData>) {
-		val adjusted = getChunkStructureData(chunk).copy(starts = starts)
-		saveChunkData(chunk, adjusted)
-	}
-
-	@Synchronized
-	fun saveReferences(chunk: ChunkPos, references: Map<GeneratedFeature, LongArray>) {
-		val adjusted = getChunkStructureData(chunk).copy(references = references)
-		saveChunkData(chunk, adjusted)
-	}
-
-	@Synchronized
-	fun saveChunkData(chunkPos: ChunkPos, data: ChunkStructureData) {
-		val stream = regionFileCache[chunkPos]
-		val chunkData = CompoundTag()
-		data.saveTo(chunkData)
-
-		stream.`moonrise$startWrite`(chunkData, chunkPos)
-	}
-
-	val regionFileCache: LoadingCache<ChunkPos, RegionFile> = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(Duration.ofMinutes(1L)).build(CacheLoader.from { chunk: ChunkPos ->
-		val world = world.world
-
-		RegionFile(
-			RegionStorageInfo(world.key.toString(), world.minecraft.dimension(), "chunk"),
-			generationMetaDataFolder.toPath(),
-			Path(world.key.toString()),
-			false
-		)
-	})
 }

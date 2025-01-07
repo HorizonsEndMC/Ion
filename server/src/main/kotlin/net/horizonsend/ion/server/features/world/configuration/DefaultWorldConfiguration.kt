@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.gas.collection.HeightRamp
 import net.horizonsend.ion.server.features.gas.collection.StaticBase
 import net.horizonsend.ion.server.features.gas.type.WorldGasConfiguration
 import net.horizonsend.ion.server.features.world.WorldSettings
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeatureGeneratorConfiguration
 import org.bukkit.entity.EntityType
 
 @Suppress("UNUSED")
@@ -22,68 +23,11 @@ object DefaultWorldConfiguration {
 		return settings
 	}
 
-	val TEST = register("Chandra", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(100),
-				maxHeight = StaticIntegerAmount(384),
-				minWeight = StaticDoubleAmount(0.0),
-				maxWeight = StaticDoubleAmount(1.0)
-			),
-			weight = StaticDoubleAmount(0.5)
-        )
-		),
-		CollectedGas(Gasses.NITROGEN.identifier,
-			ChildWeight(
-				parent = ChildWeight(
-					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
-				),
-				weight = StaticDoubleAmount(0.5)
-			),
-		),
-		CollectedGas(Gasses.METHANE.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(0),
-				maxHeight = StaticIntegerAmount(384),
-				minWeight = StaticDoubleAmount(0.5),
-				maxWeight = StaticDoubleAmount(1.0)
-			),
-			weight = StaticDoubleAmount(0.5)
-        )
-		),
-		CollectedGas(Gasses.OXYGEN.identifier,
-			ChildWeight(
-				parent = ChildWeight(
-					parent = StaticBase(amount = StaticIntegerAmount(85)), weight = StaticDoubleAmount(0.75)
-				),
-				weight = StaticDoubleAmount(0.5)
-			),
-		),
-		CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(0),
-				maxHeight = StaticIntegerAmount(384),
-				minWeight = StaticDoubleAmount(1.0),
-				maxWeight = StaticDoubleAmount(0.0)
-			),
-			weight = StaticDoubleAmount(0.5)
-        )
-		),
-		CollectedGas(Gasses.FLUORINE.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(0),
-				maxHeight = StaticIntegerAmount(128),
-				minWeight = StaticDoubleAmount(1.0),
-				maxWeight = StaticDoubleAmount(0.0)
-			),
-			weight = StaticDoubleAmount(0.5)
-        )
-		)
-	))))
+	val TEST = register("world", WorldSettings(
+		terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
+
+		))
+	))
 
 	val CHANDRA = register("Chandra", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
 		CollectedGas(Gasses.HYDROGEN.identifier, ChildWeight(
