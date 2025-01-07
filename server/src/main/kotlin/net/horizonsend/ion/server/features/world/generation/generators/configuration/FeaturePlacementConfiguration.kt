@@ -1,15 +1,13 @@
 package net.horizonsend.ion.server.features.world.generation.generators.configuration
 
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.server.features.world.generation.feature.FeaturePlacementContext
-import net.horizonsend.ion.server.features.world.generation.generators.FeatureGenerator
-import org.bukkit.Chunk
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.minecraft.world.level.ChunkPos
+import kotlin.random.Random
 
 @Serializable
 sealed interface FeaturePlacementConfiguration {
 	val placementPriority: Int
-	fun getCount(): Int
-	fun canPlace(): Boolean
 
-	fun generatePlacementContext(generator: FeatureGenerator, chunk: Chunk): FeaturePlacementContext
+	fun generatePlacements(chunk: ChunkPos, random: Random): List<Vec3i>
 }

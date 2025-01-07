@@ -7,5 +7,5 @@ import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFea
 sealed interface FeatureConfiguration {
 	val verticalPlacementConfiguration: VerticalPlacementConfiguration
 
-	fun loadFeature(): GeneratedFeature
+	fun loadFeature(): GeneratedFeature<*>
 }
