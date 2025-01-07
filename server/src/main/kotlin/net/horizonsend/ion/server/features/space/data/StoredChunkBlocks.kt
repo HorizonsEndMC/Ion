@@ -42,6 +42,8 @@ data class StoredChunkBlocks(val sections: List<CompletedSection>) {
 			for (section in this.sections) {
 				section.place(levelChunk)
 			}
+
+			levelChunk.`moonrise$getChunkAndHolder`().holder.broadcastChanges(levelChunk)
 		}
 	}
 }
