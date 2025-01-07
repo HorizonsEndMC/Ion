@@ -3,10 +3,12 @@ package net.horizonsend.ion.server.features.world.generation.feature
 import org.bukkit.NamespacedKey
 
 object FeatureRegistry {
-	val features = mutableMapOf<NamespacedKey, GeneratedFeature>()
+	val features = mutableMapOf<NamespacedKey, GeneratedFeature<*>>()
 
-	fun <T: GeneratedFeature> register(key: NamespacedKey, feature: T): T {
-		features[key] = feature
+	val ASTEROID = register(AsteroidFeature)
+
+	fun <T: GeneratedFeature<*>> register(feature: T): T {
+		features[feature.key] = feature
 		return feature
 	}
 
