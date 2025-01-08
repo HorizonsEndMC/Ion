@@ -98,7 +98,7 @@ enum class StarshipType(
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		menuItemRaw = { ItemStack(Material.IRON_NUGGET) },
-		menuSubclasses = { listOf(AI_STARFIGHTER, INTERCEPTOR) },
+		menuSubclasses = { listOf(AI_STARFIGHTER) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff8000",
 		overridePermission = "ion.ships.override.1",
@@ -121,23 +121,6 @@ enum class StarshipType(
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.starfighter",
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiStarfighter
-	),
-	INTERCEPTOR(
-		displayName = "Interceptor",
-		icon = SidebarIcon.STARFIGHTER_ICON.text,
-		minSize = 150,
-		maxSize = 350,
-		minLevel = 1,
-		containerPercent = 0.025,
-		crateLimitMultiplier = 0.5,
-		concretePercent = 0.15,
-		menuItemRaw = { ItemStack(Material.GHAST_TEAR) },
-		displayInMainMenu = false,
-		typeCategory = TypeCategory.WAR_SHIP,
-		color = "#ff8000",
-		overridePermission = "ion.ships.override.1",
-		dynmapIcon = "starfighter",
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::interceptor
 	),
 	GUNSHIP(
 		displayName = "Gunship",
