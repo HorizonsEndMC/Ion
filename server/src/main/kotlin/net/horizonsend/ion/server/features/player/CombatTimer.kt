@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -80,9 +81,10 @@ object CombatTimer : IonServerComponent() {
 			Bukkit.getOnlinePlayers().forEach { player ->
 				val pilotedStarship = PilotedStarships[player]
 
-				// Only actively controlled warships can cause proximity triggered combat tags
+				// Only actively controlled warships (that are not starfighter or interceptor) can cause proximity triggered combat tags
 				if (pilotedStarship != null && pilotedStarship.controller !is UnpilotedController &&
-					pilotedStarship.type.typeCategory == TypeCategory.WAR_SHIP) {
+					pilotedStarship.type.typeCategory == TypeCategory.WAR_SHIP &&
+					pilotedStarship.type != StarshipType.INTERCEPTOR && pilotedStarship.type != StarshipType.STARFIGHTER) {
 					val starshipCom  = pilotedStarship.centerOfMass.toLocation(player.world)
 
 					if (pilotedStarship.isInterdicting) {
