@@ -125,7 +125,6 @@ import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterM
 import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblockMirrored
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.InterceptorCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
@@ -276,7 +275,6 @@ object Multiblocks : IonServerComponent() {
 			MissileLoaderMultiblock,
 
 			LaserCannonStarshipWeaponMultiblock,
-			InterceptorCannonStarshipWeaponMultiblock,
 			PlasmaCannonStarshipWeaponMultiblock,
 			PulseCannonStarshipWeaponMultiblock,
 			HeavyLaserStarshipWeaponMultiblock,
