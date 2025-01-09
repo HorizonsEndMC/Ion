@@ -302,7 +302,6 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.CRUISER,
-		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::cruiser,
 	),
 	AI_CRUISER(
@@ -342,6 +341,7 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		overridePermission = "ion.ships.override.80",
 		sinkProvider = SinkProvider.SinkProviders.BATTLECRUISER,
+		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::battlecruiser
 	),
 	AI_BATTLECRUISER(
