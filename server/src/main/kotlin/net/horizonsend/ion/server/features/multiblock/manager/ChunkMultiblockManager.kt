@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.manager
 
+import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -90,7 +91,13 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 		}
 
 		for (serializedMultiblockData in serialized) {
-			val stored = PersistentMultiblockData.fromPrimitive(serializedMultiblockData, chunk.inner.persistentDataContainer.adapterContext)
+			val stored = runCatching {
+				PersistentMultiblockData.fromPrimitive(serializedMultiblockData, chunk.inner.persistentDataContainer.adapterContext)
+			}.onFailure { exception ->
+				if (exception is SerializationException) {
+					log.warn("Could not load multiblock, skipping.")
+				}
+			}.getOrNull() ?: continue
 
 			val multiblock = stored.type as EntityMultiblock<*>
 
