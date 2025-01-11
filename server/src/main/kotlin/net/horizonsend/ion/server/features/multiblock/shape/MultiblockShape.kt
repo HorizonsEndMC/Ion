@@ -184,6 +184,9 @@ class MultiblockShape {
 			val x = offset.x
 			val y = offset.y
 			val z = offset.z
+
+			if ((y + origin.y) !in origin.world.minHeight ..< origin.world.maxHeight) return@all false
+
 			val relative: Block = if (loadChunks) {
 				origin.getRelative(x, y, z)
 			} else {
