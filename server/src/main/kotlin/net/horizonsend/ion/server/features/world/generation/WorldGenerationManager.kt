@@ -17,7 +17,7 @@ import org.bukkit.event.world.ChunkLoadEvent
 import java.util.concurrent.Executors
 
 object WorldGenerationManager : SLEventListener() {
-	val thread = Executors.newCachedThreadPool(Tasks.namedThreadFactory("worldgen")).asCoroutineDispatcher()
+	val thread = Executors.newFixedThreadPool(64, Tasks.namedThreadFactory("worldgen")).asCoroutineDispatcher()
 	val coroutineScope = CoroutineScope(thread + SupervisorJob())
 
 	@EventHandler
