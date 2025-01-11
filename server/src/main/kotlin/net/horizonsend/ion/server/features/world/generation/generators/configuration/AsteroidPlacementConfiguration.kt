@@ -11,7 +11,7 @@ class AsteroidPlacementConfiguration() : FeaturePlacementConfiguration {
 	override val placementPriority: Int = 0
 
 	override fun generatePlacements(chunk: ChunkPos, random: Random): List<Vec3i> {
-		val density = 0.5
+		val density = 0.0612
 		val stdev = density / 2.0
 
 		val count = random.asJavaRandom().nextGaussian(density, stdev).toInt().coerceAtLeast(0)
