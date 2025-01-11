@@ -28,8 +28,8 @@ abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val 
 		val maxY = maxPoint.y + start.y
 
 		val sections = IntRange(
-			generator.heightAccessor.getSectionIndex(minY),
-			generator.heightAccessor.getSectionIndex(maxY),
+			maxOf(generator.heightAccessor.getSectionIndex(minY), generator.heightAccessor.minSectionY),
+			minOf(generator.heightAccessor.getSectionIndex(maxY), generator.heightAccessor.maxSectionY),
 		)
 
 		val deferredSections = mutableListOf<CompletableDeferred<CompletedSection>>()
@@ -64,7 +64,8 @@ abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val 
 		val minAdjusted = minPoint.plus(origin)
 		val maxAdjusted = maxPoint.plus(origin)
 
-		return ChunkPos(minAdjusted.x.shr(4), minAdjusted.z.shr(4)) to ChunkPos(maxAdjusted.x.shr(4), maxAdjusted.z.shr(4))
+		val pair = ChunkPos(minAdjusted.x.shr(4), minAdjusted.z.shr(4)) to ChunkPos(maxAdjusted.x.shr(4), maxAdjusted.z.shr(4))
+		return pair
 	}
 
 	fun buildStartsData(chunkPos: ChunkPos, random: Random): List<FeatureStart> {

@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.world.generation.feature.FeatureRegis
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.GenerationConfiguration
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
@@ -64,18 +65,10 @@ abstract class IonWorldGenerator<T: GenerationConfiguration>(val world: IonWorld
 		chunkDataCache[chunk].starts = starts
 	}
 
-	fun saveReferences(chunk: ChunkPos, references: MutableMap<GeneratedFeature<*>, LongArray>) {
-		chunkDataCache[chunk].references = references
-	}
-
-	fun addReference(chunk: ChunkPos, feature: GeneratedFeature<*>, holderPos: ChunkPos) {
-		val references = chunkDataCache[chunk].references
-
-		if (references.containsKey(feature)) {
-			references[feature] = references[feature]!!.plus(holderPos.longKey)
-		} else {
-			references[feature] = longArrayOf(holderPos.longKey)
-		}
+	@Synchronized
+	fun addReference(toChunk: ChunkPos, feature: GeneratedFeature<*>, orignChunk: ChunkPos) {
+		val references = chunkDataCache[toChunk].references
+		references[feature] = references.getOrPut(feature) { longArrayOf() }.plus(orignChunk.longKey)
 	}
 
 	fun saveChunkData(chunkPos: ChunkPos, data: ChunkStructureData) {
@@ -85,8 +78,17 @@ abstract class IonWorldGenerator<T: GenerationConfiguration>(val world: IonWorld
 		chunkStorage.write(chunkPos, chunkData)
 	}
 
+	fun save() {
+		Tasks.async {
+			for ((chunkPos, data) in chunkDataCache.asMap()) {
+				saveChunkData(chunkPos, data)
+			}
+		}
+	}
+
 	val chunkDataCache: LoadingCache<ChunkPos, ChunkStructureData> = CacheBuilder.newBuilder()
 		.expireAfterAccess(Duration.ofMinutes(1L))
+		.concurrencyLevel(250)
 		.removalListener<ChunkPos, ChunkStructureData> { notification ->
 			if (notification.cause != RemovalCause.EXPIRED) return@removalListener
 			saveChunkData(notification.key!!, notification.value!!)
