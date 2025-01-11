@@ -124,7 +124,7 @@ object DutyModeMonitor : IonServerComponent() {
 		client.send(WebhookMessageBuilder()
 			.setUsername("$name ($uuid)")
 			.setAvatarUrl("https://crafatar.com/renders/head/$uuid")
-			.setContent("${player.name}: $content at $x $y $z at ${player.location.world}")
+			.setContent("${player.name}: $content at $x $y $z at ${player.location.world}".take(1999))
 			.build())
 	}
 }
