@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -47,11 +48,20 @@ import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import net.horizonsend.ion.server.miscellaneous.utils.red
-import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGetString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
+import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.ShulkerBox
@@ -249,17 +259,17 @@ object ShipmentManager : IonServerComponent() {
 
 	private fun getCost(shipment: UnclaimedShipment, count: Int) = shipment.crateCost * count
 
-	private fun completePurchase(player: Player, shipment: UnclaimedShipment, item: ItemStack, count: Int) {
+	private fun completePurchase(player: Player, shipment: UnclaimedShipment, crateItem: ItemStack, count: Int) {
 		VAULT_ECO.withdrawPlayer(player, getCost(shipment, count))
 		shipment.isAvailable = false
-		spawnCrateItems(player, item, count)
+		spawnCrateItems(player, crateItem, count)
 		sendAcceptedMessages(shipment, player, count)
 	}
 
-	private fun spawnCrateItems(player: Player, item: ItemStack, count: Int) {
+	private fun spawnCrateItems(player: Player, crateItem: ItemStack, count: Int) {
 		val time = System.currentTimeMillis()
 		repeat(count) {
-			val entity = player.world.dropItem(player.location, item)
+			val entity = player.world.dropItem(player.location, crateItem)
 			crateItemOwnershipMap[entity.uniqueId] = ItemOwnerData(player.uniqueId, time)
 			entity.isInvulnerable = true
 			entity.velocity = Vector(0, 0, 0)
@@ -293,7 +303,13 @@ object ShipmentManager : IonServerComponent() {
 
 		val id = CargoCrateShipment.create(player, crate._id, now, expires, from, to, count, cost, revenue)
 		val crateItem = CrateItems[CargoCrates[shipment.crate]]
-		return createBoxedCrateItem(withShipmentItemId(crateItem, id.toString()), shipment, id, expires)
+
+		return createBoxedCrateItem(
+			crateItem = withShipmentItemId(crateItem, id.toString()),
+			shipment = shipment,
+			shipmentId = id,
+			expires = expires
+		)
 	}
 
 	/**
@@ -531,9 +547,14 @@ object ShipmentManager : IonServerComponent() {
 		}
 	}
 
-	private fun withShipmentItemId(itemStack: ItemStack, shipmentId: String): ItemStack = itemStack.updatePersistentDataContainer {
-		set(NamespacedKeys.CARGO_CRATE, PersistentDataType.STRING, shipmentId)
-	}
+	/**
+	 * Applies this shipment ID to the provided item, crate or paper inside crate
+	 **/
+	private fun withShipmentItemId(item: ItemStack, shipmentId: String): ItemStack = item
+		.clone()
+		.updatePersistentDataContainer {
+			set(NamespacedKeys.CARGO_CRATE, PersistentDataType.STRING, shipmentId)
+		}
 
 	fun getShipmentItemId(item: ItemStack): String? {
 		return item.persistentDataContainer.get(NamespacedKeys.CARGO_CRATE, PersistentDataType.STRING)
@@ -570,8 +591,11 @@ object ShipmentManager : IonServerComponent() {
 		lore.forEach(event.player::sendMessage)
 	}
 
+	/**
+	 * @param crateItem: Shulker box crate item, with a name and persistent data set of the shipment id
+	 **/
 	private fun createBoxedCrateItem(
-		itemStack: ItemStack,
+		crateItem: ItemStack,
 		shipment: UnclaimedShipment,
 		shipmentId: Oid<CargoCrateShipment>,
 		expires: Date
@@ -580,32 +604,33 @@ object ShipmentManager : IonServerComponent() {
 		val originSystemName = Space.planetNameCache[Regions.get<RegionTerritory>(shipment.from.territoryId).world].orNull()?.spaceWorldName
 		val destinationSystemName = Space.planetNameCache[destination.world].orNull()?.spaceWorldName
 
-		val lore = listOf(
-			"&3Shipping From: &b${shipment.from.displayName} (${Regions.get<RegionTerritory>(shipment.from.territoryId)}, in system $originSystemName)",
-			"&5Shipping To: &d${shipment.to.displayName}&7 ($destination), in system $destinationSystemName",
-			"&cExpires: &e$expires",
-			"&2Shipment ID: &a$shipmentId"/*,
-			"&6Shipment Route Value: &e${shipment.routeValue.roundToHundredth()}"*/
-		).map(String::colorize)
-		itemStack.lore = lore
+		val lore = mutableListOf(
+			ofChildren(text("Shipping From: ", DARK_AQUA), text("${shipment.from.displayName} (${Regions.get<RegionTerritory>(shipment.from.territoryId)}, in system $originSystemName)", AQUA)),
+			ofChildren(text("Shipping To: ", DARK_PURPLE), text("${shipment.to.displayName}&7 ($destination), in system $destinationSystemName", GRAY)),
+			ofChildren(text("Expires: ", RED), text("$expires", YELLOW)),
+			ofChildren(text("Shipment ID: ", DARK_GREEN), text("$shipmentId", GREEN)),
+		)
 
-		val itemMeta = itemStack.itemMeta as BlockStateMeta
-		val blockState = itemMeta.blockState
-		val inventory = (blockState as ShulkerBox).inventory
+		crateItem.updateLore(lore)
 
-		val baseItem = ItemStack(Material.PAPER, 1)
+		val crateItemMeta = crateItem.itemMeta as BlockStateMeta
+		val shulkerBlockState = crateItemMeta.blockState
+		val inventory = (shulkerBlockState as ShulkerBox).inventory
+
+		val basePaperItem = ItemStack(Material.PAPER, 1)
 			.updateDisplayName(CargoCrates[shipment.crate].name)
-			.setLoreAndGetString(lore)
+			.updateLore(lore)
 			.updatePersistentDataContainer { set(NamespacedKeys.CARGO_CRATE, PersistentDataType.STRING, shipmentId.toString()) }
 
-		val containerItem = withShipmentItemId(baseItem, shipmentId.toString())
-		inventory.addItem(containerItem)
+		val paperItemWithId = withShipmentItemId(basePaperItem, shipmentId.toString())
+		inventory.addItem(paperItemWithId)
 
-		blockState.persistentDataContainer.set(NamespacedKeys.CARGO_CRATE, PersistentDataType.STRING, shipmentId.toString())
+		shulkerBlockState.persistentDataContainer.set(NamespacedKeys.CARGO_CRATE, PersistentDataType.STRING, shipmentId.toString())
 
-		itemMeta.blockState = blockState
-		itemStack.itemMeta = itemMeta
-		return itemStack
+		crateItemMeta.blockState = shulkerBlockState
+		crateItem.itemMeta = crateItemMeta
+
+		return crateItem
 	}
 
 	private fun unboxDroppedCrate(itemStack: ItemStack): ItemStack {
