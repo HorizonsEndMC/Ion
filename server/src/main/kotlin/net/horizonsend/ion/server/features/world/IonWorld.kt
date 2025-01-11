@@ -24,7 +24,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.World
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.world.WorldInitEvent
@@ -137,9 +136,6 @@ class IonWorld private constructor(
 
 	val enviornmentManager = WorldEnvironmentManager(this)
 
-	/** Get all players on the inner world */
-	val players: List<Player> get() = world.players
-
 	/** List of blocks that cannot be detected by starships */
 	val detectionForbiddenBlocks = loadForbiddenBlocks()
 
@@ -230,7 +226,6 @@ class IonWorld private constructor(
 		@EventHandler
 		fun onWorldSave(event: WorldSaveEvent) {
 			saveAll(event.world.ion)
-
 		}
 
 		override fun onDisable() {
@@ -241,6 +236,7 @@ class IonWorld private constructor(
 
 		private fun saveAll(world: IonWorld) {
 			world.transportManager.save()
+			world.terrainGenerator?.save()
 
 			for ((_, chunk) in world.chunks) {
 				chunk.save()

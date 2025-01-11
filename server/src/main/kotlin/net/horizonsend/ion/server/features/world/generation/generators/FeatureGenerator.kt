@@ -28,16 +28,17 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 		getStartSearchChunks(pos).forEach(::buildStructureData)
 
 		// Get data for this chunk
-		val data = getChunkStructureData(pos)
+		val data = chunkDataCache[pos]
 
 		val starts = data.starts
 		val references = data.references
 
 		val referencedStarts = references.flatMap { (_, referenced) ->
-			referenced.flatMap { key -> getChunkStructureData(ChunkPos(key)).starts }
+			referenced.flatMap { key -> chunkDataCache[ChunkPos(key)].starts }
 		}
 
 		val toGenerate = starts.plus(referencedStarts)
+		if (toGenerate.isEmpty()) return
 
 		val sectionsB = toGenerate
 			.associateWith { featureStart: FeatureStart ->
@@ -56,15 +57,15 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 		nmsChunk.`moonrise$getChunkAndHolder`().holder.broadcastChanges(nmsChunk)
 	}
 
-	fun buildStructureData(chunk: ChunkPos) {
-		val toGenerate = addStructureStarts(chunk)
-		saveStarts(chunk, toGenerate)
+	fun buildStructureData(originChunk: ChunkPos) {
+		val toGenerate = addStructureStarts(originChunk)
+		saveStarts(originChunk, toGenerate)
 
 		for (start in toGenerate) {
-			val (chunkMin, chunkmax) = start.feature.getChunkExtents(start)
+			val (chunkMin, chunkMax) = start.feature.getChunkExtents(start)
 
-			for (chunkX in chunkMin.x..chunkMin.x) for (chunkZ in chunkMin.z..chunkmax.z) {
-				addReference(ChunkPos(chunkX, chunkZ), start.feature, chunk)
+			for (chunkX in chunkMin.x..chunkMax.x) for (chunkZ in chunkMin.z..chunkMax.z) {
+				addReference(ChunkPos(chunkX, chunkZ), start.feature, originChunk)
 			}
 		}
 	}
