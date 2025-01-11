@@ -44,7 +44,7 @@ fun getBlockDataSafe(world: World, x: Int, y: Int, z: Int, loadChunks: Boolean =
  * Gets the block state at the given location if loaded. Sync only.
  */
 fun getBlockIfLoaded(world: World, x: Int, y: Int, z: Int): Block? {
-	if (y < 0 || y > world.maxHeight) {
+	if (y < 0 || y >= world.maxHeight) {
 		return null
 	}
 
