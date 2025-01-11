@@ -246,8 +246,8 @@ class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHa
 				dy = -starship.min.y
 			}
 
-			dy > 0 && starship.max.y + dy > starship.world.maxHeight -> {
-				dy = starship.world.maxHeight - starship.max.y
+			dy > 0 && starship.max.y + dy > (starship.world.maxHeight - 1) -> {
+				dy = (starship.world.maxHeight - 1) - starship.max.y
 			}
 		}
 
