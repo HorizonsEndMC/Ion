@@ -65,12 +65,12 @@ class TextInputMenu(
 				backgroundChar = ANVIL_BACKGROUND,
 				horizontalShift = -52
 			))
+			.add(title, line = -2, verticalShift = -3)
+			.add(description, line = -1, verticalShift = -2)
 			.addBackground(GuiText.GuiBackground(
 				backgroundChar = BACKGROUND_EXTENDER,
 				verticalShift = -11
 			))
-			.add(title, line = -2, verticalShift = -3)
-			.add(description, line = -1, verticalShift = -2)
 			.build()
 
 		val window = AnvilWindow.single()

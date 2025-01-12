@@ -1,7 +1,10 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
+import net.horizonsend.ion.common.utils.text.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
@@ -14,10 +17,12 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.PrePackaged.checkRequirements
 import net.horizonsend.ion.server.features.multiblock.PrePackaged.createPackagedItem
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDescription
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.text.loreName
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
@@ -114,19 +119,25 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		}
 
 		private fun setGuiOverlay(view: InventoryView) {
-			println(multiblocks.size)
-
-			val text = GuiText("Multiblock Workbench")
-				.setSlotOverlay(
-					"# # # # # # # # #",
-					"# # # . . . . . .",
-					"# . # . . . . . .",
-					"# # # . . . . . ."
-				)
+			val builder = GuiText("Multiblock Workbench")
+				.addBackground(GuiText.GuiBackground(
+					backgroundChar = MULTIBLOCK_WORKBENCH,
+					backgroundWidth = 250 - 9,
+					verticalShift = 10
+				))
 				.add(currentMultiblock.getDisplayName(), line = 0)
-				.build()
 
-			view.setTitle(text)
+			val lines = currentMultiblock.getDescription().wrap(67)
+			for ((index, line) in lines.withIndex()) {
+				builder.add(
+					component = line.itemLore, // Use itemlore to give a white baseline
+					line = index + 1, // Don't overwrite the line 0
+					verticalShift = -7, // Shift down to compensate +1 line
+					horizontalShift = DEFAULT_GUI_WIDTH + 2 // Shift over past the right +3 for padding
+				)
+			}
+
+			view.setTitle(builder.build())
 		}
 
 		private fun refreshMultiblock(view: InventoryView) {
