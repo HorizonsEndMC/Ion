@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.client.display.modular
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.client.display.modular.display.Display
+import net.horizonsend.ion.server.features.client.display.modular.display.DisplayModule
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -16,45 +16,27 @@ object DisplayHandlers : IonServerComponent() {
 
 	}
 
-	fun newMultiblockSignOverlay(entity: MultiblockEntity, vararg display: Display): TextDisplayHandler {
+	fun newMultiblockSignOverlay(entity: MultiblockEntity, vararg displayModule: (TextDisplayHandler) -> DisplayModule): TextDisplayHandler {
 		val signDirection = entity.structureDirection.oppositeFace
 		val signLocation = entity.getSignLocation()
 
-		return TextDisplayHandler(
-			entity,
-			entity.world,
-			signLocation.blockX,
-			signLocation.blockY,
-			signLocation.blockZ,
-			0.0,
-			-0.1,
-			-0.39, // Back up towards the sign
-			signDirection,
-			*display
-		)
+		val builder = TextDisplayHandler.builder(entity, signLocation.blockX, signLocation.blockY, signLocation.blockZ)
+			.setOffset(offsetRight = 0.0, offsetUp = -0.1, offsetForward = -0.39)
+			.setDirection(signDirection)
+
+		displayModule.forEach(builder::addDisplay)
+
+		return builder.build()
 	}
 
-	fun newBlockOverlay(holder: DisplayHandlerHolder, world: World, block: Vec3i, direction: BlockFace, vararg display: Display): TextDisplayHandler {
-		return TextDisplayHandler(
-			holder,
-			world,
-			block.x,
-			block.y,
-			block.z,
-			0.0,
-			-0.15,
-			0.55,
-			direction,
-			*display
-		)
-	}
+	fun newBlockOverlay(holder: DisplayHandlerHolder, world: World, block: Vec3i, direction: BlockFace, vararg displayModule: (TextDisplayHandler) -> DisplayModule): TextDisplayHandler {
+		val builder = TextDisplayHandler.builder(holder, block.x, block.y, block.z)
+			.setOffset(offsetRight = 0.0, offsetUp = -0.1, offsetForward = -0.39)
+			.setDirection(direction)
 
-	fun newMultiText() {
+		displayModule.forEach(builder::addDisplay)
 
-	}
-
-	fun newSingleText() {
-
+		return builder.build()
 	}
 
 	private val displayHandlers = ConcurrentHashMap.newKeySet<TextDisplayHandler>()
