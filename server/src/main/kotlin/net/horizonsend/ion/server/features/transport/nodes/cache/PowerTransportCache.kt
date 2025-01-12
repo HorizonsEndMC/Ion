@@ -37,7 +37,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		.addSimpleNode(REDSTONE_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(IRON_BLOCK, PowerNode.PowerMergeNode)
 		.addSimpleNode(LAPIS_BLOCK, PowerNode.PowerInvertedMergeNode)
-		.addDataHandler<Observer>(OBSERVER) { data, loc -> PowerFlowMeter(this, data.facing, loc) }
+		.addDataHandler<Observer>(OBSERVER) { data, loc -> PowerFlowMeter(this, data.facing, holder.getWorld(), loc) }
 		.addSimpleNode(NOTE_BLOCK, PowerInputNode)
 		.build()
 

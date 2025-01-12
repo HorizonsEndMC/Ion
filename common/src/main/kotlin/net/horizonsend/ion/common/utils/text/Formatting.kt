@@ -244,6 +244,19 @@ inline fun formatPaginatedMenu(
 	return builder.build()
 }
 
+inline fun <T> formatPaginatedMenu(
+	entries: List<T>,
+	command: String,
+	currentPage: Int,
+	maxPerPage: Int = 10,
+	color: TextColor = HEColorScheme.HE_MEDIUM_GRAY,
+	paramColor: TextColor = HE_LIGHT_GRAY,
+	footerSeparator: Component? = null,
+	entryProvider: (T, Int) -> Component
+): Component {
+	return formatPaginatedMenu(entries.size, command, currentPage, maxPerPage, color, paramColor, footerSeparator) { index -> entryProvider.invoke(entries[index], index) }
+}
+
 /**
  * Builds a chat paginated menu
  *

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.client.display.modular.display
 
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.machine.PowerMachines.prefixComponent
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
@@ -9,15 +10,17 @@ import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 
-class PowerEntityDisplay(
+class PowerEntityDisplayModule(
+	handler: TextDisplayHandler,
 	private val multiblockEntity: PoweredMultiblockEntity,
 	offsetLeft: Double,
 	offsetUp: Double,
 	offsetBack: Double,
 	scale: Float,
 	val title: Component? = null
-): Display(offsetLeft, offsetUp, offsetBack, scale) {
+): DisplayModule(handler, offsetLeft, offsetUp, offsetBack, scale) {
 	private val updateHandler: (PowerStorage) -> Unit = {
+		println("Updating display for $it")
 		display()
 	}
 

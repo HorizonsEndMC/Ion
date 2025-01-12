@@ -5,9 +5,9 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
-import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplay
-import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplay
-import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplay
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -189,12 +189,12 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		val entity = getMultiblockEntity(sign) ?: return player.alert("NULL")
 
 		val handler = entity.displayHandler
-		player.information("Location ${handler.blockX}, ${handler.blockY}, ${handler.blockZ}")
+		player.information("Location ${handler.anchorBlockX}, ${handler.anchorBlockY}, ${handler.anchorBlockZ}")
 		player.information("Facing ${handler.facing}")
 
-		entity.displayHandler.displays.forEach { display ->
+		entity.displayHandler.displayModules.forEach { display ->
 			player.information("Display $display")
-			player.information("Offset ${display.getLocation(handler)}")
+			player.information("Location ${display.getLocation()}")
 			player.highlightBlock(display.entity.blockPosition().toVec3i(), 10L)
 		}
 
@@ -228,10 +228,10 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			PowerEntityDisplay(this, +0.0, +0.0, +0.0, 0.45f),
-			SimpleFluidDisplay(waterStorage, +0.0, -0.10, +0.0, 0.45f),
-			ComplexFluidDisplay(hydrogenStorage, text("Hydrogen"), +1.0, +0.0, +0.0, 0.5f),
-			ComplexFluidDisplay(oxygenStorage, text("Oxygen"), -1.0, +0.0, +0.0, 0.5f)
+			{ PowerEntityDisplayModule(it, this, +0.0, +0.0, +0.0, 0.45f) },
+			{ SimpleFluidDisplayModule(it, waterStorage, +0.0, -0.10, +0.0, 0.45f) },
+			{ ComplexFluidDisplayModule(it, hydrogenStorage, text("Hydrogen"), +1.0, +0.0, +0.0, 0.5f) },
+			{ ComplexFluidDisplayModule(it, oxygenStorage, text("Oxygen"), -1.0, +0.0, +0.0, 0.5f) },
 		).register()
 
 		override fun tickAsync() {

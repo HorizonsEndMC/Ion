@@ -355,4 +355,8 @@ abstract class MultiblockEntity(
 	private fun removeLinkages() {
 		for (blockKey in linkages.values) manager.getLinkageManager().deRegisterLinkage(blockKey)
 	}
+
+	override fun handlerGetWorld(): World {
+		return world
+	}
 }

@@ -9,15 +9,15 @@ import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
-import org.bukkit.craftbukkit.entity.CraftTextDisplay
 
-class FlowMeterDisplay(
+class FlowMeterDisplayModule(
+	handler: TextDisplayHandler,
 	private val meter: PowerNode.PowerFlowMeter,
 	offsetRight: Double,
 	offsetUp: Double,
 	offsetForward: Double,
 	scale: Float
-): Display(offsetRight, offsetUp, offsetForward, scale) {
+): DisplayModule(handler, offsetRight, offsetUp, offsetForward, scale) {
 	override fun register() {}
 	override fun deRegister() {}
 
@@ -28,12 +28,5 @@ class FlowMeterDisplay(
 	companion object {
 		val firstLine = text("E: ", YELLOW)
 		val secondLine = ofChildren(newline(), text("E ", YELLOW), text("/ ", HE_MEDIUM_GRAY), text("Sec", GREEN))
-	}
-
-	override fun createEntity(parent: TextDisplayHandler): CraftTextDisplay {
-		Throwable().printStackTrace()
-
-		println("Create entity $this")
-		return super.createEntity(parent)
 	}
 }
