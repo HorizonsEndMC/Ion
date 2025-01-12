@@ -48,8 +48,8 @@ import java.util.EnumSet
 import java.util.UUID
 import kotlin.math.max
 
-abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : Multiblock(), EntityMultiblock<DrillMultiblock.DrillMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
-	override val description: Component = text("Drills blocks in a ${javaClass.simpleName.substringBefore("Mirrored").substringAfter("DrillMultiblockTier").toInt() + 2} block radius")
+abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material) : Multiblock(), EntityMultiblock<DrillMultiblock.DrillMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
+	override val description: Component = text("Drills blocks in a ${javaClass.simpleName.substringBefore("Mirrored").substringAfter("DrillMultiblockTier").toInt() + 2} block radius.")
 
 	abstract val radius: Int
 	abstract val coolDown: Int
@@ -65,7 +65,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		line4 = null
 	)
 
-	override val displayName: Component = ofChildren(legacyAmpersand.deserialize(tierText), text(" Drill"), if (mirrored) text(" (Mirrored)") else empty())
+	override val displayName: Component get() = ofChildren(legacyAmpersand.deserialize(tierText), text(" Drill"), if (mirrored) text(" (Mirrored)") else empty())
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
