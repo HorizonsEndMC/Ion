@@ -89,7 +89,6 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		override fun setup(view: InventoryView) {
 			lockedSlots.addAll(BACKGROUND_SLOTS)
 
-
 			addGuiButton(LEFT_BUTTON_SLOT, GuiItem.LEFT.makeItem(text("Previous Multiblock"))) {
 				multiblockIndex = (multiblockIndex - 1).coerceAtLeast(0)
 				refreshMultiblock(it.view)
