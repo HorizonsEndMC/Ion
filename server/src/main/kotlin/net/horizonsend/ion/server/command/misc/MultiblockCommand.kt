@@ -68,8 +68,8 @@ object MultiblockCommand : SLCommand() {
 			return
 		}
 
-		val message = Component.text()
-			.append(Component.text("Which type of $multiblockType are you trying to build? (Click one)"))
+		val message = text()
+			.append(text("Which type of $multiblockType are you trying to build? (Click one)"))
 			.append(Component.newline())
 
 		for (tier in possibleTiers) {
@@ -77,9 +77,9 @@ object MultiblockCommand : SLCommand() {
 
 			val command = "/multiblock check $tierName ${sign.x} ${sign.y} ${sign.z}"
 
-			val tierText = bracketed(Component.text(tierName, NamedTextColor.DARK_GREEN, TextDecoration.BOLD))
+			val tierText = bracketed(text(tierName, NamedTextColor.DARK_GREEN, TextDecoration.BOLD))
 				.clickEvent(ClickEvent.runCommand(command))
-				.hoverEvent(Component.text(command).asHoverEvent())
+				.hoverEvent(text(command).asHoverEvent())
 
 			message.append(tierText)
 			if (possibleTiers.indexOf(tier) != possibleTiers.size - 1) message.append(Component.text(", "))
@@ -167,18 +167,16 @@ object MultiblockCommand : SLCommand() {
 		val manager = sender.chunk.ion().multiblockManager
 		val entities = manager.getAllMultiblockEntities().toList()
 
-		sender.sendMessage(
-			formatPaginatedMenu(
-				entities.size,
-				"/ionchunk dumpentities ${visual ?: false}",
-				page ?: 1,
-			) { index ->
-				val (key, entity) = entities[index]
+		sender.sendMessage(formatPaginatedMenu(
+			entities,
+			"/ionchunk dumpentities ${visual == true}",
+			page ?: 1,
+		) { entry, index ->
+			val (key, entity) = entry
+			val vec = toVec3i(key)
 
-				val vec = toVec3i(key)
-
-				text("$vec : $entity")
-			})
+			text("$vec : $entity")
+		})
 
 		if (visual == true) {
 			for ((key, _) in entities) {

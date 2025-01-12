@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlerHolder
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
-import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplay
+import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplayModule
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -82,15 +82,19 @@ sealed interface PowerNode : Node {
 		}
     }
 
-    data class PowerFlowMeter(val cache: PowerTransportCache, var face: BlockFace, val location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder {
+    data class PowerFlowMeter(val cache: PowerTransportCache, var face: BlockFace, var world: World, var location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder {
 		override var isAlive: Boolean = true
+
+		override fun handlerGetWorld(): World {
+			return world
+		}
 
         val displayHandler = DisplayHandlers.newBlockOverlay(
 			this,
             cache.holder.getWorld(),
             toVec3i(location),
             face,
-            FlowMeterDisplay(this, 0.0, 0.0, 0.0, 0.7f)
+			{ FlowMeterDisplayModule(it, this, 0.0, 0.0, 0.0, 0.7f) }
         ).register()
 
         private val STORED_AVERAGES = 20
@@ -133,7 +137,7 @@ sealed interface PowerNode : Node {
                 avg = 0.0
             }
 
-            return ofChildren(FlowMeterDisplay.firstLine, Component.text(avg, NamedTextColor.GREEN), FlowMeterDisplay.secondLine)
+            return ofChildren(FlowMeterDisplayModule.firstLine, Component.text(avg, NamedTextColor.GREEN), FlowMeterDisplayModule.secondLine)
         }
 
         override val pathfindingResistance: Double = 0.5
@@ -148,6 +152,8 @@ sealed interface PowerNode : Node {
 
         override fun displace(movement: StarshipMovement) {
             this.face = movement.displaceFace(this.face)
+			location = movement.displaceKey(location)
+
             displayHandler.displace(movement)
         }
 
