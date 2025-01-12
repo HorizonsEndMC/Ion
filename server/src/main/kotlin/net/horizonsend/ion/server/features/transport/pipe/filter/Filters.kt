@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Bukkit
@@ -58,14 +59,7 @@ object Filters : IonServerComponent() {
 	}
 
 	fun createFilterItemData(item: ItemStack): FilterItemData {
-		val material = item.type
-		val itemMeta = item.itemMeta
-
-		if (itemMeta.hasCustomModelData()) {
-			return FilterItemData(material, itemMeta.customModelData)
-		}
-
-		return FilterItemData(material, null)
+		return FilterItemData(item.type, item.customItem?.identifier)
 	}
 
 	private fun getKey(world: World, x: Int, y: Int, z: Int) =
