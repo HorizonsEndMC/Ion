@@ -17,6 +17,7 @@ interface DisplayNameMultilblock {
 
 	companion object {
 		fun Multiblock.getDisplayName() = if (this is DisplayNameMultilblock) displayName else javaClass.simpleName.toComponent()
+		fun Multiblock.getDescription() = if (this is DisplayNameMultilblock) description else Component.text("Multiblock has no description.")
 
 		fun Multiblock.getIcon(): ItemStack {
 			val base = ItemStack(Material.CHEST)
