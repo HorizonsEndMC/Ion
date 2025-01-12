@@ -62,10 +62,10 @@ open class CustomItem(
 
 	fun constructItemStack(quantity: Int): ItemStack {
 		val constructed = baseItemFactory.construct()
-		val maxSize = constructed.getData(DataComponentTypes.MAX_STACK_SIZE) ?:
-			constructed.type.asItemType()?.getDefaultData(DataComponentTypes.MAX_STACK_SIZE) ?: 1
+//		val maxSize = constructed.getData(DataComponentTypes.MAX_STACK_SIZE) ?:
+//			constructed.type.asItemType()?.getDefaultData(DataComponentTypes.MAX_STACK_SIZE) ?: 1
 
-		return constructed.asQuantity(quantity.coerceIn(1..maxSize))
+		return constructed.asQuantity(quantity.coerceAtLeast(1))
 	}
 
 	protected open fun decorateItemStack(base: ItemStack) {}
