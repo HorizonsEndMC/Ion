@@ -3,8 +3,6 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.filters.FilterBlocks
-import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
@@ -43,10 +41,6 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		.addSimpleNode(Material.REDSTONE_BLOCK, FluidNode.FluidMergeNode)
 		.addSimpleNode(Material.IRON_BLOCK, FluidNode.FluidMergeNode)
 		.addSimpleNode(Material.LAPIS_BLOCK, FluidNode.FluidInvertedMergeNode)
-		.addFilterHandler(FilterBlocks.FLUID_FILTER) { data, location ->
-			@Suppress("UNCHECKED_CAST")
-			FluidNode.FluidFilterNode(data as FilterData<Fluid>, location)
-		}
 		.build()
 
 	override fun tickExtractor(location: BlockKey, delta: Double) { NewTransport.executor.submit {
