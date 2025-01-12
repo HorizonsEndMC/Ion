@@ -2,8 +2,6 @@ package net.horizonsend.ion.server.features.transport.nodes.types
 
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.transport.filters.FilterData
-import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -62,20 +60,5 @@ sealed interface FluidNode : Node {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other is LightningRodNode
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is LightningRodNode
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
-	}
-
-	data class FluidFilterNode(val filterData: FilterData<Fluid>?, val location: BlockKey) : FluidNode, FilterNode<Fluid> {
-		override val pathfindingResistance: Double = 1.0
-
-		override fun canTransfer(resource: Fluid): Boolean {
-			if (filterData == null) return true
-			val containsEntry = filterData.entries.any { it.entry == resource }
-
-			return filterData.isWhitelist == containsEntry
-		}
-
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
-		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
-		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
 	}
 }
