@@ -652,7 +652,7 @@ object Crafting : IonServerComponent() {
 			shape("sbs", "brb", "scs")
 
 			setIngredient('s', STEEL_PLATE.constructItemStack())
-			setIngredient('b', BATTERY_M.constructItemStack())
+			setIngredient('b', BATTERY_G.constructItemStack())
 			setIngredient('r', REDSTONE_BLOCK)
 			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
 		}
