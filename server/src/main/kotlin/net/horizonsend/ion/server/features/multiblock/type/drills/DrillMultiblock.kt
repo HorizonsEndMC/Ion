@@ -65,7 +65,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : M
 		line4 = null
 	)
 
-	override val displayName: Component = ofChildren(legacyAmpersand.deserialize(tierText), text(" Drill"))
+	override val displayName: Component = ofChildren(legacyAmpersand.deserialize(tierText), text(" Drill"), if (mirrored) text(" (Mirrored)") else empty())
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
