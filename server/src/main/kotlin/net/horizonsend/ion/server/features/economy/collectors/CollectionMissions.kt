@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.textOfChildren
@@ -184,11 +185,10 @@ object CollectionMissions : IonServerComponent() {
 			text("To tuArn the items in, click on this mission icon!", NamedTextColor.GRAY).decorate(TextDecoration.ITALIC)
 		).build()
 
-		itemStack.lore(mutableListOf(
+		itemStack.updateLore(mutableListOf(
 			stationHeader,
 			collectedItemText,
-			returnText,
-			null
+			returnText
 		))
 
 //		itemStack.lore = listOf(
