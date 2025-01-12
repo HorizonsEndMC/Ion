@@ -141,20 +141,23 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		}
 
 		private fun refreshMultiblock(view: InventoryView) {
-			internalInventory.getItem(LEFT_BUTTON_SLOT)?.updateMeta {
-				it.lore(listOf(
-					if ((multiblockIndex - 1) >= 0) ofChildren(
-						text("Previous Multiblock: ", GRAY), multiblocks[multiblockIndex - 1].getDisplayName()
-					).loreName else text("No previous multiblock", RED).loreName
-				))
-			}
-			internalInventory.getItem(RIGHT_BUTTON_SLOT)?.updateMeta {
-				it.lore(listOf(
-					if ((multiblockIndex + 1) <= multiblocks.lastIndex) ofChildren(
-						text("Next Multiblock: ", GRAY), multiblocks[multiblockIndex + 1].getDisplayName()
-					).loreName else text("No previous multiblock", RED).loreName
-				))
-			}
+			internalInventory.getItem(LEFT_BUTTON_SLOT)?.updateLore(if ((multiblockIndex - 1) >= 0)
+				listOf(
+					ofChildren(text("Next Multiblock: ", GRAY), multiblocks[multiblockIndex - 1].getDisplayName()).loreName,
+					text(multiblocks[multiblockIndex - 1].javaClass.simpleName, GRAY).loreName
+				)
+			else
+				listOf(text("No previous multiblock", RED).loreName)
+			)
+
+			internalInventory.getItem(RIGHT_BUTTON_SLOT)?.updateLore(if ((multiblockIndex + 1) <= multiblocks.lastIndex)
+				listOf(
+					ofChildren(text("Next Multiblock: ", GRAY), multiblocks[multiblockIndex + 1].getDisplayName()).loreName,
+					text(multiblocks[multiblockIndex + 1].javaClass.simpleName, GRAY).loreName
+				)
+					else
+				listOf(text("No next multiblock", RED).loreName)
+			)
 
 			setGuiOverlay(view)
 			refreshButtons()
