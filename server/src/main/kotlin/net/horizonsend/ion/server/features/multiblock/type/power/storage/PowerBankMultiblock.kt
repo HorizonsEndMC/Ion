@@ -23,7 +23,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 
 abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMultiblock<PowerBankMultiblock.PowerBankEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	abstract val maxPower: Int
-	override val description: Component = Component.text("Stores $maxPower power")
+	override val description: Component get() = Component.text("Stores $maxPower power")
 	abstract val tierMaterial: Material
 	override val name = "powerbank"
 
