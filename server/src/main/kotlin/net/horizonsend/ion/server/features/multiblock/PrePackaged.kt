@@ -103,14 +103,11 @@ object PrePackaged {
 
 			var usedItem: ItemStack? = null
 
-			if (itemSource != null) {
-				itemSource
-					.firstOrNull { requirement.itemRequirement.itemCheck(it) }
-					?.let {
-						usedItem = it.clone()
-						requirement.itemRequirement.consume(it)
-					}
-			}
+			itemSource?.firstOrNull { requirement.itemRequirement.itemCheck(it) }
+				?.let {
+					usedItem = it.clone()
+					requirement.itemRequirement.consume(it)
+				}
 
 			val event = BlockPlaceEvent(
 				existingBlock,
@@ -247,7 +244,7 @@ object PrePackaged {
 		@Suppress("UnstableApiUsage") val newState = Material.CHEST.createBlockData().createBlockState() as Chest
 		packageFrom(availableItems, multiblock, newState.inventory)
 
-		return base.updateData(DataComponentTypes.CONTAINER, ItemContainerContents.containerContents(newState.inventory.contents.toList()))
+		return base.updateData(DataComponentTypes.CONTAINER, ItemContainerContents.containerContents(newState.inventory.contents.filterNotNull()))
 	}
 
 	/**
