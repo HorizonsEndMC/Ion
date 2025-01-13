@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.PrePackaged.checkRequireme
 import net.horizonsend.ion.server.features.multiblock.PrePackaged.createPackagedItem
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDescription
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getIcon
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -113,6 +114,8 @@ object MultiblockWorkbench : InteractableCustomBlock(
 				refreshButtons()
 			}
 
+			noDropSlots.add(8) // Multiblock preview
+
 			// Perform full setup of the buttons
 			refreshMultiblock(view)
 			isSearching = false
@@ -158,6 +161,8 @@ object MultiblockWorkbench : InteractableCustomBlock(
 					else
 				listOf(text("No next multiblock", RED).loreName)
 			)
+
+			internalInventory.setItem(8, currentMultiblock.getIcon())
 
 			setGuiOverlay(view)
 			refreshButtons()
