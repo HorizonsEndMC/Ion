@@ -10,7 +10,7 @@ import java.util.function.Supplier
 open class CustomBlockItem(
 	identifier: String,
 
-	customModel: String,
+	val customModel: String,
 	displayName: Component,
 
 	private val customBlockSupplier: Supplier<CustomBlock>

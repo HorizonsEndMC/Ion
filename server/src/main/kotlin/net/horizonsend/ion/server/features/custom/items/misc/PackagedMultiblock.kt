@@ -16,8 +16,10 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.PrePackaged
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getModel
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component.text
@@ -46,6 +48,7 @@ object PackagedMultiblock : CustomItem(
 		return constructItemStack()
 			.updatePersistentDataContainer { PrePackaged.setTokenData(multiblock, this) }
 			.updateDisplayName(ofChildren(text("Packaged "), multiblock.getDisplayName()))
+			.updateData(DataComponentTypes.ITEM_MODEL, multiblock.getModel())
 			.apply(::refreshLore)
 	}
 

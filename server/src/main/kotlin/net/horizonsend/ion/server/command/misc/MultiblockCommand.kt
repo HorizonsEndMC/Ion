@@ -18,26 +18,38 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
+import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getIcon
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import xyz.xenondevs.invui.gui.PagedGui
+import xyz.xenondevs.invui.gui.structure.Markers
+import xyz.xenondevs.invui.item.ItemProvider
+import xyz.xenondevs.invui.window.Window
 
 @CommandAlias("multiblock")
 object MultiblockCommand : SLCommand() {
@@ -233,4 +245,40 @@ object MultiblockCommand : SLCommand() {
 			ionChunk.multiblockManager.removeMultiblockEntity(x, y, z)
 		}
 	}
+
+	@Subcommand("menu")
+	fun onTestAll(sender: Player) {
+		val allItems = MultiblockRegistration.getAllMultiblocks().map { multiblock ->
+			object : GuiItems.AbstractButtonItem(
+				multiblock.getDisplayName().itemName,
+				multiblock.getIcon()
+			) {
+				override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+					player.inventory.addItem(MultiblockToken.constructFor(multiblock))
+				}
+			}
+		}
+		val gui = PagedGui.items()
+			.setStructure(
+				"x x x x x x x x x",
+				"x x x x x x x x x",
+				"x x x x x x x x x",
+				"x x x x x x x x x",
+				"< # # # # # # # >",
+			)
+			.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
+			.addIngredient('#', ItemProvider { ItemStack(Material.BLACK_STAINED_GLASS) })
+			.addIngredient('<', GuiItems.PageLeftItem())
+			.addIngredient('>', GuiItems.PageRightItem())
+			.setContent(allItems)
+			.build()
+
+		Window
+			.single()
+			.setGui(gui)
+			.setTitle("All Multiblocks")
+			.build(sender)
+			.open()
+	}
+
 }
