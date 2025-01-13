@@ -21,7 +21,12 @@ fun getOrCacheNode(type: CacheType, world: World, pos: BlockKey): Node? {
 /**
  * Uses the A* algorithm to find the shortest available path between these two nodes.
  **/
-fun getIdealPath(from: Node.NodePositionData, to: BlockKey, cachedNodeProvider: (CacheType, World, BlockKey) -> Node?, pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null): Array<Node.NodePositionData>? {
+fun getIdealPath(
+	from: Node.NodePositionData,
+	to: BlockKey,
+	cachedNodeProvider: (CacheType, World, BlockKey) -> Node?,
+	pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null
+): Array<Node.NodePositionData>? {
 	// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
 	val queue = PriorityQueue<PathfindingNodeWrapper> { o1, o2 -> o2.f.compareTo(o1.f) }
 	// The hash set here is to speed up the .contains() check further down the road, which is slow with the queue.
@@ -155,6 +160,6 @@ data class PathfindingNodeWrapper(
 	//</editor-fold>
 }
 
-fun calculatePathResistance(path: Array<Node.NodePositionData>?): Double? {
-	return path?.sumOf { it.type.pathfindingResistance }
+fun calculatePathResistance(path: Array<Node.NodePositionData>): Double {
+	return path.sumOf { it.type.pathfindingResistance }
 }

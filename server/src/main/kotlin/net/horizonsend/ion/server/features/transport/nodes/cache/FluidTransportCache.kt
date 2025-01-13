@@ -11,8 +11,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.FluidNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
-import net.horizonsend.ion.server.features.transport.util.getIdealPath
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.UNWAXED_CHISELED_COPPER_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
@@ -98,17 +96,17 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 
 		val numDestinations = filteredDestinations.size
 
-		val paths: Array<Array<Node.NodePositionData>?> = Array(numDestinations) { runCatching {
-			getIdealPath(source, filteredDestinations[it], holder.nodeProvider) { node, _ ->
-				(node is FluidNode) && (@Suppress("UNCHECKED_CAST") (node as? FilterNode<Fluid>)?.canTransfer(fluid) ?: true)
+		val paths: Array<PathfindingReport?> = Array(numDestinations) {
+			getOrCachePath(source, filteredDestinations[it]) { node, _ ->
+				(node is FluidNode) && (@Suppress("UNCHECKED_CAST") (node as? FilterNode<Fluid>)?.canTransfer(fluid) != false)
 			}
-		}.getOrNull() }
+		}
 
 		var maximumResistance: Double = -1.0
 
 		// Perform the calc & max find in the same loop
 		val pathResistance: Array<Double?> = Array(numDestinations) {
-			val res = calculatePathResistance(paths[it])
+			val res = paths[it]?.resistance
 			if (res != null && maximumResistance < res) maximumResistance = res
 
 			res
@@ -147,7 +145,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 			val realTaken = toSend - remainder
 
 			remainingAmount -= realTaken
-			completeChain(paths[index], realTaken)
+			completeChain(paths[index]?.traversedNodes, realTaken)
 
 			if (remainder == 0) continue
 
