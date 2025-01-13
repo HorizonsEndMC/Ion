@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.misc
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -12,8 +13,10 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.PrePackaged
 import net.horizonsend.ion.server.features.multiblock.PrePackaged.getTokenData
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getModel
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
@@ -34,8 +37,10 @@ object MultiblockToken : CustomItem(
 
 	fun constructFor(multiblock: Multiblock): ItemStack {
 		return constructItemStack()
+			.updateDisplayName(ofChildren(text("Packaged "), multiblock.getDisplayName()))
 			.updatePersistentDataContainer { PrePackaged.setTokenData(multiblock, this) }
 			.updateData(DataComponentTypes.ITEM_MODEL, multiblock.getModel())
+			.apply(::refreshLore)
 	}
 
 	private fun handleSecondaryInteract(livingEntity: Player, itemStack: ItemStack, event: PlayerInteractEvent) {
