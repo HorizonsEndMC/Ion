@@ -20,7 +20,7 @@ class PowerEntityDisplayModule(
 	val title: Component? = null
 ): DisplayModule(handler, offsetLeft, offsetUp, offsetBack, scale) {
 	private val updateHandler: (PowerStorage) -> Unit = {
-		println("Updating display for $it")
+//		println("Updating display for $it")
 		display()
 	}
 
