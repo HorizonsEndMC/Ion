@@ -18,8 +18,10 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -38,7 +40,7 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack as BukkitItemStack
 import java.util.Optional
 
-abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMultiblock<PowerFurnaceMultiblock.PowerFurnaceMultiblockEntity> {
+abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMultiblock<PowerFurnaceMultiblock.PowerFurnaceMultiblockEntity>, DisplayNameMultilblock {
 	override val name = "powerfurnace"
 
 	abstract val maxPower: Int
@@ -51,6 +53,9 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 		line3 = null,
 		line4 = tierText
 	)
+
+	override val displayName: Component = text("Power Furnace")
+	override val description: Component = text("Smelts items using power instead of fuel.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
