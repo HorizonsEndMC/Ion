@@ -95,8 +95,8 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 
 		val firstNode = cacheType.get(firstChunk).getOrCache(firstPoint) ?: return audience.information("There is no node at ${toVec3i(firstPoint)}")
 
-		val path = getIdealPath(audience, Node.NodePositionData(firstNode, world, firstPoint, BlockFace.SELF), secondPoint)
-		val resistance = calculatePathResistance(path) ?: return audience.userError("There is no path connecting these nodes")
+		val path = getIdealPath(audience, Node.NodePositionData(firstNode, world, firstPoint, BlockFace.SELF), secondPoint) ?: return audience.userError("There is no path connecting these nodes")
+		val resistance = calculatePathResistance(path)
 		audience.information("The resistance from ${firstNode.javaClass.simpleName} at ${toVec3i(firstPoint)} to ${toVec3i(secondPoint)} at ${toVec3i(secondPoint)} is $resistance")
 	}
 

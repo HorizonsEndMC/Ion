@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
+import com.google.common.collect.TreeBasedTable
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
@@ -9,6 +10,8 @@ import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
+import net.horizonsend.ion.server.features.transport.util.getIdealPath
 import net.horizonsend.ion.server.features.transport.util.getOrCacheNode
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -21,9 +24,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isAdjacent
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.set
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import java.util.Optional
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.jvm.optionals.getOrNull
 
 abstract class TransportCache(val holder: CacheHolder<*>) {
 	private var cache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap()
@@ -178,10 +184,56 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 
 			if (current.type is T && check(current)) destinations.add(current.position)
 
+
 			visitQueue.addAll(current.getNextNodes(holder.nodeProvider, null).filterNot { visited.contains(it.position) || visitQueue.contains(it) })
 		}
 
 		return destinations.toList()
+	}
+
+	/**
+	 *
+	 **/
+	private val simplePathCache = TreeBasedTable.create<BlockKey, BlockKey, Optional<PathfindingReport>>()
+
+	fun getOrCachePath(origin: Node.NodePositionData, destination: BlockKey, pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null): PathfindingReport? {
+		if (simplePathCache.contains(origin.position, destination)) {
+			return simplePathCache.get(origin.position, destination)?.getOrNull()
+		}
+
+		val path = runCatching { getIdealPath(origin, destination, holder.nodeProvider, pathfindingFilter) }.getOrNull()
+
+		if (path == null) {
+			simplePathCache[origin.position, destination] = Optional.empty()
+			return null
+		}
+
+		val resistance = calculatePathResistance(path)
+
+		val report = PathfindingReport(path, resistance)
+
+		simplePathCache[origin.position, destination] = Optional.of(report)
+		return report
+	}
+
+	data class PathfindingReport(val traversedNodes: Array<Node.NodePositionData>, val resistance: Double) {
+		override fun equals(other: Any?): Boolean {
+			if (this === other) return true
+			if (javaClass != other?.javaClass) return false
+
+			other as PathfindingReport
+
+			if (resistance != other.resistance) return false
+			if (!traversedNodes.contentEquals(other.traversedNodes)) return false
+
+			return true
+		}
+
+		override fun hashCode(): Int {
+			var result = resistance.hashCode()
+			result = 31 * result + traversedNodes.contentHashCode()
+			return result
+		}
 	}
 }
 
