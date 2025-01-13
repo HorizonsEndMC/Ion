@@ -14,7 +14,9 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -25,11 +27,14 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
 
-abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: Material) : Multiblock(), EntityMultiblock<GeneratorMultiblock.GeneratorMultiblockEntity> {
+abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: Material) : Multiblock(), EntityMultiblock<GeneratorMultiblock.GeneratorMultiblockEntity>, DisplayNameMultilblock {
 	override val name = "generator"
 	abstract val speed: Double
 
 	abstract val maxPower: Int
+
+	override val displayName: Component = text("Generator")
+	override val description: Component get() = text("Burns a fuel to generate to be used by other machines.")
 
 	override val signText = createSignText(
 		line1 = "&2Power",
