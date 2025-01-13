@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.kyori.adventure.text.Component
@@ -32,7 +33,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
 
-abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), EntityMultiblock<PlanterMultiblock.PlanterEntity> {
+abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), EntityMultiblock<PlanterMultiblock.PlanterEntity>, DisplayNameMultilblock {
 	override val name: String = "planter"
 	override val signText: Array<Component?> = arrayOf(
 		ofChildren(text("Auto ", GRAY), text("Planter", GREEN)),
@@ -40,6 +41,9 @@ abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int
 		null,
 		null
 	)
+
+	override val displayName: Component = text("Tier $tierNumber Planter")
+	override val description: Component get() = text("Plants crops on farmland. Crops will be planted opposite of the sign, up to $regionDepth blocks away.")
 
 	abstract val regionDepth: Int
 	private val powerPerCrop: Int = 10

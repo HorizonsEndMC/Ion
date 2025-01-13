@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -41,15 +42,18 @@ import java.util.Optional
 private const val POWER_USAGE_PER_INGREDIENT = 15
 
 abstract class AutoCrafterMultiblock(
-	tierText: Component,
+	val tierText: Component,
 	private val tierMaterial: Material,
 	private val iterations: Int,
-) : Multiblock(), EntityMultiblock<AutoCrafterMultiblock.AutoCrafterEntity> {
+) : Multiblock(), EntityMultiblock<AutoCrafterMultiblock.AutoCrafterEntity>, DisplayNameMultilblock {
 	override val name = "autocrafter"
 	override val requiredPermission: String? = "ion.multiblock.autocrafter"
 	open val mirrored: Boolean = false
 
 	abstract val maxPower: Int
+
+	override val displayName: Component = ofChildren(tierText, text("Auto Crafter"))
+	override val description: Component get() = text("Executes the recipe outlined in the center dropper. Input items are consumed to craft the output.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

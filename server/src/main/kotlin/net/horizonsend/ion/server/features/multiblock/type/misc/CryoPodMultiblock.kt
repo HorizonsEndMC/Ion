@@ -4,8 +4,10 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -15,7 +17,7 @@ import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 
-object CryoPodMultiblock : Multiblock(), InteractableMultiblock {
+object CryoPodMultiblock : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
 	override val name = "cryopod"
 
 	override val signText = createSignText(
@@ -24,6 +26,9 @@ object CryoPodMultiblock : Multiblock(), InteractableMultiblock {
 		line3 = null,
 		line4 = null
 	)
+
+	override val displayName: Component = text("Cryopod")
+	override val description: Component get() = text("Provides a respawn point upon death, in place of beds. Works on ships.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(-2) {
