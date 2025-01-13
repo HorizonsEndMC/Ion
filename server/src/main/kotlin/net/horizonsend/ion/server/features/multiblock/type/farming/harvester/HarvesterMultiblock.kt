@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
@@ -32,7 +33,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.Ageable
 
-abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), EntityMultiblock<HarvesterMultiblock.HarvesterEntity> {
+abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), EntityMultiblock<HarvesterMultiblock.HarvesterEntity>, DisplayNameMultilblock {
 	override val name: String = "harvester"
 	override val signText: Array<Component?> = arrayOf(
 		ofChildren(text("Auto ", GRAY), text("Harvester", GREEN)),
@@ -40,6 +41,9 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 		null,
 		null
 	)
+
+	override val displayName: Component = text("Tier $tierNumber Harvester")
+	override val description: Component get() = text("Harvests crops. Crops will be harvested opposite of the sign, up to $regionDepth blocks away.")
 
 	val powerPerCrop: Int = 10
 	abstract val regionDepth: Int
