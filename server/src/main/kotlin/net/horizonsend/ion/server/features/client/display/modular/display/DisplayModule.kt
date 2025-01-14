@@ -48,7 +48,7 @@ abstract class DisplayModule(
 
 		craftEntity.transformation = Transformation(
 			Vector3f(0f),
-			ClientDisplayEntities.rotateToFaceVector(handler.facing.direction.toVector3f()),
+			ClientDisplayEntities.rotateToFaceVector2d(handler.facing.direction.toVector3f()),
 			Vector3f(scale),
 			Quaternionf()
 		)
@@ -97,24 +97,19 @@ abstract class DisplayModule(
 	/** Registers this display handler */
 	abstract fun deRegister()
 
-	abstract fun getText(): Component
+	abstract fun buildText(): Component
 
-	private fun setText(text: Component) {
+	private fun updateText(text: Component) {
 		entity.text = PaperAdventure.asVanilla(text)
+	}
+
+	open fun runUpdates() {
+		updateText(buildText())
+
+		playerManager.runUpdates()
 	}
 
 	open fun remove() {
 		playerManager.sendRemove()
-	}
-
-	open fun display() {
-		runUpdates()
-	}
-
-	open fun runUpdates() {
-		val newText = getText()
-		setText(newText)
-
-		playerManager.runUpdates()
 	}
 }
