@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.client.display.modular.display.Displa
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import java.util.concurrent.ConcurrentHashMap
@@ -21,7 +20,7 @@ object DisplayHandlers : IonServerComponent() {
 		val signLocation = entity.getSignLocation()
 
 		val builder = TextDisplayHandler.builder(entity, signLocation.blockX, signLocation.blockY, signLocation.blockZ)
-			.setOffset(offsetRight = 0.0, offsetUp = -0.1, offsetForward = -0.39)
+			.setOffset(offsetRight = 0.0, offsetUp = -0.5, offsetForward = -0.39)
 			.setDirection(signDirection)
 
 		displayModule.forEach(builder::addDisplay)
@@ -29,7 +28,7 @@ object DisplayHandlers : IonServerComponent() {
 		return builder.build()
 	}
 
-	fun newBlockOverlay(holder: DisplayHandlerHolder, world: World, block: Vec3i, direction: BlockFace, vararg displayModule: (TextDisplayHandler) -> DisplayModule): TextDisplayHandler {
+	fun newBlockOverlay(holder: DisplayHandlerHolder, block: Vec3i, direction: BlockFace, vararg displayModule: (TextDisplayHandler) -> DisplayModule): TextDisplayHandler {
 		val builder = TextDisplayHandler.builder(holder, block.x, block.y, block.z)
 			.setOffset(offsetRight = 0.0, offsetUp = -0.1, offsetForward = -0.39)
 			.setDirection(direction)

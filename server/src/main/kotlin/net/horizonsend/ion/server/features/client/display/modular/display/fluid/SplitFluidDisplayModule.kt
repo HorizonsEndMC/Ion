@@ -14,7 +14,7 @@ class SplitFluidDisplayModule(
 	offsetBack: Double,
 	scale: Float
 ) : FluidDisplayModule(handler, storage, offsetLeft, offsetUp, offsetBack, scale) {
-	override fun getText(): Component {
+	override fun buildText(): Component {
 		return ofChildren(container.internalStorage.getFluidType().displayName, newline(), formatFluid())
 	}
 }

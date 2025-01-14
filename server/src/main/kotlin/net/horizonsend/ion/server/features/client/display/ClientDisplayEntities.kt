@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
-import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
@@ -20,6 +19,7 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.PositionMoveRotation
 import net.minecraft.world.entity.Relative
 import net.minecraft.world.entity.monster.Slime
+import net.minecraft.world.phys.Vec3
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
@@ -387,8 +387,19 @@ object ClientDisplayEntities : IonServerComponent() {
      */
     fun viewDistanceFactor(viewDistance: Int) = (0.003125 * viewDistance).toFloat()
 
-
 	fun getAddEntityPacket(entity: net.minecraft.world.entity.Entity): ClientboundAddEntityPacket {
-		return ClientboundAddEntityPacket(entity, 0, BlockPos(entity.blockX, entity.blockY, entity.blockZ))
+		return ClientboundAddEntityPacket(
+			entity.id,
+			entity.getUUID(),
+			entity.trackingPosition().x(),
+			entity.trackingPosition().y(),
+			entity.trackingPosition().z(),
+			entity.rotationVector.x,
+			entity.rotationVector.y,
+			entity.type,
+			0,
+			Vec3(Vector3f()),
+			entity.yHeadRot.toDouble()
+		)
 	}
 }
