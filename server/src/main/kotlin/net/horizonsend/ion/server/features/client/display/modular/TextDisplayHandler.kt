@@ -45,8 +45,8 @@ class TextDisplayHandler private constructor(
 
 	fun register(): TextDisplayHandler {
 		displayModules.forEach {
-			it.runUpdates()
 			it.register()
+			it.runUpdates()
 		}
 
 		DisplayHandlers.registerHandler(this)
