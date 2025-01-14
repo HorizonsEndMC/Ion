@@ -31,6 +31,8 @@ import org.bukkit.entity.Player
 import org.slf4j.Logger
 import java.lang.management.ManagementFactory
 import java.lang.management.ThreadInfo
+import java.util.concurrent.LinkedBlockingDeque
+import kotlin.system.measureNanoTime
 
 @CommandPermission("starlegacy.transportdebug")
 @CommandAlias("transportdebug|transportbug")
@@ -193,5 +195,40 @@ object TransportDebugCommand : SLCommand() {
 		val destinations = cache.getNetworkDestinations<PowerInputNode>(location) { true }
 		sender.information("${destinations.size} destinations")
 		sender.highlightBlocks(destinations.map(::toVec3i), 50L)
+	}
+
+	const val COLLECT_TRANSPORT_METRICS = true
+
+	val floodFillTimes = LinkedBlockingDeque<Long>(10_000)
+	val solarFloodFillTimes = LinkedBlockingDeque<Long>(10_000)
+	val pathfindTimes = LinkedBlockingDeque<Long>(10_000)
+	val runTransferTimes = LinkedBlockingDeque<Long>(10_000)
+	val extractorTickTimes = LinkedBlockingDeque<Long>(10_000)
+	val solarTickTimes = LinkedBlockingDeque<Long>(10_000)
+
+	fun <T> measureOrFallback(metric: LinkedBlockingDeque<Long>, block: () -> T): T {
+		if (!COLLECT_TRANSPORT_METRICS) return block()
+
+		if (metric.remainingCapacity() == 0) metric.removeFirst()
+
+		var result: T
+
+		metric.addLast(measureNanoTime {
+			result = block()
+		})
+
+		return result
+	}
+
+	@Subcommand("metrics")
+	fun getMetrics(sender: Player) {
+		if (!COLLECT_TRANSPORT_METRICS) fail { "Transport metrics are not enabled" }
+
+		sender.sendMessage("Flood fill average: ${floodFillTimes.average()} ns")
+		sender.sendMessage("Pathfind average: ${pathfindTimes.average()} ns")
+		sender.sendMessage("Transfer average: ${runTransferTimes.average()} ns")
+		sender.sendMessage("Extractor average: ${extractorTickTimes.average()} ns")
+		sender.sendMessage("Solar panel average: ${solarTickTimes.average()} ns")
+		sender.sendMessage("Solar flood average: ${solarFloodFillTimes.average()} ns")
 	}
 }

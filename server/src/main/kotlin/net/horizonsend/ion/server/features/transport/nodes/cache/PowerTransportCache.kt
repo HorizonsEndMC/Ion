@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
+import net.horizonsend.ion.server.command.misc.TransportDebugCommand
+import net.horizonsend.ion.server.command.misc.TransportDebugCommand.measureOrFallback
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
@@ -41,22 +43,27 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 	override fun tickExtractor(location: BlockKey, delta: Double) {
 		val solarCache = holder.transportManager.solarPanelManager.cache
-		if (solarCache.isSolarPanel(location)) tickSolarPanel(location, delta, solarCache)
+		if (solarCache.isSolarPanel(location)) measureOrFallback(TransportDebugCommand.solarTickTimes) { tickSolarPanel(location, delta, solarCache) }
 
-		tickPowerExtractor(location, delta)
+		measureOrFallback(TransportDebugCommand.extractorTickTimes) { tickPowerExtractor(location, delta) }
 	}
 
 	private fun tickPowerExtractor(location: BlockKey, delta: Double) = NewTransport.executor.submit {
 		val world = holder.getWorld()
 		val sources = getExtractorSources<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
 		val source = sources.randomOrNull() ?: return@submit //TODO take from all
+		println(1)
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: List<BlockKey> = getNetworkDestinations<PowerInputNode>(location) { node ->
-			world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
+		val destinations: List<BlockKey> = measureOrFallback(TransportDebugCommand.floodFillTimes) {
+			getNetworkDestinations<PowerInputNode>(location) { node ->
+				world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
+			}
 		}
+		println("destinations: $destinations")
 
 		if (destinations.isEmpty()) return@submit
+		println("was some")
 
 		val transferLimit = (transportSettings().powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
 		val transferred = minOf(source.powerStorage.getPower(), transferLimit)
@@ -64,16 +71,20 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		// Store this just in case
 		val missing = source.powerStorage.removePower(transferred)
 
-		val remainder = runPowerTransfer(
-			Node.NodePositionData(
-				PowerNode.PowerExtractorNode,
-				world,
-				location,
-				BlockFace.SELF
-			),
-			destinations.take(transportSettings().powerConfiguration.maxExtractorDestinations),
-			(transferred - missing)
-		)
+		val remainder = measureOrFallback(TransportDebugCommand.runTransferTimes) {
+			runPowerTransfer(
+				Node.NodePositionData(
+					PowerNode.PowerExtractorNode,
+					world,
+					location,
+					BlockFace.SELF
+				),
+				destinations.take(transportSettings().powerConfiguration.maxExtractorDestinations),
+				(transferred - missing)
+			)
+		}
+
+		println("remainder")
 
 		if (remainder > 0) {
 			source.powerStorage.addPower(remainder)
@@ -117,9 +128,9 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		val numDestinations = filteredDestinations.size
 
-		val paths: Array<PathfindingReport?> = Array(numDestinations) {
+		val paths: Array<PathfindingReport?> = measureOrFallback(TransportDebugCommand.pathfindTimes) { Array(numDestinations) {
 			getOrCachePath(source, filteredDestinations[it])
-		}
+		} }
 
 		var maximumResistance: Double = -1.0
 
