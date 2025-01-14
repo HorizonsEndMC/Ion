@@ -31,4 +31,3 @@ fun getLinePos(lineNum: Int): Double {
 
 val POWER_TEXT_LINE = getLinePos(3)
 val STATUS_TEXT_LINE = getLinePos(4)
-
