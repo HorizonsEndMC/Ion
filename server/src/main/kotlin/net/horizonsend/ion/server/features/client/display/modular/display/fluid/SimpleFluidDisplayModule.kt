@@ -14,7 +14,7 @@ class SimpleFluidDisplayModule(
 	offsetBack: Double,
 	scale: Float
 ) : FluidDisplayModule(handler, storage, offsetLeft, offsetUp, offsetBack, scale) {
-	override fun getText(): Component {
+	override fun buildText(): Component {
 		return ofChildren(formatFluid(), space(), container.internalStorage.getFluidType().displayName)
 	}
 }
