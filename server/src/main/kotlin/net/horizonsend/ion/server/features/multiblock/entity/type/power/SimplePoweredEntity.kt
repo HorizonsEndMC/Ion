@@ -39,7 +39,7 @@ abstract class SimplePoweredEntity(
 
 	protected fun standardPowerDisplay(entity: SimplePoweredEntity): TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 		entity,
-		{ PowerEntityDisplayModule(it, entity, +0.0, +0.0, +0.0, 0.45f) }
+		{ PowerEntityDisplayModule(it, entity) }
 	)
 
 	override val inputsData: InputsData = InputsData.Builder(this)

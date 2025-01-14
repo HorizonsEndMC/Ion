@@ -21,7 +21,7 @@ class FlowMeterDisplayModule(
 	override fun register() {}
 	override fun deRegister() {}
 
-	override fun getText(): Component {
+	override fun buildText(): Component {
 		return meter.formatFlow()
 	}
 

@@ -18,7 +18,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.Style
-import net.kyori.adventure.text.format.Style.style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -88,9 +87,6 @@ fun formatLink(showText: String, link: String): Component {
 		.clickEvent(ClickEvent.openUrl(link))
 		.hoverEvent(text(link))
 }
-
-//Shortcut
-fun text(string: String, decoration: TextDecoration): Component = text(string, style(decoration))
 
 // Allow static imports
 val OBFUSCATED = TextDecoration.OBFUSCATED

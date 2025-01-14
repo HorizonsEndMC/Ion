@@ -78,8 +78,8 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			{ PowerEntityDisplayModule(it, this, +0.0, +0.0, +0.0, 0.45f) },
-			{ StatusDisplayModule(it, statusManager, +0.0, -0.10, +0.0, 0.45f) }
+			{ PowerEntityDisplayModule(it, this) },
+			{ StatusDisplayModule(it, statusManager) }
 		).register()
 
 		override fun tick() {

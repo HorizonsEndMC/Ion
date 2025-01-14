@@ -18,7 +18,7 @@ abstract class FluidDisplayModule(
 	scale: Float
 ) : DisplayModule(handler, offsetLeft, offsetUp, offsetBack, scale) {
 	private val updateHandler: (InternalStorage) -> Unit = {
-		display()
+		runUpdates()
 	}
 
 	override fun register() {
