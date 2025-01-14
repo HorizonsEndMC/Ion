@@ -7,12 +7,12 @@ import net.kyori.adventure.text.Component
 class StatusDisplayModule(
 	handler: TextDisplayHandler,
     private val statusSupplier: StatusMultiblockEntity.StatusManager,
-    offsetLeft: Double,
-    offsetUp: Double,
-    offsetBack: Double,
-    scale: Float,
+    offsetLeft: Double = 0.0,
+    offsetUp: Double = STATUS_TEXT_LINE,
+    offsetBack: Double = 0.0,
+    scale: Float = MATCH_SIGN_FONT_SIZE,
 ) : DisplayModule(handler, offsetLeft, offsetUp, offsetBack, scale) {
-	private val updateHandler: Runnable = Runnable { display() }
+	private val updateHandler: Runnable = Runnable { runUpdates() }
 
 	override fun register() {
 		statusSupplier.updateManager.add(updateHandler)
@@ -22,7 +22,7 @@ class StatusDisplayModule(
 		statusSupplier.updateManager.remove(updateHandler)
 	}
 
-	override fun getText(): Component {
+	override fun buildText(): Component {
 		return statusSupplier.status
 	}
 }

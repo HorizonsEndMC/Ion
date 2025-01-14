@@ -91,8 +91,7 @@ sealed interface PowerNode : Node {
 
         val displayHandler = DisplayHandlers.newBlockOverlay(
 			this,
-            cache.holder.getWorld(),
-            toVec3i(location),
+			toVec3i(location),
             face,
 			{ FlowMeterDisplayModule(it, this, 0.0, 0.0, 0.0, 0.7f) }
         ).register()

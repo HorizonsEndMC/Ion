@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.power.storage
 
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.multiblock.Multiblock
@@ -12,16 +11,13 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractEvent
 
-abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMultiblock<PowerBankMultiblock.PowerBankEntity>, InteractableMultiblock, DisplayNameMultilblock {
+abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMultiblock<PowerBankMultiblock.PowerBankEntity>, DisplayNameMultilblock {
 	abstract val maxPower: Int
 	override val description: Component get() = Component.text("Stores $maxPower power")
 	abstract val tierMaterial: Material
@@ -86,11 +82,6 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMulti
 				x(+1).anyGlassPane()
 			}
 		}
-	}
-
-	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		val b = getMultiblockEntity(sign) ?: return
-		player.information("b: ${b.powerStorage.getPower()}")
 	}
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): PowerBankEntity {

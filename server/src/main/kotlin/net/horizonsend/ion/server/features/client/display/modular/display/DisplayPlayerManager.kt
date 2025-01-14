@@ -27,6 +27,11 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display) {
 		players.mapNotNull(::getPlayer).forEach { bukkitPlayer -> bukkitPlayer.minecraft.connection.send(packet) }
 	}
 
+	fun sendAddEntity(players: Set<UUID>) {
+		val addEntity = getAddEntityPacket(entity)
+		sendPacket(players, addEntity)
+	}
+
 	fun runUpdates() {
 		val chunk = entity.level().getChunkIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
 		val viewers = chunk.`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false).mapTo(mutableSetOf(), ServerPlayer::getUUID)
@@ -34,10 +39,7 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display) {
 		val new = viewers.minus(shownPlayers)
 		val retained = viewers.intersect(shownPlayers)
 
-		if (new.isNotEmpty()) {
-			val addEntity = getAddEntityPacket(entity)
-			sendPacket(new, addEntity)
-		}
+		if (new.isNotEmpty()) sendAddEntity(new)
 
 		val all = retained.union(new)
 		if (all.isNotEmpty()) {
