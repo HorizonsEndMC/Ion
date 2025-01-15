@@ -30,7 +30,7 @@ object DisplayHandlers : IonServerComponent() {
 
 	fun newBlockOverlay(holder: DisplayHandlerHolder, block: Vec3i, direction: BlockFace, vararg displayModule: (TextDisplayHandler) -> DisplayModule): TextDisplayHandler {
 		val builder = TextDisplayHandler.builder(holder, block.x, block.y, block.z)
-			.setOffset(offsetRight = 0.0, offsetUp = -0.1, offsetForward = -0.39)
+				.setOffset(offsetRight = 0.0, offsetUp = -0.1, offsetForward = +0.501)
 			.setDirection(direction)
 
 		displayModule.forEach(builder::addDisplay)
