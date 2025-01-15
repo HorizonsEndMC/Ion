@@ -46,6 +46,9 @@ interface Node {
 		return filterPositionData(nodes, backwards)
 	}
 
+	/**
+	 * Filters the found adjacent nodes, after checking for transport possibility
+	 **/
 	fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> = nextNodes
 
 	data class NodePositionData(val type: Node, val world: World, val position: BlockKey, val offset: BlockFace) {
