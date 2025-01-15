@@ -34,8 +34,8 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		.addSimpleNode(CRAFTING_TABLE, PowerNode.PowerExtractorNode)
 		.addSimpleNode(SPONGE, PowerNode.SpongeNode)
 		.addDataHandler<CraftEndRod>(END_ROD) { data, _ -> PowerNode.EndRodNode(data.facing.axis) }
-		.addSimpleNode(REDSTONE_BLOCK, PowerNode.PowerMergeNode)
-		.addSimpleNode(IRON_BLOCK, PowerNode.PowerMergeNode)
+		.addSimpleNode(REDSTONE_BLOCK, PowerNode.RedstoneMergeNode)
+		.addSimpleNode(IRON_BLOCK, PowerNode.IronMergeNode)
 		.addSimpleNode(LAPIS_BLOCK, PowerNode.PowerInvertedMergeNode)
 		.addDataHandler<Observer>(OBSERVER) { data, loc -> PowerFlowMeter(this, data.facing, holder.getWorld(), loc) }
 		.addSimpleNode(NOTE_BLOCK, PowerInputNode)
@@ -43,75 +43,74 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 	override fun tickExtractor(location: BlockKey, delta: Double) {
 		val solarCache = holder.transportManager.solarPanelManager.cache
-		if (solarCache.isSolarPanel(location)) measureOrFallback(TransportDebugCommand.solarTickTimes) { tickSolarPanel(location, delta, solarCache) }
+		if (solarCache.isSolarPanel(location)) tickSolarPanel(location, delta, solarCache)
 
-		measureOrFallback(TransportDebugCommand.extractorTickTimes) { tickPowerExtractor(location, delta) }
+		tickPowerExtractor(location, delta)
 	}
 
 	private fun tickPowerExtractor(location: BlockKey, delta: Double) = NewTransport.executor.submit {
-		val world = holder.getWorld()
-		val sources = getExtractorSources<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
-		val source = sources.randomOrNull() ?: return@submit //TODO take from all
-		println(1)
+		measureOrFallback(TransportDebugCommand.extractorTickTimes) {
+			val world = holder.getWorld()
+			val sources = getExtractorSources<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
+			val source = sources.randomOrNull() ?: return@measureOrFallback //TODO take from all
 
-		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: List<BlockKey> = measureOrFallback(TransportDebugCommand.floodFillTimes) {
-			getNetworkDestinations<PowerInputNode>(location) { node ->
-				world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
+			// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
+			val destinations: List<BlockKey> = measureOrFallback(TransportDebugCommand.floodFillTimes) {
+				getNetworkDestinations<PowerInputNode>(location) { node ->
+					world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
+				}
 			}
-		}
-		println("destinations: $destinations")
 
-		if (destinations.isEmpty()) return@submit
-		println("was some")
+			if (destinations.isEmpty()) return@measureOrFallback
 
-		val transferLimit = (transportSettings().powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
-		val transferred = minOf(source.powerStorage.getPower(), transferLimit)
+			val transferLimit = (transportSettings().powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
+			val transferred = minOf(source.powerStorage.getPower(), transferLimit)
 
-		// Store this just in case
-		val missing = source.powerStorage.removePower(transferred)
+			// Store this just in case
+			val missing = source.powerStorage.removePower(transferred)
 
-		val remainder = measureOrFallback(TransportDebugCommand.runTransferTimes) {
-			runPowerTransfer(
-				Node.NodePositionData(
-					PowerNode.PowerExtractorNode,
-					world,
-					location,
-					BlockFace.SELF
-				),
-				destinations.take(transportSettings().powerConfiguration.maxExtractorDestinations),
-				(transferred - missing)
-			)
-		}
+			val remainder = measureOrFallback(TransportDebugCommand.runTransferTimes) {
+				runPowerTransfer(
+					Node.NodePositionData(
+						PowerNode.PowerExtractorNode,
+						world,
+						location,
+						BlockFace.SELF
+					),
+					destinations.take(transportSettings().powerConfiguration.maxExtractorDestinations),
+					(transferred - missing)
+				)
+			}
 
-		println("remainder")
-
-		if (remainder > 0) {
-			source.powerStorage.addPower(remainder)
+			if (remainder > 0) {
+				source.powerStorage.addPower(remainder)
+			}
 		}
 	}
 
 	private fun tickSolarPanel(location: BlockKey, delta: Double, solarCache: SolarPanelCache) = NewTransport.executor.submit {
-		val transportPower = solarCache.getPower(holder.getWorld(), location, delta)
-		if (transportPower == 0) return@submit
+		measureOrFallback(TransportDebugCommand.solarTickTimes) {
+			val transportPower = solarCache.getPower(holder.getWorld(), location, delta)
+			if (transportPower == 0) return@measureOrFallback
 
-		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: List<BlockKey> = getNetworkDestinations<PowerInputNode>(location) { node ->
-			holder.getWorld().ion.inputManager.getHolders(CacheType.POWER, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
+			// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
+			val destinations: List<BlockKey> = getNetworkDestinations<PowerInputNode>(location) { node ->
+				holder.getWorld().ion.inputManager.getHolders(CacheType.POWER, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
+			}
+
+			if (destinations.isEmpty()) return@measureOrFallback
+
+			holder.transportManager.powerNodeManager.cache.runPowerTransfer(
+				Node.NodePositionData(
+					PowerNode.PowerExtractorNode,
+					holder.getWorld(),
+					location,
+					BlockFace.SELF
+				),
+				destinations.take(transportSettings().powerConfiguration.maxSolarDestinations),
+				transportPower
+			)
 		}
-
-		if (destinations.isEmpty()) return@submit
-
-		holder.transportManager.powerNodeManager.cache.runPowerTransfer(
-			Node.NodePositionData(
-				PowerNode.PowerExtractorNode,
-				holder.getWorld(),
-				location,
-				BlockFace.SELF
-			),
-			destinations.take(transportSettings().powerConfiguration.maxSolarDestinations),
-			transportPower
-		)
 	}
 
 	/**
