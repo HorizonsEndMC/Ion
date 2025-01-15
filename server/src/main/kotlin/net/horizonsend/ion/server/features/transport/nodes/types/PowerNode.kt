@@ -97,56 +97,39 @@ sealed interface PowerNode : Node {
     }
 
     data class PowerFlowMeter(val cache: PowerTransportCache, var face: BlockFace, var world: World, var location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder {
+		/** Data entry of transferred power, contains the amount and the timestamp if the transfer */
+		private data class TransferredPower(val transferred: Int, val time: Long = System.currentTimeMillis())
+
+		// Use array deque as a stack
+		private val averages = ArrayDeque<TransferredPower?>(NUMBER_STORED_AVERAGES)
+
 		override var isAlive: Boolean = true
 
-		override fun handlerGetWorld(): World {
-			return world
-		}
-
-        val displayHandler = DisplayHandlers.newBlockOverlay(
-			this,
-			toVec3i(location),
-            face,
-			{ FlowMeterDisplayModule(it, this, 0.0, 0.0, 0.0, 0.7f) }
-        ).register()
-
-        private val STORED_AVERAGES = 20
-        private val averages = mutableListOf<TransferredPower>()
+        val displayHandler = DisplayHandlers.newBlockOverlay(this, toVec3i(location), face, { FlowMeterDisplayModule(it, this, 0.0, 0.0, 0.0, 0.7f) })
 
         fun onCompleteChain(transferred: Int) {
-            addTransferred(TransferredPower(transferred, System.currentTimeMillis()))
+			// Push onto queue
+			if (averages.size == NUMBER_STORED_AVERAGES) averages.removeFirst()
+			averages.addLast(TransferredPower(transferred))
+
             displayHandler.update()
         }
 
-        private fun addTransferred(transferredSnapshot: TransferredPower) {
-            val currentSize = averages.size
-
-            if (currentSize < STORED_AVERAGES) {
-                averages.add(transferredSnapshot)
-                return
-            }
-
-            // If it is full, shift all averages to the right
-            for (index in 18 downTo 0) {
-                averages[index + 1] = averages[index]
-            }
-
-            averages[0] = transferredSnapshot
-        }
-
         private fun calculateAverage(): Double {
-            val sum = averages.sumOf { it.transferred }
+			val nonNull = averages.filterNotNull()
+            val sum = nonNull.sumOf { it.transferred }
 
-            val timeDiff = (System.currentTimeMillis() - averages.minOf { it.time }) / 1000.0
+            val timeDiff = (System.currentTimeMillis() - nonNull.minOf { it.time }) / 1000.0
 
             return sum / timeDiff
         }
 
         fun formatFlow(): Component {
+			val nonNull = averages.filterNotNull()
             var avg = runCatching { calculateAverage().roundToHundredth() }.getOrDefault(0.0)
 
             // If no averages, or no power has been moved in 5 seconds, go to 0
-            if (averages.isEmpty() || System.currentTimeMillis() - averages.maxOf { it.time } > 5000) {
+            if (averages.isEmpty() || System.currentTimeMillis() - nonNull.maxOf { it.time } > 5000) {
                 avg = 0.0
             }
 
@@ -170,6 +153,9 @@ sealed interface PowerNode : Node {
             displayHandler.displace(movement)
         }
 
-        private data class TransferredPower(val transferred: Int, val time: Long)
-    }
+		override fun handlerGetWorld(): World = world
+
+
+		companion object { private const val NUMBER_STORED_AVERAGES = 20 }
+	}
 }
