@@ -32,6 +32,7 @@ import org.slf4j.Logger
 import java.lang.management.ManagementFactory
 import java.lang.management.ThreadInfo
 import java.util.concurrent.LinkedBlockingDeque
+import kotlin.math.roundToInt
 import kotlin.system.measureNanoTime
 
 @CommandPermission("starlegacy.transportdebug")
@@ -224,11 +225,11 @@ object TransportDebugCommand : SLCommand() {
 	fun getMetrics(sender: Player) {
 		if (!COLLECT_TRANSPORT_METRICS) fail { "Transport metrics are not enabled" }
 
-		sender.sendMessage("Flood fill average: ${floodFillTimes.average()} ns")
-		sender.sendMessage("Pathfind average: ${pathfindTimes.average()} ns")
-		sender.sendMessage("Transfer average: ${runTransferTimes.average()} ns")
-		sender.sendMessage("Extractor average: ${extractorTickTimes.average()} ns")
-		sender.sendMessage("Solar panel average: ${solarTickTimes.average()} ns")
-		sender.sendMessage("Solar flood average: ${solarFloodFillTimes.average()} ns")
+		sender.sendMessage("Flood fill average: ${floodFillTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
+		sender.sendMessage("Pathfind average: ${pathfindTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
+		sender.sendMessage("Transfer average: ${runTransferTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
+		sender.sendMessage("Extractor average: ${extractorTickTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
+		sender.sendMessage("Solar panel average: ${solarTickTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
+		sender.sendMessage("Solar flood average: ${solarFloodFillTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
 	}
 }

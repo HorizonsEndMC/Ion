@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.util
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -23,7 +24,7 @@ fun getOrCacheNode(type: CacheType, world: World, pos: BlockKey): Node? {
  **/
 fun getIdealPath(
 	from: Node.NodePositionData,
-	to: BlockKey,
+	destination: BlockKey,
 	cachedNodeProvider: (CacheType, World, BlockKey) -> Node?,
 	pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null
 ): Array<Node.NodePositionData>? {
@@ -46,7 +47,7 @@ fun getIdealPath(
 		node = from,
 		parent = null,
 		g = 0,
-		f = 0
+		f = getHeuristic(from, destination)
 	))
 
 	val visited = IntOpenHashSet()
@@ -54,28 +55,34 @@ fun getIdealPath(
 	// Safeguard
 	var iterations = 0
 
-	while (queue.isNotEmpty() && iterations < 150) {
+	val maxDepth = ConfigurationFiles.transportSettings().powerConfiguration.maxPathfindDepth
+	while (queue.isNotEmpty() && iterations < maxDepth) {
 		iterations++
 		val current = queue.minBy { it.f }
 
-		if (current.node.position == to) return current.buildPath()
+		if (current.node.position == destination) return current.buildPath()
 
 		queueRemove(current)
 		visited.add(current.node.hashCode())
 
-		for (neighbor in getNeighbors(current, cachedNodeProvider, pathfindingFilter)) {
-			if (visited.contains(neighbor.node.hashCode())) continue
-			neighbor.f = (neighbor.g + getHeuristic(neighbor, to))
+		// Compute new neighbor data from current position
+		for (computedNeighbor in getNeighbors(current, cachedNodeProvider, pathfindingFilter)) {
+			if (visited.contains(computedNeighbor.node.hashCode())) continue
 
-			if (queueSet.contains(neighbor.node.position)) {
-				val existingNeighbor = queue.first { it.node === neighbor.node }
+			// Update the f value
+			computedNeighbor.f = (computedNeighbor.g + getHeuristic(computedNeighbor.node, destination))
 
-				if (neighbor.g < existingNeighbor.g) {
-					existingNeighbor.g = neighbor.g
-					existingNeighbor.parent = neighbor.parent
+			if (queueSet.contains(computedNeighbor.node.position)) {
+				val existingNeighbor = queue.first { it.node.position == computedNeighbor.node.position }
+
+				if (computedNeighbor.g < existingNeighbor.g) {
+					existingNeighbor.parent = computedNeighbor.parent
+
+					existingNeighbor.g = computedNeighbor.g
+					existingNeighbor.f = computedNeighbor.f
 				}
 			} else {
-				queueAdd(neighbor)
+				queueAdd(computedNeighbor)
 			}
 		}
 	}
@@ -105,9 +112,9 @@ fun getNeighbors(
 
 // The heuristic used for the algorithm in this case is the distance from the node to the destination, which is typical,
 // But it also includes the pathfinding resistance to try to find the least resistant path.
-fun getHeuristic(wrapper: PathfindingNodeWrapper, destination: BlockKey): Int {
-	val resistance = wrapper.node.type.pathfindingResistance
-	return (toVec3i(wrapper.node.position).distance(toVec3i(destination)) + resistance).roundToInt()
+fun getHeuristic(node: Node.NodePositionData, destination: BlockKey): Int {
+	val resistance = node.type.pathfindingResistance
+	return (toVec3i(node.position).distance(toVec3i(destination)) + resistance).roundToInt()
 }
 
 /**
@@ -163,3 +170,4 @@ data class PathfindingNodeWrapper(
 fun calculatePathResistance(path: Array<Node.NodePositionData>): Double {
 	return path.sumOf { it.type.pathfindingResistance }
 }
+
