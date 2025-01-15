@@ -19,5 +19,6 @@ data class TransportConfiguration(
 		val solarPanelTickPower: Int = 100,
 		val maxExtractorDestinations: Int = 100,
 		val maxSolarDestinations: Int = 100,
+		val maxPathfindDepth: Int = 600
 	)
 }

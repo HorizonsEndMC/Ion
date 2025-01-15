@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.client.display.modular.display.FlowMe
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -56,26 +57,41 @@ sealed interface PowerNode : Node {
 		fun getPoweredEntities(world: World, location: BlockKey) = world.ion.inputManager.getHolders(CacheType.POWER, location).filterIsInstance<PoweredMultiblockEntity>()
 	}
 
-    data object PowerMergeNode : PowerNode {
-        override val pathfindingResistance: Double = 0.5
-        override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other is SpongeNode
-        override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is SpongeNode
+	interface MergeNode {
+		fun mergeNodeTransferCheck(other: Node) = if (other is MergeNode) other.javaClass == javaClass else true
+	}
+
+    sealed interface PowerMergeNode : PowerNode, MergeNode {
+        override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
+        override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is SpongeNode && mergeNodeTransferCheck(other)
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 
-		override fun filterPositionData(nextNodes: List<Node.NodePositionData>, backwards: BlockFace): List<Node.NodePositionData> {
+		override fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> {
 			val forward = backwards.oppositeFace
-			nextNodes.firstOrNull { it.offset == forward }?.let { return listOf(it) }
+
+			for (node in nextNodes) {
+				if (node.offset == forward) return listOf(node)
+			}
+
 			return nextNodes
 		}
     }
 
-    data object PowerInvertedMergeNode : PowerNode {
+	data object RedstoneMergeNode : PowerMergeNode {
+		override val pathfindingResistance: Double = 0.5
+	}
+
+	data object IronMergeNode : PowerMergeNode {
+		override val pathfindingResistance: Double = 0.5
+	}
+
+    data object PowerInvertedMergeNode : PowerNode, MergeNode {
         override val pathfindingResistance: Double = 0.5
-        override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other is EndRodNode
-        override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is EndRodNode
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
+        override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is EndRodNode && mergeNodeTransferCheck(other)
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 
-		override fun filterPositionData(nextNodes: List<Node.NodePositionData>, backwards: BlockFace): List<Node.NodePositionData> {
+		override fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> {
 			val forward = backwards.oppositeFace
 			nextNodes.firstOrNull { it.offset == forward }?.let { return listOf(it) }
 			return nextNodes
