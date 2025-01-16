@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.newcrafting.input.ItemResultEnviornment
 import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
+import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -30,15 +31,16 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 	fun getResultItem(enviornment: E): ItemStack?
 
 	companion object {
-		fun <E: ItemResultEnviornment> simpleResult(itemStack: ItemStack): SimpleResult<E> = SimpleResult(itemStack)
-		fun <E: ItemResultEnviornment> simpleResult(customItem: CustomItem): SimpleResult<E> = SimpleResult(customItem.constructItemStack())
-		fun <E: ItemResultEnviornment> simpleResult(material: Material): SimpleResult<E> = SimpleResult(ItemStack(material, 1))
+		fun <E: ItemResultEnviornment> simpleResult(itemStack: ItemStack,sound: Sound? = null): SimpleResult<E> = SimpleResult(itemStack, sound)
+		fun <E: ItemResultEnviornment> simpleResult(customItem: CustomItem,sound: Sound? = null): SimpleResult<E> = SimpleResult(customItem.constructItemStack(), sound)
+		fun <E: ItemResultEnviornment> simpleResult(material: Material,sound: Sound? = null): SimpleResult<E> = SimpleResult(ItemStack(material, 1), sound)
 	}
 
-	class SimpleResult<E: ItemResultEnviornment>(private val item: ItemStack) : ItemResult<E> {
+	class SimpleResult<E: ItemResultEnviornment>(private val item: ItemStack, val sound: Sound? = null) : ItemResult<E> {
 		override fun getResultItem(enviornment: E): ItemStack? = item
 		override fun execute(enviornment: E, slotModificationWrapper: SlotModificationWrapper) {
 			slotModificationWrapper.addToSlot(item)
+			sound?.let { enviornment.playSound(it) }
 		}
 	}
 }
