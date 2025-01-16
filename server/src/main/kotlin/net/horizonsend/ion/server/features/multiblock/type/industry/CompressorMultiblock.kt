@@ -4,11 +4,12 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
-import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.newcrafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import org.bukkit.World
@@ -125,13 +126,26 @@ object CompressorMultiblock : Multiblock(), EntityMultiblock<CompressorMultibloc
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : SimplePoweredEntity(data, CompressorMultiblock, manager, x, y, z, world, structureFace, 300_000), LegacyMultiblockEntity, PoweredMultiblockEntity, RecipeEntity {
+	) : SimplePoweredEntity(data, CompressorMultiblock, manager, x, y, z, world, structureFace, 300_000),
+		LegacyMultiblockEntity,
+		SyncTickingMultiblockEntity,
+		RecipeProcessingMultiblockEntity<FurnaceEnviornment>,
+		ProgressMultiblock {
+
 		override val displayHandler = standardPowerDisplay(this)
 		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
+		}
+
+		override fun buildRecipeEnviornment(): FurnaceEnviornment {
+			return FurnaceEnviornment(this)
+		}
+
+		override fun tick() {
+			tryProcessRecipe()
 		}
 	}
 }

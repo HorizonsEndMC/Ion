@@ -128,7 +128,6 @@ object CentrifugeMultiblock : Multiblock(), EntityMultiblock<CentrifugeMultibloc
 		RecipeProcessingMultiblockEntity<FurnaceEnviornment>,
 		ProgressMultiblock {
 
-		override val multiblock: CentrifugeMultiblock = CentrifugeMultiblock
 		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
