@@ -10,7 +10,10 @@ import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.require
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.PowerRequirement
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result.ItemResult
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
+import net.kyori.adventure.sound.Sound
+import org.bukkit.SoundCategory
 import kotlin.reflect.KClass
 
 object MultiblockRecipeRegistry : IonServerComponent() {
@@ -23,7 +26,10 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.URANIUM),
 		fuelItem = null,
 		power = PowerRequirement(100),
-		result = ItemResult.simpleResult(CustomItemRegistry.ENRICHED_URANIUM)
+		result = ItemResult.simpleResult(
+			CustomItemRegistry.ENRICHED_URANIUM,
+			Sound.sound(NamespacedKeys.packKey("industry.centrifuge"), SoundCategory.BLOCKS, 1.0f, 1.0f)
+		)
 	))
 
 	fun <I: RecipeEnviornment, R: NewMultiblockRecipe<I>> register(recipe: R): R {
