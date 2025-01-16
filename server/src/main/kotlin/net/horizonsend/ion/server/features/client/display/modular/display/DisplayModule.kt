@@ -54,7 +54,6 @@ abstract class DisplayModule(
 		)
 
 		val location = getLocation()
-//		println("Location: $location")
 
 		return craftEntity.getNMSData(location.x, location.y, location.z)
 	}
