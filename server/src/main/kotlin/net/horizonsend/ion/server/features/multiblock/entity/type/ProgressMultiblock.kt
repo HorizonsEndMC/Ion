@@ -16,11 +16,7 @@ import java.time.Duration
 interface ProgressMultiblock {
 	val progressManager: ProgressManager
 	fun tickProgress(totalDuration: Duration): Boolean {
-		val current = System.currentTimeMillis()
-		val delta = Duration.ofMillis(current - progressManager.lastProgressTick)
-
-		progressManager.lastProgressTick = current
-		return progressManager.addProgress(totalDuration, delta)
+		return progressManager.addProgress(totalDuration)
 	}
 
 	class ProgressManager(data: PersistentMultiblockData) {
@@ -33,7 +29,13 @@ interface ProgressMultiblock {
 		 * Increments progress with a percentage of a total duration.
 		 * Returns whether the progress has reached 100%
 		 **/
-		fun addProgress(totalDuration: Duration, delta: Duration): Boolean {
+		fun addProgress(totalDuration: Duration): Boolean {
+			val now = System.currentTimeMillis()
+			val deltaMillis = now - lastProgressTick
+			val delta = Duration.ofMillis(deltaMillis)
+
+			lastProgressTick = now
+
 			// Convert the delta to a percentage of the total duration, and add that percentage
 			val additionalPercent = totalDuration.toMillis().toDouble() / delta.toMillis().toDouble()
 			currentProgress += additionalPercent
