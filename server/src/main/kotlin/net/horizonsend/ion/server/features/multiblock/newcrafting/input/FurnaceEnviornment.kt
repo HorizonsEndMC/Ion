@@ -8,12 +8,12 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 
-class IndustryMultiblockEnviornment(
+class FurnaceEnviornment(
 	val furnaceInventory: FurnaceInventory,
 	val powerStorage: PowerStorage,
 	val tickingManager: TickedMultiblockEntityParent.TickingManager,
 	val progressManager: ProgressMultiblock.ProgressManager
-) : MultiblockRecipeEnviornment {
+) : RecipeEnviornment {
 	constructor(entity: MultiblockEntity) : this(
 		entity.getInventory(0, 0, 0) as FurnaceInventory,
 		(entity as PoweredMultiblockEntity).powerStorage,
