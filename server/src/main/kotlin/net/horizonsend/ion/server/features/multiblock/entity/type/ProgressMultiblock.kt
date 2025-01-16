@@ -27,6 +27,8 @@ interface ProgressMultiblock {
 		var lastProgressTick: Long = data.getAdditionalDataOrDefault(LAST_PROGRESS_TICK, LONG, System.currentTimeMillis())
 		private var currentProgress: Double = data.getAdditionalDataOrDefault(PROGRESS, DOUBLE, 0.0)
 
+		fun getCurrentProgress(): Double = currentProgress
+
 		/**
 		 * Increments progress with a percentage of a total duration.
 		 * Returns whether the progress has reached 100%
