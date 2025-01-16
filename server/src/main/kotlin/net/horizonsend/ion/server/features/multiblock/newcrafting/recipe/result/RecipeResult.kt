@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result
 
-import net.horizonsend.ion.server.features.multiblock.newcrafting.input.MultiblockRecipeEnviornment
+import net.horizonsend.ion.server.features.multiblock.newcrafting.input.RecipeEnviornment
 
-interface RecipeResult<E: MultiblockRecipeEnviornment> {
+interface RecipeResult<E: RecipeEnviornment> {
 	fun verifySpace(input: E): Boolean
 	fun execute(input: E)
 }
