@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.newcrafting
 
+import io.papermc.paper.util.Tick
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
@@ -9,7 +10,9 @@ import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.NewMult
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.ItemRequirement
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.PowerRequirement
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result.ItemResult
+import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result.ProgressResult
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.sound.Sound
@@ -29,6 +32,18 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 		result = ItemResult.simpleResult(
 			CustomItemRegistry.ENRICHED_URANIUM,
 			Sound.sound(NamespacedKeys.packKey("industry.centrifuge"), SoundCategory.BLOCKS, 1.0f, 1.0f)
+		)
+	))
+
+	val URANIUM_CORE_COMPRESSION = register(FurnaceMultiblockRecipe(
+		identifier = "URANIUM_CORE_COMPRESSION",
+		clazz = CompressorMultiblock.CompressorMultiblockEntity::class,
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.URANIUM_CORE),
+		fuelItem = null,
+		power = PowerRequirement(100),
+		result = ProgressResult(
+			Tick.of(60L * 60L * 20L),
+			CustomItemRegistry.ENRICHED_URANIUM.constructItemStack()
 		)
 	))
 
