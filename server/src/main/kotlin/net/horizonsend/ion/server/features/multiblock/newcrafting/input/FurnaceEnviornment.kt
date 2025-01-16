@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerSto
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
+import net.kyori.adventure.sound.Sound
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 
@@ -39,5 +40,12 @@ class FurnaceEnviornment(
 
 	override fun getResultItemSlotModifier(): SlotModificationWrapper {
 		return SlotModificationWrapper.furnaceResult(furnaceInventory)
+	}
+
+	override fun playSound(sound: Sound) {
+		val furnaceLocation = furnaceInventory.holder?.location?.toCenterLocation()
+			?: throw IllegalStateException("Virtual furnace inventory passed to multiblock recipe! Don't do that!")
+
+		furnaceLocation.world.playSound(sound, furnaceLocation.x, furnaceLocation.y, furnaceLocation.z)
 	}
 }
