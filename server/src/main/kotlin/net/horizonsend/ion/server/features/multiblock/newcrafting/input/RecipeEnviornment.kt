@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.newcrafting.input
 
 import org.bukkit.inventory.ItemStack
 
-interface MultiblockRecipeEnviornment {
+interface RecipeEnviornment {
 	fun getItemSize(): Int
 	fun getItem(index: Int): ItemStack?
 
