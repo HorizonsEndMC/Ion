@@ -23,12 +23,15 @@ class IndustryMultiblockRecipe(
 ) : NewMultiblockRecipe<IndustryMultiblockEnviornment>(clazz) {
 
 	override val requirements: Collection<RequirementHolder<IndustryMultiblockEnviornment, *>> = listOf(
-		RequirementHolder({ it.getItem(0) }, smeltingItem ?: ItemRequirement.empty()),
-		RequirementHolder({ it.getItem(1) }, fuelitem ?: ItemRequirement.empty()),
-		RequirementHolder({ it.powerStorage.getPower() }, power)
+		RequirementHolder.of({ it.getItem(0) }, smeltingItem ?: ItemRequirement.empty()),
+		RequirementHolder.of({ it.getItem(1) }, fuelitem ?: ItemRequirement.empty()),
+		RequirementHolder.of({ it.powerStorage.getPower() }, power)
 	)
 
-	override fun assemble(input: IndustryMultiblockEnviornment): RecipeResult<IndustryMultiblockEnviornment> {
+	override fun assemble(enviornment: IndustryMultiblockEnviornment) {
+		if (!verifyAllRequirements(enviornment)) result
+		if (result.verifySpace(enviornment)) return
 
+		result.execute(enviornment)
 	}
 }
