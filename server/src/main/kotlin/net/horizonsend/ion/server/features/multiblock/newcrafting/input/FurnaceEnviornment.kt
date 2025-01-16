@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultib
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
+import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 
@@ -13,7 +14,7 @@ class FurnaceEnviornment(
 	val powerStorage: PowerStorage,
 	val tickingManager: TickedMultiblockEntityParent.TickingManager,
 	val progressManager: ProgressMultiblock.ProgressManager
-) : RecipeEnviornment {
+) : ItemResultEnviornment {
 	constructor(entity: MultiblockEntity) : this(
 		entity.getInventory(0, 0, 0) as FurnaceInventory,
 		(entity as PoweredMultiblockEntity).powerStorage,
@@ -21,14 +22,22 @@ class FurnaceEnviornment(
 		(entity as ProgressMultiblock).progressManager
 	)
 
-	fun getProgress(): Double = progressManager.getCurrentProgress()
+	val items get() = listOf(furnaceInventory.smelting, furnaceInventory.fuel)
 
-	override fun getItemSize(): Int = 1
+	override fun getItemSize(): Int = 2
 	override fun getItem(index: Int): ItemStack? {
-		return furnaceInventory.smelting
+		return items[index]
 	}
 
 	override fun isEmpty(): Boolean {
-		return furnaceInventory.smelting != null
+		return items.all { stack -> stack == null || stack.isEmpty }
+	}
+
+	override fun getResultItem(): ItemStack? {
+		return furnaceInventory.result
+	}
+
+	override fun getResultItemSlotModifier(): SlotModificationWrapper {
+		return SlotModificationWrapper.furnaceResult(furnaceInventory)
 	}
 }
