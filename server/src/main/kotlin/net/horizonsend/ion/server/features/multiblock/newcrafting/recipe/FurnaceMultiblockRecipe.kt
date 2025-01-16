@@ -30,13 +30,13 @@ class FurnaceMultiblockRecipe(
 		// Furnace smelting item
 		RequirementHolder.itemConsumable(
 			getter = { it.getItem(0) },
-			requirement = smeltingItem ?: ItemRequirement.empty(),
+			requirement = smeltingItem ?: ItemRequirement.legacy(),
 			{ SlotModificationWrapper.furnaceSmelting(it.furnaceInventory) }
 		),
 		// Furnace fuel item
 		RequirementHolder.itemConsumable(
 			getter = { it.getItem(1) },
-			requirement = fuelItem ?: ItemRequirement.empty(),
+			requirement = fuelItem ?: ItemRequirement.legacy(),
 			{ SlotModificationWrapper.furnaceFuel(it.furnaceInventory) }
 		),
 		// Power requirement

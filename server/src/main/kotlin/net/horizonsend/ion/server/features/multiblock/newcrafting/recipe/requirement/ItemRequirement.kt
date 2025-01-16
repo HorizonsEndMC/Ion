@@ -40,5 +40,19 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 			if (it == null) return@ItemRequirement true
 			it.isEmpty
 		}
+
+		/** Gets an item requirement is always true */
+		fun ignore() = ItemRequirement { true }
+
+		fun prismarine() = MaterialRequirement(Material.PRISMARINE_CRYSTALS)
+
+		/** Gets a composite requirement where it could be prismarine crystals or empty */
+		fun legacy() = any(prismarine(), empty())
+
+		/** Gets a composite requirement where any condition could be met */
+		fun any(vararg requirements: ItemRequirement) = ItemRequirement { requirements.any { requirement -> requirement.matches(it) } }
+
+		/** Gets a composite requirement where all conditions must be met */
+		fun all(vararg requirements: ItemRequirement) = ItemRequirement { requirements.all { requirement -> requirement.matches(it) } }
 	}
 }
