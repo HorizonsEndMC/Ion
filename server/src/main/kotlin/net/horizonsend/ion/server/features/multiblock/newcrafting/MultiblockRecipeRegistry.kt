@@ -43,11 +43,11 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 		power = PowerRequirement(100),
 		result = ProgressResult(
 			Tick.of(60L * 60L * 20L),
-			CustomItemRegistry.ENRICHED_URANIUM.constructItemStack()
+			CustomItemRegistry.URANIUM_ROD.constructItemStack()
 		)
 	))
 
-	fun <I: RecipeEnviornment, R: NewMultiblockRecipe<I>> register(recipe: R): R {
+	fun <E: RecipeEnviornment, R: NewMultiblockRecipe<E>> register(recipe: R): R {
 		recipes.add(recipe)
 		byMultiblock[recipe.entityType].add(recipe)
 

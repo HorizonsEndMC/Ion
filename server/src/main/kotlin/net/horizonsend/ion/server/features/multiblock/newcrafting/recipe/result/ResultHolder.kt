@@ -4,7 +4,8 @@ import net.horizonsend.ion.server.features.multiblock.newcrafting.input.ItemResu
 import net.horizonsend.ion.server.features.multiblock.newcrafting.input.RecipeEnviornment
 
 abstract class ResultHolder<E: RecipeEnviornment, R: RecipeResult<E>>(val result: R) {
-	fun verifySpace(input: E) = result.verifySpace(input)
+	fun verifySpace(enviornment: E) = result.verifySpace(enviornment)
+	fun shouldConsumeIngredients(enviornment: E): Boolean = result.shouldConsumeIngredients(enviornment)
 	abstract fun execute(input: E)
 
 	class ItemResultHolder<E: ItemResultEnviornment, R: ItemResult<E>>(result: R) : ResultHolder<E, R>(result) {

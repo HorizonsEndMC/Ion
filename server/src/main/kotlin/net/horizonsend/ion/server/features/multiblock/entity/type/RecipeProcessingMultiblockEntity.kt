@@ -6,10 +6,15 @@ import net.horizonsend.ion.server.features.multiblock.newcrafting.input.RecipeEn
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.NewMultiblockRecipe
 
 interface RecipeProcessingMultiblockEntity<E: RecipeEnviornment> {
+	var lastRecipe: NewMultiblockRecipe<E>?
+
 	fun buildRecipeEnviornment(): E
 
 	fun getRecipesFor(): NewMultiblockRecipe<E>? {
 		val enviornment = buildRecipeEnviornment()
+		// Optimization step, avoid checking all recipes
+		if (lastRecipe?.verifyAllRequirements(enviornment) == true) return lastRecipe
+
 		val recipes = MultiblockRecipeRegistry.getRecipesFor(this)
 		val match = recipes.filter { recipe -> recipe.verifyAllRequirements(enviornment) }
 
@@ -19,9 +24,13 @@ interface RecipeProcessingMultiblockEntity<E: RecipeEnviornment> {
 	}
 
 	fun tryProcessRecipe(): Boolean {
-		val enviornment = buildRecipeEnviornment()
 		val recipe = getRecipesFor()
 
+		if (this is ProgressMultiblock && (recipe == null || lastRecipe != recipe)) progressManager.reset()
+
+		lastRecipe = recipe
+
+		val enviornment = buildRecipeEnviornment()
 		return recipe?.assemble(enviornment) != null
 	}
 }

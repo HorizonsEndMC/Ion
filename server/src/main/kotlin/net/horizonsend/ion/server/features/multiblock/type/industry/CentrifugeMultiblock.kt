@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.newcrafting.input.FurnaceEnviornment
+import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.NewMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import org.bukkit.World
@@ -127,7 +128,7 @@ object CentrifugeMultiblock : Multiblock(), EntityMultiblock<CentrifugeMultibloc
 		SyncTickingMultiblockEntity,
 		RecipeProcessingMultiblockEntity<FurnaceEnviornment>,
 		ProgressMultiblock {
-
+		override var lastRecipe: NewMultiblockRecipe<FurnaceEnviornment>? = null
 		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 

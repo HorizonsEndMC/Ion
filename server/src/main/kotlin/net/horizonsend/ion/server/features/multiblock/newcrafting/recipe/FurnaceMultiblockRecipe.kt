@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.require
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result.ItemResult
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result.ResultHolder
 import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
+import java.util.function.Consumer
 import kotlin.reflect.KClass
 
 /**
@@ -24,6 +25,7 @@ class FurnaceMultiblockRecipe(
 	power: PowerRequirement,
 	result: ItemResult<FurnaceEnviornment>
 ) : NewMultiblockRecipe<FurnaceEnviornment>(identifier, clazz) {
+	val callbacks = mutableListOf<Consumer<FurnaceEnviornment>>()
 	private val result = ResultHolder.of(result)
 
 	override val requirements: Collection<RequirementHolder<FurnaceEnviornment, *, *>> = listOf(
@@ -46,12 +48,21 @@ class FurnaceMultiblockRecipe(
 		)
 	)
 
+	fun withCallback(consumer: Consumer<FurnaceEnviornment>): FurnaceMultiblockRecipe {
+		callbacks.add(consumer)
+		return this
+	}
+
 	override fun assemble(enviornment: FurnaceEnviornment) {
 		if (!verifyAllRequirements(enviornment)) result
 		if (!result.verifySpace(enviornment)) return
 
-		getAllRequirements().forEach { requirement -> requirement.consume(enviornment) }
+		if (result.shouldConsumeIngredients(enviornment)) {
+			println("Should consume ingredients")
+			getAllRequirements().forEach { requirement -> requirement.consume(enviornment) }
+		}
 
 		result.execute(enviornment)
+		callbacks.forEach { consumer -> consumer.accept(enviornment) }
 	}
 }
