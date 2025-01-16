@@ -4,5 +4,4 @@ import net.horizonsend.ion.server.features.multiblock.newcrafting.input.RecipeEn
 
 interface RecipeResult<E: RecipeEnviornment> {
 	fun verifySpace(input: E): Boolean
-	fun execute(input: E)
 }
