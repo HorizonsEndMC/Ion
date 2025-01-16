@@ -5,33 +5,52 @@ import net.horizonsend.ion.server.features.multiblock.newcrafting.input.FurnaceE
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.ItemRequirement
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.PowerRequirement
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.RequirementHolder
-import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result.RecipeResult
+import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result.ItemResult
+import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result.ResultHolder
+import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
 import kotlin.reflect.KClass
 
 /**
  * A multiblock recipe that uses a furnace inventory.
  *
  * @param smeltingItem Requirement for the item in the top slot. If it is null, there will be a requirement for this slot to be empty.
- * @param fuelitem Requirement for the item in the bottom slot. If it is null, there will be a requirement for this slot to be empty.
+ * @param fuelItem Requirement for the item in the bottom slot. If it is null, there will be a requirement for this slot to be empty.
  **/
 class FurnaceMultiblockRecipe(
 	identifier: String,
-	clazz: KClass<RecipeProcessingMultiblockEntity<FurnaceEnviornment>>,
+	clazz: KClass<out RecipeProcessingMultiblockEntity<FurnaceEnviornment>>,
 	smeltingItem: ItemRequirement?,
-	fuelitem: ItemRequirement?,
+	fuelItem: ItemRequirement?,
 	power: PowerRequirement,
-	val result: RecipeResult<FurnaceEnviornment>
+	result: ItemResult<FurnaceEnviornment>
 ) : NewMultiblockRecipe<FurnaceEnviornment>(identifier, clazz) {
+	private val result = ResultHolder.of(result)
 
-	override val requirements: Collection<RequirementHolder<FurnaceEnviornment, *>> = listOf(
-		RequirementHolder.of({ it.getItem(0) }, smeltingItem ?: ItemRequirement.empty()),
-		RequirementHolder.of({ it.getItem(1) }, fuelitem ?: ItemRequirement.empty()),
-		RequirementHolder.of({ it.powerStorage.getPower() }, power)
+	override val requirements: Collection<RequirementHolder<FurnaceEnviornment, *, *>> = listOf(
+		// Furnace smelting item
+		RequirementHolder.itemConsumable(
+			getter = { it.getItem(0) },
+			requirement = smeltingItem ?: ItemRequirement.empty(),
+			{ SlotModificationWrapper.furnaceSmelting(it.furnaceInventory) }
+		),
+		// Furnace fuel item
+		RequirementHolder.itemConsumable(
+			getter = { it.getItem(1) },
+			requirement = fuelItem ?: ItemRequirement.empty(),
+			{ SlotModificationWrapper.furnaceFuel(it.furnaceInventory) }
+		),
+		// Power requirement
+		RequirementHolder.simpleConsumable(
+			{ it.powerStorage.getPower() },
+			power
+		)
 	)
 
 	override fun assemble(enviornment: FurnaceEnviornment) {
 		if (!verifyAllRequirements(enviornment)) result
-		if (result.verifySpace(enviornment)) return
+		if (!result.verifySpace(enviornment)) return
+
+		getAllRequirements().forEach { requirement -> requirement.consume(enviornment) }
 
 		result.execute(enviornment)
 	}
