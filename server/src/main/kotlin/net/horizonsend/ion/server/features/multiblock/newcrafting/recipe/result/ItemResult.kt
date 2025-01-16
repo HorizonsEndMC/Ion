@@ -38,6 +38,7 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 
 	class SimpleResult<E: ItemResultEnviornment>(private val item: ItemStack, val sound: Sound? = null) : ItemResult<E> {
 		override fun getResultItem(enviornment: E): ItemStack? = item
+		override fun shouldConsumeIngredients(enviornment: E): Boolean = true
 		override fun execute(enviornment: E, slotModificationWrapper: SlotModificationWrapper) {
 			slotModificationWrapper.addToSlot(item)
 			sound?.let { enviornment.playSound(it) }
