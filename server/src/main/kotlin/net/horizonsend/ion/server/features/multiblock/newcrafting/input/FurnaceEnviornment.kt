@@ -11,12 +11,14 @@ import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 
 class FurnaceEnviornment(
+	override val multiblock: MultiblockEntity,
 	val furnaceInventory: FurnaceInventory,
 	val powerStorage: PowerStorage,
 	val tickingManager: TickedMultiblockEntityParent.TickingManager,
 	val progressManager: ProgressMultiblock.ProgressManager
 ) : ItemResultEnviornment {
 	constructor(entity: MultiblockEntity) : this(
+		entity,
 		entity.getInventory(0, 0, 0) as FurnaceInventory,
 		(entity as PoweredMultiblockEntity).powerStorage,
 		(entity as TickedMultiblockEntityParent).tickingManager,
