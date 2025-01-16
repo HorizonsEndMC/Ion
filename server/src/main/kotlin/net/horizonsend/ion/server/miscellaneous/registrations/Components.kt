@@ -43,6 +43,7 @@ import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipes
 import net.horizonsend.ion.server.features.multiblock.newer.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.newer.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.type.crafting.MultiblockRecipes
+import net.horizonsend.ion.server.features.multiblock.newcrafting.MultiblockRecipeRegistry
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
@@ -234,4 +235,5 @@ val components: List<IonComponent> = listOf(
 	DisplayHandlers,
 	PlanetTeleportCooldown,
 	MultiBlockDisplay,
+	MultiblockRecipeRegistry,
 )
