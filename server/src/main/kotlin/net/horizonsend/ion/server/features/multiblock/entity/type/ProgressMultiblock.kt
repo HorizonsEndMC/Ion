@@ -47,6 +47,16 @@ interface ProgressMultiblock {
 			return currentProgress > 1.0
 		}
 
+		fun wouldComplete(totalDuration: Duration): Boolean {
+			val now = System.currentTimeMillis()
+			val deltaMillis = now - lastProgressTick
+			val delta = Duration.ofMillis(deltaMillis)
+
+			val additionalPercent = totalDuration.toMillis().toDouble() / delta.toMillis().toDouble()
+
+			return currentProgress + additionalPercent >= totalDuration.toMillis()
+		}
+
 		fun reset() {
 			currentProgress = 0.0
 		}

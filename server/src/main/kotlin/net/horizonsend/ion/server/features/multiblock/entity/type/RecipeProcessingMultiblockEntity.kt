@@ -10,9 +10,9 @@ interface RecipeProcessingMultiblockEntity<E: RecipeEnviornment> {
 
 	fun getRecipesFor(): NewMultiblockRecipe<E>? {
 		val enviornment = buildRecipeEnviornment()
-
 		val recipes = MultiblockRecipeRegistry.getRecipesFor(this)
 		val match = recipes.filter { recipe -> recipe.verifyAllRequirements(enviornment) }
+
 		if (match.size > 1) IonServer.slF4JLogger.warn("Multiple recipes match input! This should not happen!!! Infringing recipes: ${match.joinToString { it.identifier }}")
 
 		return match.firstOrNull()
