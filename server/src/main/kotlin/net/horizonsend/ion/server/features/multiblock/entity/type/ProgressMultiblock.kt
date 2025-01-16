@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type
 
-import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.miscellaneous.roundToTenThousanth
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -11,6 +11,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.persistence.PersistentDataType.DOUBLE
 import org.bukkit.persistence.PersistentDataType.LONG
+import java.text.DecimalFormat
 import java.time.Duration
 
 interface ProgressMultiblock {
@@ -20,7 +21,7 @@ interface ProgressMultiblock {
 	}
 
 	class ProgressManager(data: PersistentMultiblockData) {
-		var lastProgressTick: Long = data.getAdditionalDataOrDefault(LAST_PROGRESS_TICK, LONG, System.currentTimeMillis())
+		var lastProgressTick = System.currentTimeMillis()
 		private var currentProgress: Double = data.getAdditionalDataOrDefault(PROGRESS, DOUBLE, 0.0)
 
 		fun getCurrentProgress(): Double = currentProgress
@@ -31,30 +32,29 @@ interface ProgressMultiblock {
 		 **/
 		fun addProgress(totalDuration: Duration): Boolean {
 			val now = System.currentTimeMillis()
-			val deltaMillis = now - lastProgressTick
-			val delta = Duration.ofMillis(deltaMillis)
-
+			val additionalPercent = calculatePercentageGain(now, totalDuration)
 			lastProgressTick = now
 
-			// Convert the delta to a percentage of the total duration, and add that percentage
-			val additionalPercent = totalDuration.toMillis().toDouble() / delta.toMillis().toDouble()
 			currentProgress += additionalPercent
 
 			return isComplete()
+		}
+
+		fun wouldComplete(totalDuration: Duration): Boolean {
+			val additionalPercent = calculatePercentageGain(System.currentTimeMillis(), totalDuration)
+
+			return (currentProgress + additionalPercent) >= totalDuration.toMillis()
 		}
 
 		fun isComplete(): Boolean {
 			return currentProgress > 1.0
 		}
 
-		fun wouldComplete(totalDuration: Duration): Boolean {
-			val now = System.currentTimeMillis()
+		fun calculatePercentageGain(now: Long, totalDuration: Duration): Double {
 			val deltaMillis = now - lastProgressTick
 			val delta = Duration.ofMillis(deltaMillis)
 
-			val additionalPercent = totalDuration.toMillis().toDouble() / delta.toMillis().toDouble()
-
-			return currentProgress + additionalPercent >= totalDuration.toMillis()
+			return delta.toMillis().toDouble() / totalDuration.toMillis().toDouble()
 		}
 
 		fun reset() {
@@ -67,7 +67,8 @@ interface ProgressMultiblock {
 		}
 
 		fun formatProgress(color: TextColor): Component {
-			return ofChildren(text(currentProgress.roundToHundredth() * 100.0, color), text('%', HEColorScheme.HE_LIGHT_GRAY))
+			val percent = DecimalFormat("##.##").format(getCurrentProgress().roundToTenThousanth() * 100.0)
+			return ofChildren(text(percent, color), text('%', HEColorScheme.HE_LIGHT_GRAY))
 		}
 	}
 }
