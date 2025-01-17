@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result
+package net.horizonsend.ion.server.features.multiblock.crafting.recipe.result
 
 import net.kyori.adventure.text.Component
 
