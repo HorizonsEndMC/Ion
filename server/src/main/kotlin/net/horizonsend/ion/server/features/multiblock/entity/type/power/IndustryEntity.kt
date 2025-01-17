@@ -4,6 +4,8 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
@@ -14,8 +16,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusT
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
-import net.horizonsend.ion.server.features.multiblock.newcrafting.input.FurnaceEnviornment
-import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.NewMultiblockRecipe
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -29,7 +29,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	ProgressMultiblock,
 	StatusTickedMultiblockEntity {
 
-	override var lastRecipe: NewMultiblockRecipe<FurnaceEnviornment>? = null
+	override var lastRecipe: MultiblockRecipe<FurnaceEnviornment>? = null
 
 	override val progressManager: ProgressManager = ProgressManager(data)
 	override val tickingManager: TickingManager = TickingManager(20)
