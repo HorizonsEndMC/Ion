@@ -15,8 +15,8 @@ class FurnaceEnviornment(
 	val furnaceInventory: FurnaceInventory,
 	val powerStorage: PowerStorage,
 	val tickingManager: TickedMultiblockEntityParent.TickingManager,
-	val progressManager: ProgressMultiblock.ProgressManager
-) : ItemResultEnviornment {
+	val progress: ProgressMultiblock.ProgressManager
+) : ItemResultEnviornment, ProgressEnviornment {
 	constructor(entity: MultiblockEntity) : this(
 		entity,
 		entity.getInventory(0, 0, 0) as FurnaceInventory,
@@ -43,6 +43,8 @@ class FurnaceEnviornment(
 	override fun getResultItemSlotModifier(): SlotModificationWrapper {
 		return SlotModificationWrapper.furnaceResult(furnaceInventory)
 	}
+
+	override fun getProgressManager(): ProgressMultiblock.ProgressManager = progress
 
 	override fun playSound(sound: Sound) {
 		val furnaceLocation = furnaceInventory.holder?.location?.toCenterLocation()
