@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.newcrafting.input.ItemResultEnviornment
+import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.RequirementHolder
 import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
@@ -38,7 +39,7 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 
 	class SimpleResult<E: ItemResultEnviornment>(private val item: ItemStack, val sound: Sound? = null) : ItemResult<E> {
 		override fun getResultItem(enviornment: E): ItemStack? = item
-		override fun shouldConsumeIngredients(enviornment: E): Boolean = true
+		override fun filterConsumedIngredients(enviornment: E, ingreidents: Collection<RequirementHolder<E, *, *>>): Collection<RequirementHolder<E, *, *>> = ingreidents
 		override fun execute(enviornment: E, slotModificationWrapper: SlotModificationWrapper) {
 			slotModificationWrapper.addToSlot(item)
 			sound?.let { enviornment.playSound(it) }
