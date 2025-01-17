@@ -1,11 +1,11 @@
-package net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result
+package net.horizonsend.ion.server.features.multiblock.crafting.recipe.result
 
+import net.horizonsend.ion.server.features.multiblock.crafting.input.ItemResultEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
-import net.horizonsend.ion.server.features.multiblock.newcrafting.input.ItemResultEnviornment
-import net.horizonsend.ion.server.features.multiblock.newcrafting.input.RecipeEnviornment
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.block.Furnace

@@ -1,8 +1,8 @@
-package net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result
+package net.horizonsend.ion.server.features.multiblock.crafting.recipe.result
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.multiblock.newcrafting.input.ItemResultEnviornment
-import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
+import net.horizonsend.ion.server.features.multiblock.crafting.input.ItemResultEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModificationWrapper
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
