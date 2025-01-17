@@ -1,7 +1,8 @@
-package net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement
+package net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RecipeRequirement
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
