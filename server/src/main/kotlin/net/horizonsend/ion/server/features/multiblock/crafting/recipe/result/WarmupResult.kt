@@ -1,8 +1,8 @@
-package net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result
+package net.horizonsend.ion.server.features.multiblock.crafting.recipe.result
 
-import net.horizonsend.ion.server.features.multiblock.newcrafting.input.ProgressEnviornment
-import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.ItemRequirement
-import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
+import net.horizonsend.ion.server.features.multiblock.crafting.input.ProgressEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
+import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModificationWrapper
 import org.bukkit.inventory.ItemStack
 import java.time.Duration
 
