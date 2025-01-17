@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblo
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.newcrafting.input.ItemResultEnviornment
 import net.horizonsend.ion.server.features.multiblock.newcrafting.input.RecipeEnviornment
-import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.RequirementHolder
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.block.Furnace
@@ -14,22 +13,25 @@ import kotlin.math.roundToInt
 
 abstract class ResultHolder<E: RecipeEnviornment, R: RecipeResult<E>>(val result: R) {
 	fun verifySpace(enviornment: E) = result.verifySpace(enviornment)
-	fun filterConsumedIngredients(enviornment: E, requirements: Collection<RequirementHolder<E, *, *>>) = result.filterConsumedIngredients(enviornment, requirements)
-	abstract fun execute(input: E)
 
-	val callbacks = mutableListOf<(E, RecipeExecutionResult) -> Unit>()
+	/**
+	 * Builds the result of the recipe in the result enviornment. Do not directly set the results in this function, it may result in duplications if errors arise elsewhere
+	 **/
+	abstract fun buildTransaction(input: E, resultEnviornment: ResultExecutionEnviornment<E>)
 
-	protected fun executeCallbacks(enviornment: E, result: RecipeExecutionResult) {
+	val callbacks = mutableListOf<(E, RecipeExecutionResult?) -> Unit>()
+
+	fun executeCallbacks(enviornment: E, result: RecipeExecutionResult?) {
 		callbacks.forEach { t -> t.invoke(enviornment, result) }
 	}
 
-	fun withCallback(callback: (E, RecipeExecutionResult) -> Unit): ResultHolder<E, R> {
+	fun withCallback(callback: (E, RecipeExecutionResult?) -> Unit): ResultHolder<E, R> {
 		callbacks.add(callback)
 		return this
 	}
 
 	fun playSound(sound: Sound, requireSuccess: Boolean): ResultHolder<E, R> {
-		callbacks.add { enviornment: E, result: RecipeExecutionResult ->
+		callbacks.add { enviornment: E, result: RecipeExecutionResult? ->
 			if (requireSuccess && result is RecipeExecutionResult.SuccessExecutionResult) enviornment.playSound(sound)
 		}
 
@@ -37,7 +39,7 @@ abstract class ResultHolder<E: RecipeEnviornment, R: RecipeResult<E>>(val result
 	}
 
 	fun updateFurnace(): ResultHolder<E, R> {
-		callbacks.add { enviornment: E, executionResult: RecipeExecutionResult ->
+		callbacks.add { enviornment: E, executionResult: RecipeExecutionResult? ->
 			val furnace = enviornment.multiblock.getInventory(0, 0, 0)?.holder as? Furnace ?: return@add
 
 			// Extinguish the furnace if a failure
@@ -64,7 +66,7 @@ abstract class ResultHolder<E: RecipeEnviornment, R: RecipeResult<E>>(val result
 	}
 
 	fun updateProgressText(): ResultHolder<E, R> {
-		callbacks.add { enviornment: E, result: RecipeExecutionResult ->
+		callbacks.add { enviornment: E, result: RecipeExecutionResult? ->
 			if (result !is RecipeExecutionResult.ProgressExecutionResult) return@add
 
 			val entity = enviornment.multiblock
@@ -78,7 +80,7 @@ abstract class ResultHolder<E: RecipeEnviornment, R: RecipeResult<E>>(val result
 	}
 
 	fun addCooldown(ticks: Int, requireSuccess: Boolean): ResultHolder<E, R> {
-		callbacks.add { enviornment: E, result: RecipeExecutionResult ->
+		callbacks.add { enviornment: E, result: RecipeExecutionResult? ->
 			if (requireSuccess && result !is RecipeExecutionResult.SuccessExecutionResult) return@add
 			val entity = enviornment.multiblock
 			if (entity !is TickedMultiblockEntityParent) return@add
@@ -95,12 +97,9 @@ abstract class ResultHolder<E: RecipeEnviornment, R: RecipeResult<E>>(val result
 	}
 
 	class ItemResultHolder<E: ItemResultEnviornment, R: ItemResult<E>>(result: R) : ResultHolder<E, R>(result) {
-		override fun execute(enviornment: E) {
+		override fun buildTransaction(enviornment: E, resultEnviornment: ResultExecutionEnviornment<E>) {
 			val slotModificationWrapper = enviornment.getResultItemSlotModifier()
-			val result = result.execute(enviornment, slotModificationWrapper)
-
-			executeCallbacks(enviornment, result)
+			result.buildTransaction(enviornment, resultEnviornment, slotModificationWrapper)
 		}
 	}
-
 }
