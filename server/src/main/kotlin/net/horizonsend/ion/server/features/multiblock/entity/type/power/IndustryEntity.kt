@@ -32,7 +32,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	override var lastRecipe: NewMultiblockRecipe<FurnaceEnviornment>? = null
 
 	override val progressManager: ProgressManager = ProgressManager(data)
-	override val tickingManager: TickingManager = TickingManager(20)
+	override val tickingManager: TickingManager = TickingManager(1)
 	override val statusManager: StatusManager = StatusManager()
 
 	final override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
