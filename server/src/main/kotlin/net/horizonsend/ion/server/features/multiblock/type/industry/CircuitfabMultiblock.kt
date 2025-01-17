@@ -2,16 +2,13 @@ package net.horizonsend.ion.server.features.multiblock.type.industry
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.block.Sign
 
 object CircuitfabMultiblock : Multiblock(), EntityMultiblock<CircuitfabMultiblock.CircuitfabMultiblockEntity> {
 	override val name = "circuitfab"
@@ -86,12 +83,5 @@ object CircuitfabMultiblock : Multiblock(), EntityMultiblock<CircuitfabMultibloc
 		z: Int,
 		world: World,
 		structureDirection: BlockFace
-	) : SimplePoweredEntity(data, CircuitfabMultiblock, manager, x, y, z, world, structureDirection, 300_000), LegacyMultiblockEntity, PoweredMultiblockEntity {
-		override val multiblock: CircuitfabMultiblock = CircuitfabMultiblock
-		override val  displayHandler = standardPowerDisplay(this)
-
-		override fun loadFromSign(sign: Sign) {
-			migrateLegacyPower(sign)
-		}
-	}
+	) : IndustryEntity(data, CircuitfabMultiblock, manager, x, y, z, world, structureDirection, 300_000)
 }
