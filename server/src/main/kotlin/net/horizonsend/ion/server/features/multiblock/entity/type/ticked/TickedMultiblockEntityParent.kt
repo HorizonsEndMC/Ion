@@ -4,7 +4,7 @@ interface TickedMultiblockEntityParent {
 	val tickingManager: TickingManager
 
 	/**
-	 *
+	 * Whether to check multiblock integrity before ticking
 	 **/
 	fun shouldCheckIntegrity(): Boolean = true
 
