@@ -65,9 +65,11 @@ interface ProgressMultiblock {
 			store.addAdditionalData(PROGRESS, DOUBLE, currentProgress)
 			store.addAdditionalData(LAST_PROGRESS_TICK, LONG, lastProgressTick)
 		}
+	}
 
-		fun formatProgress(color: TextColor): Component {
-			val percent = DecimalFormat("##.##").format(getCurrentProgress().roundToTenThousanth() * 100.0)
+	companion object {
+		fun formatProgress(color: TextColor, progress: Double): Component {
+			val percent = DecimalFormat("##.##").format(progress.roundToTenThousanth() * 100.0)
 			return ofChildren(text(percent, color), text('%', HEColorScheme.HE_LIGHT_GRAY))
 		}
 	}
