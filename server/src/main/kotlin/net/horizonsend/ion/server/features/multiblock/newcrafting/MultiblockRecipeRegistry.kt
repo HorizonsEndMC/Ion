@@ -31,7 +31,7 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 		clazz = CentrifugeMultiblock.CentrifugeMultiblockEntity::class,
 		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.URANIUM),
 		fuelItem = null,
-		power = PowerRequirement(100),
+		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			duration = Duration.ofSeconds(5),
 			normalResult = ItemResult.simpleResult(CustomItemRegistry.ENRICHED_URANIUM),
@@ -45,7 +45,7 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 		clazz = CompressorMultiblock.CompressorMultiblockEntity::class,
 		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.URANIUM_CORE),
 		fuelItem = null,
-		power = PowerRequirement(100),
+		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			Tick.of(60L * 60L * 20L),
 			ItemResult.simpleResult(CustomItemRegistry.URANIUM_ROD),

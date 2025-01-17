@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result
 
 import net.horizonsend.ion.server.features.multiblock.newcrafting.input.ProgressEnviornment
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.ItemRequirement
-import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.RequirementHolder
 import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
 import org.bukkit.inventory.ItemStack
 import java.time.Duration
@@ -12,22 +11,32 @@ class WarmupResult<E : ProgressEnviornment>(val duration: Duration, val normalRe
 		return normalResult.verifySpace(enviornment)
 	}
 
-	override fun filterConsumedIngredients(
-		enviornment: E,
-		ingreidents: Collection<RequirementHolder<E, *, *>>
-	): Collection<RequirementHolder<E, *, *>> {
-		if (enviornment.getProgressManager().wouldComplete(duration)) return ingreidents
-		return ingreidents.filterNot { holder -> holder.requirement is ItemRequirement }
-	}
-
-	override fun execute(enviornment: E, slotModificationWrapper: SlotModificationWrapper): RecipeExecutionResult {
-		val progressManager = enviornment.getProgressManager()
+	override fun buildTransaction(
+		recipeEnviornment: E,
+		resultEnviornment: ResultExecutionEnviornment<E>,
+		slotModificationWrapper: SlotModificationWrapper
+	) {
+		val progressManager = recipeEnviornment.getProgressManager()
 		val complete = progressManager.addProgress(duration)
 
-		if (!complete) return RecipeExecutionResult.ProgressExecutionResult(progressManager.getCurrentProgress())
+		if (!complete) {
+			resultEnviornment.requirements.removeAll { holder ->
+				holder.requirement is ItemRequirement
+			}
 
-		progressManager.reset()
-		return normalResult.execute(enviornment, slotModificationWrapper)
+			resultEnviornment.addResult { e ->
+				RecipeExecutionResult.ProgressExecutionResult(progressManager.getCurrentProgress())
+			}
+
+			return
+		}
+
+		resultEnviornment.addResult { e ->
+			progressManager.reset()
+			RecipeExecutionResult.SuccessExecutionResult
+		}
+
+		normalResult.buildTransaction(recipeEnviornment, resultEnviornment, slotModificationWrapper)
 	}
 
 	override fun getResultItem(enviornment: E): ItemStack? {

@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.result
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.newcrafting.input.ItemResultEnviornment
-import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.RequirementHolder
 import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -23,7 +22,11 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 	/**
 	 * Executes the result
 	 **/
-	fun execute(enviornment: E, slotModificationWrapper: SlotModificationWrapper): RecipeExecutionResult
+	fun buildTransaction(
+		recipeEnviornment: E,
+		resultEnviornment: ResultExecutionEnviornment<E>,
+		slotModificationWrapper: SlotModificationWrapper
+	)
 
 	/**
 	 * Gets the result item.
@@ -38,10 +41,15 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 
 	class SimpleResult<E: ItemResultEnviornment>(private val item: ItemStack) : ItemResult<E> {
 		override fun getResultItem(enviornment: E): ItemStack? = item
-		override fun filterConsumedIngredients(enviornment: E, ingreidents: Collection<RequirementHolder<E, *, *>>): Collection<RequirementHolder<E, *, *>> = ingreidents
-		override fun execute(enviornment: E, slotModificationWrapper: SlotModificationWrapper): RecipeExecutionResult {
-			slotModificationWrapper.addToSlot(item)
-			return RecipeExecutionResult.SuccessExecutionResult
+		override fun buildTransaction(
+			recipeEnviornment: E,
+			resultEnviornment: ResultExecutionEnviornment<E>,
+			slotModificationWrapper: SlotModificationWrapper
+		) {
+			resultEnviornment.addResult { e ->
+				slotModificationWrapper.addToSlot(item)
+				RecipeExecutionResult.SuccessExecutionResult
+			}
 		}
 	}
 }
