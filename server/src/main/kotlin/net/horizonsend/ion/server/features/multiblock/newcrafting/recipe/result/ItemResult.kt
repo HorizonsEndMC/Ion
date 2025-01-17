@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.newcrafting.input.ItemResultEnviornment
 import net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement.RequirementHolder
 import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
-import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -24,7 +23,7 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 	/**
 	 * Executes the result
 	 **/
-	fun execute(enviornment: E, slotModificationWrapper: SlotModificationWrapper)
+	fun execute(enviornment: E, slotModificationWrapper: SlotModificationWrapper): RecipeExecutionResult
 
 	/**
 	 * Gets the result item.
@@ -32,17 +31,17 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 	fun getResultItem(enviornment: E): ItemStack?
 
 	companion object {
-		fun <E: ItemResultEnviornment> simpleResult(itemStack: ItemStack,sound: Sound? = null): SimpleResult<E> = SimpleResult(itemStack, sound)
-		fun <E: ItemResultEnviornment> simpleResult(customItem: CustomItem,sound: Sound? = null): SimpleResult<E> = SimpleResult(customItem.constructItemStack(), sound)
-		fun <E: ItemResultEnviornment> simpleResult(material: Material,sound: Sound? = null): SimpleResult<E> = SimpleResult(ItemStack(material, 1), sound)
+		fun <E: ItemResultEnviornment> simpleResult(itemStack: ItemStack): SimpleResult<E> = SimpleResult(itemStack)
+		fun <E: ItemResultEnviornment> simpleResult(customItem: CustomItem): SimpleResult<E> = SimpleResult(customItem.constructItemStack())
+		fun <E: ItemResultEnviornment> simpleResult(material: Material): SimpleResult<E> = SimpleResult(ItemStack(material, 1))
 	}
 
-	class SimpleResult<E: ItemResultEnviornment>(private val item: ItemStack, val sound: Sound? = null) : ItemResult<E> {
+	class SimpleResult<E: ItemResultEnviornment>(private val item: ItemStack) : ItemResult<E> {
 		override fun getResultItem(enviornment: E): ItemStack? = item
 		override fun filterConsumedIngredients(enviornment: E, ingreidents: Collection<RequirementHolder<E, *, *>>): Collection<RequirementHolder<E, *, *>> = ingreidents
-		override fun execute(enviornment: E, slotModificationWrapper: SlotModificationWrapper) {
+		override fun execute(enviornment: E, slotModificationWrapper: SlotModificationWrapper): RecipeExecutionResult {
 			slotModificationWrapper.addToSlot(item)
-			sound?.let { enviornment.playSound(it) }
+			return RecipeExecutionResult.SuccessExecutionResult
 		}
 	}
 }
