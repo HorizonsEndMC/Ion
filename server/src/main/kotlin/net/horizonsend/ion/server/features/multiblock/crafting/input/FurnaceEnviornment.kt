@@ -1,11 +1,11 @@
-package net.horizonsend.ion.server.features.multiblock.newcrafting.input
+package net.horizonsend.ion.server.features.multiblock.crafting.input
 
+import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModificationWrapper
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
-import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
 import net.kyori.adventure.sound.Sound
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack

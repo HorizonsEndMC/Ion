@@ -1,7 +1,7 @@
-package net.horizonsend.ion.server.features.multiblock.newcrafting.recipe.requirement
+package net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement
 
-import net.horizonsend.ion.server.features.multiblock.newcrafting.input.RecipeEnviornment
-import net.horizonsend.ion.server.features.multiblock.newcrafting.util.SlotModificationWrapper
+import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModificationWrapper
 
 open class RequirementHolder<T: RecipeEnviornment, V: Any?, out R: RecipeRequirement<V>>(val dataTypeClass: Class<V>, val getter: (T) -> V, val requirement: R) {
 	fun checkRequirement(enviornment: T): Boolean {
