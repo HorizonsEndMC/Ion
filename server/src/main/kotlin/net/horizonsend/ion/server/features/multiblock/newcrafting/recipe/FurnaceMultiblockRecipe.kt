@@ -57,10 +57,9 @@ class FurnaceMultiblockRecipe(
 		if (!verifyAllRequirements(enviornment)) result
 		if (!result.verifySpace(enviornment)) return
 
-		if (result.shouldConsumeIngredients(enviornment)) {
-			println("Should consume ingredients")
-			getAllRequirements().forEach { requirement -> requirement.consume(enviornment) }
-		}
+		result
+			.filterConsumedIngredients(enviornment, getAllRequirements())
+			.forEach { requirement -> requirement.consume(enviornment) }
 
 		result.execute(enviornment)
 		callbacks.forEach { consumer -> consumer.accept(enviornment) }
