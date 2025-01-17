@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.newcrafting.util
+package net.horizonsend.ion.server.features.multiblock.crafting.util
 
 import com.google.common.base.Supplier
 import org.bukkit.inventory.FurnaceInventory
