@@ -164,7 +164,8 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		val playerFacing = player.facing
 		val dir = loc.direction.normalize()
 
-		val target: Vector = StarshipWeaponry.getTarget(loc, dir, starship)
+		val possibleTargetDist = StarshipWeaponry.findPossibleTarget(loc, dir, starship)?.length() ?: 500.0
+		val target: Vector = StarshipWeaponry.getTarget(loc, dir, starship, possibleTargetDist.toInt())
 
 		var weaponSet = starship.weaponSetSelections[player.uniqueId]
 		val clockWeaponSet = clock.displayNameString.lowercase()
