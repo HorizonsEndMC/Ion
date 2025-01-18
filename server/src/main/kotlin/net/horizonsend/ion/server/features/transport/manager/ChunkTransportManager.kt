@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.ChunkExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ChunkCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
-import net.horizonsend.ion.server.features.transport.nodes.cache.solarpanel.SolarPanelCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk

@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.transport.manager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
-import net.horizonsend.ion.server.features.transport.nodes.cache.solarpanel.SolarPanelCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 
 abstract class TransportManager {
