@@ -33,7 +33,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		.addSimpleNode(WAXED_EXPOSED_CHISELED_COPPER) { FluidNode.FluidJunctionNode(WAXED_EXPOSED_CHISELED_COPPER) }
 		.addSimpleNode(WAXED_WEATHERED_CHISELED_COPPER) { FluidNode.FluidJunctionNode(WAXED_WEATHERED_CHISELED_COPPER) }
 		.addSimpleNode(WAXED_OXIDIZED_COPPER) { FluidNode.FluidJunctionNode(WAXED_OXIDIZED_COPPER) }
-		.addSimpleNode(UNWAXED_CHISELED_COPPER_TYPES) { FluidNode.FluidJunctionNode(CRAFTING_TABLE) } // All unwaxed chiseled are a single channel
+		.addSimpleNode(UNWAXED_CHISELED_COPPER_TYPES) { _, _ -> FluidNode.FluidJunctionNode(CRAFTING_TABLE) } // All unwaxed chiseled are a single channel
 		.addSimpleNode(CRAFTING_TABLE, FluidNode.FluidExtractorNode)
 		.addSimpleNode(Material.FLETCHING_TABLE, FluidNode.FluidInputNode)
 		.addSimpleNode(Material.REDSTONE_BLOCK, FluidNode.FluidMergeNode)
