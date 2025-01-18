@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.util
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
@@ -38,6 +39,15 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 		override fun get(ship: ActiveStarship): FluidTransportCache {
 			TODO("Fluid is disabled")
 //			return ship.transportManager.fluidNodeManager.cache
+		}
+	},
+	ITEMS(NamespacedKeys.ITEM_TRANSPORT) {
+		override fun get(chunk: IonChunk): ItemTransportCache {
+			return chunk.transportNetwork.itemPipeManager.cache
+		}
+
+		override fun get(ship: ActiveStarship): ItemTransportCache {
+			return ship.transportManager.itemPipeManager.cache
 		}
 	},
 
