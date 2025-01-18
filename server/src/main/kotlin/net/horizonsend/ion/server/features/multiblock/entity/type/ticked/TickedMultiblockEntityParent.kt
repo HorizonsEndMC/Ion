@@ -10,17 +10,15 @@ interface TickedMultiblockEntityParent {
 
 	class TickingManager(val interval: Int) {
 		private var currentTick: Int = 0
-		private var sleepTicks: Int = 0
+
+		// Store the sleep tick end as an epoch milli to make it independent of tick rate
+		private var sleepTicksEnd: Long = 0
 
 		/**
 		 * Returns true if the current tick should be allowed to proceed
 		 **/
 		fun checkTickInterval(): Boolean {
-			if (sleepTicks >= 1) {
-				sleepTicks--
-
-				return false
-			}
+			if (System.currentTimeMillis() < sleepTicksEnd) return false
 
 			currentTick++
 
@@ -34,11 +32,11 @@ interface TickedMultiblockEntityParent {
 		}
 
 		fun sleep(ticks: Int) {
-			sleepTicks += ticks
+			sleepTicksEnd = System.currentTimeMillis() + ticks
 		}
 
 		fun clearSleep() {
-			sleepTicks = 0
+			sleepTicksEnd = 0
 		}
 	}
 }
