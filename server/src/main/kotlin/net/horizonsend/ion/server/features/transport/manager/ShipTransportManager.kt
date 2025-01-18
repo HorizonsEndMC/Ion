@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
@@ -15,7 +16,8 @@ class ShipTransportManager(val starship: Starship) : TransportManager() {
 	val inputManager = ShipInputManager(this)
 
 	override val powerNodeManager = ShipCacheHolder(this) { PowerTransportCache(it) }
-	override val solarPanelManager: ShipCacheHolder<SolarPanelCache> = ShipCacheHolder(this) { SolarPanelCache(it) }
+	override val solarPanelManager = ShipCacheHolder(this) { SolarPanelCache(it) }
+	override val itemPipeManager = ShipCacheHolder(this) { ItemTransportCache(it) }
 //	override val fluidNodeManager = ShipCacheHolder(this) { FluidTransportCache(it) }
 
 	init {

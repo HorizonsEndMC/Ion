@@ -1,0 +1,96 @@
+package net.horizonsend.ion.server.features.transport.nodes.types
+
+import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.PipeChannel.entries
+import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextColor.fromHexString
+import org.bukkit.Material
+import org.bukkit.block.BlockFace
+
+interface ItemNode : Node {
+	override val cacheType: CacheType get() = CacheType.ITEMS
+
+	sealed interface ChanneledItemNode {
+		val channel: PipeChannel
+
+		/**
+		 * Checks transfer ability between nodes
+		 **/
+		fun channelCheck(other: Node): Boolean {
+			if (other is ChanneledItemNode) return other.channel == channel
+			return true
+		}
+	}
+
+	data class SolidGlassNode(override val channel: PipeChannel) : ItemNode, ChanneledItemNode {
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = channelCheck(other)
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = channelCheck(other)
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+
+		override val pathfindingResistance: Double = 1.0
+	}
+
+	data class PaneGlassNode(override val channel: PipeChannel) : ItemNode, ChanneledItemNode {
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = channelCheck(other) //TODO
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = channelCheck(other) //TODO
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+
+		override val pathfindingResistance: Double = 1.0
+	}
+
+	data object WildcardSolidGlassNode : ItemNode {
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true //TODO
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true //TODO
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+
+		override val pathfindingResistance: Double = 1.0
+	}
+
+	data object WildcardPaneGlassNode : ItemNode {
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true //TODO
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true //TODO
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+
+		override val pathfindingResistance: Double = 1.0
+	}
+
+	data object ItemMergeNode : ItemNode {
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true //TODO
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true //TODO
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+
+		override val pathfindingResistance: Double = 1.0
+	}
+
+	enum class PipeChannel(val solidMaterial: Material, val paneMaterial: Material, val textColor: TextColor) {
+		WHITE(Material.WHITE_STAINED_GLASS, Material.WHITE_STAINED_GLASS_PANE, NamedTextColor.WHITE),
+		LIGHT_GRAY(Material.LIGHT_GRAY_STAINED_GLASS, Material.LIGHT_GRAY_STAINED_GLASS_PANE, NamedTextColor.GRAY),
+		GRAY(Material.GRAY_STAINED_GLASS, Material.GRAY_STAINED_GLASS_PANE, NamedTextColor.DARK_GRAY),
+		BLACK(Material.BLACK_STAINED_GLASS, Material.BLACK_STAINED_GLASS_PANE, NamedTextColor.BLACK),
+		BROWN(Material.BROWN_STAINED_GLASS, Material.BROWN_STAINED_GLASS_PANE, fromHexString("#6F4E37")!!),
+		RED(Material.RED_STAINED_GLASS, Material.RED_STAINED_GLASS_PANE, NamedTextColor.RED),
+		ORANGE(Material.ORANGE_STAINED_GLASS, Material.ORANGE_STAINED_GLASS_PANE, NamedTextColor.GOLD),
+		YELLOW(Material.YELLOW_STAINED_GLASS, Material.YELLOW_STAINED_GLASS_PANE, NamedTextColor.YELLOW),
+		LIME(Material.LIME_STAINED_GLASS, Material.LIME_STAINED_GLASS_PANE, NamedTextColor.GREEN),
+		GREEN(Material.GREEN_STAINED_GLASS, Material.GREEN_STAINED_GLASS_PANE, NamedTextColor.DARK_GREEN),
+		CYAN(Material.CYAN_STAINED_GLASS, Material.CYAN_STAINED_GLASS_PANE, NamedTextColor.DARK_AQUA),
+		LIGHT_BLUE(Material.LIGHT_BLUE_STAINED_GLASS, Material.LIGHT_BLUE_STAINED_GLASS_PANE, NamedTextColor.AQUA),
+		BLUE(Material.BLUE_STAINED_GLASS, Material.BLUE_STAINED_GLASS_PANE, NamedTextColor.BLUE),
+		PURPLE(Material.PURPLE_STAINED_GLASS, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.DARK_PURPLE),
+		MAGENTA(Material.MAGENTA_STAINED_GLASS, Material.MAGENTA_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE),
+		PINK(Material.PINK_STAINED_GLASS, Material.PINK_STAINED_GLASS_PANE, fromHexString("#FFC0CB")!!),
+
+		;
+
+		companion object {
+			private val byMaterial: Map<Material, PipeChannel> = mutableMapOf(
+				*entries.map { channel -> channel.solidMaterial to channel }.toTypedArray(),
+				*entries.map { channel -> channel.paneMaterial to channel }.toTypedArray(),
+			)
+
+			operator fun get(material: Material) = byMaterial[material]
+		}
+	}
+}
