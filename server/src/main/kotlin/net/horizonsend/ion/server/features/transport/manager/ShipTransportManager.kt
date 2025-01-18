@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
-import net.horizonsend.ion.server.features.transport.nodes.cache.solarpanel.SolarPanelCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.nodes.inputs.ShipInputManager
 

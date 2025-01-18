@@ -1,9 +1,7 @@
-package net.horizonsend.ion.server.features.transport.nodes.cache.solarpanel
+package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.NodeCacheFactory
-import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.getOrCacheNode
@@ -13,9 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
-import org.bukkit.Material.CRAFTING_TABLE
-import org.bukkit.Material.DAYLIGHT_DETECTOR
-import org.bukkit.Material.DIAMOND_BLOCK
+import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.DaylightDetector
@@ -23,9 +19,9 @@ import kotlin.math.roundToInt
 
 class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(holder) {
 	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
-		.addSimpleNode(CRAFTING_TABLE, SolarPanelComponent.CraftingTable)
-		.addSimpleNode(DIAMOND_BLOCK, SolarPanelComponent.DiamondBlock)
-		.addSimpleNode(DAYLIGHT_DETECTOR, SolarPanelComponent.DaylightDetector)
+		.addSimpleNode(Material.CRAFTING_TABLE, SolarPanelComponent.CraftingTable)
+		.addSimpleNode(Material.DIAMOND_BLOCK, SolarPanelComponent.DiamondBlock)
+		.addSimpleNode(Material.DAYLIGHT_DETECTOR, SolarPanelComponent.DaylightDetector)
 		.build()
 
 	override val type: CacheType = CacheType.SOLAR_PANELS
@@ -56,7 +52,7 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		val data = getBlockDataSafe(world, getX(detectorPosition), getY(detectorPosition), getZ(detectorPosition)) as? DaylightDetector ?: return 0
 		val powerRatio = data.power.toDouble() / data.maximumPower.toDouble()
 
-		val base = transportSettings().powerConfiguration.solarPanelTickPower * delta
+		val base = ConfigurationFiles.transportSettings().powerConfiguration.solarPanelTickPower * delta
 		return (base * powerRatio * powerMultiplier).roundToInt()
 	}
 
