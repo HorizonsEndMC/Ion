@@ -29,8 +29,8 @@ class NodeCacheFactory private constructor(private val materialHandlers: Map<Mat
 			return this
 		}
 
-		fun addSimpleNode(materials: Iterable<Material>, constructor: (BlockKey) -> Node): Builder {
-			for (material in materials) this.materialHandlers[material] = MaterialHandler(BlockData::class) { _, key -> constructor(key) }
+		fun addSimpleNode(materials: Iterable<Material>, constructor: (BlockKey, Material) -> Node): Builder {
+			for (material in materials) this.materialHandlers[material] = MaterialHandler(BlockData::class) { data, key -> constructor(key, data.material) }
 			return this
 		}
 
@@ -48,6 +48,8 @@ class NodeCacheFactory private constructor(private val materialHandlers: Map<Mat
 			for (material in materials) this.materialHandlers[material] = MaterialHandler(BlockData::class) { _, _ -> node }
 			return this
 		}
+
+		fun addSimpleNode(vararg material: Material, node: Node) = addSimpleNode(material.toSet(), node)
 
 		fun build(): NodeCacheFactory {
 			return NodeCacheFactory(materialHandlers)
