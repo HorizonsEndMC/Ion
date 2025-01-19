@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.custom.items.util.updateDurability
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import org.bukkit.entity.Damageable
 import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
 
@@ -31,7 +30,7 @@ class PowerStorage(private val basePowerCapacity: Int, private val basePowerUsag
 
 		StoredValues.POWER.setAmount(itemStack, corrected)
 
-		if (displayDurability && itemStack.itemMeta is Damageable) {
+		if (displayDurability) {
 			updateDurability(itemStack, corrected, capacity)
 		}
 

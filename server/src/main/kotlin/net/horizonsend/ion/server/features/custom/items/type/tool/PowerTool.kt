@@ -24,7 +24,7 @@ abstract class PowerTool(identifier: String, displayName: Component, private val
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.MOD_MANAGER, ModManager(modLimit))
 
-		addComponent(CustomComponentTypes.POWER_STORAGE, PowerStorage(basePowerCapacity, 10, true))
+		addComponent(CustomComponentTypes.POWER_STORAGE, PowerStorage(basePowerCapacity = basePowerCapacity, basePowerUsage = 10, displayDurability = true))
 
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@PowerTool) { event, _, item ->
 			tryOpenMenu(event, item)
