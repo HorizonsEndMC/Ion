@@ -33,14 +33,13 @@ class GasStorage(private val maxStored: Int, private val displayDurability: Bool
 
 	fun setFill(itemStack: ItemStack, customItem: CustomItem, newValue: Int) {
 		val corrected = newValue.coerceIn(0..maxStored)
+		StoredValues.GAS.setAmount(itemStack, corrected)
 
 		if (displayDurability && itemStack.itemMeta is org.bukkit.entity.Damageable) {
 			updateDurability(itemStack, corrected, maxStored)
 		}
 
 		customItem.refreshLore(itemStack)
-
-		StoredValues.GAS.setAmount(itemStack, newValue)
 	}
 
 	fun getFill(itemStack: ItemStack): Int = itemStack.persistentDataContainer.getOrDefault(NamespacedKeys.GAS, PersistentDataType.INTEGER, 0).coerceIn(0, maxStored)
