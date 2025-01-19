@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.gui
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.common.utils.text.wrap
-import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
@@ -179,6 +179,7 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     ROUTE_SEGMENT_2(NamespacedKeys.packKey("ui/route_segment_2")),
     MAGNIFYING_GLASS(NamespacedKeys.packKey("ui/magnifying_glass")),
     MAGNIFYING_GLASS_GRAY(NamespacedKeys.packKey("ui/magnifying_glass_gray")),
+    LOADING(NamespacedKeys.packKey("ui/loading")),
     ASTERI_2(NamespacedKeys.packKey("planet/asteri_2")),
     HORIZON_2(NamespacedKeys.packKey("planet/horizon_2")),
     ILIOS_2(NamespacedKeys.packKey("planet/ilios_2")),
