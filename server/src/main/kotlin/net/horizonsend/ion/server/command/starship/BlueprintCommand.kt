@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
@@ -18,6 +17,9 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
+import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.server.features.gui.GuiItems
+import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
@@ -30,7 +32,6 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.factory.PrintItem
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -41,19 +42,26 @@ import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.save
+import xyz.xenondevs.invui.gui.PagedGui
+import xyz.xenondevs.invui.gui.structure.Markers
+import xyz.xenondevs.invui.item.ItemProvider
+import xyz.xenondevs.invui.window.Window
 import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
-import kotlin.collections.set
 
 @CommandAlias("blueprint")
 object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
@@ -165,24 +173,56 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("list")
-	fun onList(sender: Player) = asyncCommand(sender) {
+	fun onList(sender: Player) {
+		// Use a task as to not hog the command thread
 		val slPlayerId = sender.slPlayerId
-		val blueprints: List<Blueprint> = Blueprint
-			.find(Blueprint::owner eq slPlayerId)
-			.descendingSort(Blueprint::size)
-			.toList()
-		failIf(blueprints.isEmpty()) {
-			"You have no blueprints"
-		}
-		MenuHelper.apply {
-			val items: List<GuiItem> = blueprints.map { blueprint ->
-				guiButton(blueprint.type.actualType.menuItem) {
-					playerClicker.closeInventory()
-					Tasks.async { showMaterials(playerClicker, blueprint) }
-				}.setName(blueprint.name).setRichLore(blueprintInfo(blueprint))
+
+		Tasks.async {
+			val blueprints: List<Blueprint> = Blueprint
+				.find(Blueprint::owner eq slPlayerId)
+				.descendingSort(Blueprint::size)
+				.toList()
+
+			failIf(blueprints.isEmpty()) {
+				"You have no blueprints"
 			}
+
+			val items = blueprints.map { blueprint ->
+				AsyncItem(
+					{
+						blueprint.type.actualType.menuItem.clone()
+							.updateDisplayName(text(blueprint.name))
+							.updateLore(blueprintInfo(blueprint).map(String::miniMessage))
+					},
+					{ event ->
+						event.playerClicker.closeInventory()
+						Tasks.async { showMaterials(event.playerClicker, blueprint) }
+					}
+				)
+			}
+
+			val gui = PagedGui.items()
+				.setStructure(
+					"x x x x x x x x x",
+					"x x x x x x x x x",
+					"x x x x x x x x x",
+					"x x x x x x x x x",
+					"< # # # # # # # >",
+				)
+				.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
+				.addIngredient('#', ItemProvider { ItemStack(Material.BLACK_STAINED_GLASS) })
+				.addIngredient('<', GuiItems.PageLeftItem())
+				.addIngredient('>', GuiItems.PageRightItem())
+				.setContent(items)
+				.build()
+
 			Tasks.sync {
-				sender.openPaginatedMenu("Your Blueprints", items)
+				Window
+					.single()
+					.setGui(gui)
+					.setTitle("All Multiblocks")
+					.build(sender)
+					.open()
 			}
 		}
 	}

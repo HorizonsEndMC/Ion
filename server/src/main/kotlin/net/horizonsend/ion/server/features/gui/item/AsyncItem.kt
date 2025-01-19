@@ -29,6 +29,10 @@ class AsyncItem(
 		handleClick.invoke(event)
 	}
 
+	init {
+	    update()
+	}
+
 	fun update() {
 		provider = loadingItem
 		notifyWindows()
