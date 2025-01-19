@@ -196,10 +196,12 @@ class PowerChainsaw(
 			Material.CHERRY_LOG to Material.CHERRY_SAPLING,
 			Material.MANGROVE_WOOD to Material.MANGROVE_PROPAGULE,
 			Material.MANGROVE_LOG to Material.MANGROVE_PROPAGULE,
+			Material.PALE_OAK_LOG to Material.PALE_OAK_SAPLING,
+			Material.PALE_OAK_WOOD to Material.PALE_OAK_SAPLING,
 			Material.CRIMSON_HYPHAE to Material.CRIMSON_FUNGUS,
 			Material.CRIMSON_STEM to Material.CRIMSON_FUNGUS,
 			Material.WARPED_HYPHAE to Material.WARPED_FUNGUS,
-			Material.WARPED_STEM to Material.WARPED_FUNGUS
+			Material.WARPED_STEM to Material.WARPED_FUNGUS,
 		)
 	}
 }
