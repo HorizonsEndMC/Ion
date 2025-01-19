@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component.keybind
 import net.kyori.adventure.text.Component.text
@@ -241,13 +243,16 @@ class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHa
 		dy *= speedFac
 		dz *= speedFac
 
+		var maxHeight = starship.world.maxHeight
+		if (starship.world.hasFlag(WorldFlag.SPACE_WORLD)) maxHeight -= 1
+
 		when {
 			dy < 0 && starship.min.y + dy < 0 -> {
 				dy = -starship.min.y
 			}
 
-			dy > 0 && starship.max.y + dy > (starship.world.maxHeight - 1) -> {
-				dy = (starship.world.maxHeight - 1) - starship.max.y
+			dy > 0 && starship.max.y + dy >= maxHeight -> {
+				dy = /maxHeight - starship.max.y
 			}
 		}
 
