@@ -115,6 +115,10 @@ data class SLPlayer(
 	var enableCombatTimerAlerts: Boolean = true,
 	var hitmarkerOnHull: Boolean = true,
 
+	var shortenChatChannels: Boolean = false,
+	var hideUserPrefixes: Boolean = false,
+	var hideGlobalPrefixes: Boolean = false,
+
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	var wasKilledOn: Set<String> = setOf(),
 ) : DbObject {
