@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.custom.items
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.text
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
@@ -14,6 +13,10 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners.sortCustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.Smeltable
+import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
+import net.horizonsend.ion.server.features.custom.items.misc.MultimeterItem
+import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
+import net.horizonsend.ion.server.features.custom.items.misc.Wrench
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
@@ -40,12 +43,13 @@ import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.
 import net.horizonsend.ion.server.features.custom.items.util.withComponent
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.BLACK
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
@@ -287,9 +291,9 @@ object CustomItemRegistry : IonServerComponent() {
 	val PROGRESS_HOLDER = register(ProgressHolder)
 
 	// Starship Components Start
-	val BATTLECRUISER_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "BATTLECRUISER_REACTOR_CORE", model = "starship/battlecruiser_reactor_core", displayName = text("Battlecruiser Reactor Core", BOLD), customBlock = CustomBlocks::BATTLECRUISER_REACTOR_CORE)
-	val BARGE_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "BARGE_REACTOR_CORE", model = "starship/barge_reactor_core", displayName = text("Barge Reactor Core", BOLD), customBlock = CustomBlocks::BARGE_REACTOR_CORE)
-	val CRUISER_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "CRUISER_REACTOR_CORE", model = "starship/cruiser_reactor_core", displayName = text("Cruiser Reactor Core", BOLD), customBlock = CustomBlocks::CRUISER_REACTOR_CORE)
+	val BATTLECRUISER_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "BATTLECRUISER_REACTOR_CORE", model = "starship/battlecruiser_reactor_core", displayName = text("Battlecruiser Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlocks::BATTLECRUISER_REACTOR_CORE)
+	val BARGE_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "BARGE_REACTOR_CORE", model = "starship/barge_reactor_core", displayName = text("Barge Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlocks::BARGE_REACTOR_CORE)
+	val CRUISER_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "CRUISER_REACTOR_CORE", model = "starship/cruiser_reactor_core", displayName = text("Cruiser Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlocks::CRUISER_REACTOR_CORE)
 	// Starship Components End
 
 	// Gas canisters start
@@ -312,6 +316,18 @@ object CustomItemRegistry : IonServerComponent() {
 	val BATTERY_G = register(Battery('G', GOLD, 7500))
 
 	val CRATE_PLACER = register(CratePlacer)
+
+	val MULTIMETER = register(MultimeterItem)
+
+	val MULTIBLOCK_TOKEN = register(MultiblockToken)
+	val PACKAGED_MULTIBLOCK = register(PackagedMultiblock)
+	val MULTIBLOCK_WORKBENCH = register(CustomBlockItem(
+		identifier = "MULTIBLOCK_WORKBENCH",
+		displayName = text("Multiblock Workbench"),
+		customModel = "tool/multiblock_workbench"
+	) { CustomBlocks.MULTIBLOCK_WORKBENCH })
+
+	val WRENCH = register(Wrench)
 
 	private fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
 		text("$tierName ", tierColor),

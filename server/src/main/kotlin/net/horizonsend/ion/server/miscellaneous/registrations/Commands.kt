@@ -7,9 +7,11 @@ import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.DisplayDebug
 import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
+import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.ItemDebugCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
+import net.horizonsend.ion.server.command.admin.StructureCreator
 import net.horizonsend.ion.server.command.admin.WorldCommand
 import net.horizonsend.ion.server.command.economy.BazaarCommand
 import net.horizonsend.ion.server.command.economy.CityNpcCommand
@@ -63,6 +65,7 @@ import net.horizonsend.ion.server.command.qol.ContainerCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.PersonalTransporterCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
+import net.horizonsend.ion.server.command.qol.SetFluidCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
 import net.horizonsend.ion.server.command.space.SpaceGenCommand
@@ -78,6 +81,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationCommands
 import net.horizonsend.ion.server.features.client.commands.HudCommand
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.ControlSettingsCommand
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SettingsCommand
+import net.horizonsend.ion.server.features.multiblock.ModelCreator
 import net.horizonsend.ion.server.features.player.NewPlayerProtection
 import net.horizonsend.ion.server.features.progression.achievements.AchievementsCommand
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
@@ -150,6 +154,7 @@ val commands: List<SLCommand> = listOf(
 	SpaceGenCommand,
 	ConfigurationCommands,
 	WorldCommand,
+	IonChunkCommand,
 	CustomItemCommand,
 	IonCommand,
 	SearchCommand,
@@ -158,6 +163,7 @@ val commands: List<SLCommand> = listOf(
 	CheckProtectionCommand,
 	FixExtractorsCommand,
 	SetPowerCommand,
+	SetFluidCommand,
 	RegenerateCommand,
 	RemoveGhostShipCommand,
 
@@ -191,6 +197,8 @@ val commands: List<SLCommand> = listOf(
 	EnableProtectionMessagesCommand,
 	IonSitCommand,
 	SuicideCommand,
+	StructureCreator,
+	ModelCreator,
 	NavigationCommand,
 	DisplayDebug
 )

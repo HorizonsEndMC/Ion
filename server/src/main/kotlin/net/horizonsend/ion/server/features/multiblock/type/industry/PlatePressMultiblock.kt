@@ -1,23 +1,21 @@
 package net.horizonsend.ion.server.features.multiblock.type.industry
 
-
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import org.bukkit.Material
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import org.bukkit.block.Furnace
-import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
-
-object PlatePressMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
-	override val maxPower = 300_000
-
+object PlatePressMultiblock : Multiblock(), EntityMultiblock<PlatePressMultiblock.PlatePressMultiblockEntity> {
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).ironBlock()
 			}
 			y(+0) {
@@ -34,7 +32,7 @@ object PlatePressMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 			}
 			y(+0) {
 				x(-1).ironBlock()
-				x(+0).craftingTable()
+				x(+0).extractor()
 				x(+1).ironBlock()
 			}
 		}
@@ -58,7 +56,7 @@ object PlatePressMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 			}
 			y(+0) {
 				x(-1).anyGlass()
-				x(+0).anvil()
+				x(+0).type(Material.ANVIL)
 				x(+1).anyGlass()
 			}
 		}
@@ -109,7 +107,17 @@ object PlatePressMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		line4 = null
 	)
 
-	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-		handleRecipe(this, event, furnace, sign)
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): PlatePressMultiblockEntity {
+		return PlatePressMultiblockEntity(data, manager, x, y, z, world, structureDirection)
 	}
+
+	class PlatePressMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureFace: BlockFace
+	) : IndustryEntity(data, PlatePressMultiblock, manager, x, y, z, world, structureFace, 300_000)
 }

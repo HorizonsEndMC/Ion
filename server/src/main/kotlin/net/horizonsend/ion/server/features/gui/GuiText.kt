@@ -73,7 +73,7 @@ class GuiText(
         verticalShift: Int = 0
     ): GuiText {
         add(GuiComponent(component, line, alignment, horizontalShift, verticalShift))
-        return this
+		return this
     }
 
     /**
@@ -122,13 +122,15 @@ class GuiText(
      * '#' - fully covered slot
      * @param structureData list of strings indicating what each slot should be covered with
      */
-    fun setSlotOverlay(vararg structureData: String) {
+    fun setSlotOverlay(vararg structureData: String): GuiText {
         slotOverlayStructure.clear()
         for (row in structureData) {
             val sanitizedRow = row.replace(" ", "").replace("\n", "")
             slotOverlayStructure.add(sanitizedRow)
 
         }
+
+		return this
     }
 
     /**

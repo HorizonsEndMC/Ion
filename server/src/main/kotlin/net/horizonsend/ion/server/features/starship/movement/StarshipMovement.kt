@@ -24,26 +24,26 @@ import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rectangle
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.nms
-import net.horizonsend.ion.server.miscellaneous.utils.rectangle
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Animals
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.setValue
-import kotlin.collections.set
 import kotlin.math.sqrt
 
 abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: World? = null) {
@@ -54,6 +54,9 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	abstract fun displaceY(oldY: Int): Int
 	abstract fun displaceZ(oldZ: Int, oldX: Int): Int
 	abstract fun displaceLocation(oldLocation: Location): Location
+	abstract fun displaceFace(face: BlockFace): BlockFace
+	abstract fun displaceVector(vector: Vector): Vector
+	abstract fun displaceKey(key: BlockKey): BlockKey
 	protected abstract fun movePassenger(passenger: Entity)
 	protected abstract fun onComplete()
 	protected abstract fun blockDataTransform(blockData: BlockState): BlockState
@@ -136,6 +139,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			starship.calculateMinMax()
 			updateCenter()
 			updateSubsystems(world2)
+			starship.multiblockManager.displace(this)
+			starship.transportManager.displace(this)
 
 			onComplete()
 		}

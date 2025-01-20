@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
@@ -243,6 +244,19 @@ inline fun formatPaginatedMenu(
 	return builder.build()
 }
 
+inline fun <T> formatPaginatedMenu(
+	entries: List<T>,
+	command: String,
+	currentPage: Int,
+	maxPerPage: Int = 10,
+	color: TextColor = HEColorScheme.HE_MEDIUM_GRAY,
+	paramColor: TextColor = HE_LIGHT_GRAY,
+	footerSeparator: Component? = null,
+	entryProvider: (T, Int) -> Component
+): Component {
+	return formatPaginatedMenu(entries.size, command, currentPage, maxPerPage, color, paramColor, footerSeparator) { index -> entryProvider.invoke(entries[index], index) }
+}
+
 /**
  * Builds a chat paginated menu
  *
@@ -297,3 +311,5 @@ fun formatException(throwable: Throwable): Component {
 		.hoverEvent(text(stackTrace))
 		.clickEvent(ClickEvent.copyToClipboard(stackTrace))
 }
+
+fun button(text: Component, onClick: (Audience) -> Unit): Component = bracketed(text).clickEvent(ClickEvent.callback(onClick))

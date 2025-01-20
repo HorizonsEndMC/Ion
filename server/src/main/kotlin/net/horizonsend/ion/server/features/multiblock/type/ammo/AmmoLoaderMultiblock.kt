@@ -1,22 +1,21 @@
 package net.horizonsend.ion.server.features.multiblock.type.ammo
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import org.bukkit.Material
-import org.bukkit.block.Furnace
-import org.bukkit.block.Sign
-import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 
-object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
-	override val maxPower = 250_000
-
+object AmmoLoaderMultiblock	: Multiblock(), EntityMultiblock<AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity> {
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyStairs()
 			}
 
@@ -36,7 +35,7 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 
 			y(+0) {
 				x(-1).anySlab()
-				x(+0).type(Material.GRINDSTONE)
+				x(+0).grindstone()
 				x(+1).anySlab()
 			}
 		}
@@ -44,9 +43,9 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+2) {
 			y(-1) {
 				x(-2).ironBlock()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).ironBlock()
 			}
 
@@ -62,9 +61,9 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+3) {
 			y(-1) {
 				x(-2).anyGlassPane()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).aluminumBlock()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).anyGlassPane()
 			}
 
@@ -80,9 +79,9 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 		z(+4) {
 			y(-1) {
 				x(-2).ironBlock()
-				x(-1).copperBlock()
+				x(-1).anyCopperVariant()
 				x(+0).sponge()
-				x(+1).copperBlock()
+				x(+1).anyCopperVariant()
 				x(+2).ironBlock()
 			}
 
@@ -106,7 +105,7 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 
 			y(+0) {
 				x(-1).anySlab()
-				x(+0).type(Material.GRINDSTONE)
+				x(+0).grindstone()
 				x(+1).anySlab()
 			}
 		}
@@ -132,7 +131,17 @@ object AmmoLoaderMultiblock	: Multiblock(), PowerStoringMultiblock, FurnaceMulti
 			line4 = null
 	)
 
-	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-		handleRecipe(this, event, furnace, sign)
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AmmoLoaderMultiblockEntity {
+		return AmmoLoaderMultiblockEntity(data, manager, x, y, z, world, structureDirection)
 	}
+
+	class AmmoLoaderMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureFace: BlockFace
+	) : IndustryEntity(data, AmmoLoaderMultiblock, manager, x, y, z, world, structureFace, 300_000)
 }
