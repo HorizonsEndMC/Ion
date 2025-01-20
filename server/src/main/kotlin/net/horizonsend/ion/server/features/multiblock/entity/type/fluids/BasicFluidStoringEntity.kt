@@ -25,7 +25,7 @@ abstract class BasicFluidStoringEntity(
 	world: World,
 	structureDirection: BlockFace,
 	storage: InternalStorage
-) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), FluidStoringEntity {
+) : MultiblockEntity(manager, multiblock, world, x, y, z, structureDirection), FluidStoringEntity {
 	@Suppress("LeakingThis")
 	override val fluidStores: Array<StorageContainer> = arrayOf(
 		loadStoredResource(data, "main", Component.text("Main Storage"), NamespacedKeys.MAIN_STORAGE, storage)
