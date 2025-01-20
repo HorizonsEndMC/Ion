@@ -29,7 +29,7 @@ import java.util.UUID
 
 class Fleet(var leaderId: UUID) : ForwardingAudience {
 
-    private val memberIds = mutableSetOf(leaderId)
+    val memberIds = mutableSetOf(leaderId)
     private val invitedIds = mutableSetOf<UUID>()
     var lastBroadcast = ""
 

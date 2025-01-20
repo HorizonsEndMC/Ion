@@ -100,9 +100,12 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			DBCachedBooleanToggle(text("Hitmarker On Hull"), "", GuiItem.SOUND, true, SLPlayer::hitmarkerOnHull, AbstractPlayerCache.PlayerData::hitmarkerOnHull)
 		),
 		createSettingsPage(player, "Other Settings",
-			DBCachedBooleanToggle(text("Show /itemsearch Items"), "", GuiItem.COMPASS_NEEDLE, true, SLPlayer::showItemSearchItem, AbstractPlayerCache.PlayerData::showItemSearchItem),
 			DBCachedBooleanToggle(text("Enable Combat Timer Alerts"), "", GuiItem.LIST, true, SLPlayer::enableCombatTimerAlerts, AbstractPlayerCache.PlayerData::enableCombatTimerAlerts),
 			DBCachedBooleanToggle(text("Enable Protection Messages"), "", GuiItem.LIST, true, SLPlayer::protectionMessagesEnabled, AbstractPlayerCache.PlayerData::protectionMessagesEnabled),
+			DBCachedBooleanToggle(text("Shorten Chat Channels"), "", GuiItem.LIST, false, SLPlayer::shortenChatChannels, AbstractPlayerCache.PlayerData::shortenChatChannels),
+			DBCachedBooleanToggle(text("Remove User Prefixes"), "Removes prefixes, like Helper and Mod, from non-global chats", GuiItem.LIST, false, SLPlayer::hideUserPrefixes, AbstractPlayerCache.PlayerData::hideUserPrefixes),
+			DBCachedBooleanToggle(text("Remove Global Prefixes"), "Removes prefixes, like Helper and Mod, from global chats", GuiItem.LIST, false, SLPlayer::hideGlobalPrefixes, AbstractPlayerCache.PlayerData::hideGlobalPrefixes),
+			DBCachedBooleanToggle(text("Show /itemsearch Items"), "", GuiItem.COMPASS_NEEDLE, true, SLPlayer::showItemSearchItem, AbstractPlayerCache.PlayerData::showItemSearchItem),
 			PermissionBooleanToggle(sitStateNode, text("Hitmarker On Hull"), "", GuiItem.BOOKMARK, true)
 		)
     ).apply { forEach { subMenu -> subMenu.parent = this@SettingsMainMenuGui } }
