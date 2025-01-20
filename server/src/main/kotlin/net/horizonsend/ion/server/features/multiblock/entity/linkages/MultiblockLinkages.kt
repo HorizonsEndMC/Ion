@@ -21,21 +21,4 @@ abstract class MultiblockLinkageManager {
 	fun getLinkages(location: BlockKey): Set<MultiblockLinkage> {
 		return linkages[location]?.getLinkages() ?: setOf()
 	}
-
-	fun transferTo(other: MultiblockLinkageManager) {
-		for ((key, holder) in linkages) {
-			val linkages = holder.getLinkages()
-			for (linkage in linkages) other.registerLinkage(key, linkage)
-		}
-	}
-
-	fun transferTo(keys: Iterable<BlockKey>, other: MultiblockLinkageManager) {
-		val intersect = linkages.keys.intersect(keys.toSet())
-
-		for (key in intersect) {
-			val holder = linkages[key] ?: continue
-			val linkages = holder.getLinkages()
-			for (linkage in linkages) other.registerLinkage(key, linkage)
-		}
-	}
 }

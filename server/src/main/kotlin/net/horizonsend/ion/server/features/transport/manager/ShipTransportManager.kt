@@ -10,9 +10,10 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportC
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.nodes.inputs.ShipInputManager
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 
-class ShipTransportManager(val starship: Starship) : TransportManager() {
-	override val extractorManager: ShipExtractorManager = ShipExtractorManager(starship)
+class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheHolder<*>>() {
+	override val extractorManager: ShipExtractorManager = ShipExtractorManager(this)
 	val inputManager = ShipInputManager(this)
 
 	override val powerNodeManager = ShipCacheHolder(this) { PowerTransportCache(it) }
@@ -20,34 +21,42 @@ class ShipTransportManager(val starship: Starship) : TransportManager() {
 	override val itemPipeManager = ShipCacheHolder(this) { ItemTransportCache(it) }
 //	override val fluidNodeManager = ShipCacheHolder(this) { FluidTransportCache(it) }
 
+	override val networks: Array<ShipCacheHolder<*>> = arrayOf(
+		powerNodeManager,
+		solarPanelManager,
+		itemPipeManager,
+//		fluidNodeManager
+	)
+
 	init {
 		load()
 	}
 
 	fun load() {
-		powerNodeManager.capture()
-		solarPanelManager.capture()
-//		fluidNodeManager.capture()
+		networks.forEach { it.handleLoad() }
 		extractorManager.loadExtractors()
 		NewTransport.registerTransportManager(this)
 	}
 
 	fun release() {
-		powerNodeManager.release()
-		solarPanelManager.release()
-//		fluidNodeManager.release()
-		extractorManager.releaseExtractors()
+		networks.forEach { it.release() }
 		NewTransport.removeTransportManager(this)
+		extractorManager.releaseExtractors()
 	}
 
 	fun displace(movement: StarshipMovement) {
-		powerNodeManager.displace(movement)
-		solarPanelManager.displace(movement)
-//		fluidNodeManager.displace(movement)
-		extractorManager.displace(movement)
+		networks.forEach { it.displace(movement) }
 	}
 
 	override fun getInputProvider(): InputManager {
 		return inputManager
+	}
+
+	override fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i {
+		return starship.getGlobalCoordinate(localVec3i)
+	}
+
+	override fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i {
+		return starship.getLocalCoordinate(globalVec3i)
 	}
 }

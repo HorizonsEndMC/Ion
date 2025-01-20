@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
 
 interface CacheHolder <T: TransportCache> {
-	val transportManager: TransportManager
+	val transportManager: TransportManager<*>
 	val cache: T
 
 	fun getWorld(): World

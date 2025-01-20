@@ -39,7 +39,7 @@ import org.bukkit.util.Vector
 class MiningLaserSubsystem(
     override val starship: ActiveControlledStarship,
 	override val entity: MiningLaserMultiblock.MiningLaserMultiblockEntity,
-) : WeaponSubsystem(starship, entity.vec3i), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
+) : WeaponSubsystem(starship, entity.globalVec3i), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
 
 	val multiblock = entity.multiblock
 	override var face: BlockFace = entity.structureDirection

@@ -26,7 +26,7 @@ import java.util.concurrent.Executors
 import kotlin.concurrent.fixedRateTimer
 
 object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick to wait on the full server startup. */) {
-	private val transportManagers = ConcurrentHashMap.newKeySet<TransportManager>()
+	private val transportManagers = ConcurrentHashMap.newKeySet<TransportManager<*>>()
 
 	lateinit var monitorThread: Timer
 	lateinit var executor: ExecutorService
@@ -54,11 +54,11 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		if (::executor.isInitialized) executor.shutdown()
 	}
 
-	fun registerTransportManager(manager: TransportManager) {
+	fun registerTransportManager(manager: TransportManager<*>) {
 		transportManagers.add(manager)
 	}
 
-	fun removeTransportManager(manager: TransportManager) {
+	fun removeTransportManager(manager: TransportManager<*>) {
 		transportManagers.remove(manager)
 	}
 
