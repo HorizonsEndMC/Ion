@@ -6,13 +6,17 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCa
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 
-abstract class TransportManager {
+abstract class TransportManager<T: CacheHolder<*>> {
 	abstract val extractorManager: ExtractorManager
+
 	abstract val powerNodeManager: CacheHolder<PowerTransportCache>
 	abstract val solarPanelManager: CacheHolder<SolarPanelCache>
 	abstract val itemPipeManager: CacheHolder<ItemTransportCache>
 //	abstract val fluidNodeManager: CacheHolder<FluidTransportCache>
+
+	abstract val networks: Array<T>
 
 	abstract fun getInputProvider(): InputManager
 
@@ -23,4 +27,7 @@ abstract class TransportManager {
 //			fluidNodeManager.cache.tickExtractor(extractor.pos, delta)
 		}
 	}
+
+	open fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i = localVec3i
+	open fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i = globalVec3i
 }

@@ -2,15 +2,14 @@ package net.horizonsend.ion.server.features.multiblock.entity
 
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlerHolder
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkage
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.linkage.MultiblockLinkageHolder
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -18,7 +17,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -26,9 +24,6 @@ import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.persistence.PersistentDataAdapterContext
-import java.util.UUID
-import java.util.function.Supplier
-import kotlin.reflect.KClass
 
 /**
  * @param manager The multiblock manager that this is registered to
@@ -43,16 +38,38 @@ import kotlin.reflect.KClass
  **/
 abstract class MultiblockEntity(
 	var manager: MultiblockManager,
+
 	open val multiblock: Multiblock,
 
-	var x: Int,
-	var y: Int,
-	var z: Int,
 	var world: World,
+
+	var localOffsetX: Int,
+	var localOffsetY: Int,
+	var localOffsetZ: Int,
 
 	var structureDirection: BlockFace
 ): PDCSerializable<PersistentMultiblockData, PersistentMultiblockData.Companion>, DisplayHandlerHolder {
 	private var lastRetrieved = System.currentTimeMillis()
+
+	/** Mark this entity as having been removed */
+	var removed: Boolean = false
+	final override val isAlive: Boolean get() = !removed
+
+	override val persistentDataType: PersistentMultiblockData.Companion = PersistentMultiblockData.Companion
+
+	/**
+	 * Returns the location of this multiblock, relative to the global origin, as a Location
+	 **/
+	val location get() = globalVec3i.toLocation(world)
+
+	/**
+	 * Returns the origin of this multiblock as a Vec3i
+	 **/
+	val localVec3i get() = Vec3i(localOffsetX, localOffsetY, localOffsetZ)
+	val globalVec3i get() = manager.getGlobalCoordinate(localVec3i)
+
+	val localBlockKey: BlockKey get() = toBlockKey(localOffsetX, localOffsetY, localOffsetZ)
+	val globalBlockKey: BlockKey get() = toBlockKey(globalVec3i)
 
 	/** Gets the time since this value was last retrieved */
 	protected val deltaTMS: Long get() {
@@ -62,25 +79,6 @@ abstract class MultiblockEntity(
 
 		return delta
 	}
-
-	/** Mark this entity as having been removed */
-	var removed: Boolean = false
-	final override val isAlive: Boolean get() = !removed
-
-	override val persistentDataType: PersistentMultiblockData.Companion = PersistentMultiblockData.Companion
-	val position: BlockKey get() = toBlockKey(x, y, z)
-
-	/**
-	 * Returns the origin of this multiblock as a Location
-	 **/
-	val location get() = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
-
-	/**
-	 * Returns the origin of this multiblock as a Vec3i
-	 **/
-	val vec3i get() = Vec3i(x, y, z)
-
-	val locationKey get() = toBlockKey(x, y, z)
 
 	fun processRemoval() {
 		removed = true
@@ -96,7 +94,7 @@ abstract class MultiblockEntity(
 
 	/** Removes this multiblock entity */
 	fun remove() {
-		manager.removeMultiblockEntity(x, y, z)
+		manager.removeMultiblockEntity(localOffsetX, localOffsetY, localOffsetZ)
 	}
 
 	/** Logic to be run upon the unloading of the chunk holding this entity */
@@ -126,7 +124,7 @@ abstract class MultiblockEntity(
 	 * This data is serialized and stored on the chunk when not loaded.
 	 **/
 	fun store(): PersistentMultiblockData {
-		val store = PersistentMultiblockData(x, y, z, multiblock, structureDirection)
+		val store = PersistentMultiblockData(localOffsetX, localOffsetY, localOffsetZ, multiblock, structureDirection)
 		storeAdditionalData(store, store.getAdditionalDataRaw().adapterContext)
 
 		return store
@@ -143,7 +141,7 @@ abstract class MultiblockEntity(
 
 	fun isSignLoaded(): Boolean {
 		val signDirection = structureDirection.oppositeFace
-		val signLoc = Vec3i(x, y, z) + Vec3i(signDirection.modX, 0, signDirection.modZ)
+		val signLoc = globalVec3i + Vec3i(signDirection.modX, 0, signDirection.modZ)
 
 		return isBlockLoaded(world, signLoc.x, signLoc.y, signLoc.z)
 	}
@@ -152,18 +150,19 @@ abstract class MultiblockEntity(
 	 * Gets the sign of this multiblock
 	 **/
 	fun getSign(): Sign? {
-		return getSignFromOrigin(world, vec3i, structureDirection).state as? Sign
+		return getSignFromOrigin(world, globalVec3i, structureDirection).state as? Sign
 	}
 
-	fun getSignLocation() = getSignFromOrigin(world, vec3i, structureDirection).location
-	fun getSignBlock() = getSignFromOrigin(world, vec3i, structureDirection)
-	fun getSignKey() = getRelative(locationKey, structureDirection.oppositeFace)
+	fun getSignLocation() = getSignFromOrigin(world, globalVec3i, structureDirection).location
+	fun getSignBlock() = getSignFromOrigin(world, globalVec3i, structureDirection)
+	fun getSignKey() = getRelative(globalBlockKey, structureDirection.oppositeFace)
 
 	/**
 	 * Gets the origin block of this multiblock
 	 **/
 	fun getOrigin(): Block {
-		return world.getBlockAt(x, y, z)
+		val globalLoc = globalVec3i
+		return world.getBlockAt(globalLoc.x, globalLoc.y, globalLoc.z)
 	}
 
 	/**
@@ -171,9 +170,10 @@ abstract class MultiblockEntity(
 	 **/
 	fun isIntact(checkSign: Boolean = true): Boolean {
 		if (checkSign && getSign() == null) return false
+		val globalLoc = globalVec3i
 
 		return multiblock.blockMatchesStructure(
-			world.getBlockAt(x, y, z),
+			world.getBlockAt(globalLoc.x, globalLoc.y, globalLoc.z),
 			structureDirection,
 			loadChunks = false,
 			particles = false
@@ -181,14 +181,6 @@ abstract class MultiblockEntity(
 	}
 
 	fun displace(movement: StarshipMovement) {
-		val newX = movement.displaceX(x, z)
-		val newY = movement.displaceY(y)
-		val newZ = movement.displaceZ(z, x)
-
-		this.x = newX
-		this.y = newY
-		this.z = newZ
-
 		val world = movement.newWorld
 		if (world != null) {
 			this.world = world
@@ -204,17 +196,17 @@ abstract class MultiblockEntity(
 	 *
 	 **/
 	fun getBlockRelative(right: Int, up: Int, forward: Int): Block {
-		val (x, y, z) = getRelative(vec3i, structureDirection, right = right, up = up, forward = forward)
+		val (x, y, z) = getRelative(globalVec3i, structureDirection, right = right, up = up, forward = forward)
 
 		return world.getBlockAt(x, y, z)
 	}
 
 	fun getPosRelative(right: Int, up: Int, forward: Int): Vec3i {
-		return getRelative(vec3i, structureDirection, right = right, up = up, forward = forward)
+		return getRelative(globalVec3i, structureDirection, right = right, up = up, forward = forward)
 	}
 
 	fun getKeyRelative(right: Int, up: Int, forward: Int): BlockKey {
-		return toBlockKey(getRelative(vec3i, structureDirection, right = right, up = up, forward = forward))
+		return toBlockKey(getRelative(globalVec3i, structureDirection, right = right, up = up, forward = forward))
 	}
 
 	fun getInventory(right: Int, up: Int, forward: Int): Inventory? {
@@ -334,26 +326,15 @@ abstract class MultiblockEntity(
 	// Util
 	protected fun none(): InputsData = InputsData.builder(this).build()
 
-	val linkages = mutableMapOf<UUID, BlockKey>()
+	val linkages = mutableListOf<MultiblockLinkageHolder>()
 
-	protected fun registerLinkage(right: Int, up: Int, forward: Int, linkageDirection: RelativeFace, allowedEntities: Array<KClass<out MultiblockEntity>>): Supplier<MultiblockEntity?> {
-		val realLocKey = toBlockKey(getPosRelative(right, up, forward))
-		val new = MultiblockLinkage(this, allowedEntities, realLocKey, linkageDirection[structureDirection])
-
-		val id = UUID.randomUUID()
-
-		linkages[id] = (realLocKey)
-		manager.getLinkageManager().registerLinkage(realLocKey, new)
-
-		return Supplier {
-			val currentPos = linkages[id] ?: return@Supplier null
-			val linkage = manager.getLinkageManager().getLinkages(currentPos).firstOrNull() { it.owner == this }
-			linkage?.getOtherEnd(manager.getLinkageManager())
-		}
+	fun reRegisterLinkages() {
+		removeLinkages()
+		linkages.forEach { t -> t.register() }
 	}
 
-	private fun removeLinkages() {
-		for (blockKey in linkages.values) manager.getLinkageManager().deRegisterLinkage(blockKey)
+	fun removeLinkages() {
+		linkages.forEach { linkage -> linkage.deRegister() }
 	}
 
 	override fun handlerGetWorld(): World {

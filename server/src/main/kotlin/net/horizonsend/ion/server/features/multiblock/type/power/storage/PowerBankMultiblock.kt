@@ -103,5 +103,9 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), EntityMulti
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
 		}
+
+		override fun toString(): String {
+			return "manager: $manager, local $localVec3i global $globalVec3i"
+		}
 	}
 }

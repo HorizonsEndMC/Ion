@@ -59,7 +59,7 @@ object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMulti
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, CanisterGasCollectorMultiblock, x, y, z, world, structureDirection), AsyncTickingMultiblockEntity {
+	) : MultiblockEntity(manager, CanisterGasCollectorMultiblock, world, x, y, z, structureDirection), AsyncTickingMultiblockEntity {
 		val configuration get() = globalGassesConfiguration()
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
