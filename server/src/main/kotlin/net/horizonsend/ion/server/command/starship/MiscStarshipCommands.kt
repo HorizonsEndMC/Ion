@@ -335,7 +335,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		failIf(!destinationWorld.worldBorder.isInside(Location(destinationWorld, x.toDouble(), 128.0, z.toDouble()))) {
-			"Destination coordinates are outside the world order"
+			"Destination coordinates are outside the world border!"
 		}
 
 		val massShadowInfo = MassShadows.find(
