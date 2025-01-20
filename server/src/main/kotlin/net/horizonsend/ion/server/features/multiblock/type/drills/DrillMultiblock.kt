@@ -156,7 +156,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 			val power = powerStorage.getPower()
 			if (power == 0) {
 				disable()
-				return player.alertSubtitle("Your drill at $vec3i ran out of power! It was disabled.")
+				return player.alertSubtitle("Your drill at $globalVec3i ran out of power! It was disabled.")
 			}
 
 			val inSpace = world.ion.hasFlag(WorldFlag.SPACE_WORLD)

@@ -78,9 +78,12 @@ object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntit
 
 		return mobDefenders.asSequence()
 			.filter { it.world == location.world }
-			.filter { abs(location.x - it.x) < 50 }
-			.filter { abs(location.y - it.y) < 50 }
-			.filter { abs(location.z - it.z) < 50 }
+			.filter {
+				val globalVec3i = it.globalVec3i
+				abs(location.x - globalVec3i.x) < 50  &&
+				abs(location.y - globalVec3i.y) < 50 &&
+				abs(location.z - globalVec3i.z) < 50
+			}
 			.any { it.isIntact() }
 	}
 
@@ -95,7 +98,7 @@ object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntit
 		z: Int,
 		world: World,
 		signDirection: BlockFace
-	) : MultiblockEntity(manager, MobDefender, x, y, z, world, signDirection) {
+	) : MultiblockEntity(manager, MobDefender, world, x, y, z, signDirection) {
 		override val inputsData: InputsData = none()
 
 		override fun onLoad() {
