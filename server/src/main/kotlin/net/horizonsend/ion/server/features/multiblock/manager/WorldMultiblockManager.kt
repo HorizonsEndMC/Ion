@@ -56,6 +56,9 @@ class WorldMultiblockManager(val world: IonWorld) {
 		return chunk.multiblockManager[key]
 	}
 
+	/**
+	 * Gets the multiblock manager of the chunk at the provided key, if one is loaded
+	 **/
 	fun getChunkManager(key: BlockKey): ChunkMultiblockManager? {
 		return world.getChunk(getX(key).shr(4), getZ(key).shr(4))?.multiblockManager
 	}
